@@ -5,7 +5,7 @@ EnglishFlow/
 ├─ apps/                         多端应用
 │  ├─ learner-web/               学习 Web
 │  ├─ miniapp-wechat/            微信小程序
-│  ├─ mobile/                    React Native/Expo；含 ios/ 与 android/
+│  ├─ mobile/                    uni-app 移动端原生配置与打包（见 ADR-0004）；含 ios/ 与 android/
 │  ├─ official-site/             官网与 SEO
 │  └─ admin-web/                 运营/教研/客服后台
 ├─ services/                     后端运行时

@@ -1,6 +1,6 @@
 # EnglishFlow Agent 工作与架构开发规则 (AGENTS.md)
 
-> **版本**：v2.1 (全平台统一与高性能自适应开发就绪版)  
+> **版本**：v3.0 (方案 B 落地版：Vue3 + uni-app 全端 + Spring Boot 3 后端)  
 > **面向对象**：所有参与 EnglishFlow 研发的 AI Agent 与全栈工程师。
 
 ---
@@ -16,33 +16,34 @@
 所有 Agent 在编写、重构或引入第三方依赖时，必须严格遵守以下技术栈边界，**严禁私自引入冲突框架**：
 
 ### 2.1 前端与全平台跨端矩阵
-- **统一核心框架**：`React 18+ / Next.js (SSR)` + `TypeScript` + `Tailwind CSS`。
+- **统一核心框架**：`Vue 3 + TypeScript`；跨端主体采用 **`uni-app (Vue3)`**（一套代码编译到 Web / H5 / iOS / Android / iPad / 微信小程序），管理后台采用 `Vue 3 + Element Plus`。
 - **全平台跨端体系**：**一套核心代码（Monorepo 85%+ 复用）**。
-  - **PC Web**：`Next.js` (全功能沉浸式学习)；
-  - **Windows 桌面端 & iPadOS / 平板**：统一采用 **`Tauri 2.0`**（Rust 原生轻量外壳，<15MB 包体，30MB 内存占用，严禁引入臃肿的 Electron）；
-  - **移动手机 App (iOS/Android)**：`Tauri 2.0` 或 `React Native (Expo)`；
-  - **微信小程序**：基于 `Taro` 或 `Uni-App (Vue3)` 编译层同构适配。
+  - **PC Web / H5**：uni-app H5 编译产物，响应式适配桌面与手机浏览器；官网可采用 Nuxt 3 或 uni-app；
+  - **移动手机 App (iOS/Android) & iPad**：uni-app 原生渲染编译（条件编译调用原生能力），iOS 需 Apple 开发者账号与 Xcode 打包；
+  - **Windows 桌面端**：Web 版 + PWA 优先；如需原生壳可用 **`Tauri 2.0`**（严禁引入臃肿的 Electron）；
+  - **微信小程序**：uni-app 条件编译输出（与 App/H5 共享代码）。
 - **动效与 3D 渲染引擎标准**：
-  - **3D 口腔发音解剖**：`React Three Fiber (R3F)` + `Three.js` + `Draco` 压缩；
-  - **AI 数字人伴学骨骼与状态机**：必须优先使用 **`Rive Runtime`**（严禁无节制使用大体积 Lottie）；
-  - **长难句 X 光机 & 知识图谱**：`React Flow (Pro)` / `AntV G6` (WebGL 硬件加速模式)；
-  - **音频精听与波形**：`Wavesurfer.js` + `Web Audio API (AudioWorklet)`。
+  - **3D 口腔发音解剖**：`Three.js`（H5/App 端 web-view 承载 + Draco 压缩，小程序端降级为 2D 帧动画）；
+  - **AI 数字人伴学骨骼与状态机**：优先使用 **`Rive Runtime`**（H5/App web-view；严禁无节制使用大体积 Lottie）；
+  - **长难句 X 光机 & 知识图谱**：`Vue Flow` / `AntV G6`（框架无关，WebGL 硬件加速模式）；
+  - **音频精听与波形**：`Wavesurfer.js` + `Web Audio API`；
+  - **页面动效**：uni-app 内置动画 / CSS 动画 / `@vueuse/motion`。
 - **设备算力自适应与画质降级**：
   - 必须对接 `AdaptivePerformanceEngine`，支持 **Ultra / High / Medium / Performance** 四级画质；
   - 低配设备必须能降级为 2.5D SVG 或 2D 静态切片，严禁出现低配机卡死或无法关闭动效的情况。
 
 ### 2.2 后端与实时通信架构
-- **业务核心 (Core API)**：`TypeScript / Node.js (NestJS)` 模块化单体 (Modular Monolith) 或 `Java 17+ (Spring Boot 3)`。
-- **实时语音与媒体通信**：必须基于 **`LiveKit (WebRTC)`** + 服务端 `Silero-VAD`（实现 <800ms 低延迟双向对讲与打断 Barge-in，严禁使用粗糙的 HTTP 轮询）。
-- **AI 智能编排中心**：必须采用 **`Python 3.11+ (FastAPI + LangGraph / LiteLLM)`**。
-- **持久化与数据存储**：`PostgreSQL 16 (支持 pgvector)` + `Redis 7.x Cluster` + S3 兼容对象存储。
+- **业务核心 (Core API)**：`Java 17+ (Spring Boot 3)` 模块化单体 (Modular Monolith)。
+- **实时语音与媒体通信**：P1 阶段优先接入 **商业 RTC AI 对话服务（声网 / 腾讯云 TRTC）**（Java SDK 接入，实现低延迟双向对讲与打断 Barge-in，严禁使用粗糙的 HTTP 轮询）；自建 LiveKit 仅作为后续降本评估项，启用需新增 ADR。
+- **AI 智能编排中心**：必须采用 **`Python 3.11+ (FastAPI + LangGraph / LiteLLM)`** 独立服务，与 Core API 通过 REST/gRPC 通信。
+- **持久化与数据存储**：`PostgreSQL 16 (支持 pgvector)` + `Redis 7.x` + S3 兼容对象存储；异步任务采用 `RabbitMQ 或 Redis Streams`（Spring 生态集成）。
 
 ---
 
 ## 3. 开发规范与架构边界约定 (Architecture Guardrails)
 
 1. **类型与 API 契约先行 (Contract-First)**：
-   - 任何前后端接口变动，必须先在 `packages/contracts/` 定义 TypeScript / Zod Schema 与 OpenAPI 文档，严禁在客户端代码中手写未经校验的裸 `any` 类型。
+   - 任何前后端接口变动，必须先在 `packages/contracts/` 定义 OpenAPI 文档（YAML/JSON 单一事实源），Java 端 DTO 与前端 TS 类型均由 `openapi-generator` 生成，严禁在客户端代码中手写未经校验的裸 `any` 类型。
 2. **AI 输出结构化与安全合规 (AI Safety & Schema Enforcement)**：
    - 所有 AI 功能必须有明确的 `prompt_version`、输入/输出 Pydantic/Zod Schema、超时降级与重试机制。
    - 所有学习评测结论必须在数据库留痕，具备可解释性与可回放审计能力。

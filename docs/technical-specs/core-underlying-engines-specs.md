@@ -118,10 +118,10 @@ export function calculateNextReview(
 ### 5.1 多端架构定位矩阵
 | 终端类型 | 框架技术 | 核心承载功能与交互 |
 | :--- | :--- | :--- |
-| **微信小程序** | Taro / Vue3 | 碎片化刷词、每日打卡、音标实验室、战队排行榜、轻量跟读。 |
-| **移动端 App (iOS/Android)** | React Native | WebRTC 实时卡通/外教数字人 1v1 通话、机考听说高保真录音、离线课件包。 |
-| **PC Learner Web** | Next.js (SSR/SSG) | 沉浸式长难句 X 光机交互、高考/考研/雅思全真模考大屏、学术论文与手译本。 |
-| **Admin Web 中台** | Vite + React + Ant Design | 教研题库录入与教材版本分发、AI Prompt 版本热更新、风控日志监控。 |
+| **微信小程序** | uni-app (Vue3) 条件编译 | 碎片化刷词、每日打卡、音标实验室、战队排行榜、轻量跟读。 |
+| **移动端 App (iOS/Android/iPad)** | uni-app 原生渲染编译（见 ADR-0004） | WebRTC 实时卡通/外教数字人 1v1 通话、机考听说高保真录音、离线课件包。 |
+| **PC Learner Web** | uni-app H5 编译（SEO 需求高时用 Nuxt 3） | 沉浸式长难句 X 光机交互、高考/考研/雅思全真模考大屏、学术论文与手译本。 |
+| **Admin Web 中台** | Vue 3 + Vite + Element Plus | 教研题库录入与教材版本分发、AI Prompt 版本热更新、风控日志监控。 |
 
 ### 5.2 核心 RESTful / WebSocket API 契约示例
 ```yaml

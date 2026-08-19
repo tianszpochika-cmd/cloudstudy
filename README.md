@@ -24,7 +24,7 @@
 ## 平台分期
 
 - P0：学习 Web、微信小程序、运营后台、官网落地页。
-- P1：React Native/Expo 移动端，复用领域逻辑和 API。
+- P1：移动端 App（uni-app 一套代码编译 iOS/Android/iPad，见 ADR-0004），复用领域逻辑与 API。
 - P2：只有在原生能力确有需要时，再增加独立 iOS/Android 原生模块。
 
 ## 技术分层
