@@ -7,7 +7,7 @@
 ## 本地依赖
 
 - Node.js 与 pnpm。
-- PostgreSQL。
+- MySQL。
 - Redis。
 - 可选对象存储模拟服务。
 - 可选的模型 mock provider。

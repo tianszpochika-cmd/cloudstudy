@@ -48,9 +48,9 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
                                               |
 +---------------------------------------------------------------------------------------------------+
 |                                      7. 基础设施与数据持久层                                       |
-|  [PostgreSQL 16]         [Redis 7.x]               [pgvector 扩展]            [S3 / 腾讯云 COS]    |
-|   - 关系型业务数据主库     - 缓存、分布式锁、会话   - 语法图谱/真题向量检索     - 教材音视频、录音存档 |
-|   - Row-Level Security     - 每日打卡 BitMap 统计   - 语义相似度判重与推荐      - 3D 模型资产与图片   |
+|  [MySQL 8.x]             [Redis 7.x]               [向量检索(Phase 2)]        [S3 / 腾讯云 COS]    |
+|   - 关系型业务数据主库     - 缓存、分布式锁、会话   - Phase 2 按需引入，       - 课程音视频、录音存档 |
+|   - 行级权限与审计日志     - 每日打卡 BitMap 统计     组件选型另记 ADR        - 3D 模型资产与图片   |
 +---------------------------------------------------------------------------------------------------+
 ```
 
@@ -71,7 +71,7 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
    - **iOS / iPad App**：uni-app 原生渲染编译，Xcode 打包上架 App Store（需 Apple 开发者账号）；iPad 适配 Apple Pencil 手写与分屏。
    - **Android App**：uni-app 编译 APK，官网直接分发 + 国内应用市场上架。
    - **Windows 桌面**：Web 版 + PWA 优先；如需原生壳采用 Tauri 2.0（严禁 Electron）。
-   - **微信小程序**：uni-app 条件编译输出，重度 3D/游戏页面走降级版。
+   - **微信小程序**：uni-app 条件编译输出，重度 3D/游戏页面走降级版；按 PRD §1.3 可后置到 P1.5，首发以 Android/iOS App + H5/Web 为主。
 
 ---
 
@@ -102,12 +102,12 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
 | **管理后台** | Vue 3 + Element Plus + Vite | 最新稳定版 | 教研、运营风控、Prompt 灰度与数据看板 |
 | **桌面端** | Web + PWA 优先；Tauri 2.0 可选原生壳 | v2.0+ | Windows 场景按需启用 |
 | **2D/3D 特效引擎** | **Three.js + Rive Runtime + Vue Flow / AntV G6 + Lottie(受限)** | 最新稳定版 | 3D 口腔解剖(web-view)、骨骼数字人、语法树与知识图谱、轻量动效 |
-| **游戏化小游戏引擎** | **Phaser 3**（H5/App web-view 承载） | v3.x | K12 塔防/消消乐/拼句火车/大富翁，受四级画质开关管控 |
+| **游戏化小游戏引擎** | **Vue 组件轻量实现为主，Phaser 3 重型游戏备选**（H5/App web-view 承载） | v3.x | 拼句/消消乐等首发游戏用 Vue 组件；受四级画质开关管控 |
 | **音频与音效** | **Wavesurfer.js + Howler.js** | 最新稳定版 | 波形精听与变速复读；答题提示音与连击音效 |
 | **核心业务后端** | **Java 17 + Spring Boot 3**（决策见 ADR-0004） | Java 17+ / Spring Boot 3.x | 模块化单体，负责用户、课程、答题流水、记忆调度、订单 |
 | **AI 编排服务** | **Python 3.11+ (FastAPI + LangGraph + LiteLLM)** | Python 3.11 | 独立服务；大模型网关路由、句法分析、写作升格、安全风控 |
 | **实时对话 (P1)** | **商业 RTC AI 对话服务（声网 / 腾讯云 TRTC）** | Java SDK | 低延迟双向对讲、Barge-in、流式 ASR/TTS；自建 LiveKit 为降本备选需 ADR |
-| **数据库与缓存** | **PostgreSQL 16 (pgvector) + Redis 7.x** | PG 16 / Redis 7 | 强关系型业务持久化、向量语义检索、排行榜 ZSet、打卡 BitMap |
+| **数据库与缓存** | **MySQL 8.x + Redis 7.x**（PRD §1.1，决策见 ADR-0006） | MySQL 8 / Redis 7 | 强关系型业务持久化、排行榜 ZSet、打卡 BitMap；向量检索 Phase 2 按需另选组件 |
 | **异步任务流** | **RabbitMQ 或 Redis Streams + Spring 集成** | 最新稳定版 | 异步削峰、AI 作文深度批改、机考离线打分、定时推送 |
 
 ---
@@ -135,7 +135,7 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
 │   ├── telemetry/              # 观测与事件采集 SDK
 │   └── config/                 # 共享构建与 Lint 配置
 ├── services/                    # 可部署的运行时服务
-│   ├── core-api/               # 业务核心服务 (Java 17 / Spring Boot 3，按领域模块组织)
+│   ├── core-api/               # 业务核心服务 (Java 17 / Spring Boot 3，按领域模块组织，含第四层产品基础设施模块：通知/权益/订单/客服/隐私中心等)
 │   ├── ai-orchestrator/        # AI 智能编排中心 (FastAPI/Python)
 │   ├── realtime-voice/         # 实时对话接入层 (商业 RTC SDK 集成与会话事件留痕)
 │   ├── content-worker/         # 教材导入与音频切片 Worker
@@ -143,9 +143,9 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
 │   ├── notification-worker/    # 推送与上课提醒 Worker
 │   └── analytics-worker/       # 能力雷达图与漏斗计算 Worker
 ├── database/                    # 数据库 schema、迁移、种子与夹具
-│   ├── postgres/               # PostgreSQL 迁移与种子数据 (Flyway)
+│   ├── mysql/                  # MySQL 迁移与种子数据 (Flyway，原 postgres/ 目录改造)
 │   ├── redis/                  # Redis 使用说明
-│   ├── vector/                 # 向量检索 (pgvector)
+│   ├── vector/                 # 向量检索 (Phase 2 按需，组件选型另记 ADR)
 │   └── warehouse/              # 分析仓库 (规划中)
 ├── content/                     # 课程、评测、评分规则与媒体内容
 ├── ai/                          # 提示词、评测集、策略与实验（非运行时服务）
@@ -172,5 +172,5 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
 
 1. **资质与备案**：域名 ICP 备案（前置）→ App 备案 → 小程序企业主体注册（教育类目资质）→ 生成式 AI 服务算法备案。
 2. **iOS 上架**：Apple 开发者账号（$99/年）+ Mac/Xcode 打包 + App Store 审核（1-3 天）。
-3. **服务器**：腾讯云/阿里云单机起步（Docker Compose：Spring Boot + FastAPI + PostgreSQL + Redis + Nginx），验证期无需 K8s。
+3. **服务器**：腾讯云/阿里云单机起步（Docker Compose：Spring Boot + FastAPI + MySQL + Redis + Nginx），验证期无需 K8s。
 4. **AI 供应商**：优先国内合规大模型（通义/DeepSeek/智谱），密钥仅存服务端，客户端永不接触。

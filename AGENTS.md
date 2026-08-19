@@ -36,7 +36,7 @@
 - **业务核心 (Core API)**：`Java 17+ (Spring Boot 3)` 模块化单体 (Modular Monolith)。
 - **实时语音与媒体通信**：P1 阶段优先接入 **商业 RTC AI 对话服务（声网 / 腾讯云 TRTC）**（Java SDK 接入，实现低延迟双向对讲与打断 Barge-in，严禁使用粗糙的 HTTP 轮询）；自建 LiveKit 仅作为后续降本评估项，启用需新增 ADR。
 - **AI 智能编排中心**：必须采用 **`Python 3.11+ (FastAPI + LangGraph / LiteLLM)`** 独立服务，与 Core API 通过 REST/gRPC 通信。
-- **持久化与数据存储**：`PostgreSQL 16 (支持 pgvector)` + `Redis 7.x` + S3 兼容对象存储；异步任务采用 `RabbitMQ 或 Redis Streams`（Spring 生态集成）。
+- **持久化与数据存储**：`MySQL 8.x` + `Redis 7.x` + S3 兼容对象存储（PRD §1.1，决策见 ADR-0006；向量检索 Phase 2 按需另选组件）；异步任务采用 `RabbitMQ 或 Redis Streams`（Spring 生态集成）。
 
 ---
 

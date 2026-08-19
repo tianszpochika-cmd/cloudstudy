@@ -16,6 +16,8 @@
 | **方案 B：React 统一核心 + Tauri 2.0 跨端壳 (Monorepo)** | React (Next.js / Vite) + **Tauri 2.0** + Taro | 🌟🌟🌟🌟 良好 | 🌟🌟🌟🌟🌟 内存占用极小 (~30MB)，安装包 <15MB | 🌟🌟🌟🌟 共享业务 Hooks 与状态管理 | 8.5分（团队需从零学 React） |
 | **方案 C：Flutter 全家桶 (Dart)** | Flutter for Desktop + Mobile + Web | 🌟🌟🌟🌟 良好 | 🌟🌟🌟🌟 良好 | 🌟🌟 小程序支持度差，国内生态受限 | 8.0分 |
 
+> **Phase 1 端发布优先级（PRD §1.3）**：首发 Android/iOS App + Learner Web/H5 + 官网 + Admin 中台；微信小程序可后置到 P1.5；大屏/教室端 Phase 3 再议。不为“端数量”牺牲主学习链路质量。
+
 ### 🏆 最优推荐组合：Vue 3 + uni-app 一套代码多端编译（决策见 ADR-0004）
 
 ```
@@ -46,6 +48,8 @@
 ---
 
 ## 2. 硬件算力自适应与特效分级降级引擎 (Adaptive Graphics & VFX Engine)
+
+> 3D Avatar（Avatar Studio / Wardrobe / 学习空间）的渲染与降级策略专项见 [avatar-3d-rendering-pipeline.md](./avatar-3d-rendering-pipeline.md)，与本引擎四档联动。
 
 为了让低配老电脑、千元安卓机与高配旗舰机都能极致流畅，系统建立 **四级画质梯队 (Graphic Tiers)** 与 **动态帧率监测状态机 (Dynamic FPS Watcher)**。
 

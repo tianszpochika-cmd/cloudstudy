@@ -2,6 +2,16 @@
 
 ## 2026-08-19
 
+- **Phase 1 UI/UX 设计包 v1.0 收录入库**（用户提供，原文未改）：docs/06-design/phase-1/ 新增设计总册（语学星_Phase1_UIUX设计总册_v1.0.md）+ uiux-specs/ 20 份分册（设计系统/信息架构/Adaptive Home/Onboarding/词汇 SRS/语法写作/听力阅读/Practice Hub/游戏化/3D 人物与奖励箱/Study Room/个人中心/VIP Household/客服隐私同步/Admin 后台/组件库/动效无障碍/验收清单）+ 阶段索引 README；基线为 PRD v3.2，边界为 18+ 成人/无 AI/低 UGC/免费随机奖励。06-design/README.md 与根 README 同步为已交付状态。
+
+- 技术架构按 PRD v3.2 对齐（全部调整）：①数据库主线 PostgreSQL→**MySQL 8.x + Redis 7.x**（PRD §1.1 字面口径，新增 ADR-0006；向量检索定为 Phase 2 独立组件选型另记 ADR）；同步更新主架构/选型/总览/AGENTS.md/local-development/docker 编排与 database 目录改名（postgres→mysql）；②新增 3D Avatar 渲染技术方案（avatar-3d-rendering-pipeline.md：Three.js+glTF/Draco 经 web-view 承载、服务端预渲染快照降级、平台适配矩阵、性能预算、三里程碑）；③数据流文档新增离线下载与本地同步（SQLite+幂等事件最终一致）与 Language Clips 视频分发（OSS+CDN+HLS）章节；④小程序按 PRD §1.3 后置 P1.5；⑤core-api 标注第四层产品基础设施模块（通知/权益/订单/客服/隐私中心）；⑥游戏引擎口径改为 Vue 组件轻量实现为主、Phaser 备选；ADR 索引表建立。
+
+- 旧口径设计文档清理（为 PRD v3.2 让路，重建交由后续 Agent 执行）：移除 docs/06-design/phase-1/ 全部 12 份阶段设计文档与 docs/technical-specs/ 三份旧分期规格书（phase1-k12 / phase2-highschool-college / phase3-business-abroad）；重置 06-design/README.md 与 technical-specs/README.md 为“待按 v3.2 重建”状态（保留 design-system / immersive-frontend-architecture / core-underlying-engines-specs 等通用文档）；根 README.md 重写为 v3.2 口径（三阶段边界、当前状态、清理说明）。requirements/product-requirements.md 未做任何改动。
+
+- **PRD 全量替换为 v3.2（用户复核版，原文收录未做任何修改）**：requirements/product-requirements.md 由 v2.1 升级为《语学星全栈语言学习系统 PRD v3.2 —— 四层基础设施 + 3D 成长系统全量版》（4355 行，50 章）。重大口径变化：第一阶段重定义为“市场开拓版（18+ 成人、无生成式 AI）”；新增沉浸式语言世界主地图、Adaptive Home、听力/阅读系统、词根词族、Study Room、3D Avatar 与学习奖励箱、第四层产品基础设施（27 项）、Family Plan 等体系；K12/未成年人整体移至 Phase 3。注意：下游文档（mvp-scope、roadmap、docs/06-design/phase-1 等 12 份设计文档、technical-specs）仍基于旧口径，待后续按 v3.2 同步重建。
+
+- 新增上线执行清单 docs/08-compliance/shenzhen-launch-execution-checklist.md：深圳公司主体资质（注册/托管/记账/对公账户）、域名商标软著、服务器与云资源预算（1 万注册/1–2 千 DAU 约 6,000–18,000 元/年）、ICP/APP/教育 App/AI 功能登记备案、隐私与未成年人合规、应用商店上架、推荐执行顺序与第一年预算（低成本约 1.6 万–3.4 万元）；mainland-china-checklist.md 增交叉引用。
+
 - 第一阶段功能扩充四项：①打卡补签卡（断签 3 天内补签前一日，星星兑换/VIP 每月赠 2 张）；②词根词缀专题课（100+ 词根，讲解卡片+派生词族+快测，与词条助记联动）；③错题本仅查看不导出（不提供导出/下载/打印/复制接口，内容防复制）；④分享海报（打卡/周报/成绩三类，canvas 生成含品牌水印与邀请码）。游戏矩阵扩充为**六类**：首发 4 款（拼句火车、单词消消乐、单词保卫战、拼图解谜）+ 预留 2 款（语法射击、词义捕手），统一题目抽取/限局/结算写回复习队列规则。同步更新：PRD §2.1/§2.7/§2.9、mvp-scope P0、roadmap、phase-1 设计文档（03/08/09/10/README，VIP 权益矩阵增补签卡行）。
 
 - 第一阶段设计文档全量重建（docs/06-design/phase-1/ 共 12 份）：按新需求（标准语言学习、无 AI 完全商用）重写总览与 11 个模块设计（账号入学/首页任务/单词/语法与句子拆分/口语音标/作文/考试/复习错题/游戏化排行/VIP 商业化/管理后台），每份均含功能设计与交互设计两部分，并标注第二阶段 AI 预留槽位。

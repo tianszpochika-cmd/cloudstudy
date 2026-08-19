@@ -22,7 +22,7 @@
 
 任务层：content-worker、notification-worker、analytics-worker 和 job-runner。
 
-数据层：PostgreSQL、Redis、对象存储、可选的检索索引和分析仓库。
+数据层：MySQL、Redis、对象存储、可选的检索索引和分析仓库。
 
 ## 运行策略
 

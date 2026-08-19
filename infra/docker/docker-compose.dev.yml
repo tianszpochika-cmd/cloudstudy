@@ -1,14 +1,16 @@
 services:
-  postgres:
-    image: postgres:16-alpine
+  mysql:
+    image: mysql:8.0
     environment:
-      POSTGRES_USER: englishflow
-      POSTGRES_PASSWORD: englishflow
-      POSTGRES_DB: englishflow
+      MYSQL_DATABASE: yuxuexing
+      MYSQL_USER: yuxuexing
+      MYSQL_PASSWORD: yuxuexing
+      MYSQL_ROOT_PASSWORD: root-local-only
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - englishflow-postgres:/var/lib/postgresql/data
+      - yuxuexing-mysql:/var/lib/mysql
 
   redis:
     image: redis:7-alpine
@@ -25,8 +27,8 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - englishflow-minio:/data
+      - yuxuexing-minio:/data
 
 volumes:
-  englishflow-postgres:
-  englishflow-minio:
+  yuxuexing-mysql:
+  yuxuexing-minio:

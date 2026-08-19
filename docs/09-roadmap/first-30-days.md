@@ -11,7 +11,7 @@
 
 ## 第 2 周：跑通骨架
 
-- 初始化 uni-app 学习端、Spring Boot core-api、PostgreSQL/Redis 本地容器。
+- 初始化 uni-app 学习端、Spring Boot core-api、MySQL/Redis 本地容器。
 - 建立登录、学习目标选择、背词流程、练习提交和学习记录。
 - 定义内容 schema 与 OpenAPI 契约（packages/contracts），生成 Java DTO 与 TS 类型。
 - 用合成数据跑通首日路径：选目标 -> 背词 -> 练习 -> 复习入队。

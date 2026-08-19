@@ -16,9 +16,9 @@
 | **核心业务后端 (Core API)** | Java 17+ | Spring Boot 3 + MyBatis-Plus + Spring Security | 模块化单体 DDD：统一账户鉴权、课程体系、答题评分、订单支付、记忆曲线调度。 |
 | **AI 算法与编排中心** | Python 3.11+ | FastAPI + LangGraph + LiteLLM | 独立服务与 Core API 通过 REST/gRPC 通信；提示词版本管理、多模型网关路由（Qwen/DeepSeek/GLM）、结构化输出校验、安全风控。 |
 | **实时对话服务 (P1)** | 商业 RTC AI 对话服务 | 声网 / 腾讯云 TRTC（Java SDK） | 低延迟语音对讲、Barge-in、流式 ASR/TTS；免自建 WebRTC 集群。自建 LiveKit 为后续降本备选，启用需新增 ADR。 |
-| **数据库与缓存** | PostgreSQL 16 + Redis 7.x | MyBatis-Plus + Flyway + pgvector | 关系型持久化、向量语义检索、排行榜 ZSet、打卡 BitMap。 |
+| **数据库与缓存** | MySQL 8.x + Redis 7.x（PRD §1.1，见 ADR-0006） | MyBatis-Plus + Flyway | 关系型持久化、排行榜 ZSet、打卡 BitMap；向量检索 Phase 2 按需另选组件（另记 ADR）。 |
 | **异步任务与消息流** | RabbitMQ 或 Redis Streams | Spring AMQP / Spring Data Redis | 削峰填谷、AI 离线真题批改、长篇写作精修、定时通知推送。 |
-| **特效与游戏** | Three.js + Rive + Vue Flow/AntV G6 + Phaser 3 | — | 3D 口腔（web-view）、数字人、语法树、K12 小游戏，均受四级画质开关管控。 |
+| **特效与游戏** | Three.js + Rive + Vue Flow/AntV G6 + Phaser 3（备选） | — | 3D Avatar 与口腔（web-view）、数字人、语法树、游戏化小游戏，均受四级画质开关管控。 |
 
 ---
 
@@ -32,7 +32,7 @@
 | **核心业务后端 (Core API)** | TypeScript / Node.js (NestJS) | 模块化单体 DDD，与前端共享 TS 契约。 |
 | **AI 编排与大模型服务** | Python 3.11+ (FastAPI + LangGraph) | 与主线一致。 |
 | **实时通信服务** | LiveKit 自建 + Silero-VAD | 自建 WebRTC 集群，运维成本较高。 |
-| **数据与缓存** | PostgreSQL + Redis + Prisma | 与主线一致。 |
+| **数据与缓存** | PostgreSQL + Redis + Prisma | 备选路线自持选型，与主线（MySQL）不同。 |
 
 ---
 
