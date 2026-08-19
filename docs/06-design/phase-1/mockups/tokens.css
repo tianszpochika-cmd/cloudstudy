@@ -1,0 +1,173 @@
+/* ============================================================
+   语学星 Phase 1 · 共享设计令牌与基础组件（tokens.css）
+   依据：uiux-specs/01_设计系统_配色_字体_间距.md
+   所有 mockup 页面引用本文件，保证跨端视觉一致。
+   ============================================================ */
+
+/* ---------- 色彩令牌（Light） ---------- */
+:root {
+  --brand-primary: #596BFF;
+  --brand-primary-hover: #4C5CE6;
+  --brand-primary-soft: #EEF0FF;
+  --brand-secondary: #7C5CFC;
+  --success-main: #25B88A;
+  --success-soft: #EAF8F3;
+  --warning-main: #F2A83B;
+  --warning-soft: #FEF6E8;
+  --danger-main: #E95668;
+  --danger-soft: #FFF0F2;
+  --info-main: #3B8DFF;
+  --text-primary: #202332;
+  --text-secondary: #666D80;
+  --text-tertiary: #969CAF;
+  --surface-page: #F7F8FC;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --border-default: #E6E8F0;
+  --border-strong: #D2D6E2;
+  --grad-brand: linear-gradient(135deg, #596BFF 0%, #7C5CFC 100%);
+  --shadow-sm: 0 2px 8px rgba(31,35,48,.06);
+  --shadow-md: 0 8px 24px rgba(31,35,48,.10);
+  --shadow-lg: 0 16px 48px rgba(31,35,48,.14);
+  /* 品质色（仅收藏稀有度） */
+  --rarity-common: #C6CBD6;
+  --rarity-rare: #4A8DFF;
+  --rarity-epic: #8B5CF6;
+  --rarity-legendary: #F59E0B;
+  --rarity-collection: #EF4E5D;
+  /* 圆角 */
+  --r-sm: 8px; --r-input: 12px; --r-btn: 12px; --r-btn-main: 14px;
+  --r-card: 16px; --r-card-lg: 20px; --r-3d: 24px; --r-sheet: 24px;
+  --font-en: Inter, "SF Pro Text", Roboto, system-ui, sans-serif;
+}
+
+/* ---------- 色彩令牌（Dark，01 §3） ---------- */
+html[data-theme="dark"] {
+  --brand-primary: #7785FF;
+  --brand-primary-hover: #8C98FF;
+  --brand-primary-soft: #232A4D;
+  --success-main: #43C99B;
+  --success-soft: #12332A;
+  --warning-soft: #332812;
+  --danger-main: #FF6D7E;
+  --danger-soft: #3A1F26;
+  --text-primary: #F4F6FB;
+  --text-secondary: #B5BACC;
+  --text-tertiary: #81889D;
+  --surface-page: #0F1220;
+  --surface-card: #171B2D;
+  --surface-elevated: #20253A;
+  --border-default: #2B3148;
+  --border-strong: #3A4160;
+  --shadow-sm: none; --shadow-md: none;
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.5);
+}
+
+/* ---------- 基础 ---------- */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  color: var(--text-primary);
+  background: #E9EBF3;
+}
+html[data-theme="dark"] body { background: #05060C; }
+button { font-family: inherit; }
+svg.ic { width: 20px; height: 20px; stroke: var(--text-secondary); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- 稿台工具条（非 App 内容） ---------- */
+.toolbar {
+  display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; align-items: center;
+}
+.toolbar .title { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+.toolbar button {
+  border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--text-primary);
+  border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+}
+
+/* ---------- 设备外框 ---------- */
+.device {
+  background: var(--surface-page); overflow: hidden; position: relative;
+  display: flex; flex-direction: column;
+  box-shadow: var(--shadow-lg), 0 0 0 10px #1A1D2B;
+}
+.device.phone { width: 390px; height: 844px; border-radius: 40px; }
+.device.ipad  { width: 1024px; height: 768px; border-radius: 28px; }
+.device.web   { width: 1280px; height: 800px; border-radius: 16px; }
+.scroller { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.scroller::-webkit-scrollbar { display: none; }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--surface-card); border: 1px solid var(--border-default);
+  border-radius: var(--r-card); padding: 16px;
+}
+.mod-title { display: flex; align-items: center; justify-content: space-between; margin: 24px 0 12px; }
+.mod-title h2 { font-size: 18px; font-weight: 600; }
+.mod-title a, .mod-title .link { font-size: 13px; color: var(--brand-primary); text-decoration: none; cursor: pointer; }
+
+/* ---------- 按钮 ---------- */
+.btn-primary {
+  border: none; cursor: pointer; background: var(--brand-primary); color: #fff;
+  border-radius: var(--r-btn); font-size: 15px; font-weight: 500; height: 44px; padding: 0 20px;
+}
+.btn-primary:hover { background: var(--brand-primary-hover); }
+.btn-ghost {
+  cursor: pointer; background: transparent; border: 1px solid var(--border-strong);
+  color: var(--text-primary); border-radius: var(--r-btn); font-size: 15px; height: 44px; padding: 0 20px;
+}
+.btn-warn {
+  border: none; cursor: pointer; background: var(--warning-main); color: #fff;
+  border-radius: var(--r-btn); font-size: 14px; font-weight: 500; height: 40px; padding: 0 18px;
+}
+
+/* ---------- 徽章/标签 ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px;
+  border-radius: 999px; font-size: 12px; font-weight: 600;
+}
+.chip.streak { background: var(--warning-soft); color: var(--warning-main); font-family: var(--font-en); }
+.chip.brand  { background: var(--brand-primary-soft); color: var(--brand-primary); }
+.chip.success{ background: var(--success-soft); color: var(--success-main); }
+
+/* ---------- 语义答题色（01 §5：不能只靠红绿） ---------- */
+.ans-correct { background: var(--success-soft); border: 1.5px solid var(--success-main); }
+.ans-wrong   { background: var(--danger-soft); border: 1.5px solid var(--danger-main); }
+.ans-active  { background: var(--brand-primary-soft); border: 1.5px solid var(--brand-primary); }
+
+/* ---------- 品质描边（01 §4） ---------- */
+.r-common    { border: 2px solid var(--rarity-common); }
+.r-rare      { border: 2px solid var(--rarity-rare); }
+.r-epic      { border: 2px solid var(--rarity-epic); }
+.r-legendary { border: 2px solid var(--rarity-legendary); }
+.r-collection{ border: 2px solid var(--rarity-collection); }
+
+/* ---------- 底部 TabBar（5 Tab：学习/练习/世界/课程/我的） ---------- */
+.tabbar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 76px;
+  background: var(--surface-card); border-top: 1px solid var(--border-default);
+  display: flex; padding: 8px 8px 18px; z-index: 30;
+}
+.tabbar a {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 11px; color: var(--text-tertiary); text-decoration: none;
+}
+.tabbar a.active { color: var(--brand-primary); font-weight: 600; }
+.tabbar a.active svg.ic { stroke: var(--brand-primary); }
+
+/* ---------- Bottom Sheet ---------- */
+.mask { position: absolute; inset: 0; background: rgba(15,18,32,.45); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 40; }
+.mask.open { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 50;
+  background: var(--surface-elevated); border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  padding: 20px 16px 28px; transform: translateY(105%); transition: transform .3s cubic-bezier(.32,.72,.35,1);
+}
+.sheet.open { transform: translateY(0); }
+.sheet .grab { width: 36px; height: 4px; border-radius: 999px; background: var(--border-strong); margin: 0 auto 16px; }
+.sheet h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.sheet p { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 20px; }
+
+/* ---------- 通用 JS 钩子 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

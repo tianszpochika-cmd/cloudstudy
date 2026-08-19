@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>语学星 · Web端 Adaptive Home v0.1</title>
+<link rel="stylesheet" href="tokens.css">
+<!--
+  设计依据：
+  - uiux-specs/02_信息架构：Web/iPad 使用左侧导航 + 顶部状态区，核心信息架构与移动端一致
+  - uiux-specs/03_AdaptiveHome（A–F 布局在宽屏的三栏重排）
+  - 布局：左侧导航（240px）| 中央学习主区 | 右侧状态栏（280px）
+-->
+<style>
+body { display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 24px 12px 48px; }
+.layout { flex: 1; display: flex; min-height: 0; }
+
+/* 左侧导航 */
+.sidenav {
+  width: 240px; background: var(--surface-card); border-right: 1px solid var(--border-default);
+  display: flex; flex-direction: column; padding: 20px 12px;
+}
+.logo { display: flex; align-items: center; gap: 10px; padding: 4px 10px 20px; font-size: 18px; font-weight: 700; }
+.logo .mark { width: 32px; height: 32px; border-radius: 10px; background: var(--grad-brand); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 4px;
+  border-radius: var(--r-input); color: var(--text-secondary); font-size: 15px; text-decoration: none;
+}
+.nav-item:hover { background: var(--surface-page); }
+.nav-item.active { background: var(--brand-primary-soft); color: var(--brand-primary); font-weight: 600; }
+.nav-item.active svg.ic { stroke: var(--brand-primary); }
+.sidenav .spacer { flex: 1; }
+.user-mini { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: var(--r-input); border: 1px solid var(--border-default); }
+.user-mini .av { width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #B8C2FF, #7C5CFC); }
+.user-mini b { font-size: 14px; display: block; }
+.user-mini span { font-size: 12px; color: var(--text-tertiary); }
+
+/* 中央主区 */
+.main { flex: 1; overflow-y: auto; padding: 28px 32px; scrollbar-width: none; }
+.main::-webkit-scrollbar { display: none; }
+.main-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.main-head h1 { font-size: 26px; font-weight: 600; }
+.main-head .sub { font-size: 14px; color: var(--text-secondary); margin-top: 2px; }
+
+/* 主任务卡（渐变用途：首页核心 CTA） */
+.hero {
+  border-radius: var(--r-card-lg); background: var(--grad-brand); color: #fff; padding: 24px;
+  display: flex; align-items: center; gap: 24px; margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.hero::before { content: ""; position: absolute; inset: 0; opacity: .5; pointer-events: none;
+  background: radial-gradient(circle at 88% 20%, rgba(255,255,255,.5) 0 1.5px, transparent 2.5px),
+              radial-gradient(circle at 72% 70%, rgba(255,255,255,.4) 0 1px, transparent 2px),
+              radial-gradient(circle at 94% 82%, rgba(255,255,255,.45) 0 1px, transparent 2px); }
+.hero .txt { flex: 1; }
+.hero .tag { font-size: 11px; letter-spacing: .06em; opacity: .85; text-transform: uppercase; font-family: var(--font-en); }
+.hero h2 { font-size: 24px; font-weight: 700; margin: 6px 0 4px; }
+.hero .sub { font-size: 13px; opacity: .85; }
+.hero .bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.25); margin-top: 12px; max-width: 380px; }
+.hero .bar i { display: block; height: 100%; width: 76%; background: #fff; border-radius: 999px; }
+.hero .btn-main {
+  height: 52px; padding: 0 32px; border-radius: var(--r-btn-main); border: none; cursor: pointer;
+  background: #fff; color: var(--brand-primary-hover); font-size: 17px; font-weight: 600; flex-shrink: 0;
+}
+
+/* 双列 */
+.cols2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+
+/* 地图宽版 */
+.map-wide { padding: 0; overflow: hidden; }
+.map-view { height: 150px; position: relative; background: radial-gradient(ellipse 90% 70% at 50% 118%, #E6EBFF 0%, transparent 70%), var(--brand-primary-soft); }
+html[data-theme="dark"] .map-view { background: linear-gradient(180deg,#1B2140,#171B2D); }
+.node { position: absolute; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; }
+.node.done { background: var(--success-main); }
+.node.current { background: var(--grad-brand); animation: breath 2.4s ease-in-out infinite; }
+.node.locked { background: var(--surface-card); border: 2px solid var(--border-strong); color: var(--text-tertiary); }
+@keyframes breath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.map-area-tag { position: absolute; top: 12px; left: 14px; background: rgba(255,255,255,.85); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 600; color: var(--brand-primary-hover); }
+html[data-theme="dark"] .map-area-tag { background: rgba(23,27,45,.85); color: #AAB4FF; }
+.map-body { padding: 16px 20px; display: flex; align-items: center; gap: 20px; }
+.map-body .grow { flex: 1; }
+.map-body h3 { font-size: 16px; margin-bottom: 8px; }
+.map-body .bar { height: 6px; border-radius: 999px; background: var(--brand-primary-soft); }
+.map-body .bar i { display: block; height: 100%; width: 62%; border-radius: 999px; background: var(--grad-brand); }
+
+/* 快速练习横排 */
+.quick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+.quick button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 4px; background: var(--surface-card); border: 1px solid var(--border-default); border-radius: var(--r-input); cursor: pointer; color: var(--text-primary); }
+.quick button:hover { border-color: var(--brand-primary); background: var(--brand-primary-soft); }
+.quick b { font-size: 16px; font-family: var(--font-en); }
+.quick span { font-size: 11px; color: var(--text-tertiary); }
+
+/* 推荐列表（宽屏行式） */
+.rec-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border-default); }
+.rec-row:last-child { border-bottom: none; }
+.rec-row .ic { width: 40px; height: 40px; border-radius: var(--r-input); background: var(--brand-primary-soft); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.rec-row b { font-size: 14px; display: block; }
+.rec-row span { font-size: 12px; color: var(--text-secondary); }
+.rec-row .grow { flex: 1; }
+.rec-row a { font-size: 13px; color: var(--brand-primary); text-decoration: none; }
+
+/* 右侧状态栏 */
+.rail { width: 280px; border-left: 1px solid var(--border-default); background: var(--surface-card); padding: 24px 20px; overflow-y: auto; scrollbar-width: none; }
+.rail::-webkit-scrollbar { display: none; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.stat { background: var(--surface-page); border-radius: var(--r-input); padding: 12px; }
+.stat b { font-size: 20px; font-weight: 700; font-family: var(--font-en); display: block; }
+.stat span { font-size: 12px; color: var(--text-tertiary); }
+/* XP 卡（渐变用途：XP 等级卡） */
+.xp { border-radius: var(--r-card); background: var(--grad-brand); color: #fff; padding: 16px; margin-bottom: 20px; }
+.xp .lv { font-size: 12px; opacity: .85; letter-spacing: .06em; font-family: var(--font-en); }
+.xp b { font-size: 22px; font-weight: 700; }
+.xp .bar { height: 5px; background: rgba(255,255,255,.3); border-radius: 999px; margin: 10px 0 6px; }
+.xp .bar i { display: block; height: 100%; width: 45%; background: #fff; border-radius: 999px; }
+.xp span { font-size: 12px; opacity: .85; font-family: var(--font-en); }
+/* 待修复 */
+.repair { display: flex; align-items: center; gap: 10px; border-left: 3px solid var(--warning-main); padding: 12px; }
+.repair b { font-size: 20px; color: var(--warning-main); font-family: var(--font-en); }
+.repair .t { flex: 1; font-size: 13px; }
+.repair .t span { color: var(--text-secondary); display: block; font-size: 12px; }
+/* 热力日历 */
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.cal i { aspect-ratio: 1; border-radius: 4px; background: var(--border-default); }
+.cal i.l1 { background: #C7D0FF; } .cal i.l2 { background: #93A2FF; } .cal i.l3 { background: var(--brand-primary); }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="title">Web 端 · Adaptive Home v0.1（1280 宽屏 · 左侧导航）</span>
+  <button onclick="toggleTheme()" id="themeBtn">🌙 深色</button>
+</div>
+
+<div class="device web">
+  <div class="layout">
+    <!-- 左侧导航（02：Web 使用左侧导航，5 项与移动端 Tab 一致） -->
+    <div class="sidenav">
+      <div class="logo"><span class="mark">星</span>语学星</div>
+      <a class="nav-item active" href="#"><svg class="ic"><path d="M3 10 L12 3 L21 10"/><path d="M5 9 V20 H19 V9"/></svg>学习</a>
+      <a class="nav-item" href="#"><svg class="ic"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>练习</a>
+      <a class="nav-item" href="#"><svg class="ic"><circle cx="12" cy="8" r="5"/><path d="M3 21 C3 16 7 14 12 14 C17 14 21 16 21 21"/></svg>世界</a>
+      <a class="nav-item" href="#"><svg class="ic"><path d="M4 5 H20 V19 H4 Z"/><path d="M4 9 H20"/></svg>课程</a>
+      <a class="nav-item" href="#"><svg class="ic"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 16 8 15 12 15 C16 15 20 16 20 21"/></svg>我的</a>
+      <div class="spacer"></div>
+      <div class="user-mini"><div class="av"></div><div><b>小辰</b><span>CET-4 · Lv.12</span></div></div>
+    </div>
+
+    <!-- 中央主区 -->
+    <div class="main">
+      <div class="main-head">
+        <div>
+          <h1>晚上好，小辰</h1>
+          <div class="sub">CET-4 目标 · 学习计划 Day 18 · 周四</div>
+        </div>
+        <span class="chip streak" style="font-size:14px;padding:8px 14px">🔥 连续 21 天</span>
+      </div>
+
+      <div class="hero">
+        <div class="txt">
+          <div class="tag">Continue Learning</div>
+          <h2>今日还需学习 12 分钟</h2>
+          <div class="sub">CET-4 词汇计划 · Day 18 · 上次学到「机场英语」第 7 题　·　38/50 min</div>
+          <div class="bar"><i></i></div>
+        </div>
+        <button class="btn-main">▶　继续学习</button>
+      </div>
+
+      <div class="cols2">
+        <div>
+          <div class="card map-wide">
+            <div class="map-view">
+              <span class="map-area-tag">听力港口 · 区域 3</span>
+              <div class="node done" style="left:60px; top:78px">✓</div>
+              <div class="node done" style="left:160px; top:44px">✓</div>
+              <div class="node current" style="left:262px; top:76px">▶</div>
+              <div class="node locked" style="left:364px; top:40px">🔒</div>
+              <div class="node locked" style="left:462px; top:76px">🔒</div>
+            </div>
+            <div class="map-body">
+              <div class="grow">
+                <h3>学习世界 · 当前区域 62%</h3>
+                <div class="bar"><i></i></div>
+              </div>
+              <button class="btn-primary">进入学习世界</button>
+              <button class="btn-ghost">完整路径</button>
+            </div>
+          </div>
+
+          <div class="quick">
+            <button><b>3′</b><span>碎片时间</span></button>
+            <button><b>5′</b><span>常用</span></button>
+            <button><b>10′</b><span>深度</span></button>
+            <button><b>＋</b><span>自定义</span></button>
+          </div>
+        </div>
+
+        <div>
+          <div class="mod-title" style="margin-top:0"><h2>为你推荐</h2><span class="link">为什么推荐？</span></div>
+          <div class="card">
+            <div class="rec-row"><div class="ic">🎧</div><div class="grow"><b>精听 · 机场广播</b><span>近 7 天听力正确率 58%</span></div><a href="#">开始</a></div>
+            <div class="rec-row"><div class="ic">📝</div><div class="grow"><b>CET-4 模拟卷 · 听力 Part A</b><span>本周模考额度剩 1 次</span></div><a href="#">开始</a></div>
+            <div class="rec-row"><div class="ic">📖</div><div class="grow"><b>分级阅读 · Level 4</b><span>《The Night Train》· 8 分钟</span></div><a href="#">开始</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧状态栏 -->
+    <div class="rail">
+      <div class="stat-grid">
+        <div class="stat"><b>38′</b><span>今日学习</span></div>
+        <div class="stat"><b>132</b><span>今日复习词</span></div>
+        <div class="stat"><b>87%</b><span>本周正确率</span></div>
+        <div class="stat"><b>#214</b><span>周排名</span></div>
+      </div>
+
+      <div class="xp">
+        <div class="lv">EXPLORER</div>
+        <b>Lv.12</b>
+        <div class="bar"><i></i></div>
+        <span>2,450 / 3,000 XP · 今日 +86</span>
+      </div>
+
+      <div class="card repair" style="margin-bottom:20px">
+        <b>7</b>
+        <div class="t">知识点待修复<span>虚拟语气 ×3 · 时态 ×2 …</span></div>
+        <button class="btn-warn" style="height:36px;padding:0 14px">修复</button>
+      </div>
+
+      <div class="mod-title" style="margin-top:0"><h2 style="font-size:15px">本月学习热力</h2></div>
+      <div class="cal">
+        <i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i><i></i><i class="l1"></i>
+        <i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i>
+        <i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i>
+        <i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i></i><i></i><i></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleTheme(){
+  const d=document.documentElement, dark=d.getAttribute('data-theme')==='dark';
+  d.setAttribute('data-theme', dark?'light':'dark');
+  document.getElementById('themeBtn').textContent = dark?'🌙 深色':'☀️ 浅色';
+}
+</script>
+</body>
+</html>

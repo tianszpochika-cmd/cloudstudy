@@ -44,3 +44,17 @@ docs/06-design/phase-1/
 - 3D 人物渲染与降级：[avatar-3d-rendering-pipeline.md](../../02-architecture/avatar-3d-rendering-pipeline.md)
 - 四级画质引擎：[cross-platform-and-performance-adaptive.md](../../02-architecture/cross-platform-and-performance-adaptive.md)
 - 全局设计系统（历史基线）：[design-system.md](../design-system.md)
+
+## 高保真稿件（mockups/）
+
+视觉方向 A（星海沉浸·平衡型）· 共享令牌 [tokens.css](./mockups/tokens.css) · 完整索引见 [mockups/README.md](./mockups/README.md)
+
+| 端 | 页面 | 文件 |
+| :--- | :--- | :--- |
+| 移动端 | Adaptive Home 首页 | [adaptive-home.html](./mockups/adaptive-home.html) |
+| 移动端 | 词汇学习（背词会话） | [m-vocab.html](./mockups/m-vocab.html) |
+| 移动端 | 世界页（3D 人物/奖励箱） | [m-world.html](./mockups/m-world.html) |
+| 移动端 | Onboarding 三步流 | [m-onboarding.html](./mockups/m-onboarding.html) |
+| Web 端 | 首页（侧边栏三栏） | [web-home.html](./mockups/web-home.html) |
+| Web 端 | 词汇学习（宽屏分栏） | [web-vocab.html](./mockups/web-vocab.html) |
+| iPad 端 | 首页（横屏分栏） | [ipad-home.html](./mockups/ipad-home.html) |
