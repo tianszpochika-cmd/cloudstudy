@@ -158,6 +158,18 @@ EnglishFlow 采用 **"全端统一 uni-app 内核 + 模块化单体业务核 (Sp
 
 ## 6. 部署与合规要点（中国大陆商用）
 
+**域名与服务映射**（主体：clyune，公司：深圳云澜深境科技有限公司，产品名：语学星）：
+
+| 域名 | 服务/用途 | 部署形态 |
+| :--- | :--- | :--- |
+| clyune.com / clyune.cn | 官网（大陆备案主体用 .cn） | 静态托管 + CDN |
+| study.clyune.com | Web 学习平台 | uni-app H5 + CDN |
+| work.clyune.com | 数据管理平台（教研/运营后台） | Vue 3 + Element Plus |
+| api.clyune.com | Core API / OpenAPI 契约入口 | Spring Boot 3（Nginx 网关） |
+| clyune.ai / clyune.cloud | AI 专栏 / 数据服务专栏（第二阶段启用） | 静态门户 + FastAPI 能力页 |
+
+> ICP 备案：主域 clyune.com / clyune.cn 先行，子域名随主域备案生效；App 备案与小程序企业主体均以公司主体申报。
+
 1. **资质与备案**：域名 ICP 备案（前置）→ App 备案 → 小程序企业主体注册（教育类目资质）→ 生成式 AI 服务算法备案。
 2. **iOS 上架**：Apple 开发者账号（$99/年）+ Mac/Xcode 打包 + App Store 审核（1-3 天）。
 3. **服务器**：腾讯云/阿里云单机起步（Docker Compose：Spring Boot + FastAPI + PostgreSQL + Redis + Nginx），验证期无需 K8s。
