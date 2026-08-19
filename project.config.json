@@ -1,0 +1,12 @@
+{
+  "project": "englishflow",
+  "workingTitle": "AI 职场英语成长平台",
+  "locale": "zh-CN",
+  "market": "中国大陆",
+  "architecture": "monorepo",
+  "backendStrategy": "modular-monolith-plus-workers",
+  "primaryPlatforms": ["web", "wechat-mini-program", "admin-web", "official-site"],
+  "laterPlatforms": ["react-native-mobile", "ios", "android"],
+  "createdAt": "2026-08-19",
+  "status": "foundation-scaffold"
+}

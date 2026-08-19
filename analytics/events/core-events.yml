@@ -1,0 +1,20 @@
+version: 1
+events:
+  - name: onboarding.started
+    owner: growth
+    required: [eventId, occurredAt, userId, requestId]
+  - name: assessment.completed
+    owner: learning
+    required: [eventId, occurredAt, userId, assessmentId, version]
+  - name: lesson.completed
+    owner: learning
+    required: [eventId, occurredAt, userId, lessonId, lessonVersion]
+  - name: practice.submitted
+    owner: learning
+    required: [eventId, occurredAt, userId, exerciseId, attemptId]
+  - name: ai.feedback.generated
+    owner: ai
+    required: [eventId, occurredAt, userId, taskId, provider, promptVersion]
+  - name: review.completed
+    owner: learning
+    required: [eventId, occurredAt, userId, reviewItemId]

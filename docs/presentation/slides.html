@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>EnglishFlow 全栈 AI 英语学习系统 · 方案总览</title>
+  <style>
+    @page {
+      size: 1920px 1080px;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+      background: #0f172a;
+      color: #1e293b;
+    }
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+      background: #f8fafc;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+    }
+    .slide.dark {
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    .header {
+      margin-bottom: 40px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #2563eb;
+      margin-bottom: 8px;
+    }
+    .slide.dark .tag {
+      color: #38bdf8;
+    }
+    .title {
+      font-size: 40px;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .slide.dark .title {
+      color: #ffffff;
+    }
+    .subtitle {
+      font-size: 20px;
+      color: #64748b;
+      margin-top: 8px;
+    }
+    .slide.dark .subtitle {
+      color: #94a3b8;
+    }
+    
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      flex: 1;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      flex: 1;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 36px;
+      flex: 1;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 32px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+    }
+    .slide.dark .card {
+      background: #1e293b;
+      border-color: #334155;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-badge {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      width: fit-content;
+      margin-bottom: 16px;
+    }
+    .badge-blue { background: #eff6ff; color: #2563eb; }
+    .badge-green { background: #f0fdf4; color: #16a34a; }
+    .badge-orange { background: #fff7ed; color: #ea580c; }
+    .badge-purple { background: #faf5ff; color: #9333ea; }
+    
+    .slide.dark .badge-blue { background: #1e3a8a; color: #93c5fd; }
+    .slide.dark .badge-green { background: #14532d; color: #86efac; }
+    .slide.dark .badge-orange { background: #7c2d12; color: #fdba74; }
+    .slide.dark .badge-purple { background: #581c87; color: #d8b4fe; }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+    .slide.dark .card-title {
+      color: #f8fafc;
+    }
+
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+    .card-list li {
+      font-size: 17px;
+      color: #334155;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .slide.dark .card-list li {
+      color: #cbd5e1;
+    }
+    .card-list li::before {
+      content: "•";
+      color: #2563eb;
+      font-weight: bold;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .slide.dark .card-list li::before {
+      color: #38bdf8;
+    }
+
+    .footer-bar {
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #94a3b8;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 16px;
+    }
+    .slide.dark .footer-bar {
+      border-color: #334155;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: Cover -->
+  <div class="slide dark" style="justify-content: center; align-items: center; text-align: center; padding: 100px;">
+    <div style="max-width: 1400px;">
+      <div class="tag" style="font-size: 20px; margin-bottom: 20px;">ENGLISHFLOW · 全栈 AI 英语自适应学习生态</div>
+      <h1 style="font-size: 64px; font-weight: 800; line-height: 1.2; margin-bottom: 24px; background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        EnglishFlow 核心需求与商业化方案
+      </h1>
+      <p style="font-size: 28px; color: #cbd5e1; margin-bottom: 60px; font-weight: 300;">
+        产品全景规划 · 阶梯式商业定价 · 云资源经济模型 · 深圳落地与合规风控
+      </p>
+      <div style="display: inline-flex; gap: 20px; background: rgba(255,255,255,0.05); padding: 16px 36px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.1); font-size: 16px; color: #94a3b8;">
+        <span>📱 微信小程序 / App / Web 全端矩阵</span>
+        <span>•</span>
+        <span>🤖 LLM + 实时 WebRTC + 3D 数字人</span>
+        <span>•</span>
+        <span>🎯 K12 / 高考大学 / 职场出海三阶覆盖</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Architecture & Products -->
+  <div class="slide">
+    <div class="header">
+      <div class="tag">01. 体系与定位</div>
+      <h2 class="title">全端产品矩阵与 Monorepo 微服务架构</h2>
+      <p class="subtitle">统一多端交互体验与高内聚领域服务，实现跨终端无缝学习闭环</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-badge badge-blue">MULTI-PLATFORM CLIENTS</span>
+        <h3 class="card-title">多端协同矩阵 (Apps)</h3>
+        <ul class="card-list">
+          <li><strong>微信小程序</strong>：碎片化单词记忆、每日打卡与小队互动</li>
+          <li><strong>iOS / Android App</strong>：低延迟 WebRTC 数字人对话与离线同步</li>
+          <li><strong>Learner Web</strong>：大屏语法树分析、模考机考与论文写作批改</li>
+          <li><strong>Official Site</strong>：品牌官网展示、SEO 获客与课程试用</li>
+          <li><strong>Admin Web</strong>：教研排课、Prompt 版本控制与风控中台</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">MODULAR SERVICES</span>
+        <h3 class="card-title">核心微服务群 (Services)</h3>
+        <ul class="card-list">
+          <li><strong>core-api</strong>：用户鉴权、会员权益、课程进度与订单管理</li>
+          <li><strong>ai-orchestrator</strong>：Prompt 编排、作文多维批改与语法解析</li>
+          <li><strong>realtime-voice</strong>：&lt;800ms 端到端 ASR/TTS/RTC 流媒体服务</li>
+          <li><strong>content-worker</strong>：教材 OCR 结构化入库与 RAG 向量索引</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-purple">FOUNDATION & DATA</span>
+        <h3 class="card-title">通用底层引擎 (Engine)</h3>
+        <ul class="card-list">
+          <li><strong>认知记忆引擎</strong>：改进版 SM-2 + 艾宾浩斯动态自适应复习</li>
+          <li><strong>知识图谱引擎</strong>：12,000+ 词汇与 800+ 语法点关联网络</li>
+          <li><strong>安全合规围栏</strong>：双向实时敏感词拦截与权威规则防幻觉</li>
+          <li><strong>高可靠存储</strong>：PostgreSQL 关系库 + Qdrant 向量数据库</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 2 / 8</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Phase 1 (K12) -->
+  <div class="slide">
+    <div class="header">
+      <div class="tag">02. 阶段规划 · PHASE 1</div>
+      <h2 class="title">第一阶段：中小学启蒙与教材同步体系</h2>
+      <p class="subtitle">打通校内教材同步闭环，结合卡通数字人与轻游戏消除学习枯燥感</p>
+    </div>
+    <div class="grid-4">
+      <div class="card">
+        <span class="card-badge badge-blue">PHONICS & IPA</span>
+        <h3 class="card-title">自然拼读与音标</h3>
+        <ul class="card-list">
+          <li>48 个国际音标 3D 口腔图解</li>
+          <li>音素级发音评测与重音纠偏</li>
+          <li>Phonics 规则拆解见词能读</li>
+          <li>Sight Words 220 词高频速记</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">TEXTBOOK SYNC</span>
+        <h3 class="card-title">主流教材逐课同步</h3>
+        <ul class="card-list">
+          <li>覆盖人教/牛津/外研/北京版</li>
+          <li>小学一年级至初三精准分册</li>
+          <li>单词预习 / 课文角色扮演</li>
+          <li>核心语法拆解与同步单元测</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-orange">AI COMPANION</span>
+        <h3 class="card-title">卡通数字人伴学</h3>
+        <ul class="card-list">
+          <li>魔法猫咪 / 机器人等 3D 形象</li>
+          <li>&lt;800ms 低延迟语音自然通话</li>
+          <li>支持随讲随断 (Barge-in)</li>
+          <li>严格限制在年级难度内用词</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-purple">GAMIFICATION</span>
+        <h3 class="card-title">趣味游戏与战队</h3>
+        <ul class="card-list">
+          <li>单词防御塔 / 句子拼装火车</li>
+          <li>3-6 人互助战队共育能量树</li>
+          <li>组内天梯排位与全英留言板</li>
+          <li>成就体系与阶段荣誉勋章</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 3 / 8</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Phase 2 (High School & College) -->
+  <div class="slide">
+    <div class="header">
+      <div class="tag">03. 阶段规划 · PHASE 2</div>
+      <h2 class="title">第二阶段：高中与大学学术突破体系</h2>
+      <p class="subtitle">针对升学压力设计减压沉浸体验，攻克长难句、读后续写与考研复试</p>
+    </div>
+    <div class="grid-4">
+      <div class="card">
+        <span class="card-badge badge-blue">ANTI-ANXIETY</span>
+        <h3 class="card-title">减压与微学习</h3>
+        <ul class="card-list">
+          <li>5-8 分钟番茄高能微课</li>
+          <li>暗黑极简纯净无打扰刷题</li>
+          <li>高考侦探剧情式逆袭挑战</li>
+          <li>AI 考前心理疏导与正向暗示</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">SYNTAX TREE</span>
+        <h3 class="card-title">语法树与长难句</h3>
+        <ul class="card-list">
+          <li>长复合句即时句法树分解</li>
+          <li>从句/非谓语动词智能高亮</li>
+          <li>动态红点弱项语法图谱</li>
+          <li>自适应推送同考点变式题</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-orange">GAOKAO ESSAY</span>
+        <h3 class="card-title">高考提分与机考</h3>
+        <ul class="card-list">
+          <li>读后续写 AI 逐句三阶升格</li>
+          <li>倒装句/独立主格等亮点注入</li>
+          <li>各省高考听说机考全真模考</li>
+          <li>精准匹配省份官方机考标准</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-purple">COLLEGE & RESEARCH</span>
+        <h3 class="card-title">四六级/考研/学术</h3>
+        <ul class="card-list">
+          <li>四六级无损变速与听写挖空</li>
+          <li>考研英语手译本采分点比对</li>
+          <li>考研复试英语面试多专业模拟</li>
+          <li>外企 STAR 面试与 SCI 润色</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 4 / 8</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Phase 3 (Career & Study Abroad) -->
+  <div class="slide">
+    <div class="header">
+      <div class="tag">04. 阶段规划 · PHASE 3</div>
+      <h2 class="title">第三阶段：职场商务、出海实战与留学考培</h2>
+      <p class="subtitle">赋能白领职场沟通、跨境出海业务谈判与雅思/托福机考高分冲刺</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-badge badge-blue">GLOBAL BUSINESS</span>
+        <h3 class="card-title">职场与跨国商务实战</h3>
+        <ul class="card-list">
+          <li><strong>多口音会议模拟</strong>：美/英/印/新口音模拟主持与打断</li>
+          <li><strong>跨境谈判沙盒</strong>：价格博弈、交期延误与索赔谈判实战</li>
+          <li><strong>商务邮件润色</strong>：正式 / 委婉 / 坚定 / 简短 4 档语气</li>
+          <li><strong>垂直行业术语</strong>：跨境电商、外贸制造、科技金融词库</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">SURVIVAL SANDBOX</span>
+        <h3 class="card-title">海外生存与文化沉浸</h3>
+        <ul class="card-list">
+          <li><strong>全真生活沙盒</strong>：海关盘问、租房签约、就医急诊等应对</li>
+          <li><strong>突发状况实景</strong>：银行开户、餐厅退换菜、丢件申诉</li>
+          <li><strong>跨文化避坑</strong>：西方 Small Talk 社交边界与地道俚语</li>
+          <li><strong>文化禁忌提示</strong>：避免跨文化交流尴尬与误解</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-purple">IELTS & TOEFL</span>
+        <h3 class="card-title">雅思 / 托福高分冲刺</h3>
+        <ul class="card-list">
+          <li><strong>当季换题库</strong>：每周同步全球最新口语高频新题</li>
+          <li><strong>官方 4 维诊断</strong>：流利连贯(FC)、词汇(LR)、语法(GRA)、发音(PR)</li>
+          <li><strong>大小作文批改</strong>：论据充实度评分与中式英语地道重写</li>
+          <li><strong>全真模考系统</strong>：严格还原机考倒计时与考场界面</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 5 / 8</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Pricing & Unit Economics -->
+  <div class="slide">
+    <div class="header">
+      <div class="tag">05. 商业模式与算力成本</div>
+      <h2 class="title">阶梯式商业化定价与云资源经济模型</h2>
+      <p class="subtitle">清晰的免费转付费漏斗设计，极低的边际算力成本保障健康毛利空间</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <span class="card-badge badge-blue">PRICING TIERS</span>
+        <h3 class="card-title">会员权益与定价矩阵</h3>
+        <ul class="card-list">
+          <li><strong>免费版 (¥0 / 永久)</strong>：1 本同步教材 + 每日 5 分钟数字人体验 + 基础词汇打卡</li>
+          <li><strong>基础版 (¥29 / 月 · 年费 ¥268)</strong>：全年级教材畅读 + 每日 30 分钟通话 + 动态语法树 + 读后续写批改</li>
+          <li><strong>尊享版 (¥88 / 月 · 年费 ¥698)</strong>：无限通话 + 雅思托福官方精批 + SCI 论文润色 + 商务沙盒</li>
+          <li><strong>企业/机构版 (¥199-399 / 人 / 年)</strong>：机构定制数字人助教 + 批量题库与学情导出</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">CLOUD ECONOMICS</span>
+        <h3 class="card-title">云资源开销测算 (5,000 DAU 规模)</h3>
+        <ul class="card-list">
+          <li><strong>基础设施固定开销</strong>：域名证书 + 2台 8C16G ECS + RDS + Redis + CDN/OSS + 短信 ≈ <strong>¥3,610 / 月</strong></li>
+          <li><strong>AI 动态算力开销</strong>：3000万 Tokens (DeepSeek/Qwen) + 2500h ASR + 1500万字 TTS + RTC ≈ <strong>¥5,250 / 月</strong></li>
+          <li><strong>渠道分发年费</strong>：Apple ($99) + Google Play ($25) + 微信认证 (¥300) ≈ <strong>¥1,200 / 年</strong></li>
+          <li><strong>单用户服务成本</strong>：单活跃用户单月算力成本低至 <strong>¥1.05</strong>，具备极高商业毛利</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 6 / 8</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Legal & Shenzhen Setup -->
+  <div class="slide">
+    <div class="header">
+      <div class="tag">06. 落地建设与合规风控</div>
+      <h2 class="title">深圳公司落地、法定牌照与全链路风控</h2>
+      <p class="subtitle">严格落实“双减”合规底线，完善 AI 算法备案与未成年人保护体系</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-badge badge-blue">SHENZHEN SETUP</span>
+        <h3 class="card-title">深圳主体设立方案</h3>
+        <ul class="card-list">
+          <li><strong>选址推荐</strong>：南山高新园（AI 人才集聚）或前海合作区（享双 15% 税收优惠）</li>
+          <li><strong>经营范围</strong>：软件开发、AI 基础软件、网络安全、自费出国留学中介（不含学科培训）</li>
+          <li><strong>注册资金</strong>：建议认缴 100万-500万元，开立本地银行基本户</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">REGULATORY LICENSES</span>
+        <h3 class="card-title">国内全套资质牌照清单</h3>
+        <ul class="card-list">
+          <li><strong>ICP 备案</strong>（广东省通信管理局，7-14 工作日）</li>
+          <li><strong>增值电信 ICP/EDI</strong>（线上增值付费交易必备）</li>
+          <li><strong>生成式 AI 服务备案</strong>（网信办，公众 AI 必备）</li>
+          <li><strong>深度合成算法备案</strong>（数字人/语音合成必备）</li>
+          <li><strong>公安联网备案 + 软著</strong>（各大安卓市场上架）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-purple">RISK MITIGATION</span>
+        <h3 class="card-title">四大核心合规防线</h3>
+        <ul class="card-list">
+          <li><strong>“双减”红线</strong>：定位“自适应效率工具”，严禁名师/学科培训宣传，数字人标注 AI 助教</li>
+          <li><strong>教材版权</strong>：知识点结构化提取，商业化获取官方电子版权</li>
+          <li><strong>未成年保护</strong>：夜间防沉迷限制，监护人明示授权</li>
+          <li><strong>内容安全</strong>：双向过滤 API 拦截，画面打上 AI 合成水印</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 7 / 8</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Roadmap & Summary -->
+  <div class="slide dark">
+    <div class="header">
+      <div class="tag">07. 路线图与实施展望</div>
+      <h2 class="title">实施路线图与阶段交付里程碑</h2>
+      <p class="subtitle">三步走稳健推进，从 K12 基础工具拓展至全人群终身英语学习智能体</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-badge badge-blue">PHASE 1 (M1-M2)</span>
+        <h3 class="card-title">基础打通与 K12 体系</h3>
+        <ul class="card-list">
+          <li>搭建 Monorepo 与微服务底座</li>
+          <li>完成主流教材 OCR 知识图谱入库</li>
+          <li>跑通卡通数字人 WebRTC 实时语音</li>
+          <li>上线 2 款拼读轻游戏与战队打卡</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-green">PHASE 2 (M3-M4)</span>
+        <h3 class="card-title">升学突破与多端上架</h3>
+        <ul class="card-list">
+          <li>上线动态语法树与长难句 X 光机</li>
+          <li>接入高考读后续写三阶升格导师</li>
+          <li>完成小程序与 iOS/Android 双端发布</li>
+          <li>取得 ICP/EDI 牌照并接入合规安全审核</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-badge badge-purple">PHASE 3 (M5-M6)</span>
+        <h3 class="card-title">职场出海与商业闭环</h3>
+        <ul class="card-list">
+          <li>上线国际商务谈判与外企 STAR 面试</li>
+          <li>集成雅思/托福官方多维评分与题库</li>
+          <li>开启 VIP 会员付费与机构定制推广</li>
+          <li>打造中国大陆领先的 AI 英语自适应品牌</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>EnglishFlow 产品技术白皮书</span>
+      <span>Page 8 / 8</span>
+    </div>
+  </div>
+
+</body>
+</html>

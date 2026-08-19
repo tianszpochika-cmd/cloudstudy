@@ -1,0 +1,51 @@
+# dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+
+# build output
+.next/
+out/
+dist/
+build/
+coverage/
+.expo/
+
+# local config and secrets
+.env
+.env.*
+!.env.example
+*.local
+secrets/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# local data and logs
+logs/*
+!logs/.gitkeep
+tmp/*
+!tmp/.gitkeep
+storage/raw/*
+!storage/raw/.gitkeep
+storage/processed/*
+!storage/processed/.gitkeep
+
+# generated artifacts
+*.generated.*
+*.lock.tmp
+
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+
+# mobile
+android/.gradle/
+android/app/build/
+ios/Pods/
+ios/build/

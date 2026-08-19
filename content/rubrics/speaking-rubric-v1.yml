@@ -1,0 +1,15 @@
+version: 1
+name: speaking-task-basic
+dimensions:
+  task_completion:
+    description: 是否完成任务要求的关键信息
+  comprehensibility:
+    description: 听者是否容易理解
+  language_control:
+    description: 词汇和语法是否足以支撑表达
+  fluency:
+    description: 是否能在合理停顿下完成表达
+notes:
+  - 评分用于练习反馈，不等同于正式考试成绩。
+  - 无法判断时必须标记 uncertainty。
+

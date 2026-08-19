@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "englishflow.exercise.v1",
+  "title": "Exercise",
+  "type": "object",
+  "required": ["id", "type", "prompt", "skillTags", "scoring"],
+  "properties": {
+    "id": { "type": "string" },
+    "type": { "enum": ["choice", "listening", "dictation", "rewrite", "speaking", "roleplay"] },
+    "prompt": { "type": "object" },
+    "skillTags": { "type": "array", "items": { "type": "string" } },
+    "scoring": { "type": "object" },
+    "feedbackPolicy": { "type": "object" }
+  }
+}

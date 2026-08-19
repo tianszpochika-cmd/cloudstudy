@@ -1,0 +1,6 @@
+{
+  "id": "placement-v1",
+  "version": 1,
+  "dimensions": ["vocabulary", "grammar", "listening", "reading", "speaking"],
+  "note": "这是内容骨架样例，正式测评题目和分数映射需要教研确认。"
+}
