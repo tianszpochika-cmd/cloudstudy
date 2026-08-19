@@ -10,15 +10,19 @@ docs/06-design/
 ├── design-system.md                      # 全局设计系统（品牌、体验关键词、跨端原则）
 ├── immersive-frontend-architecture.md    # 沉浸式前端与动效渲染架构
 ├── ux-flows.md                           # 早期用户流草稿（历史）
-├── phase-1/                              # 第一阶段：K12 传统型学习 App（本次设计重点）
-│   ├── README.md                         # 总览：信息架构、全局导航、视觉基调、页面清单
-│   ├── 01-onboarding.md                  # 登录、入学定位、家长模式
-│   ├── 02-home-today-task.md             # 首页与今日任务、打卡
-│   ├── 03-textbook-lesson.md             # 教材同步课：四维学习闭环
-│   ├── 04-phonetics-phonics.md           # 48 音标实验室与自然拼读
-│   ├── 05-review-memory.md               # 复习中心：间隔重复、错题、词库
-│   ├── 06-gamification.md                # 游戏化：徽章、战队、能量树、小游戏
-│   └── 07-admin-console.md               # 管理后台（教研/运营/审核）
+├── phase-1/                              # 第一阶段：标准语言学习 App（无 AI 完全商用版，本次设计重点）
+│   ├── README.md                         # 总览：信息架构、全局导航、视觉基调、全局规则
+│   ├── 01-account-and-onboarding.md      # 账号、入学引导、监护人模式
+│   ├── 02-home-and-daily-task.md         # 首页、今日任务、打卡、学习日历与周报
+│   ├── 03-vocabulary-learning.md         # 单词学习（词书库、背词会话、个人词库）
+│   ├── 04-grammar-and-sentence.md        # 语法体系与句子拆分
+│   ├── 05-speaking-and-phonetics.md      # 口语跟读、48 音标、情景会话
+│   ├── 06-writing.md                     # 作文训练（汉译英/仿写/改错）
+│   ├── 07-exam.md                        # 考试与成绩报告（四六级模拟）
+│   ├── 08-review-and-mistakes.md         # 复习队列、错题本、词库复习
+│   ├── 09-gamification-and-leaderboard.md # 排行榜、徽章、战队、能量树、小游戏
+│   ├── 10-vip-and-commercial.md          # VIP 权益、支付、激活码、到期策略
+│   └── 11-admin-console.md               # 管理后台（内容双审/会员运营/看板）
 ├── phase-2/                              # 第二阶段：AI 能力层（大纲占位，第一阶段验证后细化）
 │   └── README.md
 └── phase-3/                              # 第三阶段：升学与职场人群扩展（大纲占位）
