@@ -1,7 +1,7 @@
 # 仓库目录地图
 
 ~~~text
-EnglishFlow/
+语学星/
 ├─ apps/                         多端应用
 │  ├─ learner-web/               学习 Web
 │  ├─ miniapp-wechat/            微信小程序

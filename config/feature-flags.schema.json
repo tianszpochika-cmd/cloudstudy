@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "environment", "defaults", "audit"],
+  "properties": {
+    "schemaVersion": { "const": "feature-flags.v1" },
+    "environment": { "enum": ["local", "test", "staging", "production"] },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": { "type": "boolean" }
+    },
+    "audit": {
+      "type": "object",
+      "required": ["sourceOfTruth", "emergencyDisableAllowed", "defaultMode"],
+      "properties": {
+        "sourceOfTruth": { "type": "string" },
+        "emergencyDisableAllowed": { "const": true },
+        "defaultMode": { "const": "closed" }
+      }
+    }
+  }
+}

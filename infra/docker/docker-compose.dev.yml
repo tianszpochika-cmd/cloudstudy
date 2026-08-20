@@ -1,34 +1,139 @@
+name: yuxuexing-local
+
 services:
   mysql:
     image: mysql:8.0
+    restart: unless-stopped
     environment:
-      MYSQL_DATABASE: yuxuexing
-      MYSQL_USER: yuxuexing
-      MYSQL_PASSWORD: yuxuexing
-      MYSQL_ROOT_PASSWORD: root-local-only
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-yuxuexing}
+      MYSQL_USER: ${MYSQL_USER:-yuxuexing}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-yuxuexing}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root-local-only}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
     ports:
-      - "3306:3306"
+      - "127.0.0.1:${MYSQL_HOST_PORT:-13306}:3306"
     volumes:
       - yuxuexing-mysql:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping --protocol=socket --host=localhost --user=root --password="$${MYSQL_ROOT_PASSWORD}" --silent
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks:
+      - yuxuexing-local
 
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --save
+      - "60"
+      - "1"
     ports:
-      - "6379:6379"
+      - "127.0.0.1:${REDIS_HOST_PORT:-16379}:6379"
+    volumes:
+      - yuxuexing-redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    networks:
+      - yuxuexing-local
 
   minio:
     image: minio/minio:latest
-    command: server /data --console-address ":9001"
+    restart: unless-stopped
     environment:
-      MINIO_ROOT_USER: change-me
-      MINIO_ROOT_PASSWORD: change-me-local
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-change-me}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-local}
+    command:
+      - server
+      - /data
+      - --console-address
+      - ":9001"
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "127.0.0.1:${MINIO_API_HOST_PORT:-19000}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_HOST_PORT:-19001}:9001"
     volumes:
       - yuxuexing-minio:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl --fail --silent http://127.0.0.1:9000/minio/health/live > /dev/null || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+    networks:
+      - yuxuexing-local
+
+  minio-init:
+    image: minio/mc:latest
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-change-me}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-local}
+      MINIO_BUCKET: ${OBJECT_STORAGE_BUCKET:-yuxuexing-local}
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - >-
+        set -eu;
+        mc alias set local http://minio:9000 "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}";
+        mc mb --ignore-existing "local/$${MINIO_BUCKET}";
+        mc anonymous set none "local/$${MINIO_BUCKET}";
+        echo "MinIO bucket ready: $${MINIO_BUCKET}";
+    networks:
+      - yuxuexing-local
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-yuxuexing}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-rabbitmq-local-only}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/}
+    ports:
+      - "127.0.0.1:${RABBITMQ_AMQP_HOST_PORT:-15689}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_HOST_PORT:-15690}:15672"
+    volumes:
+      - yuxuexing-rabbitmq:/var/lib/rabbitmq
+    healthcheck:
+      test:
+        - CMD
+        - rabbitmq-diagnostics
+        - -q
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    networks:
+      - yuxuexing-local
 
 volumes:
   yuxuexing-mysql:
+  yuxuexing-redis:
   yuxuexing-minio:
+  yuxuexing-rabbitmq:
+
+networks:
+  yuxuexing-local:
+    driver: bridge

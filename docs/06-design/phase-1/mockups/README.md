@@ -20,8 +20,8 @@
 
 ```powershell
 # 在 mockups 目录下起静态服务器（中文文件名需走服务器访问）
-python -m http.server 8686 --directory docs/06-design/phase-1/mockups
-# 浏览器打开 http://localhost:8686/ 下对应文件
+python -m http.server 18185 --bind 127.0.0.1 --directory docs/06-design/phase-1/mockups
+# 浏览器打开 http://127.0.0.1:18185/ 下对应文件
 ```
 
 也可直接双击 HTML 文件打开（tokens.css 为相对路径引用，均可用）。

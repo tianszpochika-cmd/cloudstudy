@@ -1,0 +1,25 @@
+{
+  "name": "语学星",
+  "appid": "__UNI__YXSTAR",
+  "description": "面向成人与大学生的语言学习空间",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app"
+  },
+  "h5": {
+    "title": "语学星",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false
+    },
+    "usingComponents": true
+  }
+}

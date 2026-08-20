@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-device="mobile" data-page="world">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语学星 · 世界 / 课程 / Study Room / 我的</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #eef1fb;
+      --page-2: #f8f9fd;
+      --surface: rgba(255, 255, 255, .88);
+      --surface-solid: #ffffff;
+      --surface-2: #f4f6fd;
+      --elevated: #ffffff;
+      --text: #202332;
+      --text-2: #626b82;
+      --text-3: #959caf;
+      --line: #e1e5f0;
+      --line-strong: #cfd5e4;
+      --brand: #596bff;
+      --brand-2: #7c5cfc;
+      --brand-soft: #eef0ff;
+      --mint: #25b88a;
+      --mint-soft: #eaf8f3;
+      --gold: #f2a83b;
+      --gold-soft: #fff4df;
+      --coral: #e95668;
+      --coral-soft: #fff0f2;
+      --sky: #3b8dff;
+      --shadow-sm: 0 4px 14px rgba(48, 54, 91, .07);
+      --shadow-md: 0 16px 38px rgba(45, 52, 94, .12);
+      --shadow-lg: 0 24px 70px rgba(39, 44, 84, .22);
+      --font: Inter, "SF Pro Text", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 30px;
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #0c1020;
+      --page-2: #10152a;
+      --surface: rgba(23, 27, 45, .92);
+      --surface-solid: #171b2d;
+      --surface-2: #20253a;
+      --elevated: #252b45;
+      --text: #f4f6fb;
+      --text-2: #b5bacc;
+      --text-3: #81889d;
+      --line: #2b3148;
+      --line-strong: #3b4260;
+      --brand: #7785ff;
+      --brand-2: #9b7dff;
+      --brand-soft: #232743;
+      --mint: #43c99b;
+      --mint-soft: #16382f;
+      --gold: #f4b64e;
+      --gold-soft: #3c2e18;
+      --coral: #ff6d7e;
+      --coral-soft: #421f2a;
+      --sky: #66a8ff;
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, .22);
+      --shadow-md: 0 18px 40px rgba(0, 0, 0, .28);
+      --shadow-lg: 0 26px 76px rgba(0, 0, 0, .5);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(124, 92, 252, .12), transparent 26rem),
+        radial-gradient(circle at 86% 8%, rgba(89, 107, 255, .11), transparent 24rem),
+        var(--page);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, [role="button"]:focus-visible { outline: 3px solid rgba(89, 107, 255, .3); outline-offset: 2px; }
+    [hidden] { display: none !important; }
+
+    .prototype { min-height: 100vh; padding: 26px 28px 42px; }
+    .lab-header {
+      width: min(1440px, 100%);
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .lab-brand { display: flex; align-items: center; gap: 12px; min-width: 260px; }
+    .lab-brand-mark, .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 8px 18px rgba(89, 107, 255, .24);
+    }
+    .lab-brand-mark svg, .brand-mark svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .lab-brand b { display: block; font-size: 15px; letter-spacing: -.02em; }
+    .lab-brand small { display: block; margin-top: 2px; color: var(--text-3); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .lab-controls { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+    .segmented { display: inline-flex; gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow-sm); }
+    .segmented button, .lab-action {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--text-2);
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .segmented button.active, .segmented button[aria-pressed="true"] { color: var(--brand); background: var(--brand-soft); }
+    .lab-action { border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-sm); }
+    .lab-action:hover, .segmented button:hover { color: var(--brand); }
+    .lab-meta { color: var(--text-3); font-size: 12px; white-space: nowrap; }
+
+    .preview-stage { width: min(1440px, 100%); margin: 0 auto; display: grid; place-items: center; min-height: min(790px, calc(100vh - 130px)); }
+    .device-frame {
+      position: relative;
+      overflow: visible;
+      border: 1px solid rgba(26, 30, 50, .5);
+      background: #0d1020;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255, 255, 255, .06) inset;
+      transition: width .35s ease, height .35s ease, border-radius .35s ease;
+    }
+    .device-frame.phone { width: 390px; height: 844px; padding: 10px; border: 1px solid #303449; border-radius: 52px; background: linear-gradient(145deg, #2a2e42, #0b0e1a 52%, #2b3043); }
+    .device-frame.pad { width: min(1024px, calc(100vw - 56px)); height: min(768px, calc(100vh - 170px)); min-height: 600px; padding: 11px; border-radius: 31px; }
+    .device-frame.web { width: min(1280px, calc(100vw - 56px)); height: min(800px, calc(100vh - 170px)); min-height: 600px; border-radius: 18px; background: #1d2030; padding: 0; }
+    .device-frame.phone::before { content: ""; position: absolute; inset: 4px; border: 1px solid rgba(255, 255, 255, .13); border-radius: 47px; pointer-events: none; }
+    .device-frame.phone::after { content: ""; position: absolute; top: 148px; right: -2px; width: 2px; height: 72px; border-radius: 2px; background: #555a6f; box-shadow: 0 90px 0 #555a6f; }
+    .screen { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 42px; background: var(--page-2); }
+    .pad .screen { border-radius: 21px; }
+    .web .screen { border-radius: 17px; }
+    .system-status { display: none; position: absolute; z-index: 20; top: 13px; left: 27px; right: 27px; height: 18px; align-items: center; justify-content: space-between; color: var(--text); font-size: 12px; font-weight: 700; letter-spacing: .01em; pointer-events: none; }
+    .status-right { display: flex; align-items: center; gap: 7px; }
+    .status-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 11px; }
+    .status-bars i { display: block; width: 2px; border-radius: 2px; background: currentColor; }
+    .status-bars i:nth-child(1) { height: 4px; } .status-bars i:nth-child(2) { height: 6px; } .status-bars i:nth-child(3) { height: 8px; } .status-bars i:nth-child(4) { height: 10px; }
+    .status-wifi { position: relative; width: 14px; height: 11px; overflow: hidden; }
+    .status-wifi::before, .status-wifi::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); border: 1.3px solid currentColor; border-bottom: 0; border-radius: 50% 50% 0 0; }
+    .status-wifi::before { top: -6px; width: 18px; height: 18px; } .status-wifi::after { top: -2px; width: 9px; height: 9px; }
+    .status-wifi i { position: absolute; bottom: 0; left: 50%; width: 3px; height: 3px; border-radius: 50%; transform: translateX(-50%); background: currentColor; }
+    .status-battery { display: inline-flex; align-items: center; gap: 3px; }
+    .status-battery-icon { position: relative; width: 22px; height: 11px; border: 1.4px solid currentColor; border-radius: 3px; }
+    .status-battery-icon::after { content: ""; position: absolute; top: 3px; right: -4px; width: 2px; height: 5px; border-radius: 0 2px 2px 0; background: currentColor; }
+    .status-battery-icon i { display: block; width: 15px; height: 7px; margin: 1px; border-radius: 1px; background: currentColor; }
+    .dynamic-island { display: none; position: absolute; z-index: 21; top: 12px; left: 50%; width: 124px; height: 36px; transform: translateX(-50%); border: 1px solid #171923; border-radius: 999px; background: #030305; box-shadow: inset 0 2px 4px rgba(255, 255, 255, .08), 0 2px 5px rgba(0, 0, 0, .28); cursor: pointer; transition: width .22s ease, height .22s ease; }
+    .dynamic-island::before { content: ""; position: absolute; right: 15px; top: 11px; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #20283d, #090b12 65%); box-shadow: 0 0 8px rgba(67, 105, 190, .32); }
+    .dynamic-island::after { content: ""; position: absolute; left: 17px; right: 40px; top: 1px; height: 1px; border-radius: 1px; background: rgba(255, 255, 255, .12); }
+    .dynamic-island.expanded { width: 192px; height: 48px; }
+    .dynamic-island.expanded::before { right: 16px; top: 18px; }
+    .pad-camera { display: none; position: absolute; z-index: 20; top: 8px; left: 50%; width: 6px; height: 6px; border-radius: 50%; transform: translateX(-50%); background: #30374a; box-shadow: 0 0 0 2px rgba(255, 255, 255, .06); }
+    .pad-status { display: none; position: absolute; z-index: 20; top: 12px; right: 24px; gap: 14px; align-items: center; color: var(--text-2); font-size: 11px; font-weight: 600; }
+    .browser-chrome { display: none; position: relative; z-index: 20; height: 42px; align-items: center; gap: 14px; padding: 0 16px; color: var(--text-3); border-bottom: 1px solid var(--line); background: var(--surface-solid); }
+    .traffic { display: flex; gap: 6px; } .traffic i { width: 10px; height: 10px; border-radius: 50%; } .traffic i:nth-child(1) { background: #ff6359; } .traffic i:nth-child(2) { background: #f5bd4f; } .traffic i:nth-child(3) { background: #38c858; }
+    .address { flex: 1; max-width: 470px; margin: auto; padding: 7px 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); font-size: 11px; text-align: center; }
+    .home-indicator { display: none; position: absolute; z-index: 22; left: 50%; bottom: 7px; width: 126px; height: 4px; border-radius: 999px; transform: translateX(-50%); background: currentColor; opacity: .76; }
+    .phone .system-status, .phone .dynamic-island, .phone .home-indicator { display: flex; }
+    .phone .home-indicator { display: block; }
+    .pad .pad-camera, .pad .pad-status, .web .browser-chrome { display: flex; }
+    .phone .app-shell { padding-top: 34px; }
+    .pad .app-shell { padding-top: 16px; }
+    .web .app-shell { height: calc(100% - 42px); padding-top: 0; }
+
+    .app-shell { display: flex; width: 100%; height: 100%; min-width: 0; color: var(--text); }
+    .side-nav { display: none; width: 224px; flex: 0 0 224px; flex-direction: column; padding: 22px 16px; border-right: 1px solid var(--line); background: color-mix(in srgb, var(--surface-solid) 91%, transparent); }
+    .pad .side-nav, .web .side-nav { display: flex; }
+    .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 2px 10px 24px; }
+    .sidebar-brand .brand-mark { width: 34px; height: 34px; border-radius: 11px; }
+    .sidebar-brand b { display: block; font-size: 14px; } .sidebar-brand small { display: block; margin-top: 2px; color: var(--text-3); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    .side-label { padding: 14px 10px 7px; color: var(--text-3); font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .side-nav button { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 43px; margin: 2px 0; padding: 0 11px; border: 0; border-radius: 12px; color: var(--text-2); background: transparent; cursor: pointer; text-align: left; font-size: 13px; font-weight: 600; }
+    .side-nav button:hover { background: var(--brand-soft); color: var(--brand); }
+    .side-nav button.active { color: var(--brand); background: var(--brand-soft); }
+    .side-nav button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .side-spacer { flex: 1; }
+    .side-profile { display: flex; align-items: center; gap: 10px; padding: 12px 10px; border-top: 1px solid var(--line); }
+    .avatar { position: relative; display: grid; place-items: center; flex: 0 0 auto; width: 34px; height: 34px; overflow: hidden; border: 2px solid rgba(255, 255, 255, .9); border-radius: 50%; background: linear-gradient(145deg, #a3b7ff, #8066f3); box-shadow: 0 5px 14px rgba(89, 107, 255, .25); }
+    .avatar::before { content: ""; width: 12px; height: 12px; margin-top: -8px; border-radius: 50%; background: #ffe4c8; box-shadow: 0 13px 0 5px #2d356f; }
+    .avatar.large { width: 72px; height: 72px; border-width: 3px; } .avatar.large::before { transform: scale(1.45); }
+    .side-profile b { display: block; font-size: 12px; } .side-profile small { display: block; margin-top: 3px; color: var(--text-3); font-size: 10px; }
+
+    .app-content { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+    .app-topbar { display: flex; align-items: center; gap: 14px; min-height: 66px; padding: 12px 22px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--surface-solid) 82%, transparent); }
+    .topbar-avatar { display: none; padding: 0; border: 0; background: transparent; cursor: pointer; }
+    .topbar-center { min-width: 0; flex: 1; }
+    .topbar-center span { display: block; color: var(--text-3); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .topbar-center strong { display: block; margin-top: 3px; font-size: 15px; letter-spacing: -.02em; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; }
+    .topbar-pill, .icon-button { min-height: 36px; border: 1px solid var(--line); border-radius: 11px; color: var(--text-2); background: var(--surface); cursor: pointer; }
+    .topbar-pill { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px; font-size: 11px; font-weight: 700; }
+    .topbar-pill b { color: var(--gold); }
+    .icon-button { position: relative; display: grid; place-items: center; width: 36px; padding: 0; }
+    .icon-button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .unread { position: absolute; top: -3px; right: -3px; min-width: 15px; height: 15px; padding: 0 4px; border: 2px solid var(--surface-solid); border-radius: 99px; color: #fff; background: var(--coral); font-size: 8px; line-height: 11px; text-align: center; }
+    .app-main { min-width: 0; flex: 1; overflow: auto; padding: 28px 30px 38px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+    .phone .app-main { padding: 20px 16px 94px; scrollbar-width: none; }
+    .phone .app-main::-webkit-scrollbar { display: none; width: 0; height: 0; }
+    .bottom-nav { display: none; position: absolute; z-index: 15; right: 0; bottom: 0; left: 0; grid-template-columns: repeat(5, 1fr); height: 74px; padding: 8px 9px 13px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--surface-solid) 92%, transparent); backdrop-filter: blur(18px); }
+    .phone .bottom-nav { display: grid; }
+    .bottom-nav button { display: flex; align-items: center; justify-content: center; gap: 4px; flex-direction: column; min-width: 0; border: 0; color: var(--text-3); background: transparent; cursor: pointer; font-size: 10px; font-weight: 600; }
+    .bottom-nav button.active { color: var(--brand); }
+    .bottom-nav svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+    .page-view { max-width: 1240px; margin: 0 auto; animation: page-in .28s ease both; }
+    @keyframes page-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    html[data-motion="off"] * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .eyebrow { color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    h1, h2, h3, p { margin: 0; }
+    .page-head h1 { margin-top: 5px; font-size: clamp(24px, 3vw, 32px); letter-spacing: -.055em; }
+    .page-head p { margin-top: 7px; color: var(--text-2); font-size: 13px; line-height: 1.55; }
+    .page-chip, .soft-chip, .status-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 10px; border: 1px solid var(--line); border-radius: 99px; color: var(--text-2); background: var(--surface); font-size: 11px; font-weight: 700; white-space: nowrap; }
+    .status-chip { color: var(--mint); border-color: color-mix(in srgb, var(--mint) 28%, var(--line)); background: var(--mint-soft); }
+    .page-button, .ghost-button, .text-button, .filter-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 0 14px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; }
+    .page-button { border: 0; color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: 0 10px 20px rgba(89, 107, 255, .18); }
+    .ghost-button, .filter-button { border: 1px solid var(--line); color: var(--text-2); background: var(--surface); }
+    .text-button { min-height: 30px; padding: 0 6px; border: 0; color: var(--brand); background: transparent; }
+    .page-button:hover, .ghost-button:hover, .filter-button:hover, .text-button:hover { filter: brightness(1.04); color: var(--brand); }
+    .page-button svg, .ghost-button svg, .filter-button svg, .text-button svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    .world-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(240px, .82fr); gap: 18px; }
+    .surface-panel { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow-sm); }
+    .world-map-panel { position: relative; min-height: 430px; overflow: hidden; padding: 21px; }
+    .panel-topline, .section-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-topline h2, .section-topline h2 { font-size: 16px; letter-spacing: -.025em; }
+    .panel-topline span, .section-topline span { color: var(--text-3); font-size: 11px; }
+    .world-map { position: relative; min-height: 340px; margin-top: 12px; overflow: hidden; border-radius: 20px; background: linear-gradient(155deg, #17265c 0%, #243c92 34%, #5b5ff2 74%, #7e63f1 100%); }
+    html[data-theme="dark"] .world-map { background: linear-gradient(155deg, #0d163e 0%, #152b70 38%, #403aa6 77%, #5f42b0 100%); }
+    .world-map::before { content: ""; position: absolute; inset: 0; opacity: .5; background-image: radial-gradient(circle at 18% 20%, rgba(255,255,255,.7) 0 1px, transparent 1.5px), radial-gradient(circle at 68% 30%, rgba(255,255,255,.55) 0 1px, transparent 1.5px), radial-gradient(circle at 84% 72%, rgba(255,255,255,.5) 0 1px, transparent 1.5px), radial-gradient(circle at 40% 82%, rgba(255,255,255,.45) 0 1px, transparent 1.5px); background-size: 88px 78px, 122px 110px, 140px 92px, 104px 84px; }
+    .world-map::after { content: ""; position: absolute; right: -80px; bottom: -110px; width: 280px; height: 280px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; box-shadow: 0 0 0 30px rgba(255,255,255,.04), 0 0 0 62px rgba(255,255,255,.03); }
+    .map-planet { position: absolute; top: 50%; left: 50%; width: 122px; height: 122px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ffffff 0 5%, rgba(255,255,255,.83) 6%, rgba(194, 210, 255, .7) 42%, rgba(101, 115, 244, .1) 70%); box-shadow: 0 0 0 16px rgba(219, 225, 255, .12), 0 0 0 32px rgba(219, 225, 255, .06), 0 22px 48px rgba(16, 21, 76, .28); }
+    .map-planet::before { content: ""; position: absolute; inset: 22px 13px 33px 32px; border-radius: 50%; background: rgba(89, 107, 255, .25); transform: rotate(-16deg); }
+    .map-planet::after { content: "✦"; position: absolute; right: 19px; top: 17px; color: #fff; font-size: 13px; opacity: .85; }
+    .map-route { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .8; }
+    .map-route path { fill: none; stroke: rgba(203, 213, 255, .75); stroke-width: 1.25; stroke-dasharray: 4 6; }
+    .map-node { position: absolute; z-index: 3; display: grid; place-items: center; width: 45px; height: 45px; border: 3px solid rgba(255,255,255,.72); border-radius: 50%; color: #fff; background: rgba(51, 67, 180, .68); box-shadow: 0 0 0 7px rgba(223, 230, 255, .16), 0 8px 16px rgba(22, 28, 101, .25); cursor: pointer; font-size: 15px; font-weight: 800; transition: transform .2s ease, box-shadow .2s ease; }
+    .map-node:hover { transform: scale(1.08); box-shadow: 0 0 0 9px rgba(223, 230, 255, .18), 0 12px 20px rgba(22, 28, 101, .3); }
+    .map-node.done { border-color: var(--mint); background: rgba(37, 184, 138, .88); }
+    .map-node.current { width: 58px; height: 58px; border-color: #fff; background: linear-gradient(135deg, var(--brand), var(--brand-2)); box-shadow: 0 0 0 10px rgba(255,255,255,.18), 0 0 26px rgba(135, 136, 255, .55); }
+    .node-label { position: absolute; z-index: 4; color: rgba(255,255,255,.9); font-size: 10px; font-weight: 700; white-space: nowrap; text-shadow: 0 1px 5px rgba(15, 21, 75, .5); }
+    .node-forest { top: 25%; left: 17%; } .label-forest { top: 34%; left: 12%; }
+    .node-grammar { top: 64%; left: 19%; } .label-grammar { top: 73%; left: 12%; }
+    .node-listen { top: 43%; left: 50%; transform: translate(-50%, -50%); } .label-listen { top: 56%; left: 50%; transform: translateX(-50%); }
+    .node-read { top: 22%; right: 18%; } .label-read { top: 31%; right: 13%; }
+    .node-tower { right: 16%; bottom: 19%; } .label-tower { right: 10%; bottom: 11%; }
+    .map-status { position: absolute; right: 15px; bottom: 14px; left: 15px; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: rgba(255,255,255,.86); font-size: 10px; }
+    .map-status .meter { flex: 1; max-width: 170px; height: 5px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.18); } .map-status .meter i { display: block; width: 62%; height: 100%; border-radius: inherit; background: #8ff0d0; }
+    .world-side { display: grid; gap: 14px; align-content: start; }
+    .path-card { padding: 19px; }
+    .path-list { display: grid; gap: 9px; margin-top: 15px; }
+    .path-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); color: var(--text); background: transparent; cursor: pointer; text-align: left; }
+    .path-row:last-child { border-bottom: 0; }
+    .path-dot { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; color: var(--brand); background: var(--brand-soft); font-size: 11px; font-weight: 800; }
+    .path-row.done .path-dot { color: var(--mint); background: var(--mint-soft); } .path-row.current .path-dot { color: #fff; background: var(--brand); }
+    .path-copy { min-width: 0; flex: 1; } .path-copy b { display: block; font-size: 12px; } .path-copy small { display: block; margin-top: 3px; color: var(--text-3); font-size: 10px; }
+    .path-arrow { color: var(--text-3); font-size: 17px; }
+    .streak-card { position: relative; overflow: hidden; padding: 18px; background: linear-gradient(145deg, color-mix(in srgb, var(--gold-soft) 80%, var(--surface-solid)), var(--surface)); }
+    .streak-card::after { content: ""; position: absolute; right: -22px; bottom: -26px; width: 110px; height: 110px; border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent); border-radius: 50%; box-shadow: 0 0 0 16px color-mix(in srgb, var(--gold) 8%, transparent); }
+    .streak-card b { display: block; font-size: 18px; } .streak-card p { margin-top: 5px; color: var(--text-2); font-size: 11px; line-height: 1.5; }
+    .streak-value { display: flex; align-items: baseline; gap: 5px; margin-top: 15px; } .streak-value strong { color: var(--gold); font-size: 34px; letter-spacing: -.08em; } .streak-value span { color: var(--text-2); font-size: 11px; }
+    .world-section { margin-top: 20px; }
+    .world-tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
+    .tool-card { position: relative; min-height: 136px; overflow: hidden; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); color: var(--text); background: var(--surface); cursor: pointer; text-align: left; box-shadow: var(--shadow-sm); }
+    .tool-card:hover { border-color: color-mix(in srgb, var(--brand) 38%, var(--line)); transform: translateY(-2px); }
+    .tool-card b { position: relative; z-index: 2; display: block; font-size: 13px; } .tool-card small { position: relative; z-index: 2; display: block; max-width: 150px; margin-top: 7px; color: var(--text-2); font-size: 10px; line-height: 1.45; }
+    .tool-card .tool-art { position: absolute; right: 10px; bottom: -12px; width: 102px; height: 102px; border-radius: 32px; opacity: .96; transform: rotate(10deg); }
+    .tool-art.avatar-art { background: radial-gradient(circle at 50% 30%, #ffe4c8 0 13%, transparent 14%), radial-gradient(circle at 50% 42%, #2d356f 0 23%, transparent 24%), linear-gradient(135deg, #b8c8ff, #8164f5); box-shadow: 0 10px 25px rgba(89, 107, 255, .22); }
+    .tool-art.wardrobe-art { background: linear-gradient(145deg, #202a5e, #5a65ce); box-shadow: inset 0 0 0 10px rgba(255,255,255,.07); } .tool-art.wardrobe-art::before { content: "✦"; position: absolute; top: 22px; left: 36px; color: #f4c35e; font-size: 30px; }
+    .tool-art.space-art { background: linear-gradient(145deg, #d9e1ff, #8b7ef4); } .tool-art.space-art::before { content: ""; position: absolute; left: 20px; right: 10px; bottom: 20px; height: 24px; border-radius: 8px; background: #b97958; box-shadow: 0 9px 0 #8a5a45; } .tool-art.space-art::after { content: "◒"; position: absolute; top: 12px; right: 22px; color: #fff; font-size: 28px; }
+    .room-teaser { display: flex; align-items: center; gap: 16px; margin-top: 18px; padding: 17px 19px; border: 1px solid var(--line); border-radius: var(--radius-md); background: linear-gradient(135deg, color-mix(in srgb, var(--brand-soft) 72%, var(--surface-solid)), var(--surface)); }
+    .room-avatars { display: flex; padding-left: 6px; } .room-avatars .avatar { width: 29px; height: 29px; margin-left: -6px; border-width: 2px; } .room-avatars .avatar:nth-child(2) { background: linear-gradient(145deg, #f2c4a5, #8db0ff); } .room-avatars .avatar:nth-child(3) { background: linear-gradient(145deg, #a3f0cc, #7283ff); } .room-avatars .avatar:nth-child(4) { background: linear-gradient(145deg, #ffcfb6, #c77df9); }
+    .room-teaser-copy { flex: 1; min-width: 0; } .room-teaser-copy b { display: block; font-size: 13px; } .room-teaser-copy small { display: block; margin-top: 4px; color: var(--text-2); font-size: 10px; }
+
+    .course-filters, .room-tabs, .report-tabs { display: flex; gap: 7px; flex-wrap: wrap; margin: -2px 0 18px; }
+    .filter-button { min-height: 32px; padding: 0 11px; font-size: 11px; } .filter-button.active { color: var(--brand); border-color: color-mix(in srgb, var(--brand) 35%, var(--line)); background: var(--brand-soft); }
+    .course-feature { position: relative; display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(180px, .82fr); min-height: 248px; overflow: hidden; margin-bottom: 22px; border-radius: var(--radius-lg); color: #fff; background: linear-gradient(126deg, #394bbd, #596bff 45%, #8a68f4); box-shadow: 0 18px 34px rgba(63, 75, 192, .22); }
+    .course-feature::before { content: ""; position: absolute; right: -120px; top: -100px; width: 390px; height: 390px; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; box-shadow: 0 0 0 32px rgba(255,255,255,.04), 0 0 0 72px rgba(255,255,255,.035); }
+    .feature-copy { position: relative; z-index: 2; padding: 28px; } .feature-kicker { color: rgba(255,255,255,.72); font-size: 10px; font-weight: 800; letter-spacing: .14em; } .feature-copy h2 { margin-top: 10px; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.05em; } .feature-copy p { max-width: 450px; margin-top: 10px; color: rgba(255,255,255,.8); font-size: 12px; line-height: 1.6; }
+    .feature-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; } .feature-actions .page-button { color: var(--brand); background: #fff; box-shadow: none; } .feature-actions .ghost-button { color: #fff; border-color: rgba(255,255,255,.35); background: rgba(255,255,255,.08); }
+    .feature-visual { position: relative; min-height: 220px; } .feature-visual::before { content: ""; position: absolute; top: 45px; right: 62px; width: 134px; height: 134px; border-radius: 50%; background: radial-gradient(circle at 35% 28%, #fff 0 4%, #c6d4ff 5% 30%, #7f91ff 31% 56%, rgba(205,217,255,.18) 57%); box-shadow: 0 0 0 18px rgba(255,255,255,.1), 0 0 0 40px rgba(255,255,255,.05); } .feature-visual::after { content: "✦   ◌   ✧"; position: absolute; top: 30px; right: 18px; color: rgba(255,255,255,.7); font-size: 18px; letter-spacing: 18px; }
+    .course-section { margin-top: 18px; } .course-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 12px; }
+    .course-card { position: relative; min-height: 178px; padding: 17px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-md); color: var(--text); background: var(--surface); cursor: pointer; text-align: left; box-shadow: var(--shadow-sm); }
+    .course-card:hover { border-color: color-mix(in srgb, var(--brand) 36%, var(--line)); transform: translateY(-2px); } .course-card::after { content: ""; position: absolute; right: -22px; top: -28px; width: 110px; height: 110px; border-radius: 50%; background: var(--brand-soft); }
+    .course-icon { position: relative; z-index: 2; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 13px; color: var(--brand); background: var(--brand-soft); font-size: 13px; font-weight: 800; } .course-card:nth-child(2) .course-icon { color: var(--gold); background: var(--gold-soft); } .course-card:nth-child(3) .course-icon { color: var(--mint); background: var(--mint-soft); } .course-card:nth-child(4) .course-icon { color: var(--sky); background: color-mix(in srgb, var(--sky) 12%, var(--surface-solid)); }
+    .course-card h3 { position: relative; z-index: 2; margin-top: 14px; font-size: 14px; } .course-card p { position: relative; z-index: 2; margin-top: 6px; color: var(--text-2); font-size: 11px; line-height: 1.45; }
+    .course-progress { position: relative; z-index: 2; display: flex; align-items: center; gap: 8px; margin-top: 17px; } .course-progress .track { flex: 1; height: 5px; overflow: hidden; border-radius: 99px; background: var(--brand-soft); } .course-progress .track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--brand), var(--brand-2)); } .course-progress small { color: var(--text-3); font-size: 10px; }
+    .catalog-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line); } .catalog-row:last-child { border-bottom: 0; } .catalog-copy { min-width: 0; flex: 1; } .catalog-copy b { display: block; font-size: 12px; } .catalog-copy small { display: block; margin-top: 4px; color: var(--text-3); font-size: 10px; } .catalog-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; } .catalog-tags span { padding: 4px 7px; border-radius: 7px; color: var(--text-2); background: var(--surface-2); font-size: 9px; }
+
+    .room-summary { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(110px, .55fr)); gap: 12px; margin-bottom: 18px; } .room-stat { min-height: 96px; padding: 15px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); } .room-stat:first-child { color: #fff; border-color: transparent; background: linear-gradient(135deg, #3e53cd, #8065f5); } .room-stat small { display: block; color: var(--text-3); font-size: 10px; } .room-stat:first-child small { color: rgba(255,255,255,.72); } .room-stat strong { display: block; margin-top: 8px; font-size: 23px; letter-spacing: -.06em; } .room-stat span { display: block; margin-top: 5px; color: var(--text-2); font-size: 10px; } .room-stat:first-child span { color: rgba(255,255,255,.8); }
+    .room-hero { position: relative; min-height: 246px; overflow: hidden; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: linear-gradient(135deg, color-mix(in srgb, var(--brand-soft) 82%, var(--surface-solid)), var(--surface)); } .room-hero::after { content: ""; position: absolute; right: -50px; bottom: -120px; width: 340px; height: 260px; border: 1px solid color-mix(in srgb, var(--brand) 18%, transparent); border-radius: 50%; box-shadow: 0 0 0 28px color-mix(in srgb, var(--brand) 5%, transparent), 0 0 0 58px color-mix(in srgb, var(--brand) 4%, transparent); } .room-hero-head { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 14px; } .room-hero-head b { font-size: 15px; } .room-hero-head small { display: block; margin-top: 4px; color: var(--text-2); font-size: 10px; } .room-seat-grid { position: relative; z-index: 2; display: flex; align-items: flex-end; justify-content: center; gap: clamp(12px, 4vw, 44px); min-height: 153px; padding-top: 18px; } .seat { position: relative; display: grid; justify-items: center; gap: 7px; min-width: 70px; color: var(--text-2); font-size: 10px; } .seat::after { content: ""; width: 58px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--brand) 18%, transparent); box-shadow: 0 7px 10px rgba(64, 76, 180, .13); } .seat .avatar { width: 49px; height: 49px; } .seat.current .avatar { border-color: var(--mint); box-shadow: 0 0 0 6px var(--mint-soft), 0 8px 18px rgba(37, 184, 138, .22); } .seat .focus-tag { position: absolute; top: -3px; right: -7px; padding: 4px 6px; border-radius: 7px; color: var(--mint); background: var(--mint-soft); font-size: 8px; font-weight: 700; }
+    .room-content { margin-top: 18px; } .room-pane { display: block; } .room-pane[hidden] { display: none; }
+    .room-columns { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr); gap: 14px; } .room-panel { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); } .room-panel h3 { font-size: 14px; } .room-panel > p { margin-top: 5px; color: var(--text-2); font-size: 11px; line-height: 1.5; }
+    .focus-row { display: flex; align-items: center; gap: 16px; margin-top: 18px; } .focus-ring { display: grid; place-items: center; width: 92px; height: 92px; border: 8px solid var(--brand-soft); border-top-color: var(--brand); border-right-color: var(--brand); border-radius: 50%; transform: rotate(28deg); } .focus-ring strong { color: var(--text); font-size: 17px; transform: rotate(-28deg); } .focus-copy { flex: 1; } .focus-copy b { display: block; font-size: 13px; } .focus-copy small { display: block; margin-top: 6px; color: var(--text-3); font-size: 10px; line-height: 1.45; }
+    .activity-list { display: grid; gap: 12px; margin-top: 15px; } .activity-item { display: flex; align-items: flex-start; gap: 10px; } .activity-item .activity-dot { width: 26px; height: 26px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; color: var(--mint); background: var(--mint-soft); font-size: 12px; } .activity-item b { display: block; font-size: 11px; line-height: 1.4; } .activity-item small { display: block; margin-top: 3px; color: var(--text-3); font-size: 9px; }
+    .reaction-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; } .reaction { min-height: 28px; padding: 0 8px; border: 1px solid var(--line); border-radius: 9px; color: var(--text-2); background: var(--surface-2); cursor: pointer; font-size: 10px; } .reaction:hover { color: var(--brand); border-color: var(--brand); }
+    .leaderboard { overflow: hidden; margin-top: 2px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); } .leader-head, .leader-row { display: grid; grid-template-columns: 38px minmax(0, 1.5fr) repeat(2, minmax(72px, .5fr)); align-items: center; gap: 10px; padding: 12px 15px; } .leader-head { color: var(--text-3); border-bottom: 1px solid var(--line); font-size: 10px; font-weight: 700; } .leader-row { border-bottom: 1px solid var(--line); font-size: 11px; } .leader-row:last-child { border-bottom: 0; } .rank { color: var(--text-3); font-weight: 800; } .rank.top { color: var(--gold); } .leader-user { display: flex; align-items: center; gap: 8px; min-width: 0; } .leader-user .avatar { width: 27px; height: 27px; } .leader-user b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .leader-value { color: var(--text-2); font-variant-numeric: tabular-nums; text-align: right; } .leader-row.me { color: var(--brand); background: var(--brand-soft); }
+
+    .profile-hero { position: relative; display: flex; align-items: center; gap: 18px; min-height: 178px; overflow: hidden; padding: 24px; border-radius: var(--radius-lg); color: #fff; background: linear-gradient(135deg, #394bbd, #596bff 44%, #896af1); box-shadow: 0 16px 34px rgba(70, 78, 190, .2); } .profile-hero::after { content: "✦"; position: absolute; right: 12%; top: 22px; color: rgba(255,255,255,.52); font-size: 22px; box-shadow: 40px 48px 0 -5px rgba(255,255,255,.35), -75px 116px 0 -8px rgba(255,255,255,.25); } .profile-hero .avatar { width: 86px; height: 86px; } .profile-hero-copy { position: relative; z-index: 2; min-width: 0; flex: 1; } .profile-hero-copy small { display: block; color: rgba(255,255,255,.7); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; } .profile-hero-copy h2 { margin-top: 6px; font-size: 26px; letter-spacing: -.06em; } .profile-hero-copy p { margin-top: 6px; color: rgba(255,255,255,.8); font-size: 11px; } .vip-badge { display: inline-flex; align-items: center; gap: 5px; min-height: 24px; margin-top: 13px; padding: 0 8px; border: 1px solid rgba(255,255,255,.28); border-radius: 8px; color: #fff5d7; background: rgba(255,255,255,.12); font-size: 10px; font-weight: 800; } .profile-hero-actions { position: relative; z-index: 2; display: flex; align-self: flex-start; gap: 7px; } .profile-hero-actions button { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid rgba(255,255,255,.28); border-radius: 11px; color: #fff; background: rgba(255,255,255,.1); cursor: pointer; } .profile-hero-actions svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .profile-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; } .profile-stat { padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); } .profile-stat strong { display: block; font-size: 20px; letter-spacing: -.06em; } .profile-stat small { display: block; margin-top: 5px; color: var(--text-3); font-size: 10px; }
+    .profile-layout { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(240px, .92fr); gap: 14px; margin-top: 18px; } .profile-panel { padding: 18px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); } .profile-panel h3 { font-size: 14px; } .profile-panel > p { margin-top: 5px; color: var(--text-2); font-size: 11px; line-height: 1.5; }
+    .report-figure { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 12px; height: 104px; margin-top: 16px; padding-bottom: 17px; border-bottom: 1px solid var(--line); } .bar-col { display: grid; align-content: end; justify-items: center; gap: 6px; height: 100%; } .bar { width: 27px; border-radius: 8px 8px 3px 3px; background: linear-gradient(180deg, var(--brand), var(--brand-2)); } .bar-col:nth-child(2) .bar { background: linear-gradient(180deg, var(--mint), #76ddbd); } .bar-col:nth-child(3) .bar { background: linear-gradient(180deg, var(--gold), #ffd886); } .bar-col small { color: var(--text-3); font-size: 9px; } .report-note { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; } .report-note b { font-size: 12px; } .report-note span { color: var(--mint); font-size: 11px; font-weight: 700; }
+    .profile-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; } .profile-action { display: flex; align-items: center; gap: 9px; min-height: 48px; padding: 0 10px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); background: var(--surface-2); cursor: pointer; text-align: left; } .profile-action:hover { color: var(--brand); border-color: var(--brand); } .profile-action .action-icon { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 8px; color: var(--brand); background: var(--brand-soft); font-size: 12px; } .profile-action b { display: block; font-size: 11px; } .profile-action small { display: block; margin-top: 2px; color: var(--text-3); font-size: 9px; }
+    .vip-mini { position: relative; overflow: hidden; margin-top: 14px; padding: 17px; border-radius: var(--radius-md); color: #fff; background: linear-gradient(135deg, #2c286b, #5d4bc0 58%, #9b70ed); } .vip-mini::after { content: "✦"; position: absolute; right: 20px; top: 18px; color: rgba(255,255,255,.7); font-size: 24px; } .vip-mini b { display: block; font-size: 14px; } .vip-mini p { max-width: 78%; margin-top: 6px; color: rgba(255,255,255,.74); font-size: 10px; line-height: 1.5; } .vip-mini .ghost-button { margin-top: 13px; color: #fff; border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.1); }
+
+    .overlay { position: fixed; z-index: 80; inset: 0; display: none; background: rgba(12, 16, 35, .46); backdrop-filter: blur(4px); } .overlay.open { display: block; }
+    .drawer { position: fixed; z-index: 81; top: 0; right: 0; bottom: 0; width: min(560px, 100vw); overflow: auto; padding: 28px 26px 36px; border-left: 1px solid var(--line); color: var(--text); background: var(--elevated); box-shadow: -20px 0 55px rgba(24, 29, 65, .2); transform: translateX(102%); transition: transform .28s ease; }
+    .drawer.open { transform: translateX(0); } .drawer-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; } .drawer-kicker { color: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; } .drawer h2 { margin-top: 5px; font-size: 24px; letter-spacing: -.05em; } .drawer-intro { margin-top: 8px; color: var(--text-2); font-size: 12px; line-height: 1.6; } .drawer-close { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 12px; color: var(--text-2); background: var(--surface-2); cursor: pointer; } .drawer-close svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+    .drawer-section { margin-top: 24px; } .drawer-section h3 { font-size: 14px; } .drawer-section > p { margin-top: 6px; color: var(--text-2); font-size: 11px; line-height: 1.55; }
+    .drawer-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 22px; } .drawer-actions .page-button { min-height: 43px; }
+    .detail-hero { position: relative; min-height: 164px; overflow: hidden; margin-top: 20px; padding: 20px; border-radius: 20px; color: #fff; background: linear-gradient(135deg, #394bbd, #596bff 50%, #896af1); } .detail-hero::after { content: "◌  ✦  ◌"; position: absolute; right: 24px; top: 24px; color: rgba(255,255,255,.58); font-size: 22px; letter-spacing: 10px; } .detail-hero strong { position: relative; z-index: 2; display: block; font-size: 20px; } .detail-hero p { position: relative; z-index: 2; max-width: 70%; margin-top: 8px; color: rgba(255,255,255,.78); font-size: 11px; line-height: 1.5; }
+    .detail-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; } .detail-meta div { padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-2); } .detail-meta b { display: block; font-size: 14px; } .detail-meta small { display: block; margin-top: 3px; color: var(--text-3); font-size: 9px; }
+    .lesson-list { display: grid; gap: 8px; margin-top: 13px; } .lesson-row { display: flex; align-items: center; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); } .lesson-number { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; color: var(--brand); background: var(--brand-soft); font-size: 10px; font-weight: 800; } .lesson-row.done .lesson-number { color: var(--mint); background: var(--mint-soft); } .lesson-copy { flex: 1; min-width: 0; } .lesson-copy b { display: block; font-size: 11px; } .lesson-copy small { display: block; margin-top: 3px; color: var(--text-3); font-size: 9px; } .lesson-state { color: var(--text-3); font-size: 15px; }
+    .avatar-stage { position: relative; min-height: 246px; overflow: hidden; margin-top: 20px; border-radius: 20px; background: linear-gradient(145deg, #c7d4ff, #7b70e9); } .avatar-stage::before { content: ""; position: absolute; right: -42px; bottom: -120px; width: 300px; height: 240px; border: 1px solid rgba(255,255,255,.4); border-radius: 50%; box-shadow: 0 0 0 26px rgba(255,255,255,.1), 0 0 0 58px rgba(255,255,255,.08); } .avatar-stage .avatar-figure { position: absolute; left: 50%; bottom: 18px; width: 132px; height: 190px; transform: translateX(-50%); } .avatar-figure .head { position: absolute; top: 9px; left: 36px; width: 62px; height: 68px; border-radius: 45% 45% 42% 42%; background: #ffe3ca; box-shadow: 0 -15px 0 12px #2b326e; } .avatar-figure .body { position: absolute; top: 76px; left: 15px; width: 103px; height: 112px; border-radius: 36px 36px 18px 18px; background: linear-gradient(135deg, #324487, #7788ff); box-shadow: inset 0 13px rgba(255,255,255,.1); } .avatar-figure .neck { position: absolute; top: 67px; left: 58px; width: 19px; height: 25px; background: #f6c9ab; } .avatar-figure .badge { position: absolute; top: 95px; left: 77px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #ffe59b; background: #1d2c6a; font-size: 11px; } .avatar-controls { display: flex; gap: 7px; margin-top: 13px; overflow: auto; } .avatar-controls button { min-height: 31px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; color: var(--text-2); background: var(--surface-2); cursor: pointer; font-size: 10px; white-space: nowrap; } .avatar-controls button.active { color: var(--brand); border-color: var(--brand); background: var(--brand-soft); }
+    .wardrobe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 13px; } .wardrobe-item { position: relative; min-height: 104px; padding: 10px; border: 1px solid var(--line); border-radius: 13px; color: var(--text); background: var(--surface-2); cursor: pointer; text-align: left; } .wardrobe-item:hover, .wardrobe-item.selected { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); } .wardrobe-thumb { display: grid; place-items: center; height: 53px; border-radius: 9px; color: var(--brand); background: linear-gradient(135deg, var(--brand-soft), var(--surface-solid)); font-size: 22px; } .wardrobe-item:nth-child(2) .wardrobe-thumb { color: var(--gold); background: linear-gradient(135deg, var(--gold-soft), var(--surface-solid)); } .wardrobe-item:nth-child(3) .wardrobe-thumb { color: var(--mint); background: linear-gradient(135deg, var(--mint-soft), var(--surface-solid)); } .wardrobe-item b { display: block; margin-top: 7px; font-size: 10px; } .wardrobe-item small { display: block; margin-top: 3px; color: var(--text-3); font-size: 8px; }
+    .space-stage { position: relative; min-height: 240px; overflow: hidden; margin-top: 20px; border-radius: 20px; background: linear-gradient(145deg, #e4e9ff, #9285ee); } .space-stage::before { content: ""; position: absolute; right: -30px; bottom: -55px; width: 300px; height: 140px; border-radius: 50%; background: rgba(65, 50, 145, .18); transform: rotate(-11deg); } .space-floor { position: absolute; right: 17%; bottom: 30px; width: 230px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.22); transform: rotate(-9deg); } .space-desk { position: absolute; right: 20%; bottom: 52px; width: 150px; height: 16px; border-radius: 5px; background: #a66c51; box-shadow: 0 24px 0 -5px #8f5c48, 0 38px 0 -6px #8f5c48; } .space-lamp { position: absolute; right: 26%; bottom: 84px; width: 5px; height: 62px; background: #5c4c86; } .space-lamp::before { content: ""; position: absolute; top: -12px; left: -17px; width: 38px; height: 22px; border-radius: 50% 50% 7px 7px; background: #f7c870; } .space-plant { position: absolute; left: 18%; bottom: 57px; width: 28px; height: 42px; border-radius: 50% 50% 8px 8px; background: #7d9e6a; box-shadow: 14px -20px 0 -4px #6c9361, -10px -12px 0 -5px #87aa72; } .space-plant::after { content: ""; position: absolute; left: -5px; bottom: -9px; width: 38px; height: 15px; border-radius: 4px 4px 10px 10px; background: #c07c5c; }
+    .member-card { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 14px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-2); } .member-card .avatar { width: 48px; height: 48px; } .member-copy { flex: 1; } .member-copy b { display: block; font-size: 13px; } .member-copy small { display: block; margin-top: 4px; color: var(--text-2); font-size: 10px; line-height: 1.45; }
+    .report-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 20px; } .report-kpi { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); } .report-kpi strong { display: block; font-size: 18px; } .report-kpi small { display: block; margin-top: 4px; color: var(--text-3); font-size: 9px; }
+    .message-tabs { display: flex; gap: 7px; overflow: auto; margin-top: 20px; } .message-list { display: grid; gap: 9px; margin-top: 14px; } .message-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); cursor: pointer; } .message-row.unread { position: relative; top: auto; right: auto; min-width: 0; height: auto; padding: 12px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); background: color-mix(in srgb, var(--brand-soft) 70%, var(--surface-2)); font-size: inherit; line-height: normal; text-align: left; } .message-icon { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 9px; color: var(--brand); background: var(--brand-soft); font-size: 12px; } .message-copy { min-width: 0; flex: 1; } .message-copy b { display: block; font-size: 11px; } .message-copy p { margin-top: 4px; color: var(--text-2); font-size: 10px; line-height: 1.45; } .message-copy small { display: block; margin-top: 5px; color: var(--text-3); font-size: 9px; } .message-dot { width: 6px; height: 6px; margin-top: 4px; border-radius: 50%; background: var(--coral); }
+    .vip-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 20px; } .vip-plan { padding: 14px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-2); cursor: pointer; text-align: left; } .vip-plan.selected { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); } .vip-plan b { display: block; font-size: 12px; } .vip-plan strong { display: block; margin-top: 9px; font-size: 20px; letter-spacing: -.05em; } .vip-plan small { display: block; margin-top: 4px; color: var(--text-3); font-size: 9px; }
+    .benefit-list { display: grid; gap: 8px; margin-top: 13px; } .benefit-row { display: flex; align-items: center; gap: 8px; color: var(--text-2); font-size: 11px; } .benefit-row i { display: grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; color: var(--mint); background: var(--mint-soft); font-style: normal; font-size: 10px; }
+    .setting-list { display: grid; gap: 8px; margin-top: 20px; } .setting-row { display: flex; align-items: center; gap: 11px; min-height: 52px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; color: var(--text); background: var(--surface-2); cursor: pointer; text-align: left; } .setting-row:hover { color: var(--brand); border-color: var(--brand); } .setting-row .action-icon { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 8px; color: var(--brand); background: var(--brand-soft); } .setting-row b { display: block; font-size: 11px; } .setting-row small { display: block; margin-top: 3px; color: var(--text-3); font-size: 9px; } .setting-row .chevron { margin-left: auto; color: var(--text-3); font-size: 17px; }
+    .toast { position: fixed; z-index: 100; left: 50%; bottom: 24px; max-width: min(360px, calc(100vw - 32px)); padding: 10px 15px; border: 1px solid rgba(255,255,255,.15); border-radius: 11px; color: #fff; background: rgba(23, 27, 45, .92); box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; transform: translate(-50%, 12px); transition: opacity .2s ease, transform .2s ease; font-size: 12px; text-align: center; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .empty-note { padding: 18px 0; color: var(--text-3); font-size: 11px; text-align: center; }
+
+    @media (max-width: 980px) {
+      .prototype { padding: 18px 16px 32px; }
+      .lab-header { align-items: flex-start; flex-wrap: wrap; }
+      .lab-meta { width: 100%; order: 3; }
+      .world-layout, .profile-layout, .room-columns { grid-template-columns: 1fr; }
+      .world-side { grid-template-columns: repeat(2, 1fr); }
+      .path-card { grid-row: span 2; }
+      .room-summary { grid-template-columns: 1.5fr repeat(3, 1fr); }
+      .device-frame.pad, .device-frame.web { width: calc(100vw - 32px); }
+    }
+    @media (max-width: 700px) {
+      .prototype { padding: 14px 10px 24px; }
+      .lab-header { margin-bottom: 12px; }
+      .lab-brand { min-width: 0; } .lab-brand small { display: none; }
+      .lab-controls { width: 100%; justify-content: flex-start; }
+      .lab-meta { display: none; }
+      .preview-stage { min-height: 0; }
+      .device-frame.phone { width: min(390px, calc(100vw - 20px)); height: min(844px, calc(100vh - 134px)); min-height: 660px; }
+      .device-frame.pad, .device-frame.web { height: min(760px, calc(100vh - 150px)); min-height: 600px; }
+      .world-map-panel { padding: 15px; }
+      .world-map { min-height: 300px; }
+      .map-node { transform: scale(.9); } .node-listen { transform: translate(-50%, -50%) scale(.9); }
+      .world-tools { grid-template-columns: 1fr; }
+      .tool-card { min-height: 86px; }
+      .tool-card .tool-art { width: 78px; height: 78px; }
+      .course-feature { grid-template-columns: 1fr; } .feature-visual { display: none; } .feature-copy { padding: 23px; }
+      .course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .room-summary { grid-template-columns: 1fr 1fr; } .room-stat:first-child { grid-column: 1 / -1; }
+      .profile-hero { align-items: flex-start; flex-wrap: wrap; padding: 18px; } .profile-hero-actions { margin-left: auto; } .profile-hero-copy { flex-basis: calc(100% - 108px); }
+      .profile-stats { grid-template-columns: repeat(2, 1fr); }
+      .drawer { width: 100%; padding: 22px 18px 30px; }
+    }
+    @media (max-width: 520px) {
+      .phone .app-topbar { min-height: 66px; padding: 10px 16px; }
+      .phone .topbar-avatar { display: block; }
+      .phone .topbar-actions .topbar-pill { display: none; }
+      .phone .app-main { padding-right: 14px; padding-left: 14px; }
+      .page-head { margin-bottom: 17px; }
+      .page-head h1 { font-size: 26px; }
+      .page-head p { font-size: 12px; }
+      .world-map-panel { min-height: 397px; }
+      .world-map { min-height: 305px; }
+      .world-side { grid-template-columns: 1fr; }
+      .path-card { grid-row: auto; }
+      .world-tools { margin-top: 9px; }
+      .course-grid { grid-template-columns: 1fr; }
+      .course-card { min-height: 142px; }
+      .room-summary { gap: 8px; } .room-stat { min-height: 86px; padding: 12px; } .room-stat strong { font-size: 20px; }
+      .room-seat-grid { gap: 7px; justify-content: space-between; } .seat { min-width: 52px; } .seat .avatar { width: 40px; height: 40px; }
+      .leader-head, .leader-row { grid-template-columns: 28px minmax(0, 1.5fr) repeat(2, minmax(52px, .5fr)); padding-right: 10px; padding-left: 10px; }
+      .profile-actions { grid-template-columns: 1fr; }
+      .vip-plans { grid-template-columns: 1fr; }
+      .detail-meta, .report-kpis { gap: 6px; }
+      .drawer h2 { font-size: 22px; }
+    }
+
+    /* Device-shell responsive rules: the mockup is narrower than the browser viewport. */
+    .phone .world-layout, .phone .profile-layout, .phone .room-columns { grid-template-columns: 1fr; }
+    .phone .world-side { grid-template-columns: 1fr; }
+    .phone .world-map-panel { min-height: 397px; }
+    .phone .world-map { min-height: 305px; }
+    .phone .world-tools { grid-template-columns: 1fr; }
+    .phone .tool-card { min-height: 86px; }
+    .phone .tool-card .tool-art { width: 78px; height: 78px; }
+    .phone .course-feature { grid-template-columns: 1fr; }
+    .phone .feature-visual { display: none; }
+    .phone .feature-copy { padding: 23px; }
+    .phone .course-grid { grid-template-columns: 1fr; }
+    .phone .course-card { min-height: 142px; }
+    .phone .room-summary { grid-template-columns: 1fr 1fr; }
+    .phone .room-stat:first-child { grid-column: 1 / -1; }
+    .phone .room-seat-grid { gap: 7px; justify-content: space-between; }
+    .phone .seat { min-width: 52px; }
+    .phone .seat .avatar { width: 40px; height: 40px; }
+    .phone .profile-stats { grid-template-columns: repeat(2, 1fr); }
+    .phone .profile-layout { grid-template-columns: 1fr; }
+    .phone .profile-actions { grid-template-columns: 1fr; }
+  </style>
+</head>
+<body>
+  <div class="prototype" id="prototype">
+    <header class="lab-header">
+      <div class="lab-brand">
+        <span class="lab-brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3.5 1.8 6.7 6.7 1.8-6.7 1.8-1.8 6.7-1.8-6.7-6.7-1.8 6.7-1.8L12 3.5Z"/><path d="M19.5 3.5v3M21 5h-3"/></svg></span>
+        <span><b>语学星 · 完整产品原型</b><small>world / course / study room / me</small></span>
+      </div>
+      <div class="lab-controls" aria-label="预览控制">
+        <div class="segmented" aria-label="设备预览">
+          <button type="button" data-device="mobile" aria-pressed="true">Mobile</button>
+          <button type="button" data-device="pad" aria-pressed="false">Pad</button>
+          <button type="button" data-device="web" aria-pressed="false">Web</button>
+        </div>
+        <button class="lab-action" id="themeToggle" type="button">☼ 浅色</button>
+        <button class="lab-action" id="motionToggle" type="button">动效：开启</button>
+        <button class="lab-action" id="resetButton" type="button">重置</button>
+      </div>
+      <span class="lab-meta">Phase 1 · 成人学习闭环 · 轻社交低 UGC</span>
+    </header>
+
+    <main class="preview-stage">
+      <section class="device-frame phone" id="deviceFrame" aria-label="产品设备预览">
+        <div class="screen">
+          <div class="system-status" aria-hidden="true">
+            <span>21:36</span>
+            <span class="status-right"><span class="status-bars"><i></i><i></i><i></i><i></i></span><span class="status-wifi"><i></i></span><span class="status-battery"><span class="status-battery-icon"><i></i></span><b>88</b>%</span></span>
+          </div>
+          <button class="dynamic-island" id="dynamicIsland" type="button" aria-label="展开通知岛"></button>
+          <span class="pad-camera" aria-hidden="true"></span>
+          <div class="pad-status" aria-hidden="true"><span>9:41</span><span>Wi-Fi　100%</span></div>
+          <div class="browser-chrome" aria-hidden="true"><span class="traffic"><i></i><i></i><i></i></span><span>‹</span><span>›</span><span class="address">app.yuxuexing.cn / world</span><span>↗</span><span>⋯</span></div>
+
+          <div class="app-shell">
+            <aside class="side-nav" aria-label="桌面端主导航">
+              <div class="sidebar-brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3.5 1.8 6.7 6.7 1.8-6.7 1.8-1.8 6.7-1.8-6.7-6.7-1.8 6.7-1.8L12 3.5Z"/></svg></span><span><b>语学星</b><small>LEARN YOUR WAY</small></span></div>
+              <div class="side-label">主导航</div>
+              <button type="button" data-page="world" class="active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.8 10.5h16.4M4.8 15.5h14.4M12 3.5c2.1 2.4 3.2 5.2 3.2 8.5S14.1 18.1 12 20.5c-2.1-2.4-3.2-5.2-3.2-8.5S9.9 5.9 12 3.5Z"/></svg>世界</button>
+              <button type="button" data-page="courses"><svg viewBox="0 0 24 24"><path d="M5 5.2h14v13.6H5z"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/></svg>课程</button>
+              <button type="button" data-page="room"><svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><circle cx="16.5" cy="10.5" r="2.2"/><path d="M3.8 19c.8-3.1 2.5-4.8 5.2-4.8s4.4 1.7 5.2 4.8M14 15.6c2.7-.5 4.8.6 6.1 3.4"/></svg>Study Room</button>
+              <div class="side-label">我的空间</div>
+              <button type="button" data-action="drawer" data-drawer="avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.1"/><path d="M5.5 19c.9-3 3-4.6 6.5-4.6s5.6 1.6 6.5 4.6"/></svg>Avatar / 衣柜</button>
+              <button type="button" data-action="drawer" data-drawer="space"><svg viewBox="0 0 24 24"><path d="m4 11 8-6 8 6v8.2H4z"/><path d="M8 19.2v-5h8v5M9 9.5h.1M15 9.5h.1"/></svg>学习空间</button>
+              <div class="side-spacer"></div>
+              <button type="button" data-page="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.1"/><path d="M5.5 19c.9-3 3-4.6 6.5-4.6s5.6 1.6 6.5 4.6"/></svg>我的中心</button>
+              <button type="button" data-action="drawer" data-drawer="settings"><svg viewBox="0 0 24 24"><path d="M12 3.8v2.1M12 18.1v2.1M3.8 12h2.1M18.1 12h2.1M6.2 6.2l1.5 1.5M16.3 16.3l1.5 1.5M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5"/><circle cx="12" cy="12" r="3.3"/></svg>设置</button>
+              <div class="side-profile"><span class="avatar"></span><span><b>小辰</b><small>Lv.12 · 21 天 Streak</small></span></div>
+            </aside>
+
+            <section class="app-content">
+              <header class="app-topbar">
+                <button class="topbar-avatar" type="button" data-action="drawer" data-drawer="avatar" aria-label="打开我的空间"><span class="avatar"></span></button>
+                <div class="topbar-center"><span id="topbarKicker">LEARNING WORLD</span><strong id="topbarTitle">学习世界</strong></div>
+                <div class="topbar-actions">
+                  <button class="topbar-pill" type="button" data-action="streak"><span>🔥</span><b>21 天</b></button>
+                  <button class="icon-button" type="button" data-action="drawer" data-drawer="messages" aria-label="打开消息"><svg viewBox="0 0 24 24"><path d="M5 6.5h14v10H8.5L5 19z"/><path d="M8.5 10h7M8.5 13h4"/></svg><span class="unread">2</span></button>
+                  <button class="icon-button" type="button" data-action="drawer" data-drawer="settings" aria-label="打开设置"><svg viewBox="0 0 24 24"><path d="M12 3.8v2.1M12 18.1v2.1M3.8 12h2.1M18.1 12h2.1M6.2 6.2l1.5 1.5M16.3 16.3l1.5 1.5M17.8 6.2l-1.5 1.5M7.7 16.3l-1.5 1.5"/><circle cx="12" cy="12" r="3.3"/></svg></button>
+                </div>
+              </header>
+
+              <main class="app-main" id="appMain">
+                <section class="page-view" data-page-view="world">
+                  <div class="page-head"><div><span class="eyebrow">LEARNING WORLD</span><h1>学习世界</h1><p>沿着路径完成区域，把每一次正确变成新的星光。</p></div><span class="status-chip">● 区域 3 · 62% 完成</span></div>
+                  <div class="world-layout">
+                    <section class="surface-panel world-map-panel">
+                      <div class="panel-topline"><h2>今日路径 · 听力港口</h2><button class="text-button" type="button" data-action="region">查看完整路径 <span>›</span></button></div>
+                      <div class="world-map" aria-label="学习世界地图">
+                        <svg class="map-route" viewBox="0 0 700 340" preserveAspectRatio="none" aria-hidden="true"><path d="M125 105 C205 235 255 90 350 170 S510 85 585 115"/><path d="M155 265 C245 235 245 210 350 170 S480 240 548 264"/><path d="M120 105 C285 28 470 32 585 115"/></svg>
+                        <span class="map-planet" aria-hidden="true"></span>
+                        <button class="map-node done node-forest" type="button" data-action="node" data-node="词汇森林" aria-label="词汇森林，已完成">✓</button><span class="node-label label-forest">词汇森林</span>
+                        <button class="map-node done node-grammar" type="button" data-action="node" data-node="语法工坊" aria-label="语法工坊，已完成">✓</button><span class="node-label label-grammar">语法工坊</span>
+                        <button class="map-node current node-listen" type="button" data-action="node" data-node="听力港口" aria-label="听力港口，当前节点">▶</button><span class="node-label label-listen">听力港口 · 当前</span>
+                        <button class="map-node node-read" type="button" data-action="node" data-node="阅读书城" aria-label="阅读书城，待解锁">4</button><span class="node-label label-read">阅读书城</span>
+                        <button class="map-node node-tower" type="button" data-action="node" data-node="挑战塔" aria-label="挑战塔，待解锁">5</button><span class="node-label label-tower">挑战塔</span>
+                        <div class="map-status"><span>本周完成 4 / 6 天</span><span class="meter"><i></i></span><span>还差 2 天</span></div>
+                      </div>
+                    </section>
+                    <aside class="world-side">
+                      <section class="surface-panel path-card"><div class="section-topline"><h2>区域进度</h2><span>5 个节点</span></div><div class="path-list">
+                        <button class="path-row done" type="button" data-action="node" data-node="词汇森林"><span class="path-dot">✓</span><span class="path-copy"><b>词汇森林</b><small>12 个高频词 · 已完成</small></span><span class="path-arrow">›</span></button>
+                        <button class="path-row done" type="button" data-action="node" data-node="语法工坊"><span class="path-dot">✓</span><span class="path-copy"><b>语法工坊</b><small>6 个句型 · 已完成</small></span><span class="path-arrow">›</span></button>
+                        <button class="path-row current" type="button" data-action="node" data-node="听力港口"><span class="path-dot">▶</span><span class="path-copy"><b>听力港口</b><small>机场广播 · 预计 6 分钟</small></span><span class="path-arrow">›</span></button>
+                        <button class="path-row" type="button" data-action="node" data-node="阅读书城"><span class="path-dot">4</span><span class="path-copy"><b>阅读书城</b><small>完成听力港口后解锁</small></span><span class="path-arrow">›</span></button>
+                      </div></section>
+                      <section class="surface-panel streak-card"><b>连续学习保持中</b><p>今天再完成一个有效任务，就能延续你的节奏。</p><div class="streak-value"><strong>21</strong><span>天 Streak</span></div></section>
+                    </aside>
+                  </div>
+                  <section class="world-section"><div class="section-topline"><h2>我的世界</h2><span>学习获得的空间与装扮</span></div><div class="world-tools">
+                    <button class="tool-card" type="button" data-action="drawer" data-drawer="avatar"><b>Avatar Studio</b><small>调整外观、动作和展示名片</small><span class="tool-art avatar-art" aria-hidden="true"></span></button>
+                    <button class="tool-card" type="button" data-action="drawer" data-drawer="wardrobe"><b>衣柜与图鉴</b><small>试穿已获得的服饰与收藏</small><span class="tool-art wardrobe-art" aria-hidden="true"></span></button>
+                    <button class="tool-card" type="button" data-action="drawer" data-drawer="space"><b>学习空间</b><small>把学习记录放进自己的小房间</small><span class="tool-art space-art" aria-hidden="true"></span></button>
+                  </div></section>
+                  <button class="room-teaser" type="button" data-page="room"><span class="room-avatars"><span class="avatar"></span><span class="avatar"></span><span class="avatar"></span><span class="avatar"></span></span><span class="room-teaser-copy"><b>CET-4 冲刺 Study Room</b><small>18 位成员在线 · 本周团队目标完成 74%</small></span><span class="page-row-arrow">›</span></button>
+                </section>
+
+                <section class="page-view" data-page-view="courses" hidden>
+                  <div class="page-head"><div><span class="eyebrow">COURSE LIBRARY</span><h1>课程货架</h1><p>从真实场景出发，把课程拆成可完成的每一小段。</p></div><span class="page-chip">3 门进行中</span></div>
+                  <div class="course-filters" role="tablist" aria-label="课程分类"><button class="filter-button active" type="button" data-course-filter="全部">全部</button><button class="filter-button" type="button" data-course-filter="Scenario Packs">Scenario Packs</button><button class="filter-button" type="button" data-course-filter="分级阅读">分级阅读</button><button class="filter-button" type="button" data-course-filter="Language Clips">Language Clips</button></div>
+                  <section class="course-feature"><div class="feature-copy"><span class="feature-kicker">CONTINUE YOUR PATH · DAY 18</span><h2>机场英语 · 任务型课程</h2><p>从值机、安检到登机广播，掌握一趟旅程里最常用的表达。当前单元专注数字、时间和连读。</p><div class="feature-actions"><button class="page-button" type="button" data-action="course-detail" data-course="机场英语听力">继续第 4 单元 <span>›</span></button><button class="ghost-button" type="button" data-action="course-detail" data-course="机场英语听力">查看课程详情</button></div></div><div class="feature-visual" aria-hidden="true"></div></section>
+                  <section class="course-section"><div class="section-topline"><h2>正在学习</h2><span>按最近学习排序</span></div><div class="course-grid">
+                    <button class="course-card" type="button" data-action="course-detail" data-course="CET-4 词汇计划"><span class="course-icon">A</span><h3>CET-4 词汇计划</h3><p>Day 18 · 高频词与例句</p><span class="course-progress"><span class="track"><i style="width:62%"></i></span><small>62%</small></span></button>
+                    <button class="course-card" type="button" data-action="course-detail" data-course="机场英语听力"><span class="course-icon">◉</span><h3>机场英语听力</h3><p>Unit 04 · Gate change</p><span class="course-progress"><span class="track"><i style="width:38%"></i></span><small>38%</small></span></button>
+                    <button class="course-card" type="button" data-action="course-detail" data-course="职场会议表达"><span class="course-icon">↗</span><h3>职场会议表达</h3><p>Scenario 02 · 提出观点</p><span class="course-progress"><span class="track"><i style="width:24%"></i></span><small>24%</small></span></button>
+                    <button class="course-card" type="button" data-action="course-detail" data-course="读懂新闻标题"><span class="course-icon">▤</span><h3>读懂新闻标题</h3><p>分级阅读 B1 · 试读</p><span class="course-progress"><span class="track"><i style="width:12%"></i></span><small>12%</small></span></button>
+                  </div></section>
+                  <section class="surface-panel course-section" style="padding: 18px"><div class="section-topline"><h2>适合今天的短内容</h2><button class="text-button" type="button" data-action="course-filter-more">查看全部 ›</button></div><div class="catalog-row"><span class="course-icon">♫</span><span class="catalog-copy"><b>3 分钟 Language Clip · Asking for directions</b><small>听力 · 连读 · 机场场景</small><span class="catalog-tags"><span>3 min</span><span>B1</span><span>今日推荐</span></span></span><button class="ghost-button" type="button" data-action="quick-start">开始</button></div><div class="catalog-row"><span class="course-icon">▥</span><span class="catalog-copy"><b>分级阅读 · A quiet morning in London</b><small>阅读 · 词组收藏 · 预计 8 分钟</small><span class="catalog-tags"><span>8 min</span><span>B1+</span></span></span><button class="ghost-button" type="button" data-action="quick-start">试读</button></div></section>
+                </section>
+
+                <section class="page-view" data-page-view="room" hidden>
+                  <div class="page-head"><div><span class="eyebrow">STUDY ROOM</span><h1>共同学习</h1><p>和同路的人安静前进，互动只保留对学习有帮助的回应。</p></div><button class="page-button" type="button" data-action="invite">邀请成员 <span>＋</span></button></div>
+                  <div class="room-summary"><div class="room-stat"><small>本周团队目标</small><strong>74%</strong><span>还差 156 分钟 · 周日结算</span></div><div class="room-stat"><small>在线成员</small><strong>18</strong><span>共 30 个座位</span></div><div class="room-stat"><small>我的排名</small><strong>#04</strong><span>上升 2 位</span></div><div class="room-stat"><small>团队连续</small><strong>9</strong><span>天保持学习</span></div></div>
+                  <section class="room-hero"><div class="room-hero-head"><div><b>CET-4 冲刺房</b><small>安静专注 · 本周目标 600 分钟</small></div><button class="ghost-button" type="button" data-action="room-settings">房间设置</button></div><div class="room-seat-grid"><button class="seat current" type="button" data-action="member" data-member="小辰"><span class="avatar"></span><span>小辰</span><span class="focus-tag">专注中</span></button><button class="seat" type="button" data-action="member" data-member="林一"><span class="avatar"></span><span>林一</span></button><button class="seat" type="button" data-action="member" data-member="Mia"><span class="avatar"></span><span>Mia</span></button><button class="seat" type="button" data-action="member" data-member="周野"><span class="avatar"></span><span>周野</span></button><button class="seat" type="button" data-action="member" data-member="Kiki"><span class="avatar"></span><span>Kiki</span></button></div></section>
+                  <div class="room-tabs" role="tablist" aria-label="学习室视图"><button class="filter-button active" type="button" data-room-tab="focus">房间动态</button><button class="filter-button" type="button" data-room-tab="leaderboard">排行榜</button></div>
+                  <section class="room-content"><div class="room-pane" data-room-pane="focus"><div class="room-columns"><section class="room-panel"><h3>我的专注时段</h3><p>选择 25 / 45 分钟专注，结束后会自动记录到本周目标。</p><div class="focus-row"><div class="focus-ring"><strong>25:00</strong></div><div class="focus-copy"><b>准备开始一轮安静学习</b><small>白噪音：咖啡馆 · 预设回应已开启<br>离座超过 5 分钟将自动释放位置</small><div class="drawer-actions"><button class="page-button" type="button" data-action="focus">开始专注</button><button class="ghost-button" type="button" data-action="noise">咖啡馆音</button></div></div></div></section><section class="room-panel"><h3>学习动态</h3><p>只展示系统事件和预设反应，不开放自由评论。</p><div class="activity-list"><div class="activity-item"><span class="activity-dot">✓</span><span><b>林一完成了 30 个词复习</b><small>2 分钟前 · 预设回应</small><span class="reaction-row"><button class="reaction" type="button" data-action="react" data-reaction="加油">👍 加油</button><button class="reaction" type="button" data-action="react" data-reaction="厉害">🏆 厉害</button></span></span></div><div class="activity-item"><span class="activity-dot">✦</span><span><b>Mia 连续学习达到 14 天</b><small>18 分钟前 · 成就已记录</small><span class="reaction-row"><button class="reaction" type="button" data-action="react" data-reaction="好看">✨ 好看</button></span></span></div></div></section></div></div><div class="room-pane" data-room-pane="leaderboard" hidden><div class="leaderboard"><div class="room-tabs" style="padding: 14px 15px 0; margin: 0"><button class="filter-button active" type="button" data-rank="XP">XP</button><button class="filter-button" type="button" data-rank="分钟">分钟</button><button class="filter-button" type="button" data-rank="Streak">Streak</button><button class="filter-button" type="button" data-rank="Checkpoint">Checkpoint</button></div><div class="leader-head"><span>名次</span><span>成员</span><span>本周</span><span>变化</span></div><div class="leader-row"><span class="rank top">1</span><span class="leader-user"><span class="avatar"></span><b>林一</b></span><span class="leader-value" data-leader-value="1">2,840 XP</span><span class="leader-value">＋1</span></div><div class="leader-row"><span class="rank top">2</span><span class="leader-user"><span class="avatar"></span><b>Mia</b></span><span class="leader-value" data-leader-value="2">2,610 XP</span><span class="leader-value">—</span></div><div class="leader-row me"><span class="rank">4</span><span class="leader-user"><span class="avatar"></span><b>小辰 · 我</b></span><span class="leader-value" data-leader-value="me">2,180 XP</span><span class="leader-value">＋2</span></div><div class="leader-row"><span class="rank">5</span><span class="leader-user"><span class="avatar"></span><b>周野</b></span><span class="leader-value" data-leader-value="5">2,060 XP</span><span class="leader-value">—</span></div></div></div></section>
+                </section>
+
+                <section class="page-view" data-page-view="profile" hidden>
+                  <div class="page-head"><div><span class="eyebrow">YOUR SPACE</span><h1>我的中心</h1><p>学习记录、空间资产、会员权益和隐私设置。</p></div><button class="ghost-button" type="button" data-action="drawer" data-drawer="messages">消息中心 <span>2</span></button></div>
+                  <section class="profile-hero"><span class="avatar large"></span><div class="profile-hero-copy"><small>YOUR LEARNING ID · YX-2048</small><h2>小辰</h2><p>连续学习 21 天 · 本周保持 4 天</p><span class="vip-badge">✦ VIP 专业版 · 有效至 2027-08-20</span></div><div class="profile-hero-actions"><button type="button" data-action="edit-profile" aria-label="编辑资料">✎</button><button type="button" data-action="drawer" data-drawer="settings" aria-label="设置">⚙</button></div></section>
+                  <div class="profile-stats"><div class="profile-stat"><strong>21</strong><small>连续学习 / 天</small></div><div class="profile-stat"><strong>138</strong><small>本周学习 / 分钟</small></div><div class="profile-stat"><strong>1,284</strong><small>已掌握词汇</small></div><div class="profile-stat"><strong>12</strong><small>当前等级 / Lv.</small></div></div>
+                  <div class="profile-layout"><section class="profile-panel"><h3>学习报告</h3><p>最近 7 天，你在听力和词汇复习上保持得最稳定。</p><div class="report-figure"><span class="bar-col"><span class="bar" style="height:54%"></span><small>词汇</small></span><span class="bar-col"><span class="bar" style="height:78%"></span><small>听力</small></span><span class="bar-col"><span class="bar" style="height:66%"></span><small>阅读</small></span></div><div class="report-note"><b>综合完成率 76%</b><span>较上周 ＋8%</span></div><button class="ghost-button" style="margin-top: 14px; width: 100%" type="button" data-action="drawer" data-drawer="report">查看完整报告 <span>›</span></button></section><section class="profile-panel"><h3>常用入口</h3><p>把高频操作放在手边，进入后会在当前原型内展开。</p><div class="profile-actions"><button class="profile-action" type="button" data-action="drawer" data-drawer="report"><span class="action-icon">▥</span><span><b>学习报告</b><small>周报 · 掌握变化</small></span></button><button class="profile-action" type="button" data-action="drawer" data-drawer="wardrobe"><span class="action-icon">✦</span><span><b>衣柜图鉴</b><small>12 件已拥有</small></span></button><button class="profile-action" type="button" data-action="drawer" data-drawer="messages"><span class="action-icon">✉</span><span><b>消息</b><small>2 条未读</small></span></button><button class="profile-action" type="button" data-action="drawer" data-drawer="household"><span class="action-icon">⌂</span><span><b>Household</b><small>已绑定 2 位成员</small></span></button><button class="profile-action" type="button" data-action="drawer" data-drawer="orders"><span class="action-icon">▤</span><span><b>订单与权益</b><small>3 条历史订单</small></span></button><button class="profile-action" type="button" data-action="drawer" data-drawer="settings"><span class="action-icon">⚙</span><span><b>设置与隐私</b><small>通知 · 下载 · 安全</small></span></button></div><div class="vip-mini"><b>VIP 专业版</b><p>全词书、全历史错题、高级报告和离线课程已为你开启。</p><button class="ghost-button" type="button" data-action="drawer" data-drawer="vip">查看会员权益</button></div></section></div>
+                </section>
+              </main>
+            </section>
+            <nav class="bottom-nav" aria-label="移动端主导航"><button class="active" type="button" data-page="world"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.8 10.5h16.4M4.8 15.5h14.4M12 3.5c2.1 2.4 3.2 5.2 3.2 8.5S14.1 18.1 12 20.5c-2.1-2.4-3.2-5.2-3.2-8.5S9.9 5.9 12 3.5Z"/></svg>世界</button><button type="button" data-page="room"><svg viewBox="0 0 24 24"><path d="M4.5 6.5h15v10h-15z"/><path d="M8 10h8M8 13.5h5"/><path d="M7 16.5 5 19"/></svg>练习室</button><button type="button" data-page="courses"><svg viewBox="0 0 24 24"><path d="M5 5.2h14v13.6H5z"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/></svg>课程</button><button type="button" data-action="drawer" data-drawer="wardrobe"><svg viewBox="0 0 24 24"><path d="m7 6 5 3 5-3M8 5.2c0 3.8-2 4.4-3 6.2v7.1h14v-7.1c-1-1.8-3-2.4-3-6.2"/><path d="M8 13h8"/></svg>空间</button><button type="button" data-page="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.1"/><path d="M5.5 19c.9-3 3-4.6 6.5-4.6s5.6 1.6 6.5 4.6"/></svg>我的</button></nav>
+          </div>
+          <span class="home-indicator" aria-hidden="true"></span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+    <div class="drawer-top"><div><span class="drawer-kicker" id="drawerKicker">LEARNING DETAIL</span><h2 id="drawerTitle">详情</h2><p class="drawer-intro" id="drawerIntro">从这里继续你的学习路径。</p></div><button class="drawer-close" id="drawerClose" type="button" aria-label="关闭"><svg viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+    <div id="drawerBody"></div>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      const html = document.documentElement;
+      const frame = document.getElementById('deviceFrame');
+      const appMain = document.getElementById('appMain');
+      const overlay = document.getElementById('overlay');
+      const drawer = document.getElementById('drawer');
+      const drawerBody = document.getElementById('drawerBody');
+      const toast = document.getElementById('toast');
+      const drawerTitle = document.getElementById('drawerTitle');
+      const drawerKicker = document.getElementById('drawerKicker');
+      const drawerIntro = document.getElementById('drawerIntro');
+      const pageMeta = {
+        world: ['LEARNING WORLD', '学习世界'],
+        courses: ['COURSE LIBRARY', '课程货架'],
+        room: ['STUDY ROOM', '共同学习'],
+        profile: ['YOUR SPACE', '我的中心']
+      };
+      const courseDetails = {
+        '机场英语听力': { kicker: 'SCENARIO PACK · A2-B1', title: '机场英语听力', intro: '从值机到登机广播，把一次真实出行拆成 6 个可完成的场景。', progress: '38%', lessons: [['01', 'Check-in desk', '已完成 · 词汇 + 对话'], ['02', 'Security check', '已完成 · 重点复习'], ['03', 'Gate change', '当前 · 预计 6 分钟'], ['04', 'Boarding call', '完成上一节后解锁']] },
+        'CET-4 词汇计划': { kicker: 'STUDY PLAN · DAY 18', title: 'CET-4 词汇计划', intro: '按遗忘风险复习核心词，例句和短语会同步进入表达库。', progress: '62%', lessons: [['17', 'Academic verbs', '已完成 · 30 个词'], ['18', 'Travel & transport', '当前 · 18 个词待复习'], ['19', 'Workplace basics', '明日开放'], ['20', 'Checkpoint review', '完成本周任务后开放']] },
+        '职场会议表达': { kicker: 'SCENARIO PACK · B1', title: '职场会议表达', intro: '练习提出观点、确认共识和礼貌打断，适合 10 分钟短学习。', progress: '24%', lessons: [['01', 'Opening a meeting', '已完成 · 6 个表达'], ['02', 'Share your view', '当前 · 预计 8 分钟'], ['03', 'Clarify politely', '完成上一节后解锁']] },
+        '读懂新闻标题': { kicker: 'GRADED READING · B1+', title: '读懂新闻标题', intro: '从标题结构和高频短语入手，建立阅读上下文判断力。', progress: '12%', lessons: [['01', 'A quiet morning', '试读 · 预计 8 分钟'], ['02', 'What changed?', '完成试读后解锁'], ['03', 'Headline patterns', '稍后开放']] }
+      };
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(window.__completeLabToast);
+        window.__completeLabToast = setTimeout(() => toast.classList.remove('show'), 2300);
+      }
+
+      function setPage(page, announce = true) {
+        if (!pageMeta[page]) return;
+        html.dataset.page = page;
+        document.querySelectorAll('[data-page-view]').forEach(view => { view.hidden = view.dataset.pageView !== page; });
+        document.querySelectorAll('[data-page]').forEach(button => button.classList.toggle('active', button.dataset.page === page));
+        document.getElementById('topbarKicker').textContent = pageMeta[page][0];
+        document.getElementById('topbarTitle').textContent = pageMeta[page][1];
+        appMain.scrollTop = 0;
+        if (announce) showToast('已进入“' + pageMeta[page][1] + '”');
+      }
+
+      function setDevice(device, announce = true) {
+        html.dataset.device = device;
+        frame.className = 'device-frame ' + (device === 'mobile' ? 'phone' : device);
+        document.querySelectorAll('[data-device]').forEach(button => {
+          const active = button.dataset.device === device;
+          button.classList.toggle('active', active);
+          button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        appMain.scrollTop = 0;
+        closeDrawer();
+        if (announce) showToast((device === 'mobile' ? 'Mobile · iPhone 16 Pro Max 风格' : device === 'pad' ? 'Pad · iPad 横屏风格' : 'Web · 桌面浏览器风格') + ' 已切换');
+      }
+
+      function toggleTheme() {
+        const dark = html.dataset.theme !== 'dark';
+        html.dataset.theme = dark ? 'dark' : 'light';
+        document.getElementById('themeToggle').textContent = dark ? '☾ 深色' : '☼ 浅色';
+        showToast(dark ? '已切换到深色极光模式' : '已切换到浅色极光模式');
+      }
+
+      function toggleMotion() {
+        const off = html.dataset.motion === 'off';
+        html.dataset.motion = off ? 'on' : 'off';
+        document.getElementById('motionToggle').textContent = off ? '动效：开启' : '动效：减弱';
+        showToast(off ? '已恢复完整动效' : '已减弱循环动效，保留状态反馈');
+      }
+
+      function courseDetail(name) {
+        const data = courseDetails[name] || courseDetails['机场英语听力'];
+        drawerKicker.textContent = data.kicker;
+        drawerTitle.textContent = data.title;
+        drawerIntro.textContent = data.intro;
+        drawerBody.innerHTML = '<div class="detail-hero"><strong>' + data.title + '</strong><p>' + data.intro + '</p></div><div class="detail-meta"><div><b>' + data.progress + '</b><small>课程进度</small></div><div><b>6</b><small>场景单元</small></div><div><b>8 min</b><small>今日建议</small></div></div><section class="drawer-section"><h3>学习路径</h3><p>每个单元完成后会记录到学习报告，并联动世界地图节点。</p><div class="lesson-list">' + data.lessons.map(item => '<div class="lesson-row ' + (item[2].includes('已完成') ? 'done' : '') + '"><span class="lesson-number">' + item[0] + '</span><span class="lesson-copy"><b>' + item[1] + '</b><small>' + item[2] + '</small></span><span class="lesson-state">' + (item[2].includes('已完成') ? '✓' : '›') + '</span></div>').join('') + '</div></section><div class="drawer-actions"><button class="page-button" type="button" data-action="start-course">开始当前单元 <span>›</span></button><button class="ghost-button" type="button" data-action="save-course">收藏课程</button></div>';
+        openDrawer();
+      }
+
+      function openDrawer() {
+        overlay.classList.add('open');
+        drawer.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+        document.getElementById('drawerClose').focus();
+      }
+
+      function closeDrawer() {
+        overlay.classList.remove('open');
+        drawer.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+
+      function openDrawerType(type) {
+        const base = { kicker: 'YOUR SPACE', title: '详情', intro: '从这里继续你的学习路径。' };
+        let body = '';
+        if (type === 'avatar') {
+          base.kicker = 'AVATAR STUDIO'; base.title = '我的角色'; base.intro = '风格化半写实人物是你的学习名片，不上传真实人脸。';
+          body = '<div class="avatar-stage"><div class="avatar-figure"><span class="head"></span><span class="neck"></span><span class="body"></span><span class="badge">✦</span></div></div><div class="avatar-controls"><button class="active" type="button" data-avatar-tab="脸型">脸型</button><button type="button" data-avatar-tab="发型">发型</button><button type="button" data-avatar-tab="服装">服装</button><button type="button" data-avatar-tab="饰品">饰品</button><button type="button" data-avatar-tab="动作">动作</button></div><section class="drawer-section"><h3>当前展示</h3><p id="avatarSelection">星海蓝基础套装 · 专注动作</p></section><div class="drawer-actions"><button class="page-button" type="button" data-action="random-avatar">随机外观</button><button class="ghost-button" type="button" data-action="save-avatar">保存展示</button></div>';
+        } else if (type === 'wardrobe') {
+          base.kicker = 'WARDROBE & COLLECTION'; base.title = '衣柜与图鉴'; base.intro = '所有装扮来自学习奖励或固定兑换，不影响学习数值。';
+          body = '<div class="avatar-stage" style="min-height: 190px"><div class="avatar-figure" style="transform: translateX(-50%) scale(.78); bottom: -4px"><span class="head"></span><span class="neck"></span><span class="body" style="background: linear-gradient(135deg, #c37a51, #f4c05e)"></span><span class="badge">✦</span></div></div><div class="avatar-controls"><button class="active" type="button" data-wardrobe-tab="全部">全部</button><button type="button" data-wardrobe-tab="发型">发型</button><button type="button" data-wardrobe-tab="上装">上装</button><button type="button" data-wardrobe-tab="饰品">饰品</button></div><div class="wardrobe-grid"><button class="wardrobe-item selected" type="button" data-action="try-on" data-item="星海基础套装"><span class="wardrobe-thumb">✦</span><b>星海基础套装</b><small>已拥有 · 普通</small></button><button class="wardrobe-item" type="button" data-action="try-on" data-item="琥珀围巾"><span class="wardrobe-thumb">◒</span><b>琥珀围巾</b><small>已拥有 · 稀有</small></button><button class="wardrobe-item" type="button" data-action="try-on" data-item="专注耳机"><span class="wardrobe-thumb">◉</span><b>专注耳机</b><small>已拥有 · 稀有</small></button><button class="wardrobe-item" type="button" data-action="try-on" data-item="月光夹克"><span class="wardrobe-thumb">◇</span><b>月光夹克</b><small>学习奖励 · 未解锁</small></button><button class="wardrobe-item" type="button" data-action="try-on" data-item="星图徽章"><span class="wardrobe-thumb">✧</span><b>星图徽章</b><small>区域完成奖励</small></button><button class="wardrobe-item" type="button" data-action="open-chest"><span class="wardrobe-thumb">▣</span><b>学习奖励箱</b><small>完成今日任务获得</small></button></div><div class="drawer-actions"><button class="page-button" type="button" data-action="save-look">保存穿搭</button><button class="ghost-button" type="button" data-action="view-rules">查看获得规则</button></div>';
+        } else if (type === 'space') {
+          base.kicker = 'LEARNING SPACE'; base.title = '我的学习空间'; base.intro = '把学习中的里程碑放进一个只属于你的安静角落。';
+          body = '<div class="space-stage"><span class="space-floor"></span><span class="space-desk"></span><span class="space-lamp"></span><span class="space-plant"></span></div><div class="avatar-controls"><button class="active" type="button" data-space-tab="场景">场景</button><button type="button" data-space-tab="书桌">书桌</button><button type="button" data-space-tab="灯光">灯光</button><button type="button" data-space-tab="道具">道具</button></div><section class="drawer-section"><h3>当前方案 · 深夜专注</h3><p>背景：月面观测站　书桌：暖木　灯光：专注暖白　道具：21 天徽章</p></section><div class="drawer-actions"><button class="page-button" type="button" data-action="save-space">保存方案</button><button class="ghost-button" type="button" data-action="reset-space">恢复默认</button></div>';
+        } else if (type === 'member') {
+          base.kicker = 'MEMBER SHOWCASE'; base.title = '林一的学习展示'; base.intro = '仅展示对方主动公开的学习信息，不展示私密记录。';
+          body = '<div class="member-card"><span class="avatar large"></span><span class="member-copy"><b>林一 · Lv.14</b><small>本周学习 196 分钟 · 连续 32 天<br>公开展示：成就、等级、学习分钟</small></span><span class="status-chip">专注中</span></div><div class="report-kpis"><div class="report-kpi"><strong>2,840</strong><small>本周 XP</small></div><div class="report-kpi"><strong>32</strong><small>Streak</small></div><div class="report-kpi"><strong>76%</strong><small>Checkpoint</small></div></div><section class="drawer-section"><h3>预设互动</h3><p>不开放自由评论，只发送轻量、可控的学习回应。</p><div class="reaction-row"><button class="reaction" type="button" data-action="react" data-reaction="加油">👍 加油</button><button class="reaction" type="button" data-action="react" data-reaction="好看">✨ 好看</button><button class="reaction" type="button" data-action="react" data-reaction="厉害">🏆 厉害</button></div></section><div class="drawer-actions"><button class="page-button" type="button" data-action="challenge">发起学习挑战</button></div>';
+        } else if (type === 'report') {
+          base.kicker = 'LEARNING REPORT'; base.title = '学习报告'; base.intro = '用可解释的反馈回看你的学习节奏，不把单次结果变成压力。';
+          body = '<div class="report-tabs"><button class="filter-button active" type="button" data-report-tab="周报">周报</button><button class="filter-button" type="button" data-report-tab="月报">月报</button><button class="filter-button" type="button" data-report-tab="课程">课程</button></div><div class="report-kpis"><div class="report-kpi"><strong>138m</strong><small>本周学习</small></div><div class="report-kpi"><strong>76%</strong><small>综合完成</small></div><div class="report-kpi"><strong>＋8%</strong><small>较上周</small></div></div><div class="report-figure" style="height: 160px"><span class="bar-col"><span class="bar" style="height:44%"></span><small>周一</small></span><span class="bar-col"><span class="bar" style="height:70%"></span><small>周三</small></span><span class="bar-col"><span class="bar" style="height:90%"></span><small>周五</small></span></div><section class="drawer-section"><h3>本周洞察</h3><p>听力港口的机场广播完成率提升明显；建议明天先复习 7 个连读知识点，再开始新内容。</p></section><div class="drawer-actions"><button class="page-button" type="button" data-action="export-report">导出报告</button></div>';
+        } else if (type === 'vip') {
+          base.kicker = 'MEMBERSHIP'; base.title = 'VIP 专业版'; base.intro = '会员权益清晰可见，基础学习能力不被锁死。';
+          body = '<div class="detail-hero"><strong>把更多时间留给学习</strong><p>当前已开通 VIP 专业版，有效至 2027-08-20。可随时查看权益和订单状态。</p></div><div class="vip-plans"><button class="vip-plan" type="button" data-vip-plan="月"><b>月卡</b><strong>¥28</strong><small>按月续订</small></button><button class="vip-plan selected" type="button" data-vip-plan="年"><b>年卡</b><strong>¥198</strong><small>年度畅学卡</small></button><button class="vip-plan" type="button" data-vip-plan="终身"><b>终身</b><strong>¥498</strong><small>固定权益</small></button></div><div class="benefit-list"><span class="benefit-row"><i>✓</i>全量词书与历史错题</span><span class="benefit-row"><i>✓</i>高级学习报告与离线课程</span><span class="benefit-row"><i>✓</i>更多主题与装扮保存位</span><span class="benefit-row"><i>✓</i>不增加排行榜数值优势</span></div><div class="drawer-actions"><button class="page-button" type="button" data-action="manage-vip">管理会员权益</button><button class="ghost-button" type="button" data-action="household">查看 Household</button></div>';
+        } else if (type === 'household') {
+          base.kicker = 'HOUSEHOLD'; base.title = '共享会员组'; base.intro = '共享的是会员权益，不会自动共享成员的学习记录。';
+          body = '<div class="detail-meta"><div><b>2 / 4</b><small>已绑定成员</small></div><div><b>VIP</b><small>共享权益</small></div><div><b>独立</b><small>学习记录</small></div></div><section class="drawer-section"><h3>成员槽位</h3><div class="member-card"><span class="avatar"></span><span class="member-copy"><b>小辰 · 主账号</b><small>会员管理人 · 学习记录仅自己可见</small></span><span class="status-chip">主账号</span></div><div class="member-card"><span class="avatar"></span><span class="member-copy"><b>阿遥</b><small>已加入 · 独立学习记录</small></span><button class="text-button" type="button" data-action="remove-member">移除</button></div><div class="member-card"><span class="avatar"></span><span class="member-copy"><b>还有 2 个空位</b><small>邀请成年家人或好友加入</small></span><button class="text-button" type="button" data-action="invite">邀请</button></div></section><div class="drawer-actions"><button class="page-button" type="button" data-action="invite">生成邀请链接</button></div>';
+        } else if (type === 'messages') {
+          base.kicker = 'INBOX'; base.title = '消息中心'; base.intro = '学习、社交、会员与安全通知集中在这里。';
+          body = '<div class="message-tabs"><button class="filter-button active" type="button" data-message-tab="全部">全部</button><button class="filter-button" type="button" data-message-tab="学习">学习</button><button class="filter-button" type="button" data-message-tab="社交">社交</button><button class="filter-button" type="button" data-message-tab="会员">会员</button></div><button class="text-button" style="margin-top: 12px" type="button" data-action="read-all">全部已读</button><div class="message-list"><div class="message-row unread" data-message-type="学习"><span class="message-icon">✓</span><span class="message-copy"><b>今日复习已经准备好</b><p>有 7 个知识点进入高风险复习队列，预计 8 分钟。</p><small>今天 09:12 · 学习</small></span><span class="message-dot"></span></div><div class="message-row unread" data-message-type="社交"><span class="message-icon">✦</span><span class="message-copy"><b>林一给你的学习状态点了“加油”</b><p>你们正在同一个 CET-4 冲刺房学习。</p><small>昨天 21:30 · Study Room</small></span><span class="message-dot"></span></div><div class="message-row" data-message-type="会员"><span class="message-icon">◇</span><span class="message-copy"><b>会员权益已同步</b><p>VIP 专业版权益有效至 2027-08-20。</p><small>8 月 18 日 · 会员</small></span></div></div>';
+        } else if (type === 'orders') {
+          base.kicker = 'ENTITLEMENTS & ORDERS'; base.title = '订单与权益'; base.intro = '统一查看会员权益、来源与历史订单状态。';
+          body = '<div class="detail-meta"><div><b>VIP</b><small>当前权益</small></div><div><b>2027</b><small>有效至</small></div><div><b>3</b><small>历史订单</small></div></div><section class="drawer-section"><h3>当前权益</h3><div class="lesson-list"><div class="lesson-row done"><span class="lesson-number">✓</span><span class="lesson-copy"><b>VIP_STANDARD</b><small>来源：年度畅学卡 · 有效至 2027-08-20</small></span><span class="lesson-state">›</span></div><div class="lesson-row done"><span class="lesson-number">✓</span><span class="lesson-copy"><b>OFFLINE_DOWNLOAD</b><small>来源：VIP 专业版 · 可下载课程 12 个</small></span><span class="lesson-state">›</span></div></div></section><section class="drawer-section"><h3>最近订单</h3><div class="catalog-row"><span class="catalog-copy"><b>年度畅学卡</b><small>¥198 · Apple In-App Purchase · 2026-08-20</small></span><span class="status-chip">成功</span></div><div class="catalog-row"><span class="catalog-copy"><b>装扮固定兑换</b><small>星星 240 · 2026-08-08</small></span><span class="status-chip">完成</span></div></section><div class="drawer-actions"><button class="ghost-button" type="button" data-action="refund">查看退款说明</button></div>';
+        } else if (type === 'settings') {
+          base.kicker = 'SETTINGS & PRIVACY'; base.title = '设置与隐私'; base.intro = '通知、显示、下载、设备和账号安全都可以在这里调整。';
+          body = '<section class="drawer-section" style="margin-top:20px"><h3>通知偏好</h3><div class="setting-list"><button class="setting-row" type="button" data-action="toggle-setting"><span class="action-icon">✓</span><span><b>今日任务提醒</b><small>每天 19:30 提醒复习</small></span><span class="status-chip">开</span></button><button class="setting-row" type="button" data-action="toggle-setting"><span class="action-icon">✦</span><span><b>Study Room 动态</b><small>成员完成任务和预设回应</small></span><span class="status-chip">开</span></button><button class="setting-row" type="button" data-action="toggle-setting"><span class="action-icon">◇</span><span><b>营销与新课程</b><small>只接收已订阅的内容推荐</small><span class="page-chip">关</span></button></div></section><section class="drawer-section"><h3>显示与性能</h3><div class="setting-list"><button class="setting-row" type="button" data-action="toggle-theme-drawer"><span class="action-icon">☼</span><span><b>界面主题</b><small id="drawerThemeText">当前：浅色极光</small></span><span class="chevron">›</span></button><button class="setting-row" type="button" data-action="toggle-motion-drawer"><span class="action-icon">✧</span><span><b>动效强度</b><small id="drawerMotionText">当前：完整动效</small></span><span class="chevron">›</span></button><button class="setting-row" type="button" data-action="device-quality"><span class="action-icon">◌</span><span><b>3D 与性能</b><small>当前：Medium · 自动适配</small></span><span class="chevron">›</span></button></div></section><section class="drawer-section"><h3>账号安全</h3><div class="member-card"><span class="action-icon">⌘</span><span class="member-copy"><b>Windows Chrome · 深圳</b><small>当前设备 · 2 小时前活跃</small></span><span class="status-chip">在线</span></div></section><div class="drawer-actions"><button class="ghost-button" type="button" data-action="privacy">隐私中心</button><button class="text-button" type="button" data-action="logout">退出登录</button></div>';
+        }
+        drawerKicker.textContent = base.kicker; drawerTitle.textContent = base.title; drawerIntro.textContent = base.intro; drawerBody.innerHTML = body; openDrawer();
+      }
+
+      function handleAction(target) {
+        const action = target.dataset.action;
+        if (action === 'drawer') openDrawerType(target.dataset.drawer);
+        else if (action === 'node') { drawerKicker.textContent = 'WORLD NODE'; drawerTitle.textContent = target.dataset.node; drawerIntro.textContent = '当前节点包含一段可完成的学习内容，完成后会加入你的地图进度。'; drawerBody.innerHTML = '<div class="detail-hero"><strong>' + target.dataset.node + '</strong><p>预计 6 分钟 · 机场广播精听 · 5 个高频表达</p></div><div class="detail-meta"><div><b>6 min</b><small>预计时长</small></div><div><b>5</b><small>知识点</small></div><div><b>＋32</b><small>完成奖励 XP</small></div></div><section class="drawer-section"><h3>为什么现在学</h3><p>这是当前学习路径上的下一步，完成后会解锁阅读书城，并把错题加入明日复测。</p></section><div class="drawer-actions"><button class="page-button" type="button" data-action="start-node">开始这一段 <span>›</span></button><button class="ghost-button" type="button" data-action="bookmark-node">稍后再学</button></div>'; openDrawer(); }
+        else if (action === 'course-detail') courseDetail(target.dataset.course);
+        else if (action === 'region') showToast('区域选择已打开：当前为区域 3');
+        else if (action === 'streak') showToast('今天再完成 1 个有效任务即可延续 Streak');
+        else if (action === 'invite') showToast('已生成 Study Room 邀请链接，可分享给成年好友');
+        else if (action === 'member') openDrawerType('member');
+        else if (action === 'focus') { target.textContent = '结束专注'; target.dataset.action = 'end-focus'; showToast('专注计时已开始 · 25 分钟'); }
+        else if (action === 'end-focus') { target.textContent = '开始专注'; target.dataset.action = 'focus'; showToast('已结束本轮专注，学习分钟已记录'); }
+        else if (action === 'noise') { target.textContent = target.textContent.includes('咖啡馆') ? '雨声' : '咖啡馆音'; showToast('白噪音已切换'); }
+        else if (action === 'react') showToast('已发送“' + target.dataset.reaction + '”回应');
+        else if (action === 'room-settings') showToast('房主设置：周目标、动态展示、成员管理');
+        else if (action === 'quick-start') showToast('已打开短内容学习 · 完成后记录到课程进度');
+        else if (action === 'course-filter-more') showToast('课程目录已展开：按场景、等级和时长浏览');
+        else if (action === 'random-avatar') showToast('已生成一套新的初始外观组合');
+        else if (action === 'save-avatar') showToast('Avatar 展示已保存');
+        else if (action === 'try-on') { document.querySelectorAll('.wardrobe-item').forEach(item => item.classList.remove('selected')); target.classList.add('selected'); showToast('已试穿“' + target.dataset.item + '”'); }
+        else if (action === 'save-look') showToast('穿搭方案已保存到“星海专注”');
+        else if (action === 'open-chest') showToast('奖励箱来自学习行为，完成今日任务后可免费开启');
+        else if (action === 'view-rules') showToast('装扮只通过学习奖励或固定兑换获得，不影响学习数值');
+        else if (action === 'save-space') showToast('学习空间方案已保存');
+        else if (action === 'reset-space') showToast('学习空间已恢复为默认方案');
+        else if (action === 'challenge') showToast('已向林一发起“本周多学 20 分钟”挑战');
+        else if (action === 'report') openDrawerType('report');
+        else if (action === 'edit-profile') showToast('资料编辑入口已打开');
+        else if (action === 'start-course') { closeDrawer(); showToast('已开始当前课程单元'); }
+        else if (action === 'save-course') showToast('课程已收藏');
+        else if (action === 'start-node') { closeDrawer(); showToast('已开始“' + drawerTitle.textContent + '”'); }
+        else if (action === 'bookmark-node') { closeDrawer(); showToast('已加入稍后学习'); }
+        else if (action === 'manage-vip') showToast('会员管理入口已打开，可查看权益、续费和退款');
+        else if (action === 'household') openDrawerType('household');
+        else if (action === 'remove-member') showToast('移除成员需要二次确认（原型状态）');
+        else if (action === 'read-all') { document.querySelectorAll('.message-row').forEach(item => item.classList.remove('unread')); document.querySelectorAll('.message-dot').forEach(dot => dot.remove()); showToast('消息已全部标记为已读'); }
+        else if (action === 'toggle-setting') { const chip = target.querySelector('.status-chip, .page-chip'); if (chip) { const on = chip.textContent.trim() === '开'; chip.textContent = on ? '关' : '开'; chip.className = on ? 'page-chip' : 'status-chip'; showToast(on ? '通知已关闭' : '通知已开启'); } }
+        else if (action === 'toggle-theme-drawer') { toggleTheme(); openDrawerType('settings'); }
+        else if (action === 'toggle-motion-drawer') { toggleMotion(); openDrawerType('settings'); }
+        else if (action === 'device-quality') showToast('性能档位已保持自动适配：Medium');
+        else if (action === 'privacy') showToast('隐私中心：公开范围、数据导出和账号安全');
+        else if (action === 'logout') showToast('退出登录需要确认（原型状态）');
+      }
+
+      document.querySelectorAll('.segmented [data-device]').forEach(button => button.addEventListener('click', () => setDevice(button.dataset.device)));
+      document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+      document.getElementById('motionToggle').addEventListener('click', toggleMotion);
+      document.getElementById('resetButton').addEventListener('click', () => { html.dataset.theme = 'light'; html.dataset.motion = 'on'; document.getElementById('themeToggle').textContent = '☼ 浅色'; document.getElementById('motionToggle').textContent = '动效：开启'; setDevice('mobile', false); setPage('world', false); document.getElementById('dynamicIsland').classList.remove('expanded'); showToast('预览状态已重置'); });
+      document.getElementById('dynamicIsland').addEventListener('click', event => { event.currentTarget.classList.toggle('expanded'); showToast(event.currentTarget.classList.contains('expanded') ? '通知岛已展开' : '通知岛已收起'); });
+      document.getElementById('overlay').addEventListener('click', closeDrawer);
+      document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') closeDrawer(); });
+      document.getElementById('prototype').addEventListener('click', event => {
+        const pageTarget = event.target.closest('[data-page]');
+        if (pageTarget && pageTarget !== document.documentElement) { setPage(pageTarget.dataset.page); return; }
+        const actionTarget = event.target.closest('[data-action]');
+        if (actionTarget) { handleAction(actionTarget); return; }
+        const courseFilter = event.target.closest('[data-course-filter]');
+        if (courseFilter) { document.querySelectorAll('[data-course-filter]').forEach(item => item.classList.toggle('active', item === courseFilter)); showToast('课程分类已切换：' + courseFilter.dataset.courseFilter); return; }
+        const roomTab = event.target.closest('[data-room-tab]');
+        if (roomTab) { document.querySelectorAll('[data-room-tab]').forEach(item => item.classList.toggle('active', item === roomTab)); document.querySelectorAll('[data-room-pane]').forEach(pane => { pane.hidden = pane.dataset.roomPane !== roomTab.dataset.roomTab; }); return; }
+        const rankTab = event.target.closest('[data-rank]');
+        if (rankTab) { const labels = { XP: ['2,840 XP', '2,610 XP', '2,180 XP', '2,060 XP'], 分钟: ['196 min', '184 min', '138 min', '124 min'], Streak: ['32 天', '28 天', '21 天', '18 天'], Checkpoint: ['＋18%', '＋14%', '＋8%', '＋6%'] }; document.querySelectorAll('[data-rank]').forEach(item => item.classList.toggle('active', item === rankTab)); document.querySelectorAll('[data-leader-value]').forEach((item, index) => { item.textContent = labels[rankTab.dataset.rank][index === 0 ? 0 : index === 1 ? 1 : index === 2 ? 2 : 3]; }); showToast('排行榜已切换：' + rankTab.dataset.rank); return; }
+      });
+      drawerBody.addEventListener('click', event => {
+        const target = event.target.closest('[data-action]');
+        if (target) { handleAction(target); return; }
+        const avatarTab = event.target.closest('[data-avatar-tab]');
+        if (avatarTab) { document.querySelectorAll('[data-avatar-tab]').forEach(item => item.classList.toggle('active', item === avatarTab)); document.getElementById('avatarSelection').textContent = avatarTab.dataset.avatarTab + '选项已切换 · 预览即时更新'; return; }
+        const wardrobeTab = event.target.closest('[data-wardrobe-tab]');
+        if (wardrobeTab) { document.querySelectorAll('[data-wardrobe-tab]').forEach(item => item.classList.toggle('active', item === wardrobeTab)); showToast('衣柜分类已切换：' + wardrobeTab.dataset.wardrobeTab); return; }
+        const spaceTab = event.target.closest('[data-space-tab]');
+        if (spaceTab) { document.querySelectorAll('[data-space-tab]').forEach(item => item.classList.toggle('active', item === spaceTab)); showToast('空间编辑项已切换：' + spaceTab.dataset.spaceTab); return; }
+        const vipPlan = event.target.closest('[data-vip-plan]');
+        if (vipPlan) { document.querySelectorAll('[data-vip-plan]').forEach(item => item.classList.toggle('selected', item === vipPlan)); showToast('已选择' + vipPlan.dataset.vipPlan + '方案'); return; }
+        const messageTab = event.target.closest('[data-message-tab]');
+        if (messageTab) { document.querySelectorAll('[data-message-tab]').forEach(item => item.classList.toggle('active', item === messageTab)); document.querySelectorAll('[data-message-type]').forEach(item => { item.hidden = messageTab.dataset.messageTab !== '全部' && item.dataset.messageType !== messageTab.dataset.messageTab; }); return; }
+        const reportTab = event.target.closest('[data-report-tab]');
+        if (reportTab) { document.querySelectorAll('[data-report-tab]').forEach(item => item.classList.toggle('active', item === reportTab)); showToast('报告视图已切换：' + reportTab.dataset.reportTab); }
+      });
+
+      html.dataset.motion = 'on';
+      setPage('world', false);
+      setDevice('mobile', false);
+    })();
+  </script>
+</body>
+</html>

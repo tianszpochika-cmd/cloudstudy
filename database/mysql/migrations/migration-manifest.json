@@ -1,0 +1,37 @@
+{
+  "formatVersion": 1,
+  "engine": "mysql-8.0",
+  "checksumAlgorithm": "sha256-normalized-utf8",
+  "migrations": [
+    {
+      "version": "0001",
+      "file": "V0001__create_schema_version.sql",
+      "description": "create schema version ledger",
+      "requiredTables": ["schema_version"]
+    },
+    {
+      "version": "0002",
+      "file": "V0002__create_idempotency_keys.sql",
+      "description": "create idempotent request records",
+      "requiredTables": ["idempotency_keys"]
+    },
+    {
+      "version": "0003",
+      "file": "V0003__create_outbox_events.sql",
+      "description": "create transactional outbox events",
+      "requiredTables": ["outbox_events"]
+    },
+    {
+      "version": "0004",
+      "file": "V0004__create_audit_logs.sql",
+      "description": "create append only audit logs",
+      "requiredTables": ["audit_logs"]
+    },
+    {
+      "version": "0005",
+      "file": "V0005__create_media_assets.sql",
+      "description": "create media asset metadata",
+      "requiredTables": ["media_assets"]
+    }
+  ]
+}

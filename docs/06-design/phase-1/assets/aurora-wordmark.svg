@@ -1,0 +1,19 @@
+<svg width="252" height="72" viewBox="0 0 252 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="aurora" x1="6" y1="6" x2="66" y2="66" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#596BFF"/>
+      <stop offset="1" stop-color="#7C5CFC"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="31" y1="15" x2="49" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DDE3FF" stop-opacity="0.82"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="64" height="64" rx="19" fill="url(#aurora)"/>
+  <path d="M14 47C22 26 38 17 56 22C61 23 64 26 68 29" stroke="#D7DDFF" stroke-opacity="0.58" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M9 55C21 41 38 38 54 43C61 45 65 48 69 52" stroke="#FFFFFF" stroke-opacity="0.32" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M35.5 14L38.7 24.3L49 27.5L38.7 30.7L35.5 41L32.3 30.7L22 27.5L32.3 24.3L35.5 14Z" fill="url(#shine)"/>
+  <circle cx="56" cy="16" r="2.2" fill="#FFFFFF" fill-opacity="0.86"/>
+  <text x="82" y="36" fill="#202332" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="25" font-weight="700" letter-spacing="1">语学星</text>
+  <text x="84" y="55" fill="#666D80" font-family="Inter, SF Pro Text, sans-serif" font-size="9" font-weight="500" letter-spacing="1.4">LEARN WITH AURORA</text>
+</svg>

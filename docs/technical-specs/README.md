@@ -1,22 +1,48 @@
-# 语学星技术规格与架构说明书总览 (Technical Specifications Index)
+# 技术规格与架构文档索引
 
-> ⚠️ **待重建**：需求已升级为 [PRD v3.2（四层基础设施 + 3D 成长系统全量版）](../../requirements/product-requirements.md)。基于旧分期口径（K12 小学初中 / 高中大学 / 商务出海）的三份阶段技术规格书已移除，将按 v3.2 的三阶段边界（18+ 市场开拓版 / AI 智能增强 / 未成年人 K12 受监管扩展）重建。
+> 当前唯一技术基线：Vue 3 + TypeScript + uni-app + Spring Boot 3 + MySQL 8.x + Redis 7.x。所有技术规格必须引用该基线，不引入与基线冲突的替代主线。
 
----
+## 技术文档入口
 
-## 目录导航 (Documentation Map)
+| 文档 | 作用 |
+|---|---|
+| docs/02-architecture/stack-recommendation.md | 最终技术栈、边界与禁止项 |
+| docs/02-architecture/system-technical-architecture.md | 系统分层、服务边界、关键链路 |
+| docs/02-architecture/system-overview.md | 架构总览与阶段能力 |
+| docs/02-architecture/cross-platform-and-performance-adaptive.md | uni-app 跨端和四级性能降级 |
+| docs/02-architecture/data-flow.md | 学习、同步、媒体和事件数据流 |
+| docs/02-architecture/avatar-3d-rendering-pipeline.md | 3D Avatar 与平台降级方案 |
+| docs/02-architecture/repo-structure.md | 仓库目录与模块边界 |
+| docs/technical-specs/core-underlying-engines-specs.md | SRS、内容模型、契约和通用底层规范 |
+| docs/05-api/openapi/README.md | OpenAPI 契约入口 |
+| docs/10-decisions/README.md | 当前有效 ADR |
 
-| 技术文档分类 | 对应技术文档路径 | 核心覆盖范围与功能点 |
-| :--- | :--- | :--- |
-| **全景系统架构** | [`docs/02-architecture/system-technical-architecture.md`](../02-architecture/system-technical-architecture.md) | 总体拓扑、实时媒体引擎、AI 编排中心、Monorepo 目录规范、高可用与安全基座。 |
-| **底层引擎与契约** | [`docs/technical-specs/core-underlying-engines-specs.md`](./core-underlying-engines-specs.md) | 记忆算法（SuperMemo-2 / FSRS）、词汇与语法知识图谱、能力雷达图、中国大陆双审合规网关、多端与 OpenAPI 接口契约。 |
-| **Phase 1 技术规格** | 待按 PRD v3.2 §2–§23 重建 | 市场开拓版（18+、无生成式 AI）：语言世界主地图、词汇/语法/听力/阅读/口语/写作/考试、3D Avatar 与学习奖励箱、第四层产品基础设施。 |
-| **Phase 2 技术规格** | 待按 PRD v3.2 §24–§37 重建 | AI 智能增强：AI Tutor、长难句与语法 AI、写作、ASR/TTS 与发音评测、数字人、雅思/托福、RAG 知识库。 |
-| **Phase 3 技术规格** | 待按 PRD v3.2 §38–§43 重建 | 未成年人/K12 受监管扩展：未成年人账号体系、K12 课程、高考体系、教材 RAG、教师/机构生态。 |
+## 阶段技术边界
 
----
+### Phase 1
 
-## 开发与集成指引 (Development Guidelines)
-1. **类型契约先行**：所有前端/小程序与后端交互数据模型定义于 `packages/contracts/`，严格与 OpenAPI 规范同步。
-2. **AI 输出结构化**：所有 AI 服务交互强制定义 Pydantic / Zod JSON Schema，支持失败自动重试与降级（Phase 2 适用）。
-3. **阶段红线**：Phase 1 不含任何生成式 AI 依赖；AI 能力的技术规格在 Phase 2 前置条件（PRD §23.1）满足后启用。
+- Vue 3 + uni-app 学习端和 Vue 3 管理后台。
+- Spring Boot 3 模块化单体、MySQL 8.x、Redis 7.x、OSS/CDN。
+- 规则化测评、SRS、题目评分、错题复习、报告和游戏化。
+- 不接入生成式 AI、AI 发音评分、AI 数字人、开放式 AI 聊天。
+
+### Phase 2
+
+- 保留 Phase 1 主线，新增 Python FastAPI AI 编排服务。
+- 按顺序接入结构化文字反馈、RAG、发音评测、作文批改、实时语音和数字人。
+- 所有 AI 能力需经过 schema、安全、成本、评测和备案闸门。
+
+### Phase 3
+
+- 在资质、版权和未成年人保护完成后，扩展 K12/高中和机构能力。
+- 不允许通过 Phase 3 预留文档反向改变 Phase 1 的用户边界。
+
+## Agent 阅读顺序
+
+1. AGENTS.md
+2. requirements/product-requirements.md
+3. requirements/mvp-scope.md
+4. docs/02-architecture/stack-recommendation.md
+5. docs/02-architecture/system-technical-architecture.md
+6. 对应模块设计文档和 OpenAPI 契约
+7. docs/10-decisions/README.md 与相关 ADR

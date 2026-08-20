@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "host": "127.0.0.1",
+  "policy": {
+    "autoIncrement": false,
+    "bindOnlyToLoopback": true,
+    "checkCommand": "pnpm ports:check"
+  },
+  "services": {
+    "core-api": {"port": 18080, "protocol": "http", "phase": "phase-1", "description": "Spring Boot Core API"},
+    "ai-orchestrator": {"port": 18081, "protocol": "http", "phase": "phase-2", "description": "FastAPI AI orchestrator; disabled in Phase 1"},
+    "content-worker": {"port": 18082, "protocol": "http", "phase": "phase-1", "description": "Optional worker health endpoint"},
+    "analytics-worker": {"port": 18083, "protocol": "http", "phase": "phase-1", "description": "Optional worker health endpoint"},
+    "job-runner": {"port": 18084, "protocol": "http", "phase": "phase-1", "description": "Optional scheduler health endpoint"},
+    "notification-worker": {"port": 18085, "protocol": "http", "phase": "phase-1", "description": "Optional worker health endpoint"},
+    "realtime-voice": {"port": 18086, "protocol": "http", "phase": "phase-2", "description": "RTC signaling; disabled in Phase 1"},
+    "learner-web-dev": {"port": 18180, "protocol": "http", "phase": "phase-1", "description": "Learner Web/H5 Vite development server"},
+    "admin-web-dev": {"port": 18181, "protocol": "http", "phase": "phase-1", "description": "Admin Web Vite development server"},
+    "official-site-dev": {"port": 18182, "protocol": "http", "phase": "phase-1", "description": "Official site Nuxt development server"},
+    "mobile-h5-dev": {"port": 18183, "protocol": "http", "phase": "phase-1", "description": "uni-app H5 development server"},
+    "mobile-app-dev": {"port": 18184, "protocol": "http", "phase": "phase-1", "description": "uni-app native app development bundler when enabled"},
+    "mockups-static": {"port": 18185, "protocol": "http", "phase": "phase-1", "description": "Static server for UI/UX mockups"},
+    "learner-web-preview": {"port": 18190, "protocol": "http", "phase": "phase-1", "description": "Learner Web/H5 Vite preview server"},
+    "admin-web-preview": {"port": 18191, "protocol": "http", "phase": "phase-1", "description": "Admin Web Vite preview server"},
+    "official-site-preview": {"port": 18192, "protocol": "http", "phase": "phase-1", "description": "Official site Nuxt preview server"},
+    "mobile-h5-preview": {"port": 18193, "protocol": "http", "phase": "phase-1", "description": "uni-app H5 preview server when enabled"},
+    "mysql": {"port": 13306, "protocol": "mysql", "phase": "phase-1", "description": "Host port mapped to container port 3306"},
+    "redis": {"port": 16379, "protocol": "redis", "phase": "phase-1", "description": "Host port mapped to container port 6379"},
+    "rabbitmq-amqp": {"port": 15689, "protocol": "amqp", "phase": "phase-1", "description": "Host port mapped to container port 5672"},
+    "rabbitmq-management": {"port": 15690, "protocol": "http", "phase": "phase-1", "description": "Host port mapped to container port 15672"},
+    "minio-api": {"port": 19000, "protocol": "http", "phase": "phase-1", "description": "Host port mapped to container port 9000"},
+    "minio-console": {"port": 19001, "protocol": "http", "phase": "phase-1", "description": "Host port mapped to container port 9001"},
+    "mailpit-smtp": {"port": 18025, "protocol": "smtp", "phase": "phase-1", "description": "Optional local mail sink"},
+    "mailpit-ui": {"port": 18026, "protocol": "http", "phase": "phase-1", "description": "Optional local mail sink UI"},
+    "prometheus": {"port": 19090, "protocol": "http", "phase": "phase-1", "description": "Optional metrics UI/API"},
+    "grafana": {"port": 19091, "protocol": "http", "phase": "phase-1", "description": "Optional observability UI"},
+    "jaeger-ui": {"port": 16689, "protocol": "http", "phase": "phase-1", "description": "Optional tracing UI"}
+  }
+}

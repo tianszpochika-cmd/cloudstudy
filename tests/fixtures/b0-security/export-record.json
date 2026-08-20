@@ -1,0 +1,15 @@
+{
+  "recordId": "record_test_0001",
+  "actorId": "user_test_0001",
+  "subjectId": "user_test_0001",
+  "tenantId": "tenant_test_0001",
+  "displayName": "合成学习者",
+  "email": "synthetic@example.test",
+  "phone": "13800001234",
+  "ipAddress": "192.0.2.10",
+  "createdAt": "2026-01-02T03:04:05.000Z",
+  "status": "active",
+  "goalCode": "cet4",
+  "durationMinutes": 15,
+  "userAgent": "SyntheticTestAgent/1.0"
+}

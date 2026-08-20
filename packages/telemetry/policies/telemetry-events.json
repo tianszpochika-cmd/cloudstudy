@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "policyId": "yuxuexing-telemetry-events",
+  "version": "1.0.0",
+  "defaultEffect": "deny",
+  "eventNamePattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+\\.v[0-9]+$",
+  "eventVersionPattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+  "idPattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$",
+  "envelope": {
+    "required": [
+      "eventId",
+      "eventName",
+      "eventVersion",
+      "occurredAt",
+      "environment",
+      "source",
+      "requestId",
+      "traceId",
+      "correlationId",
+      "actorId",
+      "tenantId",
+      "payload"
+    ],
+    "optional": ["sessionId", "deviceId", "resource"],
+    "allowedEnvironments": ["local", "test", "staging", "production"],
+    "allowedSources": ["web", "mobile", "admin", "api", "worker", "system"]
+  },
+  "sensitiveKeys": [
+    "password",
+    "passcode",
+    "token",
+    "accessToken",
+    "refreshToken",
+    "idToken",
+    "authorization",
+    "cookie",
+    "setCookie",
+    "secret",
+    "apiKey",
+    "privateKey",
+    "rawAudio",
+    "audioBlob",
+    "audioData",
+    "audioBytes",
+    "recordingBytes",
+    "paymentCredential",
+    "paymentToken",
+    "cardNumber",
+    "cvv",
+    "cvc",
+    "securityCode",
+    "receipt",
+    "jws",
+    "transactionProof"
+  ],
+  "sensitiveValuePatterns": [
+    { "name": "bearer-token", "pattern": "^Bearer\\s+[A-Za-z0-9._~+/=-]{16,}$" },
+    { "name": "jwt", "pattern": "^eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$" },
+    { "name": "private-key", "pattern": "-----BEGIN [A-Z ]+ PRIVATE KEY-----" },
+    { "name": "card-like-number", "pattern": "^(?:\\d[ -]?){13,19}$" },
+    { "name": "secret-key-prefix", "pattern": "^(?:sk|rk|pk)_[A-Za-z0-9_-]{16,}$" }
+  ],
+  "maskableFields": {
+    "email": "email",
+    "phone": "phone",
+    "displayName": "partial",
+    "ipAddress": "ip",
+    "userAgent": "hash"
+  },
+  "events": {
+    "auth.login.succeeded.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "method"],
+          "allowed": ["schema", "method", "provider", "riskBand", "deviceClass", "userAgent"]
+        }
+      }
+    },
+    "assessment.started.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "assessmentId", "attemptId", "mode"],
+          "allowed": ["schema", "assessmentId", "attemptId", "mode"]
+        }
+      }
+    },
+    "assessment.completed.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "assessmentId", "attemptId", "resultBand", "durationMs"],
+          "allowed": ["schema", "assessmentId", "attemptId", "resultBand", "durationMs"]
+        }
+      }
+    },
+    "learning.task.started.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "taskId", "taskType"],
+          "allowed": ["schema", "taskId", "taskType"]
+        }
+      }
+    },
+    "learning.task.completed.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "taskId", "taskType", "completionStatus", "itemCount"],
+          "allowed": ["schema", "taskId", "taskType", "completionStatus", "itemCount"]
+        }
+      }
+    },
+    "practice.submitted.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "practiceId", "itemId", "itemType", "resultBand", "durationMs"],
+          "allowed": ["schema", "practiceId", "itemId", "itemType", "resultBand", "durationMs"]
+        }
+      }
+    },
+    "review.scheduled.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "itemId", "masteryStage", "dueAt", "algorithmVersion"],
+          "allowed": ["schema", "itemId", "masteryStage", "dueAt", "algorithmVersion"]
+        }
+      }
+    },
+    "content.published.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "contentId", "contentVersion", "actorRole"],
+          "allowed": ["schema", "contentId", "contentVersion", "actorRole"]
+        }
+      }
+    },
+    "billing.entitlement.changed.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "entitlementId", "changeType", "status", "source"],
+          "allowed": ["schema", "entitlementId", "changeType", "status", "source"]
+        }
+      }
+    },
+    "security.access.denied.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "resourceType", "action", "denialCode"],
+          "allowed": ["schema", "resourceType", "action", "denialCode"]
+        }
+      }
+    },
+    "telemetry.error.v1": {
+      "versions": {
+        "1.0.0": {
+          "required": ["schema", "errorCode", "category", "retryable"],
+          "allowed": ["schema", "errorCode", "category", "retryable", "durationMs"]
+        }
+      }
+    }
+  }
+}

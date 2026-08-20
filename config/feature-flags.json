@@ -1,0 +1,19 @@
+{
+  "$schema": "./feature-flags.schema.json",
+  "schemaVersion": "feature-flags.v1",
+  "environment": "local",
+  "defaults": {
+    "phase1.learningCore": true,
+    "phase2.aiOrchestrator": false,
+    "phase2.realtimeVoice": false,
+    "phase2.vectorSearch": false,
+    "phase3.k12": false,
+    "commerce.payments": false,
+    "social.community": false
+  },
+  "audit": {
+    "sourceOfTruth": "config/feature-flags.json",
+    "emergencyDisableAllowed": true,
+    "defaultMode": "closed"
+  }
+}

@@ -1,0 +1,686 @@
+{
+  "catalogVersion": "1.0.0",
+  "schema": "platform.event.catalog.v1",
+  "description": "语学星 Phase 1 领域事件目录。Outbox、RabbitMQ/Redis Streams 和可重放消费者均以本目录为事实源。",
+  "envelope": {
+    "schema": "platform.event.v1",
+    "required": [
+      "eventId",
+      "eventName",
+      "schema",
+      "version",
+      "occurredAt",
+      "aggregateType",
+      "aggregateId",
+      "actorId",
+      "traceId",
+      "requestId",
+      "payload"
+    ],
+    "properties": {
+      "eventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+\\.v[0-9]+$"
+      },
+      "schema": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,63}\\.v[0-9]+$"
+      },
+      "version": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "occurredAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{1,63}$"
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "actorId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._-]{7,127}$"
+      },
+      "clientEventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 96
+      },
+      "contentVersionId": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "payload": {
+        "type": "object"
+      }
+    }
+  },
+  "compatibilityPolicy": {
+    "versioning": "event-name-suffix",
+    "rule": "仅允许向后兼容地新增可选 payload 字段；删除、改类型、改变语义或改变 required 字段必须发布同一动作的新 vN 事件名。",
+    "consumer": "消费者必须忽略未知字段、按 eventId 去重、按 schema/version 选择解析器，未知版本只记录兼容性指标，不产生副作用。",
+    "replay": "事件不可变；重放不得重复发放奖励、权益或通知。"
+  },
+  "forbiddenPayloadFieldPatterns": [
+    "^(access|refresh)?token$",
+    "^authorization$",
+    "^password$",
+    "^(apiKey|secret|privateKey|clientSecret)$",
+    "^(phone|mobile|email|realName|identityToken|thirdPartySubject)$",
+    "^(rawAnswer|answerText|answerContent|userInput|prompt)$",
+    "^(audio|video|rawRecording|recordingBytes|screenPixels|imageBytes)$",
+    "^(paymentCallbackRaw|jws|signedPayload|webhookBody)$",
+    "^(deviceFingerprint|ipAddress|cookie)$"
+  ],
+  "payloadSchemas": {
+    "LearningSrsBatchCreated": {
+      "$id": "platform.events.learning.srs.batch_created.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "scheduleSnapshotId", "localDate", "rulesVersion", "itemCount"],
+      "properties": {
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "scheduleSnapshotId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "localDate": { "type": "string", "format": "date" },
+        "rulesVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "itemCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "VocabularyReviewAccepted": {
+      "$id": "platform.events.vocabulary.review.accepted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewEventId", "userId", "srsStateId", "stateVersion", "effectiveQuality", "riskDecision"],
+      "properties": {
+        "reviewEventId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "srsStateId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "stateVersion": { "type": "integer", "minimum": 1 },
+        "effectiveQuality": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "riskDecision": { "type": "string", "enum": ["ALLOW"] },
+        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION"] }
+      }
+    },
+    "VocabularySrsStateChanged": {
+      "$id": "platform.events.vocabulary.srs.state_changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["srsStateId", "itemType", "targetId", "before", "after", "algorithmVersion"],
+      "properties": {
+        "srsStateId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION"] },
+        "targetId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "before": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
+        "after": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
+        "algorithmVersion": { "type": "string", "minLength": 1, "maxLength": 64 }
+      }
+    },
+    "AssessmentAnswerScored": {
+      "$id": "platform.events.assessment.answer_scored.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attemptId", "userId", "exerciseId", "questionId", "scoringStatus", "scoreBucket"],
+      "properties": {
+        "attemptId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "exerciseId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "questionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "scoringStatus": { "type": "string", "enum": ["SCORED", "PENDING_REVIEW", "REJECTED"] },
+        "scoreBucket": { "type": "string", "enum": ["ZERO", "LOW", "MEDIUM", "HIGH", "FULL", "WITHHELD"] },
+        "isCorrect": { "type": "boolean", "nullable": true },
+        "errorCategory": { "type": "string", "maxLength": 64 }
+      }
+    },
+    "MasteryStateChanged": {
+      "$id": "platform.events.mastery.state_changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "itemType", "itemId", "from", "to", "reason"],
+      "properties": {
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION", "GRAMMAR", "SENTENCE", "EXERCISE"] },
+        "itemId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "from": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
+        "to": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
+        "reason": { "type": "string", "maxLength": 64 },
+        "verificationStage": { "type": "string", "enum": ["D0", "D1", "D7", "SRS"] }
+      }
+    },
+    "LearningTaskCompleted": {
+      "$id": "platform.events.learning.task.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "taskId", "taskType", "completedAt", "completionVersion"],
+      "properties": {
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "taskId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "taskType": { "type": "string", "maxLength": 64 },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "completionVersion": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "CmsContentSubmitted": {
+      "$id": "platform.events.cms.content.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contentId", "contentVersionId", "contentType", "contentStatus"],
+      "properties": {
+        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentType": { "type": "string", "maxLength": 64 },
+        "contentStatus": { "type": "string", "enum": ["IN_REVIEW"] },
+        "reviewStage": { "type": "string", "enum": ["FIRST_REVIEW", "FINAL_REVIEW"] }
+      }
+    },
+    "CmsReviewDecided": {
+      "$id": "platform.events.cms.review.decided.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contentId", "contentVersionId", "reviewStage", "decision", "reviewVersion"],
+      "properties": {
+        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "reviewStage": { "type": "string", "enum": ["FIRST_REVIEW", "FINAL_REVIEW"] },
+        "decision": { "type": "string", "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"] },
+        "reviewVersion": { "type": "integer", "minimum": 1 },
+        "reasonCode": { "type": "string", "maxLength": 64 }
+      }
+    },
+    "CmsContentPublished": {
+      "$id": "platform.events.cms.content.published.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contentId", "contentVersionId", "contentType", "publishedAt", "contentStatus"],
+      "properties": {
+        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentType": { "type": "string", "maxLength": 64 },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "contentStatus": { "type": "string", "enum": ["PUBLISHED"] }
+      }
+    },
+    "CmsContentRolledBack": {
+      "$id": "platform.events.cms.content.rolled_back.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contentId", "contentVersionId", "rollbackToVersionId", "reasonCode"],
+      "properties": {
+        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "rollbackToVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "reasonCode": { "type": "string", "maxLength": 64 }
+      }
+    },
+    "CommerceOrderPaid": {
+      "$id": "platform.events.commerce.order.paid.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["orderId", "userId", "amountMinor", "currency", "paymentChannel"],
+      "properties": {
+        "orderId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "enum": ["CNY"] },
+        "paymentChannel": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE_IAP", "MANUAL"] }
+      }
+    },
+    "CommerceEntitlementActivated": {
+      "$id": "platform.events.commerce.entitlement.activated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entitlementId", "userId", "planCode", "startsAt", "endsAt", "status"],
+      "properties": {
+        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "orderId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "planCode": { "type": "string", "maxLength": 64 },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["ACTIVE"] }
+      }
+    },
+    "CommerceEntitlementRevoked": {
+      "$id": "platform.events.commerce.entitlement.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entitlementId", "userId", "reasonCode", "revokedAt", "status"],
+      "properties": {
+        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "reasonCode": { "type": "string", "maxLength": 64 },
+        "revokedAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["REVOKED"] }
+      }
+    },
+    "CommerceSubscriptionChanged": {
+      "$id": "platform.events.commerce.subscription.changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entitlementId", "userId", "fromStatus", "toStatus", "source"],
+      "properties": {
+        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "fromStatus": { "type": "string", "enum": ["PENDING", "ACTIVE", "EXPIRED", "REVOKED", "FROZEN"] },
+        "toStatus": { "type": "string", "enum": ["PENDING", "ACTIVE", "EXPIRED", "REVOKED", "FROZEN"] },
+        "source": { "type": "string", "enum": ["PURCHASE", "RENEWAL", "REFUND", "EXPIRY", "RISK", "ADMIN"] }
+      }
+    },
+    "NotificationCreated": {
+      "$id": "platform.events.notification.created.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notificationId", "userId", "category", "templateCode", "dedupeKey", "priority"],
+      "properties": {
+        "notificationId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "category": { "type": "string", "enum": ["LEARNING", "REMINDER", "SECURITY", "TRANSACTION", "SYSTEM"] },
+        "templateCode": { "type": "string", "maxLength": 64 },
+        "dedupeKey": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "priority": { "type": "string", "enum": ["NORMAL", "IMPORTANT", "CRITICAL"] },
+        "expiresAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "NotificationDelivered": {
+      "$id": "platform.events.notification.delivered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notificationId", "userId", "channel", "status", "deliveredAt"],
+      "properties": {
+        "notificationId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "channel": { "type": "string", "enum": ["IN_APP", "PUSH", "SMS", "EMAIL"] },
+        "status": { "type": "string", "enum": ["DELIVERED", "SKIPPED", "FAILED"] },
+        "deliveredAt": { "type": "string", "format": "date-time" },
+        "providerCode": { "type": "string", "maxLength": 64 }
+      }
+    },
+    "NotificationRead": {
+      "$id": "platform.events.notification.read.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notificationId", "userId", "readAt"],
+      "properties": {
+        "notificationId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "readAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "SyncLearningCheckpointSaved": {
+      "$id": "platform.events.sync.learning.checkpoint_saved.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientEventId", "userId", "deviceId", "entityType", "entityId", "entityVersion", "stepIndex", "baseCursor", "offline"],
+      "properties": {
+        "clientEventId": { "type": "string", "minLength": 8, "maxLength": 96 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "entityType": { "type": "string", "enum": ["LEARNING_SESSION", "ASSESSMENT_SESSION", "MEDIA_PROGRESS"] },
+        "entityId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "entityVersion": { "type": "integer", "minimum": 1 },
+        "stepIndex": { "type": "integer", "minimum": 0 },
+        "baseCursor": { "type": "string", "minLength": 8, "maxLength": 512 },
+        "offline": { "type": "boolean" }
+      }
+    },
+    "SyncConflictDetected": {
+      "$id": "platform.events.sync.conflict.detected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "clientEventId", "entityType", "entityId", "conflictType", "serverVersion", "clientVersion", "resolution"],
+      "properties": {
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "clientEventId": { "type": "string", "minLength": 8, "maxLength": 96 },
+        "entityType": { "type": "string", "maxLength": 64 },
+        "entityId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "conflictType": { "type": "string", "enum": ["VERSION", "CURSOR_EXPIRED", "CONTENT_VERSION", "OWNERSHIP"] },
+        "serverVersion": { "type": "integer", "minimum": 1 },
+        "clientVersion": { "type": "integer", "minimum": 1 },
+        "resolution": { "type": "string", "enum": ["SERVER_WINS", "CLIENT_RETRY", "MANUAL_REVIEW"] }
+      }
+    },
+    "SyncCursorAdvanced": {
+      "$id": "platform.events.sync.cursor.advanced.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["userId", "deviceId", "cursor", "acceptedCount", "rejectedCount"],
+      "properties": {
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "cursor": { "type": "string", "minLength": 8, "maxLength": 512 },
+        "acceptedCount": { "type": "integer", "minimum": 0 },
+        "rejectedCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "AuthSessionRevoked": {
+      "$id": "platform.events.auth.session.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "userId", "deviceId", "reasonCode", "revokedAt"],
+      "properties": {
+        "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "reasonCode": { "type": "string", "enum": ["LOGOUT", "KICKED", "REUSE_DETECTED", "RISK_FREEZE", "ACCOUNT_DELETED", "ADMIN"] },
+        "revokedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "events": [
+    {
+      "eventName": "learning.srs.batch_created.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "srs_schedule",
+      "aggregateIdField": "scheduleSnapshotId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/LearningSrsBatchCreated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 learning.srs.batch_created.v2",
+        "consumerRule": "未知可选字段忽略；rulesVersion 由消费者按版本选择解释器。"
+      }
+    },
+    {
+      "eventName": "vocabulary.review.accepted.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "review_event",
+      "aggregateIdField": "reviewEventId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularyReviewAccepted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 vocabulary.review.accepted.v2",
+        "consumerRule": "XP、Streak 和通知消费者按 reviewEventId 去重，只有 riskDecision=ALLOW 才能结算。"
+      }
+    },
+    {
+      "eventName": "vocabulary.srs.state_changed.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "srs_state",
+      "aggregateIdField": "srsStateId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularySrsStateChanged" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 vocabulary.srs.state_changed.v2",
+        "consumerRule": "before/after 只使用 canonical 四级状态，不把内部 SRS 细分状态直接外传。"
+      }
+    },
+    {
+      "eventName": "assessment.answer_scored.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "attempt",
+      "aggregateIdField": "attemptId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/AssessmentAnswerScored" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 assessment.answer_scored.v2",
+        "consumerRule": "事件只包含 bucket 和规则结果，不包含答案原文；模考交卷前 scoreBucket 可为 WITHHELD。"
+      }
+    },
+    {
+      "eventName": "mastery.state_changed.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "mastery_projection",
+      "aggregateIdField": "itemId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/MasteryStateChanged" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 mastery.state_changed.v2",
+        "consumerRule": "重放不得重复增加 mastered_count；verificationStage 用于解释 D1/D7。"
+      }
+    },
+    {
+      "eventName": "learning.task.completed.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_task",
+      "aggregateIdField": "taskId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/LearningTaskCompleted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 learning.task.completed.v2",
+        "consumerRule": "以 taskId + completionVersion 幂等，不能由客户端直接生成奖励或权益。"
+      }
+    },
+    {
+      "eventName": "cms.content.submitted.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CmsContentSubmitted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 cms.content.submitted.v2",
+        "consumerRule": "作者提交后只进入审核，草稿不可被学习域读取。"
+      }
+    },
+    {
+      "eventName": "cms.review.decided.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CmsReviewDecided" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 cms.review.decided.v2",
+        "consumerRule": "初审、终审和作者权限由 CMS 决定；作者不能审核自己的版本。"
+      }
+    },
+    {
+      "eventName": "cms.content.published.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CmsContentPublished" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 cms.content.published.v2",
+        "consumerRule": "所有学习查询必须绑定 contentVersionId；版本切换不能改写历史学习事实。"
+      }
+    },
+    {
+      "eventName": "cms.content.rolled_back.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CmsContentRolledBack" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 cms.content.rolled_back.v2",
+        "consumerRule": "回滚是新的内容状态变化，不删除已产生的学习事件和报告。"
+      }
+    },
+    {
+      "eventName": "commerce.order.paid.v1",
+      "domain": "entitlement",
+      "version": 1,
+      "schema": "entitlement.event.v1",
+      "aggregateType": "order",
+      "aggregateIdField": "orderId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceOrderPaid" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 commerce.order.paid.v2",
+        "consumerRule": "金额使用 amountMinor 整数；支付回调原文和渠道签名不得进入事件。"
+      }
+    },
+    {
+      "eventName": "commerce.entitlement.activated.v1",
+      "domain": "entitlement",
+      "version": 1,
+      "schema": "entitlement.event.v1",
+      "aggregateType": "entitlement",
+      "aggregateIdField": "entitlementId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceEntitlementActivated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 commerce.entitlement.activated.v2",
+        "consumerRule": "权益消费者按 entitlementId + statusVersion（由实现层补充）幂等，学习数据不因到期删除。"
+      }
+    },
+    {
+      "eventName": "commerce.entitlement.revoked.v1",
+      "domain": "entitlement",
+      "version": 1,
+      "schema": "entitlement.event.v1",
+      "aggregateType": "entitlement",
+      "aggregateIdField": "entitlementId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceEntitlementRevoked" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 commerce.entitlement.revoked.v2",
+        "consumerRule": "撤销只影响后续访问策略；已消费内容和学习事实保持可审计。"
+      }
+    },
+    {
+      "eventName": "commerce.subscription.changed.v1",
+      "domain": "entitlement",
+      "version": 1,
+      "schema": "entitlement.event.v1",
+      "aggregateType": "entitlement",
+      "aggregateIdField": "entitlementId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceSubscriptionChanged" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 commerce.subscription.changed.v2",
+        "consumerRule": "状态迁移必须由服务端权威流水产生，客户端不能本地制造权益状态。"
+      }
+    },
+    {
+      "eventName": "notification.created.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification",
+      "aggregateIdField": "notificationId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/NotificationCreated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 notification.created.v2",
+        "consumerRule": "使用 dedupeKey、用户偏好、DND 和频控路由；事件只传模板和安全参数，不传正文隐私。"
+      }
+    },
+    {
+      "eventName": "notification.delivered.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification",
+      "aggregateIdField": "notificationId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/NotificationDelivered" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 notification.delivered.v2",
+        "consumerRule": "providerCode 只能是供应商返回的非敏感分类码；重复回执按 notificationId + channel 幂等。"
+      }
+    },
+    {
+      "eventName": "notification.read.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification",
+      "aggregateIdField": "notificationId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/NotificationRead" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 notification.read.v2",
+        "consumerRule": "已读操作重复提交保持最终状态，不倒退未读状态。"
+      }
+    },
+    {
+      "eventName": "sync.learning.checkpoint_saved.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "learning_checkpoint",
+      "aggregateIdField": "entityId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/SyncLearningCheckpointSaved" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 sync.learning.checkpoint_saved.v2",
+        "consumerRule": "以 clientEventId 去重，已提交 checkpoint 的 stepIndex 和完成态单调前进，旧事件不能回退。"
+      }
+    },
+    {
+      "eventName": "sync.conflict.detected.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_entity",
+      "aggregateIdField": "entityId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/SyncConflictDetected" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 sync.conflict.detected.v2",
+        "consumerRule": "冲突事件只记录安全摘要；默认服务器版本优先，无法合并时才进入人工或用户决策。"
+      }
+    },
+    {
+      "eventName": "sync.cursor.advanced.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_cursor",
+      "aggregateIdField": "userId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/SyncCursorAdvanced" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 sync.cursor.advanced.v2",
+        "consumerRule": "cursor 不透明且只由服务端签发；客户端不能通过跳过游标伪造已同步状态。"
+      }
+    },
+    {
+      "eventName": "auth.session.revoked.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "auth.event.v1",
+      "aggregateType": "auth_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthSessionRevoked" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.session.revoked.v2",
+        "consumerRule": "事件不含 Token；设备、WebSocket 和通知消费者按 sessionId 幂等撤销。"
+      }
+    }
+  ]
+}

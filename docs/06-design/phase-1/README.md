@@ -1,6 +1,6 @@
 # Phase 1 UI/UX 设计文档（v1.0）
 
-> 依据 [PRD v3.2](../../../requirements/product-requirements.md) 交付的第一阶段完整 UI/UX 设计包。设计边界：18 岁及以上成人用户、无生成式 AI、Study Room 低 UGC、随机奖励仅学习行为免费获得（不可付费抽取）。
+> 依据 [PRD v3.3](../../../requirements/product-requirements.md) 交付的第一阶段完整 UI/UX 设计包。设计边界：18 岁及以上成人用户、无生成式 AI、Study Room 低 UGC、随机奖励仅学习行为免费获得（不可付费抽取）。
 
 ## 目录结构
 
@@ -49,6 +49,8 @@ docs/06-design/phase-1/
 
 视觉方向 A（星海沉浸·平衡型）· 共享令牌 [tokens.css](./mockups/tokens.css) · 完整索引见 [mockups/README.md](./mockups/README.md)
 
+Figma 续作与限流交接记录：[FIGMA_移动端UIUX_工作交接记录_2026-08-20.md](./FIGMA_移动端UIUX_工作交接记录_2026-08-20.md)
+
 | 端 | 页面 | 文件 |
 | :--- | :--- | :--- |
 | 移动端 | Adaptive Home 首页 | [adaptive-home.html](./mockups/adaptive-home.html) |
@@ -58,3 +60,4 @@ docs/06-design/phase-1/
 | Web 端 | 首页（侧边栏三栏） | [web-home.html](./mockups/web-home.html) |
 | Web 端 | 词汇学习（宽屏分栏） | [web-vocab.html](./mockups/web-vocab.html) |
 | iPad 端 | 首页（横屏分栏） | [ipad-home.html](./mockups/ipad-home.html) |
+

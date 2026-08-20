@@ -1,0 +1,154 @@
+/* 语学星跨端语义 Token：页面只消费这些变量，业务页不散落颜色值。 */
+$yx-color-brand-primary: #596bff;
+$yx-color-brand-primary-soft: #eef0ff;
+$yx-color-brand-secondary: #7c5cfc;
+$yx-color-success: #25b88a;
+$yx-color-warning: #f2a83b;
+$yx-color-danger: #e95668;
+$yx-color-text-primary: #202332;
+$yx-color-text-secondary: #666d80;
+$yx-color-text-tertiary: #969caf;
+$yx-color-surface-page: #f7f8fc;
+$yx-color-surface-card: #ffffff;
+$yx-color-border: #e6e8f0;
+$yx-radius-card: 16px;
+$yx-radius-button: 14px;
+
+page {
+  color: $yx-color-text-primary;
+  background: $yx-color-surface-page;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.yx-page {
+  min-height: 100vh;
+  padding: 24rpx 32rpx 48rpx;
+  background: $yx-color-surface-page;
+}
+
+.yx-brand {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  color: $yx-color-text-primary;
+  font-size: 38rpx;
+  font-weight: 700;
+}
+
+.yx-brand__mark {
+  display: flex;
+  width: 64rpx;
+  height: 64rpx;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  color: #fff;
+  background: linear-gradient(135deg, $yx-color-brand-primary, $yx-color-brand-secondary);
+  font-size: 34rpx;
+}
+
+.yx-eyebrow {
+  margin: 48rpx 0 16rpx;
+  color: $yx-color-brand-primary;
+  font-size: 22rpx;
+  font-weight: 700;
+  letter-spacing: 3rpx;
+}
+
+.yx-title {
+  margin: 0 0 20rpx;
+  color: $yx-color-text-primary;
+  font-size: 52rpx;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.yx-description {
+  margin: 0;
+  color: $yx-color-text-secondary;
+  font-size: 30rpx;
+  line-height: 1.7;
+}
+
+.yx-card {
+  margin-top: 32rpx;
+  padding: 32rpx;
+  border: 1rpx solid $yx-color-border;
+  border-radius: $yx-radius-card;
+  background: $yx-color-surface-card;
+  box-shadow: 0 12rpx 36rpx rgba(31, 35, 48, .06);
+}
+
+.yx-button {
+  display: flex;
+  height: 96rpx;
+  align-items: center;
+  justify-content: center;
+  margin-top: 28rpx;
+  border: 0;
+  border-radius: $yx-radius-button;
+  color: #fff;
+  background: $yx-color-brand-primary;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.yx-button--secondary {
+  border: 1rpx solid $yx-color-border;
+  color: $yx-color-text-primary;
+  background: $yx-color-surface-card;
+}
+
+.yx-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 32rpx;
+  border: 1rpx dashed $yx-color-border;
+  border-radius: $yx-radius-card;
+  text-align: center;
+}
+
+.yx-empty__mark {
+  display: flex;
+  width: 96rpx;
+  height: 96rpx;
+  align-items: center;
+  justify-content: center;
+  border-radius: 32rpx;
+  color: $yx-color-brand-primary;
+  background: $yx-color-brand-primary-soft;
+  font-size: 42rpx;
+}
+
+.yx-empty__title {
+  margin: 28rpx 0 12rpx;
+  font-size: 34rpx;
+}
+
+.yx-empty__description {
+  margin: 0;
+  color: $yx-color-text-secondary;
+  font-size: 28rpx;
+  line-height: 1.7;
+}
+
+.yx-status {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 24rpx;
+  color: $yx-color-text-tertiary;
+  font-size: 24rpx;
+}
+
+.yx-status__dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: $yx-color-warning;
+}
+
+.yx-status__dot--success {
+  background: $yx-color-success;
+}

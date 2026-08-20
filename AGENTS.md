@@ -1,13 +1,11 @@
-# EnglishFlow Agent 工作与架构开发规则 (AGENTS.md)
+# 语学星 Agent 工作与架构开发规则 (AGENTS.md)
 
 > **版本**：v3.0 (方案 B 落地版：Vue3 + uni-app 全端 + Spring Boot 3 后端)  
-> **面向对象**：所有参与 EnglishFlow 研发的 AI Agent 与全栈工程师。
-
----
+> **面向对象**：所有参与语学星研发的 AI Agent 与全栈工程师。
 
 ## 1. 产品与业务使命
 
-把本仓库维护成一个面向全年龄段（K12 中小学启蒙、高中/大学升学突破、职场与出海实战）的中国大陆全场景 AI 自适应英语学习平台，而不是临时演示项目。所有实现都要服务于**“学习目标 -> 练习 -> 实时反馈 -> 复习 -> 闭环复盘”**。
+把本仓库维护成中国大陆多端语言学习平台，而不是临时演示项目。Phase 1 只面向18岁以上成人与大学生，采用规则化学习闭环；AI 能力仅在 Phase 2 启用；未成年人/K12 仅在 Phase 3 完成专项合规后开放。所有实现都要服务于“学习目标 -> 练习 -> 反馈 -> 复习 -> 闭环复盘”。
 
 ---
 
@@ -37,6 +35,17 @@
 - **实时语音与媒体通信**：P1 阶段优先接入 **商业 RTC AI 对话服务（声网 / 腾讯云 TRTC）**（Java SDK 接入，实现低延迟双向对讲与打断 Barge-in，严禁使用粗糙的 HTTP 轮询）；自建 LiveKit 仅作为后续降本评估项，启用需新增 ADR。
 - **AI 智能编排中心**：必须采用 **`Python 3.11+ (FastAPI + LangGraph / LiteLLM)`** 独立服务，与 Core API 通过 REST/gRPC 通信。
 - **持久化与数据存储**：`MySQL 8.x` + `Redis 7.x` + S3 兼容对象存储（PRD §1.1，决策见 ADR-0006；向量检索 Phase 2 按需另选组件）；异步任务采用 `RabbitMQ 或 Redis Streams`（Spring 生态集成）。
+
+---
+
+### 2.3 本地服务固定端口
+
+- 本地端口唯一事实源为 config/local-ports.json，说明见 docs/02-architecture/local-development-port-allocation.md。
+- Core API 固定 18080；Learner Web 固定 18180；Admin Web 固定 18181；Official Site 固定 18182；Mobile H5 固定 18183。
+- MySQL 宿主机固定 13306；Redis 固定 16379；MinIO API/Console 固定 19000/19001；RabbitMQ AMQP/Management 预留 15689/15690。
+- 所有本地 HTTP 服务默认绑定 127.0.0.1。端口冲突时必须停止占用进程并报告，严禁自动递增、随机改端口或复用常见默认端口。
+- 前端启动脚本必须使用固定端口检查和 strictPort；启动全栈前先运行 pnpm ports:check。
+- 新增或变更服务端口时，必须同步 config/local-ports.json、.env.example、启动脚本、Docker 映射、端口说明和 CHANGELOG。
 
 ---
 

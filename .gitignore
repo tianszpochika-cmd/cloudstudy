@@ -10,6 +10,10 @@ dist/
 build/
 coverage/
 .expo/
+.turbo/
+**/.turbo/
+target/
+**/target/
 
 # local config and secrets
 .env

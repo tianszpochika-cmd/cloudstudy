@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="zh-CN" data-device="mobile" data-theme="light" data-motion="on">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>语学星 · Phase 1 Skills Session Lab</title>
+  <style>
+    :root {
+      --lab-bg: #eef1fb;
+      --lab-ink: #202332;
+      --lab-muted: #70788d;
+      --lab-card: #ffffff;
+      --lab-border: #dfe4f1;
+      --app-bg: #f7f8fd;
+      --app-card: #ffffff;
+      --app-card-soft: #f1f3ff;
+      --app-ink: #202332;
+      --app-muted: #6f778b;
+      --app-border: #e1e5f0;
+      --app-border-strong: #cdd4e5;
+      --primary: #596bff;
+      --primary-2: #8c68ff;
+      --primary-soft: #eef0ff;
+      --success: #25b88a;
+      --success-soft: #eaf8f3;
+      --warning: #f2a83b;
+      --warning-soft: #fff6e7;
+      --danger: #e95668;
+      --danger-soft: #fff0f2;
+      --info: #3b8dff;
+      --shadow-sm: 0 4px 14px rgba(51, 63, 118, .07);
+      --shadow-md: 0 12px 30px rgba(51, 63, 118, .12);
+      --device-frame: #121626;
+      --device-shadow: 0 28px 72px rgba(32, 44, 92, .24);
+      --subject-fill: #dbeafe;
+      --subject-line: #2563eb;
+      --predicate-fill: #ffedd5;
+      --predicate-line: #ea580c;
+      --object-fill: #dcfce7;
+      --object-line: #16a34a;
+      --attribute-fill: #f5f3ff;
+      --attribute-line: #7c3aed;
+      --adverbial-fill: #fef3c7;
+      --adverbial-line: #d97706;
+      --clause-line: #8b5cf6;
+      --font-cn: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+      --font-en: Inter, "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    html[data-theme="dark"] {
+      --lab-bg: #080c1c;
+      --lab-ink: #f4f6ff;
+      --lab-muted: #a8b2d8;
+      --lab-card: #121a37;
+      --lab-border: #2b3866;
+      --app-bg: #0b1026;
+      --app-card: #121a37;
+      --app-card-soft: #18224a;
+      --app-ink: #f4f6ff;
+      --app-muted: #a8b2d8;
+      --app-border: #2b3866;
+      --app-border-strong: #45527f;
+      --primary: #7d8cff;
+      --primary-2: #c26dff;
+      --primary-soft: rgba(125, 140, 255, .15);
+      --success: #48d6aa;
+      --success-soft: rgba(72, 214, 170, .13);
+      --warning: #ffc36d;
+      --warning-soft: rgba(255, 195, 109, .12);
+      --danger: #ff6d7e;
+      --danger-soft: rgba(255, 109, 126, .13);
+      --info: #6eadff;
+      --shadow-sm: 0 5px 18px rgba(39, 54, 149, .18);
+      --shadow-md: 0 16px 40px rgba(39, 54, 149, .32);
+      --device-frame: #050914;
+      --subject-fill: rgba(37, 99, 235, .2);
+      --predicate-fill: rgba(234, 88, 12, .2);
+      --object-fill: rgba(22, 163, 74, .2);
+      --attribute-fill: rgba(124, 58, 237, .2);
+      --adverbial-fill: rgba(217, 119, 6, .2);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 26px;
+      color: var(--lab-ink);
+      background: var(--lab-bg);
+      font-family: var(--font-cn);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--primary) 32%, transparent);
+      outline-offset: 3px;
+    }
+    button:disabled { cursor: not-allowed; opacity: .52; }
+    [hidden] { display: none !important; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .lab-shell { max-width: 1540px; margin: 0 auto; }
+    .lab-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+    .lab-head h1 { margin: 0; font-size: 30px; letter-spacing: -.045em; }
+    .lab-head p { margin: 7px 0 0; color: var(--lab-muted); font-size: 13px; line-height: 1.5; }
+    .lab-head p span { color: var(--primary); font-weight: 700; }
+    .head-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    .lab-control {
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--lab-border);
+      border-radius: 999px;
+      color: var(--lab-ink);
+      background: var(--lab-card);
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .lab-control:hover, .lab-control.is-active { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
+
+    .workspace { display: grid; grid-template-columns: 258px minmax(0, 1fr); gap: 16px; align-items: start; }
+    .lab-brief {
+      position: sticky;
+      top: 16px;
+      padding: 16px;
+      border: 1px solid var(--lab-border);
+      border-radius: 20px;
+      background: var(--lab-card);
+    }
+    .brief-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .brief-heading h2 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+    .brief-heading span { color: var(--primary); font: 700 10px/1 var(--font-en); letter-spacing: .08em; }
+    .brief-copy { margin: 9px 0 0; color: var(--lab-muted); font-size: 12px; line-height: 1.65; }
+    .module-list { display: grid; gap: 7px; margin-top: 16px; }
+    .module-entry {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      min-height: 54px;
+      padding: 8px 9px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      color: var(--lab-muted);
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+    .module-entry:hover { border-color: var(--lab-border); background: var(--primary-soft); }
+    .module-entry.is-active { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 34%, var(--lab-border)); background: var(--primary-soft); }
+    .module-symbol { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; color: var(--primary); background: var(--lab-card); border: 1px solid var(--lab-border); font-size: 14px; }
+    .module-entry.is-active .module-symbol { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--primary), var(--primary-2)); }
+    .module-entry b { display: block; font-size: 12px; }
+    .module-entry small { display: block; margin-top: 3px; color: var(--lab-muted); font-size: 10px; line-height: 1.35; }
+    .module-entry .entry-arrow { color: var(--lab-muted); font-size: 18px; }
+    .scope-box { margin-top: 16px; padding: 12px; border-radius: 14px; background: var(--primary-soft); color: var(--lab-muted); font-size: 11px; line-height: 1.6; }
+    .scope-box strong { display: block; margin-bottom: 5px; color: var(--lab-ink); font-size: 12px; }
+    .scope-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+    .scope-list li { display: flex; gap: 6px; align-items: flex-start; }
+    .scope-list .yes { color: var(--success); }
+    .scope-list .no { color: var(--danger); }
+    .brief-foot { margin-top: 13px; color: var(--lab-muted); font-size: 10px; line-height: 1.55; }
+
+    .preview { min-width: 0; padding: 15px; border: 1px solid var(--lab-border); border-radius: 20px; background: var(--lab-card); }
+    .preview-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+    .preview-head strong { font-size: 14px; }
+    .preview-head span { display: block; margin-top: 3px; color: var(--lab-muted); font-size: 11px; }
+    .device-switch { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .device-switch .lab-control { min-height: 31px; padding: 6px 10px; }
+    .preview-stage {
+      min-height: 800px;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: 22px;
+      border-radius: 15px;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(89, 107, 255, .16), transparent 25%),
+        radial-gradient(circle at 88% 82%, rgba(140, 104, 255, .12), transparent 30%),
+        color-mix(in srgb, var(--lab-bg) 72%, var(--primary-soft));
+    }
+
+    .device {
+      position: relative;
+      flex: 0 0 auto;
+      color: var(--app-ink);
+      background: var(--app-bg);
+      isolation: isolate;
+      box-shadow: var(--device-shadow);
+    }
+    .device-screen { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--app-bg); }
+    .device.phone {
+      width: 390px;
+      height: 844px;
+      padding: 11px;
+      border: 1px solid #2c3042;
+      border-radius: 50px;
+      background: linear-gradient(145deg, #32374b 0%, #131727 24%, #090b13 62%, #2b3042 100%);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .07), inset 0 0 0 1px rgba(0, 0, 0, .65), var(--device-shadow);
+    }
+    .device.phone::before { content: ""; position: absolute; z-index: 0; inset: 3px; border: 1px solid rgba(255, 255, 255, .08); border-radius: 47px; pointer-events: none; }
+    .device.phone .device-screen { z-index: 1; border-radius: 39px; clip-path: inset(0 round 39px); }
+    .hardware-island, .phone-status, .ipad-camera, .ipad-status, .browser-chrome, .home-indicator { display: none; }
+    .device.phone .hardware-island {
+      display: block;
+      position: absolute;
+      z-index: 9;
+      top: 14px;
+      left: 50%;
+      width: 124px;
+      height: 36px;
+      transform: translateX(-50%);
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 999px;
+      background: linear-gradient(180deg, #08090d 0%, #000 75%);
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, .07), inset 0 -2px 5px rgba(0, 0, 0, .75);
+      cursor: pointer;
+      transition: width .22s, height .22s, border-radius .22s;
+    }
+    .device.phone .hardware-island::after { content: ""; position: absolute; right: 12px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #263044 0 13%, #0c101a 38%, #020307 72%); }
+    .device.phone .hardware-island.is-expanded { width: 238px; height: 54px; border-radius: 20px; }
+    .device.phone .hardware-island.is-expanded::after { display: none; }
+    .island-content { display: flex; align-items: center; gap: 8px; height: 100%; padding: 0 14px; color: #fff; opacity: 0; pointer-events: none; font-size: 10px; transition: opacity .18s; }
+    .hardware-island.is-expanded .island-content { opacity: 1; }
+    .island-dot { width: 8px; height: 8px; border-radius: 50%; background: #5ef1d5; box-shadow: 0 0 10px #5ef1d5; }
+    .phone-status { position: absolute; z-index: 8; top: 18px; left: 27px; right: 27px; align-items: center; justify-content: space-between; color: var(--app-ink); font: 600 11px/1 var(--font-en); pointer-events: none; }
+    .phone-status .system-icons { display: flex; align-items: center; gap: 7px; }
+    .phone .phone-status { display: flex; }
+    .cellular { display: inline-flex; align-items: flex-end; gap: 1.5px; height: 11px; }
+    .cellular i { display: block; width: 2px; border-radius: 1px; background: currentColor; }
+    .cellular i:nth-child(1) { height: 4px; opacity: .75; }
+    .cellular i:nth-child(2) { height: 6px; opacity: .82; }
+    .cellular i:nth-child(3) { height: 8px; opacity: .9; }
+    .cellular i:nth-child(4) { height: 10px; }
+    .wifi-icon { position: relative; display: inline-block; width: 15px; height: 11px; }
+    .wifi-icon::before, .wifi-icon::after { content: ""; position: absolute; border: 1.4px solid currentColor; border-bottom: 0; border-left-color: transparent; border-right-color: transparent; border-radius: 50% 50% 0 0; }
+    .wifi-icon::before { left: 1px; top: 0; width: 13px; height: 9px; }
+    .wifi-icon::after { left: 4px; top: 3px; width: 7px; height: 5px; }
+    .wifi-icon i { position: absolute; left: 6px; bottom: 0; width: 3px; height: 3px; border-radius: 50%; background: currentColor; }
+    .battery { display: inline-flex; align-items: center; }
+    .battery i { position: relative; display: grid; place-items: center; width: 25px; height: 12px; border: 1.2px solid currentColor; border-radius: 3.5px; }
+    .battery i::after { content: ""; position: absolute; right: -3px; top: 3px; width: 2px; height: 5px; border-radius: 0 2px 2px 0; background: currentColor; }
+    .battery i::before { content: ""; position: absolute; inset: 2px; width: 73%; border-radius: 1.5px; background: currentColor; opacity: .18; }
+    .battery b { position: relative; z-index: 1; font: 700 7px/1 var(--font-en); letter-spacing: -.03em; }
+    .home-indicator { position: absolute; z-index: 8; bottom: 8px; left: 50%; width: 116px; height: 4px; transform: translateX(-50%); border-radius: 999px; background: var(--app-ink); opacity: .8; }
+    .phone .home-indicator { display: block; }
+
+    .device.ipad { width: min(1024px, 100%); height: auto; aspect-ratio: 4 / 3; padding: 11px; border: 2px solid #2b3044; border-radius: 31px; background: var(--device-frame); }
+    .device.ipad .device-screen { border-radius: 22px; }
+    .ipad-camera { position: absolute; z-index: 8; top: 5px; left: 50%; width: 7px; height: 7px; transform: translateX(-50%); border-radius: 50%; background: #0b0d14; box-shadow: 0 0 0 2px rgba(255, 255, 255, .05); }
+    .ipad-status { position: absolute; z-index: 8; top: 17px; left: 27px; right: 27px; align-items: center; justify-content: space-between; color: var(--app-muted); font: 600 11px var(--font-en); pointer-events: none; }
+    .ipad .ipad-camera, .ipad .ipad-status { display: flex; }
+
+    .device.web { width: min(1280px, 100%); height: auto; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid #cbd1e0; border-radius: 18px; background: #e8ebf4; }
+    .browser-chrome { height: 67px; padding: 10px 14px 8px; color: #555e73; background: #f2f4f9; border-bottom: 1px solid #d2d7e4; }
+    .web .browser-chrome { display: block; }
+    html[data-theme="dark"] .browser-chrome { color: #c0c7da; background: #20253a; border-color: #353e5a; }
+    .chrome-top { display: flex; align-items: center; gap: 7px; }
+    .traffic { display: flex; gap: 6px; }
+    .traffic i { display: block; width: 10px; height: 10px; border-radius: 50%; }
+    .traffic .red { background: #ff605c; } .traffic .yellow { background: #ffbd44; } .traffic .green { background: #00ca4e; }
+    .browser-tab { margin-left: 20px; padding: 5px 20px; border-radius: 8px 8px 0 0; color: #525b70; background: #fff; font-size: 10px; }
+    html[data-theme="dark"] .browser-tab { color: #d9deea; background: #171b2d; }
+    .address { display: flex; align-items: center; gap: 8px; height: 27px; margin-top: 5px; padding: 0 10px; border-radius: 7px; color: #7a8397; background: #fff; font-size: 10px; }
+    html[data-theme="dark"] .address { background: #171b2d; }
+
+    .app-shell { position: relative; height: 100%; background: var(--app-bg); }
+    .web .app-shell { height: calc(100% - 67px); }
+    .app-grid { display: grid; grid-template-columns: 198px minmax(0, 1fr) 244px; height: 100%; }
+    .session-rail, .context-rail { min-width: 0; background: color-mix(in srgb, var(--app-card) 64%, transparent); }
+    .session-rail { display: flex; flex-direction: column; padding: 24px 13px 18px; border-right: 1px solid var(--app-border); }
+    .context-rail { padding: 24px 15px; border-left: 1px solid var(--app-border); }
+    .rail-brand { display: flex; align-items: center; gap: 8px; margin: 0 8px 26px; font-weight: 800; font-size: 15px; }
+    .brand-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 5px 15px rgba(89, 107, 255, .24); }
+    .brand-mark svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .rail-label { margin: 0 8px 8px; color: var(--app-muted); font: 700 10px/1 var(--font-en); letter-spacing: .1em; }
+    .rail-nav { display: grid; gap: 5px; }
+    .rail-nav button { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 42px; padding: 8px 9px; border: 1px solid transparent; border-radius: 11px; color: var(--app-muted); background: transparent; text-align: left; cursor: pointer; font-size: 11px; }
+    .rail-nav button:hover, .rail-nav button.is-active { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 30%, var(--app-border)); background: var(--primary-soft); }
+    .rail-nav button.is-active { font-weight: 700; }
+    .rail-nav .rail-icon { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; background: var(--app-card); border: 1px solid var(--app-border); font-size: 12px; }
+    .rail-nav button.is-active .rail-icon { color: #fff; border-color: transparent; background: linear-gradient(135deg, var(--primary), var(--primary-2)); }
+    .rail-foot { margin-top: auto; padding: 12px 9px 0; color: var(--app-muted); font-size: 10px; line-height: 1.6; }
+    .rail-foot b { display: block; color: var(--app-ink); font-size: 12px; }
+
+    .session-main { min-width: 0; height: 100%; overflow: auto; padding: 24px 26px 22px; scrollbar-color: color-mix(in srgb, var(--primary) 38%, transparent) transparent; scrollbar-width: thin; }
+    .session-main::-webkit-scrollbar { width: 8px; }
+    .session-main::-webkit-scrollbar-thumb { border: 2px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--primary) 38%, transparent); background-clip: padding-box; }
+    .session-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 36px; }
+    .session-close { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 8px; border: 0; border-radius: 10px; color: var(--app-muted); background: transparent; cursor: pointer; font-size: 12px; }
+    .session-close:hover { color: var(--app-ink); background: var(--app-card-soft); }
+    .session-close strong { font-size: 20px; font-weight: 400; line-height: 1; }
+    .session-title { min-width: 0; text-align: center; }
+    .session-title b { display: block; font-size: 12px; }
+    .session-title span { display: block; margin-top: 3px; color: var(--app-muted); font: 700 9px/1 var(--font-en); letter-spacing: .09em; }
+    .sync-status { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 9px; border: 1px solid var(--app-border); border-radius: 999px; color: var(--app-muted); background: var(--app-card); font-size: 10px; white-space: nowrap; }
+    .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+    .session-progress { display: flex; align-items: center; gap: 10px; margin-top: 13px; }
+    .progress-track { height: 5px; flex: 1; overflow: hidden; border-radius: 999px; background: var(--app-card-soft); }
+    .progress-track i { display: block; width: 16.6%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--primary-2)); transition: width .28s ease; }
+    .progress-label { color: var(--app-muted); font: 700 10px var(--font-en); white-space: nowrap; }
+    .mobile-skill-switch { display: none; gap: 5px; overflow-x: auto; margin: 14px -2px 0; padding: 2px; scrollbar-width: none; }
+    .mobile-skill-switch::-webkit-scrollbar { display: none; }
+    .mobile-skill-switch button { flex: 0 0 auto; min-height: 32px; padding: 0 9px; border: 1px solid var(--app-border); border-radius: 999px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .mobile-skill-switch button.is-active { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); font-weight: 700; }
+
+    .module-view { padding-top: 22px; }
+    .module-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .module-heading h1 { margin: 4px 0 0; color: var(--app-ink); font-size: 25px; letter-spacing: -.045em; line-height: 1.15; }
+    .module-heading p { max-width: 560px; margin: 7px 0 0; color: var(--app-muted); font-size: 12px; line-height: 1.55; }
+    .module-kicker { color: var(--primary); font: 700 10px/1 var(--font-en); letter-spacing: .11em; }
+    .module-chip { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border: 1px solid var(--app-border); border-radius: 999px; color: var(--primary); background: var(--app-card-soft); font: 700 10px var(--font-en); white-space: nowrap; }
+    .surface { border: 1px solid var(--app-border); border-radius: 16px; background: var(--app-card); box-shadow: var(--shadow-sm); }
+    .surface + .surface { margin-top: 12px; }
+    .surface-pad { padding: 16px; }
+    .surface-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .surface-head h2, .surface-head h3 { margin: 0; font-size: 14px; letter-spacing: -.02em; }
+    .surface-head span { color: var(--app-muted); font-size: 10px; }
+    .section-label { color: var(--app-muted); font: 700 10px/1 var(--font-en); letter-spacing: .08em; }
+    .muted { color: var(--app-muted); }
+    .tiny { color: var(--app-muted); font-size: 10px; line-height: 1.5; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill { display: inline-flex; align-items: center; min-height: 26px; padding: 0 9px; border: 1px solid var(--app-border); border-radius: 999px; color: var(--app-muted); background: var(--app-card-soft); font-size: 10px; }
+    .pill.primary { color: var(--primary); border-color: color-mix(in srgb, var(--primary) 40%, var(--app-border)); background: var(--primary-soft); }
+    .pill.success { color: var(--success); border-color: color-mix(in srgb, var(--success) 44%, var(--app-border)); background: var(--success-soft); }
+    .button-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .button-primary, .button-secondary, .button-ghost, .icon-button { min-height: 42px; border-radius: 12px; cursor: pointer; }
+    .button-primary { padding: 0 15px; border: 0; color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: 0 8px 16px rgba(89, 107, 255, .18); font-size: 12px; font-weight: 700; }
+    .button-secondary { padding: 0 14px; border: 1px solid var(--primary); color: var(--primary); background: var(--app-card); font-size: 12px; font-weight: 700; }
+    .button-ghost { padding: 0 10px; border: 1px solid transparent; color: var(--app-muted); background: transparent; font-size: 11px; }
+    .button-ghost:hover { color: var(--primary); background: var(--primary-soft); }
+    .icon-button { display: inline-grid; place-items: center; width: 42px; padding: 0; border: 1px solid var(--app-border); color: var(--app-muted); background: var(--app-card); font-size: 17px; }
+    .icon-button:hover { color: var(--primary); border-color: var(--primary); }
+    .main-cta { min-width: 150px; }
+
+    .rule-hero { position: relative; overflow: hidden; padding: 19px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: var(--shadow-md); }
+    .rule-hero::after { content: ""; position: absolute; right: -48px; top: -84px; width: 190px; height: 190px; border: 1px solid rgba(255,255,255,.28); border-radius: 50%; box-shadow: 0 0 0 20px rgba(255,255,255,.06), 0 0 0 44px rgba(255,255,255,.04); }
+    .rule-hero > * { position: relative; z-index: 1; }
+    .rule-hero .section-label { color: rgba(255,255,255,.72); }
+    .rule-hero h2 { max-width: 520px; margin: 9px 0 8px; font-size: 22px; letter-spacing: -.045em; }
+    .rule-hero p { max-width: 560px; margin: 0; color: rgba(255,255,255,.8); font-size: 12px; line-height: 1.6; }
+    .formula { display: inline-flex; align-items: center; min-height: 39px; margin-top: 16px; padding: 0 13px; border: 1px solid rgba(255,255,255,.26); border-radius: 11px; color: #fff; background: rgba(255,255,255,.12); font: 700 16px var(--font-en); letter-spacing: .02em; }
+    .rule-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 12px; margin-top: 12px; }
+    .rule-example { padding: 14px; border-radius: 13px; border: 1px solid var(--app-border); background: var(--app-card-soft); }
+    .rule-example.good { border-color: color-mix(in srgb, var(--success) 36%, var(--app-border)); background: var(--success-soft); }
+    .rule-example.bad { border-color: color-mix(in srgb, var(--danger) 32%, var(--app-border)); background: var(--danger-soft); }
+    .rule-example b { display: block; margin-bottom: 8px; font-size: 11px; }
+    .rule-example p { margin: 0; color: var(--app-ink); font: 500 14px/1.55 var(--font-en); }
+    .rule-example small { display: block; margin-top: 7px; color: var(--app-muted); font-size: 10px; line-height: 1.5; }
+    .trap-list { display: grid; gap: 8px; margin-top: 12px; }
+    .trap-row { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 8px; align-items: start; padding: 9px 0; border-bottom: 1px solid var(--app-border); }
+    .trap-row:last-child { border-bottom: 0; }
+    .trap-mark { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; color: var(--warning); background: var(--warning-soft); font-size: 12px; }
+    .trap-row b { display: block; font-size: 11px; }
+    .trap-row span { display: block; margin-top: 3px; color: var(--app-muted); font-size: 10px; line-height: 1.45; }
+    .exercise-drawer { margin-top: 12px; padding: 16px; border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--app-border)); border-radius: 16px; background: var(--primary-soft); }
+    .exercise-question { margin: 12px 0; color: var(--app-ink); font: 500 16px/1.65 var(--font-en); }
+    .choice-list { display: grid; gap: 7px; }
+    .choice-button { display: grid; grid-template-columns: 27px minmax(0,1fr); align-items: center; gap: 8px; min-height: 44px; padding: 7px 10px; border: 1px solid var(--app-border); border-radius: 11px; color: var(--app-ink); background: var(--app-card); text-align: left; cursor: pointer; font-size: 12px; }
+    .choice-button:hover, .choice-button.is-selected { border-color: var(--primary); background: var(--primary-soft); }
+    .choice-letter { display: grid; place-items: center; width: 27px; height: 27px; border-radius: 8px; color: var(--primary); background: var(--app-card-soft); font: 700 11px var(--font-en); }
+    .feedback-panel { margin-top: 12px; padding: 13px; border-radius: 13px; border: 1px solid color-mix(in srgb, var(--success) 43%, var(--app-border)); color: var(--app-ink); background: var(--success-soft); }
+    .feedback-panel.is-wrong { border-color: color-mix(in srgb, var(--danger) 43%, var(--app-border)); background: var(--danger-soft); }
+    .feedback-panel strong { display: block; font-size: 12px; }
+    .feedback-panel p { margin: 5px 0 0; color: var(--app-muted); font-size: 11px; line-height: 1.55; }
+
+    .xray-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+    .xray-tab { min-height: 34px; padding: 0 11px; border: 1px solid var(--app-border); border-radius: 9px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 11px; }
+    .xray-tab.is-active { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); font-weight: 700; }
+    .xray-stage { position: relative; overflow: hidden; padding: 17px; border: 1px solid var(--app-border); border-radius: 16px; background: radial-gradient(circle at 78% 12%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 35%), var(--app-card-soft); }
+    .xray-stage::before, .xray-stage::after { content: ""; position: absolute; left: 8%; right: 8%; height: 1px; background: color-mix(in srgb, var(--primary) 16%, transparent); }
+    .xray-stage::before { top: 28%; } .xray-stage::after { bottom: 28%; }
+    .xray-sentence { position: relative; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 11px 0 17px; color: var(--app-ink); font: 500 17px/1.65 var(--font-en); }
+    .xray-token { padding: 2px 4px; border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
+    .xray-token:hover, .xray-token.is-selected { border-color: var(--primary); background: var(--primary-soft); }
+    .xray-token.subject { color: var(--subject-line); background: var(--subject-fill); }
+    .xray-token.predicate { color: var(--predicate-line); background: var(--predicate-fill); }
+    .xray-token.object { color: var(--object-line); background: var(--object-fill); }
+    .xray-token.attribute { color: var(--attribute-line); border-bottom: 1px dashed var(--attribute-line); }
+    .xray-token.adverbial { color: var(--adverbial-line); border-bottom: 1px dashed var(--adverbial-line); }
+    .xray-clause { position: relative; z-index: 1; margin-top: 4px; padding: 12px; border: 2px dashed var(--clause-line); border-radius: 12px; background: color-mix(in srgb, var(--attribute-fill) 38%, transparent); transition: opacity .22s, max-height .22s; }
+    .xray-clause.is-collapsed { max-height: 58px; overflow: hidden; opacity: .78; }
+    .xray-clause-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .xray-clause-head b { color: var(--clause-line); font-size: 11px; }
+    .xray-clause-head button { min-height: 28px; padding: 0 8px; border: 1px solid color-mix(in srgb, var(--clause-line) 40%, var(--app-border)); border-radius: 8px; color: var(--clause-line); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .clause-children { display: flex; flex-wrap: wrap; gap: 6px; }
+    .clause-node { padding: 7px 9px; border: 1px solid var(--app-border); border-radius: 8px; background: var(--app-card); color: var(--app-ink); font-size: 11px; cursor: pointer; }
+    .clause-node:hover, .clause-node.is-selected { border-color: var(--primary); color: var(--primary); }
+    .xray-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+    .legend-item { display: inline-flex; align-items: center; gap: 5px; color: var(--app-muted); font-size: 10px; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 3px; }
+    .legend-dot.subject { background: var(--subject-line); } .legend-dot.predicate { background: var(--predicate-line); } .legend-dot.object { background: var(--object-line); } .legend-dot.clause { border: 1px dashed var(--clause-line); }
+    .xray-explain { margin-top: 12px; padding: 11px 12px; border-left: 3px solid var(--primary); border-radius: 0 10px 10px 0; color: var(--app-muted); background: var(--app-card); font-size: 11px; line-height: 1.55; }
+    .xray-explain strong { color: var(--app-ink); }
+    .xray-player { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 10px; margin-top: 12px; padding: 10px; border: 1px solid var(--app-border); border-radius: 12px; background: var(--app-card); }
+    .mini-wave { display: flex; align-items: center; gap: 2px; height: 28px; }
+    .mini-wave i { display: block; width: 3px; height: 9px; border-radius: 3px; background: color-mix(in srgb, var(--primary) 40%, var(--app-border)); }
+    .mini-wave i:nth-child(2n) { height: 18px; } .mini-wave i:nth-child(3n) { height: 25px; background: var(--primary); } .mini-wave i:nth-child(5n) { height: 13px; }
+    .xray-player.is-playing .mini-wave i { animation: wavePulse .8s ease-in-out infinite alternate; }
+    @keyframes wavePulse { to { transform: scaleY(.5); opacity: .65; } }
+
+    .audio-card { padding: 16px; }
+    .audio-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .audio-header h2 { margin: 0; font-size: 16px; }
+    .audio-header p { margin: 5px 0 0; color: var(--app-muted); font-size: 11px; line-height: 1.45; }
+    .audio-cover { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; color: var(--primary); background: var(--primary-soft); font-size: 20px; }
+    .waveform { display: flex; align-items: center; gap: 3px; height: 72px; margin-top: 15px; padding: 0 4px; }
+    .waveform i { flex: 1; min-width: 2px; max-width: 6px; height: 20%; border-radius: 99px; background: color-mix(in srgb, var(--primary) 26%, var(--app-border)); transition: height .2s, background .2s; }
+    .waveform i:nth-child(3n) { height: 72%; } .waveform i:nth-child(4n) { height: 43%; } .waveform i:nth-child(7n) { height: 91%; }
+    .waveform i.is-played { background: var(--primary); }
+    .audio-card.is-playing .waveform i { animation: audioBars .95s ease-in-out infinite alternate; }
+    @keyframes audioBars { to { height: 30%; } }
+    .audio-time { display: flex; justify-content: space-between; color: var(--app-muted); font: 10px var(--font-en); }
+    .audio-controls { display: flex; align-items: center; gap: 7px; margin-top: 12px; }
+    .audio-controls .icon-button { width: 38px; min-height: 38px; border-radius: 10px; font-size: 13px; }
+    .audio-controls .play-button { width: 46px; min-height: 46px; color: #fff; border: 0; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-2)); font-size: 16px; }
+    .speed-options { display: flex; gap: 4px; margin-left: auto; }
+    .speed-options button { min-height: 30px; padding: 0 7px; border: 1px solid var(--app-border); border-radius: 8px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font: 700 10px var(--font-en); }
+    .speed-options button.is-active { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+    .caption-strip { margin-top: 14px; padding: 13px; border: 1px solid var(--app-border); border-radius: 12px; background: var(--app-card-soft); }
+    .caption-strip b { display: block; color: var(--app-ink); font: 500 15px/1.55 var(--font-en); }
+    .caption-strip span { display: block; margin-top: 5px; color: var(--app-muted); font-size: 11px; }
+    .audio-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+    .text-toggle { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 9px; border: 1px solid var(--app-border); border-radius: 9px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .text-toggle.is-active { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+    .dictation-box { margin-top: 12px; padding-top: 13px; border-top: 1px solid var(--app-border); }
+    .dictation-box label, .writing-card label { display: block; margin-bottom: 6px; color: var(--app-ink); font-size: 11px; font-weight: 700; }
+    .input-control { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--app-border-strong); border-radius: 11px; color: var(--app-ink); background: var(--app-bg); }
+    .input-control::placeholder { color: var(--app-muted); }
+    .dictation-feedback { margin-top: 10px; padding: 11px 12px; border-radius: 11px; border: 1px solid color-mix(in srgb, var(--danger) 42%, var(--app-border)); background: var(--danger-soft); }
+    .dictation-feedback b { display: block; font-size: 11px; }
+    .diff-line { margin-top: 6px; color: var(--app-ink); font: 500 14px/1.7 var(--font-en); }
+    .diff-line .missed { text-decoration: underline; text-decoration-color: var(--danger); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    .dictation-feedback p { margin: 6px 0 0; color: var(--app-muted); font-size: 10px; line-height: 1.5; }
+
+    .reader-layout { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 12px; }
+    .reader-card { overflow: hidden; }
+    .reader-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--app-border); background: var(--app-card-soft); }
+    .reader-toolbar strong { font-size: 12px; }
+    .reader-tools { display: flex; align-items: center; gap: 4px; }
+    .reader-tools button { min-height: 30px; padding: 0 8px; border: 1px solid var(--app-border); border-radius: 8px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .reader-tools button:hover, .reader-tools button.is-active { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+    .reader-copy { padding: 17px 18px 20px; color: var(--app-ink); font: 500 16px/1.85 var(--font-en); }
+    .reader-copy p { margin: 0 0 15px; }
+    .reader-copy p:last-child { margin-bottom: 0; }
+    .reader-word { padding: 1px 2px; border-bottom: 2px solid color-mix(in srgb, var(--primary) 52%, transparent); border-radius: 3px; cursor: pointer; }
+    .reader-word:hover, .reader-word.is-selected { color: var(--primary); background: var(--primary-soft); }
+    .reader-translation { margin-top: 10px; padding: 10px 11px; border-left: 3px solid var(--primary); color: var(--app-muted); background: var(--app-card-soft); font: 400 12px/1.65 var(--font-cn); }
+    .reader-translation[hidden] { display: none; }
+    .reader-side { display: grid; align-content: start; gap: 9px; }
+    .reader-side-card { padding: 12px; border: 1px solid var(--app-border); border-radius: 13px; background: var(--app-card); }
+    .reader-side-card strong { display: block; font-size: 11px; }
+    .reader-side-card span { display: block; margin-top: 5px; color: var(--app-muted); font-size: 10px; line-height: 1.5; }
+    .reader-progress { height: 6px; margin-top: 10px; overflow: hidden; border-radius: 99px; background: var(--app-card-soft); }
+    .reader-progress i { display: block; width: 42%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
+    .reader-size-row { display: flex; gap: 5px; margin-top: 10px; }
+    .reader-size-row button { flex: 1; min-height: 30px; border: 1px solid var(--app-border); border-radius: 8px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .reader-size-row button.is-active { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+    .reader-card[data-reader-size="large"] .reader-copy { font-size: 19px; line-height: 2; }
+    .reader-card[data-reader-size="compact"] .reader-copy { font-size: 14px; line-height: 1.65; }
+
+    .speaking-hero { padding: 16px; background: linear-gradient(135deg, var(--primary-soft), var(--app-card)); }
+    .speaking-hero h2 { margin: 9px 0 0; color: var(--app-ink); font: 500 20px/1.45 var(--font-en); }
+    .speaking-hero p { margin: 7px 0 0; color: var(--app-muted); font-size: 11px; line-height: 1.55; }
+    .recording-stage { margin-top: 12px; padding: 13px; border: 1px solid var(--app-border); border-radius: 14px; background: var(--app-card); }
+    .track-row { display: grid; grid-template-columns: 44px minmax(0,1fr) auto; align-items: center; gap: 9px; min-height: 47px; }
+    .track-row + .track-row { border-top: 1px solid var(--app-border); }
+    .track-label { color: var(--app-muted); font-size: 10px; }
+    .track-label b { display: block; margin-bottom: 3px; color: var(--app-ink); font-size: 11px; }
+    .track-wave { display: flex; align-items: center; gap: 2px; height: 30px; }
+    .track-wave i { flex: 1; max-width: 6px; height: 32%; border-radius: 99px; background: color-mix(in srgb, var(--primary) 34%, var(--app-border)); }
+    .track-wave i:nth-child(2n) { height: 65%; } .track-wave i:nth-child(5n) { height: 90%; }
+    .track-wave.user i { background: color-mix(in srgb, var(--success) 42%, var(--app-border)); }
+    .track-wave.user i:nth-child(3n) { height: 70%; }
+    .track-row.is-active .track-wave i { background: var(--primary); }
+    .track-row.is-active .track-wave.user i { background: var(--success); }
+    .track-action { min-height: 30px; padding: 0 7px; border: 1px solid var(--app-border); border-radius: 8px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .record-action { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 46px; margin-top: 12px; padding: 0 13px; border: 1px solid var(--danger); border-radius: 12px; color: var(--danger); background: var(--danger-soft); cursor: pointer; font-size: 11px; font-weight: 700; }
+    .record-action.is-recording { color: #fff; background: var(--danger); }
+    .record-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+    .record-action.is-recording .record-dot { animation: recordBlink .9s ease-in-out infinite alternate; }
+    @keyframes recordBlink { to { opacity: .34; transform: scale(.75); } }
+    .recording-complete { margin-top: 11px; padding: 10px 11px; border-radius: 11px; color: var(--success); background: var(--success-soft); font-size: 10px; line-height: 1.5; }
+    .self-rating { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 7px; margin-top: 12px; }
+    .self-rating button { min-height: 46px; padding: 5px; border: 1px solid var(--app-border); border-radius: 10px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .self-rating button b { display: block; margin-bottom: 3px; color: var(--app-ink); font-size: 11px; }
+    .self-rating button.is-selected { border-color: var(--success); color: var(--success); background: var(--success-soft); }
+    .self-rating button.is-selected b { color: var(--success); }
+    .phase-note { margin-top: 11px; padding: 10px 11px; border-radius: 10px; color: var(--app-muted); background: var(--app-card-soft); font-size: 10px; line-height: 1.5; }
+    .phase-note strong { color: var(--app-ink); }
+
+    .writing-layout { display: grid; grid-template-columns: minmax(0,1fr) 180px; gap: 12px; }
+    .writing-card { padding: 16px; }
+    .writing-prompt { padding: 12px; border-radius: 12px; background: var(--app-card-soft); }
+    .writing-prompt strong { display: block; color: var(--app-ink); font-size: 12px; }
+    .writing-prompt p { margin: 7px 0 0; color: var(--app-ink); font-size: 15px; line-height: 1.6; }
+    .writing-hints { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .hint-button { min-height: 30px; padding: 0 8px; border: 1px dashed var(--app-border-strong); border-radius: 8px; color: var(--app-muted); background: var(--app-card); cursor: pointer; font-size: 10px; }
+    .hint-button.is-used { color: var(--primary); border-color: var(--primary); background: var(--primary-soft); }
+    .writing-card textarea { min-height: 116px; margin-top: 14px; resize: vertical; font: 500 14px/1.7 var(--font-en); }
+    .writing-feedback { margin-top: 12px; padding: 13px; border: 1px solid color-mix(in srgb, var(--success) 40%, var(--app-border)); border-radius: 13px; background: var(--success-soft); }
+    .writing-feedback h3 { margin: 0; font-size: 12px; }
+    .writing-feedback p { margin: 5px 0 0; color: var(--app-muted); font-size: 10px; line-height: 1.5; }
+    .point-list { display: grid; gap: 6px; margin-top: 10px; }
+    .point-row { display: flex; align-items: flex-start; gap: 7px; color: var(--app-ink); font-size: 11px; line-height: 1.45; }
+    .point-row i { display: grid; place-items: center; width: 18px; height: 18px; flex: 0 0 auto; border-radius: 6px; color: var(--success); background: var(--app-card); font-style: normal; font-size: 10px; }
+    .reference-card { padding: 13px; }
+    .reference-card h3 { margin: 0; font-size: 12px; }
+    .reference-card p { margin: 7px 0 0; color: var(--app-ink); font: 500 12px/1.6 var(--font-en); }
+    .reference-card small { display: block; margin-top: 9px; color: var(--app-muted); font-size: 10px; line-height: 1.5; }
+
+    .result-view { padding-top: 22px; }
+    .result-hero { position: relative; overflow: hidden; padding: 20px; border-radius: 18px; color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-2)); box-shadow: var(--shadow-md); }
+    .result-hero::after { content: ""; position: absolute; right: -48px; bottom: -100px; width: 220px; height: 220px; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; box-shadow: 0 0 0 18px rgba(255,255,255,.06), 0 0 0 43px rgba(255,255,255,.04); }
+    .result-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; color: var(--primary); background: #fff; font-size: 22px; }
+    .result-hero h1 { position: relative; z-index: 1; margin: 14px 0 0; font-size: 24px; letter-spacing: -.045em; }
+    .result-hero p { position: relative; z-index: 1; max-width: 520px; margin: 7px 0 0; color: rgba(255,255,255,.82); font-size: 11px; line-height: 1.6; }
+    .result-hero .result-status { position: relative; z-index: 1; display: inline-flex; margin-top: 13px; padding: 6px 9px; border-radius: 999px; color: #fff; background: rgba(255,255,255,.14); font-size: 10px; }
+    .result-metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-top: 12px; }
+    .result-metric { padding: 13px; border: 1px solid var(--app-border); border-radius: 13px; background: var(--app-card); }
+    .result-metric b { display: block; color: var(--app-ink); font: 700 19px var(--font-en); }
+    .result-metric span { display: block; margin-top: 4px; color: var(--app-muted); font-size: 10px; }
+    .result-next { display: grid; grid-template-columns: minmax(0,1fr) 180px; gap: 12px; margin-top: 12px; }
+    .result-list { padding: 15px; }
+    .result-list h2, .review-plan h2 { margin: 0; font-size: 13px; }
+    .result-row { display: flex; align-items: flex-start; gap: 9px; padding: 11px 0; border-bottom: 1px solid var(--app-border); }
+    .result-row:last-child { border-bottom: 0; }
+    .result-row .result-bullet { display: grid; place-items: center; width: 23px; height: 23px; flex: 0 0 auto; border-radius: 8px; color: var(--success); background: var(--success-soft); font-size: 11px; }
+    .result-row b { display: block; font-size: 11px; }
+    .result-row span { display: block; margin-top: 3px; color: var(--app-muted); font-size: 10px; line-height: 1.45; }
+    .review-plan { padding: 15px; background: var(--app-card-soft); }
+    .review-date { margin-top: 13px; color: var(--primary); font: 700 20px var(--font-en); }
+    .review-plan p { margin: 6px 0 0; color: var(--app-muted); font-size: 10px; line-height: 1.55; }
+    .result-note { margin-top: 12px; padding: 11px 12px; border-left: 3px solid var(--warning); border-radius: 0 10px 10px 0; color: var(--app-muted); background: var(--warning-soft); font-size: 10px; line-height: 1.55; }
+    .result-note strong { color: var(--app-ink); }
+
+    .session-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 22px; padding: 12px 0 2px; border-top: 1px solid var(--app-border); background: color-mix(in srgb, var(--app-bg) 92%, transparent); }
+    .bottom-hint { color: var(--app-muted); font-size: 10px; line-height: 1.45; }
+    .bottom-hint b { display: block; color: var(--app-ink); font-size: 11px; }
+    .context-title { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 12px; }
+    .context-title h2 { margin: 0; font-size: 13px; }
+    .context-title span { color: var(--app-muted); font-size: 10px; }
+    .context-card { padding: 13px; border: 1px solid var(--app-border); border-radius: 13px; background: var(--app-card); }
+    .context-card + .context-card { margin-top: 10px; }
+    .context-card h3 { margin: 0; font-size: 11px; }
+    .context-card p { margin: 6px 0 0; color: var(--app-muted); font-size: 10px; line-height: 1.55; }
+    .context-meter { height: 6px; margin-top: 10px; overflow: hidden; border-radius: 99px; background: var(--app-card-soft); }
+    .context-meter i { display: block; width: 68%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
+    .context-list { display: grid; gap: 7px; margin-top: 10px; }
+    .context-row { display: flex; align-items: flex-start; gap: 7px; color: var(--app-muted); font-size: 10px; line-height: 1.45; }
+    .context-row i { color: var(--success); font-style: normal; }
+    .scope-mini { border-color: color-mix(in srgb, var(--primary) 30%, var(--app-border)); background: var(--primary-soft); }
+    .scope-mini .context-list { gap: 5px; }
+    .scope-mini .context-row i.no { color: var(--danger); }
+    .mobile-bottom-note { display: none; }
+
+    .toast { position: fixed; z-index: 50; left: 50%; bottom: 24px; max-width: min(360px, calc(100vw - 32px)); padding: 10px 13px; transform: translate(-50%, 16px); border: 1px solid var(--lab-border); border-radius: 11px; color: var(--lab-ink); background: var(--lab-card); box-shadow: var(--shadow-md); opacity: 0; pointer-events: none; font-size: 12px; transition: opacity .18s, transform .18s; }
+    .toast.is-visible { transform: translate(-50%, 0); opacity: 1; }
+    .sheet-backdrop, .dialog-backdrop { position: fixed; z-index: 40; inset: 0; display: grid; place-items: end center; padding: 20px; background: rgba(10, 14, 32, .42); }
+    .bottom-sheet, .exit-dialog { width: min(480px, 100%); padding: 15px; border: 1px solid var(--lab-border); border-radius: 22px 22px 15px 15px; color: var(--lab-ink); background: var(--lab-card); box-shadow: var(--shadow-md); }
+    .sheet-handle { width: 42px; height: 4px; margin: -4px auto 14px; border-radius: 99px; background: var(--lab-border); }
+    .sheet-head, .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .sheet-head h2, .dialog-head h2 { margin: 0; font-size: 16px; }
+    .sheet-head p, .dialog-head p { margin: 6px 0 0; color: var(--lab-muted); font-size: 11px; line-height: 1.55; }
+    .sheet-close { min-height: 34px; min-width: 34px; border: 1px solid var(--lab-border); border-radius: 9px; color: var(--lab-muted); background: var(--lab-card); cursor: pointer; }
+    .lookup-word { margin-top: 17px; color: var(--primary); font: 700 27px var(--font-en); }
+    .lookup-ipa { margin-top: 3px; color: var(--lab-muted); font: 12px var(--font-en); }
+    .lookup-meaning { margin-top: 13px; padding: 12px; border-radius: 11px; color: var(--lab-ink); background: color-mix(in srgb, var(--primary-soft) 82%, var(--lab-card)); font-size: 12px; line-height: 1.6; }
+    .dialog-backdrop { place-items: center; }
+    .exit-dialog { border-radius: 18px; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+
+    .device.phone .session-rail, .device.phone .context-rail { display: none; }
+    .device.phone .app-grid { display: block; }
+    .device.phone .session-main { padding: 19px 16px 18px; }
+    .device.phone .session-header { padding-top: 22px; }
+    .device.phone .sync-status { padding: 0 7px; }
+    .device.phone .sync-status span:last-child { display: none; }
+    .device.phone .mobile-skill-switch { display: flex; }
+    .device.phone .module-heading { margin-bottom: 14px; }
+    .device.phone .module-heading h1 { font-size: 22px; }
+    .device.phone .module-heading p { font-size: 11px; }
+    .device.phone .rule-grid, .device.phone .reader-layout, .device.phone .writing-layout, .device.phone .result-next { grid-template-columns: 1fr; }
+    .device.phone .rule-hero { padding: 16px; }
+    .device.phone .rule-hero h2 { font-size: 20px; }
+    .device.phone .formula { font-size: 14px; }
+    .device.phone .reader-side { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .device.phone .reader-side-card:first-child { grid-column: 1 / -1; }
+    .device.phone .result-metrics { gap: 6px; }
+    .device.phone .result-metric { padding: 10px; }
+    .device.phone .result-metric b { font-size: 16px; }
+    .device.phone .session-bottom { position: sticky; bottom: -1px; z-index: 5; margin: 18px -16px -18px; padding: 10px 16px calc(13px + env(safe-area-inset-bottom)); border-top: 1px solid var(--app-border); background: color-mix(in srgb, var(--app-bg) 96%, transparent); }
+    .device.phone .bottom-hint { display: none; }
+    .device.phone .session-bottom .button-primary { flex: 1; }
+    .device.phone .session-bottom .button-secondary { min-width: 90px; }
+    .device.ipad .mobile-skill-switch { display: none; }
+    .device.ipad .app-grid { grid-template-columns: 190px minmax(0, 1fr); }
+    .device.ipad .context-rail { display: none; }
+    .device.ipad .session-main { padding: 27px 30px 26px; }
+    .device.ipad .module-heading h1 { font-size: 27px; }
+    .device.ipad .module-view { max-width: 760px; margin: 0 auto; }
+    .device.web .mobile-skill-switch { display: none; }
+    .device.web .session-main { padding: 27px 31px 26px; }
+    .device.web .module-view, .device.web .result-view { max-width: 860px; margin: 0 auto; }
+    .device.web .module-heading h1 { font-size: 28px; }
+
+    @media (max-width: 1180px) {
+      body { padding: 18px; }
+      .workspace { grid-template-columns: 230px minmax(0, 1fr); }
+      .preview-stage { min-height: 720px; padding: 16px; }
+      .device.web { width: min(1120px, 100%); }
+    }
+    @media (max-width: 760px) {
+      body { padding: 12px; }
+      .lab-head { display: block; }
+      .lab-head h1 { font-size: 25px; }
+      .head-actions { justify-content: flex-start; margin-top: 13px; }
+      .workspace { display: block; }
+      .lab-brief { position: static; margin-bottom: 12px; }
+      .module-list { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .module-entry { grid-template-columns: 28px minmax(0,1fr); }
+      .module-entry .entry-arrow { display: none; }
+      .preview { padding: 10px; }
+      .preview-head { display: block; }
+      .device-switch { justify-content: flex-start; margin-top: 9px; }
+      .preview-stage { min-height: 700px; padding: 12px; }
+      .device.phone { width: min(390px, calc(100vw - 48px)); height: auto; aspect-ratio: 390 / 844; }
+      .device.ipad, .device.web { min-height: 440px; }
+      .device.ipad .module-heading h1, .device.web .module-heading h1 { font-size: 22px; }
+      .device.ipad .session-main, .device.web .session-main { padding: 20px 18px; }
+      .device.ipad .app-grid { grid-template-columns: 164px minmax(0,1fr); }
+      .device.web .app-grid { grid-template-columns: 175px minmax(0,1fr) 210px; }
+      .device.web .context-rail { padding: 18px 11px; }
+      .result-metrics { grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .result-metric span { min-height: 26px; }
+      .bottom-sheet, .exit-dialog { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="lab-shell">
+    <header class="lab-head">
+      <div>
+        <h1>Skills Session Lab</h1>
+        <p>Phase 1 学习 Session 页面族 · <span>18+ 成人 / 大学生</span> · 规则化练习 → 反馈 → 复习</p>
+      </div>
+      <div class="head-actions" aria-label="原型设置">
+        <button class="lab-control is-active" id="themeButton" type="button">主题：浅色</button>
+        <button class="lab-control" id="motionButton" type="button">动效：开启</button>
+        <button class="lab-control" id="scopeButton" type="button">Phase 1 边界</button>
+        <button class="lab-control" id="resetButton" type="button">重置演示</button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="lab-brief">
+        <div class="brief-heading"><h2>学习 Session 入口</h2><span>6 FLOWS</span></div>
+        <p class="brief-copy">同一套外壳承载六类能力：顶部进度、可恢复状态、一个主任务和统一完成反馈。</p>
+        <nav class="module-list" aria-label="技能 Session 入口">
+          <button class="module-entry is-active" data-module="grammar" type="button"><span class="module-symbol">文</span><span><b>语法规则卡</b><small>公式 · 例句 · 练习</small></span><span class="entry-arrow">›</span></button>
+          <button class="module-entry" data-module="xray" type="button"><span class="module-symbol">⌁</span><span><b>长难句 X-Ray</b><small>切片 · 结构 · 拆句</small></span><span class="entry-arrow">›</span></button>
+          <button class="module-entry" data-module="listening" type="button"><span class="module-symbol">◉</span><span><b>听力 / 听写</b><small>播放器 · 变速 · 差异</small></span><span class="entry-arrow">›</span></button>
+          <button class="module-entry" data-module="reading" type="button"><span class="module-symbol">▤</span><span><b>阅读器 / 查词</b><small>分级 · 双语 · 收藏</small></span><span class="entry-arrow">›</span></button>
+          <button class="module-entry" data-module="speaking" type="button"><span class="module-symbol">↗</span><span><b>口语自练</b><small>录音 · 回放 · 自评</small></span><span class="entry-arrow">›</span></button>
+          <button class="module-entry" data-module="writing" type="button"><span class="module-symbol">✎</span><span><b>写作规则反馈</b><small>翻译 · 采分点 · 对照</small></span><span class="entry-arrow">›</span></button>
+        </nav>
+        <div class="scope-box">
+          <strong>Phase 1 学习边界</strong>
+          <ul class="scope-list">
+            <li><span class="yes">✓</span><span>预制内容、规则判分、用户自评</span></li>
+            <li><span class="yes">✓</span><span>可追踪的错题 / 收藏 / D+1 复习</span></li>
+            <li><span class="no">×</span><span>不做 AI 发音评分 / AI Tutor / K12</span></li>
+          </ul>
+        </div>
+        <p class="brief-foot">左侧入口、设备切换和主题按钮均可操作。Session 内退出会先保存并确认。</p>
+      </aside>
+
+      <section class="preview" aria-label="三端 Session 预览">
+        <div class="preview-head">
+          <div><strong id="previewTitle">Mobile · iPhone 16 Pro Max 风格</strong><span id="previewHint">单列主任务 · 底部固定 CTA · Session 内隐藏五 Tab</span></div>
+          <div class="device-switch" aria-label="设备选择">
+            <button class="lab-control is-active" data-device="mobile" type="button">Mobile</button>
+            <button class="lab-control" data-device="ipad" type="button">Pad</button>
+            <button class="lab-control" data-device="web" type="button">Web</button>
+          </div>
+        </div>
+
+        <div class="preview-stage">
+          <div class="device phone" id="deviceFrame">
+            <div class="device-screen">
+              <button class="hardware-island" id="islandButton" type="button" aria-label="展开 Session 自动保存状态">
+                <span class="island-content"><i class="island-dot"></i><b>Session 已自动保存</b><small>刚刚</small></span>
+              </button>
+              <div class="phone-status" aria-label="手机状态栏">
+                <span>21:36</span>
+                <span class="system-icons"><span class="cellular" aria-label="蜂窝网络"><i></i><i></i><i></i><i></i></span><span class="wifi-icon" aria-label="Wi-Fi"><i></i></span><span class="battery" aria-label="电池 88%"><i><b>88</b></i></span></span>
+              </div>
+              <div class="ipad-camera" aria-hidden="true"></div>
+              <div class="ipad-status" aria-label="Pad 状态栏"><span>21:36</span><span>语学星 · Learning Session</span><span>Wi-Fi　88%</span></div>
+              <div class="browser-chrome" aria-label="浏览器窗口栏">
+                <div class="chrome-top"><span class="traffic"><i class="red"></i><i class="yellow"></i><i class="green"></i></span><span class="browser-tab">Skills Session · 语学星</span></div>
+                <div class="address"><span>⌁</span><span>study.clyune.com / practice/session</span></div>
+              </div>
+
+              <div class="app-shell">
+                <div class="app-grid">
+                  <aside class="session-rail" aria-label="Session 技能导航">
+                    <div class="rail-brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 2.1 5.2L19 10l-4.9 1.9L12 17l-2.1-5.1L5 10l4.9-1.8L12 3Z"></path><path d="M5 17.5 6 20l2.5 1"></path></svg></span><span>语学星</span></div>
+                    <p class="rail-label">SESSION LAB</p>
+                    <nav class="rail-nav" aria-label="Pad 与 Web 技能入口">
+                      <button class="is-active" data-module="grammar" type="button"><span class="rail-icon">文</span><span>语法规则卡</span></button>
+                      <button data-module="xray" type="button"><span class="rail-icon">⌁</span><span>长难句 X-Ray</span></button>
+                      <button data-module="listening" type="button"><span class="rail-icon">◉</span><span>听力 / 听写</span></button>
+                      <button data-module="reading" type="button"><span class="rail-icon">▤</span><span>阅读 / 查词</span></button>
+                      <button data-module="speaking" type="button"><span class="rail-icon">↗</span><span>口语自练</span></button>
+                      <button data-module="writing" type="button"><span class="rail-icon">✎</span><span>写作反馈</span></button>
+                    </nav>
+                    <div class="rail-foot"><b>今日 Session</b>规则化反馈已保存<br>建议复习：明天 19:30</div>
+                  </aside>
+
+                  <main class="session-main" id="sessionMain">
+                    <header class="session-header">
+                      <button class="session-close" data-action="close" type="button" aria-label="退出当前 Session"><strong>×</strong><span>退出</span></button>
+                      <div class="session-title"><b id="sessionTitle">Grammar Session</b><span id="sessionSubtitle">RULE-BASED PRACTICE</span></div>
+                      <span class="sync-status" aria-label="保存状态"><i class="sync-dot"></i><span id="syncText">已保存</span></span>
+                    </header>
+                    <div class="session-progress" aria-label="Session 进度"><span class="progress-track"><i id="sessionProgress"></i></span><span class="progress-label" id="sessionStep">01 / 06</span></div>
+
+                    <nav class="mobile-skill-switch" aria-label="Mobile 技能入口">
+                      <button class="is-active" data-module="grammar" type="button">语法</button>
+                      <button data-module="xray" type="button">X-Ray</button>
+                      <button data-module="listening" type="button">听写</button>
+                      <button data-module="reading" type="button">阅读</button>
+                      <button data-module="speaking" type="button">口语</button>
+                      <button data-module="writing" type="button">写作</button>
+                    </nav>
+
+                    <div id="moduleView" class="module-view"></div>
+
+                    <section id="resultView" class="result-view" hidden>
+                      <div class="result-hero">
+                        <div class="result-icon" aria-hidden="true">✓</div>
+                        <h1 id="resultTitle">本次 Session 已完成</h1>
+                        <p id="resultDescription">你完成了一个可回放的学习闭环。结果、错因和下一次复习时间已经写入学习记录。</p>
+                        <span class="result-status">已保存 · 规则反馈可回看</span>
+                      </div>
+                      <div class="result-metrics" aria-label="本次学习摘要">
+                        <div class="result-metric"><b id="resultCount">1 / 1</b><span>完成内容</span></div>
+                        <div class="result-metric"><b id="resultDuration">08:42</b><span>专注用时</span></div>
+                        <div class="result-metric"><b id="resultRepair">2 个</b><span>待复习信号</span></div>
+                      </div>
+                      <div class="result-next">
+                        <section class="surface result-list">
+                          <h2>本次留下的学习记录</h2>
+                          <div class="result-row"><span class="result-bullet">✓</span><span><b id="resultRecordOne">过去完成时 · 规则已复习</b><span>内容版本已锁定，下一次复测会使用已发布变式题。</span></span></div>
+                          <div class="result-row"><span class="result-bullet">↗</span><span><b id="resultRecordTwo">表达与错因 · 可回放</b><span>收藏、错题和用户自评都可从复习队列继续。</span></span></div>
+                          <div class="result-note"><strong>说明：</strong>一次答对不会直接变成永久掌握；系统会按 D+1 / D+7 节奏再次检查。</div>
+                        </section>
+                        <aside class="surface review-plan">
+                          <h2>下一次复习</h2>
+                          <div class="review-date">明天 19:30</div>
+                          <p>建议先完成本次标记的 2 个复习信号，再进入新的学习内容。</p>
+                          <button class="button-secondary" data-action="review-queue" type="button" style="width:100%;margin-top:14px;">查看复习队列</button>
+                        </aside>
+                      </div>
+                    </section>
+
+                    <footer class="session-bottom">
+                      <div class="bottom-hint"><b id="bottomHintTitle">一个主任务 · 可随时恢复</b><span id="bottomHintText">提交后会显示规则解释和下一次复习安排。</span></div>
+                      <button class="button-secondary" id="bottomSecondary" data-action="module-help" type="button">查看说明</button>
+                      <button class="button-primary main-cta" id="bottomPrimary" data-action="complete" type="button">完成本节</button>
+                    </footer>
+                  </main>
+
+                  <aside class="context-rail" aria-label="Session 上下文">
+                    <div class="context-title"><h2>Session 上下文</h2><span id="contextType">P0</span></div>
+                    <div class="context-card">
+                      <h3 id="contextHeading">为什么从这里开始？</h3>
+                      <p id="contextCopy">过去完成时是最近错题中的高风险点。先看规则，再用一个变式确认。</p>
+                      <div class="context-meter" aria-label="本模块掌握进度"><i id="contextMeter"></i></div>
+                    </div>
+                    <div class="context-card">
+                      <h3>统一反馈会保留</h3>
+                      <div class="context-list"><div class="context-row"><i>✓</i><span>完成量、用时与保存状态</span></div><div class="context-row"><i>✓</i><span>规则错因、收藏与复习信号</span></div><div class="context-row"><i>✓</i><span>断点恢复与待同步说明</span></div></div>
+                    </div>
+                    <div class="context-card scope-mini">
+                      <h3>Phase 1 能力提示</h3>
+                      <div class="context-list"><div class="context-row"><i>✓</i><span>确定性规则 / 预制内容</span></div><div class="context-row"><i>✓</i><span>录音回放 / 用户自评</span></div><div class="context-row"><i class="no">×</i><span>AI 评分、AI Tutor、K12</span></div></div>
+                    </div>
+                  </aside>
+                </div>
+                <div class="home-indicator" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="sheetBackdrop" class="sheet-backdrop" hidden>
+    <section class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <div class="sheet-head"><div><h2 id="sheetTitle">词语解释</h2><p id="sheetSubtitle">点击句中词语即可查看简明释义。</p></div><button class="sheet-close" data-action="close-sheet" type="button" aria-label="关闭详情">×</button></div>
+      <div id="sheetContent"></div>
+    </section>
+  </div>
+
+  <div id="exitBackdrop" class="dialog-backdrop" hidden>
+    <section class="exit-dialog" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+      <div class="dialog-head"><div><h2 id="exitTitle">先保存，再暂时离开？</h2><p>已提交的答案会保留；未提交的输入会标记为“尚未保存”。</p></div></div>
+      <div class="dialog-actions"><button class="button-ghost" data-action="stay" type="button">继续学习</button><button class="button-secondary" data-action="leave" type="button">暂时离开</button></div>
+    </section>
+  </div>
+
+  <template id="tpl-grammar">
+    <div class="module-heading"><div><div class="module-kicker">GRAMMAR · RULE CARD</div><h1>过去完成时：先发生的过去</h1><p>先用一句规则建立方向，再进入一个不重复原题的变式练习。</p></div><span class="module-chip">规则卡 01</span></div>
+    <section class="rule-hero">
+      <span class="section-label">ONE-LINE RULE</span>
+      <h2>在过去某个时间点之前已经完成的动作，用过去完成时。</h2>
+      <p>时间线先后关系是关键：较早的动作使用 <b>had + 过去分词</b>，较晚的动作通常使用一般过去时。</p>
+      <span class="formula">S + had + V-ed + O</span>
+    </section>
+    <div class="rule-grid">
+      <section class="surface surface-pad"><div class="surface-head"><h2>正反例对照</h2><span>可回放规则</span></div><div class="rule-example good" style="margin-top:12px;"><b>✓ 正例 · 先发生</b><p>By the time we arrived, the plane <strong>had left</strong>.</p><small>我们到达之前，飞机已经起飞。</small></div><div class="rule-example bad" style="margin-top:8px;"><b>× 反例 · 时态顺序错位</b><p>By the time we arrived, the plane <strong>has left</strong>.</p><small>过去时间点不能用现在完成时表达。</small></div></section>
+      <section class="surface surface-pad"><div class="surface-head"><h2>高频陷阱</h2><span>TRAP LIST</span></div><div class="trap-list"><div class="trap-row"><i class="trap-mark">!</i><span><b>不要只看 already</b><span>先定位两个过去动作的先后，再决定时态。</span></span></div><div class="trap-row"><i class="trap-mark">!</i><span><b>by the time ≠ 固定答案</b><span>连接词提供时间关系，具体时态仍看语境。</span></span></div><div class="trap-row"><i class="trap-mark">!</i><span><b>注意主句与从句</b><span>先完成的动作才进入 had + done。</span></span></div></div></section>
+    </div>
+    <section class="surface surface-pad" style="margin-top:12px;"><div class="surface-head"><h2>把规则带进练习</h2><span>规则引擎 · 可解释</span></div><p class="tiny" style="margin:8px 0 13px;">提交后只返回本题命中的规则、正确路径和复习安排；不使用生成式批改。</p><div class="button-row"><button class="button-primary" data-action="grammar-practice" type="button">开始 1 题变式</button><button class="button-secondary" data-action="favorite" type="button">收藏规则</button></div></section>
+    <section class="exercise-drawer" data-grammar-exercise hidden><div class="surface-head"><h2>变式题 · 时间线辨析</h2><span>第 1 / 1 题</span></div><p class="exercise-question">When I got to the station, the train ______.</p><div class="choice-list"><button class="choice-button" data-action="grammar-option" data-answer="A" type="button"><span class="choice-letter">A</span><span>has departed</span></button><button class="choice-button" data-action="grammar-option" data-answer="B" type="button"><span class="choice-letter">B</span>had departed</button><button class="choice-button" data-action="grammar-option" data-answer="C" type="button"><span class="choice-letter">C</span>departs</button></div><div class="button-row" style="margin-top:11px;"><button class="button-primary" id="grammarSubmit" data-action="submit-grammar" type="button" disabled>确认答案</button><button class="button-ghost" data-action="module-help" type="button">查看规则提示</button></div><div class="feedback-panel" data-grammar-feedback hidden><strong>✓ 回答正确 · RULE_TENSE_SEQUENCE</strong><p>两个动作都发生在过去，先离开的火车使用 had departed。结果会进入明天的延迟复测。</p></div></section>
+  </template>
+
+  <template id="tpl-xray">
+    <div class="module-heading"><div><div class="module-kicker">GRAMMAR · SENTENCE X-RAY</div><h1>把长句看成一张结构图</h1><p>预制句法切片、从句边界和原声同步，点击节点即可下钻。</p></div><span class="module-chip">B2 · 句子 03</span></div>
+    <div class="xray-tabs" role="tablist" aria-label="X-Ray 视图"><button class="xray-tab is-active" data-action="xray-tab" data-panel="original" type="button">原句</button><button class="xray-tab" data-action="xray-tab" data-panel="structure" type="button">结构</button><button class="xray-tab" data-action="xray-tab" data-panel="translation" type="button">译文</button></div>
+    <section class="surface xray-stage">
+      <div class="xray-sentence" id="xrayOriginal"><button class="xray-token subject" data-action="xray-token" data-explain="主句主语：The policy，承担主句的动作。" type="button">The policy</button><button class="xray-token predicate" data-action="xray-token" data-explain="主句谓语：has remained，表示从过去持续到现在的状态。" type="button">has remained</button><button class="xray-token attribute" data-action="xray-token" data-explain="定语切片：introduced last year，修饰 policy。" type="button">introduced last year</button><button class="xray-token object" data-action="xray-token" data-explain="主句补充信息：a useful guide，说明 policy 的作用。" type="button">a useful guide</button><span>.</span></div>
+      <div class="xray-clause" data-clause><div class="xray-clause-head"><b>从句边界 · although</b><button data-action="xray-collapse" type="button">折叠从句</button></div><div class="clause-children"><button class="clause-node" data-action="xray-token" data-explain="连接词 although 引出让步关系。" type="button">although</button><button class="clause-node" data-action="xray-token" data-explain="从句主语：it，指代前文的 policy。" type="button">it</button><button class="clause-node" data-action="xray-token" data-explain="从句谓语：was controversial，描述过去状态。" type="button">was controversial</button></div></div>
+      <div class="xray-legend"><span class="legend-item"><i class="legend-dot subject"></i>主语</span><span class="legend-item"><i class="legend-dot predicate"></i>谓语</span><span class="legend-item"><i class="legend-dot object"></i>宾语/补足</span><span class="legend-item"><i class="legend-dot clause"></i>从句</span></div>
+      <div class="xray-explain" id="xrayExplain"><strong>点击一个词块。</strong> 选中后会高亮它的切片、祖先节点和语法作用。</div>
+      <div class="xray-player" id="xrayPlayer"><button class="icon-button" data-action="xray-play" type="button" aria-label="播放句子">▶</button><div class="mini-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="tiny" id="xrayPlayLabel">原声 · 常速</span></div>
+    </section>
+    <section class="surface surface-pad"><div class="surface-head"><h2>下一步：拆句练习</h2><span>Performance 可降级为列表</span></div><p class="tiny" style="margin:8px 0 13px;">先选出主干，再把定语和让步从句放回正确位置。拖拽不是唯一操作，点击即可加入答案区。</p><div class="button-row"><button class="button-primary" data-action="xray-exercise" type="button">开始拆句</button><button class="button-secondary" data-action="favorite" type="button">收藏表达</button></div><div class="feedback-panel" data-xray-feedback hidden><strong>已打开拆句练习</strong><p>你可以点击成分块完成重组；提交后会定位首个错位并解释原因。</p></div></section>
+  </template>
+
+  <template id="tpl-listening">
+    <div class="module-heading"><div><div class="module-kicker">LISTENING · PLAYER + DICTATION</div><h1>机场广播 · 逐句精听</h1><p>波形、句子和听写共用同一条时间轴；变速只改变播放速度，不改变内容时间。</p></div><span class="module-chip">句子 04 / 07</span></div>
+    <section class="surface audio-card" id="audioCard">
+      <div class="audio-header"><div><h2>Gate 18 is now boarding</h2><p>机场广播 · 00:18 · 已缓存，可离线继续</p></div><span class="audio-cover">◉</span></div>
+      <div class="waveform" aria-label="音频波形"><i class="is-played"></i><i class="is-played"></i><i class="is-played"></i><i class="is-played"></i><i class="is-played"></i><i class="is-played"></i><i class="is-played"></i><i class="is-played"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="audio-time"><span>00:07</span><span>00:18</span></div>
+      <div class="audio-controls"><button class="icon-button" data-action="rewind" type="button" aria-label="后退五秒">↶</button><button class="icon-button play-button" data-action="listen-play" type="button" aria-label="播放或暂停">▶</button><button class="icon-button" data-action="forward" type="button" aria-label="前进五秒">↷</button><div class="speed-options" aria-label="播放速度"><button data-action="listen-speed" data-speed="0.75" type="button">0.75×</button><button class="is-active" data-action="listen-speed" data-speed="1" type="button">1×</button><button data-action="listen-speed" data-speed="1.25" type="button">1.25×</button></div></div>
+      <div class="caption-strip" id="captionStrip"><b>Gate 18 is now boarding passengers for flight EF 204.</b><span>提示：is now boarding 是正在进行的广播表达。</span></div>
+      <div class="audio-tools"><button class="text-toggle is-active" id="subtitleButton" data-action="listen-subtitle" type="button">字幕：英文</button><button class="text-toggle" data-action="listen-mode" type="button">切换到听写</button></div>
+      <div class="dictation-box" id="dictationBox" hidden><label for="dictationInput">听写当前句</label><input class="input-control" id="dictationInput" type="text" placeholder="听完后输入你听到的英文句子"><div class="button-row" style="margin-top:9px;"><button class="button-primary" data-action="dictation-submit" type="button">提交听写</button><button class="button-ghost" data-action="dictation-hint" type="button">提示首字母</button></div><div class="dictation-feedback" id="dictationFeedback" hidden><b>有 1 处差异 · 已定位到错误 token</b><div class="diff-line">Gate 18 is now <span class="missed">boarding</span> passengers for flight EF 204.</div><p>可再听一次，或加入“听力漏词”复习队列。结果按确定性 token diff 计算。</p><div class="button-row" style="margin-top:8px;"><button class="button-secondary" data-action="repair-queue" type="button">加入修复</button><button class="button-ghost" data-action="listen-play" type="button">再听一次</button></div></div></div>
+    </section>
+    <section class="surface surface-pad"><div class="surface-head"><h2>音变雷达</h2><span>教研标注 · 可解释</span></div><div class="pill-row" style="margin-top:10px;"><span class="pill primary">连读 · is‿now</span><span class="pill">弱读 · for</span><span class="pill">重音 · boarding</span></div><p class="tiny" style="margin:9px 0 0;">点击播放时会把当前句定位到标注区间；没有标注时不生成推测结论。</p></section>
+  </template>
+
+  <template id="tpl-reading">
+    <div class="module-heading"><div><div class="module-kicker">READING · IMMERSIVE READER</div><h1>The night train</h1><p>Level B1 · 6 分钟 · 412 词 · 点击任意词查看简明词典，长按句子可收藏表达。</p></div><span class="module-chip">B1 · 42%</span></div>
+    <div class="reader-layout">
+      <section class="surface reader-card" id="readerCard" data-reader-size="normal">
+        <div class="reader-toolbar"><strong>Chapter 02 · A quiet platform</strong><div class="reader-tools"><button data-action="reader-bilingual" type="button">双语</button><button data-action="reader-mine" type="button">收藏句子</button></div></div>
+        <article class="reader-copy" aria-label="分级阅读正文"><p>The station was almost empty when Maya arrived. A single lamp <button class="reader-word" data-action="lookup" data-word="flickered" data-meaning="v. 摇曳；忽明忽暗" data-ipa="/ˈflɪkərd/" type="button">flickered</button> above the old timetable, and the last train waited beyond the quiet platform.</p><p>She opened her notebook and read the sentence she had saved earlier: <button class="reader-word" data-action="lookup" data-word="Small steps still move you forward." data-meaning="小步前进，依然是在向前走。" data-ipa="表达库 · sentence mining" type="button">Small steps still move you forward.</button></p><div class="reader-translation" id="readingTranslation" hidden>车站几乎空无一人。Maya 打开笔记本，重新读起她之前收藏的那句话。</div></article>
+      </section>
+      <aside class="reader-side"><div class="reader-side-card"><strong>阅读进度</strong><span>已读 2 / 5 段 · 预计剩余 3 分钟</span><div class="reader-progress"><i></i></div></div><div class="reader-side-card"><strong>排版</strong><span>字号和行距会在本设备即时保存。</span><div class="reader-size-row"><button data-action="reader-size" data-size="compact" type="button">A−</button><button class="is-active" data-action="reader-size" data-size="normal" type="button">A</button><button data-action="reader-size" data-size="large" type="button">A＋</button></div></div><div class="reader-side-card"><strong>本节动作</strong><span>已收藏 1 句 · 生词 1 个</span><button class="button-secondary" data-action="reader-next" type="button" style="width:100%;margin-top:10px;">下一节</button></div></aside>
+    </div>
+    <section class="surface surface-pad"><div class="surface-head"><h2>阅读理解 · 预制题</h2><span>不生成分支内容</span></div><p class="tiny" style="margin:8px 0 13px;">下一题会从已发布的文章理解题库进入；查词和句子收藏会进入统一复习队列。</p><button class="button-primary" data-action="reading-question" type="button">进入本节小测</button></section>
+  </template>
+
+  <template id="tpl-speaking">
+    <div class="module-heading"><div><div class="module-kicker">SPEAKING · SELF PRACTICE</div><h1>机场值机 · 跟读一句</h1><p>先听原声，再录下自己的版本；波形只看节奏、停顿和时长，不给发音分数。</p></div><span class="module-chip">SELF RATING</span></div>
+    <section class="surface speaking-hero"><span class="section-label">SOURCE SEGMENT · ROLE A</span><h2>Could I see your passport and boarding pass?</h2><p>原声 · 00:04　｜　录音默认仅保存在本地，保存前会明确提示。</p><div class="recording-stage"><div class="track-row is-active" data-track="original"><span class="track-label"><b>原声</b>Source</span><span class="track-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><button class="track-action" data-action="speak-play" data-track="原声" type="button">播放</button></div><div class="track-row" data-track="user"><span class="track-label"><b>我的录音</b>Local</span><span class="track-wave user"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><button class="track-action" data-action="speak-play" data-track="我的录音" type="button">播放</button></div></div><button class="record-action" id="recordButton" data-action="record" type="button"><i class="record-dot"></i><span>开始录音</span></button><div class="recording-complete" id="recordingComplete" hidden>录音已生成：00:04 · 本地可回放 · 未上传。你可以重录、删除或保存本次录音。</div></section>
+    <section class="surface surface-pad"><div class="surface-head"><h2>听感自评</h2><span id="speakingRatingLabel">选择后进入复习记录</span></div><div class="self-rating"><button data-action="self-rate" type="button"><b>需要练习</b>再听两次</button><button data-action="self-rate" type="button"><b>基本可以</b>节奏可用</button><button data-action="self-rate" type="button"><b>很流畅</b>可以继续</button></div><div class="phase-note"><strong>Phase 1 说明：</strong>这里只记录你的听感自评、录音时长和回放选择；不显示 AI 发音评分或相似度。</div></section>
+  </template>
+
+  <template id="tpl-writing">
+    <div class="module-heading"><div><div class="module-kicker">WRITING · RULE FEEDBACK</div><h1>把中文意思写成英文</h1><p>输入完整译文，提交后按关键词、目标结构、词形和语序给出可解释的规则反馈。</p></div><span class="module-chip">翻译 01</span></div>
+    <div class="writing-layout">
+      <section class="surface writing-card"><div class="writing-prompt"><strong>中文题目 · 目标结构：过去完成时</strong><p>到我们到达车站时，火车已经离开了。</p></div><div class="writing-hints"><button class="hint-button" data-action="writing-hint" type="button">关键词提示</button><button class="hint-button" data-action="writing-hint" type="button">词块提示</button><span class="pill">FULL PRODUCTION</span></div><label for="writingInput" style="margin-top:14px;">你的英文译文</label><textarea class="input-control" id="writingInput" placeholder="Write one complete sentence.">By the time we arrived at the station, the train had left.</textarea><div class="button-row" style="margin-top:10px;"><button class="button-primary" data-action="writing-submit" type="button">提交并查看规则</button><button class="button-ghost" data-action="writing-reset" type="button">清空重写</button></div><div class="writing-feedback" id="writingFeedback" hidden><h3>规则反馈 · 已生成</h3><p>这不是开放式作文批改；以下项目来自当前题目的已发布评分规则。</p><div class="point-list"><div class="point-row"><i>✓</i><span><b>关键词覆盖</b>：by the time / station / train 已命中。</span></div><div class="point-row"><i>✓</i><span><b>目标结构</b>：had + left 表达先发生动作。</span></div><div class="point-row"><i>✓</i><span><b>语序</b>：时间从句与主句顺序符合规则。</span></div></div></div></section>
+      <aside class="surface reference-card"><h3>参考答案对照</h3><p>By the time we arrived at the station, the train had left.</p><small>允许的词形、同义替换和标点策略来自题目版本；超出规则范围时会保留已确定项并提示查看参考答案。</small><button class="button-secondary" data-action="favorite" type="button" style="width:100%;margin-top:13px;">收藏参考表达</button></aside>
+    </div>
+    <section class="surface surface-pad"><div class="surface-head"><h2>写作闭环</h2><span>提交 → 规则比对 → 复习</span></div><div class="pill-row" style="margin-top:10px;"><span class="pill success">3 / 3 采分点</span><span class="pill">规则版本 WRT-1.2</span><span class="pill">可加入错题</span></div></section>
+  </template>
+
+  <script>
+    const root = document.documentElement;
+    const deviceFrame = document.getElementById('deviceFrame');
+    const moduleView = document.getElementById('moduleView');
+    const resultView = document.getElementById('resultView');
+    const sessionMain = document.getElementById('sessionMain');
+    const toast = document.getElementById('toast');
+    const moduleOrder = ['grammar', 'xray', 'listening', 'reading', 'speaking', 'writing'];
+    const moduleMeta = {
+      grammar: { title: 'Grammar Session', subtitle: 'RULE-BASED PRACTICE', name: '语法规则卡', copy: '过去完成时是最近错题中的高风险点。先看规则，再用一个变式确认。', meter: 68, hint: '提交后会显示规则解释和下一次复习安排。', record: '过去完成时 · 规则已复习', next: '继续今日学习' },
+      xray: { title: 'Sentence X-Ray', subtitle: 'PREPARED STRUCTURE', name: '长难句 X-Ray', copy: '这句包含主句、定语和让步从句。点击切片可以理解修饰范围。', meter: 54, hint: '点击词块或从句边界，观察结构和原声同步。', record: '长难句 · 主干与从句已拆解', next: '进入下一句' },
+      listening: { title: 'Listening Session', subtitle: 'TIMELINE + DICTATION', name: '听力 / 听写', copy: '机场广播句子已缓存。先听懂语流，再提交一次短句听写。', meter: 42, hint: '播放器、字幕、变速和听写共享同一条时间轴。', record: '机场广播 · 听写差异已定位', next: '修复 1 个听力漏词' },
+      reading: { title: 'Reading Session', subtitle: 'CEFR · IMMERSIVE READER', name: '阅读 / 查词', copy: 'B1 分级文章提供双语、字号、查词和句子收藏，不打断阅读路径。', meter: 42, hint: '点击词语打开词典 Sheet；阅读位置会按语义锚点恢复。', record: 'The night train · 1 句已收藏', next: '继续今日学习' },
+      speaking: { title: 'Speaking Session', subtitle: 'LOCAL RECORDING + SELF RATING', name: '口语自练', copy: '先播放原声，再录下自己的版本；自评会进入可回放的学习记录。', meter: 35, hint: '录音默认本地优先，完成后可回放、删除或保存。', record: '机场值机 · 录音回放与自评已记录', next: '继续下一句跟读' },
+      writing: { title: 'Writing Session', subtitle: 'RULE-BASED FEEDBACK', name: '写作规则反馈', copy: '这道翻译题已绑定采分点和规则版本，提交后逐项解释命中与遗漏。', meter: 61, hint: '输入会保留在本地草稿；提交后查看采分点和参考答案。', record: '翻译练习 · 3 / 3 采分点已命中', next: '收藏参考表达' }
+    };
+    let currentModule = 'grammar';
+    let toastTimer;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('is-visible');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2200);
+    }
+
+    function updateModuleChrome() {
+      const meta = moduleMeta[currentModule];
+      const index = moduleOrder.indexOf(currentModule) + 1;
+      document.getElementById('sessionTitle').textContent = meta.title;
+      document.getElementById('sessionSubtitle').textContent = meta.subtitle;
+      document.getElementById('sessionStep').textContent = String(index).padStart(2, '0') + ' / 06';
+      document.getElementById('sessionProgress').style.width = (index / moduleOrder.length * 100) + '%';
+      document.getElementById('bottomHintTitle').textContent = '一个主任务 · 可随时恢复';
+      document.getElementById('bottomHintText').textContent = meta.hint;
+      document.getElementById('bottomSecondary').textContent = '查看说明';
+      document.getElementById('bottomSecondary').dataset.action = 'module-help';
+      document.getElementById('bottomPrimary').textContent = '完成本节';
+      document.getElementById('bottomPrimary').dataset.action = 'complete';
+      document.getElementById('contextHeading').textContent = '为什么从这里开始？';
+      document.getElementById('contextCopy').textContent = meta.copy;
+      document.getElementById('contextMeter').style.width = meta.meter + '%';
+      document.getElementById('contextType').textContent = currentModule === 'speaking' ? 'P0 / SELF' : 'P0';
+      document.querySelectorAll('[data-module]').forEach((button) => button.classList.toggle('is-active', button.dataset.module === currentModule));
+    }
+
+    function setModule(name, announce = true) {
+      if (!moduleMeta[name]) return;
+      currentModule = name;
+      resultView.hidden = true;
+      moduleView.hidden = false;
+      const template = document.getElementById('tpl-' + name);
+      moduleView.replaceChildren(template.content.cloneNode(true));
+      updateModuleChrome();
+      sessionMain.scrollTop = 0;
+      if (announce) showToast('已进入“' + moduleMeta[name].name + '” Session');
+    }
+
+    function showResult() {
+      const meta = moduleMeta[currentModule];
+      moduleView.hidden = true;
+      resultView.hidden = false;
+      document.getElementById('sessionTitle').textContent = 'Session Result';
+      document.getElementById('sessionSubtitle').textContent = 'RESULT + REVIEW PLAN';
+      document.getElementById('sessionStep').textContent = '06 / 06';
+      document.getElementById('sessionProgress').style.width = '100%';
+      document.getElementById('resultTitle').textContent = meta.name + ' · 本次已完成';
+      document.getElementById('resultDescription').textContent = '你完成了一个可回放的学习闭环。' + meta.name + ' 的结果、反馈和下一次复习时间已经写入学习记录。';
+      document.getElementById('resultRecordOne').textContent = meta.record;
+      document.getElementById('resultRecordTwo').textContent = '反馈与学习信号 · 可回放';
+      document.getElementById('bottomHintTitle').textContent = '完成反馈 · 先看下一步';
+      document.getElementById('bottomHintText').textContent = '一次完成不会直接标记为永久掌握，复习安排会继续跟进。';
+      document.getElementById('bottomSecondary').textContent = '查看复习队列';
+      document.getElementById('bottomSecondary').dataset.action = 'review-queue';
+      document.getElementById('bottomPrimary').textContent = meta.next;
+      document.getElementById('bottomPrimary').dataset.action = 'continue-learning';
+      sessionMain.scrollTop = 0;
+      showToast('完成反馈已生成，结果已保存');
+    }
+
+    function openSheet(title, subtitle, content) {
+      document.getElementById('sheetTitle').textContent = title;
+      document.getElementById('sheetSubtitle').textContent = subtitle;
+      document.getElementById('sheetContent').innerHTML = content;
+      document.getElementById('sheetBackdrop').hidden = false;
+    }
+
+    function handleAction(target) {
+      const action = target.dataset.action;
+      if (!action) return;
+      if (action === 'close') { document.getElementById('exitBackdrop').hidden = false; return; }
+      if (action === 'stay') { document.getElementById('exitBackdrop').hidden = true; return; }
+      if (action === 'leave') { document.getElementById('exitBackdrop').hidden = true; showToast('已保存到最近安全检查点，可从 Continue Learning 恢复'); return; }
+      if (action === 'close-sheet') { document.getElementById('sheetBackdrop').hidden = true; return; }
+      if (action === 'complete') { showResult(); return; }
+      if (action === 'continue-learning') { setModule(moduleOrder[(moduleOrder.indexOf(currentModule) + 1) % moduleOrder.length]); return; }
+      if (action === 'review-queue' || action === 'repair-queue') { showToast('已加入复习队列：明天 19:30 进行 D+1 复测'); return; }
+      if (action === 'module-help') { showToast(moduleMeta[currentModule].copy); return; }
+      if (action === 'favorite') { target.classList.toggle('is-selected'); target.textContent = target.classList.contains('is-selected') ? '已收藏' : '收藏规则'; showToast(target.classList.contains('is-selected') ? '已收藏，稍后可从表达库复习' : '已取消收藏'); return; }
+
+      if (action === 'grammar-practice') { const drawer = document.querySelector('[data-grammar-exercise]'); if (drawer) { drawer.hidden = false; target.disabled = true; showToast('已进入 1 题规则变式'); } return; }
+      if (action === 'grammar-option') { target.parentElement.querySelectorAll('.choice-button').forEach((button) => button.classList.remove('is-selected')); target.classList.add('is-selected'); const submit = document.getElementById('grammarSubmit'); if (submit) submit.disabled = false; return; }
+      if (action === 'submit-grammar') { const selected = document.querySelector('.choice-button.is-selected'); const feedback = document.querySelector('[data-grammar-feedback]'); if (!selected || !feedback) return; feedback.hidden = false; feedback.classList.toggle('is-wrong', selected.dataset.answer !== 'B'); feedback.querySelector('strong').textContent = selected.dataset.answer === 'B' ? '✓ 回答正确 · RULE_TENSE_SEQUENCE' : '× 需要再看一次 · RULE_TENSE_SEQUENCE'; feedback.querySelector('p').textContent = selected.dataset.answer === 'B' ? '两个动作都发生在过去，先离开的火车使用 had departed。结果会进入明天的延迟复测。' : '请先定位两个过去动作的先后：较早离开的动作使用 had + 过去分词。你可以重新选择。'; return; }
+
+      if (action === 'xray-tab') { document.querySelectorAll('.xray-tab').forEach((button) => button.classList.toggle('is-active', button === target)); const panel = target.dataset.panel; const sentence = document.getElementById('xrayOriginal'); const explain = document.getElementById('xrayExplain'); if (panel === 'translation') { sentence.innerHTML = '<span style="font-family:var(--font-cn);font-size:14px;line-height:1.7;">尽管这项去年推出的政策颇具争议，它仍然是一个有用的指南。</span>'; explain.innerHTML = '<strong>译文视图。</strong> 译文用于理解整体意义，结构颜色和节点交互保留在“结构”视图。'; } else if (panel === 'structure') { sentence.innerHTML = '<span class="xray-token subject">主语：The policy</span><span class="xray-token predicate">谓语：has remained</span><span class="xray-token attribute">定语：introduced last year</span><span class="xray-token object">补足：a useful guide</span>'; explain.innerHTML = '<strong>结构视图。</strong> 主句主干是 The policy has remained a useful guide，从句和定语是附加层。'; } else { sentence.innerHTML = '<button class="xray-token subject" data-action="xray-token" data-explain="主句主语：The policy，承担主句的动作。" type="button">The policy</button><button class="xray-token predicate" data-action="xray-token" data-explain="主句谓语：has remained，表示从过去持续到现在的状态。" type="button">has remained</button><button class="xray-token attribute" data-action="xray-token" data-explain="定语切片：introduced last year，修饰 policy。" type="button">introduced last year</button><button class="xray-token object" data-action="xray-token" data-explain="主句补充信息：a useful guide，说明 policy 的作用。" type="button">a useful guide</button><span>.</span>'; explain.innerHTML = '<strong>点击一个词块。</strong> 选中后会高亮它的切片、祖先节点和语法作用。'; } return; }
+      if (action === 'xray-token') { document.querySelectorAll('.xray-token, .clause-node').forEach((node) => node.classList.toggle('is-selected', node === target)); const explain = document.getElementById('xrayExplain'); if (explain) explain.innerHTML = '<strong>已选中：</strong> ' + target.dataset.explain; return; }
+      if (action === 'xray-collapse') { const clause = target.closest('[data-clause]'); if (!clause) return; clause.classList.toggle('is-collapsed'); target.textContent = clause.classList.contains('is-collapsed') ? '展开从句' : '折叠从句'; return; }
+      if (action === 'xray-play') { const player = document.getElementById('xrayPlayer'); if (!player) return; const playing = player.classList.toggle('is-playing'); target.textContent = playing ? 'Ⅱ' : '▶'; target.setAttribute('aria-label', playing ? '暂停句子' : '播放句子'); document.getElementById('xrayPlayLabel').textContent = playing ? '正在同步 · 01:24' : '原声 · 常速'; if (playing) showToast('正在按时间轴高亮主句与从句'); return; }
+      if (action === 'xray-exercise') { const feedback = document.querySelector('[data-xray-feedback]'); if (feedback) { feedback.hidden = false; showToast('拆句练习已打开，支持点击式重组'); } return; }
+
+      if (action === 'listen-play') { const card = document.getElementById('audioCard'); if (!card) return; const playing = card.classList.toggle('is-playing'); document.querySelectorAll('#audioCard [data-action="listen-play"]').forEach((button) => { button.textContent = playing ? 'Ⅱ' : '▶'; }); showToast(playing ? '正在播放当前句 · 时间轴已同步' : '已暂停 · 可从 00:07 继续'); return; }
+      if (action === 'listen-speed') { document.querySelectorAll('[data-action="listen-speed"]').forEach((button) => button.classList.toggle('is-active', button === target)); showToast('播放速度已切换为 ' + target.dataset.speed + '×'); return; }
+      if (action === 'listen-subtitle') { const caption = document.getElementById('captionStrip'); if (!caption) return; const active = target.classList.toggle('is-active'); caption.hidden = !active; target.textContent = active ? '字幕：英文' : '字幕：隐藏'; return; }
+      if (action === 'listen-mode') { const dictation = document.getElementById('dictationBox'); if (!dictation) return; const opening = dictation.hidden; dictation.hidden = !opening; target.textContent = opening ? '返回精听' : '切换到听写'; if (opening) showToast('已切换到短句听写'); return; }
+      if (action === 'dictation-submit') { const input = document.getElementById('dictationInput'); const feedback = document.getElementById('dictationFeedback'); if (!input || !feedback) return; feedback.hidden = false; showToast(input.value.trim() ? '听写已提交，差异已定位' : '请先输入听到的内容'); return; }
+      if (action === 'dictation-hint') { const input = document.getElementById('dictationInput'); if (input) { input.placeholder = '首字母提示：Gate 18 is now b…'; input.focus(); } showToast('已显示首字母提示，不改变本题答案'); return; }
+      if (action === 'rewind' || action === 'forward') { showToast(action === 'rewind' ? '已后退 5 秒，字幕锚点保持同步' : '已前进 5 秒，字幕锚点保持同步'); return; }
+
+      if (action === 'lookup') { document.querySelectorAll('.reader-word').forEach((word) => word.classList.toggle('is-selected', word === target)); openSheet('查词 · ' + target.dataset.word, '简明词典 · 可加入生词本或表达库', '<div class="lookup-word">' + target.dataset.word + '</div><div class="lookup-ipa">' + target.dataset.ipa + '</div><div class="lookup-meaning">' + target.dataset.meaning + '<br><span class="muted">来源：已发布词条 · 可追踪版本</span></div><div class="button-row" style="margin-top:13px;"><button class="button-primary" data-action="add-word" type="button">加入生词本</button><button class="button-secondary" data-action="add-expression" type="button">收藏表达</button></div>'); return; }
+      if (action === 'add-word') { showToast('已加入生词本，安排到后续 SRS 复习'); document.getElementById('sheetBackdrop').hidden = true; return; }
+      if (action === 'add-expression') { showToast('已收藏到表达库'); document.getElementById('sheetBackdrop').hidden = true; return; }
+      if (action === 'reader-bilingual') { const translation = document.getElementById('readingTranslation'); if (translation) { translation.hidden = !translation.hidden; target.classList.toggle('is-active', !translation.hidden); showToast(translation.hidden ? '已隐藏中文对照' : '已打开中文对照'); } return; }
+      if (action === 'reader-mine') { target.classList.toggle('is-active'); target.textContent = target.classList.contains('is-active') ? '已收藏句子' : '收藏句子'; showToast(target.classList.contains('is-active') ? '已加入表达库' : '已移出表达库'); return; }
+      if (action === 'reader-size') { const card = document.getElementById('readerCard'); if (card) { card.dataset.readerSize = target.dataset.size; document.querySelectorAll('[data-action="reader-size"]').forEach((button) => button.classList.toggle('is-active', button.dataset.size === target.dataset.size)); } return; }
+      if (action === 'reader-next' || action === 'reading-question') { showToast(action === 'reader-next' ? '已进入下一段阅读，位置会按段落锚点恢复' : '已进入本节理解题，答案提交后统一反馈'); return; }
+
+      if (action === 'record') { const button = document.getElementById('recordButton'); const complete = document.getElementById('recordingComplete'); if (!button || !complete) return; const recording = button.classList.toggle('is-recording'); button.querySelector('span').textContent = recording ? '停止录音' : '开始录音'; if (!recording) { complete.hidden = false; showToast('录音已生成，可回放并进行自评'); } else { showToast('录音中 · 仅在停止后生成本地音频'); } return; }
+      if (action === 'speak-play') { document.querySelectorAll('.track-row').forEach((row) => row.classList.toggle('is-active', row.dataset.track === target.dataset.track.toLowerCase().replace('我的录音', 'user').replace('原声', 'original'))); showToast('正在回放：' + target.dataset.track); return; }
+      if (action === 'self-rate') { document.querySelectorAll('[data-action="self-rate"]').forEach((button) => button.classList.toggle('is-selected', button === target)); document.getElementById('speakingRatingLabel').textContent = '已记录：' + target.querySelector('b').textContent + ' · 可回放'; showToast('已记录你的听感自评，不生成 AI 分数'); return; }
+
+      if (action === 'writing-hint') { target.classList.toggle('is-used'); showToast(target.classList.contains('is-used') ? '已显示受控提示，不改变参考答案' : '已收起提示'); return; }
+      if (action === 'writing-submit') { const input = document.getElementById('writingInput'); const feedback = document.getElementById('writingFeedback'); if (!input || !feedback) return; if (!input.value.trim()) { showToast('请先输入译文，草稿不会被丢弃'); input.focus(); return; } feedback.hidden = false; showToast('已按采分点生成规则反馈'); return; }
+      if (action === 'writing-reset') { const input = document.getElementById('writingInput'); const feedback = document.getElementById('writingFeedback'); if (input) input.value = ''; if (feedback) feedback.hidden = true; showToast('已清空当前草稿，可重新输入'); return; }
+    }
+
+    document.addEventListener('click', (event) => {
+      const eventPath = event.composedPath ? event.composedPath() : [event.target];
+      const findTarget = (selector) => eventPath.find((node) => node && node.nodeType === 1 && node.matches(selector));
+      const actionTarget = findTarget('[data-action]');
+      if (actionTarget) { handleAction(actionTarget); return; }
+      const moduleButton = findTarget('[data-module]');
+      if (moduleButton) { setModule(moduleButton.dataset.module); return; }
+      const deviceButton = findTarget('.device-switch [data-device]');
+      if (deviceButton) { const device = deviceButton.dataset.device; root.dataset.device = device; deviceFrame.className = 'device ' + (device === 'mobile' ? 'phone' : device); document.querySelectorAll('[data-device]').forEach((button) => button.classList.toggle('is-active', button.dataset.device === device)); const label = device === 'mobile' ? 'Mobile · iPhone 16 Pro Max 风格' : device === 'ipad' ? 'Pad · 横屏 Session 工作区' : 'Web · 桌面 Session 工作区'; const hint = device === 'mobile' ? '单列主任务 · 底部固定 CTA · Session 内隐藏五 Tab' : device === 'ipad' ? '左侧技能 Rail · 中央学习任务 · 详情保持克制' : '左侧导航 · 中央主任务 · 右侧复习与 Phase 1 证据'; document.getElementById('previewTitle').textContent = label; document.getElementById('previewHint').textContent = hint; showToast(device === 'mobile' ? '已切换到 Mobile 预览' : device === 'ipad' ? '已切换到 Pad 预览' : '已切换到 Web 预览'); }
+    });
+
+    document.getElementById('themeButton').addEventListener('click', () => { const dark = root.dataset.theme === 'dark'; root.dataset.theme = dark ? 'light' : 'dark'; document.getElementById('themeButton').textContent = dark ? '主题：浅色' : '主题：深色'; document.getElementById('themeButton').classList.toggle('is-active', !dark); showToast(dark ? '已切换到浅色极光' : '已切换到深色极光'); });
+    document.getElementById('motionButton').addEventListener('click', () => { const off = root.dataset.motion === 'off'; root.dataset.motion = off ? 'on' : 'off'; document.getElementById('motionButton').textContent = off ? '动效：开启' : '动效：减弱'; showToast(off ? '已恢复状态动效' : '已减弱循环动效'); });
+    document.getElementById('scopeButton').addEventListener('click', () => openSheet('Phase 1 边界', '本稿只展示已冻结的学习端范围', '<div class="scope-box" style="margin-top:15px;"><strong>保留</strong><ul class="scope-list"><li><span class="yes">✓</span><span>预制内容、规则化判分、音频时间轴</span></li><li><span class="yes">✓</span><span>录音回放、用户自评、错题与 SRS 信号</span></li><li><span class="yes">✓</span><span>Mobile / Pad / Web 和浅深色主题</span></li></ul></div><div class="scope-box" style="margin-top:10px;background:var(--danger-soft);"><strong>不在 Phase 1</strong><ul class="scope-list"><li><span class="no">×</span><span>AI 发音评分、ASR 自动转写、AI Tutor</span></li><li><span class="no">×</span><span>K12 / 未成年人入口 / 中高考同步</span></li><li><span class="no">×</span><span>开放式 AI 对话、生成式写作批改</span></li></ul></div>'));
+    document.getElementById('resetButton').addEventListener('click', () => { root.dataset.theme = 'light'; root.dataset.motion = 'on'; root.dataset.device = 'mobile'; document.getElementById('themeButton').textContent = '主题：浅色'; document.getElementById('themeButton').classList.add('is-active'); document.getElementById('motionButton').textContent = '动效：开启'; deviceFrame.className = 'device phone'; document.querySelectorAll('[data-device]').forEach((button) => button.classList.toggle('is-active', button.dataset.device === 'mobile')); document.getElementById('previewTitle').textContent = 'Mobile · iPhone 16 Pro Max 风格'; document.getElementById('previewHint').textContent = '单列主任务 · 底部固定 CTA · Session 内隐藏五 Tab'; document.getElementById('exitBackdrop').hidden = true; document.getElementById('sheetBackdrop').hidden = true; setModule('grammar', false); showToast('原型已重置到语法规则卡'); });
+    document.getElementById('islandButton').addEventListener('click', () => { document.getElementById('islandButton').classList.toggle('is-expanded'); });
+    document.getElementById('sheetBackdrop').addEventListener('click', (event) => { if (event.target.id === 'sheetBackdrop') document.getElementById('sheetBackdrop').hidden = true; });
+    document.getElementById('exitBackdrop').addEventListener('click', (event) => { if (event.target.id === 'exitBackdrop') document.getElementById('exitBackdrop').hidden = true; });
+    setModule('grammar', false);
+  </script>
+</body>
+</html>

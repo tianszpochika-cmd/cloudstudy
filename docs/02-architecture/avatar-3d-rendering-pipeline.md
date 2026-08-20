@@ -1,6 +1,6 @@
 # 3D Avatar 渲染技术方案（Avatar Studio / Wardrobe / 学习空间）
 
-> 需求溯源：PRD v3.2 §16.4 Avatar Studio（3D 半写实个性化人物）、§16.5 Wardrobe、§16.6 品质等级、§16.12 成员资料卡、§18.1 个人中心。
+> 需求溯源：PRD v3.3 §16.4 Avatar Studio（3D 半写实个性化人物）、§16.5 Wardrobe、§16.6 品质等级、§16.12 成员资料卡、§18.1 个人中心。
 > 依赖主线：Vue 3 + uni-app（ADR-0004）、四级画质引擎（cross-platform-and-performance-adaptive.md）。
 
 ---
@@ -15,7 +15,7 @@
 
 | 项 | 选型 | 说明 |
 | :--- | :--- | :--- |
-| 渲染引擎 | **Three.js**（web-view 承载） | uni-app 生态无 R3F（React 专属）；Three.js 经 web-view/renderjs 在 App 与 H5 均可运行 |
+| 渲染引擎 | **Three.js**（web-view 承载） | Three.js 经 web-view/renderjs 在 App 与 H5 均可运行，并可独立于学习页面降级 |
 | 模型格式 | glTF 2.0 + **Draco 压缩** | 人物基体 + 装扮部件模块化挂载（骨骼插槽） |
 | 承载方式 | App/H5：`web-view` 独立渲染页 + postMessage 通信 | 与主页面解耦，崩溃/卡顿不影响学习链路；小程序端（P1.5）条件编译降级为快照 |
 | 快照降级 | 服务端预渲染 + CDN | 人物配置 → 离屏渲染服务生成多姿态/多光照快照图（PNG/WebP），低配机与 H5 直接展示 |
@@ -35,7 +35,7 @@
 
 ## 4. 快照生成方案（关键降级路径）
 
-1. **生成时机**：用户保存人物配置时，后端异步任务（job-runner）触发离屏渲染（Node + three headless 或云函数），生成 4 姿态 × 2 光照 = 8 张快照。
+1. **生成时机**：用户保存人物配置时，后端异步任务（job-runner）触发离屏渲染（专用渲染 Worker 或云函数），生成 4 姿态 × 2 光照 = 8 张快照。
 2. **存储分发**：OSS + CDN，路径含配置版本哈希（`avatar/{userId}/{configHash}/pose_1.webp`），配置变更即失效重生成。
 3. **兜底**：快照未就绪时显示 2D 预设头像（PRD §17.3 系统头像），不阻塞任何页面。
 
@@ -71,3 +71,4 @@
 3. **M3**：画质联动、待机动画、场景装扮合成。
 
 > M1 快照方案即可满足 PRD 对 H5/低配的验收要求，实时 3D 为增强项，避免阻塞主链路。
+

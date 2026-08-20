@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yuxuexing.local/schemas/telemetry-event.schema.json",
+  "title": "语学星统一埋点事件",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "eventName",
+    "eventVersion",
+    "occurredAt",
+    "environment",
+    "source",
+    "requestId",
+    "traceId",
+    "correlationId",
+    "actorId",
+    "tenantId",
+    "payload"
+  ],
+  "properties": {
+    "eventId": { "$ref": "#/$defs/id" },
+    "eventName": { "type": "string", "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+\\.v[0-9]+$" },
+    "eventVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["local", "test", "staging", "production"] },
+    "source": { "enum": ["web", "mobile", "admin", "api", "worker", "system"] },
+    "requestId": { "$ref": "#/$defs/id" },
+    "traceId": { "$ref": "#/$defs/id" },
+    "correlationId": { "$ref": "#/$defs/id" },
+    "actorId": { "type": ["string", "null"] },
+    "tenantId": { "type": ["string", "null"] },
+    "sessionId": { "type": ["string", "null"] },
+    "deviceId": { "type": ["string", "null"] },
+    "resource": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "resourceType": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "resourceId": { "type": ["string", "null"] }
+      }
+    },
+    "payload": { "type": "object", "minProperties": 1, "maxProperties": 32 }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+  }
+}

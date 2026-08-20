@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "composeFile": "infra/docker/docker-compose.dev.yml",
+  "host": "127.0.0.1",
+  "portSource": "config/local-ports.json",
+  "policy": {
+    "bindOnlyToLoopback": true,
+    "autoIncrement": false,
+    "staticCheckCommand": "node scripts/check-local-infra.mjs --static-only",
+    "runtimeCheckCommand": "node scripts/check-local-infra.mjs",
+    "strictRuntimeCheckCommand": "node scripts/check-local-infra.mjs --require-healthy"
+  },
+  "services": {
+    "mysql": {
+      "composeService": "mysql",
+      "image": "mysql:8.0",
+      "bindings": [
+        {
+          "portKey": "mysql",
+          "hostPort": 13306,
+          "containerPort": 3306,
+          "protocol": "mysql",
+          "hostPortEnv": "MYSQL_HOST_PORT"
+        }
+      ],
+      "volume": "yuxuexing-mysql",
+      "healthcheckMarker": "mysqladmin ping",
+      "credentials": [
+        "MYSQL_DATABASE",
+        "MYSQL_USER",
+        "MYSQL_PASSWORD",
+        "MYSQL_ROOT_PASSWORD"
+      ]
+    },
+    "redis": {
+      "composeService": "redis",
+      "image": "redis:7-alpine",
+      "bindings": [
+        {
+          "portKey": "redis",
+          "hostPort": 16379,
+          "containerPort": 6379,
+          "protocol": "redis",
+          "hostPortEnv": "REDIS_HOST_PORT"
+        }
+      ],
+      "volume": "yuxuexing-redis",
+      "healthcheckMarker": "redis-cli"
+    },
+    "minio": {
+      "composeService": "minio",
+      "image": "minio/minio:latest",
+      "bindings": [
+        {
+          "portKey": "minio-api",
+          "hostPort": 19000,
+          "containerPort": 9000,
+          "protocol": "http",
+          "hostPortEnv": "MINIO_API_HOST_PORT"
+        },
+        {
+          "portKey": "minio-console",
+          "hostPort": 19001,
+          "containerPort": 9001,
+          "protocol": "http",
+          "hostPortEnv": "MINIO_CONSOLE_HOST_PORT"
+        }
+      ],
+      "volume": "yuxuexing-minio",
+      "healthcheckMarker": "minio/health/live"
+    },
+    "rabbitmq": {
+      "composeService": "rabbitmq",
+      "image": "rabbitmq:3-management-alpine",
+      "bindings": [
+        {
+          "portKey": "rabbitmq-amqp",
+          "hostPort": 15689,
+          "containerPort": 5672,
+          "protocol": "amqp",
+          "hostPortEnv": "RABBITMQ_AMQP_HOST_PORT"
+        },
+        {
+          "portKey": "rabbitmq-management",
+          "hostPort": 15690,
+          "containerPort": 15672,
+          "protocol": "http",
+          "hostPortEnv": "RABBITMQ_MANAGEMENT_HOST_PORT"
+        }
+      ],
+      "volume": "yuxuexing-rabbitmq",
+      "healthcheckMarker": "rabbitmq-diagnostics",
+      "credentials": [
+        "RABBITMQ_DEFAULT_USER",
+        "RABBITMQ_DEFAULT_PASS",
+        "RABBITMQ_DEFAULT_VHOST"
+      ]
+    }
+  },
+  "minioInitialization": {
+    "composeService": "minio-init",
+    "dependsOn": "minio",
+    "bucketEnv": "OBJECT_STORAGE_BUCKET",
+    "defaultBucket": "yuxuexing-local",
+    "accessPolicy": "none",
+    "purpose": "Create the local S3-compatible bucket after MinIO becomes healthy."
+  }
+}

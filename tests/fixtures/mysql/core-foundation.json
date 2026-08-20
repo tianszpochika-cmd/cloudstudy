@@ -1,0 +1,52 @@
+{
+  "fixtureVersion": 1,
+  "synthetic": true,
+  "seedRunId": "seed-core-foundation-v1",
+  "mediaAssets": [
+    {
+      "assetUuid": "00000000-0000-4000-8000-000000000001",
+      "assetKey": "fixture/core-foundation/audio-placeholder-v1",
+      "assetKind": "AUDIO",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "contentLengthBytes": 1024,
+      "supportsRange": true,
+      "chunkSizeBytes": 256,
+      "partCount": 4,
+      "ownerType": "SYSTEM_FIXTURE",
+      "ownerId": "fixture-owner-0001",
+      "visibility": "AUTHENTICATED"
+    }
+  ],
+  "idempotencyKeys": [
+    {
+      "scopeCode": "fixture",
+      "scopeSubject": "seed-core-foundation",
+      "idempotencyKey": "fixture-idempotency-0001",
+      "requestHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "status": "SUCCEEDED"
+    }
+  ],
+  "outboxEvents": [
+    {
+      "eventId": "00000000-0000-4000-8000-000000000002",
+      "eventType": "fixture.foundation.created.v1",
+      "dedupeKey": "fixture:core-foundation:event-0001",
+      "aggregateType": "fixture",
+      "aggregateId": "core-foundation-0001",
+      "payload": {
+        "synthetic": true,
+        "seedRunId": "seed-core-foundation-v1"
+      }
+    }
+  ],
+  "auditLogs": [
+    {
+      "auditUuid": "00000000-0000-4000-8000-000000000003",
+      "requestId": "fixture-request-00000001",
+      "actorType": "SYSTEM_FIXTURE",
+      "actorSubject": "seed-core-foundation",
+      "actionCode": "FIXTURE_SEED",
+      "reasonCode": "DEV_FIXTURE_CORE_FOUNDATION"
+    }
+  ]
+}

@@ -1,26 +1,26 @@
-# ADR-0006：关系型数据库主线切换为 MySQL 8.x（遵循 PRD v3.2 §1.1）
+# ADR-0006：采用 MySQL 8.x + Redis 7.x 作为数据主线
 
 ## 状态
 
-accepted（supersedes 原 PostgreSQL 16 + pgvector 口径，见 ADR-0001/0004 时期文档）
-
-## 背景
-
-PRD v3.2（用户复核版，需求唯一事实源）§1.1 明确技术主线数据层为 **MySQL + Redis**，且容量目标仅 1 万注册 / 1,000–2,000 DAU、单机起步、低成本优先。此前架构文档沿用的是 PostgreSQL 16 + pgvector 口径，与 PRD 冲突。经确认，架构文档按 PRD 字面口径更新。
+accepted
 
 ## 决策
 
-1. **关系型主库**：MySQL 8.x（utf8mb4 / utf8mb4_unicode_ci），ORM 用 MyBatis-Plus，迁移用 Flyway。
-2. **缓存**：Redis 7.x 不变（排行榜 ZSet、打卡 BitMap、分布式锁、会话）。
-3. **向量检索（Phase 2 预留）**：PRD 同时提到"Phase 2 按需加入 pgvector/向量检索"，pgvector 为 PostgreSQL 专属扩展、与 MySQL 主线不兼容；本决策将向量检索定义为 **Phase 2 独立组件选型问题**（候选：专用向量数据库 / 云厂商向量检索服务 / 独立 PostgreSQL 实例仅承载向量库），届时另记 ADR，Phase 1 不引入。
-4. **目录与工程**：`database/postgres/` 改造为 `database/mysql/`，迁移脚本改写为 MySQL 方言；`infra/docker/docker-compose.dev.yml` 切换为 mysql:8.0。
+1. 关系主库使用 MySQL 8.x，字符集 utf8mb4，ORM 使用 MyBatis-Plus，迁移使用 Flyway。
+2. Redis 7.x 用于会话、排行榜、打卡、锁、短期缓存和辅助消息能力。
+3. Phase 1 不引入向量检索组件。
+4. Phase 2 若需要向量检索，单独评估专用向量服务或独立检索组件，并新增 ADR。
+5. 数据目录、容器编排、迁移和种子统一使用 MySQL 口径。
 
-## 代价与接受
+## 原因
 
-- 放弃 PostgreSQL 的行级安全（RLS）与 JSONB 富查询：行级权限改用应用层权限模块实现，JSON 字段使用 MySQL JSON 类型（功能够用、索引能力略弱，可接受）。
-- Phase 2 若向量检索需要 pgvector 生态，需额外维护一个 PostgreSQL 实例或改选其他向量组件，成本在 Phase 2 预算内评估。
-- 现有 `database/postgres/` 下的迁移与种子脚本需要一次性改写（工作量小，未上生产无历史包袱）。
+- PRD v3.3 明确 MySQL + Redis 为数据基线。
+- Phase 1 容量目标为 1 万注册、1,000-2,000 DAU，单机起步、低成本和成熟运维优先。
+- MySQL 与 Spring Boot、MyBatis-Plus、Flyway 的集成稳定，适合学习记录、内容、权益、订单和审计数据。
 
-## 回滚触发条件
+## 约束
 
-出现 MySQL 无法承载的硬性需求（如大规模向量检索与关系查询深度耦合、强 RLS 合规要求），且改写成本低于迁移成本时，可评估切回 PostgreSQL，需新增 ADR。
+- Redis 不承担唯一事实数据。
+- 行级权限、审计和数据隔离由应用层权限模块与审计日志实现。
+- 数据库替换、向量组件引入或跨库同步必须新增 ADR。
+

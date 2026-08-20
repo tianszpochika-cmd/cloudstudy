@@ -1,191 +1,76 @@
-# 跨阶段通用底层核心模块与技术规范 (Core Underlying Engines & Infrastructure)
+# 跨阶段通用底层核心模块与技术规范
 
-> **对应 PRD 章节**：第 5 章 (Core Underlying Engines) 与 第 6 章 (Multi-Platform & API Contracts)  
-> **面向对象**：全栈开发人员、算法工程师、数据中台工程师、运维与测试团队  
-> **设计目标**：构建贯穿 Phase 1 至 Phase 3 的高可用、可复用、高精度的通用基础设施与算法底座。
+> 本文按最终技术路线编写：Vue 3 + uni-app + Spring Boot 3 + MySQL 8.x + Redis 7.x。Phase 1 优先实现规则化学习底座，Phase 2 再接入 AI。
 
----
+## 1. 自适应记忆复习引擎
 
-## 1. 自适应记忆复习调度引擎 (Adaptive Memory & Spaced Repetition)
+### 1.1 目标
 
-### 1.1 改进版 SuperMemo-2 / FSRS (Free Spaced Repetition Scheduler) 算法
-结合学习者的**答题质量 (Quality 0-5)**、**反应耗时 (Response Time in ms)** 与 **历史失误率** 动态计算下次复习时间：
+统一管理单词、短语、句型、语法点和错题的复习状态，支持 SM-2 或 FSRS 可配置实现。
 
-```typescript
-/**
- * 记忆调度算法核心参数
- */
-export interface MemoryItemState {
-  itemId: string;              // 词汇、句型或语法点 ID
-  repetitionCount: number;     // 连续正确重复次数
-  easeFactor: number;          // 难度系数 EF (初始 2.5，最小 1.3)
-  intervalDays: number;        // 当前复习间隔 (天)
-  lastReviewedAt: Date;        // 上次复习时间
-  nextReviewDue: Date;         // 下次预计复习时间
-  stability: number;           // 记忆稳定性评分
-}
+### 1.2 核心字段
 
-export function calculateNextReview(
-  currentState: MemoryItemState,
-  quality: number, // 0: 彻底遗忘, 1: 错误, 2: 严重犹豫, 3: 勉强正确, 4: 熟练, 5: 瞬间秒答
-  responseTimeMs: number
-): MemoryItemState {
-  let { repetitionCount, easeFactor, intervalDays } = currentState;
-  
-  // 结合响应时间修正质量评分 (若超时超过基准则惩罚质量等级)
-  if (responseTimeMs > 8000 && quality >= 3) {
-    quality = quality - 1;
-  }
+- learning_item_id
+- item_type
+- repetition_count
+- ease_factor
+- interval_days
+- stability
+- last_reviewed_at
+- next_review_due
+- source_type
+- source_id
 
-  // 1. 更新难度因子 EF
-  // EF'' = EF + (0.1 - (5 - Q) * (0.08 + (5 - Q) * 0.02))
-  easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  if (easeFactor < 1.3) easeFactor = 1.3;
+### 1.3 规则要求
 
-  // 2. 更新复习间隔与重复计数
-  if (quality < 3) {
-    // 回答错误或遗忘，重置周期
-    repetitionCount = 0;
-    intervalDays = 1; // 次日立即复习
-  } else {
-    // 回答正确
-    if (repetitionCount === 0) {
-      intervalDays = 1;
-    } else if (repetitionCount === 1) {
-      intervalDays = 6;
-    } else {
-      intervalDays = Math.round(intervalDays * easeFactor);
-    }
-    repetitionCount += 1;
-  }
+- 答题质量、响应时间、连续错误和历史遗忘风险参与调度。
+- 错题必须回到复习队列，记录来源和触发原因。
+- 调度结果可解释、可回放、可重新计算。
+- Java Core API 负责持久化和业务调度；前端只展示结果，不复制算法事实。
 
-  const nextReviewDue = new Date();
-  nextReviewDue.setDate(nextReviewDue.getDate() + intervalDays);
+## 2. 内容与学习对象模型
 
-  return {
-    ...currentState,
-    repetitionCount,
-    easeFactor: Number(easeFactor.toFixed(2)),
-    intervalDays,
-    lastReviewedAt: new Date(),
-    nextReviewDue
-  };
-}
-```
+统一对象：
 
----
+- WORD：单词
+- PHRASE：短语和搭配
+- SENTENCE：句型和表达
+- GRAMMAR：语法点
+- LISTENING：听力材料
+- READING：阅读材料
+- WRITING：写作任务
+- EXERCISE：练习题
+- SCENARIO：场景课程
 
-## 2. 英语知识图谱与错题追踪网络 (Knowledge Graph & Error Tracking)
+每个对象必须有：版本、难度、能力标签、内容来源、版权状态、审核状态、发布时间和下线时间。
 
-### 2.1 拓扑结构设计
-- **12,000+ 词汇节点 (Lexical Nodes)**：包含 CEFR 等级 (A1-C2)、词根词缀 (Etymology)、同义词簇 (Synonym Clusters)、中高考/四六级/雅思核心标签。
-- **800+ 语法与考点节点 (Grammar & Skill Nodes)**：以树状与有向无环图 (DAG) 组织。
-  - 示例：`非谓语动词 (Non-finite Verbs)` -> `现在分词 (Present Participle)` -> `分词作伴随状语 (Participle as Adverbial of Accompanying)`。
-- **错题因果溯源 (Root-cause Tracing)**：
-  - 用户在做高考读后续写或单选错题时，系统不止记录题目本身，而是向上反查其前置依赖的知识节点，形成个性化“红色薄弱知识孤岛”并在复习时定向轰炸。
+## 3. 规则化能力与报告
 
----
+Phase 1 只使用确定性规则：
 
-## 3. 全链路多维能力雷达图体系 (Competency Radar System)
+- 正确率、耗时、完成率和连续错误。
+- 词汇掌握度、语法掌握度、听力完成度和阅读表现。
+- 阶段报告必须说明数据范围、计算口径和局限性。
+- 不宣称官方考试成绩、官方 CEFR 认证或专业诊断。
 
-### 3.1 核心评估维度
-1. **听力理解 (Listening Comprehension)**：辨音敏锐度、连读捕捉、长难篇章主旨概括。
-2. **口语表达 (Spoken Fluency & Pronunciation)**：发音标准度 (PR)、语流连贯 (FC)、语调与抑扬顿挫。
-3. **词汇掌控 (Vocabulary Mastery)**：词汇广度 (Volume)、深度 (Collocation/Idioms)、产出型词汇比率。
-4. **语法架构 (Grammatical Accuracy & Range)**：时态语态正确率、复杂复合句使用率 (GRA)。
-5. **阅读提炼 (Reading & Analytical Skills)**：短文阅读速度 (WPM)、推理判断、细节定位。
-6. **地道书面写作 (Writing & Pragmatics)**：篇章连贯性 (Cohesion)、学术/商务地道性、中式英语规避率。
+## 4. 数据与服务边界
 
----
+- Core API：Spring Boot 3 模块化单体，负责用户、课程、练习、复习、权益、订单和审计。
+- MySQL 8.x：唯一关系事实源；Flyway 管理迁移。
+- Redis 7.x：会话、排行榜、分布式锁、短期缓存和队列辅助。
+- OSS/CDN：音频、视频、图片和离线课程包。
+- OpenAPI：前后端契约单一事实源，生成 Java DTO 和 TypeScript 类型。
 
-## 4. AI 智能安全风控与内容合规网关 (AI Safety & Compliance)
+## 5. Phase 2 AI 插槽
 
-### 4.1 中国大陆合规双审机制
-```
-+-----------------------+     +------------------------+     +------------------------+
-| 1. 前置输入敏感词过滤  | --> | 2. LLM 推理与提示词锚定 | --> | 3. 后置敏感与生成物核验 |
-| (网络安全法/少儿保护)  |     | (严格限制于教研知识库) |     | (网信办深度合成标识)   |
-+-----------------------+     +------------------------+     +------------------------+
-```
-- **提示词防注入 (Prompt Injection Defense)**：在 System Prompt 头部注入不可违抗的隔离指令。
-- **可回放与确定性追溯 (Explainable & Auditable AI)**：
-  - 任何涉及语法诊断、判分依据的 AI 输出，均在数据库保存完整的 `prompt_version`, `model_name`, `input_hash`, `structured_output_json`，支持一键调取回放与专家复审。
+- Python FastAPI 作为独立 AI 编排服务。
+- 每项 AI 能力定义 prompt_version、输入/输出 schema、超时、重试、降级和审计字段。
+- AI 反馈不能覆盖原始答案，不能直接决定付费、封禁或等级变更。
+- 向量检索由 Phase 2 单独评估并新增 ADR。
 
----
+## 6. 性能与跨端
 
-## 5. 多端落地与 API 契约设计 (Multi-Platform Specs & API Contracts)
-
-### 5.1 多端架构定位矩阵
-| 终端类型 | 框架技术 | 核心承载功能与交互 |
-| :--- | :--- | :--- |
-| **微信小程序** | uni-app (Vue3) 条件编译 | 碎片化刷词、每日打卡、音标实验室、战队排行榜、轻量跟读。 |
-| **移动端 App (iOS/Android/iPad)** | uni-app 原生渲染编译（见 ADR-0004） | WebRTC 实时卡通/外教数字人 1v1 通话、机考听说高保真录音、离线课件包。 |
-| **PC Learner Web** | uni-app H5 编译（SEO 需求高时用 Nuxt 3） | 沉浸式长难句 X 光机交互、高考/考研/雅思全真模考大屏、学术论文与手译本。 |
-| **Admin Web 中台** | Vue 3 + Vite + Element Plus | 教研题库录入与教材版本分发、AI Prompt 版本热更新、风控日志监控。 |
-
-### 5.2 核心 RESTful / WebSocket API 契约示例
-```yaml
-openapi: 3.0.3
-info:
-  title: EnglishFlow Core Services API
-  version: 2.0.0
-paths:
-  /api/v1/learning/today-tasks:
-    get:
-      summary: 获取今日自适应学习任务链
-      security:
-        - BearerAuth: []
-      responses:
-        ''200'':
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  userId: { type: string }
-                  phase: { type: string, enum: [phase1, phase2, phase3] }
-                  tasks:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        taskId: { type: string }
-                        type: { type: string, enum: [vocab_review, textbook_lesson, syntax_xray, ai_dialogue, exam_mock] }
-                        title: { type: string }
-                        estimatedMinutes: { type: integer }
-                        isCompleted: { type: boolean }
-
-  /api/v1/ai/syntax-xray:
-    post:
-      summary: 长难句 X 光机智能分析
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [sentence]
-              properties:
-                sentence: { type: string }
-                level: { type: string, enum: [junior, highschool, college, advanced] }
-      responses:
-        ''200'':
-          description: 成功返回结构化句法树与图谱拆解
-
-  /api/v1/ai/writing-elevate:
-    post:
-      summary: 读后续写 / 大小作文三阶升格批改
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [essayType, text]
-              properties:
-                essayType: { type: string, enum: [gaokao_continuation, cet6, kaoyan, ielts_task2] }
-                promptContext: { type: string }
-                text: { type: string }
-      responses:
-        ''200'':
-          description: 成功返回三阶词句升格、逻辑断层诊断与评分报告
-```
-
+- 页面和动效由 AdaptivePerformanceEngine 控制 Ultra / High / Medium / Performance 四档。
+- Performance 档使用静态图片、SVG、文本反馈和轻量音频。
+- H5/App 可使用 Three.js、Rive、Wavesurfer；小程序必须有 2D 降级。
+- 所有核心学习任务支持弱网恢复、幂等提交和离线数据安全清理。

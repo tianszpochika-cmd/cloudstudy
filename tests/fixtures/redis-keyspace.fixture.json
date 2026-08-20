@@ -1,0 +1,12 @@
+{
+  "registry": "database/redis/keyspace.registry.json",
+  "samples": [
+    {"entryId": "auth.otp.challenge", "values": {"subjectHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "channel": "sms"}},
+    {"entryId": "learning.continue-context", "values": {"userId": "usr_test_001"}},
+    {"entryId": "learning.srs.state-lock", "values": {"userId": "usr_test_001", "itemKey": "word_demo_001"}},
+    {"entryId": "learning.srs.idempotency-response", "values": {"userId": "usr_test_001", "route": "srs.review", "idempotencyKey": "idem_test_001"}},
+    {"entryId": "social.seat.lease", "values": {"roomId": "room_test_001", "seatIndex": "7"}},
+    {"entryId": "social.leaderboard.projection", "values": {"kind": "focus", "period": "2026-08-20", "version": "1"}},
+    {"entryId": "ops.feature-flag.projection", "values": {"flagKey": "home.reorder.v1"}}
+  ]
+}

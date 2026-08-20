@@ -1,12 +1,15 @@
 {
-  "project": "englishflow",
-  "workingTitle": "AI 职场英语成长平台",
+  "project": "yuxuexing",
+  "workingTitle": "语学星成人语言学习平台",
+  "legacyCodeName": "englishflow",
   "locale": "zh-CN",
   "market": "中国大陆",
   "architecture": "monorepo",
-  "backendStrategy": "modular-monolith-plus-workers",
-  "primaryPlatforms": ["web", "wechat-mini-program", "admin-web", "official-site"],
-  "laterPlatforms": ["react-native-mobile", "ios", "android"],
+  "frontend": "vue3-uniapp",
+  "backend": "spring-boot-3",
+  "database": "mysql-8-redis-7",
+  "primaryPlatforms": ["web", "h5", "ios", "android", "admin-web", "official-site"],
+  "laterPlatforms": ["wechat-mini-program", "windows-pwa"],
   "createdAt": "2026-08-19",
   "status": "foundation-scaffold"
 }

@@ -1,0 +1,612 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "语学星 Core API Contract",
+    "description": "Phase 1 Core API 的最小可执行契约基线。JSON 是 API 单一事实源；详细业务域接口按同一组件和版本约定增量接入。",
+    "version": "1.0.0",
+    "contact": {
+      "name": "语学星平台工程"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:18080",
+      "description": "本地 Core API 固定端口"
+    }
+  ],
+  "x-canonical-id-fields": {
+    "userId": "#/components/schemas/CanonicalInt64Id",
+    "contentVersionId": "#/components/schemas/CanonicalInt64Id",
+    "vocabId": "#/components/schemas/CanonicalInt64Id",
+    "expressionId": "#/components/schemas/CanonicalInt64Id",
+    "grammarPointId": "#/components/schemas/CanonicalInt64Id",
+    "sentenceId": "#/components/schemas/CanonicalInt64Id",
+    "questionId": "#/components/schemas/CanonicalInt64Id",
+    "exerciseId": "#/components/schemas/CanonicalInt64Id",
+    "attemptId": "#/components/schemas/CanonicalInt64Id",
+    "sessionId": "#/components/schemas/SessionId",
+    "requestId": "#/components/schemas/RequestId",
+    "traceId": "#/components/schemas/TraceId",
+    "eventId": "#/components/schemas/EventId",
+    "aggregateId": "#/components/schemas/AggregateId",
+    "actorId": "#/components/schemas/ActorId"
+  },
+  "tags": [
+    {
+      "name": "system",
+      "description": "运行状态和基础设施探针"
+    },
+    {
+      "name": "auth",
+      "description": "登录会话和 Refresh Token 轮换"
+    }
+  ],
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": ["system"],
+        "summary": "读取 Core API 健康状态",
+        "operationId": "getHealth",
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/Traceparent" }
+        ],
+        "responses": {
+          "200": {
+            "description": "服务可用或处于受控降级状态",
+            "headers": {
+              "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+              "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthResponse" }
+              }
+            }
+          },
+          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "轮换 Access/Refresh Token",
+        "operationId": "refreshAuthSession",
+        "security": [],
+        "x-contract": {
+          "domain": "auth",
+          "phase": "P1",
+          "owner": "core-api.auth"
+        },
+        "x-idempotency": {
+          "required": false,
+          "strategy": "refresh-token-rotation",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复使用旧 Refresh Token 必须进入 REUSE_DETECTED，不返回第二枚有效 Token"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/XRequestId" },
+          { "$ref": "#/components/parameters/Traceparent" },
+          { "$ref": "#/components/parameters/IdempotencyKeyOptional" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AuthRefreshRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token 轮换成功",
+            "headers": {
+              "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+              "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthRefreshResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "429": { "$ref": "#/components/responses/RateLimited" },
+          "500": { "$ref": "#/components/responses/InternalError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "XRequestId": {
+        "name": "X-Request-Id",
+        "in": "header",
+        "required": false,
+        "description": "客户端可传入关联 ID；服务端必须回显或生成新的 requestId。不得包含手机号、Token 或答案原文。",
+        "schema": { "$ref": "#/components/schemas/RequestId" }
+      },
+      "Traceparent": {
+        "name": "traceparent",
+        "in": "header",
+        "required": false,
+        "description": "W3C Trace Context。服务之间透传，不把用户隐私写入 trace。",
+        "schema": { "$ref": "#/components/schemas/Traceparent" }
+      },
+      "IdempotencyKeyOptional": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "description": "写操作幂等键。相同作用域内同 key 必须绑定 request body hash；不同 body 返回 IDEMPOTENCY_CONFLICT。",
+        "schema": { "$ref": "#/components/schemas/IdempotencyKey" }
+      },
+      "IdempotencyKeyRequired": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "必填写操作幂等键；同一作用域内同 key 不同 request body hash 必须返回 IDEMPOTENCY_CONFLICT。",
+        "schema": { "$ref": "#/components/schemas/IdempotencyKey" }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "不透明、服务端签发的稳定游标；客户端不得解码或自行拼接。",
+        "schema": { "$ref": "#/components/schemas/Cursor" }
+      },
+      "PageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "required": false,
+        "description": "游标分页大小。服务端必须再次限幅。",
+        "schema": { "$ref": "#/components/schemas/PageSize", "default": 20 }
+      }
+    },
+    "headers": {
+      "XRequestId": {
+        "description": "本次请求的稳定关联 ID。",
+        "schema": { "$ref": "#/components/schemas/RequestId" }
+      },
+      "XTraceId": {
+        "description": "OpenTelemetry/W3C trace ID。",
+        "schema": { "$ref": "#/components/schemas/TraceId" }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "请求结构或业务参数不合法",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiErrorResponse" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "身份凭证无效、过期或已撤销",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiErrorResponse" }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "幂等、版本或 Token family 冲突",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiErrorResponse" }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "请求频率超过限制",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" },
+          "Retry-After": {
+            "description": "建议客户端等待的秒数。",
+            "schema": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiErrorResponse" }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "服务端内部错误",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiErrorResponse" }
+          }
+        }
+      },
+      "ServiceUnavailable": {
+        "description": "服务暂不可用或依赖处于不可用状态",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" },
+          "Retry-After": {
+            "description": "建议客户端等待的秒数。",
+            "schema": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ApiErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "CanonicalInt64Id": {
+        "title": "Canonical domain ID",
+        "description": "MySQL BIGINT UNSIGNED 在 REST JSON 中的 canonical 表示。字段名决定领域含义，数值必须为正整数。",
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1,
+        "maximum": 9223372036854775807
+      },
+      "RequestId": {
+        "title": "Request ID",
+        "description": "跨服务请求关联 ID；客户端可生成，服务端可替换，但响应必须回传最终值。",
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._-]{7,127}$",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "TraceId": {
+        "title": "W3C trace ID",
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$",
+        "minLength": 32,
+        "maxLength": 32
+      },
+      "Traceparent": {
+        "title": "W3C traceparent",
+        "type": "string",
+        "pattern": "^00-[a-f0-9]{32}-[a-f0-9]{16}-[0-9a-f]{2}$",
+        "minLength": 55,
+        "maxLength": 55
+      },
+      "EventId": {
+        "title": "Event ID",
+        "description": "事件唯一 ID。推荐 ULID；消费端按 eventId 去重。",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "ClientEventId": {
+        "title": "Client event ID",
+        "description": "离线或客户端产生事件的幂等 ID。",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$",
+        "minLength": 8,
+        "maxLength": 96
+      },
+      "AggregateId": {
+        "title": "Aggregate ID",
+        "description": "事件总线上的不透明聚合 ID，可承载十进制 BIGINT、UUID 或 ULID；不能用来替代 payload 内的领域 ID 字段。",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "ActorId": {
+        "title": "Actor ID",
+        "description": "触发事件的用户、服务或 system 标识。原始手机号、第三方 subject 和 Token 禁止写入。",
+        "type": "string",
+        "pattern": "^(system|service:[a-z0-9-]{1,48}|[1-9][0-9]{0,19})$",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "DeviceId": {
+        "title": "Public device ID",
+        "description": "不可逆设备公开标识；不等同于设备指纹。",
+        "type": "string",
+        "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$",
+        "minLength": 12,
+        "maxLength": 100
+      },
+      "SessionId": {
+        "title": "Session ID",
+        "description": "学习、认证或考试会话的不可变 ID；优先 UUID/ULID，不与数据库自增主键混用。",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "IdempotencyKey": {
+        "title": "Idempotency key",
+        "description": "同一用户/设备/路由作用域内唯一的写请求幂等键；服务端持久化 request body hash 和首次结果。",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$",
+        "minLength": 16,
+        "maxLength": 128
+      },
+      "Cursor": {
+        "title": "Opaque cursor",
+        "type": "string",
+        "pattern": "^[A-Za-z0-9._:-]{8,512}$",
+        "minLength": 8,
+        "maxLength": 512
+      },
+      "PageSize": {
+        "title": "Cursor page size",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "DateTime": {
+        "title": "UTC date-time",
+        "description": "接口使用 RFC 3339 date-time；数据库统一 UTC DATETIME(3)，客户端按用户时区显示。",
+        "type": "string",
+        "format": "date-time"
+      },
+      "ApiVersion": {
+        "type": "string",
+        "enum": ["v1"]
+      },
+      "SemanticVersion": {
+        "type": "string",
+        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      },
+      "ApiMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["apiVersion", "schemaVersion", "serverTime", "traceId"],
+        "properties": {
+          "apiVersion": { "$ref": "#/components/schemas/ApiVersion" },
+          "schemaVersion": { "$ref": "#/components/schemas/SemanticVersion" },
+          "serverTime": { "$ref": "#/components/schemas/DateTime" },
+          "traceId": { "$ref": "#/components/schemas/TraceId" }
+        }
+      },
+      "PageMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["hasMore", "pageSize"],
+        "properties": {
+          "nextCursor": { "$ref": "#/components/schemas/Cursor", "nullable": true },
+          "hasMore": { "type": "boolean" },
+          "pageSize": { "$ref": "#/components/schemas/PageSize" }
+        }
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "VALIDATION_ERROR",
+          "AUTH_REQUIRED",
+          "AUTH_INVALID_REFRESH_TOKEN",
+          "AUTH_REFRESH_TOKEN_EXPIRED",
+          "AUTH_REFRESH_TOKEN_REVOKED",
+          "AUTH_REFRESH_REUSE_DETECTED",
+          "AUTH_DEVICE_MISMATCH",
+          "AUTH_IDENTITY_BOUND_OTHER",
+          "FORBIDDEN",
+          "NOT_FOUND",
+          "CONFLICT",
+          "IDEMPOTENCY_REQUIRED",
+          "IDEMPOTENCY_CONFLICT",
+          "IDEMPOTENCY_KEY_REUSED",
+          "VERSION_CONFLICT",
+          "CONTENT_NOT_PUBLISHED",
+          "SYNC_CONFLICT",
+          "EVENT_EXPIRED",
+          "RATE_LIMITED",
+          "FEATURE_DISABLED",
+          "SERVICE_UNAVAILABLE",
+          "INTERNAL_ERROR"
+        ]
+      },
+      "ErrorDetailValue": {
+        "oneOf": [
+          { "type": "string" },
+          { "type": "number" },
+          { "type": "boolean" },
+          { "type": "array", "items": { "type": "string" } },
+          { "type": "object", "additionalProperties": true }
+        ]
+      },
+      "ErrorDetails": {
+        "type": "object",
+        "description": "仅放可安全展示的结构化字段；不得放 Token、原始答案、音频、支付回调或第三方身份原文。",
+        "additionalProperties": { "$ref": "#/components/schemas/ErrorDetailValue" }
+      },
+      "ApiError": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["errorCode", "message", "retryable"],
+        "properties": {
+          "errorCode": { "$ref": "#/components/schemas/ErrorCode" },
+          "message": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "retryable": { "type": "boolean" },
+          "details": { "$ref": "#/components/schemas/ErrorDetails" }
+        }
+      },
+      "ApiErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requestId", "traceId", "error"],
+        "properties": {
+          "requestId": { "$ref": "#/components/schemas/RequestId" },
+          "traceId": { "$ref": "#/components/schemas/TraceId" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "HealthStatus": {
+        "type": "string",
+        "enum": ["UP", "DEGRADED", "DOWN"]
+      },
+      "HealthDependency": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+          "status": { "$ref": "#/components/schemas/HealthStatus" },
+          "latencyMs": { "type": "integer", "minimum": 0, "nullable": true },
+          "errorCode": { "$ref": "#/components/schemas/ErrorCode", "nullable": true }
+        }
+      },
+      "HealthData": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "service", "version", "build", "dependencies"],
+        "properties": {
+          "status": { "$ref": "#/components/schemas/HealthStatus" },
+          "service": { "type": "string", "const": "core-api" },
+          "version": { "$ref": "#/components/schemas/SemanticVersion" },
+          "build": { "type": "string", "maxLength": 128 },
+          "dependencies": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/HealthDependency" }
+          }
+        }
+      },
+      "HealthResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requestId", "data", "meta"],
+        "properties": {
+          "requestId": { "$ref": "#/components/schemas/RequestId" },
+          "data": { "$ref": "#/components/schemas/HealthData" },
+          "meta": { "$ref": "#/components/schemas/ApiMeta" }
+        }
+      },
+      "AuthRefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["refreshToken", "deviceId"],
+        "x-sensitive-fields": ["refreshToken"],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 4096,
+            "description": "仅通过 TLS 传输；服务端只保存 hash，日志和事件禁止记录原文。"
+          },
+          "deviceId": { "$ref": "#/components/schemas/DeviceId" }
+        }
+      },
+      "TokenType": {
+        "type": "string",
+        "enum": ["Bearer"]
+      },
+      "AuthTokenPair": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "tokenType",
+          "accessTokenExpiresAt",
+          "refreshTokenExpiresAt",
+          "userId",
+          "deviceId",
+          "sessionId"
+        ],
+        "x-sensitive-fields": ["accessToken", "refreshToken"],
+        "properties": {
+          "accessToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "仅通过 TLS 返回；客户端只存短期凭证，服务端日志、事件和持久化记录禁止写入原文。" },
+          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "仅通过 TLS 返回；服务端只保存 hash，日志、事件和客户端遥测禁止写入原文。" },
+          "tokenType": { "$ref": "#/components/schemas/TokenType" },
+          "accessTokenExpiresAt": { "$ref": "#/components/schemas/DateTime" },
+          "refreshTokenExpiresAt": { "$ref": "#/components/schemas/DateTime" },
+          "userId": { "$ref": "#/components/schemas/CanonicalInt64Id" },
+          "deviceId": { "$ref": "#/components/schemas/DeviceId" },
+          "sessionId": { "$ref": "#/components/schemas/SessionId" }
+        }
+      },
+      "AuthRefreshResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requestId", "data", "meta"],
+        "properties": {
+          "requestId": { "$ref": "#/components/schemas/RequestId" },
+          "data": { "$ref": "#/components/schemas/AuthTokenPair" },
+          "meta": { "$ref": "#/components/schemas/ApiMeta" }
+        }
+      },
+      "LanguageCode": {
+        "type": "string",
+        "enum": ["EN"]
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": ["LEARNER", "CONTENT_EDITOR", "REVIEWER", "FINANCE", "RISK", "OPERATOR", "ADMIN"]
+      },
+      "UserStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "LOCKED", "DELETION_PENDING", "DELETED"]
+      },
+      "ContentStatus": {
+        "type": "string",
+        "enum": ["DRAFT", "IN_REVIEW", "APPROVED", "PUBLISHED", "ARCHIVED"]
+      },
+      "ContentAvailabilityStatus": {
+        "type": "string",
+        "enum": ["ONLINE", "OFFLINE", "REVOKED", "EXPIRED"]
+      },
+      "MasteryStatus": {
+        "type": "string",
+        "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"]
+      },
+      "RiskBand": {
+        "type": "string",
+        "enum": ["LOW", "MEDIUM", "HIGH"]
+      },
+      "ItemType": {
+        "type": "string",
+        "enum": ["VOCAB", "PHRASE", "EXPRESSION", "GRAMMAR", "SENTENCE", "LISTENING", "READING", "WRITING", "EXERCISE"]
+      },
+      "SyncStatus": {
+        "type": "string",
+        "enum": ["PENDING", "ACCEPTED", "CONFLICT", "REJECTED", "EXPIRED"]
+      },
+      "NotificationCategory": {
+        "type": "string",
+        "enum": ["LEARNING", "REMINDER", "SECURITY", "TRANSACTION", "SYSTEM"]
+      },
+      "EntitlementStatus": {
+        "type": "string",
+        "enum": ["PENDING", "ACTIVE", "EXPIRED", "REVOKED", "FROZEN"]
+      },
+      "PerformanceTier": {
+        "type": "string",
+        "enum": ["ULTRA", "HIGH", "MEDIUM", "PERFORMANCE"]
+      },
+      "SessionStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "REVOKED", "KICKED", "EXPIRED"]
+      }
+    }
+  }
+}

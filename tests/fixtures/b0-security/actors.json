@@ -1,0 +1,27 @@
+{
+  "learnerA": {
+    "id": "user_test_0001",
+    "tenantId": "tenant_test_0001",
+    "roles": ["learner"]
+  },
+  "learnerB": {
+    "id": "user_test_0002",
+    "tenantId": "tenant_test_0001",
+    "roles": ["learner"]
+  },
+  "tenantAdmin": {
+    "id": "admin_test_0001",
+    "tenantId": "tenant_test_0001",
+    "roles": ["admin"]
+  },
+  "contentEditor": {
+    "id": "editor_test_0001",
+    "tenantId": "tenant_test_0001",
+    "roles": ["content-editor"]
+  },
+  "financeAuditor": {
+    "id": "finance_test_0001",
+    "tenantId": "tenant_test_0001",
+    "roles": ["finance-auditor"]
+  }
+}

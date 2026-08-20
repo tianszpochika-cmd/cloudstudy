@@ -1,0 +1,81 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/home",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "学习"
+      }
+    },
+    {
+      "path": "pages/learn/learn",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "学习流"
+      }
+    },
+    {
+      "path": "pages/practice/practice",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "练习"
+      }
+    },
+    {
+      "path": "pages/world/world",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "世界"
+      }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "登录"
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#969CAF",
+    "selectedColor": "#596BFF",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "学习"
+      },
+      {
+        "pagePath": "pages/practice/practice",
+        "text": "练习"
+      },
+      {
+        "pagePath": "pages/world/world",
+        "text": "世界"
+      },
+      {
+        "pagePath": "pages/learn/learn",
+        "text": "课程"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "语学星",
+    "navigationBarBackgroundColor": "#F7F8FC",
+    "backgroundColor": "#F7F8FC",
+    "backgroundTextStyle": "light"
+  }
+}

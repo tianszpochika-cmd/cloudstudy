@@ -1,0 +1,28 @@
+{
+  "name": "@englishflow/learner-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "语学星学员端 Web/H5 响应式学习应用 (Vue 3 + Vite)",
+  "scripts": {
+    "dev": "node ../../scripts/run-fixed-port.mjs learner-web-dev -- vite --host 127.0.0.1 --port 18180 --strictPort",
+    "build": "vue-tsc && vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "preview": "node ../../scripts/run-fixed-port.mjs learner-web-preview -- vite preview --host 127.0.0.1 --port 18190 --strictPort"
+  },
+  "dependencies": {
+    "vue": "^3.4.0",
+    "vue-router": "^4.3.0",
+    "pinia": "^2.1.0",
+    "@vueuse/core": "^10.9.0",
+    "@englishflow/api-client": "workspace:*",
+    "@englishflow/contracts": "workspace:*",
+    "@englishflow/design-tokens": "workspace:*",
+    "@englishflow/performance": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.0"
+  }
+}

@@ -1,12 +1,28 @@
 {
   "name": "englishflow",
   "private": true,
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "dev": "turbo dev",
+    "dev:all": "pnpm ports:check && turbo dev",
+    "ports:check": "node scripts/check-fixed-ports.mjs",
+    "contracts:validate": "node scripts/contracts/validate-contracts.mjs",
+    "contracts:generate": "node scripts/contracts/generate-contracts.mjs",
+    "infra:check": "node scripts/check-local-infra.mjs --static-only",
+    "db:validate": "node scripts/database/validate-migrations.mjs && node scripts/database/validate-fixtures.mjs",
+    "redis:validate": "node scripts/database/validate-redis-keyspace.mjs",
+    "config:check": "node scripts/check-runtime-config.mjs",
+    "dod:check": "node scripts/check-dod.mjs --json",
+    "core-api:build": "mvn -f services/core-api/pom.xml -DskipTests package",
     "build": "turbo build",
     "test": "turbo test",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.3.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0"
   }
 }

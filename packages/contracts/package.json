@@ -1,0 +1,20 @@
+{
+  "name": "@englishflow/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./generated/index.ts",
+      "import": "./generated/index.ts"
+    }
+  },
+  "scripts": {
+    "validate": "node ../../scripts/contracts/validate-contracts.mjs",
+    "generate": "node ../../scripts/contracts/generate-contracts.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

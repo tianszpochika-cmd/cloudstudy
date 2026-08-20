@@ -1,0 +1,37 @@
+server:
+  address: ${CORE_API_BIND_ADDRESS:127.0.0.1}
+  port: ${CORE_API_PORT:18080}
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: englishflow-core-api
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://127.0.0.1:13306/yuxuexing?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:yuxuexing}
+    password: ${SPRING_DATASOURCE_PASSWORD:yuxuexing}
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:127.0.0.1}
+      port: ${SPRING_DATA_REDIS_PORT:16379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+
+info:
+  app:
+    version: ${APP_VERSION:1.0.0}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
