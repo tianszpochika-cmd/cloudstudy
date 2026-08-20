@@ -46,6 +46,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '今日任务' },
   },
   {
+    path: '/vocabulary',
+    name: 'vocabulary',
+    component: () => import('../pages/VocabularyPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '词汇与 SRS' },
+  },
+  {
     path: '/learn/session',
     name: 'learn-session',
     component: () => import('../pages/LearnPage.vue'),
@@ -60,10 +66,45 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/practice',
-    name: 'practice',
-    component: () => import('../pages/EmptyPage.vue'),
-    props: { title: '练习', description: '练习中心将在题目契约接入后呈现。' },
+    name: 'b2-practice',
+    component: () => import('../pages/B2PracticePage.vue'),
     meta: { requiresAuth: true, shell: true, title: '练习' },
+  },
+  {
+    path: '/b2/report',
+    name: 'b2-report',
+    component: () => import('../pages/B2ReportPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '学习报告' },
+  },
+  {
+    path: '/grammar',
+    name: 'b3-grammar',
+    component: () => import('../pages/B3GrammarPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '语法 X 光机' },
+  },
+  {
+    path: '/writing',
+    name: 'b3-writing',
+    component: () => import('../pages/B3WritingPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '写作规则评测' },
+  },
+  {
+    path: '/listening',
+    name: 'b3-listening',
+    component: () => import('../pages/B3ListeningPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '听力精练' },
+  },
+  {
+    path: '/reading',
+    name: 'b3-reading',
+    component: () => import('../pages/B3ReadingPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '分级阅读' },
+  },
+  {
+    path: '/speaking',
+    name: 'b3-speaking',
+    component: () => import('../pages/B3SpeakingPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '口语自练' },
   },
   {
     path: '/world',

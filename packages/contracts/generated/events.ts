@@ -143,6 +143,101 @@ export type PrivacyExportRequested = { exportId: string; userId: number; policyN
  */
 export type PrivacyExportCompleted = { exportId: string; userId: number; recordCount: number; outputDigest: string; completedAt: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type AssessmentStreamBuilt = { sessionId: string; userId: number; streamRevision: string; algorithmVersion: "ASM-DS-1"; seedHash: string; requestedQuota: Record<string, never>; actualQuota: Record<string, never>; degraded: boolean; candidateSnapshotAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AssessmentAnswerSubmitted = { submissionId: number; sessionId: string; exerciseId: number; questionId: number; revision: number; scoringStatus: string; submittedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MasteryVerificationStateChanged = { transitionId: string; mistakeId: number; itemId: number; fromMistakeStatus: string; toMistakeStatus: string; masteryStatus: string; stage: "D0" | "D1" | "D7"; ruleVersion: string; changedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ExamSessionStateChanged = { transitionId: string; sessionId: string; from: string; to: string; reason: string; serverOccurredAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ExamAntiCheatRecorded = { eventId: string; sessionId: string; eventType: string; severity: "INFO" | "WARNING" | "SUSPECTED_REVIEW"; sequence: number; deviceHash: string; ruleVersion: string; recordedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ReportGenerated = { reportId: number; reportType: "EXAM_DIAGNOSTIC" | "DAILY" | "WEEKLY"; calculationVersion: string; status: "READY" | "PARTIAL" | "FAILED"; generatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type VocabularyReviewFiltered = { reviewEventId: number; userId: number; itemType: "VOCAB" | "PHRASE" | "CHUNK" | "EXPRESSION"; riskDecision: "FILTER" | "REVIEW"; ruleCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type VocabularyExpressionCreated = { expressionId: number; userId: number; sourceType: string; textLength: number; hasAudio: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type GrammarPracticeCompleted = { sessionId: string; userId: number; grammarPointId: number; ruleVersion: string; completedCount: number; mistakeCount: number; reviewSignal?: "NONE" | "SRS_REVIEW"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type WritingEvaluationCompleted = { submissionId: string; userId: number; promptId: number; ruleVersion: string; score: number; matchedPointCount?: number; aiScoringAvailable: false; reviewSignal?: "NONE" | "SRS_REVIEW"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ListeningDictationSubmitted = { attemptId: string; userId: number; materialId: number; segmentId: string; mode: string; score: number; mismatchCount?: number; contentVersionId: number; reviewSignal?: "NONE" | "VOCAB_REVIEW"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ReadingProgressUpdated = { progressId: string; userId: number; articleId: number; contentVersionId: number; positionVersion: number; progressPercent: number; blockId?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingSelfRatingSubmitted = { recordingId: string; userId: number; rating: string; tagCount?: number; durationMs?: number; aiScoringAvailable: false; reviewSignal?: "NONE" | "SRS_REVIEW"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type OfflineSyncApplied = { clientBatchId: string; userId: number; acceptedCount: number; conflictCount: number; nextCursor: string; resolution?: "SERVER_WINS" | "LOCAL_RETRY" | "MERGED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type GrammarMasteryUpdated = { grammarPointId: number; userId: number; dimensions?: { [key: string]: number; }; overall: number; masteryLevel: string; ruleVersion: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ListeningProgressSaved = { sessionId: string; userId: number; materialId: number; positionMs: number; positionVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ShadowingProgressed = { shadowingSessionId: string; userId: number; attemptCount: number; positionMs: number; aiScoringAvailable: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type OfflinePackageSynced = { packageId: number; userId: number; assetCount: number; readyCount: number; failedCount?: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B4FactPayload = { aggregateId: string; userId: number; ruleVersion: string; status: string; sourceType?: string; deltaXp?: number; deltaCoins?: number; serverScore?: number; serverDurationSeconds?: number; duplicateConverted?: boolean; versionNo?: number; };
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -268,4 +363,199 @@ export interface PrivacyExportCompletedEvent extends PlatformEventEnvelope<Priva
   version: 1;
 }
 
-export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent;
+export interface AssessmentStreamBuiltEvent extends PlatformEventEnvelope<AssessmentStreamBuilt> {
+  eventName: "assessment.stream_built.v1";
+  version: 1;
+}
+
+export interface AssessmentAnswerSubmittedEvent extends PlatformEventEnvelope<AssessmentAnswerSubmitted> {
+  eventName: "assessment.answer_submitted.v1";
+  version: 1;
+}
+
+export interface MasteryVerificationStateChangedEvent extends PlatformEventEnvelope<MasteryVerificationStateChanged> {
+  eventName: "mastery.verification_state_changed.v1";
+  version: 1;
+}
+
+export interface ExamSessionStateChangedEvent extends PlatformEventEnvelope<ExamSessionStateChanged> {
+  eventName: "exam.session_state_changed.v1";
+  version: 1;
+}
+
+export interface ExamAntiCheatRecordedEvent extends PlatformEventEnvelope<ExamAntiCheatRecorded> {
+  eventName: "exam.anti_cheat_recorded.v1";
+  version: 1;
+}
+
+export interface ReportGeneratedEvent extends PlatformEventEnvelope<ReportGenerated> {
+  eventName: "report.generated.v1";
+  version: 1;
+}
+
+export interface VocabularyReviewFilteredEvent extends PlatformEventEnvelope<VocabularyReviewFiltered> {
+  eventName: "vocabulary.review.filtered.v1";
+  version: 1;
+}
+
+export interface VocabularyExpressionCreatedEvent extends PlatformEventEnvelope<VocabularyExpressionCreated> {
+  eventName: "vocabulary.expression.created.v1";
+  version: 1;
+}
+
+export interface GrammarPracticeCompletedEvent extends PlatformEventEnvelope<GrammarPracticeCompleted> {
+  eventName: "grammar.practice.completed.v1";
+  version: 1;
+}
+
+export interface WritingEvaluationCompletedEvent extends PlatformEventEnvelope<WritingEvaluationCompleted> {
+  eventName: "writing.evaluation.completed.v1";
+  version: 1;
+}
+
+export interface ListeningDictationSubmittedEvent extends PlatformEventEnvelope<ListeningDictationSubmitted> {
+  eventName: "listening.dictation.submitted.v1";
+  version: 1;
+}
+
+export interface ReadingProgressUpdatedEvent extends PlatformEventEnvelope<ReadingProgressUpdated> {
+  eventName: "reading.progress.updated.v1";
+  version: 1;
+}
+
+export interface SpeakingSelfRatingSubmittedEvent extends PlatformEventEnvelope<SpeakingSelfRatingSubmitted> {
+  eventName: "speaking.self_rating.submitted.v1";
+  version: 1;
+}
+
+export interface OfflineSyncAppliedEvent extends PlatformEventEnvelope<OfflineSyncApplied> {
+  eventName: "offline.sync.applied.v1";
+  version: 1;
+}
+
+export interface GrammarMasteryUpdatedEvent extends PlatformEventEnvelope<GrammarMasteryUpdated> {
+  eventName: "grammar.mastery.updated.v1";
+  version: 1;
+}
+
+export interface ListeningProgressSavedEvent extends PlatformEventEnvelope<ListeningProgressSaved> {
+  eventName: "listening.progress.saved.v1";
+  version: 1;
+}
+
+export interface SpeakingShadowingProgressedEvent extends PlatformEventEnvelope<ShadowingProgressed> {
+  eventName: "speaking.shadowing.progressed.v1";
+  version: 1;
+}
+
+export interface MediaOfflinePackageSyncedEvent extends PlatformEventEnvelope<OfflinePackageSynced> {
+  eventName: "media.offline.package.synced.v1";
+  version: 1;
+}
+
+export interface GamificationProfileUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.profile.updated.v1";
+  version: 1;
+}
+
+export interface GamificationXpLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.xp.ledger_appended.v1";
+  version: 1;
+}
+
+export interface GamificationCurrencyLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.currency.ledger_appended.v1";
+  version: 1;
+}
+
+export interface GamificationStreakDayValidatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.streak.day_validated.v1";
+  version: 1;
+}
+
+export interface GamificationStreakRescueCompletedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.streak.rescue_completed.v1";
+  version: 1;
+}
+
+export interface GamificationQuestProgressedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.quest.progressed.v1";
+  version: 1;
+}
+
+export interface GamificationQuestClaimedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.quest.claimed.v1";
+  version: 1;
+}
+
+export interface GamificationAchievementUnlockedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.achievement.unlocked.v1";
+  version: 1;
+}
+
+export interface GamificationChestGrantedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.chest.granted.v1";
+  version: 1;
+}
+
+export interface GamificationChestOpenedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.chest.opened.v1";
+  version: 1;
+}
+
+export interface GamificationAvatarLoadoutEquippedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.avatar.loadout_equipped.v1";
+  version: 1;
+}
+
+export interface GamificationSeasonPointsUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "gamification.season.points_updated.v1";
+  version: 1;
+}
+
+export interface GamesSessionCreatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "games.session.created.v1";
+  version: 1;
+}
+
+export interface GamesSessionEventAcceptedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "games.session.event_accepted.v1";
+  version: 1;
+}
+
+export interface GamesSessionCompletedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "games.session.completed.v1";
+  version: 1;
+}
+
+export interface SocialRoomJoinedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.room.joined.v1";
+  version: 1;
+}
+
+export interface SocialFocusStartedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.focus.started.v1";
+  version: 1;
+}
+
+export interface SocialFocusCompletedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.focus.completed.v1";
+  version: 1;
+}
+
+export interface SocialInteractionSentEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.interaction.sent.v1";
+  version: 1;
+}
+
+export interface OfflinePackageAuthorizedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "offline.package.authorized.v1";
+  version: 1;
+}
+
+export interface OfflineB4SyncAppliedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "offline.b4.sync_applied.v1";
+  version: 1;
+}
+
+export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent;

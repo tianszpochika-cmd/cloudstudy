@@ -15,7 +15,14 @@ const unsubscribe = engine.subscribe((state) => {
 
 const navItems = [
   { name: 'home', label: '学习', icon: '⌂' },
-  { name: 'practice', label: '练习', icon: '✓' },
+  { name: 'vocabulary', label: '词汇', icon: 'Aa' },
+  { name: 'b2-practice', label: '练习', icon: '✓' },
+  { name: 'b2-report', label: '报告', icon: '▥' },
+  { name: 'b3-grammar', label: '语法', icon: '⌘' },
+  { name: 'b3-writing', label: '写作', icon: '✎' },
+  { name: 'b3-listening', label: '听力', icon: '◖' },
+  { name: 'b3-reading', label: '阅读', icon: '▥' },
+  { name: 'b3-speaking', label: '口语', icon: '◌' },
   { name: 'world', label: '世界', icon: '✧' },
   { name: 'courses', label: '课程', icon: '▤' },
   { name: 'me', label: '我的', icon: '◎' },

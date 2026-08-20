@@ -7,6 +7,8 @@ const repoRoot = path.resolve(scriptDir, '..', '..');
 const openApiPath = path.join(repoRoot, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const eventCatalogPath = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
 const openApiFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments', 'b1');
+const openApiB2FragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments', 'b2');
+const openApiB3FragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments', 'b3');
 const openApiSharedFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments');
 const eventFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'fragments');
 
@@ -30,12 +32,12 @@ function listJsonFiles(directory) {
     .sort();
 }
 
-function mergeNamedMap(target, source, label) {
+function mergeNamedMap(target, source, label, { allowOverride = false } = {}) {
   for (const [name, value] of Object.entries(source ?? {})) {
-    if (target[name] !== undefined && stableJson(target[name]) !== stableJson(value)) {
+    if (target[name] !== undefined && stableJson(target[name]) !== stableJson(value) && !allowOverride) {
       throw new Error(`${label} duplicate with different definitions: ${name}`);
     }
-    target[name] ??= value;
+    target[name] = value;
   }
 }
 
@@ -49,14 +51,16 @@ function mergeOpenApi(base, fragment, filePath) {
   }
 
   for (const [route, pathItem] of Object.entries(fragment.paths ?? {})) {
-    if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem)) {
+    const isOverrideFragment = /[\\/]b(?:2|3|4)(?:[\\/]|-)/i.test(filePath);
+    if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment) {
       throw new Error(`${filePath} conflicts with OpenAPI route ${route}; reconcile manually`);
     }
-    base.paths[route] ??= pathItem;
+    base.paths[route] = pathItem;
   }
 
+  const isOverrideFragment = /[\\/]b(?:2|3|4)(?:[\\/]|-)/i.test(filePath);
   for (const componentGroup of ['schemas', 'parameters', 'responses', 'headers', 'securitySchemes', 'requestBodies', 'examples']) {
-    mergeNamedMap(base.components[componentGroup] ??= {}, fragment.components?.[componentGroup], `OpenAPI ${componentGroup}`);
+    mergeNamedMap(base.components[componentGroup] ??= {}, fragment.components?.[componentGroup], `OpenAPI ${componentGroup}`, { allowOverride: isOverrideFragment });
   }
 }
 
@@ -74,9 +78,9 @@ function mergeEvents(base, fragment, filePath) {
 function merge({ write = false } = {}) {
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
-  const openApiFiles = [...listJsonFiles(openApiSharedFragmentDir), ...listJsonFiles(openApiFragmentDir)]
+  const openApiFiles = [...listJsonFiles(openApiSharedFragmentDir), ...listJsonFiles(openApiFragmentDir), ...listJsonFiles(openApiB2FragmentDir), ...listJsonFiles(openApiB3FragmentDir)]
     .filter((filePath, index, files) => files.indexOf(filePath) === index);
-  const eventFiles = listJsonFiles(eventFragmentDir).filter((filePath) => path.basename(filePath).startsWith('b1-'));
+  const eventFiles = listJsonFiles(eventFragmentDir).filter((filePath) => /^(b1|b2|b3|b4)-/.test(path.basename(filePath)));
 
   for (const filePath of openApiFiles) mergeOpenApi(openApi, readJson(filePath), path.relative(repoRoot, filePath));
   for (const filePath of eventFiles) mergeEvents(catalog, readJson(filePath), path.relative(repoRoot, filePath));
@@ -96,7 +100,7 @@ function merge({ write = false } = {}) {
 
 try {
   const result = merge({ write: process.argv.includes('--write') });
-  console.log(`B1 contract merge ${process.argv.includes('--write') ? 'written' : 'checked'}: ${result.openApiFragments.length} OpenAPI fragments, ${result.eventFragments.length} event fragments, ${result.routes} routes, ${result.events} events.`);
+  console.log(`Contract fragment merge ${process.argv.includes('--write') ? 'written' : 'checked'}: ${result.openApiFragments.length} OpenAPI fragments, ${result.eventFragments.length} event fragments, ${result.routes} routes, ${result.events} events.`);
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;

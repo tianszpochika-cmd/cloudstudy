@@ -56,6 +56,30 @@
       "file": "V0009__create_learning_facts.sql",
       "description": "create replayable learning facts and evidence",
       "requiredTables": ["lrn_learning_fact", "lrn_learning_fact_evidence"]
+    },
+    {
+      "version": "0010",
+      "file": "V0010__create_vocabulary_srs.sql",
+      "description": "create vocabulary phrase expression and SRS learning projections",
+      "requiredTables": ["cnt_wordbook", "cnt_vocabulary", "lrn_srs_state", "lrn_schedule_snapshot"]
+    },
+    {
+      "version": "0011",
+      "file": "V0011__create_assessment_mastery_b2.sql",
+      "description": "create B2 assessment mastery report anti-cheat and notification records",
+      "requiredTables": ["asm_question", "asm_session", "asm_attempt", "asm_mastery_verification", "asm_report_snapshot", "notifications"]
+    },
+    {
+      "version": "0012",
+      "file": "V0012__create_multimodal_grammar_reading_speaking_sync.sql",
+      "description": "create B3 grammar multimodal practice speaking and offline sync records",
+      "requiredTables": ["cnt_grammar_point", "cnt_grammar_trap", "cnt_grammar_exercise", "cnt_grammar_exercise_option", "cnt_grammar_mastery_dimension", "cnt_grammar_sentence", "cnt_grammar_sentence_node", "cnt_grammar_sentence_edge", "cnt_sentence_token", "cnt_sentence_slice", "cnt_sentence_audio_track", "cnt_sentence_audio_segment", "cnt_writing_prompt", "cnt_writing_rubric", "cnt_writing_template", "cnt_writing_material", "cnt_writing_proofreading_issue", "cnt_media_material", "cnt_media_segment", "cnt_media_token", "cnt_sound_change_annotation", "cnt_media_clip", "cnt_media_offline_package", "cnt_media_offline_package_item", "cnt_reading_article", "cnt_reading_block", "cnt_reading_dictionary_entry", "cnt_reading_story_node", "cnt_reading_question", "cnt_phoneme_symbol", "cnt_phoneme_minimal_pair", "cnt_mouth_profile", "lrn_b3_practice_session", "lrn_b3_attempt", "lrn_grammar_mastery", "lrn_reading_progress", "lrn_speaking_recording", "lrn_speaking_recording_segment", "lrn_speaking_self_rating", "lrn_shadowing_session", "lrn_speaking_roleplay_session", "lrn_offline_change", "lrn_offline_cursor", "lrn_offline_conflict"]
+    },
+    {
+      "version": "0013",
+      "file": "V0013__create_gamification_social_offline_b4.sql",
+      "description": "create B4 gamification study room notification and offline sync facts",
+      "requiredTables": ["gam_rule_config", "gam_idempotency_record", "gam_account_summary", "gam_xp_ledger", "gam_currency_ledger", "gam_daily_reward_counter", "gam_reward_grant", "gam_streak_profile", "gam_streak_day", "gam_streak_rescue", "gam_quest_definition", "gam_user_quest", "gam_quest_progress_event", "gam_achievement_definition", "gam_user_achievement", "gam_achievement_progress_event", "gam_game_definition", "gam_game_session", "gam_game_session_event", "gam_game_item_attempt", "gam_avatar_asset_manifest", "gam_avatar_item_definition", "gam_avatar_inventory", "gam_avatar_profile", "gam_avatar_loadout", "gam_avatar_loadout_item", "gam_study_space", "gam_study_space_placement", "gam_chest_definition", "gam_chest_probability_version", "gam_chest_probability_tier", "gam_chest_drop_definition", "gam_chest_grant", "gam_chest_open_audit", "gam_fixed_catalog_item", "gam_collection_set", "gam_season_definition", "gam_season_tier", "gam_user_season", "gam_season_point_ledger", "gam_admin_audit_log", "soc_room", "soc_room_member", "soc_room_seat", "soc_focus_session", "soc_interaction_event", "soc_leaderboard_snapshot", "soc_leaderboard_entry", "inf_notification_preference", "inf_notification_message", "inf_notification_delivery", "inf_offline_package", "inf_offline_download", "inf_sync_cursor", "inf_client_event", "inf_sync_change_log", "b4_durable_fact"]
     }
   ]
 }

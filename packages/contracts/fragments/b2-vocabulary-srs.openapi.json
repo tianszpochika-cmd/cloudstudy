@@ -1,0 +1,1319 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EnglishFlow Vocabulary and SRS API",
+    "version": "2.0.0",
+    "description": "Phase 1 成人词汇、短语、表达与确定性 SRS 契约。答案字段只在词汇详情或揭晓后的受保护响应中出现。"
+  },
+  "tags": [
+    { "name": "vocabulary-content" },
+    { "name": "vocabulary-library" },
+    { "name": "expressions" },
+    { "name": "srs" }
+  ],
+  "paths": {
+    "/api/v1/vocab/wordbooks": {
+      "get": {
+        "operationId": "listWordbooks",
+        "tags": ["vocabulary-content"],
+        "parameters": [
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Timezone" },
+          {
+            "name": "targetGoal",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 32 }
+          },
+          {
+            "name": "cefrLevel",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/CefrLevel" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/WordbookPage" }
+        }
+      }
+    },
+    "/api/v1/vocab/wordbooks/{wordbookId}/activation": {
+      "put": {
+        "operationId": "activateWordbook",
+        "tags": ["vocabulary-content"],
+        "x-idempotency": { "required": true, "strategy": "wordbook-activation", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次激活结果" },
+        "parameters": [
+          { "$ref": "#/components/parameters/WordbookId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["active"],
+                "properties": { "active": { "type": "boolean", "const": true } }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Activation" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/api/v1/vocab/wordbooks/{wordbookId}/items": {
+      "get": {
+        "operationId": "listWordbookItems",
+        "tags": ["vocabulary-content"],
+        "parameters": [
+          { "$ref": "#/components/parameters/WordbookId" },
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Timezone" },
+          {
+            "name": "masteryStatus",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/MasteryStatus" }
+          },
+          {
+            "name": "dueOnly",
+            "in": "query",
+            "schema": { "type": "boolean", "default": false }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/VocabItemPage" }
+        }
+      }
+    },
+    "/api/v1/vocab/items/{vocabId}": {
+      "get": {
+        "operationId": "getVocabDetail",
+        "tags": ["vocabulary-content"],
+        "parameters": [
+          { "$ref": "#/components/parameters/VocabId" },
+          {
+            "name": "contentVersion",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 32 }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/VocabDetail" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api/v1/vocab/chunks/{chunkId}": {
+      "get": {
+        "operationId": "getChunkDetail",
+        "tags": ["vocabulary-content"],
+        "parameters": [{ "$ref": "#/components/parameters/ChunkId" }],
+        "responses": { "200": { "$ref": "#/components/responses/ChunkDetail" } }
+      }
+    },
+    "/api/v1/vocab/roots/{rootId}": {
+      "get": {
+        "operationId": "getRootTopic",
+        "tags": ["vocabulary-content"],
+        "parameters": [
+          { "$ref": "#/components/parameters/RootId" },
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/Limit" }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/RootTopic" } }
+      }
+    },
+    "/api/v1/vocab/library": {
+      "get": {
+        "operationId": "listUserLibrary",
+        "tags": ["vocabulary-library"],
+        "parameters": [
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/Limit" },
+          {
+            "name": "itemType",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/ItemType" }
+          },
+          {
+            "name": "masteryStatus",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/MasteryStatus" }
+          },
+          {
+            "name": "collectionStatus",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["NEW_WORD", "SAVED", "MASTERED"]
+            }
+          },
+          {
+            "name": "sourceType",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "dueRange",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["TODAY", "UPCOMING", "OVERDUE"]
+            }
+          }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/LibraryPage" } }
+      }
+    },
+    "/api/v1/vocab/library/entries": {
+      "post": {
+        "operationId": "addLibraryEntry",
+        "tags": ["vocabulary-library"],
+        "x-idempotency": { "required": true, "strategy": "library-entry", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次收藏结果" },
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryEntryCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/LibraryEntry" }
+        }
+      }
+    },
+    "/api/v1/vocab/library/entries/{entryId}": {
+      "delete": {
+        "operationId": "removeLibraryEntry",
+        "tags": ["vocabulary-library"],
+        "x-idempotency": { "required": true, "strategy": "library-entry-delete", "keyHeader": "Idempotency-Key", "replayBehavior": "重复删除保持幂等" },
+        "parameters": [
+          { "$ref": "#/components/parameters/EntryId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/Empty" } }
+      }
+    },
+    "/api/v1/vocab/expressions": {
+      "get": {
+        "operationId": "listExpressions",
+        "tags": ["expressions"],
+        "parameters": [
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/Limit" },
+          {
+            "name": "sourceType",
+            "in": "query",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "wantToSay",
+            "in": "query",
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "tagId",
+            "in": "query",
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/ExpressionPage" }
+        }
+      },
+      "post": {
+        "operationId": "createMinedExpression",
+        "tags": ["expressions"],
+        "x-idempotency": { "required": true, "strategy": "expression-create", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次表达记录" },
+        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpressionCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Expression" },
+          "422": { "$ref": "#/components/responses/ValidationError" }
+        }
+      }
+    },
+    "/api/v1/vocab/expressions/{expressionId}": {
+      "patch": {
+        "operationId": "updateMinedExpression",
+        "tags": ["expressions"],
+        "x-idempotency": { "required": true, "strategy": "expression-update", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次更新结果" },
+        "parameters": [
+          { "$ref": "#/components/parameters/ExpressionId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpressionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/responses/Expression" } }
+      },
+      "delete": {
+        "operationId": "deleteMinedExpression",
+        "tags": ["expressions"],
+        "x-idempotency": { "required": true, "strategy": "expression-delete", "keyHeader": "Idempotency-Key", "replayBehavior": "重复删除保持幂等" },
+        "parameters": [
+          { "$ref": "#/components/parameters/ExpressionId" },
+          { "$ref": "#/components/parameters/IdempotencyKey" }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/Empty" } }
+      }
+    },
+    "/api/v1/vocab/offline/cards": {
+      "get": {
+        "operationId": "getOfflineVocabularyCards",
+        "tags": ["vocabulary-content"],
+        "parameters": [
+          {
+            "name": "wordbookId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          { "$ref": "#/components/parameters/Limit" },
+          { "$ref": "#/components/parameters/Timezone" }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/OfflineCards" }
+        }
+      }
+    },
+    "/api/v1/learning/srs/batches": {
+      "post": {
+        "operationId": "createSrsBatch",
+        "tags": ["srs"],
+        "x-idempotency": { "required": true, "strategy": "srs-batch", "keyHeader": "Idempotency-Key", "replayBehavior": "相同请求返回首次快照" },
+        "parameters": [
+          { "$ref": "#/components/parameters/IdempotencyKey" },
+          { "$ref": "#/components/parameters/Timezone" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SrsBatchCreateRequest" }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/responses/SrsBatch" } }
+      }
+    },
+    "/api/v1/learning/srs/batches/{snapshotId}": {
+      "get": {
+        "operationId": "getSrsBatch",
+        "tags": ["srs"],
+        "parameters": [{ "$ref": "#/components/parameters/SnapshotId" }],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SrsBatch" },
+          "410": { "$ref": "#/components/responses/SnapshotExpired" }
+        }
+      }
+    },
+    "/api/v1/learning/srs/reviews": {
+      "post": {
+        "operationId": "submitReviewEvent",
+        "tags": ["srs"],
+        "x-idempotency": { "required": true, "strategy": "srs-review", "keyHeader": "Idempotency-Key", "replayBehavior": "重复复习事件只结算一次" },
+        "parameters": [
+          { "$ref": "#/components/parameters/IdempotencyKey" },
+          { "$ref": "#/components/parameters/Timezone" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ReviewEventRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "$ref": "#/components/responses/Review" },
+          "409": { "$ref": "#/components/responses/Conflict" },
+          "410": { "$ref": "#/components/responses/OfflineExpired" }
+        }
+      }
+    },
+    "/api/v1/learning/srs/reviews:sync": {
+      "post": {
+        "operationId": "syncReviewEvents",
+        "tags": ["srs"],
+        "x-idempotency": { "required": true, "strategy": "srs-review-sync", "keyHeader": "Idempotency-Key", "replayBehavior": "逐事件返回首次结果" },
+        "parameters": [
+          { "$ref": "#/components/parameters/IdempotencyKey" },
+          { "$ref": "#/components/parameters/Timezone" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["events"],
+                "properties": {
+                  "events": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "items": {
+                      "$ref": "#/components/schemas/ReviewEventRequest"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "$ref": "#/components/responses/ReviewSync" } }
+      }
+    },
+    "/api/v1/learning/srs/states": {
+      "get": {
+        "operationId": "listSrsStates",
+        "tags": ["srs"],
+        "parameters": [
+          { "$ref": "#/components/parameters/Cursor" },
+          { "$ref": "#/components/parameters/Limit" },
+          {
+            "name": "itemType",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/ItemType" }
+          },
+          {
+            "name": "masteryStatus",
+            "in": "query",
+            "schema": { "$ref": "#/components/schemas/MasteryStatus" }
+          },
+          {
+            "name": "dueRange",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["TODAY", "UPCOMING", "OVERDUE", "AT_RISK"]
+            }
+          }
+        ],
+        "responses": {
+          "200": { "$ref": "#/components/responses/SrsStatePage" }
+        }
+      }
+    },
+    "/api/v1/learning/srs/overview": {
+      "get": {
+        "operationId": "getSrsOverview",
+        "tags": ["srs"],
+        "responses": { "200": { "$ref": "#/components/responses/SrsOverview" } }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "不透明、服务端签发的稳定游标；客户端不得解码或自行拼接。",
+        "schema": { "$ref": "#/components/schemas/Cursor" }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "Timezone": {
+        "name": "X-Timezone",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string", "maxLength": 64 }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": { "type": "string", "minLength": 16, "maxLength": 128 }
+      },
+      "WordbookId": {
+        "name": "wordbookId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      },
+      "VocabId": {
+        "name": "vocabId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      },
+      "ChunkId": {
+        "name": "chunkId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      },
+      "RootId": {
+        "name": "rootId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      },
+      "EntryId": {
+        "name": "entryId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      },
+      "ExpressionId": {
+        "name": "expressionId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      },
+      "SnapshotId": {
+        "name": "snapshotId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+      }
+    },
+    "schemas": {
+      "CefrLevel": {
+        "type": "string",
+        "enum": ["A1", "A2", "B1", "B2", "C1", "C2"]
+      },
+      "ItemType": {
+        "type": "string",
+        "enum": ["VOCAB", "PHRASE", "CHUNK", "EXPRESSION", "GRAMMAR", "SENTENCE", "LISTENING", "READING", "WRITING", "EXERCISE"]
+      },
+      "MasteryStatus": {
+        "type": "string",
+        "enum": [
+          "NEW",
+          "LEARNING",
+          "MASTERED",
+          "CONSOLIDATED",
+          "SHORT_TERM",
+          "CONSOLIDATING",
+          "AT_RISK",
+          "SUSPENDED"
+        ]
+      },
+      "LearningItemRef": {
+        "type": "object",
+        "required": ["itemType"],
+        "properties": {
+          "itemType": { "$ref": "#/components/schemas/ItemType" },
+          "vocabId": { "type": "integer", "format": "int64" },
+          "chunkId": { "type": "integer", "format": "int64" },
+          "expressionId": { "type": "integer", "format": "int64" }
+        },
+        "additionalProperties": false
+      },
+      "SrsState": {
+        "type": "object",
+        "required": [
+          "srsStateId",
+          "item",
+          "repetitionCount",
+          "easeFactor",
+          "intervalDays",
+          "dueAt",
+          "dueLocalDate",
+          "masteryStatus",
+          "stateVersion"
+        ],
+        "properties": {
+          "srsStateId": { "type": "integer", "format": "int64" },
+          "item": { "$ref": "#/components/schemas/LearningItemRef" },
+          "repetitionCount": { "type": "integer", "minimum": 0 },
+          "easeFactor": { "type": "number", "minimum": 1.3, "maximum": 2.5 },
+          "intervalDays": { "type": "integer", "minimum": 0, "maximum": 365 },
+          "dueAt": { "type": "string", "format": "date-time" },
+          "dueLocalDate": { "type": "string", "format": "date" },
+          "masteryStatus": { "$ref": "#/components/schemas/MasteryStatus" },
+          "delayedVerifyStage": {
+            "type": "string",
+            "enum": ["NONE", "D1_PENDING", "D7_PENDING", "PASSED", "FAILED"]
+          },
+          "stateVersion": { "type": "integer", "format": "int64" },
+          "riskBand": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+          "explanation": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "ReviewEventRequest": {
+        "type": "object",
+        "required": [
+          "snapshotItemId",
+          "item",
+          "rawQuality",
+          "answerOutcome",
+          "clientEventId",
+          "clientOccurredAt",
+          "baseStateVersion"
+        ],
+        "properties": {
+          "snapshotId": { "type": "integer", "format": "int64" },
+          "snapshotItemId": { "type": "integer", "format": "int64" },
+          "item": { "$ref": "#/components/schemas/LearningItemRef" },
+          "rawQuality": { "type": "integer", "enum": [0, 1, 2, 3] },
+          "answerOutcome": {
+            "type": "string",
+            "enum": [
+              "CORRECT",
+              "INCORRECT",
+              "UNANSWERED",
+              "REVEALED_WITHOUT_ANSWER"
+            ]
+          },
+          "responseTimeMs": { "type": "integer", "minimum": 0 },
+          "revealElapsedMs": { "type": "integer", "minimum": 0 },
+          "attemptNo": { "type": "integer", "minimum": 1 },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          },
+          "clientOccurredAt": { "type": "string", "format": "date-time" },
+          "baseStateVersion": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "LibraryEntryCreateRequest": {
+        "type": "object",
+        "required": ["itemType", "sourceType"],
+        "properties": {
+          "itemType": { "$ref": "#/components/schemas/ItemType" },
+          "vocabId": { "type": "integer" },
+          "chunkId": { "type": "integer" },
+          "expressionId": { "type": "integer" },
+          "sourceType": { "type": "string" },
+          "collectionStatus": {
+            "type": "string",
+            "enum": ["NEW_WORD", "SAVED", "MASTERED"]
+          }
+        }
+      },
+      "ExpressionCreateRequest": {
+        "type": "object",
+        "required": ["sourceType", "sentenceText"],
+        "properties": {
+          "sourceType": {
+            "type": "string",
+            "enum": ["READING", "LISTENING", "SCENARIO", "VOCAB_EXAMPLE"]
+          },
+          "sourceRef": { "type": "string" },
+          "sourceContentVersion": { "type": "string" },
+          "sentenceText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "translationCn": { "type": "string" },
+          "selectedText": { "type": "string" },
+          "rangeStart": { "type": "integer", "minimum": 0 },
+          "rangeEnd": { "type": "integer", "minimum": 1 },
+          "wantToSay": { "type": "boolean" },
+          "addToSrs": { "type": "boolean" },
+          "privateNote": { "type": "string" }
+        }
+      },
+      "ExpressionUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "wantToSay": { "type": "boolean" },
+          "privateNote": { "type": "string" },
+          "addTagIds": { "type": "array", "items": { "type": "integer" } },
+          "removeTagIds": { "type": "array", "items": { "type": "integer" } }
+        }
+      },
+      "SrsBatchCreateRequest": {
+        "type": "object",
+        "required": [
+          "localDate",
+          "timezone",
+          "dailyNewTarget",
+          "maxDailyReview",
+          "scheduleType"
+        ],
+        "properties": {
+          "localDate": { "type": "string", "format": "date" },
+          "timezone": { "type": "string" },
+          "dailyNewTarget": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "maxDailyReview": { "type": "integer", "minimum": 1, "maximum": 200 },
+          "scheduleType": {
+            "type": "string",
+            "enum": ["DAILY", "CATCH_UP", "EXPRESSION"]
+          }
+        }
+      },
+      "OfflineCard": {
+        "type": "object",
+        "required": ["snapshotItemId", "item", "front", "contentVersion"],
+        "properties": {
+          "snapshotItemId": { "type": "integer" },
+          "item": { "$ref": "#/components/schemas/LearningItemRef" },
+          "front": {
+            "type": "object",
+            "x-sensitive-fields": ["audio"],
+            "properties": {
+              "word": { "type": "string" },
+              "phoneticUs": { "type": "string" },
+              "phoneticUk": { "type": "string" },
+              "audio": { "type": "object", "description": "仅返回受控媒体引用；禁止传输原始音频字节或写入日志" }
+            }
+          },
+          "contentVersion": { "type": "string" }
+        },
+        "additionalProperties": false
+      },
+      "PageMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["hasMore", "pageSize"],
+        "properties": {
+          "nextCursor": { "$ref": "#/components/schemas/Cursor", "nullable": true },
+          "serverTime": { "$ref": "#/components/schemas/DateTime" },
+          "snapshotAt": { "$ref": "#/components/schemas/DateTime", "nullable": true },
+          "hasMore": { "type": "boolean" },
+          "pageSize": { "$ref": "#/components/schemas/PageSize" }
+        }
+      },
+      "Wordbook": {
+        "type": "object",
+        "required": [
+          "wordbookId",
+          "code",
+          "nameCn",
+          "status",
+          "contentVersion",
+          "wordCount"
+        ],
+        "properties": {
+          "wordbookId": { "type": "integer", "format": "int64" },
+          "code": { "type": "string" },
+          "nameCn": { "type": "string" },
+          "status": { "type": "string", "enum": ["PUBLISHED", "ARCHIVED"] },
+          "contentVersion": { "type": "string" },
+          "sourceVersion": { "type": "string" },
+          "minCefr": { "$ref": "#/components/schemas/CefrLevel" },
+          "maxCefr": { "$ref": "#/components/schemas/CefrLevel" },
+          "wordCount": { "type": "integer", "minimum": 0 },
+          "active": { "type": "boolean" }
+        }
+      },
+      "VocabItem": {
+        "type": "object",
+        "required": ["vocabId", "word", "cefrLevel", "contentVersion"],
+        "properties": {
+          "vocabId": { "type": "integer", "format": "int64" },
+          "word": { "type": "string" },
+          "cefrLevel": { "$ref": "#/components/schemas/CefrLevel" },
+          "contentVersion": { "type": "string" },
+          "srsState": { "$ref": "#/components/schemas/SrsState" }
+        }
+      },
+      "VocabDetail": {
+        "type": "object",
+        "x-sensitive-fields": ["audio"],
+        "required": [
+          "vocabId",
+          "word",
+          "contentVersion",
+          "definitions",
+          "examples"
+        ],
+        "properties": {
+          "vocabId": { "type": "integer", "format": "int64" },
+          "word": { "type": "string" },
+          "phoneticUs": { "type": "string", "nullable": true },
+          "phoneticUk": { "type": "string", "nullable": true },
+          "audio": {
+            "type": "object",
+            "description": "仅返回受控媒体引用；禁止传输原始音频字节或写入日志",
+            "additionalProperties": { "type": "string" }
+          },
+          "pronunciation": { "type": "object", "additionalProperties": true },
+          "cefrLevel": { "$ref": "#/components/schemas/CefrLevel" },
+          "frequencyRank": { "type": "integer", "nullable": true },
+          "definitions": { "type": "array", "items": { "type": "object" } },
+          "examples": { "type": "array", "items": { "type": "object" } },
+          "relations": { "type": "array", "items": { "type": "object" } },
+          "srsState": { "$ref": "#/components/schemas/SrsState" },
+          "contentVersion": { "type": "string" }
+        }
+      },
+      "ChunkDetail": {
+        "type": "object",
+        "required": ["chunkId", "canonicalText", "meaningCn", "contentVersion"],
+        "properties": {
+          "chunkId": { "type": "integer", "format": "int64" },
+          "canonicalText": { "type": "string" },
+          "chunkType": { "type": "string" },
+          "meaningCn": { "type": "string" },
+          "usageNote": { "type": "string", "nullable": true },
+          "scenarioCode": { "type": "string", "nullable": true },
+          "examples": { "type": "array", "items": { "type": "object" } },
+          "srsState": { "$ref": "#/components/schemas/SrsState" },
+          "contentVersion": { "type": "string" }
+        }
+      },
+      "SrsBatchItem": {
+        "type": "object",
+        "required": [
+          "snapshotItemId",
+          "sequenceNo",
+          "item",
+          "sourceReason",
+          "plannedLocalDate",
+          "status"
+        ],
+        "properties": {
+          "snapshotItemId": { "type": "integer", "format": "int64" },
+          "sequenceNo": { "type": "integer", "minimum": 1 },
+          "item": { "$ref": "#/components/schemas/LearningItemRef" },
+          "sourceReason": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "DUE",
+              "OVERDUE_SMOOTHING",
+              "D1_VERIFY",
+              "D7_VERIFY",
+              "MISTAKE_REPAIR",
+              "EXPRESSION"
+            ]
+          },
+          "plannedLocalDate": { "type": "string", "format": "date" },
+          "dueAtAtSnapshot": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "priorityScore": { "type": "number" },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "SKIPPED",
+              "EXPIRED",
+              "RISK_FILTERED"
+            ]
+          },
+          "contentVersion": { "type": "string" }
+        }
+      },
+      "ExpressionResponse": {
+        "type": "object",
+        "required": ["expressionId", "sourceType", "sentenceText", "status"],
+        "properties": {
+          "expressionId": { "type": "integer", "format": "int64" },
+          "sourceType": { "type": "string" },
+          "sourceRef": { "type": "string", "nullable": true },
+          "sentenceText": { "type": "string" },
+          "translationCn": { "type": "string", "nullable": true },
+          "selectedText": { "type": "string", "nullable": true },
+          "wantToSay": { "type": "boolean" },
+          "tags": { "type": "array", "items": { "type": "integer" } },
+          "privateNote": {
+            "type": "string",
+            "nullable": true,
+            "writeOnly": true
+          },
+          "srsState": { "$ref": "#/components/schemas/SrsState" },
+          "status": {
+            "type": "string",
+            "enum": ["ACTIVE", "ARCHIVED", "DELETED"]
+          }
+        }
+      },
+      "ReviewEventResponse": {
+        "type": "object",
+        "required": [
+          "reviewEventId",
+          "eventStatus",
+          "riskDecision",
+          "stateVersion"
+        ],
+        "properties": {
+          "reviewEventId": { "type": "integer", "format": "int64" },
+          "eventStatus": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DUPLICATE",
+              "RISK_FILTERED",
+              "CONFLICT",
+              "REJECTED",
+              "EXPIRED"
+            ]
+          },
+          "riskDecision": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "ACCEPT_NO_REWARD",
+              "THROTTLE",
+              "REJECT",
+              "REVIEW"
+            ]
+          },
+          "effectiveQuality": {
+            "type": "integer",
+            "enum": [0, 1, 2, 3],
+            "nullable": true
+          },
+          "reconciled": { "type": "boolean" },
+          "stateVersion": { "type": "integer", "format": "int64" },
+          "srsState": { "$ref": "#/components/schemas/SrsState" },
+          "rewardSettlementStatus": {
+            "type": "string",
+            "enum": ["PENDING", "SETTLED", "NOT_ELIGIBLE", "DUPLICATE"]
+          },
+          "nextSnapshotItemId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        }
+      },
+      "SrsOverview": {
+        "type": "object",
+        "required": [
+          "todayDue",
+          "overdue",
+          "atRisk",
+          "shortTerm",
+          "mastered",
+          "consolidated"
+        ],
+        "properties": {
+          "todayDue": { "type": "integer", "minimum": 0 },
+          "overdue": { "type": "integer", "minimum": 0 },
+          "atRisk": { "type": "integer", "minimum": 0 },
+          "shortTerm": { "type": "integer", "minimum": 0 },
+          "mastered": { "type": "integer", "minimum": 0 },
+          "consolidated": { "type": "integer", "minimum": 0 },
+          "last7DaysMasteryRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "responses": {
+      "WordbookPage": {
+        "description": "已发布成人词书",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data", "meta"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Wordbook" }
+                    }
+                  }
+                },
+                "meta": { "$ref": "#/components/schemas/PageMeta" }
+              }
+            }
+          }
+        }
+      },
+      "Activation": {
+        "description": "词书切换结果",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "required": ["activeWordbookId", "planVersion"],
+                  "properties": {
+                    "activeWordbookId": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "planVersion": { "type": "integer", "format": "int64" },
+                    "retainedStateCount": { "type": "integer" },
+                    "firstSnapshotId": { "type": "integer", "nullable": true }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "VocabItemPage": {
+        "description": "词书词条与 SRS 摘要",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data", "meta"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/VocabItem" }
+                    }
+                  }
+                },
+                "meta": { "$ref": "#/components/schemas/PageMeta" }
+              }
+            }
+          }
+        }
+      },
+      "VocabDetail": {
+        "description": "词汇详情",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": { "$ref": "#/components/schemas/VocabDetail" }
+              }
+            }
+          }
+        }
+      },
+      "ChunkDetail": {
+        "description": "句块详情",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": { "$ref": "#/components/schemas/ChunkDetail" }
+              }
+            }
+          }
+        }
+      },
+      "RootTopic": {
+        "description": "词根专题",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "required": ["rootId", "titleCn", "nodes"],
+                  "properties": {
+                    "rootId": { "type": "integer" },
+                    "titleCn": { "type": "string" },
+                    "nodes": { "type": "array", "items": { "type": "object" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "LibraryPage": {
+        "description": "个人词库",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data", "meta"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "items": { "type": "array", "items": { "type": "object" } }
+                  }
+                },
+                "meta": { "$ref": "#/components/schemas/PageMeta" }
+              }
+            }
+          }
+        }
+      },
+      "LibraryEntry": {
+        "description": "收藏结果",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "required": ["entryId", "item"],
+                  "properties": {
+                    "entryId": { "type": "integer" },
+                    "item": { "$ref": "#/components/schemas/LearningItemRef" },
+                    "collectionStatus": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Expression": {
+        "description": "表达结果",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": { "$ref": "#/components/schemas/ExpressionResponse" }
+              }
+            }
+          }
+        }
+      },
+      "ExpressionPage": {
+        "description": "表达库",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data", "meta"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ExpressionResponse"
+                      }
+                    }
+                  }
+                },
+                "meta": { "$ref": "#/components/schemas/PageMeta" }
+              }
+            }
+          }
+        }
+      },
+      "OfflineCards": {
+        "description": "不含答案的离线卡片包",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "manifestHash",
+                    "contentVersion",
+                    "cards",
+                    "answerFieldsIncluded"
+                  ],
+                  "properties": {
+                    "manifestHash": { "type": "string" },
+                    "contentVersion": { "type": "string" },
+                    "cards": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/OfflineCard" }
+                    },
+                    "answerFieldsIncluded": {
+                      "type": "boolean",
+                      "const": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SrsBatch": {
+        "description": "不可变排程快照",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "required": ["snapshotId", "localDate", "status", "items"],
+                  "properties": {
+                    "snapshotId": { "type": "integer" },
+                    "localDate": { "type": "string", "format": "date" },
+                    "timezone": { "type": "string" },
+                    "status": { "type": "string" },
+                    "algorithmVersion": { "type": "string" },
+                    "rulesVersion": { "type": "string" },
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SrsBatchItem" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Review": {
+        "description": "复习结算结果",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": { "$ref": "#/components/schemas/ReviewEventResponse" }
+              }
+            }
+          }
+        }
+      },
+      "ReviewSync": {
+        "description": "逐项同步结果",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "required": ["results"],
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": { "type": "object" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SrsStatePage": {
+        "description": "SRS 状态页",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data", "meta"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/SrsState" }
+                    }
+                  }
+                },
+                "meta": { "$ref": "#/components/schemas/PageMeta" }
+              }
+            }
+          }
+        }
+      },
+      "SrsOverview": {
+        "description": "SRS 基础统计",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["requestId", "data"],
+              "properties": {
+                "requestId": { "type": "string" },
+                "data": { "$ref": "#/components/schemas/SrsOverview" }
+              }
+            }
+          }
+        }
+      },
+      "Empty": {
+        "description": "空结果",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      },
+      "Conflict": {
+        "description": "幂等、版本或 Token family 冲突",
+        "headers": {
+          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
+          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
+        },
+        "content": {
+          "application/json": { "schema": { "$ref": "#/components/schemas/ApiErrorResponse" } }
+        }
+      },
+      "NotFound": {
+        "description": "资源不存在",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      },
+      "ValidationError": {
+        "description": "参数校验失败",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      },
+      "SnapshotExpired": {
+        "description": "快照过期",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      },
+      "OfflineExpired": {
+        "description": "离线事件超过 72 小时",
+        "content": { "application/json": { "schema": { "type": "object" } } }
+      }
+    }
+  }
+}

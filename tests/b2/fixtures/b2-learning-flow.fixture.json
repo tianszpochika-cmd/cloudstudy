@@ -1,0 +1,35 @@
+{
+  "fixtureVersion": "b2-v1",
+  "dailyStream": {
+    "localDate": "2026-08-20",
+    "targetCount": 10,
+    "quotas": {"NEW": 4, "REVIEW": 4, "MISTAKE": 2},
+    "items": [
+      {"itemId": "new-001", "source": "NEW", "priority": 40, "priorityReason": "new-plan-slot"},
+      {"itemId": "new-002", "source": "NEW", "priority": 35, "priorityReason": "new-plan-slot"},
+      {"itemId": "new-003", "source": "NEW", "priority": 30, "priorityReason": "new-plan-slot"},
+      {"itemId": "new-004", "source": "NEW", "priority": 25, "priorityReason": "new-plan-slot"},
+      {"itemId": "review-001", "source": "REVIEW", "priority": 95, "priorityReason": "due-today"},
+      {"itemId": "review-002", "source": "REVIEW", "priority": 80, "priorityReason": "due-today"},
+      {"itemId": "review-003", "source": "REVIEW", "priority": 70, "priorityReason": "due-today"},
+      {"itemId": "review-004", "source": "REVIEW", "priority": 60, "priorityReason": "due-today"},
+      {"itemId": "mistake-001", "source": "MISTAKE", "priority": 100, "priorityReason": "repeated-error"},
+      {"itemId": "mistake-002", "source": "MISTAKE", "priority": 90, "priorityReason": "d1-failed"}
+    ]
+  },
+  "masteryCases": [
+    {"itemId": "m-001", "from": "LEARNING", "verification": "D1", "scheduledAt": "2026-08-21", "result": "PASS", "expectedTo": "D7_PENDING"},
+    {"itemId": "m-002", "from": "LEARNING", "verification": "D1", "scheduledAt": "2026-08-21", "result": "FAIL", "expectedTo": "REVIEW_QUEUE"},
+    {"itemId": "m-003", "from": "D7_PENDING", "verification": "D7", "scheduledAt": "2026-08-27", "result": "PASS", "expectedTo": "MASTERED"},
+    {"itemId": "m-004", "from": "D7_PENDING", "verification": "D7", "scheduledAt": "2026-08-27", "result": "FAIL", "expectedTo": "REVIEW_QUEUE"}
+  ],
+  "idempotencyCases": [
+    {"scope": "answer-item:user-1001:session-7001:question-3001", "key": "b2-answer-3001-0001", "requestHash": "sha256:answer-hash-3001", "replay": "same-response"},
+    {"scope": "answer-item:user-1001:session-7001:question-3001", "key": "b2-answer-3001-0001", "requestHash": "sha256:answer-hash-3001", "replay": "same-response"},
+    {"scope": "answer-item:user-1001:session-7001:question-3001", "key": "b2-answer-3001-0001", "requestHash": "sha256:different-hash", "replay": "IDEMPOTENCY_CONFLICT"}
+  ],
+  "privacyFields": {
+    "allowedAuditProjection": ["userIdHash", "contentVersionId", "questionId", "scoreBucket", "requestId", "traceId"],
+    "forbidden": ["rawAnswer", "answerText", "audio", "rawRecording", "phone", "email", "ipAddress", "deviceFingerprint", "token"]
+  }
+}

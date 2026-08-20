@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "events": [
+    { "eventName": "gamification.profile.updated.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_account_summary", "aggregateIdField": "userId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.xp.ledger_appended.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_xp_ledger", "aggregateIdField": "sourceEventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.currency.ledger_appended.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_currency_ledger", "aggregateIdField": "sourceEventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.streak.day_validated.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_streak_day", "aggregateIdField": "validDate", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.streak.rescue_completed.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_streak_rescue", "aggregateIdField": "rescueId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.quest.progressed.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_quest_progress_event", "aggregateIdField": "sourceEventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.quest.claimed.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_user_quest", "aggregateIdField": "questId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.achievement.unlocked.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_user_achievement", "aggregateIdField": "achievementCode", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.chest.granted.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_chest_grant", "aggregateIdField": "chestGrantId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.chest.opened.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_chest_open_audit", "aggregateIdField": "chestGrantId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.avatar.loadout_equipped.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_avatar_loadout", "aggregateIdField": "loadoutId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "gamification.season.points_updated.v1", "domain": "gamification", "version": 1, "schema": "gamification.event.v1", "aggregateType": "gam_season_point_ledger", "aggregateIdField": "sourceEventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "games.session.created.v1", "domain": "games", "version": 1, "schema": "games.event.v1", "aggregateType": "gam_game_session", "aggregateIdField": "sessionId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "games.session.event_accepted.v1", "domain": "games", "version": 1, "schema": "games.event.v1", "aggregateType": "gam_game_session_event", "aggregateIdField": "eventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "games.session.completed.v1", "domain": "games", "version": 1, "schema": "games.event.v1", "aggregateType": "gam_game_session", "aggregateIdField": "sessionId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "social.room.joined.v1", "domain": "social", "version": 1, "schema": "social.event.v1", "aggregateType": "soc_room_member", "aggregateIdField": "roomId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "social.focus.started.v1", "domain": "social", "version": 1, "schema": "social.event.v1", "aggregateType": "soc_focus_session", "aggregateIdField": "sessionId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "social.focus.completed.v1", "domain": "social", "version": 1, "schema": "social.event.v1", "aggregateType": "soc_focus_session", "aggregateIdField": "sessionId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "social.interaction.sent.v1", "domain": "social", "version": 1, "schema": "social.event.v1", "aggregateType": "soc_interaction_event", "aggregateIdField": "eventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "offline.package.authorized.v1", "domain": "offline", "version": 1, "schema": "offline.event.v1", "aggregateType": "inf_offline_package", "aggregateIdField": "packageId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "offline.b4.sync_applied.v1", "domain": "offline", "version": 1, "schema": "offline.event.v1", "aggregateType": "inf_client_event", "aggregateIdField": "clientEventId", "payloadSchema": { "$ref": "#/payloadSchemas/B4FactPayload" }, "compatibility": { "strategy": "additive" } }
+  ],
+  "payloadSchemas": {
+    "B4FactPayload": {
+      "$id": "platform.events.b4.fact.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aggregateId", "userId", "ruleVersion", "status"],
+      "properties": {
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "ruleVersion": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "maxLength": 64 },
+        "sourceType": { "type": "string", "maxLength": 64 },
+        "deltaXp": { "type": "integer" },
+        "deltaCoins": { "type": "integer" },
+        "serverScore": { "type": "integer", "minimum": 0 },
+        "serverDurationSeconds": { "type": "integer", "minimum": 0 },
+        "duplicateConverted": { "type": "boolean" },
+        "versionNo": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "fixtureVersion": "b2-v1",
+  "rulesVersion": "deterministic-objective-grading-v1",
+  "questionTypes": [
+    {
+      "type": "single_choice",
+      "questionId": 3001,
+      "public": {"prompt": "Choose the closest meaning.", "options": [{"id": "a", "label": "分配"}, {"id": "b", "label": "删除"}]},
+      "answerKey": {"selected": "a"},
+      "candidateAnswer": {"selected": "a"},
+      "expected": {"scoreBucket": "FULL", "isCorrect": true}
+    },
+    {
+      "type": "multiple_choice",
+      "questionId": 3002,
+      "public": {"prompt": "Select all reliable sources.", "options": [{"id": "a", "label": "A"}, {"id": "b", "label": "B"}, {"id": "c", "label": "C"}]},
+      "answerKey": {"selected": ["a", "c"]},
+      "candidateAnswer": {"selected": ["c", "a"]},
+      "expected": {"scoreBucket": "FULL", "isCorrect": true}
+    },
+    {
+      "type": "true_false",
+      "questionId": 3003,
+      "public": {"prompt": "A review schedule has a next due date."},
+      "answerKey": {"value": true},
+      "candidateAnswer": {"value": false},
+      "expected": {"scoreBucket": "ZERO", "isCorrect": false}
+    },
+    {
+      "type": "matching",
+      "questionId": 3004,
+      "public": {"left": ["allocate", "reliable"], "right": ["可靠的", "分配"]},
+      "answerKey": {"pairs": [{"left": "allocate", "right": "分配"}, {"left": "reliable", "right": "可靠的"}]},
+      "candidateAnswer": {"pairs": [{"left": "reliable", "right": "可靠的"}, {"left": "allocate", "right": "分配"}]},
+      "expected": {"scoreBucket": "FULL", "isCorrect": true}
+    },
+    {
+      "type": "ordering",
+      "questionId": 3005,
+      "public": {"tokens": ["review", "We", "today"]},
+      "answerKey": {"order": ["We", "review", "today"]},
+      "candidateAnswer": {"order": ["We", "today", "review"]},
+      "expected": {"scoreBucket": "ZERO", "isCorrect": false}
+    },
+    {
+      "type": "fill_blank",
+      "questionId": 3006,
+      "public": {"prompt": "We ___ time for review."},
+      "answerKey": {"accepted": ["allocate", "allocate "]},
+      "candidateAnswer": {"text": " Allocate. "},
+      "expected": {"scoreBucket": "FULL", "isCorrect": true}
+    },
+    {
+      "type": "listening_choice",
+      "questionId": 3007,
+      "public": {"mediaAssetId": 4007, "options": [{"id": "a", "label": "allocate"}, {"id": "b", "label": "locate"}]},
+      "answerKey": {"selected": "a"},
+      "candidateAnswer": {"selected": "b"},
+      "expected": {"scoreBucket": "ZERO", "isCorrect": false}
+    },
+    {
+      "type": "speaking_self_record",
+      "questionId": 3008,
+      "public": {"prompt": "Read the sentence aloud.", "mediaAssetId": 4008},
+      "answerKey": {"review": "manual-rule-review"},
+      "candidateAnswer": {"recordingAssetId": 5008},
+      "expected": {"scoreBucket": "PENDING_REVIEW", "isCorrect": null}
+    }
+  ],
+  "learnerSessionProjection": {
+    "questionIds": [3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008],
+    "fields": ["questionId", "type", "public", "contentVersionId", "rulesVersion"],
+    "mustNotExpose": ["answerKey", "correctAnswer", "acceptedAnswers", "explanation", "referenceAnswer"]
+  },
+  "reviewProjection": {
+    "fields": ["questionId", "candidateAnswer", "referenceAnswer", "ruleBasedAdvice", "sourceContentVersionId"]
+  }
+}

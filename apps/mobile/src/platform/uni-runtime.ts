@@ -12,6 +12,26 @@ export interface UniRequestOptions {
   fail?: (error: unknown) => void
 }
 
+export interface UniAudioContext {
+  src: string
+  playbackRate?: number
+  loop?: boolean
+  play(): void
+  pause(): void
+  destroy(): void
+}
+
+export interface UniFileSystemManager {
+  readFile(options: { filePath: string; success: (result: { data: ArrayBuffer | string }) => void; fail?: (error: unknown) => void }): void
+}
+
+/** Native Keychain/Keystore boundary; raw recording bytes never cross this API. */
+export interface UniSecureRecordingVault {
+  encryptFile(options: { filePath: string }): Promise<{ encryptedFilePath: string; contentHash: string }>
+  createPlaybackSource(options: { encryptedFilePath: string }): Promise<string>
+  deleteFile(options: { encryptedFilePath: string }): Promise<void>
+}
+
 export interface UniRuntime {
   getStorageSync(key: string): unknown
   setStorageSync(key: string, value: string): void
@@ -20,6 +40,9 @@ export interface UniRuntime {
   navigateTo(options: { url: string }): void
   switchTab(options: { url: string }): void
   showToast(options: { title: string; icon?: 'none' | 'success' | 'error' }): void
+  createInnerAudioContext?: () => UniAudioContext
+  getFileSystemManager?: () => UniFileSystemManager
+  getSecureRecordingVault?: () => UniSecureRecordingVault
 }
 
 export function getUniRuntime(): UniRuntime {

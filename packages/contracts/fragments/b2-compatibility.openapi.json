@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EnglishFlow B2 learning-loop compatibility API",
+    "version": "2.0.0",
+    "description": "B2 对学习流、错题、报告和通知旧入口的兼容契约；权威规则仍由 VOC/SRS 与 ASM 服务实现。"
+  },
+  "tags": [
+    { "name": "b2-learning-loop", "description": "学习流、错题验证和学习统计" },
+    { "name": "b2-notifications", "description": "复习提醒和站内通知读取" }
+  ],
+  "paths": {
+    "/api/v1/learning/plan/current": {
+      "get": {
+        "operationId": "getCurrentLearningPlan",
+        "tags": ["b2-learning-loop"],
+        "responses": { "200": { "$ref": "#/components/responses/B2PlanResponse" } }
+      }
+    },
+    "/api/v1/learning/stream/today": {
+      "get": {
+        "operationId": "getTodayLearningStream",
+        "tags": ["b2-learning-loop"],
+        "parameters": [
+          { "$ref": "#/components/parameters/B2LocalDateOptional" },
+          { "$ref": "#/components/parameters/B2TargetCount" }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/B2LearningStreamResponse" } }
+      }
+    },
+    "/api/v1/learning/stream/action": {
+      "post": {
+        "operationId": "submitLearningStreamAction",
+        "tags": ["b2-learning-loop"],
+        "x-idempotency": { "required": true, "strategy": "learning-stream-action", "keyHeader": "Idempotency-Key", "replayBehavior": "相同事件只应用一次并返回首次结算" },
+        "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2LearningStreamActionRequest" } } } },
+        "responses": { "200": { "$ref": "#/components/responses/B2LearningActionResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } }
+      }
+    },
+    "/api/v1/assessment/session/start": {
+      "post": {
+        "operationId": "startLegacyAssessmentSession",
+        "tags": ["b2-assessment"],
+        "x-idempotency": { "required": true, "strategy": "assessment-session", "keyHeader": "Idempotency-Key", "replayBehavior": "相同请求返回同一会话" },
+        "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2CreateAssessmentSessionRequest" } } } },
+        "responses": { "201": { "$ref": "#/components/responses/B2SessionResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } }
+      }
+    },
+    "/api/v1/assessment/session/answer-item": {
+      "post": {
+        "operationId": "submitLegacyAssessmentAnswerItem",
+        "tags": ["b2-assessment"],
+        "x-idempotency": { "required": true, "strategy": "assessment-answer", "keyHeader": "Idempotency-Key", "replayBehavior": "相同题目和幂等键返回首次判分结果" },
+        "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2LegacyAnswerItemRequest" } } } },
+        "responses": { "200": { "$ref": "#/components/responses/B2AnswerResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } }
+      }
+    },
+    "/api/v1/assessment/session/submit": {
+      "post": {
+        "operationId": "submitLegacyAssessmentSession",
+        "tags": ["b2-assessment"],
+        "x-idempotency": { "required": true, "strategy": "assessment-complete", "keyHeader": "Idempotency-Key", "replayBehavior": "重复交卷返回首次结算" },
+        "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2LegacySessionSubmitRequest" } } } },
+        "responses": { "200": { "$ref": "#/components/responses/B2CompletionResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } }
+      }
+    },
+    "/api/v1/assessment/report/{sessionUuid}": {
+      "get": {
+        "operationId": "getLegacyAssessmentReport",
+        "tags": ["b2-assessment"],
+        "parameters": [{ "$ref": "#/components/parameters/B2SessionUuid" }],
+        "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" }, "404": { "$ref": "#/components/responses/B2NotFound" } }
+      }
+    },
+    "/api/v1/learning/mistakes/queue": {
+      "get": {
+        "operationId": "getLearningMistakeQueue",
+        "tags": ["b2-learning-loop"],
+        "parameters": [{ "$ref": "#/components/parameters/B2MistakeStatusOptional" }],
+        "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" } }
+      }
+    },
+    "/api/v1/learning/mistakes/verify": {
+      "post": {
+        "operationId": "verifyLearningMistake",
+        "tags": ["b2-learning-loop"],
+        "x-idempotency": { "required": true, "strategy": "mastery-verification", "keyHeader": "Idempotency-Key", "replayBehavior": "相同验证只写入一次" },
+        "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2LegacyMistakeVerifyRequest" } } } },
+        "responses": { "200": { "$ref": "#/components/responses/B2VerificationResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } }
+      }
+    },
+    "/api/v1/learning/stats/daily-summary": {
+      "get": {
+        "operationId": "getDailyLearningSummary",
+        "tags": ["b2-learning-loop"],
+        "parameters": [{ "$ref": "#/components/parameters/B2LocalDateOptional" }],
+        "responses": { "200": { "$ref": "#/components/responses/B2DailySummaryResponse" } }
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "listLearningNotifications",
+        "tags": ["b2-notifications"],
+        "parameters": [
+          { "$ref": "#/components/parameters/B2NotificationStatusOptional" },
+          { "$ref": "#/components/parameters/B2LimitOptional" }
+        ],
+        "responses": { "200": { "$ref": "#/components/responses/B2NotificationPageResponse" } }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "B2LocalDateOptional": { "name": "date", "in": "query", "required": false, "schema": { "type": "string", "format": "date" } },
+      "B2TargetCount": { "name": "targetCount", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 15, "maximum": 20, "default": 15 } },
+      "B2IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 16, "maxLength": 128 } },
+      "B2SessionUuid": { "name": "sessionUuid", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+      "B2MistakeStatusOptional": { "name": "status", "in": "query", "required": false, "schema": { "type": "string", "maxLength": 32 } },
+      "B2NotificationStatusOptional": { "name": "status", "in": "query", "required": false, "schema": { "type": "string", "enum": ["UNREAD", "READ", "ALL"] } },
+      "B2LimitOptional": { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 50, "default": 20 } }
+    },
+    "schemas": {
+      "B2LearningStreamActionRequest": { "type": "object", "additionalProperties": false, "required": ["itemId", "responseQuality"], "properties": { "itemId": { "type": "integer", "format": "int64", "minimum": 1 }, "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "CHUNK", "EXPRESSION", "EXERCISE"] }, "responseQuality": { "type": "integer", "minimum": 0, "maximum": 3 }, "clientEventId": { "type": "string", "maxLength": 128 } } },
+      "B2LegacyAnswerItemRequest": { "type": "object", "additionalProperties": false, "required": ["sessionUuid", "exerciseId", "answer"], "properties": { "sessionUuid": { "type": "string", "format": "uuid" }, "exerciseId": { "type": "integer", "format": "int64", "minimum": 1 }, "answer": { "type": "object", "description": "用户答案仅在受保护判分边界读取；禁止进入事件和日志原文", "x-sensitive-fields": ["answer"] }, "clientSubmissionId": { "type": "string", "maxLength": 128 } } },
+      "B2LegacySessionSubmitRequest": { "type": "object", "additionalProperties": false, "required": ["sessionUuid"], "properties": { "sessionUuid": { "type": "string", "format": "uuid" } } },
+      "B2LegacyMistakeVerifyRequest": { "type": "object", "additionalProperties": false, "required": ["mistakeId", "stage", "answer"], "properties": { "mistakeId": { "type": "integer", "format": "int64", "minimum": 1 }, "stage": { "type": "string", "enum": ["D0", "D1", "D7"] }, "answer": { "type": "object", "description": "用户答案仅在受保护判分边界读取；禁止进入事件和日志原文", "x-sensitive-fields": ["answer"] } } },
+      "B2LearningStream": { "type": "object", "additionalProperties": false, "required": ["items", "serverNow"], "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/B2Exercise" } }, "serverNow": { "type": "string", "format": "date-time" }, "requestedQuota": { "type": "object" }, "actualQuota": { "type": "object" }, "degraded": { "type": "boolean" } } },
+      "B2DailySummary": { "type": "object", "additionalProperties": false, "required": ["date", "completedCount", "reviewedCount", "masteredCount"], "properties": { "date": { "type": "string", "format": "date" }, "completedCount": { "type": "integer", "minimum": 0 }, "reviewedCount": { "type": "integer", "minimum": 0 }, "masteredCount": { "type": "integer", "minimum": 0 }, "masteryRadar": { "type": "object" } } },
+      "B2Notification": { "type": "object", "additionalProperties": false, "required": ["notificationId", "templateCode", "status", "occurredAt"], "properties": { "notificationId": { "type": "string", "maxLength": 128 }, "templateCode": { "type": "string", "maxLength": 64 }, "status": { "type": "string", "enum": ["UNREAD", "READ"] }, "safeParams": { "type": "object" }, "deepLink": { "type": "string", "maxLength": 512 }, "occurredAt": { "type": "string", "format": "date-time" } } }
+    },
+    "responses": {
+      "B2PlanResponse": { "description": "当前学习计划", "content": { "application/json": { "schema": { "type": "object", "required": ["data"], "properties": { "data": { "type": "object" } } } } } },
+      "B2LearningStreamResponse": { "description": "今日学习流", "content": { "application/json": { "schema": { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B2LearningStream" } } } } } },
+      "B2LearningActionResponse": { "description": "学习流动作结算", "content": { "application/json": { "schema": { "type": "object", "required": ["accepted"], "properties": { "accepted": { "type": "boolean" }, "data": { "type": "object" } } } } } },
+      "B2DailySummaryResponse": { "description": "每日学习汇总", "content": { "application/json": { "schema": { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B2DailySummary" } } } } } },
+      "B2NotificationPageResponse": { "description": "通知列表", "content": { "application/json": { "schema": { "type": "object", "required": ["items"], "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/B2Notification" } }, "unreadCount": { "type": "integer", "minimum": 0 }, "nextCursor": { "type": "string", "nullable": true } } } } } }
+    }
+  }
+}

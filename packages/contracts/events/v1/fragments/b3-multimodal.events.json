@@ -1,0 +1,252 @@
+{
+  "version": "1.0.0",
+  "events": [
+    {
+      "eventName": "grammar.practice.completed.v1",
+      "domain": "grammar",
+      "version": 1,
+      "schema": "grammar.event.v1",
+      "aggregateType": "grammar_practice_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/GrammarPracticeCompleted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish grammar.practice.completed.v2", "consumerRule": "按 sessionId 和 attemptVersion 去重，payload 不携带用户答案原文" }
+    },
+    {
+      "eventName": "writing.evaluation.completed.v1",
+      "domain": "writing",
+      "version": 1,
+      "schema": "writing.event.v1",
+      "aggregateType": "writing_submission",
+      "aggregateIdField": "submissionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/WritingEvaluationCompleted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish writing.evaluation.completed.v2", "consumerRule": "仅消费规则版本、分数摘要和复习信号，不消费答案原文" }
+    },
+    {
+      "eventName": "listening.dictation.submitted.v1",
+      "domain": "listening",
+      "version": 1,
+      "schema": "listening.event.v1",
+      "aggregateType": "dictation_attempt",
+      "aggregateIdField": "attemptId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ListeningDictationSubmitted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish listening.dictation.submitted.v2", "consumerRule": "以 attemptId 去重，错词只以哈希和分类摘要传递" }
+    },
+    {
+      "eventName": "reading.progress.updated.v1",
+      "domain": "reading",
+      "version": 1,
+      "schema": "reading.event.v1",
+      "aggregateType": "reading_progress",
+      "aggregateIdField": "progressId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ReadingProgressUpdated" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish reading.progress.updated.v2", "consumerRule": "按 positionVersion 保留最新进度，旧事件可重放" }
+    },
+    {
+      "eventName": "speaking.self_rating.submitted.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "speaking_recording",
+      "aggregateIdField": "recordingId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/SpeakingSelfRatingSubmitted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish speaking.self_rating.submitted.v2", "consumerRule": "仅使用用户自评和录音元数据，永不推导 AI 发音分数" }
+    },
+    {
+      "eventName": "offline.sync.applied.v1",
+      "domain": "offline",
+      "version": 1,
+      "schema": "offline.event.v1",
+      "aggregateType": "sync_batch",
+      "aggregateIdField": "clientBatchId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/OfflineSyncApplied" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish offline.sync.applied.v2", "consumerRule": "按 clientBatchId/changeId 去重，冲突结果可审计且不得重复写入事实表" }
+    },
+    {
+      "eventName": "grammar.mastery.updated.v1",
+      "domain": "grammar",
+      "version": 1,
+      "schema": "grammar.event.v1",
+      "aggregateType": "grammar_mastery",
+      "aggregateIdField": "grammarPointId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/GrammarMasteryUpdated" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish grammar.mastery.updated.v2", "consumerRule": "仅携带六维分数摘要，不携带用户答案" }
+    },
+    {
+      "eventName": "listening.progress.saved.v1",
+      "domain": "listening",
+      "version": 1,
+      "schema": "listening.event.v1",
+      "aggregateType": "listening_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ListeningProgressSaved" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish listening.progress.saved.v2", "consumerRule": "按 positionVersion 保留最新时间轴位置" }
+    },
+    {
+      "eventName": "speaking.shadowing.progressed.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "shadowing_session",
+      "aggregateIdField": "shadowingSessionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ShadowingProgressed" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish speaking.shadowing.progressed.v2", "consumerRule": "仅消费片段、次数和毫秒位置，不推导语音分数" }
+    },
+    {
+      "eventName": "media.offline.package.synced.v1",
+      "domain": "offline",
+      "version": 1,
+      "schema": "offline.event.v1",
+      "aggregateType": "offline_package",
+      "aggregateIdField": "packageId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/OfflinePackageSynced" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish media.offline.package.synced.v2", "consumerRule": "按 packageId、assetId 和哈希去重" }
+    }
+  ],
+  "payloadSchemas": {
+    "GrammarPracticeCompleted": {
+      "$id": "platform.events.grammar.practice.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "userId", "grammarPointId", "ruleVersion", "completedCount", "mistakeCount"],
+      "properties": {
+        "sessionId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "grammarPointId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "ruleVersion": { "type": "string" },
+        "completedCount": { "type": "integer", "minimum": 0 },
+        "mistakeCount": { "type": "integer", "minimum": 0 },
+        "reviewSignal": { "type": "string", "enum": ["NONE", "SRS_REVIEW"] }
+      }
+    },
+    "WritingEvaluationCompleted": {
+      "$id": "platform.events.writing.evaluation.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["submissionId", "userId", "promptId", "ruleVersion", "score", "aiScoringAvailable"],
+      "properties": {
+        "submissionId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "promptId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "ruleVersion": { "type": "string" },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 },
+        "matchedPointCount": { "type": "integer", "minimum": 0 },
+        "aiScoringAvailable": { "type": "boolean", "const": false },
+        "reviewSignal": { "type": "string", "enum": ["NONE", "SRS_REVIEW"] }
+      }
+    },
+    "ListeningDictationSubmitted": {
+      "$id": "platform.events.listening.dictation.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attemptId", "userId", "materialId", "segmentId", "mode", "score", "contentVersionId"],
+      "properties": {
+        "attemptId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "materialId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "segmentId": { "type": "string" },
+        "mode": { "type": "string" },
+        "score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "mismatchCount": { "type": "integer", "minimum": 0 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "reviewSignal": { "type": "string", "enum": ["NONE", "VOCAB_REVIEW"] }
+      }
+    },
+    "ReadingProgressUpdated": {
+      "$id": "platform.events.reading.progress.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["progressId", "userId", "articleId", "contentVersionId", "positionVersion", "progressPercent"],
+      "properties": {
+        "progressId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "articleId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "positionVersion": { "type": "integer", "minimum": 1 },
+        "progressPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "blockId": { "type": "string" }
+      }
+    },
+    "SpeakingSelfRatingSubmitted": {
+      "$id": "platform.events.speaking.self_rating.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordingId", "userId", "rating", "aiScoringAvailable"],
+      "properties": {
+        "recordingId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "rating": { "type": "string" },
+        "tagCount": { "type": "integer", "minimum": 0 },
+        "durationMs": { "type": "integer", "minimum": 0 },
+        "aiScoringAvailable": { "type": "boolean", "const": false },
+        "reviewSignal": { "type": "string", "enum": ["NONE", "SRS_REVIEW"] }
+      }
+    },
+    "OfflineSyncApplied": {
+      "$id": "platform.events.offline.sync.applied.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientBatchId", "userId", "acceptedCount", "conflictCount", "nextCursor"],
+      "properties": {
+        "clientBatchId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "acceptedCount": { "type": "integer", "minimum": 0 },
+        "conflictCount": { "type": "integer", "minimum": 0 },
+        "nextCursor": { "type": "string" },
+        "resolution": { "type": "string", "enum": ["SERVER_WINS", "LOCAL_RETRY", "MERGED"] }
+      }
+    },
+    "GrammarMasteryUpdated": {
+      "$id": "platform.events.grammar.mastery.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grammarPointId", "userId", "overall", "masteryLevel", "ruleVersion"],
+      "properties": {
+        "grammarPointId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "dimensions": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 } },
+        "overall": { "type": "number", "minimum": 0, "maximum": 1 },
+        "masteryLevel": { "type": "string" },
+        "ruleVersion": { "type": "string" }
+      }
+    },
+    "ListeningProgressSaved": {
+      "$id": "platform.events.listening.progress.saved.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "userId", "materialId", "positionMs", "positionVersion"],
+      "properties": {
+        "sessionId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "materialId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "positionMs": { "type": "integer", "minimum": 0 },
+        "positionVersion": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "ShadowingProgressed": {
+      "$id": "platform.events.speaking.shadowing.progressed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shadowingSessionId", "userId", "attemptCount", "positionMs", "aiScoringAvailable"],
+      "properties": {
+        "shadowingSessionId": { "type": "string" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "attemptCount": { "type": "integer", "minimum": 0 },
+        "positionMs": { "type": "integer", "minimum": 0 },
+        "aiScoringAvailable": { "type": "boolean", "const": false }
+      }
+    },
+    "OfflinePackageSynced": {
+      "$id": "platform.events.media.offline.package.synced.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packageId", "userId", "assetCount", "readyCount"],
+      "properties": {
+        "packageId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "assetCount": { "type": "integer", "minimum": 0 },
+        "readyCount": { "type": "integer", "minimum": 0 },
+        "failedCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

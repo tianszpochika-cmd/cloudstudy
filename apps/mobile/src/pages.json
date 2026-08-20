@@ -22,6 +22,55 @@
       }
     },
     {
+      "path": "pages/b2-vocabulary/b2-vocabulary",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "词汇与复习"
+      }
+    },
+    {
+      "path": "pages/b2-practice/b2-practice",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "B2 练习"
+      }
+    },
+    {
+      "path": "pages/b3-grammar/b3-grammar",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "语法与长难句"
+      }
+    },
+    {
+      "path": "pages/b3-writing/b3-writing",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "写作规则评测"
+      }
+    },
+    {
+      "path": "pages/b3-listening/b3-listening",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "听力精练"
+      }
+    },
+    {
+      "path": "pages/b3-reading/b3-reading",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "阅读精练"
+      }
+    },
+    {
+      "path": "pages/b3-speaking/b3-speaking",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "口语与音标"
+      }
+    },
+    {
       "path": "pages/world/world",
       "style": {
         "navigationStyle": "custom",
@@ -70,7 +119,7 @@
         "text": "学习"
       },
       {
-        "pagePath": "pages/practice/practice",
+        "pagePath": "pages/b2-practice/b2-practice",
         "text": "练习"
       },
       {

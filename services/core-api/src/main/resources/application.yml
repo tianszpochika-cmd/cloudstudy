@@ -7,6 +7,8 @@ server:
 spring:
   application:
     name: englishflow-core-api
+  aop:
+    proxy-target-class: false
   profiles:
     active: dev
   datasource:
@@ -19,6 +21,12 @@ spring:
       host: ${SPRING_DATA_REDIS_HOST:127.0.0.1}
       port: ${SPRING_DATA_REDIS_PORT:16379}
       password: ${SPRING_DATA_REDIS_PASSWORD:}
+
+englishflow:
+  b3:
+    persistence: ${B3_PERSISTENCE_MODE:memory}
+  b4:
+    persistence: ${B4_PERSISTENCE_MODE:memory}
 
 info:
   app:

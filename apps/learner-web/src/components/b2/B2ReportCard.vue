@@ -1,0 +1,16 @@
+<script setup lang="ts">
+import type { LearningReport } from '../../domain/b2'
+defineProps<{ report: LearningReport }>()
+</script>
+
+<template>
+  <article class="report-card">
+    <div class="report-card__header"><div><span class="eyebrow">{{ report.reportType === 'WEEKLY' ? 'WEEKLY REVIEW' : 'DAILY REVIEW' }}</span><h2>这份报告只记录已确认的学习结果</h2></div><span class="report-card__version">{{ report.calculationVersion ?? '服务端版本未返回' }}</span></div>
+    <div class="metrics"><div><strong>{{ report.studyMinutes ?? '—' }}</strong><span>学习分钟</span></div><div><strong>{{ report.newItems ?? '—' }}</strong><span>新学内容</span></div><div><strong>{{ report.reviewItems ?? '—' }}</strong><span>复习内容</span></div><div><strong>{{ report.accuracy === null ? '—' : `${Math.round(report.accuracy)}%` }}</strong><span>正确率</span></div><div><strong>{{ report.masteredIncrement ?? '—' }}</strong><span>掌握增量</span></div></div>
+    <div class="report-card__grid"><section><h3>延迟复测</h3><p>D+1 待复测：<strong>{{ report.d1Pending ?? '—' }}</strong></p><p>D+7 待复测：<strong>{{ report.d7Pending ?? '—' }}</strong></p><p>遗忘率：<strong>{{ report.forgettingRate === null ? '—' : `${Math.round(report.forgettingRate)}%` }}</strong></p></section><section><h3>薄弱项</h3><div v-if="report.weakness.length" class="weakness-list"><div v-for="item in report.weakness" :key="item.label" class="weakness"><div><span>{{ item.label }}</span><strong>{{ Math.round(item.value) }}</strong></div><progress :value="item.value" max="100">{{ item.value }}</progress><small v-if="item.evidence">证据：{{ item.evidence }}</small></div></div><p v-else class="muted">服务端没有返回薄弱项证据。</p></section></div>
+    <p class="report-card__footnote">生成于 {{ report.generatedAt }}。本页不根据本地点击推算 XP、掌握度或成绩。</p>
+  </article>
+</template>
+
+<style scoped>
+.report-card{display:grid;gap:24px;padding:28px;border:1px solid #e6e8f0;border-radius:22px;background:#fff;box-shadow:0 10px 30px rgb(31 35 48 / 7%)}.report-card__header{display:flex;justify-content:space-between;gap:18px}.eyebrow{color:#596bff;font-size:12px;font-weight:800;letter-spacing:.12em}.report-card h2{max-width:600px;margin:10px 0 0;font-size:clamp(24px,4vw,38px);line-height:1.2}.report-card__version{color:#666d80;font-size:12px}.metrics{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.metrics div{display:grid;gap:5px;padding:16px;border-radius:14px;background:#f7f8fc}.metrics strong{font-size:26px}.metrics span{color:#666d80;font-size:12px}.report-card__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.report-card__grid section{padding:18px;border:1px solid #e6e8f0;border-radius:14px}.report-card h3{margin:0 0 12px}.report-card p{margin:8px 0;color:#666d80;line-height:1.6}.weakness-list{display:grid;gap:12px}.weakness{display:grid;gap:5px}.weakness>div{display:flex;justify-content:space-between}.weakness small,.muted,.report-card__footnote{color:#969caf;font-size:12px}.weakness progress{width:100%;height:8px;accent-color:#596bff}.report-card__footnote{margin:0;border-top:1px solid #e6e8f0;padding-top:14px}@media(max-width:760px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.report-card__grid{grid-template-columns:1fr}.report-card__header{display:grid}.report-card__version{justify-self:start}}</style>

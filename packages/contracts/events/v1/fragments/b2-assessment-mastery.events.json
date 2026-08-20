@@ -1,0 +1,158 @@
+{
+  "events": [
+    {
+      "eventName": "assessment.stream_built.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "assessment_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/AssessmentStreamBuilt" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish assessment.stream_built.v2", "consumerRule": "deduplicate by sessionId and streamRevision; payload never carries answer data" }
+    },
+    {
+      "eventName": "assessment.answer_submitted.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "submissionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/AssessmentAnswerSubmitted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish assessment.answer_submitted.v2", "consumerRule": "deduplicate by submissionId; answer content remains in protected storage" }
+    },
+    {
+      "eventName": "mastery.verification_state_changed.v1",
+      "domain": "mastery",
+      "version": 1,
+      "schema": "mastery.event.v1",
+      "aggregateType": "mastery_item",
+      "aggregateIdField": "mistakeId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/MasteryVerificationStateChanged" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish mastery.verification_state_changed.v2", "consumerRule": "apply only once per transitionId and preserve from/to evidence" }
+    },
+    {
+      "eventName": "exam.session_state_changed.v1",
+      "domain": "exam",
+      "version": 1,
+      "schema": "exam.event.v1",
+      "aggregateType": "exam_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ExamSessionStateChanged" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish exam.session_state_changed.v2", "consumerRule": "deduplicate by transitionId; server status is authoritative" }
+    },
+    {
+      "eventName": "exam.anti_cheat_recorded.v1",
+      "domain": "exam",
+      "version": 1,
+      "schema": "exam.event.v1",
+      "aggregateType": "anti_cheat_event",
+      "aggregateIdField": "eventId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ExamAntiCheatRecorded" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish exam.anti_cheat_recorded.v2", "consumerRule": "payload contains only enum, count, time and hash metadata; never delete answer facts" }
+    },
+    {
+      "eventName": "report.generated.v1",
+      "domain": "mastery",
+      "version": 1,
+      "schema": "mastery.event.v1",
+      "aggregateType": "learning_report",
+      "aggregateIdField": "reportId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/ReportGenerated" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish report.generated.v2", "consumerRule": "recalculate using the same calculationVersion and deduplicate by reportId" }
+    }
+  ],
+  "payloadSchemas": {
+    "AssessmentStreamBuilt": {
+      "$id": "platform.events.assessment.stream_built.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "userId", "streamRevision", "algorithmVersion", "seedHash", "requestedQuota", "actualQuota", "degraded", "candidateSnapshotAt"],
+      "properties": {
+        "sessionId": { "type": "string", "format": "uuid" },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "streamRevision": { "type": "string" },
+        "algorithmVersion": { "type": "string", "const": "ASM-DS-1" },
+        "seedHash": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43}$" },
+        "requestedQuota": { "type": "object" },
+        "actualQuota": { "type": "object" },
+        "degraded": { "type": "boolean" },
+        "candidateSnapshotAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AssessmentAnswerSubmitted": {
+      "$id": "platform.events.assessment.answer_submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["submissionId", "sessionId", "exerciseId", "questionId", "revision", "scoringStatus", "submittedAt"],
+      "properties": {
+        "submissionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "sessionId": { "type": "string", "format": "uuid" },
+        "exerciseId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "questionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "revision": { "type": "integer", "minimum": 1 },
+        "scoringStatus": { "type": "string" },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "MasteryVerificationStateChanged": {
+      "$id": "platform.events.mastery.verification_state_changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transitionId", "mistakeId", "itemId", "fromMistakeStatus", "toMistakeStatus", "masteryStatus", "stage", "ruleVersion", "changedAt"],
+      "properties": {
+        "transitionId": { "type": "string" },
+        "mistakeId": { "type": "integer", "format": "int64" },
+        "itemId": { "type": "integer", "format": "int64" },
+        "fromMistakeStatus": { "type": "string" },
+        "toMistakeStatus": { "type": "string" },
+        "masteryStatus": { "type": "string" },
+        "stage": { "type": "string", "enum": ["D0", "D1", "D7"] },
+        "ruleVersion": { "type": "string" },
+        "changedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ExamSessionStateChanged": {
+      "$id": "platform.events.exam.session_state_changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transitionId", "sessionId", "from", "to", "reason", "serverOccurredAt"],
+      "properties": {
+        "transitionId": { "type": "string" },
+        "sessionId": { "type": "string", "format": "uuid" },
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "reason": { "type": "string" },
+        "serverOccurredAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ExamAntiCheatRecorded": {
+      "$id": "platform.events.exam.anti_cheat_recorded.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventId", "sessionId", "eventType", "severity", "sequence", "deviceHash", "ruleVersion", "recordedAt"],
+      "properties": {
+        "eventId": { "type": "string" },
+        "sessionId": { "type": "string", "format": "uuid" },
+        "eventType": { "type": "string" },
+        "severity": { "type": "string", "enum": ["INFO", "WARNING", "SUSPECTED_REVIEW"] },
+        "sequence": { "type": "integer", "minimum": 0 },
+        "deviceHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "ruleVersion": { "type": "string" },
+        "recordedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "ReportGenerated": {
+      "$id": "platform.events.report.generated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reportId", "reportType", "calculationVersion", "status", "generatedAt"],
+      "properties": {
+        "reportId": { "type": "integer", "format": "int64" },
+        "reportType": { "type": "string", "enum": ["EXAM_DIAGNOSTIC", "DAILY", "WEEKLY"] },
+        "calculationVersion": { "type": "string" },
+        "status": { "type": "string", "enum": ["READY", "PARTIAL", "FAILED"] },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

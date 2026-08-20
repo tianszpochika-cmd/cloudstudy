@@ -1,0 +1,49 @@
+{
+  "fixtureVersion": "b3-v1",
+  "contentVersionId": 301,
+  "grammar": {
+    "grammarPointId": 3101,
+    "sentenceId": 3201,
+    "nodeIds": ["n1", "n2", "n3"],
+    "edges": [["n1", "n2"], ["n2", "n3"]],
+    "ruleVersion": "B3-RULE-1"
+  },
+  "writing": {
+    "promptId": 3301,
+    "rubricCodes": ["THESIS", "CONNECTOR"],
+    "sameInputExpectedScore": 50,
+    "aiScoringAvailable": false
+  },
+  "listening": {
+    "materialId": 3401,
+    "durationMs": 1200,
+    "segments": [{
+      "segmentId": "seg-1",
+      "startMs": 0,
+      "endMs": 1200,
+      "tokens": [
+        {"tokenId": "t1", "startMs": 0, "endMs": 280},
+        {"tokenId": "t2", "startMs": 300, "endMs": 760},
+        {"tokenId": "t3", "startMs": 800, "endMs": 1060}
+      ]
+    }]
+  },
+  "reading": {
+    "articleId": 3501,
+    "cefrLevel": "B1",
+    "positionVersions": [1, 2, 3]
+  },
+  "phonetics": {
+    "setCode": "EN_48_PHASE1",
+    "count": 48,
+    "groups": {"MONOPHTHONG": 12, "DIPHTHONG": 8, "CONSONANT": 24, "TEACHING_VARIANT": 4}
+  },
+  "sync": {
+    "serverVersion": 4,
+    "cases": [
+      {"changeId": "c-1", "entityVersion": 5, "expected": "LOCAL_RETRY"},
+      {"changeId": "c-2", "entityVersion": 4, "expected": "MERGED"},
+      {"changeId": "c-3", "entityVersion": 3, "expected": "SERVER_WINS"}
+    ]
+  }
+}

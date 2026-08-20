@@ -1,0 +1,91 @@
+{
+  "fixtureVersion": "b2-v1",
+  "rules": {
+    "algorithmVersion": "SM2_Q03_V1",
+    "minEaseFactor": 1.3,
+    "maxEaseFactor": 2.5,
+    "maxIntervalDays": 365,
+    "passingQuality": 2,
+    "firstIntervals": [1, 3],
+    "intervalAnchors": [1, 3, 7, 15, 30, 90],
+    "qualityEaseDelta": {
+      "0": -0.32,
+      "1": -0.14,
+      "2": 0,
+      "3": 0.1
+    }
+  },
+  "vocabulary": [
+    {
+      "vocabId": 1001,
+      "contentVersionId": 2001,
+      "lemma": "allocate",
+      "phonetic": "/ˈæləkeɪt/",
+      "partOfSpeech": ["verb"],
+      "definitions": [{"language": "zh-CN", "text": "分配；拨出"}],
+      "examples": [{"sentence": "We allocate time for review.", "translation": "我们为复习分配时间。"}],
+      "collocations": ["allocate resources"],
+      "source": {"sourceCode": "synthetic-open-license-001", "licenseCode": "CC-BY-TEST", "rightsStatus": "AUTHORIZED"}
+    },
+    {
+      "vocabId": 1002,
+      "contentVersionId": 2002,
+      "lemma": "reliable",
+      "phonetic": "/rɪˈlaɪəbl/",
+      "partOfSpeech": ["adjective"],
+      "definitions": [{"language": "zh-CN", "text": "可靠的"}],
+      "examples": [{"sentence": "The source is reliable.", "translation": "这个来源是可靠的。"}],
+      "collocations": ["reliable evidence"],
+      "source": {"sourceCode": "synthetic-open-license-002", "licenseCode": "CC-BY-TEST", "rightsStatus": "AUTHORIZED"}
+    }
+  ],
+  "sm2Vectors": [
+    {
+      "name": "new-card-forgotten",
+      "initial": {"repetition": 0, "easeFactor": 2.5, "intervalDays": 0, "status": "NEW"},
+      "quality": 0,
+      "expected": {"repetition": 0, "easeFactor": 2.18, "intervalDays": 1, "status": "LEARNING"}
+    },
+    {
+      "name": "new-card-hesitant",
+      "initial": {"repetition": 0, "easeFactor": 2.5, "intervalDays": 0, "status": "NEW"},
+      "quality": 1,
+      "expected": {"repetition": 0, "easeFactor": 2.36, "intervalDays": 1, "status": "LEARNING"}
+    },
+    {
+      "name": "new-card-recalled",
+      "initial": {"repetition": 0, "easeFactor": 2.5, "intervalDays": 0, "status": "NEW"},
+      "quality": 2,
+      "expected": {"repetition": 1, "easeFactor": 2.5, "intervalDays": 1, "status": "LEARNING"}
+    },
+    {
+      "name": "second-success-uses-three-day-step",
+      "initial": {"repetition": 1, "easeFactor": 2.5, "intervalDays": 1, "status": "LEARNING"},
+      "quality": 3,
+      "expected": {"repetition": 2, "easeFactor": 2.5, "intervalDays": 3, "status": "LEARNING"}
+    },
+    {
+      "name": "late-review-is-capped",
+      "initial": {"repetition": 12, "easeFactor": 2.5, "intervalDays": 365, "status": "MASTERED"},
+      "quality": 3,
+      "expected": {"repetition": 13, "easeFactor": 2.5, "intervalDays": 365, "status": "MASTERED"}
+    },
+    {
+      "name": "low-quality-never-drops-below-floor",
+      "initial": {"repetition": 4, "easeFactor": 1.3, "intervalDays": 15, "status": "LEARNING"},
+      "quality": 0,
+      "expected": {"repetition": 0, "easeFactor": 1.3, "intervalDays": 1, "status": "LEARNING"}
+    }
+  ],
+  "stateTransitions": [
+    {"from": "NEW", "quality": 0, "to": "LEARNING"},
+    {"from": "NEW", "quality": 2, "to": "LEARNING"},
+    {"from": "LEARNING", "quality": 3, "to": "LEARNING"},
+    {"from": "LEARNING", "quality": 0, "to": "LEARNING"},
+    {"from": "LEARNING", "quality": 3, "repetition": 3, "to": "MASTERED"},
+    {"from": "MASTERED", "quality": 0, "to": "LEARNING"},
+    {"from": "MASTERED", "quality": 3, "to": "MASTERED"},
+    {"from": "CONSOLIDATED", "quality": 0, "to": "LEARNING"},
+    {"from": "CONSOLIDATED", "quality": 3, "to": "CONSOLIDATED"}
+  ]
+}

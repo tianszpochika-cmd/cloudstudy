@@ -1,0 +1,76 @@
+{
+  "domain": "learning",
+  "version": "1.0.0",
+  "events": [
+    {
+      "eventName": "vocabulary.review.accepted.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "review_event",
+      "aggregateIdField": "reviewEventId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularyReviewAccepted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 vocabulary.review.accepted.v2",
+        "consumerRule": "只有 riskDecision=ALLOW 才能结算；按 reviewEventId 去重。"
+      }
+    },
+    {
+      "eventName": "vocabulary.review.filtered.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "review_event",
+      "aggregateIdField": "reviewEventId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularyReviewFiltered" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 vocabulary.review.filtered.v2",
+        "consumerRule": "过滤结果只包含规则码和风险决策，不传答案、释义或媒体原文。"
+      }
+    },
+    {
+      "eventName": "vocabulary.expression.created.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "expression",
+      "aggregateIdField": "expressionId",
+      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularyExpressionCreated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 vocabulary.expression.created.v2",
+        "consumerRule": "只记录长度、来源和媒体存在性，不传私密笔记或原始音频。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "VocabularyReviewFiltered": {
+      "$id": "platform.events.vocabulary.review.filtered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewEventId", "userId", "itemType", "riskDecision", "ruleCode"],
+      "properties": {
+        "reviewEventId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "CHUNK", "EXPRESSION"] },
+        "riskDecision": { "type": "string", "enum": ["FILTER", "REVIEW"] },
+        "ruleCode": { "type": "string", "maxLength": 64 }
+      }
+    },
+    "VocabularyExpressionCreated": {
+      "$id": "platform.events.vocabulary.expression.created.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expressionId", "userId", "sourceType", "textLength", "hasAudio"],
+      "properties": {
+        "expressionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "sourceType": { "type": "string", "maxLength": 32 },
+        "textLength": { "type": "integer", "minimum": 1 },
+        "hasAudio": { "type": "boolean" }
+      }
+    }
+  }
+}
