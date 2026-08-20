@@ -1,0 +1,274 @@
+{
+  "metadata": {
+    "fixtureId": "b1_baseline_fixture_20260820",
+    "fixtureVersion": "1.0.0",
+    "synthetic": true,
+    "externalServices": false,
+    "generatedAt": "2026-08-20T00:00:00.000Z",
+    "purpose": "DEV-02/03/09 static, mock and E2E acceptance preparation"
+  },
+  "actors": {
+    "learnerA": {
+      "userId": "usr_b1_learner_a",
+      "tenantId": "tenant_b1_alpha",
+      "role": "learner",
+      "email": "learner-a@example.test",
+      "phoneTail": "0001"
+    },
+    "learnerB": {
+      "userId": "usr_b1_learner_b",
+      "tenantId": "tenant_b1_alpha",
+      "role": "learner",
+      "email": "learner-b@example.test",
+      "phoneTail": "0002"
+    },
+    "otherTenantLearner": {
+      "userId": "usr_b1_learner_c",
+      "tenantId": "tenant_b1_beta",
+      "role": "learner",
+      "email": "learner-c@example.test",
+      "phoneTail": "0003"
+    },
+    "contentEditor": {
+      "userId": "usr_b1_editor_a",
+      "tenantId": "tenant_b1_alpha",
+      "role": "content_editor"
+    },
+    "firstReviewer": {
+      "userId": "usr_b1_reviewer_a",
+      "tenantId": "tenant_b1_alpha",
+      "role": "first_reviewer"
+    },
+    "finalReviewer": {
+      "userId": "usr_b1_reviewer_b",
+      "tenantId": "tenant_b1_alpha",
+      "role": "final_reviewer"
+    },
+    "contentPublisher": {
+      "userId": "usr_b1_publisher_a",
+      "tenantId": "tenant_b1_alpha",
+      "role": "content_publisher"
+    }
+  },
+  "content": {
+    "contentId": "content_b1_001",
+    "tenantId": "tenant_b1_alpha",
+    "contentType": "question",
+    "versions": [
+      {
+        "contentVersionId": "content_version_b1_001",
+        "version": 1,
+        "status": "PUBLISHED",
+        "learnerVisible": true,
+        "body": {
+          "title": "Synthetic airport check-in",
+          "stem": "Choose the synthetic answer for check-in."
+        },
+        "rights": {
+          "sourceType": "synthetic",
+          "rightsStatus": "AUTHORIZED",
+          "licenseRef": "license_b1_001"
+        },
+        "review": {
+          "firstReviewerId": "usr_b1_reviewer_a",
+          "finalReviewerId": "usr_b1_reviewer_b",
+          "reviewedAt": "2026-08-19T08:00:00.000Z"
+        }
+      },
+      {
+        "contentVersionId": "content_version_b1_002",
+        "version": 2,
+        "status": "DRAFT",
+        "learnerVisible": false,
+        "body": {
+          "title": "Synthetic airport check-in revised",
+          "stem": "Choose the revised synthetic answer for check-in."
+        },
+        "rights": {
+          "sourceType": "synthetic",
+          "rightsStatus": "AUTHORIZED",
+          "licenseRef": "license_b1_002"
+        },
+        "review": {
+          "firstReviewerId": "usr_b1_reviewer_a",
+          "finalReviewerId": "usr_b1_reviewer_b",
+          "reviewedAt": "2026-08-19T09:00:00.000Z"
+        }
+      },
+      {
+        "contentVersionId": "content_version_b1_003",
+        "version": 3,
+        "status": "APPROVED",
+        "learnerVisible": false,
+        "body": {
+          "title": "Synthetic content without credential",
+          "stem": "This candidate must not publish."
+        },
+        "rights": {
+          "sourceType": "synthetic",
+          "rightsStatus": "PENDING",
+          "licenseRef": null
+        },
+        "review": {
+          "firstReviewerId": "usr_b1_reviewer_a",
+          "finalReviewerId": "usr_b1_reviewer_b",
+          "reviewedAt": "2026-08-19T10:00:00.000Z"
+        }
+      }
+    ],
+    "learningFacts": [
+      {
+        "factId": "learning_fact_b1_001",
+        "userId": "usr_b1_learner_a",
+        "contentVersionId": "content_version_b1_001",
+        "result": "HIGH",
+        "createdAt": "2026-08-19T11:00:00.000Z"
+      }
+    ]
+  },
+  "assessment": {
+    "assessmentVersionId": "assessment_version_b1_001",
+    "rulesVersion": "placement-rules-v1",
+    "scoringMode": "deterministic-rules",
+    "tenantId": "tenant_b1_alpha",
+    "userId": "usr_b1_learner_a",
+    "sessionId": "assessment_session_b1_001",
+    "questions": [
+      { "questionId": "question_b1_001", "difficulty": 1, "correctAnswer": "A" },
+      { "questionId": "question_b1_002", "difficulty": 2, "correctAnswer": "B" },
+      { "questionId": "question_b1_003", "difficulty": 2, "correctAnswer": "A" },
+      { "questionId": "question_b1_004", "difficulty": 3, "correctAnswer": "C" },
+      { "questionId": "question_b1_005", "difficulty": 3, "correctAnswer": "B" },
+      { "questionId": "question_b1_006", "difficulty": 4, "correctAnswer": "A" },
+      { "questionId": "question_b1_007", "difficulty": 4, "correctAnswer": "D" },
+      { "questionId": "question_b1_008", "difficulty": 5, "correctAnswer": "C" },
+      { "questionId": "question_b1_009", "difficulty": 5, "correctAnswer": "B" },
+      { "questionId": "question_b1_010", "difficulty": 6, "correctAnswer": "A" }
+    ],
+    "responses": [
+      { "questionId": "question_b1_001", "answer": "A", "timeSpentSec": 10 },
+      { "questionId": "question_b1_002", "answer": "B", "timeSpentSec": 11 },
+      { "questionId": "question_b1_003", "answer": "A", "timeSpentSec": 12 },
+      { "questionId": "question_b1_004", "answer": "C", "timeSpentSec": 14 },
+      { "questionId": "question_b1_005", "answer": "A", "timeSpentSec": 15 },
+      { "questionId": "question_b1_006", "answer": "A", "timeSpentSec": 18 },
+      { "questionId": "question_b1_007", "answer": "D", "timeSpentSec": 19 },
+      { "questionId": "question_b1_008", "answer": "C", "timeSpentSec": 21 },
+      { "questionId": "question_b1_009", "answer": "B", "timeSpentSec": 22 },
+      { "questionId": "question_b1_010", "answer": "D", "timeSpentSec": 23 }
+    ],
+    "expected": {
+      "score": 80,
+      "level": "C1",
+      "confidenceBand": "MEDIUM",
+      "startingPoint": "B2_REINFORCEMENT"
+    }
+  },
+  "identityPrivacy": {
+    "devices": [
+      {
+        "userId": "usr_b1_learner_a",
+        "tenantId": "tenant_b1_alpha",
+        "deviceId": "dev_b1_web_a",
+        "sessionId": "session_b1_web_a",
+        "status": "ACTIVE",
+        "accessTokenDigest": "sha256:synthetic-access-a",
+        "refreshTokenDigest": "sha256:synthetic-refresh-a"
+      },
+      {
+        "userId": "usr_b1_learner_a",
+        "tenantId": "tenant_b1_alpha",
+        "deviceId": "dev_b1_mobile_a",
+        "sessionId": "session_b1_mobile_a",
+        "status": "ACTIVE",
+        "accessTokenDigest": "sha256:synthetic-access-b",
+        "refreshTokenDigest": "sha256:synthetic-refresh-b"
+      },
+      {
+        "userId": "usr_b1_learner_b",
+        "tenantId": "tenant_b1_alpha",
+        "deviceId": "dev_b1_web_b",
+        "sessionId": "session_b1_web_b",
+        "status": "ACTIVE",
+        "accessTokenDigest": "sha256:synthetic-access-c",
+        "refreshTokenDigest": "sha256:synthetic-refresh-c"
+      }
+    ],
+    "exportRecord": {
+      "userId": "usr_b1_learner_a",
+      "tenantId": "tenant_b1_alpha",
+      "email": "learner-a@example.test",
+      "phoneTail": "0001",
+      "ipAddress": "192.0.2.10",
+      "userAgent": "SyntheticB1Agent/1.0",
+      "goalCode": "CET4",
+      "learningFacts": ["learning_fact_b1_001"]
+    }
+  },
+  "contractInventory": {
+    "sharedOpenApi": [
+      {
+        "operationId": "refreshAuthSession",
+        "method": "post",
+        "path": "/api/v1/auth/refresh",
+        "status": "present",
+        "devRefs": ["DEV-02-002", "DEV-09-007"]
+      }
+    ],
+    "runtimeRequired": [
+      { "id": "DEV-02-001", "operationHints": ["POST /api/v1/auth/sms/send-code", "POST /api/v1/auth/login/phone"] },
+      { "id": "DEV-02-002", "operationHints": ["POST /api/v1/auth/refresh", "POST /api/v1/auth/logout"] },
+      { "id": "DEV-02-003", "operationHints": ["GET /api/v1/user/profile", "PUT /api/v1/user/profile"] },
+      { "id": "DEV-02-004", "operationHints": ["POST /api/v1/assessment/placement/start"] },
+      { "id": "DEV-02-005", "operationHints": ["POST /api/v1/assessment/placement/submit-step"] },
+      { "id": "DEV-02-006", "operationHints": ["POST /api/v1/assessment/placement/complete"] },
+      { "id": "DEV-02-007", "operationHints": ["GET /api/v1/home/feed"] },
+      { "id": "DEV-02-008", "operationHints": ["GET /api/v1/learning/continue-context"] },
+      { "id": "DEV-02-009", "operationHints": ["POST /api/v1/privacy/export", "POST /api/v1/account/close"] },
+      { "id": "DEV-03-001", "operationHints": ["POST /api/v1/content/versions"] },
+      { "id": "DEV-03-002", "operationHints": ["GET /api/v1/content/question/{id}"] },
+      { "id": "DEV-03-003", "operationHints": ["POST /api/v1/content/import"] },
+      { "id": "DEV-03-004", "operationHints": ["PUT /api/v1/content/versions/{id}/rights"] },
+      { "id": "DEV-03-005", "operationHints": ["GET /api/v1/content/versions/{id}/diff"] },
+      { "id": "DEV-03-006", "operationHints": ["POST /api/v1/content/versions/{id}/publish", "POST /api/v1/content/versions/{id}/rollback"] },
+      { "id": "DEV-03-007", "operationHints": ["POST /api/v1/content/media"] },
+      { "id": "DEV-03-008", "operationHints": ["GET /api/v1/content/first-day-pack"] },
+      { "id": "DEV-03-009", "operationHints": ["POST /api/v1/content/validate"] },
+      { "id": "DEV-03-010", "operationHints": ["GET /api/v1/content/manifests/{id}"] },
+      { "id": "DEV-09-006", "operationHints": ["GET /api/v1/user/settings", "PUT /api/v1/user/settings"] },
+      { "id": "DEV-09-007", "operationHints": ["GET /api/v1/user/devices", "POST /api/v1/user/devices/kickout"] }
+    ]
+  },
+  "acceptanceMatrix": [
+    { "id": "B1-CONTENT-DRAFT-VISIBILITY", "devRefs": ["DEV-03-005", "DEV-03-008"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-CONTENT-COPYRIGHT-BLOCK", "devRefs": ["DEV-03-004", "DEV-03-006"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-CONTENT-DIFF-ROLLBACK", "devRefs": ["DEV-03-005", "DEV-03-006"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-AUTH-DUAL-TOKEN-REVOKE", "devRefs": ["DEV-02-002", "DEV-09-007"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-ASSESSMENT-VERSION-REPLAY", "devRefs": ["DEV-02-004", "DEV-02-005"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-ASSESSMENT-ITEM-IDEMPOTENCY", "devRefs": ["DEV-02-005"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-ASSESSMENT-DETERMINISM", "devRefs": ["DEV-02-006"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-SCOPE-CROSS-TENANT-USER", "devRefs": ["DEV-02-009", "DEV-09-006"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-DEVICE-KICKOUT", "devRefs": ["DEV-09-007"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-PRIVACY-EXPORT-MASKING", "devRefs": ["DEV-02-009"], "verificationMode": "mock", "status": "ready", "runtimeStatus": "not-run" },
+    { "id": "B1-FIRST-DAY-E2E-READINESS", "devRefs": ["DEV-02-001", "DEV-02-008", "DEV-03-008", "DEV-09-006", "DEV-09-007"], "verificationMode": "static", "status": "ready", "runtimeStatus": "not-run" }
+  ],
+  "firstDayChecklist": {
+    "checklistId": "b1_first_day_path",
+    "runtimeStatus": "not-run",
+    "externalServicesRequired": ["core-api", "mysql", "redis", "learner-web-or-h5", "browser"],
+    "steps": [
+      { "order": 1, "devId": "DEV-02-001", "assertion": "18+ boundary and privacy consent precede learner access", "runtimeStatus": "not-run" },
+      { "order": 2, "devId": "DEV-02-002", "assertion": "login returns access and refresh session bound to a device", "runtimeStatus": "not-run" },
+      { "order": 3, "devId": "DEV-02-003", "assertion": "goal and daily target are saved and can be restored", "runtimeStatus": "not-run" },
+      { "order": 4, "devId": "DEV-02-004", "assertion": "fixed assessment version returns a reproducible question set", "runtimeStatus": "not-run" },
+      { "order": 5, "devId": "DEV-02-005", "assertion": "interruption resumes and repeated item submit does not duplicate scoring", "runtimeStatus": "not-run" },
+      { "order": 6, "devId": "DEV-02-006", "assertion": "same answers under the same rules version return the same placement", "runtimeStatus": "not-run" },
+      { "order": 7, "devId": "DEV-02-007", "assertion": "placement completion exposes the first goal and today task", "runtimeStatus": "not-run" },
+      { "order": 8, "devId": "DEV-03-008", "assertion": "published first-day content is visible and draft content is not", "runtimeStatus": "not-run" },
+      { "order": 9, "devId": "DEV-02-008", "assertion": "adaptive home exposes a continue-learning checkpoint", "runtimeStatus": "not-run" },
+      { "order": 10, "devId": "DEV-09-006", "assertion": "settings and privacy view are self-scoped", "runtimeStatus": "not-run" },
+      { "order": 11, "devId": "DEV-09-007", "assertion": "kicking a device invalidates its refresh path", "runtimeStatus": "not-run" },
+      { "order": 12, "devId": "DEV-02-009", "assertion": "privacy export is masked and account close invalidates sessions", "runtimeStatus": "not-run" }
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "tags": [
+    { "name": "b1-onboarding", "description": "B1 deterministic placement and first-day readiness" },
+    { "name": "b1-privacy", "description": "B1 device and self-scoped privacy operations" }
+  ],
+  "paths": {
+    "/api/v1/assessment/placement/start": {
+      "post": {
+        "tags": ["b1-onboarding"],
+        "summary": "Start a deterministic placement session",
+        "operationId": "startPlacementSession",
+        "security": [{ "B1ContentBearerAuth": [] }],
+        "x-b1-acceptance": ["B1-ASSESSMENT-VERSION-REPLAY", "B1-FIRST-DAY-E2E-READINESS"],
+        "x-idempotency": { "required": true, "strategy": "assessment-session", "keyHeader": "Idempotency-Key", "replayBehavior": "same user and assessment version returns the original session" },
+        "parameters": [{ "$ref": "#/components/parameters/B1IdempotencyKey" }],
+        "responses": {
+          "200": { "description": "Placement session started", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AssessmentStartResponse" } } } },
+          "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" },
+          "409": { "$ref": "#/components/responses/B1OnboardingConflict" }
+        }
+      }
+    },
+    "/api/v1/assessment/placement/submit-step": {
+      "post": {
+        "tags": ["b1-onboarding"],
+        "summary": "Submit one placement item with replay-safe idempotency",
+        "operationId": "submitPlacementStep",
+        "security": [{ "B1ContentBearerAuth": [] }],
+        "x-b1-acceptance": ["B1-ASSESSMENT-ITEM-IDEMPOTENCY", "B1-ASSESSMENT-DETERMINISM"],
+        "x-idempotency": { "required": true, "strategy": "assessment-session-item", "keyHeader": "Idempotency-Key", "replayBehavior": "same session, version, item and request hash returns the original score" },
+        "parameters": [{ "$ref": "#/components/parameters/B1IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AssessmentStepRequest" } } } },
+        "responses": {
+          "200": { "description": "Item scored or session completed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AssessmentStepResponse" } } } },
+          "400": { "$ref": "#/components/responses/B1OnboardingBadRequest" },
+          "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" },
+          "403": { "$ref": "#/components/responses/B1OnboardingForbidden" },
+          "409": { "$ref": "#/components/responses/B1OnboardingConflict" }
+        }
+      }
+    },
+    "/api/v1/user/devices": {
+      "get": {
+        "tags": ["b1-privacy"], "summary": "List the current user's active devices", "operationId": "listUserDevices",
+        "security": [{ "B1ContentBearerAuth": [] }], "x-b1-acceptance": ["B1-DEVICE-KICKOUT", "B1-SCOPE-CROSS-TENANT-USER"],
+        "responses": { "200": { "description": "Self-scoped device list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1DeviceListResponse" } } } }, "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" } }
+      }
+    },
+    "/api/v1/user/devices/kickout": {
+      "post": {
+        "tags": ["b1-privacy"], "summary": "Revoke one of the current user's device sessions", "operationId": "kickoutUserDevice",
+        "security": [{ "B1ContentBearerAuth": [] }], "x-b1-acceptance": ["B1-AUTH-DUAL-TOKEN-REVOKE", "B1-DEVICE-KICKOUT"],
+        "x-idempotency": { "required": true, "strategy": "device-kickout", "keyHeader": "Idempotency-Key", "replayBehavior": "same device and request returns the original revocation" },
+        "parameters": [{ "$ref": "#/components/parameters/B1IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1KickoutRequest" } } } },
+        "responses": { "200": { "description": "Device session revoked" }, "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" }, "403": { "$ref": "#/components/responses/B1OnboardingForbidden" }, "404": { "$ref": "#/components/responses/B1OnboardingNotFound" }, "409": { "$ref": "#/components/responses/B1OnboardingConflict" } }
+      }
+    },
+    "/api/v1/privacy/export": {
+      "post": {
+        "tags": ["b1-privacy"], "summary": "Create a self-scoped, masked privacy export", "operationId": "createPrivacyExport",
+        "security": [{ "B1ContentBearerAuth": [] }], "x-b1-acceptance": ["B1-PRIVACY-EXPORT-MASKING", "B1-SCOPE-CROSS-TENANT-USER"],
+        "x-idempotency": { "required": true, "strategy": "privacy-export", "keyHeader": "Idempotency-Key", "replayBehavior": "same subject and policy returns the original export job" },
+        "parameters": [{ "$ref": "#/components/parameters/B1IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1PrivacyExportRequest" } } } },
+        "responses": { "202": { "description": "Export accepted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1PrivacyExportResponse" } } } }, "400": { "$ref": "#/components/responses/B1OnboardingBadRequest" }, "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" }, "403": { "$ref": "#/components/responses/B1OnboardingForbidden" }, "409": { "$ref": "#/components/responses/B1OnboardingConflict" } }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "B1OnboardingBadRequest": { "description": "Invalid B1 request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1ErrorResponse" } } } },
+      "B1OnboardingUnauthorized": { "description": "Missing or revoked credentials", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1ErrorResponse" } } } },
+      "B1OnboardingForbidden": { "description": "Scope or role denied", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1ErrorResponse" } } } },
+      "B1OnboardingNotFound": { "description": "Resource not found in actor scope", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1ErrorResponse" } } } },
+      "B1OnboardingConflict": { "description": "Version, idempotency or session conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1ErrorResponse" } } } }
+    },
+    "schemas": {
+      "B1ErrorResponse": { "type": "object", "additionalProperties": false, "required": ["requestId", "traceId", "error"], "properties": { "requestId": { "type": "string", "minLength": 8, "maxLength": 128 }, "traceId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "error": { "type": "object", "additionalProperties": false, "required": ["errorCode", "message", "retryable"], "properties": { "errorCode": { "type": "string", "enum": ["AUTH_REQUIRED", "FORBIDDEN", "NOT_FOUND", "CONFLICT", "IDEMPOTENCY_CONFLICT"] }, "message": { "type": "string", "minLength": 1, "maxLength": 500 }, "retryable": { "type": "boolean" } } } } },
+      "B1AssessmentStartResponse": { "type": "object", "additionalProperties": false, "required": ["sessionId", "assessmentVersionId", "questionId", "rulesVersion"], "properties": { "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "assessmentVersionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "questionId": { "type": "integer", "format": "int64", "minimum": 1 }, "rulesVersion": { "type": "string", "minLength": 1, "maxLength": 64 } } },
+      "B1AssessmentStepRequest": { "type": "object", "additionalProperties": false, "required": ["sessionId", "assessmentVersionId", "questionId", "answer", "timeSpentSec"], "properties": { "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "assessmentVersionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "questionId": { "type": "integer", "format": "int64", "minimum": 1 }, "answer": { "type": "string", "minLength": 1, "maxLength": 128, "description": "只接受答案键，不保存答案原文" }, "timeSpentSec": { "type": "integer", "minimum": 0, "maximum": 3600 } } },
+      "B1AssessmentStepResponse": { "type": "object", "additionalProperties": false, "required": ["attemptId", "questionId", "scoreBucket", "deduplicated"], "properties": { "attemptId": { "type": "integer", "format": "int64", "minimum": 1 }, "questionId": { "type": "integer", "format": "int64", "minimum": 1 }, "scoreBucket": { "type": "string", "enum": ["ZERO", "LOW", "MEDIUM", "HIGH", "FULL", "WITHHELD"] }, "deduplicated": { "type": "boolean" } } },
+      "B1DeviceListResponse": { "type": "object", "additionalProperties": false, "required": ["devices"], "properties": { "devices": { "type": "array", "items": { "$ref": "#/components/schemas/B1Device" } } } },
+      "B1Device": { "type": "object", "additionalProperties": false, "required": ["deviceId", "sessionId", "status", "lastActiveAt"], "properties": { "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" }, "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "status": { "type": "string", "enum": ["ACTIVE", "REVOKED"] }, "lastActiveAt": { "type": "string", "format": "date-time" } } },
+      "B1KickoutRequest": { "type": "object", "additionalProperties": false, "required": ["deviceId", "reasonCode"], "properties": { "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" }, "reasonCode": { "type": "string", "enum": ["KICKED", "RISK_FREEZE", "ADMIN"] } } },
+      "B1PrivacyExportRequest": { "type": "object", "additionalProperties": false, "required": ["subjectId", "policyName"], "properties": { "subjectId": { "type": "integer", "format": "int64", "minimum": 1 }, "policyName": { "type": "string", "enum": ["learner-self"] } } },
+      "B1PrivacyExportResponse": { "type": "object", "additionalProperties": false, "required": ["exportId", "status", "redactionPolicy"], "properties": { "exportId": { "type": "string", "minLength": 8, "maxLength": 128 }, "status": { "type": "string", "enum": ["QUEUED", "READY", "FAILED"] }, "redactionPolicy": { "type": "string", "const": "learner-self" } } }
+    }
+  }
+}

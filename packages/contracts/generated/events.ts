@@ -123,6 +123,26 @@ export type SyncCursorAdvanced = { userId: number; deviceId: string; cursor: str
  */
 export type AuthSessionRevoked = { sessionId: string; userId: number; deviceId: string; reasonCode: "LOGOUT" | "KICKED" | "REUSE_DETECTED" | "RISK_FREEZE" | "ACCOUNT_DELETED" | "ADMIN"; revokedAt: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type AssessmentItemSubmitted = { attemptId: number; userId: number; questionId: number; contentVersionId: number; idempotencyKeyHash: string; submittedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthDeviceKicked = { sessionId: string; userId: number; deviceId: string; reasonCode: "KICKED" | "RISK_FREEZE" | "ADMIN"; revokedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type PrivacyExportRequested = { exportId: string; userId: number; policyName: "learner-self"; requestedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type PrivacyExportCompleted = { exportId: string; userId: number; recordCount: number; outputDigest: string; completedAt: string; };
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -228,4 +248,24 @@ export interface AuthSessionRevokedEvent extends PlatformEventEnvelope<AuthSessi
   version: 1;
 }
 
-export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent;
+export interface AssessmentItemSubmittedEvent extends PlatformEventEnvelope<AssessmentItemSubmitted> {
+  eventName: "assessment.item.submitted.v1";
+  version: 1;
+}
+
+export interface AuthDeviceKickedEvent extends PlatformEventEnvelope<AuthDeviceKicked> {
+  eventName: "auth.device.kicked.v1";
+  version: 1;
+}
+
+export interface PrivacyExportRequestedEvent extends PlatformEventEnvelope<PrivacyExportRequested> {
+  eventName: "privacy.export.requested.v1";
+  version: 1;
+}
+
+export interface PrivacyExportCompletedEvent extends PlatformEventEnvelope<PrivacyExportCompleted> {
+  eventName: "privacy.export.completed.v1";
+  version: 1;
+}
+
+export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent;

@@ -82,7 +82,7 @@ function generateApiClientTypes(document) {
       if (!isHttpMethod(method)) continue;
       const response = Object.values(operation.responses ?? {}).find((candidate) => candidate?.content?.['application/json']?.schema);
       const responseType = response ? schemaToTs(document, response.content['application/json'].schema) : 'unknown';
-      if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(responseType)) responseTypes.add(responseType);
+      if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(responseType) && !['unknown', 'string', 'number', 'boolean', 'never', 'object'].includes(responseType)) responseTypes.add(responseType);
       operations.push(`  ${operation.operationId}: { method: ${JSON.stringify(method.toUpperCase())}; path: ${JSON.stringify(route)}; response: ${responseType}; };`);
     }
   }

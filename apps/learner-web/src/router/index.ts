@@ -6,6 +6,7 @@ declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
     shell?: boolean
+    title?: string
   }
 }
 
@@ -24,42 +25,73 @@ const routes: RouteRecordRaw[] = [
     path: '/home',
     name: 'home',
     component: () => import('../pages/HomePage.vue'),
-    meta: { requiresAuth: true, shell: true },
+    meta: { requiresAuth: true, shell: true, title: '学习首页' },
+  },
+  {
+    path: '/onboarding',
+    name: 'onboarding',
+    component: () => import('../pages/OnboardingPage.vue'),
+    meta: { requiresAuth: true, title: '新手引导' },
+  },
+  {
+    path: '/assessment',
+    name: 'assessment',
+    component: () => import('../pages/AssessmentPage.vue'),
+    meta: { requiresAuth: true, title: '规则化测评' },
+  },
+  {
+    path: '/today',
+    name: 'today',
+    component: () => import('../pages/TodayPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '今日任务' },
+  },
+  {
+    path: '/learn/session',
+    name: 'learn-session',
+    component: () => import('../pages/LearnPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '继续学习' },
   },
   {
     path: '/learn',
     name: 'learn',
     component: () => import('../pages/EmptyPage.vue'),
     props: { title: '学习', description: '学习任务与课程将在学习契约接入后呈现。' },
-    meta: { requiresAuth: true, shell: true },
+    meta: { requiresAuth: true, shell: true, title: '学习' },
   },
   {
     path: '/practice',
     name: 'practice',
     component: () => import('../pages/EmptyPage.vue'),
     props: { title: '练习', description: '练习中心将在题目契约接入后呈现。' },
-    meta: { requiresAuth: true, shell: true },
+    meta: { requiresAuth: true, shell: true, title: '练习' },
   },
   {
     path: '/world',
     name: 'world',
     component: () => import('../pages/EmptyPage.vue'),
     props: { title: '世界', description: '学习地图与成长空间将在对应模块接入后呈现。' },
-    meta: { requiresAuth: true, shell: true },
+    meta: { requiresAuth: true, shell: true, title: '世界' },
   },
   {
     path: '/courses',
     name: 'courses',
     component: () => import('../pages/EmptyPage.vue'),
     props: { title: '课程', description: '课程内容将在内容契约接入后呈现。' },
-    meta: { requiresAuth: true, shell: true },
+    meta: { requiresAuth: true, shell: true, title: '课程' },
   },
   {
     path: '/me',
     name: 'me',
     component: () => import('../pages/EmptyPage.vue'),
     props: { title: '我的', description: '个人设置与学习报告将在用户服务接入后呈现。' },
-    meta: { requiresAuth: true, shell: true },
+    meta: { requiresAuth: true, shell: true, title: '我的' },
+  },
+  {
+    path: '/settings/:section',
+    name: 'settings',
+    component: () => import('../pages/SettingsPage.vue'),
+    props: (route) => ({ section: typeof route.params.section === 'string' ? route.params.section : 'profile' }),
+    meta: { requiresAuth: true, shell: true, title: '设置' },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -79,7 +111,9 @@ router.beforeEach((to) => {
   const session = useSessionStore(pinia)
   session.restore()
 
-  if (to.meta.requiresAuth && !session.isAuthenticated) {
+  const preview = to.query.preview === '1'
+
+  if (to.meta.requiresAuth && !session.isAuthenticated && !preview) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 

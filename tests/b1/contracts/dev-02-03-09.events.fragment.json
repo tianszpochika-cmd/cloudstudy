@@ -1,0 +1,114 @@
+{
+  "events": [
+    {
+      "eventName": "assessment.item.submitted.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "attemptId",
+      "payloadSchema": {"$ref": "#/payloadSchemas/AssessmentItemSubmitted"},
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.item.submitted.v2",
+        "consumerRule": "deduplicate by attemptId, questionId and idempotencyKeyHash; the payload never carries the answer"
+      }
+    },
+    {
+      "eventName": "auth.device.kicked.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "auth.event.v1",
+      "aggregateType": "auth_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": {"$ref": "#/payloadSchemas/AuthDeviceKicked"},
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish auth.device.kicked.v2",
+        "consumerRule": "revoke the session by sessionId; never emit access or refresh token material"
+      }
+    },
+    {
+      "eventName": "privacy.export.requested.v1",
+      "domain": "privacy",
+      "version": 1,
+      "schema": "privacy.event.v1",
+      "aggregateType": "privacy_export",
+      "aggregateIdField": "exportId",
+      "payloadSchema": {"$ref": "#/payloadSchemas/PrivacyExportRequested"},
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish privacy.export.requested.v2",
+        "consumerRule": "export jobs remain self-scoped and only receive a policy name plus identifiers"
+      }
+    },
+    {
+      "eventName": "privacy.export.completed.v1",
+      "domain": "privacy",
+      "version": 1,
+      "schema": "privacy.event.v1",
+      "aggregateType": "privacy_export",
+      "aggregateIdField": "exportId",
+      "payloadSchema": {"$ref": "#/payloadSchemas/PrivacyExportCompleted"},
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish privacy.export.completed.v2",
+        "consumerRule": "completion metadata contains digests and counts, never raw export fields"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "AssessmentItemSubmitted": {
+      "$id": "platform.events.assessment.item.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attemptId", "userId", "questionId", "contentVersionId", "idempotencyKeyHash", "submittedAt"],
+      "properties": {
+        "attemptId": {"type": "integer", "format": "int64", "minimum": 1},
+        "userId": {"type": "integer", "format": "int64", "minimum": 1},
+        "questionId": {"type": "integer", "format": "int64", "minimum": 1},
+        "contentVersionId": {"type": "integer", "format": "int64", "minimum": 1},
+        "idempotencyKeyHash": {"type": "string", "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"},
+        "submittedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "AuthDeviceKicked": {
+      "$id": "platform.events.auth.device.kicked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "userId", "deviceId", "reasonCode", "revokedAt"],
+      "properties": {
+        "sessionId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "userId": {"type": "integer", "format": "int64", "minimum": 1},
+        "deviceId": {"type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"},
+        "reasonCode": {"type": "string", "enum": ["KICKED", "RISK_FREEZE", "ADMIN"]},
+        "revokedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "PrivacyExportRequested": {
+      "$id": "platform.events.privacy.export.requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exportId", "userId", "policyName", "requestedAt"],
+      "properties": {
+        "exportId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "userId": {"type": "integer", "format": "int64", "minimum": 1},
+        "policyName": {"type": "string", "enum": ["learner-self"]},
+        "requestedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "PrivacyExportCompleted": {
+      "$id": "platform.events.privacy.export.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exportId", "userId", "recordCount", "outputDigest", "completedAt"],
+      "properties": {
+        "exportId": {"type": "string", "minLength": 8, "maxLength": 128},
+        "userId": {"type": "integer", "format": "int64", "minimum": 1},
+        "recordCount": {"type": "integer", "minimum": 0},
+        "outputDigest": {"type": "string", "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"},
+        "completedAt": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

@@ -29,6 +29,8 @@ export interface ApiClient {
   request<TResponse>(path: string, options?: ApiRequestOptions): Promise<TResponse>
   get<TResponse>(path: string, options?: Omit<ApiRequestOptions, 'method' | 'body'>): Promise<TResponse>
   post<TResponse>(path: string, body: unknown, options?: Omit<ApiRequestOptions, 'method' | 'body'>): Promise<TResponse>
+  put<TResponse>(path: string, body: unknown, options?: Omit<ApiRequestOptions, 'method' | 'body'>): Promise<TResponse>
+  patch<TResponse>(path: string, body: unknown, options?: Omit<ApiRequestOptions, 'method' | 'body'>): Promise<TResponse>
 }
 
 async function decodeBody(response: Response): Promise<unknown> {
@@ -89,6 +91,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     request,
     get: (path, options) => request(path, { ...options, method: 'GET' }),
     post: (path, body, options) => request(path, { ...options, method: 'POST', body }),
+    put: (path, body, options) => request(path, { ...options, method: 'PUT', body }),
+    patch: (path, body, options) => request(path, { ...options, method: 'PATCH', body }),
   }
 }
 

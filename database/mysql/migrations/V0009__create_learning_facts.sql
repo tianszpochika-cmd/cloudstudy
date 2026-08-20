@@ -1,0 +1,40 @@
+CREATE TABLE IF NOT EXISTS lrn_learning_fact (
+  learning_fact_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  fact_uuid CHAR(36) NOT NULL,
+  user_id BIGINT UNSIGNED NOT NULL,
+  content_version_id BIGINT UNSIGNED NOT NULL,
+  source_type VARCHAR(32) NOT NULL,
+  mastery_status VARCHAR(24) NOT NULL DEFAULT 'LEARNING',
+  verification_stage VARCHAR(8) NOT NULL DEFAULT 'NONE',
+  evidence_event_id CHAR(36) NULL,
+  first_observed_at DATETIME(6) NOT NULL,
+  last_observed_at DATETIME(6) NOT NULL,
+  next_due_at DATETIME(6) NULL,
+  fact_metadata_json JSON NOT NULL,
+  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (learning_fact_id),
+  UNIQUE KEY uk_lrn_fact_uuid (fact_uuid),
+  UNIQUE KEY uk_lrn_fact_user_content (user_id, content_version_id, source_type),
+  KEY idx_lrn_fact_due (user_id, mastery_status, next_due_at),
+  CONSTRAINT chk_lrn_fact_source CHECK (source_type IN ('PLACEMENT', 'PRACTICE', 'REVIEW', 'IMPORT')),
+  CONSTRAINT chk_lrn_fact_mastery CHECK (mastery_status IN ('NEW', 'LEARNING', 'CONSOLIDATING', 'MASTERED', 'AT_RISK')),
+  CONSTRAINT chk_lrn_fact_verification CHECK (verification_stage IN ('NONE', 'D1', 'D7')),
+  CONSTRAINT chk_lrn_fact_time CHECK (last_observed_at >= first_observed_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='可解释、可回放的用户学习事实';
+
+CREATE TABLE IF NOT EXISTS lrn_learning_fact_evidence (
+  evidence_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  learning_fact_id BIGINT UNSIGNED NOT NULL,
+  event_id CHAR(36) NOT NULL,
+  evidence_type VARCHAR(32) NOT NULL,
+  content_version_id BIGINT UNSIGNED NOT NULL,
+  result_bucket VARCHAR(16) NULL,
+  evidence_hash BINARY(32) NOT NULL,
+  occurred_at DATETIME(6) NOT NULL,
+  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (evidence_id),
+  UNIQUE KEY uk_lrn_fact_evidence_event (event_id),
+  KEY idx_lrn_fact_evidence_fact_time (learning_fact_id, occurred_at),
+  CONSTRAINT chk_lrn_fact_evidence_type CHECK (evidence_type IN ('ASSESSMENT', 'PRACTICE', 'REVIEW', 'VERIFICATION'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='学习事实的脱敏证据链，不保存答案原文';

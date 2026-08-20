@@ -32,6 +32,30 @@
       "file": "V0005__create_media_assets.sql",
       "description": "create media asset metadata",
       "requiredTables": ["media_assets"]
+    },
+    {
+      "version": "0006",
+      "file": "V0006__create_identity_sessions.sql",
+      "description": "create adult identities device sessions and token families",
+      "requiredTables": ["usr_user", "usr_device_session", "usr_token_family", "usr_refresh_token", "usr_account_deletion"]
+    },
+    {
+      "version": "0007",
+      "file": "V0007__create_placement_assessment.sql",
+      "description": "create learning profile deterministic placement and attempts",
+      "requiredTables": ["usr_learning_profile", "asm_placement_item", "asm_placement_session", "asm_placement_attempt"]
+    },
+    {
+      "version": "0008",
+      "file": "V0008__create_content_supply_chain.sql",
+      "description": "create content supply chain and publication evidence",
+      "requiredTables": ["content_sources", "content_licenses", "content_entities", "content_versions", "content_release_audits"]
+    },
+    {
+      "version": "0009",
+      "file": "V0009__create_learning_facts.sql",
+      "description": "create replayable learning facts and evidence",
+      "requiredTables": ["lrn_learning_fact", "lrn_learning_fact_evidence"]
     }
   ]
 }

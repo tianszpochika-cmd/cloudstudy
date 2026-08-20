@@ -1,0 +1,458 @@
+{
+  "tags": [
+    {
+      "name": "b1-onboarding",
+      "description": "DEV-02 assessment and first-day learning path additions"
+    },
+    {
+      "name": "b1-content",
+      "description": "DEV-03 content version governance additions"
+    },
+    {
+      "name": "b1-privacy",
+      "description": "DEV-02/09 device and privacy additions"
+    }
+  ],
+  "paths": {
+    "/api/v1/assessment/placement/start": {
+      "post": {
+        "tags": ["b1-onboarding"],
+        "summary": "Start a deterministic placement session",
+        "operationId": "startPlacementSession",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-ASSESSMENT-VERSION-REPLAY", "B1-FIRST-DAY-E2E-READINESS"],
+        "responses": {
+          "200": {
+            "description": "Placement session started",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/B1AssessmentStartResponse"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "409": {"$ref": "#/components/responses/B1Conflict"}
+        }
+      }
+    },
+    "/api/v1/assessment/placement/submit-step": {
+      "post": {
+        "tags": ["b1-onboarding"],
+        "summary": "Submit one placement item with replay-safe idempotency",
+        "operationId": "submitPlacementStep",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-ASSESSMENT-ITEM-IDEMPOTENCY", "B1-ASSESSMENT-DETERMINISM"],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "assessment-session-item",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same session, version, item and request hash returns the original score without a second attempt"
+        },
+        "parameters": [{"$ref": "#/components/parameters/B1IdempotencyKey"}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/B1AssessmentStepRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item scored or session completed",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/B1AssessmentStepResponse"}
+              }
+            }
+          },
+          "400": {"$ref": "#/components/responses/B1BadRequest"},
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "403": {"$ref": "#/components/responses/B1Forbidden"},
+          "409": {"$ref": "#/components/responses/B1Conflict"}
+        }
+      }
+    },
+    "/api/v1/content/versions/{contentVersionId}/publish": {
+      "post": {
+        "tags": ["b1-content"],
+        "summary": "Publish an approved, licensed content version",
+        "operationId": "publishContentVersion",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-CONTENT-COPYRIGHT-BLOCK", "B1-CONTENT-DRAFT-VISIBILITY"],
+        "x-publish-guard": {
+          "requiredRightsStatus": "AUTHORIZED",
+          "requiredLicenseRef": true,
+          "requiredReviewStages": ["FIRST_REVIEW", "FINAL_REVIEW"]
+        },
+        "parameters": [
+          {"$ref": "#/components/parameters/B1ContentVersionId"},
+          {"$ref": "#/components/parameters/B1IdempotencyKey"}
+        ],
+        "responses": {
+          "200": {"description": "Version published"},
+          "400": {"$ref": "#/components/responses/B1BadRequest"},
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "403": {"$ref": "#/components/responses/B1Forbidden"},
+          "409": {"$ref": "#/components/responses/B1Conflict"}
+        }
+      }
+    },
+    "/api/v1/content/versions/{contentVersionId}/diff": {
+      "get": {
+        "tags": ["b1-content"],
+        "summary": "Compare a content version against a requested baseline",
+        "operationId": "diffContentVersion",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-CONTENT-DIFF-ROLLBACK"],
+        "parameters": [
+          {"$ref": "#/components/parameters/B1ContentVersionId"},
+          {
+            "name": "baseVersionId",
+            "in": "query",
+            "required": true,
+            "schema": {"$ref": "#/components/schemas/B1ContentVersionId"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stable, auditable field diff",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/B1ContentDiffResponse"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "403": {"$ref": "#/components/responses/B1Forbidden"},
+          "404": {"$ref": "#/components/responses/B1NotFound"}
+        }
+      }
+    },
+    "/api/v1/content/versions/{contentVersionId}/rollback": {
+      "post": {
+        "tags": ["b1-content"],
+        "summary": "Restore a previously published content version",
+        "operationId": "rollbackContentVersion",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-CONTENT-DIFF-ROLLBACK"],
+        "parameters": [
+          {"$ref": "#/components/parameters/B1ContentVersionId"},
+          {"$ref": "#/components/parameters/B1IdempotencyKey"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/B1RollbackRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Requested version restored"},
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "403": {"$ref": "#/components/responses/B1Forbidden"},
+          "409": {"$ref": "#/components/responses/B1Conflict"}
+        }
+      }
+    },
+    "/api/v1/user/devices": {
+      "get": {
+        "tags": ["b1-privacy"],
+        "summary": "List the current user's active devices",
+        "operationId": "listUserDevices",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-DEVICE-KICKOUT", "B1-SCOPE-CROSS-TENANT-USER"],
+        "responses": {
+          "200": {
+            "description": "Self-scoped device list",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/B1DeviceListResponse"}
+              }
+            }
+          },
+          "401": {"$ref": "#/components/responses/B1Unauthorized"}
+        }
+      }
+    },
+    "/api/v1/user/devices/kickout": {
+      "post": {
+        "tags": ["b1-privacy"],
+        "summary": "Revoke one of the current user's device sessions",
+        "operationId": "kickoutUserDevice",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-AUTH-DUAL-TOKEN-REVOKE", "B1-DEVICE-KICKOUT"],
+        "parameters": [{"$ref": "#/components/parameters/B1IdempotencyKey"}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/B1KickoutRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Device session revoked"},
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "403": {"$ref": "#/components/responses/B1Forbidden"},
+          "404": {"$ref": "#/components/responses/B1NotFound"},
+          "409": {"$ref": "#/components/responses/B1Conflict"}
+        }
+      }
+    },
+    "/api/v1/privacy/export": {
+      "post": {
+        "tags": ["b1-privacy"],
+        "summary": "Create a self-scoped, masked privacy export",
+        "operationId": "createPrivacyExport",
+        "security": [{"bearerAuth": []}],
+        "x-b1-acceptance": ["B1-PRIVACY-EXPORT-MASKING", "B1-SCOPE-CROSS-TENANT-USER"],
+        "parameters": [{"$ref": "#/components/parameters/B1IdempotencyKey"}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/B1PrivacyExportRequest"}
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Export accepted for asynchronous processing",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/B1PrivacyExportResponse"}
+              }
+            }
+          },
+          "400": {"$ref": "#/components/responses/B1BadRequest"},
+          "401": {"$ref": "#/components/responses/B1Unauthorized"},
+          "403": {"$ref": "#/components/responses/B1Forbidden"},
+          "409": {"$ref": "#/components/responses/B1Conflict"}
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "B1IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+        }
+      },
+      "B1ContentVersionId": {
+        "name": "contentVersionId",
+        "in": "path",
+        "required": true,
+        "schema": {"$ref": "#/components/schemas/B1ContentVersionId"}
+      }
+    },
+    "headers": {
+      "B1RequestId": {
+        "description": "Stable request correlation identifier",
+        "schema": {"$ref": "#/components/schemas/B1RequestId"}
+      }
+    },
+    "responses": {
+      "B1BadRequest": {
+        "description": "Invalid request",
+        "headers": {"X-Request-Id": {"$ref": "#/components/headers/B1RequestId"}},
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/B1ErrorResponse"}}}
+      },
+      "B1Unauthorized": {
+        "description": "Missing, expired or revoked credentials",
+        "headers": {"X-Request-Id": {"$ref": "#/components/headers/B1RequestId"}},
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/B1ErrorResponse"}}}
+      },
+      "B1Forbidden": {
+        "description": "Tenant, user or role scope denied",
+        "headers": {"X-Request-Id": {"$ref": "#/components/headers/B1RequestId"}},
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/B1ErrorResponse"}}}
+      },
+      "B1NotFound": {
+        "description": "Resource not found in the actor scope",
+        "headers": {"X-Request-Id": {"$ref": "#/components/headers/B1RequestId"}},
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/B1ErrorResponse"}}}
+      },
+      "B1Conflict": {
+        "description": "Version, idempotency or token-family conflict",
+        "headers": {"X-Request-Id": {"$ref": "#/components/headers/B1RequestId"}},
+        "content": {"application/json": {"schema": {"$ref": "#/components/schemas/B1ErrorResponse"}}}
+      }
+    },
+    "schemas": {
+      "B1RequestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._-]{7,127}$",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "B1ContentVersionId": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "B1SessionId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "B1DeviceId": {
+        "type": "string",
+        "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$",
+        "minLength": 12,
+        "maxLength": 100
+      },
+      "B1ErrorResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requestId", "traceId", "error"],
+        "properties": {
+          "requestId": {"$ref": "#/components/schemas/B1RequestId"},
+          "traceId": {"type": "string", "pattern": "^[a-f0-9]{32}$"},
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["errorCode", "message", "retryable"],
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "enum": ["AUTH_REQUIRED", "FORBIDDEN", "NOT_FOUND", "CONFLICT", "IDEMPOTENCY_CONFLICT", "CONTENT_NOT_PUBLISHED"]
+              },
+              "message": {"type": "string", "minLength": 1, "maxLength": 500},
+              "retryable": {"type": "boolean"}
+            }
+          }
+        }
+      },
+      "B1AssessmentStartResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sessionId", "assessmentVersionId", "questionId", "rulesVersion"],
+        "properties": {
+          "sessionId": {"$ref": "#/components/schemas/B1SessionId"},
+          "assessmentVersionId": {"type": "string", "minLength": 8, "maxLength": 128},
+          "questionId": {"type": "integer", "format": "int64", "minimum": 1},
+          "rulesVersion": {"type": "string", "minLength": 1, "maxLength": 64}
+        }
+      },
+      "B1AssessmentStepRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sessionId", "assessmentVersionId", "questionId", "answer", "timeSpentSec"],
+        "properties": {
+          "sessionId": {"$ref": "#/components/schemas/B1SessionId"},
+          "assessmentVersionId": {"type": "string", "minLength": 8, "maxLength": 128},
+          "questionId": {"type": "integer", "format": "int64", "minimum": 1},
+          "answer": {"type": "string", "minLength": 1, "maxLength": 128},
+          "timeSpentSec": {"type": "integer", "minimum": 0, "maximum": 3600}
+        }
+      },
+      "B1AssessmentStepResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["attemptId", "questionId", "scoreBucket", "deduplicated"],
+        "properties": {
+          "attemptId": {"type": "integer", "format": "int64", "minimum": 1},
+          "questionId": {"type": "integer", "format": "int64", "minimum": 1},
+          "scoreBucket": {"type": "string", "enum": ["ZERO", "LOW", "MEDIUM", "HIGH", "FULL", "WITHHELD"]},
+          "deduplicated": {"type": "boolean"}
+        }
+      },
+      "B1ContentDiffResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contentId", "fromVersionId", "toVersionId", "changes"],
+        "properties": {
+          "contentId": {"type": "integer", "format": "int64", "minimum": 1},
+          "fromVersionId": {"$ref": "#/components/schemas/B1ContentVersionId"},
+          "toVersionId": {"$ref": "#/components/schemas/B1ContentVersionId"},
+          "changes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["field", "before", "after"],
+              "properties": {
+                "field": {"type": "string", "minLength": 1, "maxLength": 128},
+                "before": {},
+                "after": {}
+              }
+            }
+          }
+        }
+      },
+      "B1RollbackRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["restoreVersionId", "reasonCode"],
+        "properties": {
+          "restoreVersionId": {"$ref": "#/components/schemas/B1ContentVersionId"},
+          "reasonCode": {"type": "string", "minLength": 1, "maxLength": 64}
+        }
+      },
+      "B1Device": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["deviceId", "sessionId", "status", "lastActiveAt"],
+        "properties": {
+          "deviceId": {"$ref": "#/components/schemas/B1DeviceId"},
+          "sessionId": {"$ref": "#/components/schemas/B1SessionId"},
+          "status": {"type": "string", "enum": ["ACTIVE", "REVOKED"]},
+          "lastActiveAt": {"type": "string", "format": "date-time"}
+        }
+      },
+      "B1DeviceListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["devices"],
+        "properties": {
+          "devices": {"type": "array", "items": {"$ref": "#/components/schemas/B1Device"}}
+        }
+      },
+      "B1KickoutRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["deviceId", "reasonCode"],
+        "properties": {
+          "deviceId": {"$ref": "#/components/schemas/B1DeviceId"},
+          "reasonCode": {"type": "string", "enum": ["KICKED", "RISK_FREEZE", "ADMIN"]}
+        }
+      },
+      "B1PrivacyExportRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["subjectId", "policyName"],
+        "properties": {
+          "subjectId": {"type": "integer", "format": "int64", "minimum": 1},
+          "policyName": {"type": "string", "enum": ["learner-self"]}
+        }
+      },
+      "B1PrivacyExportResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["exportId", "status", "redactionPolicy"],
+        "properties": {
+          "exportId": {"type": "string", "minLength": 8, "maxLength": 128},
+          "status": {"type": "string", "enum": ["QUEUED", "READY", "FAILED"]},
+          "redactionPolicy": {"type": "string", "const": "learner-self"}
+        }
+      }
+    }
+  }
+}

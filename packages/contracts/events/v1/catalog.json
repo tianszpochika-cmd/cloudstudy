@@ -97,293 +97,1146 @@
       "$id": "platform.events.learning.srs.batch_created.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["userId", "scheduleSnapshotId", "localDate", "rulesVersion", "itemCount"],
+      "required": [
+        "userId",
+        "scheduleSnapshotId",
+        "localDate",
+        "rulesVersion",
+        "itemCount"
+      ],
       "properties": {
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "scheduleSnapshotId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "localDate": { "type": "string", "format": "date" },
-        "rulesVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
-        "itemCount": { "type": "integer", "minimum": 0 }
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "scheduleSnapshotId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "localDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "rulesVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "VocabularyReviewAccepted": {
       "$id": "platform.events.vocabulary.review.accepted.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["reviewEventId", "userId", "srsStateId", "stateVersion", "effectiveQuality", "riskDecision"],
+      "required": [
+        "reviewEventId",
+        "userId",
+        "srsStateId",
+        "stateVersion",
+        "effectiveQuality",
+        "riskDecision"
+      ],
       "properties": {
-        "reviewEventId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "srsStateId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "stateVersion": { "type": "integer", "minimum": 1 },
-        "effectiveQuality": { "type": "integer", "minimum": 0, "maximum": 5 },
-        "riskDecision": { "type": "string", "enum": ["ALLOW"] },
-        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION"] }
+        "reviewEventId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "srsStateId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "stateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "effectiveQuality": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "riskDecision": {
+          "type": "string",
+          "enum": [
+            "ALLOW"
+          ]
+        },
+        "itemType": {
+          "type": "string",
+          "enum": [
+            "VOCAB",
+            "PHRASE",
+            "EXPRESSION"
+          ]
+        }
       }
     },
     "VocabularySrsStateChanged": {
       "$id": "platform.events.vocabulary.srs.state_changed.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["srsStateId", "itemType", "targetId", "before", "after", "algorithmVersion"],
+      "required": [
+        "srsStateId",
+        "itemType",
+        "targetId",
+        "before",
+        "after",
+        "algorithmVersion"
+      ],
       "properties": {
-        "srsStateId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION"] },
-        "targetId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "before": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "after": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "algorithmVersion": { "type": "string", "minLength": 1, "maxLength": 64 }
+        "srsStateId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "itemType": {
+          "type": "string",
+          "enum": [
+            "VOCAB",
+            "PHRASE",
+            "EXPRESSION"
+          ]
+        },
+        "targetId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "before": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "after": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "algorithmVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
       }
     },
     "AssessmentAnswerScored": {
       "$id": "platform.events.assessment.answer_scored.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["attemptId", "userId", "exerciseId", "questionId", "scoringStatus", "scoreBucket"],
+      "required": [
+        "attemptId",
+        "userId",
+        "exerciseId",
+        "questionId",
+        "scoringStatus",
+        "scoreBucket"
+      ],
       "properties": {
-        "attemptId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "exerciseId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "questionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "scoringStatus": { "type": "string", "enum": ["SCORED", "PENDING_REVIEW", "REJECTED"] },
-        "scoreBucket": { "type": "string", "enum": ["ZERO", "LOW", "MEDIUM", "HIGH", "FULL", "WITHHELD"] },
-        "isCorrect": { "type": "boolean", "nullable": true },
-        "errorCategory": { "type": "string", "maxLength": 64 }
+        "attemptId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "exerciseId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "questionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "scoringStatus": {
+          "type": "string",
+          "enum": [
+            "SCORED",
+            "PENDING_REVIEW",
+            "REJECTED"
+          ]
+        },
+        "scoreBucket": {
+          "type": "string",
+          "enum": [
+            "ZERO",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "FULL",
+            "WITHHELD"
+          ]
+        },
+        "isCorrect": {
+          "type": "boolean",
+          "nullable": true
+        },
+        "errorCategory": {
+          "type": "string",
+          "maxLength": 64
+        }
       }
     },
     "MasteryStateChanged": {
       "$id": "platform.events.mastery.state_changed.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["userId", "itemType", "itemId", "from", "to", "reason"],
+      "required": [
+        "userId",
+        "itemType",
+        "itemId",
+        "from",
+        "to",
+        "reason"
+      ],
       "properties": {
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION", "GRAMMAR", "SENTENCE", "EXERCISE"] },
-        "itemId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "from": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "to": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] },
-        "reason": { "type": "string", "maxLength": 64 },
-        "verificationStage": { "type": "string", "enum": ["D0", "D1", "D7", "SRS"] }
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "itemType": {
+          "type": "string",
+          "enum": [
+            "VOCAB",
+            "PHRASE",
+            "EXPRESSION",
+            "GRAMMAR",
+            "SENTENCE",
+            "EXERCISE"
+          ]
+        },
+        "itemId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "from": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "to": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "verificationStage": {
+          "type": "string",
+          "enum": [
+            "D0",
+            "D1",
+            "D7",
+            "SRS"
+          ]
+        }
       }
     },
     "LearningTaskCompleted": {
       "$id": "platform.events.learning.task.completed.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["userId", "taskId", "taskType", "completedAt", "completionVersion"],
+      "required": [
+        "userId",
+        "taskId",
+        "taskType",
+        "completedAt",
+        "completionVersion"
+      ],
       "properties": {
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "taskId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "taskType": { "type": "string", "maxLength": 64 },
-        "completedAt": { "type": "string", "format": "date-time" },
-        "completionVersion": { "type": "integer", "minimum": 1 }
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "taskId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "taskType": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completionVersion": {
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "CmsContentSubmitted": {
       "$id": "platform.events.cms.content.submitted.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["contentId", "contentVersionId", "contentType", "contentStatus"],
+      "required": [
+        "contentId",
+        "contentVersionId",
+        "contentType",
+        "contentStatus"
+      ],
       "properties": {
-        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentType": { "type": "string", "maxLength": 64 },
-        "contentStatus": { "type": "string", "enum": ["IN_REVIEW"] },
-        "reviewStage": { "type": "string", "enum": ["FIRST_REVIEW", "FINAL_REVIEW"] }
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentType": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "contentStatus": {
+          "type": "string",
+          "enum": [
+            "IN_REVIEW"
+          ]
+        },
+        "reviewStage": {
+          "type": "string",
+          "enum": [
+            "FIRST_REVIEW",
+            "FINAL_REVIEW"
+          ]
+        }
       }
     },
     "CmsReviewDecided": {
       "$id": "platform.events.cms.review.decided.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["contentId", "contentVersionId", "reviewStage", "decision", "reviewVersion"],
+      "required": [
+        "contentId",
+        "contentVersionId",
+        "reviewStage",
+        "decision",
+        "reviewVersion"
+      ],
       "properties": {
-        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "reviewStage": { "type": "string", "enum": ["FIRST_REVIEW", "FINAL_REVIEW"] },
-        "decision": { "type": "string", "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"] },
-        "reviewVersion": { "type": "integer", "minimum": 1 },
-        "reasonCode": { "type": "string", "maxLength": 64 }
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "reviewStage": {
+          "type": "string",
+          "enum": [
+            "FIRST_REVIEW",
+            "FINAL_REVIEW"
+          ]
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "APPROVED",
+            "REJECTED",
+            "CHANGES_REQUESTED"
+          ]
+        },
+        "reviewVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 64
+        }
       }
     },
     "CmsContentPublished": {
       "$id": "platform.events.cms.content.published.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["contentId", "contentVersionId", "contentType", "publishedAt", "contentStatus"],
+      "required": [
+        "contentId",
+        "contentVersionId",
+        "contentType",
+        "publishedAt",
+        "contentStatus"
+      ],
       "properties": {
-        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentType": { "type": "string", "maxLength": 64 },
-        "publishedAt": { "type": "string", "format": "date-time" },
-        "contentStatus": { "type": "string", "enum": ["PUBLISHED"] }
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentType": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "contentStatus": {
+          "type": "string",
+          "enum": [
+            "PUBLISHED"
+          ]
+        }
       }
     },
     "CmsContentRolledBack": {
       "$id": "platform.events.cms.content.rolled_back.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["contentId", "contentVersionId", "rollbackToVersionId", "reasonCode"],
+      "required": [
+        "contentId",
+        "contentVersionId",
+        "rollbackToVersionId",
+        "reasonCode"
+      ],
       "properties": {
-        "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "rollbackToVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "reasonCode": { "type": "string", "maxLength": 64 }
+        "contentId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "rollbackToVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 64
+        }
       }
     },
     "CommerceOrderPaid": {
       "$id": "platform.events.commerce.order.paid.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["orderId", "userId", "amountMinor", "currency", "paymentChannel"],
+      "required": [
+        "orderId",
+        "userId",
+        "amountMinor",
+        "currency",
+        "paymentChannel"
+      ],
       "properties": {
-        "orderId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "amountMinor": { "type": "integer", "minimum": 0 },
-        "currency": { "type": "string", "enum": ["CNY"] },
-        "paymentChannel": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE_IAP", "MANUAL"] }
+        "orderId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "entitlementId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "enum": [
+            "CNY"
+          ]
+        },
+        "paymentChannel": {
+          "type": "string",
+          "enum": [
+            "WECHAT",
+            "ALIPAY",
+            "APPLE_IAP",
+            "MANUAL"
+          ]
+        }
       }
     },
     "CommerceEntitlementActivated": {
       "$id": "platform.events.commerce.entitlement.activated.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["entitlementId", "userId", "planCode", "startsAt", "endsAt", "status"],
+      "required": [
+        "entitlementId",
+        "userId",
+        "planCode",
+        "startsAt",
+        "endsAt",
+        "status"
+      ],
       "properties": {
-        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "orderId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "planCode": { "type": "string", "maxLength": 64 },
-        "startsAt": { "type": "string", "format": "date-time" },
-        "endsAt": { "type": "string", "format": "date-time" },
-        "status": { "type": "string", "enum": ["ACTIVE"] }
+        "entitlementId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "orderId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "planCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "startsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ACTIVE"
+          ]
+        }
       }
     },
     "CommerceEntitlementRevoked": {
       "$id": "platform.events.commerce.entitlement.revoked.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["entitlementId", "userId", "reasonCode", "revokedAt", "status"],
+      "required": [
+        "entitlementId",
+        "userId",
+        "reasonCode",
+        "revokedAt",
+        "status"
+      ],
       "properties": {
-        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "reasonCode": { "type": "string", "maxLength": 64 },
-        "revokedAt": { "type": "string", "format": "date-time" },
-        "status": { "type": "string", "enum": ["REVOKED"] }
+        "entitlementId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "REVOKED"
+          ]
+        }
       }
     },
     "CommerceSubscriptionChanged": {
       "$id": "platform.events.commerce.subscription.changed.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["entitlementId", "userId", "fromStatus", "toStatus", "source"],
+      "required": [
+        "entitlementId",
+        "userId",
+        "fromStatus",
+        "toStatus",
+        "source"
+      ],
       "properties": {
-        "entitlementId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "fromStatus": { "type": "string", "enum": ["PENDING", "ACTIVE", "EXPIRED", "REVOKED", "FROZEN"] },
-        "toStatus": { "type": "string", "enum": ["PENDING", "ACTIVE", "EXPIRED", "REVOKED", "FROZEN"] },
-        "source": { "type": "string", "enum": ["PURCHASE", "RENEWAL", "REFUND", "EXPIRY", "RISK", "ADMIN"] }
+        "entitlementId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "fromStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTIVE",
+            "EXPIRED",
+            "REVOKED",
+            "FROZEN"
+          ]
+        },
+        "toStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "ACTIVE",
+            "EXPIRED",
+            "REVOKED",
+            "FROZEN"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "PURCHASE",
+            "RENEWAL",
+            "REFUND",
+            "EXPIRY",
+            "RISK",
+            "ADMIN"
+          ]
+        }
       }
     },
     "NotificationCreated": {
       "$id": "platform.events.notification.created.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["notificationId", "userId", "category", "templateCode", "dedupeKey", "priority"],
+      "required": [
+        "notificationId",
+        "userId",
+        "category",
+        "templateCode",
+        "dedupeKey",
+        "priority"
+      ],
       "properties": {
-        "notificationId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "category": { "type": "string", "enum": ["LEARNING", "REMINDER", "SECURITY", "TRANSACTION", "SYSTEM"] },
-        "templateCode": { "type": "string", "maxLength": 64 },
-        "dedupeKey": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "priority": { "type": "string", "enum": ["NORMAL", "IMPORTANT", "CRITICAL"] },
-        "expiresAt": { "type": "string", "format": "date-time" }
+        "notificationId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "LEARNING",
+            "REMINDER",
+            "SECURITY",
+            "TRANSACTION",
+            "SYSTEM"
+          ]
+        },
+        "templateCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "dedupeKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "NORMAL",
+            "IMPORTANT",
+            "CRITICAL"
+          ]
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "NotificationDelivered": {
       "$id": "platform.events.notification.delivered.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["notificationId", "userId", "channel", "status", "deliveredAt"],
+      "required": [
+        "notificationId",
+        "userId",
+        "channel",
+        "status",
+        "deliveredAt"
+      ],
       "properties": {
-        "notificationId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "channel": { "type": "string", "enum": ["IN_APP", "PUSH", "SMS", "EMAIL"] },
-        "status": { "type": "string", "enum": ["DELIVERED", "SKIPPED", "FAILED"] },
-        "deliveredAt": { "type": "string", "format": "date-time" },
-        "providerCode": { "type": "string", "maxLength": 64 }
+        "notificationId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "IN_APP",
+            "PUSH",
+            "SMS",
+            "EMAIL"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DELIVERED",
+            "SKIPPED",
+            "FAILED"
+          ]
+        },
+        "deliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "providerCode": {
+          "type": "string",
+          "maxLength": 64
+        }
       }
     },
     "NotificationRead": {
       "$id": "platform.events.notification.read.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["notificationId", "userId", "readAt"],
+      "required": [
+        "notificationId",
+        "userId",
+        "readAt"
+      ],
       "properties": {
-        "notificationId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "readAt": { "type": "string", "format": "date-time" }
+        "notificationId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "readAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "SyncLearningCheckpointSaved": {
       "$id": "platform.events.sync.learning.checkpoint_saved.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["clientEventId", "userId", "deviceId", "entityType", "entityId", "entityVersion", "stepIndex", "baseCursor", "offline"],
+      "required": [
+        "clientEventId",
+        "userId",
+        "deviceId",
+        "entityType",
+        "entityId",
+        "entityVersion",
+        "stepIndex",
+        "baseCursor",
+        "offline"
+      ],
       "properties": {
-        "clientEventId": { "type": "string", "minLength": 8, "maxLength": 96 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
-        "entityType": { "type": "string", "enum": ["LEARNING_SESSION", "ASSESSMENT_SESSION", "MEDIA_PROGRESS"] },
-        "entityId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "entityVersion": { "type": "integer", "minimum": 1 },
-        "stepIndex": { "type": "integer", "minimum": 0 },
-        "baseCursor": { "type": "string", "minLength": 8, "maxLength": 512 },
-        "offline": { "type": "boolean" }
+        "clientEventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "entityType": {
+          "type": "string",
+          "enum": [
+            "LEARNING_SESSION",
+            "ASSESSMENT_SESSION",
+            "MEDIA_PROGRESS"
+          ]
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "entityVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "stepIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "baseCursor": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512
+        },
+        "offline": {
+          "type": "boolean"
+        }
       }
     },
     "SyncConflictDetected": {
       "$id": "platform.events.sync.conflict.detected.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["userId", "clientEventId", "entityType", "entityId", "conflictType", "serverVersion", "clientVersion", "resolution"],
+      "required": [
+        "userId",
+        "clientEventId",
+        "entityType",
+        "entityId",
+        "conflictType",
+        "serverVersion",
+        "clientVersion",
+        "resolution"
+      ],
       "properties": {
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "clientEventId": { "type": "string", "minLength": 8, "maxLength": 96 },
-        "entityType": { "type": "string", "maxLength": 64 },
-        "entityId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "conflictType": { "type": "string", "enum": ["VERSION", "CURSOR_EXPIRED", "CONTENT_VERSION", "OWNERSHIP"] },
-        "serverVersion": { "type": "integer", "minimum": 1 },
-        "clientVersion": { "type": "integer", "minimum": 1 },
-        "resolution": { "type": "string", "enum": ["SERVER_WINS", "CLIENT_RETRY", "MANUAL_REVIEW"] }
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "clientEventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 96
+        },
+        "entityType": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "conflictType": {
+          "type": "string",
+          "enum": [
+            "VERSION",
+            "CURSOR_EXPIRED",
+            "CONTENT_VERSION",
+            "OWNERSHIP"
+          ]
+        },
+        "serverVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "clientVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolution": {
+          "type": "string",
+          "enum": [
+            "SERVER_WINS",
+            "CLIENT_RETRY",
+            "MANUAL_REVIEW"
+          ]
+        }
       }
     },
     "SyncCursorAdvanced": {
       "$id": "platform.events.sync.cursor.advanced.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["userId", "deviceId", "cursor", "acceptedCount", "rejectedCount"],
+      "required": [
+        "userId",
+        "deviceId",
+        "cursor",
+        "acceptedCount",
+        "rejectedCount"
+      ],
       "properties": {
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
-        "cursor": { "type": "string", "minLength": 8, "maxLength": 512 },
-        "acceptedCount": { "type": "integer", "minimum": 0 },
-        "rejectedCount": { "type": "integer", "minimum": 0 }
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "cursor": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 512
+        },
+        "acceptedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejectedCount": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "AuthSessionRevoked": {
       "$id": "platform.events.auth.session.revoked.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["sessionId", "userId", "deviceId", "reasonCode", "revokedAt"],
+      "required": [
+        "sessionId",
+        "userId",
+        "deviceId",
+        "reasonCode",
+        "revokedAt"
+      ],
       "properties": {
-        "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
-        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
-        "reasonCode": { "type": "string", "enum": ["LOGOUT", "KICKED", "REUSE_DETECTED", "RISK_FREEZE", "ACCOUNT_DELETED", "ADMIN"] },
-        "revokedAt": { "type": "string", "format": "date-time" }
+        "sessionId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "LOGOUT",
+            "KICKED",
+            "REUSE_DETECTED",
+            "RISK_FREEZE",
+            "ACCOUNT_DELETED",
+            "ADMIN"
+          ]
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AssessmentItemSubmitted": {
+      "$id": "platform.events.assessment.item.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptId",
+        "userId",
+        "questionId",
+        "contentVersionId",
+        "idempotencyKeyHash",
+        "submittedAt"
+      ],
+      "properties": {
+        "attemptId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "questionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "idempotencyKeyHash": {
+          "type": "string",
+          "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthDeviceKicked": {
+      "$id": "platform.events.auth.device.kicked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "userId",
+        "deviceId",
+        "reasonCode",
+        "revokedAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "KICKED",
+            "RISK_FREEZE",
+            "ADMIN"
+          ]
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PrivacyExportRequested": {
+      "$id": "platform.events.privacy.export.requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exportId",
+        "userId",
+        "policyName",
+        "requestedAt"
+      ],
+      "properties": {
+        "exportId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "policyName": {
+          "type": "string",
+          "enum": [
+            "learner-self"
+          ]
+        },
+        "requestedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PrivacyExportCompleted": {
+      "$id": "platform.events.privacy.export.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exportId",
+        "userId",
+        "recordCount",
+        "outputDigest",
+        "completedAt"
+      ],
+      "properties": {
+        "exportId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "recordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputDigest": {
+          "type": "string",
+          "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     }
   },
@@ -395,7 +1248,9 @@
       "schema": "learning.event.v1",
       "aggregateType": "srs_schedule",
       "aggregateIdField": "scheduleSnapshotId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/LearningSrsBatchCreated" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/LearningSrsBatchCreated"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 learning.srs.batch_created.v2",
@@ -409,7 +1264,9 @@
       "schema": "learning.event.v1",
       "aggregateType": "review_event",
       "aggregateIdField": "reviewEventId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularyReviewAccepted" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/VocabularyReviewAccepted"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 vocabulary.review.accepted.v2",
@@ -423,7 +1280,9 @@
       "schema": "learning.event.v1",
       "aggregateType": "srs_state",
       "aggregateIdField": "srsStateId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/VocabularySrsStateChanged" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/VocabularySrsStateChanged"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 vocabulary.srs.state_changed.v2",
@@ -437,7 +1296,9 @@
       "schema": "learning.event.v1",
       "aggregateType": "attempt",
       "aggregateIdField": "attemptId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/AssessmentAnswerScored" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AssessmentAnswerScored"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 assessment.answer_scored.v2",
@@ -451,7 +1312,9 @@
       "schema": "learning.event.v1",
       "aggregateType": "mastery_projection",
       "aggregateIdField": "itemId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/MasteryStateChanged" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/MasteryStateChanged"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 mastery.state_changed.v2",
@@ -465,7 +1328,9 @@
       "schema": "learning.event.v1",
       "aggregateType": "learning_task",
       "aggregateIdField": "taskId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/LearningTaskCompleted" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/LearningTaskCompleted"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 learning.task.completed.v2",
@@ -479,7 +1344,9 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CmsContentSubmitted" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CmsContentSubmitted"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 cms.content.submitted.v2",
@@ -493,7 +1360,9 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CmsReviewDecided" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CmsReviewDecided"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 cms.review.decided.v2",
@@ -507,7 +1376,9 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CmsContentPublished" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CmsContentPublished"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 cms.content.published.v2",
@@ -521,7 +1392,9 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CmsContentRolledBack" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CmsContentRolledBack"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 cms.content.rolled_back.v2",
@@ -535,7 +1408,9 @@
       "schema": "entitlement.event.v1",
       "aggregateType": "order",
       "aggregateIdField": "orderId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceOrderPaid" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CommerceOrderPaid"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 commerce.order.paid.v2",
@@ -549,7 +1424,9 @@
       "schema": "entitlement.event.v1",
       "aggregateType": "entitlement",
       "aggregateIdField": "entitlementId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceEntitlementActivated" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CommerceEntitlementActivated"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 commerce.entitlement.activated.v2",
@@ -563,7 +1440,9 @@
       "schema": "entitlement.event.v1",
       "aggregateType": "entitlement",
       "aggregateIdField": "entitlementId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceEntitlementRevoked" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CommerceEntitlementRevoked"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 commerce.entitlement.revoked.v2",
@@ -577,7 +1456,9 @@
       "schema": "entitlement.event.v1",
       "aggregateType": "entitlement",
       "aggregateIdField": "entitlementId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/CommerceSubscriptionChanged" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/CommerceSubscriptionChanged"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 commerce.subscription.changed.v2",
@@ -591,7 +1472,9 @@
       "schema": "notification.event.v1",
       "aggregateType": "notification",
       "aggregateIdField": "notificationId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/NotificationCreated" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/NotificationCreated"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 notification.created.v2",
@@ -605,7 +1488,9 @@
       "schema": "notification.event.v1",
       "aggregateType": "notification",
       "aggregateIdField": "notificationId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/NotificationDelivered" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/NotificationDelivered"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 notification.delivered.v2",
@@ -619,7 +1504,9 @@
       "schema": "notification.event.v1",
       "aggregateType": "notification",
       "aggregateIdField": "notificationId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/NotificationRead" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/NotificationRead"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 notification.read.v2",
@@ -633,7 +1520,9 @@
       "schema": "sync.event.v1",
       "aggregateType": "learning_checkpoint",
       "aggregateIdField": "entityId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/SyncLearningCheckpointSaved" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/SyncLearningCheckpointSaved"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 sync.learning.checkpoint_saved.v2",
@@ -647,7 +1536,9 @@
       "schema": "sync.event.v1",
       "aggregateType": "sync_entity",
       "aggregateIdField": "entityId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/SyncConflictDetected" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/SyncConflictDetected"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 sync.conflict.detected.v2",
@@ -661,7 +1552,9 @@
       "schema": "sync.event.v1",
       "aggregateType": "sync_cursor",
       "aggregateIdField": "userId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/SyncCursorAdvanced" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/SyncCursorAdvanced"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 sync.cursor.advanced.v2",
@@ -675,11 +1568,77 @@
       "schema": "auth.event.v1",
       "aggregateType": "auth_session",
       "aggregateIdField": "sessionId",
-      "payloadSchema": { "$ref": "#/payloadSchemas/AuthSessionRevoked" },
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthSessionRevoked"
+      },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "发布 auth.session.revoked.v2",
         "consumerRule": "事件不含 Token；设备、WebSocket 和通知消费者按 sessionId 幂等撤销。"
+      }
+    },
+    {
+      "eventName": "assessment.item.submitted.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "attemptId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AssessmentItemSubmitted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.item.submitted.v2",
+        "consumerRule": "deduplicate by attemptId and questionId; payload never carries answer content"
+      }
+    },
+    {
+      "eventName": "auth.device.kicked.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "auth.event.v1",
+      "aggregateType": "auth_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthDeviceKicked"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish auth.device.kicked.v2",
+        "consumerRule": "revoke by sessionId and never emit token material"
+      }
+    },
+    {
+      "eventName": "privacy.export.requested.v1",
+      "domain": "privacy",
+      "version": 1,
+      "schema": "privacy.event.v1",
+      "aggregateType": "privacy_export",
+      "aggregateIdField": "exportId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/PrivacyExportRequested"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish privacy.export.requested.v2",
+        "consumerRule": "export jobs remain self-scoped"
+      }
+    },
+    {
+      "eventName": "privacy.export.completed.v1",
+      "domain": "privacy",
+      "version": 1,
+      "schema": "privacy.event.v1",
+      "aggregateType": "privacy_export",
+      "aggregateIdField": "exportId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/PrivacyExportCompleted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish privacy.export.completed.v2",
+        "consumerRule": "completion contains digests and counts, never raw export fields"
       }
     }
   ]
