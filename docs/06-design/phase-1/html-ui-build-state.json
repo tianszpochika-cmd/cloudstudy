@@ -1,0 +1,49 @@
+{
+  "runId": "aurora-local-html-uiux-v1",
+  "sourceOfTruth": "local-html",
+  "workflow": "Build Web Apps",
+  "phase": "phase1-local-html-foundation",
+  "directories": {
+    "mockups": "docs/06-design/phase-1/mockups",
+    "masterFile": "docs/06-design/phase-1/mockups/complete-ui-ux-command-center.html",
+    "assets": "docs/06-design/phase-1/assets",
+    "specs": "docs/06-design/phase-1/uiux-specs",
+    "mobileApp": "apps/mobile",
+    "learnerWeb": "apps/learner-web"
+  },
+  "preparedFoundations": {
+    "tokenGroups": [
+      "Primitives",
+      "Color/Light",
+      "Color/Dark",
+      "Spacing",
+      "Radius",
+      "Typography"
+    ],
+    "tokenCount": 93,
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "sharedStylesheet": "docs/06-design/phase-1/mockups/tokens.css"
+  },
+  "progress": {
+    "htmlMockupFiles": 1,
+    "brandSvgAssets": 2,
+    "conceptAssets": 1,
+    "routeCount": 43,
+    "prototypeFlowCount": 10,
+    "designSpecsReady": true,
+    "componentManifestReady": true,
+    "browserQa": "passed",
+    "suiteVersion": "v0.3",
+    "frameworkHandoff": "Vue3 + TypeScript + uni-app"
+  },
+  "nextSteps": [
+    "补齐统一 HTML AppShell、DeviceFrame、TabBar、Sheet、Dialog 和状态组件",
+    "按 P0 流程完善所有页面族与异常状态",
+    "用 Browser 做移动端、Pad、Web 截图和交互回归",
+    "将稳定的 HTML 组件契约同步到 apps/mobile 与 apps/learner-web"
+  ],
+  "handoffRule": "Do not depend on an external design editor to continue local UI work."
+}
