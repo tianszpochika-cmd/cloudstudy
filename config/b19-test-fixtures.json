@@ -1,0 +1,120 @@
+{
+  "version": "1.0.0",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B19_REQUIRE_RUNTIME",
+    "strictContractEnv": "B19_STRICT_CONTRACT_ERRORS",
+    "requiredEnv": [
+      "B19_RUNTIME_ORIGIN",
+      "B19_RUNTIME_ACCOUNT_MATRIX",
+      "B19_RUNTIME_IDP_ISSUER",
+      "B19_RUNTIME_KAFKA_BOOTSTRAP",
+      "B19_RUNTIME_MYSQL_DSN"
+    ],
+    "requiredEvidence": [
+      "oidc-authenticated-account",
+      "gateway-api-response",
+      "mysql-fact-and-projection-reconciliation",
+      "kafka-outbox-consumer-dlq-replay"
+    ]
+  },
+  "contract": {
+    "openApiPath": "packages/contracts/openapi/v1/openapi.json",
+    "eventCatalogPath": "packages/contracts/events/v1/catalog.json",
+    "schemaRegistryPath": "packages/contracts/schemas/v1/registry.json",
+    "generatedOpenApiPath": "packages/contracts/generated/openapi.ts",
+    "generatedEventsPath": "packages/contracts/generated/events.ts",
+    "generatedClientPath": "packages/api-client/src/generated/index.ts",
+    "openApiVersion": "3.0.3",
+    "apiVersion": "1.0.0",
+    "apiPathPrefixes": ["/api/v1/", "/internal/v1/"],
+    "requiredEventEnvelopeFields": [
+      "eventId",
+      "eventName",
+      "schema",
+      "version",
+      "occurredAt",
+      "aggregateType",
+      "aggregateId",
+      "actorId",
+      "traceId",
+      "requestId",
+      "payload"
+    ],
+    "errorEnvelopeSchemas": [
+      "ApiErrorResponse",
+      "B1ErrorResponse",
+      "B2ApiError",
+      "B3ErrorResponse",
+      "B4ErrorResponse",
+      "B5ErrorEnvelope",
+      "B6ErrorEnvelope",
+      "B8ErrorEnvelope"
+    ],
+    "canonicalErrorEnvelope": "ApiErrorResponse"
+  },
+  "journey": {
+    "requiredSteps": [
+      "login",
+      "target",
+      "learning",
+      "submit",
+      "assess",
+      "review",
+      "report",
+      "notification"
+    ],
+    "subject": "synthetic-b19-learner",
+    "tenantId": "platform",
+    "targetId": "target-b19-001",
+    "contentId": "content-b19-001",
+    "contentVersion": 1,
+    "attemptId": "attempt-b19-001",
+    "idempotencyKey": "idem-b19-001",
+    "clientEventId": "client-event-b19-001",
+    "expectedEvents": [
+      "auth.principal.mapped.v1",
+      "learner.target.updated.v1",
+      "learner.first_day.projected.v1",
+      "assessment.attempt.submitted.v1",
+      "workflow.assessment_learning.saga_started.v1",
+      "assessment.attempt.assessed.v1",
+      "learning.mastery.projected.v1",
+      "learning.review.scheduled.v1",
+      "report.generated.v1",
+      "notification.requested.v1"
+    ],
+    "compensationEvent": "workflow.assessment_learning.saga_compensated.v1",
+    "replayEvent": "workflow.event.replayed.v1"
+  },
+  "forbiddenClientAuthorityFields": [
+    "tenantId",
+    "ownerId",
+    "role",
+    "roles",
+    "permission",
+    "permissions",
+    "score",
+    "correctAnswer",
+    "answerKey",
+    "authorization",
+    "accessToken",
+    "refreshToken"
+  ],
+  "syntheticAccounts": [
+    {
+      "id": "learner-adult",
+      "subject": "synthetic-b19-learner",
+      "persona": "adult-learner",
+      "identityProvider": "external-test-idp"
+    },
+    {
+      "id": "admin-operator",
+      "subject": "synthetic-b19-admin",
+      "persona": "admin-operator",
+      "identityProvider": "external-test-idp"
+    }
+  ]
+}
