@@ -1,4 +1,5 @@
 import { apiClient, type ApiRequestOptions } from './client'
+import { createClientId } from '../platform/client-id'
 import type {
   ChoiceQuestion,
   ContinueContext,
@@ -30,7 +31,7 @@ function boolValue(value: unknown): boolean | null { return typeof value === 'bo
 function arrayValue(value: unknown): unknown[] { return Array.isArray(value) ? value : [] }
 
 function withB2Headers(options: ApiRequestOptions = {}, stableKey?: string): ApiRequestOptions {
-  const key = stableKey ?? (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `b2-${Date.now()}-${Math.random().toString(36).slice(2)}`)
+  const key = stableKey ?? createClientId('b2')
   const headers = { ...(options.headers ?? {}), 'Idempotency-Key': key, 'X-Device-Id': 'learner-web', 'X-Client-Version': 'b2-web', 'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai' }
   return { ...options, headers }
 }

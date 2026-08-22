@@ -1,0 +1,116 @@
+-- social-service owns this schema. No table below is shared with gamification, learning or IAM.
+CREATE TABLE study_room (
+    room_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    owner_subject_id VARCHAR(96) NOT NULL,
+    template_code VARCHAR(48) NOT NULL,
+    state VARCHAR(24) NOT NULL,
+    capacity INT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    updated_at TIMESTAMP(6) NOT NULL,
+    PRIMARY KEY (room_id),
+    CONSTRAINT ck_study_room_capacity CHECK (capacity BETWEEN 1 AND 30)
+);
+
+CREATE TABLE seat_lease (
+    lease_id VARCHAR(96) NOT NULL,
+    room_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    subject_id VARCHAR(96) NOT NULL,
+    seat_index INT NOT NULL,
+    lease_version BIGINT NOT NULL,
+    state VARCHAR(24) NOT NULL,
+    presence_state VARCHAR(24) NOT NULL,
+    focus_state VARCHAR(24) NOT NULL,
+    acquired_at TIMESTAMP(6) NOT NULL,
+    expires_at TIMESTAMP(6) NOT NULL,
+    released_at TIMESTAMP(6) NULL,
+    PRIMARY KEY (lease_id),
+    UNIQUE KEY uk_seat_lease_active (room_id, seat_index, state),
+    KEY ix_seat_lease_subject (tenant_id, subject_id, state),
+    CONSTRAINT fk_seat_lease_room FOREIGN KEY (room_id) REFERENCES study_room (room_id)
+);
+
+CREATE TABLE presence_focus (
+    room_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    subject_id VARCHAR(96) NOT NULL,
+    presence_state VARCHAR(24) NOT NULL,
+    focus_state VARCHAR(24) NOT NULL,
+    focus_tag_code VARCHAR(48) NULL,
+    disconnected_at TIMESTAMP(6) NULL,
+    updated_at TIMESTAMP(6) NOT NULL,
+    PRIMARY KEY (room_id, subject_id),
+    CONSTRAINT fk_presence_focus_room FOREIGN KEY (room_id) REFERENCES study_room (room_id)
+);
+
+CREATE TABLE leaderboard_snapshot (
+    snapshot_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    metric_code VARCHAR(48) NOT NULL,
+    period_key VARCHAR(32) NOT NULL,
+    snapshot_state VARCHAR(24) NOT NULL,
+    source_as_of TIMESTAMP(6) NULL,
+    available_at TIMESTAMP(6) NULL,
+    published_at TIMESTAMP(6) NULL,
+    PRIMARY KEY (snapshot_id),
+    UNIQUE KEY uk_leaderboard_snapshot (tenant_id, metric_code, period_key)
+);
+
+CREATE TABLE leaderboard_entry (
+    snapshot_id VARCHAR(96) NOT NULL,
+    subject_id VARCHAR(96) NOT NULL,
+    trusted_score BIGINT NOT NULL,
+    visibility_mode VARCHAR(24) NOT NULL,
+    source_event_id VARCHAR(96) NOT NULL,
+    PRIMARY KEY (snapshot_id, subject_id),
+    CONSTRAINT fk_leaderboard_entry_snapshot FOREIGN KEY (snapshot_id) REFERENCES leaderboard_snapshot (snapshot_id)
+);
+
+CREATE TABLE preset_interaction (
+    interaction_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    room_id VARCHAR(96) NOT NULL,
+    sender_subject_id VARCHAR(96) NOT NULL,
+    target_seat_index INT NULL,
+    preset_code VARCHAR(48) NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    PRIMARY KEY (interaction_id),
+    CONSTRAINT fk_preset_interaction_room FOREIGN KEY (room_id) REFERENCES study_room (room_id)
+);
+
+CREATE TABLE moderation_report (
+    report_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    room_id VARCHAR(96) NOT NULL,
+    reporter_subject_id VARCHAR(96) NOT NULL,
+    target_subject_id VARCHAR(96) NOT NULL,
+    target_seat_index INT NOT NULL,
+    reason_code VARCHAR(48) NOT NULL,
+    state VARCHAR(24) NOT NULL,
+    appeal_code VARCHAR(48) NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    updated_at TIMESTAMP(6) NOT NULL,
+    PRIMARY KEY (report_id),
+    CONSTRAINT fk_moderation_report_room FOREIGN KEY (room_id) REFERENCES study_room (room_id)
+);
+
+CREATE TABLE social_idempotency (
+    tenant_id VARCHAR(96) NOT NULL,
+    subject_id VARCHAR(96) NOT NULL,
+    operation_code VARCHAR(128) NOT NULL,
+    idempotency_key VARCHAR(96) NOT NULL,
+    request_fingerprint CHAR(64) NOT NULL,
+    response_status INT NOT NULL,
+    created_at TIMESTAMP(6) NOT NULL,
+    PRIMARY KEY (tenant_id, subject_id, operation_code, idempotency_key)
+);
+
+CREATE TABLE trusted_event_dedupe (
+    source_service VARCHAR(96) NOT NULL,
+    event_id VARCHAR(96) NOT NULL,
+    tenant_id VARCHAR(96) NOT NULL,
+    event_fingerprint CHAR(64) NOT NULL,
+    occurred_at TIMESTAMP(6) NOT NULL,
+    PRIMARY KEY (source_service, event_id)
+);

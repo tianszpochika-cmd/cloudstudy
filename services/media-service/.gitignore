@@ -1,0 +1,3 @@
+# Local pure-Java smoke output; source and tests remain tracked.
+.compile-check*/
+target/

@@ -4,10 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#596BFF" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <title>语学星</title>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('/sw.js')
+    </script>
   </body>
 </html>

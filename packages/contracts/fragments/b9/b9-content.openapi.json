@@ -1,0 +1,610 @@
+{
+  "tags": [
+    { "name": "b9-content-public", "description": "Published content and official-site public projections" },
+    { "name": "b9-content-learner", "description": "Authenticated learner read projections" },
+    { "name": "b9-content-admin", "description": "Content-service commands issued by admin operations" },
+    { "name": "b9-content-internal", "description": "Workload-only content snapshots and projection reads" }
+  ],
+  "paths": {
+    "/api/v1/public/content/catalog": {
+      "get": {
+        "tags": ["b9-content-public"],
+        "summary": "List published public content cards",
+        "operationId": "listB9PublicContentCatalog",
+        "security": [],
+        "x-contract": {
+          "owner": "content-service",
+          "projection": "cnt_public_projection",
+          "tenant": "platform public projection; no client tenant selection",
+          "fieldFiltering": "PUBLIC_V1 allow-list only",
+          "cache": "ETag/contentEpoch; invalidated by content.public_projection.invalidated.v1"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B9ContentTypeQuery" },
+          { "$ref": "#/components/parameters/B9TargetLevelQuery" },
+          { "$ref": "#/components/parameters/B9ContentLocaleQuery" },
+          { "$ref": "#/components/parameters/B9Cursor" },
+          { "$ref": "#/components/parameters/B9PageSize" }
+        ],
+        "responses": {
+          "200": { "description": "Published public catalog", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9PublicContentCatalogResponse" } } } },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    },
+    "/api/v1/public/content/{contentCode}": {
+      "get": {
+        "tags": ["b9-content-public"],
+        "summary": "Read a published public content projection",
+        "operationId": "getB9PublicContentProjection",
+        "security": [],
+        "x-contract": {
+          "owner": "content-service",
+          "projection": "cnt_public_projection",
+          "versioning": "optional version pin; never silently falls forward or backward",
+          "fieldFiltering": "PUBLIC_V1 allow-list; answerRuleVersion, draft payload, reviewer actors and license evidence are excluded"
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B9ContentCode" }, { "$ref": "#/components/parameters/B9VersionPin" }],
+        "responses": {
+          "200": { "description": "Published public content", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9PublicContentProjectionResponse" } } } },
+          "404": { "$ref": "#/components/responses/B9NotFound" },
+          "410": { "$ref": "#/components/responses/B9Gone" },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    },
+    "/api/v1/public/site/projection": {
+      "get": {
+        "tags": ["b9-content-public"],
+        "summary": "Read the official-site public projection",
+        "operationId": "getB9OfficialSiteProjection",
+        "security": [],
+        "x-contract": {
+          "owner": "content-service + commerce-service + platform projection",
+          "projection": "public site projection assembled from published read models",
+          "fieldFiltering": "public courses, published price cards, download channels, announcements and compliance notices only",
+          "forbiddenDependency": "official-site must not call authenticated learner, admin or IAM APIs"
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B9UiLocale" }],
+        "responses": {
+          "200": { "description": "Official-site projection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9PublicSiteProjectionResponse" } } } },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    },
+    "/api/v1/content/learner/catalog": {
+      "get": {
+        "tags": ["b9-content-learner"],
+        "summary": "List published learner-readable content",
+        "operationId": "listB9LearnerContentCatalog",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "content-service",
+          "projection": "cnt_public_projection",
+          "authorization": "verified principal, phase and content rights; resource owner is not client supplied",
+          "fieldFiltering": "LEARNER_V1 allow-list; no answer rules"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B9ContentTypeQuery" },
+          { "$ref": "#/components/parameters/B9TargetLevelQuery" },
+          { "$ref": "#/components/parameters/B9ContentLocaleQuery" },
+          { "$ref": "#/components/parameters/B9Cursor" },
+          { "$ref": "#/components/parameters/B9PageSize" }
+        ],
+        "responses": {
+          "200": { "description": "Learner content catalog", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerContentCatalogResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    },
+    "/api/v1/content/learner/{contentCode}": {
+      "get": {
+        "tags": ["b9-content-learner"],
+        "summary": "Read a version-pinned learner content projection",
+        "operationId": "getB9LearnerContentProjection",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "content-service",
+          "projection": "cnt_public_projection",
+          "authorization": "service-side PEP evaluates phase, rights, entitlement and device/offline state",
+          "fieldFiltering": "LEARNER_V1 allow-list; answer rules remain assessment-service internal"
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B9ContentCode" }, { "$ref": "#/components/parameters/B9VersionPin" }],
+        "responses": {
+          "200": { "description": "Learner content projection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerContentProjectionResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "404": { "$ref": "#/components/responses/B9NotFound" },
+          "410": { "$ref": "#/components/responses/B9Gone" },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    },
+    "/api/v1/admin/content-commands": {
+      "get": {
+        "tags": ["b9-content-admin"],
+        "summary": "List admin content state and review/publication status",
+        "operationId": "listB9AdminContentStates",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "content-service", "caller": "admin-ops-service/admin-web", "readOnly": true, "fieldFiltering": "admin role-specific fields; no direct database projection or cross-service write" },
+        "parameters": [{ "$ref": "#/components/parameters/B9Cursor" }, { "$ref": "#/components/parameters/B9PageSize" }],
+        "responses": {
+          "200": { "description": "Admin content state list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9AdminContentStateListResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["b9-content-admin"],
+        "summary": "Submit a content-service command",
+        "operationId": "submitB9ContentCommand",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "content-service",
+          "caller": "admin-ops-service/admin-web",
+          "commandBoundary": "admin sends command; it never writes content tables",
+          "authorization": "content-editor/reviewer-l1/reviewer-l2/release-operator scopes plus ABAC rights and stage",
+          "dualReview": "REVIEW_FIRST and REVIEW_FINAL require distinct verified actors; author cannot review own version"
+        },
+        "x-idempotency": { "required": true, "strategy": "content-command", "keyHeader": "Idempotency-Key", "replayBehavior": "same actor, target and request hash returns original command result" },
+        "parameters": [{ "$ref": "#/components/parameters/B9IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9ContentCommandRequest" } } } },
+        "responses": {
+          "202": { "description": "Command accepted for content-service application and Outbox publication", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9ContentCommandAcceptedResponse" } } } },
+          "400": { "$ref": "#/components/responses/B9BadRequest" },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "409": { "$ref": "#/components/responses/B9Conflict" }
+        }
+      }
+    },
+    "/api/v1/admin/content-commands/{contentCode}": {
+      "get": {
+        "tags": ["b9-content-admin"],
+        "summary": "Read admin content state and review/publication status",
+        "operationId": "getB9AdminContentState",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "content-service", "caller": "admin-ops-service/admin-web", "readOnly": true, "fieldFiltering": "admin role-specific fields; no direct database projection or cross-service write" },
+        "parameters": [{ "$ref": "#/components/parameters/B9ContentCode" }],
+        "responses": {
+          "200": { "description": "Admin content state", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9AdminContentStateResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "404": { "$ref": "#/components/responses/B9NotFound" }
+        }
+      }
+    },
+    "/internal/v1/content/public-projections/{projectionKey}": {
+      "get": {
+        "tags": ["b9-content-internal"],
+        "summary": "Read a public projection through workload identity",
+        "operationId": "getB9InternalPublicProjection",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": { "owner": "content-service", "caller": "gateway/official-site adapter", "readOnly": true, "fieldFiltering": "same PUBLIC_V1 allow-list; workload identity does not unlock private content" },
+        "parameters": [{ "$ref": "#/components/parameters/B9ProjectionKey" }],
+        "responses": {
+          "200": { "description": "Public projection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9InternalPublicProjectionResponse" } } } },
+          "404": { "$ref": "#/components/responses/B9NotFound" },
+          "410": { "$ref": "#/components/responses/B9Gone" },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    },
+    "/internal/v1/content/versions/{contentVersionId}/assessment-snapshot": {
+      "get": {
+        "tags": ["b9-content-internal"],
+        "summary": "Read a versioned assessment content snapshot",
+        "operationId": "getB9AssessmentContentSnapshot",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": { "owner": "content-service", "caller": "assessment-service", "readOnly": true, "fieldFiltering": "opaque answer-rule version and scoring references only; no learner-facing answer rule body" },
+        "parameters": [{ "$ref": "#/components/parameters/B9ContentVersionId" }],
+        "responses": {
+          "200": { "description": "Assessment snapshot", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9AssessmentContentSnapshotResponse" } } } },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "404": { "$ref": "#/components/responses/B9NotFound" },
+          "410": { "$ref": "#/components/responses/B9Gone" }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "B9ContentTypeQuery": {
+        "name": "contentType",
+        "in": "query",
+        "required": false,
+        "schema": { "$ref": "#/components/schemas/B9ContentType" }
+      },
+      "B9TargetLevelQuery": {
+        "name": "targetLevel",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] }
+      },
+      "B9ContentLocaleQuery": {
+        "name": "contentLocale",
+        "in": "query",
+        "required": false,
+        "schema": { "$ref": "#/components/schemas/B9Locale" }
+      }
+    },
+    "schemas": {
+      "B9ContentVersionSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contentVersionId", "versionNumber", "status", "contentHash", "createdAt"],
+        "properties": {
+          "contentVersionId": { "$ref": "#/components/schemas/B9ContentVersionId" },
+          "versionNumber": { "type": "integer", "minimum": 1 },
+          "status": { "type": "string", "enum": ["DRAFT", "IN_REVIEW", "APPROVED", "PUBLISHED", "UNPUBLISHED", "ROLLED_BACK", "ARCHIVED"] },
+          "contentHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+          "sourceCode": { "type": "string", "maxLength": 96 },
+          "licenseCode": { "type": "string", "maxLength": 96, "description": "Admin-only reference; public projections expose only a rights status." },
+          "createdAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "publishedAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9ContentItemDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["itemCode", "itemType", "displayOrder", "stimulusRef", "definition"],
+        "properties": {
+          "itemCode": { "type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{1,127}$" },
+          "itemType": { "$ref": "#/components/schemas/B9ContentItemType" },
+          "displayOrder": { "type": "integer", "minimum": 0 },
+          "stimulusRef": { "type": "string", "maxLength": 256, "description": "Opaque reference to a content stimulus; answer material is not carried here." },
+          "displayText": { "type": "string", "maxLength": 4096 },
+          "definition": { "type": "object", "additionalProperties": true, "description": "Service-owned structured definition. Public projection is generated by an allow-list, never by copying this object." },
+          "answerRuleVersion": { "type": "string", "maxLength": 64, "description": "Opaque internal version used only by assessment-service; never emitted in public or learner projections." }
+        }
+      },
+      "B9ContentDraftInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contentType", "title", "contentLocale", "targetLevel", "sourceCode", "licenseCode", "contentHash", "items"],
+        "properties": {
+          "contentType": { "$ref": "#/components/schemas/B9ContentType" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "summary": { "type": "string", "maxLength": 2048 },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "sourceCode": { "type": "string", "minLength": 1, "maxLength": 96 },
+          "licenseCode": { "type": "string", "minLength": 1, "maxLength": 96 },
+          "contentHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+          "items": { "type": "array", "minItems": 1, "maxItems": 10000, "items": { "$ref": "#/components/schemas/B9ContentItemDefinition" } }
+        }
+      },
+      "B9ContentCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "contentCode", "expectedStateVersion"],
+        "description": "命令只表达意图和资源版本；actor、tenant、owner、role、permission、reviewer 和版权事实均由服务端从已验证上下文与内容记录派生。",
+        "x-server-derived-authorization-facts": ["actor", "tenant", "owner", "role", "permission", "contentRights", "reviewStage"],
+        "properties": {
+          "command": { "type": "string", "enum": ["CREATE_DRAFT", "SAVE_DRAFT", "VALIDATE_DRAFT", "SUBMIT_REVIEW", "REVIEW_FIRST", "REVIEW_FINAL", "PUBLISH", "UNPUBLISH", "ROLLBACK"] },
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "expectedStateVersion": { "$ref": "#/components/schemas/B9ExpectedStateVersion" },
+          "targetVersionNumber": { "type": "integer", "minimum": 1 },
+          "reasonCode": { "type": "string", "maxLength": 96 },
+          "content": { "$ref": "#/components/schemas/B9ContentDraftInput" },
+          "reviewDecision": { "type": "string", "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"] },
+          "reviewNote": { "type": "string", "maxLength": 2048 }
+        }
+      },
+      "B9ContentCommandAccepted": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["commandId", "command", "contentCode", "status", "stateVersion", "acceptedAt"],
+        "properties": {
+          "commandId": { "type": "string", "pattern": "^cmd_[A-Za-z0-9._:-]{15,127}$" },
+          "command": { "type": "string" },
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "contentVersionId": { "$ref": "#/components/schemas/B9ContentVersionId" },
+          "status": { "$ref": "#/components/schemas/B9CommandStatus" },
+          "stateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
+          "outboxEventId": { "type": "string", "pattern": "^[0-9a-fA-F-]{36}$", "description": "Content-service Outbox event identity; publication is at-least-once and consumers deduplicate." },
+          "acceptedAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9PublicContentItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["itemCode", "itemType", "displayOrder", "stimulusRef"],
+        "properties": {
+          "itemCode": { "type": "string", "maxLength": 128 },
+          "itemType": { "$ref": "#/components/schemas/B9ContentItemType" },
+          "displayOrder": { "type": "integer", "minimum": 0 },
+          "stimulusRef": { "type": "string", "maxLength": 256 },
+          "displayText": { "type": "string", "maxLength": 4096 },
+          "mediaRefs": { "type": "array", "items": { "type": "string", "maxLength": 512 }, "maxItems": 32 }
+        }
+      },
+      "B9PublicContentProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["projectionKey", "contentCode", "contentType", "title", "contentLocale", "targetLevel", "contentVersionId", "versionNumber", "projectionVersion", "contentEpoch", "availability", "items", "publishedAt", "cacheTag"],
+        "x-public-field-set": "PUBLIC_V1",
+        "x-private-fields-never-expose": ["answerRuleVersion", "reviewerActors", "draftPayload", "sourceLicenseEvidence", "internalNotes"],
+        "properties": {
+          "projectionKey": { "$ref": "#/components/schemas/B9ProjectionKey" },
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "contentType": { "$ref": "#/components/schemas/B9ContentType" },
+          "title": { "type": "string", "maxLength": 255 },
+          "summary": { "type": "string", "maxLength": 2048 },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "contentVersionId": { "$ref": "#/components/schemas/B9ContentVersionId" },
+          "versionNumber": { "type": "integer", "minimum": 1 },
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "availability": { "type": "string", "const": "PUBLISHED" },
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B9PublicContentItem" }, "maxItems": 10000 },
+          "publishedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "cacheTag": { "type": "string", "pattern": "^[a-fA-F0-9]{16,128}$" }
+        }
+      },
+      "B9LearnerContentProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["content", "learnerAccess", "contentEpoch"],
+        "x-field-filtering": "LEARNER_V1 is PUBLIC_V1 plus server-computed access flags; no content answer rules",
+        "properties": {
+          "content": { "$ref": "#/components/schemas/B9PublicContentProjection" },
+          "learnerAccess": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["available", "offlineAllowed", "reasonCode"],
+            "properties": {
+              "available": { "type": "boolean" },
+              "offlineAllowed": { "type": "boolean" },
+              "reasonCode": { "type": "string", "enum": ["ALLOWED", "PHASE_RESTRICTED", "RIGHTS_RESTRICTED", "DEVICE_RESTRICTED", "POLICY_DENIED"] }
+            }
+          },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" }
+        }
+      },
+      "B9PublicContentCard": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contentCode", "contentType", "title", "contentLocale", "targetLevel", "contentVersionId", "availability"],
+        "properties": {
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "contentType": { "$ref": "#/components/schemas/B9ContentType" },
+          "title": { "type": "string", "maxLength": 255 },
+          "summary": { "type": "string", "maxLength": 512 },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "contentVersionId": { "$ref": "#/components/schemas/B9ContentVersionId" },
+          "availability": { "type": "string", "const": "PUBLISHED" }
+        }
+      },
+      "B9PublicProjectionMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["projectionVersion", "contentEpoch", "generatedAt", "source"],
+        "properties": {
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "generatedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "source": { "type": "string", "enum": ["CONTENT_SERVICE", "CACHE", "STATIC_DEGRADED"] },
+          "stale": { "type": "boolean" },
+          "traceId": { "type": "string", "maxLength": 128 }
+        }
+      },
+      "B9PublicContentCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "contentEpoch", "projectionVersion"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B9PublicContentCard" }, "maxItems": 100 },
+          "nextCursor": { "type": "string", "maxLength": 512 },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" }
+        }
+      },
+      "B9LearnerContentCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "contentEpoch", "projectionVersion"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B9PublicContentCard" }, "maxItems": 100 },
+          "nextCursor": { "type": "string", "maxLength": 512 },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" }
+        }
+      },
+      "B9PriceCard": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["priceCode", "currency", "amountMinor", "displayAmount", "status"],
+        "properties": {
+          "priceCode": { "type": "string", "maxLength": 96 },
+          "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+          "amountMinor": { "type": "integer", "minimum": 0 },
+          "displayAmount": { "type": "string", "maxLength": 64 },
+          "status": { "type": "string", "enum": ["PUBLISHED", "UNAVAILABLE"] },
+          "effectiveFrom": { "$ref": "#/components/schemas/B9DateTime" },
+          "effectiveUntil": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9DownloadChannel": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["platform", "channel", "status"],
+        "properties": {
+          "platform": { "type": "string", "enum": ["WEB", "IOS", "ANDROID", "IPAD", "WECHAT_MINI_PROGRAM", "WINDOWS"] },
+          "channel": { "type": "string", "maxLength": 64 },
+          "status": { "type": "string", "enum": ["AVAILABLE", "UNAVAILABLE", "COMING_SOON"] },
+          "downloadUrl": { "type": "string", "format": "uri", "maxLength": 2048 },
+          "version": { "type": "string", "maxLength": 64 }
+        }
+      },
+      "B9PublicAnnouncement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["announcementCode", "title", "summary", "publishedAt"],
+        "properties": {
+          "announcementCode": { "type": "string", "maxLength": 96 },
+          "title": { "type": "string", "maxLength": 255 },
+          "summary": { "type": "string", "maxLength": 1024 },
+          "publishedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "expiresAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9ComplianceNotice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["noticeCode", "title", "body", "version", "effectiveAt"],
+        "properties": {
+          "noticeCode": { "type": "string", "maxLength": 96 },
+          "title": { "type": "string", "maxLength": 255 },
+          "body": { "type": "string", "maxLength": 12000 },
+          "version": { "type": "string", "maxLength": 64 },
+          "effectiveAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9PublicSiteProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["projectionVersion", "contentEpoch", "generatedAt", "courses", "pricing", "downloads", "announcements", "compliance"],
+        "x-public-field-set": "OFFICIAL_SITE_V1",
+        "x-private-fields-never-expose": ["learnerProfile", "accessToken", "orderDetails", "draftContent", "reviewActors", "answerRuleVersion"],
+        "properties": {
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "generatedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "courses": { "type": "array", "items": { "$ref": "#/components/schemas/B9PublicContentCard" }, "maxItems": 100 },
+          "pricing": { "type": "array", "items": { "$ref": "#/components/schemas/B9PriceCard" }, "maxItems": 100 },
+          "downloads": { "type": "array", "items": { "$ref": "#/components/schemas/B9DownloadChannel" }, "maxItems": 32 },
+          "announcements": { "type": "array", "items": { "$ref": "#/components/schemas/B9PublicAnnouncement" }, "maxItems": 100 },
+          "compliance": { "type": "array", "items": { "$ref": "#/components/schemas/B9ComplianceNotice" }, "maxItems": 32 }
+        }
+      },
+      "B9PublicProjectionState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["availability", "projectionVersion", "contentEpoch"],
+        "properties": {
+          "availability": { "$ref": "#/components/schemas/B9ContentAvailability" },
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "lastPublishedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "cacheTag": { "type": "string", "maxLength": 128 }
+        }
+      },
+      "B9AdminContentState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contentCode", "contentType", "title", "stateVersion", "latestStatus", "versions", "publicProjection", "rightsStatus"],
+        "properties": {
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "contentType": { "$ref": "#/components/schemas/B9ContentType" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "authorSubject": { "type": "string", "maxLength": 128, "description": "仅向具备审核权限的后台投影提供；服务端仍必须独立拒绝作者自审。" },
+          "stateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
+          "latestStatus": { "type": "string", "enum": ["DRAFT", "IN_REVIEW", "APPROVED", "PUBLISHED", "UNPUBLISHED", "ROLLED_BACK", "ARCHIVED"] },
+          "versions": { "type": "array", "items": { "$ref": "#/components/schemas/B9ContentVersionSummary" }, "maxItems": 100 },
+          "publicProjection": { "$ref": "#/components/schemas/B9PublicProjectionState" },
+          "rightsStatus": { "type": "string", "enum": ["PENDING", "VALID", "EXPIRED", "REVOKED"] },
+          "reviewStages": { "type": "array", "items": { "type": "string", "enum": ["FIRST_PENDING", "FIRST_APPROVED", "FINAL_PENDING", "FINAL_APPROVED", "REJECTED"] }, "maxItems": 4 }
+        }
+      },
+      "B9AdminContentStateList": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B9AdminContentState" }, "maxItems": 100 },
+          "nextCursor": { "type": "string", "maxLength": 256 }
+        }
+      },
+      "B9AssessmentItemDefinition": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["itemCode", "itemType", "stimulusRef", "answerRuleVersion", "scoringPolicyRef"],
+        "properties": {
+          "itemCode": { "type": "string", "maxLength": 128 },
+          "itemType": { "$ref": "#/components/schemas/B9ContentItemType" },
+          "stimulusRef": { "type": "string", "maxLength": 256 },
+          "answerRuleVersion": { "type": "string", "maxLength": 64, "description": "Opaque version identifier only; no answer rule body is returned." },
+          "scoringPolicyRef": { "type": "string", "maxLength": 128 }
+        }
+      },
+      "B9AssessmentContentSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["contentVersionId", "contentCode", "snapshotVersion", "items", "rightsStatus"],
+        "properties": {
+          "contentVersionId": { "$ref": "#/components/schemas/B9ContentVersionId" },
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "snapshotVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B9AssessmentItemDefinition" }, "maxItems": 10000 },
+          "rightsStatus": { "type": "string", "enum": ["VALID", "EXPIRED", "REVOKED"] },
+          "expiresAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9PublicContentCatalogResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9PublicContentCatalog" }, "meta": { "$ref": "#/components/schemas/B9PublicProjectionMeta" } }
+      },
+      "B9PublicContentProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9PublicContentProjection" }, "meta": { "$ref": "#/components/schemas/B9PublicProjectionMeta" } }
+      },
+      "B9LearnerContentCatalogResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9LearnerContentCatalog" }, "meta": { "$ref": "#/components/schemas/B9PublicProjectionMeta" } }
+      },
+      "B9LearnerContentProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9LearnerContentProjection" }, "meta": { "$ref": "#/components/schemas/B9PublicProjectionMeta" } }
+      },
+      "B9PublicSiteProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9PublicSiteProjection" }, "meta": { "$ref": "#/components/schemas/B9PublicProjectionMeta" } }
+      },
+      "B9ContentCommandAcceptedResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9ContentCommandAccepted" } }
+      },
+      "B9AdminContentStateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9AdminContentState" } }
+      },
+      "B9AdminContentStateListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9AdminContentStateList" } }
+      },
+      "B9InternalPublicProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data", "meta"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9PublicContentProjection" }, "meta": { "$ref": "#/components/schemas/B9PublicProjectionMeta" } }
+      },
+      "B9AssessmentContentSnapshotResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9AssessmentContentSnapshot" } }
+      }
+    }
+  }
+}

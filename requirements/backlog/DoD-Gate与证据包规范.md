@@ -16,6 +16,17 @@
 
 任务只有在适用的 Gate 全部通过后才可由统筹 Agent 标记“已完成”。只满足 G0 或“文档已写”不等于业务完成。
 
+## 1.1 v2 平台任务强制 Gate
+
+涉及 `ARCH-GW-*`、`ARCH-IAM-*`、`ARCH-DATA-*`、`ARCH-EVT-*`、`ARCH-OBS-*`、`ARCH-REL-*` 或 `ARCH-SVC-*` 的任务，除上述 Gate 外必须额外证明：
+
+1. OIDC 使用经 ADR 选择的标准 IdP；外部流量经 Gateway，领域服务有独立 JWT 验签和 PEP。直连、客户端角色头和客户端 owner/tenant 字段不能扩大权限；PDP/策略失效必须 fail closed。
+2. 服务有明确 schema/data owner、Flyway、Redis namespace、tenant 查询守卫、事件契约和运行 owner；没有跨服务写表、共享 ORM entity 或跨服务 SQL join。已抽取服务另有独立 OCI 进程、凭据和发布/回滚证据。
+3. 内容/题目规则、attempt/判分报告、学习掌握度/复习事实有唯一 owner；admin/workflow/audit 不跨域双写。关键跨服务写入有 Outbox、幂等键、聚合键、消费者去重、DLQ/回放和补偿；`eventId/requestId/traceId/schemaVersion` 可关联。
+4. 事件总线只传递集成事实，不承载 UI 点击、日志、指标或 RPC；具备健康探针、优雅停机、超时/重试/熔断、SLO/告警、SBOM/依赖扫描及回滚证据。
+
+平台目录、README、静态策略或“服务可以启动”只能证明基座存在，不能替代运行态、权限、数据一致性、故障和回滚证据。
+
 ## 2. 证据包目录和命名
 
 推荐每个任务一个目录：

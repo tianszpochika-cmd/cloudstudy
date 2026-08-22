@@ -1,0 +1,308 @@
+{
+  "version": "1.0.0",
+  "events": [
+    {
+      "eventName": "media.started.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "media_playback",
+      "aggregateIdField": "playbackId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11MediaStarted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish media.started.v2", "consumerRule": "按 playbackId、assetVersion 和 positionVersion 幂等；事件只包含媒体引用和播放摘要。" }
+    },
+    {
+      "eventName": "media.segment_completed.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "media_playback",
+      "aggregateIdField": "playbackId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11MediaSegmentCompleted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish media.segment_completed.v2", "consumerRule": "按 playbackId、segmentId 和 segmentVersion 去重，不发布字幕原文或隐藏内容。" }
+    },
+    {
+      "eventName": "media.downloaded.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "offline_media_asset",
+      "aggregateIdField": "assetId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11MediaDownloaded" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish media.downloaded.v2", "consumerRule": "按 principalId、deviceRefHash、assetId 和 checksum 幂等；不携带对象存储 URL 或原始媒体。" }
+    },
+    {
+      "eventName": "media.revoked.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "media_asset",
+      "aggregateIdField": "assetId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11MediaRevoked" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish media.revoked.v2", "consumerRule": "按 assetId 和 rightsEpoch 幂等；消费者必须使未过期授权失效，不能恢复已撤权对象。" }
+    },
+    {
+      "eventName": "notification.delivered.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification",
+      "aggregateIdField": "notificationId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11NotificationDelivered" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish notification.delivered.v2", "consumerRule": "按 notificationId、channel 和 deliveryVersion 幂等；providerCode 仅允许非敏感分类码。" }
+    },
+    {
+      "eventName": "sync.enqueued.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_batch",
+      "aggregateIdField": "clientBatchId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11SyncEnqueued" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish sync.enqueued.v2", "consumerRule": "按 clientBatchId、clientEventId 和 deviceRefHash 去重；只发布数量、版本和游标摘要。" }
+    },
+    {
+      "eventName": "sync.conflict_detected.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_conflict",
+      "aggregateIdField": "conflictId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11SyncConflictDetected" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish sync.conflict_detected.v2", "consumerRule": "按 conflictId、entityId 和 serverVersion 幂等；冲突事件不携带变更原文或隐藏学习事实。" }
+    },
+    {
+      "eventName": "sync.recovered.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_conflict",
+      "aggregateIdField": "conflictId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11SyncRecovered" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish sync.recovered.v2", "consumerRule": "按 conflictId、recoveryVersion 和 clientEventId 幂等；只记录明确决策和下一步动作。" }
+    },
+    {
+      "eventName": "recording.saved.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "speaking_recording",
+      "aggregateIdField": "recordingId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11RecordingSaved" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish recording.saved.v2", "consumerRule": "按 recordingId、contentHash 和 clientEventId 幂等；仅发布媒体引用和元数据，Phase 1 的 aiScoringAvailable 固定为 false。" }
+    },
+    {
+      "eventName": "speaking.permission_requested.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "speaking_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish speaking.permission_requested.v2", "consumerRule": "按 sessionId、deviceRefHash 和 permissionVersion 幂等；权限结果不能推导语音能力或评分。" }
+    },
+    {
+      "eventName": "shadowing.completed.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "shadowing_session",
+      "aggregateIdField": "shadowingSessionId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B11ShadowingCompleted" },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish shadowing.completed.v2", "consumerRule": "按 shadowingSessionId、contentVersionId 和 completionVersion 幂等；不产生 ASR 或 AI 评分。" }
+    }
+  ],
+  "payloadSchemas": {
+    "B11MediaStarted": {
+      "$id": "platform.events.media.started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["playbackId", "principalId", "assetId", "contentVersionId", "assetVersion", "positionVersion", "playbackMode"],
+      "properties": {
+        "playbackId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "assetId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "assetVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "positionVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "positionMs": { "type": "integer", "format": "int64", "minimum": 0 },
+        "playbackMode": { "type": "string", "enum": ["NORMAL", "SLOW", "AB_REPEAT", "OFFLINE"] }
+      }
+    },
+    "B11MediaSegmentCompleted": {
+      "$id": "platform.events.media.segment_completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["playbackId", "principalId", "assetId", "segmentId", "segmentVersion", "contentVersionId", "positionMs"],
+      "properties": {
+        "playbackId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "assetId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "segmentId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "segmentVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "positionMs": { "type": "integer", "format": "int64", "minimum": 0 },
+        "completionPercent": { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+    "B11MediaDownloaded": {
+      "$id": "platform.events.media.downloaded.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principalId", "deviceRefHash", "assetId", "manifestId", "contentVersionId", "sha256", "bytesDownloaded"],
+      "properties": {
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "deviceRefHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "assetId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "manifestId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "bytesDownloaded": { "type": "integer", "format": "int64", "minimum": 0 },
+        "offlinePackageId": { "type": "string", "minLength": 8, "maxLength": 128 }
+      }
+    },
+    "B11MediaRevoked": {
+      "$id": "platform.events.media.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assetId", "rightsEpoch", "reasonCode", "revokedGrantCount"],
+      "properties": {
+        "assetId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "rightsEpoch": { "type": "integer", "format": "int64", "minimum": 1 },
+        "reasonCode": { "type": "string", "enum": ["RIGHTS_REVOKED", "CONTENT_UNPUBLISHED", "USER_REQUEST", "SECURITY_INCIDENT", "RETENTION_EXPIRED"] },
+        "revokedGrantCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "B11NotificationDelivered": {
+      "$id": "platform.events.notification.delivered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["notificationId", "principalId", "channel", "status", "deliveryVersion", "deliveredAt"],
+      "properties": {
+        "notificationId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "channel": { "type": "string", "enum": ["IN_APP", "PUSH", "SMS", "EMAIL"] },
+        "status": { "type": "string", "enum": ["DELIVERED", "SKIPPED", "FAILED"] },
+        "deliveryVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "deliveredAt": { "type": "string", "format": "date-time" },
+        "providerCode": { "type": "string", "maxLength": 64 }
+      }
+    },
+    "B11SyncEnqueued": {
+      "$id": "platform.events.sync.enqueued.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clientBatchId", "principalId", "deviceRefHash", "changeCount", "baseCursor", "queuedAt"],
+      "properties": {
+        "clientBatchId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "deviceRefHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "changeCount": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "baseCursor": { "type": "string", "maxLength": 512 },
+        "queuedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B11SyncConflictDetected": {
+      "$id": "platform.events.sync.conflict_detected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflictId", "clientBatchId", "principalId", "entityType", "entityId", "localVersion", "serverVersion", "reasonCode"],
+      "properties": {
+        "conflictId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "clientBatchId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "entityType": { "type": "string", "enum": ["LISTENING_PROGRESS", "READING_PROGRESS", "SHADOWING_PROGRESS", "SPEAKING_SELF_RATING", "NOTIFICATION_PREFERENCE"] },
+        "entityId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "localVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "serverVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "reasonCode": { "type": "string", "enum": ["VERSION_VECTOR_AHEAD", "CONTENT_VERSION_CHANGED", "RIGHTS_REVOKED", "DUPLICATE_CLIENT_EVENT", "SAFE_MERGE_UNAVAILABLE", "STORAGE_FULL"] },
+        "safeToRetry": { "type": "boolean" }
+      }
+    },
+    "B11SyncRecovered": {
+      "$id": "platform.events.sync.recovered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conflictId", "principalId", "recoveryVersion", "resolution", "nextAction", "domainFactsUntouched"],
+      "properties": {
+        "conflictId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "recoveryVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "resolution": { "type": "string", "enum": ["SERVER_WINS", "LOCAL_RETRY", "MERGED"] },
+        "nextAction": { "type": "string", "enum": ["PULL_LATEST", "RETRY_CHANGE", "NO_ACTION", "CONTACT_SUPPORT"] },
+        "domainFactsUntouched": { "type": "boolean", "const": true }
+      }
+    },
+    "B11RecordingSaved": {
+      "$id": "platform.events.recording.saved.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordingId", "principalId", "assetId", "contentVersionId", "contentHash", "durationMs", "storageMode", "status", "aiScoringAvailable"],
+      "properties": {
+        "recordingId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "assetId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "durationMs": { "type": "integer", "format": "int64", "minimum": 0, "maximum": 120000 },
+        "storageMode": { "type": "string", "enum": ["LOCAL_ENCRYPTED", "REMOTE_ENCRYPTED"] },
+        "status": { "type": "string", "enum": ["LOCAL_ONLY", "UPLOAD_PENDING", "READY"] },
+        "aiScoringAvailable": { "type": "boolean", "const": false }
+      }
+    },
+    "B11SpeakingPermissionRequested": {
+      "$id": "platform.events.speaking.permission_requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "principalId", "deviceRefHash", "permissionVersion", "result"],
+      "properties": {
+        "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "deviceRefHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "permissionVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "result": { "type": "string", "enum": ["REQUESTED", "GRANTED", "DENIED", "UNAVAILABLE"] }
+      }
+    },
+    "B11ShadowingCompleted": {
+      "$id": "platform.events.shadowing.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shadowingSessionId", "principalId", "contentVersionId", "completedSegments", "attemptCount", "aiScoringAvailable"],
+      "properties": {
+        "shadowingSessionId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "completedSegments": { "type": "integer", "minimum": 0 },
+        "attemptCount": { "type": "integer", "minimum": 0 },
+        "aiScoringAvailable": { "type": "boolean", "const": false }
+      }
+    }
+  },
+  "asyncapi": {
+    "channels": {
+      "b11MediaStarted": { "address": "media.started.v1", "messages": { "mediaStarted": { "$ref": "#/payloadSchemas/B11MediaStarted" } } },
+      "b11MediaSegmentCompleted": { "address": "media.segment_completed.v1", "messages": { "mediaSegmentCompleted": { "$ref": "#/payloadSchemas/B11MediaSegmentCompleted" } } },
+      "b11MediaDownloaded": { "address": "media.downloaded.v1", "messages": { "mediaDownloaded": { "$ref": "#/payloadSchemas/B11MediaDownloaded" } } },
+      "b11MediaRevoked": { "address": "media.revoked.v1", "messages": { "mediaRevoked": { "$ref": "#/payloadSchemas/B11MediaRevoked" } } },
+      "b11NotificationDelivered": { "address": "notification.delivered.v1", "messages": { "notificationDelivered": { "$ref": "#/payloadSchemas/B11NotificationDelivered" } } },
+      "b11SyncEnqueued": { "address": "sync.enqueued.v1", "messages": { "syncEnqueued": { "$ref": "#/payloadSchemas/B11SyncEnqueued" } } },
+      "b11SyncConflictDetected": { "address": "sync.conflict_detected.v1", "messages": { "syncConflictDetected": { "$ref": "#/payloadSchemas/B11SyncConflictDetected" } } },
+      "b11SyncRecovered": { "address": "sync.recovered.v1", "messages": { "syncRecovered": { "$ref": "#/payloadSchemas/B11SyncRecovered" } } },
+      "b11RecordingSaved": { "address": "recording.saved.v1", "messages": { "recordingSaved": { "$ref": "#/payloadSchemas/B11RecordingSaved" } } },
+      "b11SpeakingPermissionRequested": { "address": "speaking.permission_requested.v1", "messages": { "speakingPermissionRequested": { "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested" } } },
+      "b11ShadowingCompleted": { "address": "shadowing.completed.v1", "messages": { "shadowingCompleted": { "$ref": "#/payloadSchemas/B11ShadowingCompleted" } } }
+    },
+    "operations": {}
+  }
+}

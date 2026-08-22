@@ -1,0 +1,141 @@
+{
+  "metadata": {
+    "synthetic": true,
+    "fixtureId": "b10_learning_assessment_fixture_0001",
+    "fixtureVersion": "b10-v1",
+    "externalServices": false,
+    "sourceFixtures": ["tests/b2/fixtures/b2-learning-flow.fixture.json", "tests/b2/fixtures/b2-assessment.fixture.json", "tests/b3/fixtures/b3-multimodal.fixture.json"]
+  },
+  "contentSnapshot": {
+    "contentCode": "fixture.b10.learning.loop",
+    "contentVersionId": 301,
+    "snapshotId": "snap_b10_00000001",
+    "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "contentEpoch": 7,
+    "snapshotVersion": 1,
+    "pinStatus": "PINNED",
+    "gradingRuleSetVersion": "deterministic-objective-grading-v1",
+    "learnerItems": [
+      { "itemId": 3001, "itemCode": "fixture.allocate", "itemType": "VOCABULARY", "stem": "Choose the closest meaning.", "options": [{ "optionId": "a", "label": "分配" }, { "optionId": "b", "label": "删除" }] },
+      { "itemId": 3101, "itemCode": "fixture.grammar.tree", "itemType": "GRAMMAR", "stem": "Build the sentence structure.", "options": [] }
+    ],
+    "protectedRuleContracts": [
+      { "itemId": 3001, "ruleRef": "rule:fixture.allocate", "ruleVersion": "deterministic-objective-grading-v1", "ruleDigest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" },
+      { "itemId": 3101, "ruleRef": "rule:fixture.grammar.tree", "ruleVersion": "B3-RULE-1", "ruleDigest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" }
+    ],
+    "mustNotExpose": ["answerKey", "correctAnswer", "acceptedAnswers", "rawAnswer", "referenceAnswer"]
+  },
+  "attemptToLearningChain": {
+    "attemptSubmitted": {
+      "eventId": "evt-b10-attempt-0001",
+      "eventName": "assessment.attempt.submitted.v1",
+      "schemaVersion": "assessment.event.v1",
+      "aggregateId": "aatm_b10_00000001",
+      "dedupeKey": "assessment:attempt:aatm_b10_00000001:v1",
+      "traceId": "0123456789abcdef0123456789abcdef",
+      "requestId": "req-b10-attempt-0001",
+      "payload": {
+        "tenantId": "platform",
+        "principalId": "prn_fixture00000001",
+        "attemptId": "aatm_b10_00000001",
+        "sessionId": "asess_b10_00000001",
+        "contentVersionId": 301,
+        "contentSnapshotId": "snap_b10_00000001",
+        "contentEpoch": 7,
+        "attemptVersion": 1,
+        "submissionDigest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "itemCount": 2,
+        "gradingRuleVersion": "deterministic-objective-grading-v1",
+        "submittedAt": "2026-08-22T09:00:00Z"
+      }
+    },
+    "attemptAssessed": {
+      "eventId": "evt-b10-assessed-0001",
+      "eventName": "assessment.attempt.assessed.v1",
+      "schemaVersion": "assessment.event.v1",
+      "aggregateId": "aatm_b10_00000001",
+      "dedupeKey": "assessment:attempt:aatm_b10_00000001:assessed:v1",
+      "traceId": "0123456789abcdef0123456789abcdef",
+      "requestId": "req-b10-attempt-0001",
+      "payload": {
+        "tenantId": "platform",
+        "principalId": "prn_fixture00000001",
+        "attemptId": "aatm_b10_00000001",
+        "sessionId": "asess_b10_00000001",
+        "contentVersionId": 301,
+        "contentSnapshotId": "snap_b10_00000001",
+        "attemptVersion": 1,
+        "assessmentVersion": "assessment-rules-v1",
+        "scoreBucket": "PARTIAL",
+        "masterySignal": "RETRY",
+        "mistakeCodes": ["GRAMMAR_NODE_ORDER"],
+        "assessedAt": "2026-08-22T09:00:01Z"
+      }
+    },
+    "masteryProjected": {
+      "eventId": "evt-b10-projection-0001",
+      "eventName": "learning.mastery.projected.v1",
+      "schemaVersion": "learning.event.v1",
+      "aggregateId": "mp_b10_00000001",
+      "dedupeKey": "learning:mastery:aatm_b10_00000001:item-3101:v1",
+      "traceId": "0123456789abcdef0123456789abcdef",
+      "requestId": "req-b10-attempt-0001",
+      "payload": {
+        "tenantId": "platform",
+        "principalId": "prn_fixture00000001",
+        "projectionId": "mp_b10_00000001",
+        "itemId": 3101,
+        "sourceAttemptId": "aatm_b10_00000001",
+        "sourceAssessmentEventId": "evt-b10-assessed-0001",
+        "contentVersionId": 301,
+        "contentEpoch": 7,
+        "fromState": "LEARNING",
+        "toState": "REVIEW_QUEUE",
+        "srsStage": "D1",
+        "projectionVersion": 1,
+        "projectionStatus": "APPLIED",
+        "projectedAt": "2026-08-22T09:00:02Z"
+      }
+    }
+  },
+  "reliability": {
+    "dedupeCases": [
+      { "consumer": "learning.mastery.projector", "eventId": "evt-b10-assessed-0001", "dedupeKey": "learning:mastery:aatm_b10_00000001:item-3101:v1", "firstDelivery": "APPLIED", "duplicateDelivery": "DUPLICATE_IGNORED" },
+      { "consumer": "learning.mastery.projector", "eventId": "evt-b10-assessed-0001", "dedupeKey": "learning:mastery:aatm_b10_00000001:item-3101:v1", "firstDelivery": "DUPLICATE_IGNORED", "duplicateDelivery": "DUPLICATE_IGNORED" }
+    ],
+    "dlqReplay": {
+      "dlqId": "dlq_b10_00000001",
+      "sourceEventId": "evt-b10-assessed-0001",
+      "consumerName": "learning.mastery.projector",
+      "failureCode": "TARGET_TIMEOUT",
+      "replayAttempt": 1,
+      "replayResult": "APPLIED",
+      "mustPreserveTraceId": true,
+      "mustCreateNewReplayEventId": true
+    },
+    "saga": {
+      "sagaId": "saga_b10_00000001",
+      "sagaType": "ASSESSMENT_TO_LEARNING",
+      "steps": ["ASSESSMENT_ACCEPT", "ASSESSMENT_ASSESS", "LEARNING_PROJECT"],
+      "failureStep": "LEARNING_PROJECT",
+      "compensationAction": "MARK_PROJECTION_RETRY",
+      "recoveryMode": "AUTOMATIC"
+    }
+  },
+  "compatibility": {
+    "domainCode": "ASSESSMENT",
+    "subjectRefHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "fixtureVersion": "b2-v1",
+    "legacyVersion": "core-api-b2-v1",
+    "targetVersion": "b10-assessment-v1",
+    "readMode": "SHADOW_READ",
+    "comparisonStatus": "MATCH",
+    "safeToCutover": true,
+    "rollbackTarget": "LEGACY_READ",
+    "targetFactsRemainUntouched": true
+  },
+  "privacyFields": {
+    "allowedEventProjection": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey", "contentVersionId", "contentSnapshotId", "scoreBucket", "mistakeCodes", "projectionVersion"],
+    "forbiddenEventProjection": ["answerKey", "correctAnswer", "acceptedAnswers", "rawAnswer", "answerText", "referenceAnswer", "rawRecording", "audioBytes", "phone", "email", "token"]
+  }
+}

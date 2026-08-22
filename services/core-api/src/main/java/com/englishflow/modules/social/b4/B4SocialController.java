@@ -54,7 +54,7 @@ public final class B4SocialController {
     public Map<String, Object> leaderboard(@RequestParam String roomId, HttpServletRequest request) { return service.leaderboard(user(request), roomId); }
 
     @PostMapping("/social/ws-ticket")
-    public Map<String, Object> wsTicket(@RequestBody(required = false) Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.issueWsTicket(user(request), body == null ? Map.of() : body, key); }
+    public Map<String, Object> wsTicket(@RequestBody(required = false) Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, @RequestHeader(value = "Origin", required = false) String origin, HttpServletRequest request) { return service.issueWsTicket(user(request), body == null ? Map.of() : body, key, origin); }
 
     @GetMapping("/user/notifications")
     public Map<String, Object> notifications(@RequestParam(defaultValue = "20") int limit, HttpServletRequest request) { return service.notifications(user(request), limit); }
@@ -75,19 +75,25 @@ public final class B4SocialController {
     public Map<String, Object> offlinePackages(@RequestParam(defaultValue = "20") int limit, HttpServletRequest request) { return service.offlinePackages(user(request), limit); }
 
     @PostMapping("/sync/offline-packages/{packageId}/authorize")
-    public Map<String, Object> authorizeOffline(@PathVariable String packageId, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.authorizeOfflinePackage(user(request), packageId, key); }
+    public Map<String, Object> authorizeOffline(@PathVariable String packageId, @RequestHeader("Idempotency-Key") String key, @RequestHeader(value = "X-Device-Id", required = false) String deviceId, HttpServletRequest request) { return service.authorizeOfflinePackage(user(request), packageId, deviceId, key); }
+
+    @PatchMapping("/sync/offline-downloads/{downloadId}")
+    public Map<String, Object> updateOfflineDownload(@PathVariable String downloadId, @RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.updateOfflineDownload(user(request), downloadId, body, key); }
+
+    @PostMapping("/sync/offline-downloads/{downloadId}/cleanup")
+    public Map<String, Object> cleanupOfflineDownload(@PathVariable String downloadId, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.cleanupOfflineDownload(user(request), downloadId, key); }
 
     @GetMapping("/sync/changes")
     public Map<String, Object> changes(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "50") int limit, HttpServletRequest request) { return service.syncChanges(user(request), cursor, limit); }
 
     @PostMapping("/sync/events")
-    public Map<String, Object> syncEvents(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.pushSync(user(request), body, key); }
+    public Map<String, Object> syncEvents(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, @RequestHeader(value = "X-Device-Id", required = false) String deviceId, HttpServletRequest request) { return service.pushSync(user(request), body, deviceId, key); }
 
     @PutMapping("/sync/checkpoints/{entityId}")
     public Map<String, Object> checkpoint(@PathVariable String entityId, @RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.checkpoint(user(request), entityId, body, key); }
 
     @PostMapping("/offline/sync/push")
-    public Map<String, Object> push(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.pushSync(user(request), body, key); }
+    public Map<String, Object> push(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, @RequestHeader(value = "X-Device-Id", required = false) String deviceId, HttpServletRequest request) { return service.pushSync(user(request), body, deviceId, key); }
 
     @GetMapping("/offline/sync/pull")
     public Map<String, Object> pull(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "50") int limit, HttpServletRequest request) { return service.syncChanges(user(request), cursor, limit); }
@@ -95,11 +101,14 @@ public final class B4SocialController {
     @PostMapping("/social/moderation/reports")
     public Map<String, Object> report(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.report(user(request), body, key); }
 
+    @PostMapping("/social/moderation/reports/{reportId}/appeal")
+    public Map<String, Object> appeal(@PathVariable String reportId, @RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.appealModeration(user(request), reportId, body, key); }
+
     @PostMapping("/social/moderation/blocks")
     public Map<String, Object> block(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.block(user(request), longValue(body.get("targetUserId")), key); }
 
     @PostMapping("/social/rooms/{roomId}/mutes")
-    public Map<String, Object> mute(@PathVariable String roomId, @RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.mute(user(request), roomId, longValue(body.get("targetUserId")), key); }
+    public Map<String, Object> mute(@PathVariable String roomId, @RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.mute(user(request), roomId, body == null ? Map.of() : body, key); }
 
     private static long user(HttpServletRequest request) {
         Object value = request.getAttribute(RequestAttributeUserContextResolver.REQUEST_ATTRIBUTE);

@@ -1,0 +1,118 @@
+spring:
+  application:
+    name: ${GATEWAY_SERVICE_ID:api-gateway}
+  main:
+    web-application-type: reactive
+    banner-mode: off
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  cloud:
+    gateway:
+      metrics:
+        enabled: true
+
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  # This value is intentionally required. The local port authority must inject
+  # GATEWAY_PORT after the port is registered; this service never auto-increments.
+  port: ${GATEWAY_PORT}
+  shutdown: graceful
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  info:
+    env:
+      enabled: false
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+gateway:
+  identity:
+    enabled: ${IAM_ROUTE_ENABLED:true}
+    iam-base-url: ${IAM_SERVICE_BASE_URL:http://127.0.0.1:18087}
+  b12:
+    enabled: ${B12_SERVICES_ENABLED:true}
+    gamification-base-url: ${GAMIFICATION_SERVICE_BASE_URL:http://127.0.0.1:18094}
+    social-base-url: ${SOCIAL_SERVICE_BASE_URL:http://127.0.0.1:18095}
+    notification-base-url: ${NOTIFICATION_SERVICE_BASE_URL:http://127.0.0.1:18093}
+  b13:
+    enabled: ${B13_SERVICES_ENABLED:true}
+    commerce-base-url: ${COMMERCE_SERVICE_BASE_URL:http://127.0.0.1:18096}
+    admin-ops-base-url: ${ADMIN_OPS_SERVICE_BASE_URL:http://127.0.0.1:18097}
+    analytics-base-url: ${ANALYTICS_SERVICE_BASE_URL:http://127.0.0.1:18098}
+  b14:
+    enabled: ${B14_STRANGLER_ENABLED:true}
+    deprecation-headers-enabled: ${B14_DEPRECATION_HEADERS_ENABLED:true}
+    deprecation-sunset-at: ${B14_DEPRECATION_SUNSET_AT:2027-06-30T00:00:00Z}
+    service-base-urls:
+      learner: ${LEARNER_SERVICE_BASE_URL:http://127.0.0.1:18088}
+      content: ${CONTENT_SERVICE_BASE_URL:http://127.0.0.1:18089}
+      learning: ${LEARNING_SERVICE_BASE_URL:http://127.0.0.1:18090}
+      assessment: ${ASSESSMENT_SERVICE_BASE_URL:http://127.0.0.1:18091}
+      media: ${MEDIA_SERVICE_BASE_URL:http://127.0.0.1:18092}
+      gamification: ${GAMIFICATION_SERVICE_BASE_URL:http://127.0.0.1:18094}
+      social: ${SOCIAL_SERVICE_BASE_URL:http://127.0.0.1:18095}
+      commerce: ${COMMERCE_SERVICE_BASE_URL:http://127.0.0.1:18096}
+    route-modes:
+      learner: ${B14_ROUTE_MODE_LEARNER:TARGET}
+      content: ${B14_ROUTE_MODE_CONTENT:TARGET}
+      learning: ${B14_ROUTE_MODE_LEARNING:TARGET}
+      assessment: ${B14_ROUTE_MODE_ASSESSMENT:TARGET}
+      media: ${B14_ROUTE_MODE_MEDIA:TARGET}
+      gamification: ${B14_ROUTE_MODE_GAMIFICATION:TARGET}
+      social: ${B14_ROUTE_MODE_SOCIAL:TARGET}
+      commerce: ${B14_ROUTE_MODE_COMMERCE:TARGET}
+  compatibility:
+    enabled: ${CORE_API_COMPAT_ENABLED:true}
+    core-api-base-url: ${CORE_API_BASE_URL:http://127.0.0.1:18080}
+    # The legacy route is registered for migration, but anonymous access is
+    # denied unless the explicit local profile enables read-only compatibility.
+    anonymous-read-enabled: false
+  cors:
+    allowed-origins:
+      - ${CORS_ALLOWED_ORIGIN_LEARNER:http://127.0.0.1:18180}
+      - ${CORS_ALLOWED_ORIGIN_ADMIN:http://127.0.0.1:18181}
+      - ${CORS_ALLOWED_ORIGIN_OFFICIAL:http://127.0.0.1:18182}
+      - ${CORS_ALLOWED_ORIGIN_MOBILE:http://127.0.0.1:18183}
+    allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: Authorization,Content-Type,Idempotency-Key,X-Request-Id,X-Trace-Id
+    exposed-headers: X-Request-Id,X-Trace-Id,Retry-After
+    allow-credentials: true
+    max-age: 30m
+  rate-limit:
+    # Phase 0 is an explicit local placeholder. Distributed limiting belongs to
+    # the platform runtime and must not be mistaken for a production guarantee.
+    enabled: ${GATEWAY_RATE_LIMIT_ENABLED:false}
+    requests-per-window: ${GATEWAY_RATE_LIMIT_REQUESTS:120}
+    window: ${GATEWAY_RATE_LIMIT_WINDOW:1m}
+    key-strategy: remote-address
+  request-context:
+    max-id-length: 128
+  security:
+    # B8 enables real OIDC/JWKS validation only after the G-IDP gate. A bearer
+    # header alone is never treated as authenticated.
+    jwt-prevalidation-enabled: ${GATEWAY_JWT_PREVALIDATION_ENABLED:false}
+    resource-server-enabled: ${GATEWAY_RESOURCE_SERVER_ENABLED:false}
+    audit-enabled: ${GATEWAY_SECURITY_AUDIT_ENABLED:true}
+    issuer-uri: ${OIDC_ISSUER_URI:}

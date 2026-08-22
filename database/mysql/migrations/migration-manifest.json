@@ -80,6 +80,54 @@
       "file": "V0013__create_gamification_social_offline_b4.sql",
       "description": "create B4 gamification study room notification and offline sync facts",
       "requiredTables": ["gam_rule_config", "gam_idempotency_record", "gam_account_summary", "gam_xp_ledger", "gam_currency_ledger", "gam_daily_reward_counter", "gam_reward_grant", "gam_streak_profile", "gam_streak_day", "gam_streak_rescue", "gam_quest_definition", "gam_user_quest", "gam_quest_progress_event", "gam_achievement_definition", "gam_user_achievement", "gam_achievement_progress_event", "gam_game_definition", "gam_game_session", "gam_game_session_event", "gam_game_item_attempt", "gam_avatar_asset_manifest", "gam_avatar_item_definition", "gam_avatar_inventory", "gam_avatar_profile", "gam_avatar_loadout", "gam_avatar_loadout_item", "gam_study_space", "gam_study_space_placement", "gam_chest_definition", "gam_chest_probability_version", "gam_chest_probability_tier", "gam_chest_drop_definition", "gam_chest_grant", "gam_chest_open_audit", "gam_fixed_catalog_item", "gam_collection_set", "gam_season_definition", "gam_season_tier", "gam_user_season", "gam_season_point_ledger", "gam_admin_audit_log", "soc_room", "soc_room_member", "soc_room_seat", "soc_focus_session", "soc_interaction_event", "soc_leaderboard_snapshot", "soc_leaderboard_entry", "inf_notification_preference", "inf_notification_message", "inf_notification_delivery", "inf_offline_package", "inf_offline_download", "inf_sync_cursor", "inf_client_event", "inf_sync_change_log", "b4_durable_fact"]
+    },
+    {
+      "version": "0014",
+      "file": "V0014__create_commerce_cms_operations_b5.sql",
+      "description": "create B5 commerce entitlement CMS operations risk reconciliation and support records",
+      "requiredTables": ["com_sku", "com_sku_price", "com_order", "com_order_item", "com_payment_attempt", "com_payment_callback", "com_apple_transaction", "com_apple_notification", "com_subscription", "com_entitlement", "com_activation_batch", "com_activation_code", "com_household", "com_household_member", "com_refund", "com_invoice_request", "com_reconciliation_batch", "com_reconciliation_item", "com_idempotency_record", "cms_content", "cms_content_version", "cms_asset", "cms_review_task", "cms_review_action", "cms_publish_log", "cms_import_job", "cms_import_row", "cms_sensitive_rule", "cms_sensitive_hit", "cms_correction_ticket", "cms_correction_message", "ops_user_risk", "ops_risk_event", "ops_metric_snapshot", "ops_feature_flag", "ops_experiment_assignment", "ops_audit_log"]
+    },
+    {
+      "version": "0015",
+      "file": "V0015__create_platform_quality_release_b6.sql",
+      "description": "create B6 cross-platform build quality observability recovery and release gate records",
+      "requiredTables": ["plt_build_artifact", "plt_platform_check", "plt_performance_budget", "plt_accessibility_check", "qly_e2e_run", "qly_security_scan", "qly_reliability_run", "obs_alert", "rel_backup_drill", "rel_release_gate"]
+    },
+    {
+      "version": "0016",
+      "file": "V0016__create_iam_control_plane_b8.sql",
+      "description": "create B8 IAM principal device session consent policy and decision audit facts",
+      "requiredTables": ["iam_principal", "iam_external_identity", "iam_device", "iam_session", "iam_consent", "iam_policy_version", "iam_decision_audit"]
+    },
+    {
+      "version": "0017",
+      "file": "V0017__create_learner_content_public_projection_b9.sql",
+      "description": "create B9 learner content review rights public projection idempotency and outbox facts",
+      "requiredTables": ["lrn_b9_profile", "lrn_b9_goal", "lrn_b9_preferences", "lrn_b9_first_day_projection", "lrn_b9_idempotency_key", "lrn_b9_outbox_event", "cnt_b9_content_definition", "cnt_b9_content_version", "cnt_b9_content_item", "cnt_b9_content_rights", "cnt_b9_review_task", "cnt_b9_public_projection", "cnt_b9_public_cache_epoch", "cnt_b9_idempotency_key", "cnt_b9_outbox_event"]
+    },
+    {
+      "version": "0018",
+      "file": "V0018__create_learning_assessment_event_reliability_b10.sql",
+      "description": "create B10 content snapshots assessment attempts learning projections outbox dedupe DLQ Saga and compatibility ledgers",
+      "requiredTables": ["cnt_b10_content_snapshot", "cnt_b10_snapshot_item", "asm_b10_session", "asm_b10_attempt", "asm_b10_checkpoint", "asm_b10_report_snapshot", "lrn_b10_plan", "lrn_b10_srs_state", "lrn_b10_review_queue", "lrn_b10_mastery_projection", "asm_b10_outbox_event", "lrn_b10_outbox_event", "wf_b10_consumer_dedupe", "wf_b10_dlq_event", "wf_b10_saga", "wf_b10_saga_step", "cmp_b10_reconciliation", "cmp_b10_route_control", "cmp_b10_rollback_ledger"]
+    },
+    {
+      "version": "0019",
+      "file": "V0019__create_media_notification_offline_b11.sql",
+      "description": "create B11 media metadata grants manifests revocation notification preferences messages offline sync conflicts recovery workflow and B3 compatibility ledgers",
+      "requiredTables": ["med_b11_asset", "med_b11_rendition", "med_b11_manifest", "med_b11_manifest_item", "med_b11_access_grant", "med_b11_revocation", "ntf_b11_preference", "ntf_b11_message", "ntf_b11_delivery", "ntf_b11_outbox_event", "sync_b11_change", "sync_b11_cursor", "sync_b11_conflict", "sync_b11_recovery", "wf_b11_consumer_dedupe", "wf_b11_recovery_task", "cmp_b11_compatibility", "cmp_b11_migration"]
+    },
+    {
+      "version": "0020",
+      "file": "V0020__create_growth_social_notification_b12.sql",
+      "description": "create B12 growth social notification workflow and compatibility facts",
+      "requiredTables": ["gam_b12_event_receipt", "gam_b12_score_ledger", "gam_b12_currency_ledger", "gam_b12_reward_grant", "gam_b12_reward_claim", "gam_b12_streak_state", "gam_b12_avatar_loadout", "soc_b12_room", "soc_b12_seat_lease", "soc_b12_interaction", "soc_b12_leaderboard", "soc_b12_report", "ntf_b12_event_receipt", "ntf_b12_delivery_attempt", "ntf_b12_dlq", "wf_b12_recovery_task", "cmp_b12_compatibility", "cmp_b12_route_control", "cmp_b12_replay_ledger"]
+    },
+    {
+      "version": "0021",
+      "file": "V0021__create_commerce_admin_analytics_b13.sql",
+      "description": "create B13 commerce admin-ops support and analytics facts",
+      "requiredTables": ["com_b13_sku", "com_b13_price_snapshot", "com_b13_order", "com_b13_order_item", "com_b13_entitlement", "com_b13_activation_batch", "com_b13_activation_code", "com_b13_payment_callback", "com_b13_refund", "com_b13_reconciliation_batch", "com_b13_reconciliation_item", "com_b13_idempotency", "com_b13_outbox_event", "adm_b13_command", "adm_b13_approval", "adm_b13_ticket", "adm_b13_ticket_attachment_ref", "adm_b13_audit_link", "anl_b13_event_receipt", "anl_b13_metric_definition", "anl_b13_metric_projection", "anl_b13_recompute_job"]
     }
   ]
 }

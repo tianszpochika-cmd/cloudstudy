@@ -1,0 +1,7 @@
+commerce:
+  security:
+    resource-server-enabled: false
+  payment:
+    enabled: false
+    environment: DISABLED
+    real-providers-enabled: false

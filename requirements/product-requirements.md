@@ -107,11 +107,13 @@
 | 第一阶段主语言 | 英语 |
 | 架构目标 | 多语种资源包模型，后续可扩展日语、韩语、西班牙语等 |
 | 前端主线 | Vue 3 + uni-app |
-| 后端主线 | Spring Boot 3 |
+| 后端主线 | Java 25 LTS + Spring Boot 4.1 微服务；`api-gateway` + `iam-service`（OIDC/RBAC/ABAC）+ 领域服务；现有 Spring Boot 3 `core-api` 仅作迁移兼容 |
 | Phase 2 AI编排 | Python FastAPI |
 | 数据 | MySQL + Redis |
 | 静态资源 | OSS / CDN |
 | 搜索 / 向量 | Phase 1普通索引；Phase 2按需加入pgvector/向量检索 |
+
+> 产品需求只冻结能力和阶段边界，不替代技术架构。后端服务、Gateway、权限、数据 owner、事件和运维目标见 [v2 微服务目标架构](../docs/02-architecture/v2-microservices-architecture.md)；新增任务还必须引用 `ARCH-*` 平台能力。
 
 ---
 
@@ -131,17 +133,18 @@
 
 ## 1.3 终端阶段划分
 
-| 终端 | Phase 1 | Phase 2 | Phase 3 |
-|---|---|---|---|
-| Android App | ✅ 主端 | ✅ | ✅ |
-| iOS / iPad | ✅ | ✅ | ✅ |
-| Learner Web / H5 | ✅ | ✅ | ✅ |
-| 官网 | ✅ | ✅ | ✅ |
-| Admin中台 | ✅ | ✅ | ✅ |
-| 微信小程序 | 可后置到P1.5 | ✅ | ✅ |
-| 大屏 / 教室端 | ❌ | 可选 | ✅ 资质允许后 |
+| 终端 | 前端项目 | Phase 1 | Phase 2 | Phase 3 |
+|---|---|---|---|---|
+| Android App | `apps/mobile` | ✅ 主端 | ✅ | ✅ |
+| iOS / iPad | `apps/mobile` | ✅ | ✅ | ✅ |
+| 移动 H5 | `apps/mobile` | ✅ 主端 | ✅ | ✅ |
+| Learner Web（PC / 平板浏览器 / PWA） | `apps/learner-web` | ✅ | ✅ | ✅ |
+| 官网 | `apps/official-site` | ✅ | ✅ | ✅ |
+| Admin 中台 | `apps/admin-web` | ✅ | ✅ | ✅ |
+| 微信小程序 | `apps/mobile`（P1.5 条件编译目标） | 可后置到 P1.5 | ✅ | ✅ |
+| 大屏 / 教室端 | — | ❌ | 可选 | ✅ 资质允许后 |
 
-> 第一阶段架构保持全端兼容，但不为了“端数量”牺牲主学习链路质量。
+> 第一阶段架构保持全端兼容，但不为了“端数量”牺牲主学习链路质量。以上是四个前端项目；iPad 是 `apps/mobile` 的布局变体，PC / 平板浏览器学习工作台属于 `apps/learner-web`。
 
 ---
 

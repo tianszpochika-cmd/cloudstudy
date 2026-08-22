@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: ${ANALYTICS_SERVICE_NAME:analytics-service}
+  lifecycle.timeout-per-shutdown-phase: ${ANALYTICS_SHUTDOWN_TIMEOUT:20s}
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+server:
+  address: ${ANALYTICS_SERVER_ADDRESS:127.0.0.1}
+  port: ${ANALYTICS_SERVICE_PORT:18083}
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+analytics:
+  feature-enabled: ${ANALYTICS_FEATURE_ENABLED:true}
+  metric-version: ${ANALYTICS_METRIC_VERSION:analytics.v1}
+  security:
+    resource-server-enabled: ${ANALYTICS_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${ANALYTICS_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${ANALYTICS_SECURITY_JWK_SET_URI:}

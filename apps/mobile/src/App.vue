@@ -5,7 +5,7 @@ import { useSessionStore } from './stores/session'
 const session = useSessionStore()
 
 onLaunch(() => {
-  session.restore()
+  void session.restore()
 })
 </script>
 

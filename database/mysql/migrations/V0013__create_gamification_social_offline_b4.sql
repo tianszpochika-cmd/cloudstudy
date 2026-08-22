@@ -211,6 +211,37 @@ CREATE TABLE IF NOT EXISTS soc_interaction_event (
     target_user_id BIGINT NULL, interaction_code VARCHAR(64) NOT NULL, occurred_at TIMESTAMP NOT NULL,
     visibility_code VARCHAR(32) NOT NULL DEFAULT 'ROOM_MEMBERS'
 );
+CREATE TABLE IF NOT EXISTS soc_room_event (
+    event_id VARCHAR(128) PRIMARY KEY, room_id VARCHAR(96) NOT NULL, seq_no BIGINT NOT NULL,
+    actor_user_id BIGINT NOT NULL, event_type VARCHAR(64) NOT NULL, payload_json JSON NOT NULL,
+    occurred_at TIMESTAMP NOT NULL, UNIQUE KEY uk_soc_room_event_seq (room_id, seq_no)
+);
+CREATE TABLE IF NOT EXISTS soc_ws_ticket (
+    ticket_id VARCHAR(128) PRIMARY KEY, user_id BIGINT NOT NULL, room_id VARCHAR(96) NULL,
+    device_id VARCHAR(128) NULL, expires_at TIMESTAMP NOT NULL, consumed_at TIMESTAMP NULL,
+    issued_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE KEY uk_soc_ws_ticket_user_device (user_id, device_id, expires_at)
+);
+CREATE TABLE IF NOT EXISTS soc_moderation_report (
+    report_id VARCHAR(128) PRIMARY KEY, reporter_user_id BIGINT NOT NULL, target_user_id BIGINT NOT NULL,
+    room_id VARCHAR(96) NULL, reason_code VARCHAR(32) NOT NULL, status VARCHAR(32) NOT NULL DEFAULT 'OPEN',
+    resolution_code VARCHAR(64) NULL, resolution_json JSON NULL, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP NULL, KEY ix_soc_report_target (target_user_id, status, created_at)
+);
+CREATE TABLE IF NOT EXISTS soc_user_block (
+    block_id VARCHAR(128) PRIMARY KEY, user_id BIGINT NOT NULL, target_user_id BIGINT NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_soc_user_block (user_id, target_user_id)
+);
+CREATE TABLE IF NOT EXISTS soc_room_mute (
+    mute_id VARCHAR(128) PRIMARY KEY, room_id VARCHAR(96) NOT NULL, actor_user_id BIGINT NOT NULL,
+    target_user_id BIGINT NOT NULL, mute_until TIMESTAMP NOT NULL, status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, KEY ix_soc_room_mute_target (room_id, target_user_id, status)
+);
+CREATE TABLE IF NOT EXISTS soc_moderation_appeal (
+    appeal_id VARCHAR(128) PRIMARY KEY, report_id VARCHAR(128) NULL, appellant_user_id BIGINT NOT NULL,
+    reason_code VARCHAR(64) NOT NULL, status VARCHAR(32) NOT NULL DEFAULT 'OPEN',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, resolved_at TIMESTAMP NULL
+);
 CREATE TABLE IF NOT EXISTS soc_leaderboard_snapshot (
     snapshot_id VARCHAR(128) PRIMARY KEY, room_id VARCHAR(96) NOT NULL, period_code VARCHAR(32) NOT NULL,
     generated_at TIMESTAMP NOT NULL, source_version BIGINT NOT NULL

@@ -20,6 +20,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const openApiPath = path.join(repoRoot, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const eventCatalogPath = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
+const schemaRegistryPath = path.join(repoRoot, 'packages', 'contracts', 'schemas', 'v1', 'registry.json');
 const contractsGeneratedDir = path.join(repoRoot, 'packages', 'contracts', 'generated');
 const apiClientGeneratedDir = path.join(repoRoot, 'packages', 'api-client', 'src', 'generated');
 
@@ -64,14 +65,49 @@ function generateOpenApiTypes(document) {
 
 function generateEventTypes(catalog) {
   const payloadAliases = Object.entries(catalog.payloadSchemas ?? {}).map(([name, schema]) => schemaTypeAlias(name, schema, catalog));
-  const eventTypes = catalog.events.map((event) => {
-    const typeName = toEventTypeName(event.eventName);
+  const usedEventTypeNames = new Set();
+  const eventTypeNames = catalog.events.map((event) => {
+    const baseName = toEventTypeName(event.eventName);
+    if (!usedEventTypeNames.has(baseName)) {
+      usedEventTypeNames.add(baseName);
+      return baseName;
+    }
+
     const payloadName = event.payloadSchema.$ref.split('/').at(-1);
-    return `export interface ${typeName}Event extends PlatformEventEnvelope<${toTypeName(payloadName)}> {\n  eventName: ${JSON.stringify(event.eventName)};\n  version: ${event.version};\n}`;
+    const payloadTypeName = toTypeName(payloadName);
+    const numericBoundary = payloadTypeName.match(/^B[0-9]+/)?.[0] ?? '';
+    const semanticSuffix = payloadTypeName.startsWith(baseName)
+      ? payloadTypeName.slice(baseName.length)
+      : numericBoundary || payloadTypeName;
+    const collisionSuffix = semanticSuffix || 'Variant';
+    let candidate = `${baseName}${collisionSuffix}`;
+    let variant = 2;
+    while (usedEventTypeNames.has(candidate)) candidate = `${baseName}${collisionSuffix}${variant++}`;
+    usedEventTypeNames.add(candidate);
+    return candidate;
+  });
+  const baseEnvelopeFields = new Set([
+    'eventId', 'eventName', 'schema', 'version', 'occurredAt', 'aggregateType',
+    'aggregateId', 'actorId', 'traceId', 'requestId', 'payload',
+  ]);
+  const envelopeFieldTypes = {
+    schemaVersion: 'string',
+    dedupeKey: 'string',
+    clientEventId: 'string',
+    contentVersionId: 'number',
+  };
+  const eventTypes = catalog.events.map((event, index) => {
+    const typeName = eventTypeNames[index];
+    const payloadName = event.payloadSchema.$ref.split('/').at(-1);
+    const requiredEnvelopeFields = (event['x-envelope-required'] ?? [])
+      .filter((field) => !baseEnvelopeFields.has(field))
+      .map((field) => `  ${tsPropertyName(field)}: ${envelopeFieldTypes[field] ?? 'string'};`)
+      .join('\n');
+    return `export interface ${typeName}Event extends PlatformEventEnvelope<${toTypeName(payloadName)}> {\n  eventName: ${JSON.stringify(event.eventName)};\n  version: ${event.version};${requiredEnvelopeFields ? `\n${requiredEnvelopeFields}` : ''}\n}`;
   });
   const header = `/* eslint-disable */\n// GENERATED FILE. Source: packages/contracts/events/v1/catalog.json\n// Run node scripts/contracts/generate-contracts.mjs after changing the source.\n\n`;
-  const envelope = `export interface PlatformEventEnvelope<TPayload> {\n  eventId: string;\n  eventName: string;\n  schema: ${JSON.stringify(catalog.envelope.schema)};\n  version: number;\n  occurredAt: string;\n  aggregateType: string;\n  aggregateId: string;\n  actorId: string;\n  traceId: string;\n  requestId: string;\n  clientEventId?: string;\n  contentVersionId?: number;\n  payload: TPayload;\n}\n`;
-  return `${header}${envelope}\n${payloadAliases.join('\n\n')}\n\n${eventTypes.join('\n\n')}\n\nexport type PlatformEvent = ${catalog.events.map((event) => `${toEventTypeName(event.eventName)}Event`).join(' | ')};\n`;
+  const envelope = `export interface PlatformEventEnvelope<TPayload> {\n  eventId: string;\n  eventName: string;\n  schema: ${JSON.stringify(catalog.envelope.schema)};\n  version: number;\n  occurredAt: string;\n  aggregateType: string;\n  aggregateId: string;\n  actorId: string;\n  traceId: string;\n  requestId: string;\n  schemaVersion?: string;\n  dedupeKey?: string;\n  clientEventId?: string;\n  contentVersionId?: number;\n  payload: TPayload;\n}\n`;
+  return `${header}${envelope}\n${payloadAliases.join('\n\n')}\n\n${eventTypes.join('\n\n')}\n\nexport type PlatformEvent = ${eventTypeNames.map((typeName) => `${typeName}Event`).join(' | ')};\n`;
 }
 
 function generateApiClientTypes(document) {
@@ -90,28 +126,46 @@ function generateApiClientTypes(document) {
   return `/* eslint-disable */\n// GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json\n\n${imports}export interface GeneratedApiOperationRegistry {\n${operations.join('\n')}\n}\n\nexport type GeneratedApiOperationId = keyof GeneratedApiOperationRegistry;\n`;
 }
 
+function generateSchemaRegistry(registry) {
+  const header = `/* eslint-disable */
+// GENERATED FILE. Source: packages/contracts/schemas/v1/registry.json
+// Run node scripts/contracts/generate-contracts.mjs after changing the source.
+
+`;
+  return `${header}export const jsonSchemaRegistry = ${JSON.stringify(registry.schemas, null, 2)} as const;
+
+export type JsonSchemaId = keyof typeof jsonSchemaRegistry;
+`;
+}
+
 export function generateContracts() {
   validateContracts({ quiet: true });
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
+  const schemaRegistry = readJson(schemaRegistryPath);
   writeFile(path.join(contractsGeneratedDir, 'openapi.ts'), generateOpenApiTypes(openApi));
   writeFile(path.join(contractsGeneratedDir, 'events.ts'), generateEventTypes(catalog));
-  writeFile(path.join(contractsGeneratedDir, 'index.ts'), `export * from './openapi';\nexport * from './events';`);
-  writeFile(path.join(apiClientGeneratedDir, 'index.ts'), generateApiClientTypes(openApi));
+  writeFile(path.join(contractsGeneratedDir, 'schemas.ts'), generateSchemaRegistry(schemaRegistry));
+  writeFile(path.join(contractsGeneratedDir, 'index.ts'), `export * from './openapi';\nexport * from './events';\nexport * from './schemas';`);
+  const outputs = [
+    path.join(contractsGeneratedDir, 'openapi.ts'),
+    path.join(contractsGeneratedDir, 'events.ts'),
+    path.join(contractsGeneratedDir, 'schemas.ts'),
+    path.join(contractsGeneratedDir, 'index.ts'),
+  ];
+  if (!process.argv.includes('--contracts-only')) {
+    writeFile(path.join(apiClientGeneratedDir, 'index.ts'), generateApiClientTypes(openApi));
+    outputs.push(path.join(apiClientGeneratedDir, 'index.ts'));
+  }
   return {
-    outputs: [
-      path.join(contractsGeneratedDir, 'openapi.ts'),
-      path.join(contractsGeneratedDir, 'events.ts'),
-      path.join(contractsGeneratedDir, 'index.ts'),
-      path.join(apiClientGeneratedDir, 'index.ts'),
-    ],
+    outputs,
   };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
   try {
     if (process.argv.includes('--help')) {
-      console.log('Usage: node scripts/contracts/generate-contracts.mjs');
+      console.log('Usage: node scripts/contracts/generate-contracts.mjs [--contracts-only]');
       process.exit(0);
     }
     const result = generateContracts();

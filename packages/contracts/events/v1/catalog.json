@@ -60,6 +60,14 @@
         "type": "string",
         "pattern": "^[A-Za-z][A-Za-z0-9._-]{7,127}$"
       },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,63}\\.v[0-9]+$"
+      },
+      "dedupeKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+      },
       "clientEventId": {
         "type": "string",
         "minLength": 8,
@@ -2077,6 +2085,2782 @@
           "minimum": 0
         }
       }
+    },
+    "B5FactPayload": {
+      "$id": "platform.events.b5.fact.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aggregateId",
+        "status",
+        "ruleVersion"
+      ],
+      "properties": {
+        "aggregateId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "userId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "status": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "ruleVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "amountMinor": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "maxLength": 8
+        },
+        "provider": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "contentVersionId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "decisionCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "ttlSeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rolloutPercent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "discrepancyCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "redacted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "B6FactPayload": {
+      "$id": "platform.events.b6.fact.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aggregateId",
+        "status",
+        "resultCode",
+        "ruleVersion"
+      ],
+      "properties": {
+        "aggregateId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "status": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "resultCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "ruleVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "platformCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "buildVersion": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "sourceRevision": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "passedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "criticalCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "highCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duplicateWriteCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lostWriteCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rtoSeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rpoSeconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gateDecision": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "evidenceRef": {
+          "type": "string",
+          "maxLength": 255
+        }
+      }
+    },
+    "AuthPrincipalMapped": {
+      "$id": "platform.events.auth.principal.mapped.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId",
+        "provider",
+        "mappingStatus",
+        "adultGateStatus",
+        "mappedAt"
+      ],
+      "properties": {
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "provider": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,31}$"
+        },
+        "mappingStatus": {
+          "type": "string",
+          "enum": [
+            "CREATED",
+            "LINKED",
+            "REJECTED"
+          ]
+        },
+        "adultGateStatus": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "mappedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthSessionRotated": {
+      "$id": "platform.events.auth.session.rotated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "rotationId",
+        "deviceId",
+        "sessionGeneration",
+        "rotatedAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+        },
+        "rotationId": {
+          "type": "string",
+          "pattern": "^rot_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "sessionGeneration": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rotatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthSessionReplayDetected": {
+      "$id": "platform.events.auth.session.replay_detected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "deviceId",
+        "detectionId",
+        "detectionCode",
+        "revocationStatus",
+        "detectedAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "detectionId": {
+          "type": "string",
+          "pattern": "^rpl_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "detectionCode": {
+          "type": "string",
+          "enum": [
+            "REFRESH_REUSE",
+            "CALLBACK_REUSE",
+            "STATE_REUSE"
+          ]
+        },
+        "revocationStatus": {
+          "type": "string",
+          "enum": [
+            "SESSION_REVOKED",
+            "PENDING_REVIEW"
+          ]
+        },
+        "detectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthDeviceRevoked": {
+      "$id": "platform.events.auth.device.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deviceId",
+        "sessionId",
+        "reasonCode",
+        "revokedAt"
+      ],
+      "properties": {
+        "deviceId": {
+          "type": "string",
+          "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "LOGOUT",
+            "KICKED",
+            "REPLAY_DETECTED",
+            "RISK_FREEZE",
+            "ADMIN"
+          ]
+        },
+        "revokedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthConsentUpdated": {
+      "$id": "platform.events.auth.consent.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId",
+        "consentType",
+        "consentVersion",
+        "decision",
+        "updatedAt"
+      ],
+      "properties": {
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "consentType": {
+          "type": "string",
+          "enum": [
+            "TERMS",
+            "PRIVACY",
+            "ADULT_LEARNING",
+            "PRODUCT_ANALYTICS"
+          ]
+        },
+        "consentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "ACCEPTED",
+            "WITHDRAWN"
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "AuthAdultGateRejected": {
+      "$id": "platform.events.auth.adult_gate.rejected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionId",
+        "reasonCode",
+        "policyVersion",
+        "rejectedAt"
+      ],
+      "properties": {
+        "decisionId": {
+          "type": "string",
+          "pattern": "^dec_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "UNDER_ADULT_THRESHOLD",
+            "EVIDENCE_REQUIRED",
+            "PHASE_DISABLED"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "rejectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "IamPolicyVersionChanged": {
+      "$id": "platform.events.iam.policy.version_changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyName",
+        "previousVersion",
+        "currentVersion",
+        "activationMode",
+        "changedAt"
+      ],
+      "properties": {
+        "policyName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
+        },
+        "previousVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "currentVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "activationMode": {
+          "type": "string",
+          "enum": [
+            "SCHEDULED",
+            "IMMEDIATE",
+            "ROLLBACK"
+          ]
+        },
+        "changedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9LearnerProfileUpdated": {
+      "$id": "platform.events.learner.profile.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "profileVersion",
+        "changedFieldCodes",
+        "updatedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "profileVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "changedFieldCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9LearnerTargetUpdated": {
+      "$id": "platform.events.learner.target.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "targetId",
+        "targetVersion",
+        "goalCode",
+        "targetLevel",
+        "dailyQuotaMinutes",
+        "updatedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "targetId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "targetVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "goalCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "targetLevel": {
+          "type": "string",
+          "enum": [
+            "A1",
+            "A2",
+            "B1",
+            "B2",
+            "C1",
+            "C2"
+          ]
+        },
+        "dailyQuotaMinutes": {
+          "type": "integer",
+          "enum": [
+            5,
+            15,
+            30,
+            45,
+            60
+          ]
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9LearnerFirstDayProjected": {
+      "$id": "platform.events.learner.first_day.projected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "projectionVersion",
+        "contentEpoch",
+        "readiness",
+        "taskCount",
+        "projectedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "projectionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "readiness": {
+          "type": "string",
+          "enum": [
+            "NOT_READY",
+            "READY",
+            "DEGRADED"
+          ]
+        },
+        "taskCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "projectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9ContentVersionSubmitted": {
+      "$id": "platform.events.content.version.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "contentCode",
+        "contentType",
+        "contentVersionId",
+        "versionNumber",
+        "stateVersion",
+        "submittedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "contentType": {
+          "type": "string",
+          "enum": [
+            "COURSE",
+            "COURSE_UNIT",
+            "VOCABULARY",
+            "PHRASE",
+            "GRAMMAR",
+            "SENTENCE",
+            "QUESTION"
+          ]
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "versionNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "stateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9ContentVersionReviewed": {
+      "$id": "platform.events.content.version.reviewed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "contentCode",
+        "contentVersionId",
+        "versionNumber",
+        "reviewStage",
+        "decision",
+        "reviewVersion",
+        "reviewedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "versionNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewStage": {
+          "type": "string",
+          "enum": [
+            "FIRST_REVIEW",
+            "FINAL_REVIEW"
+          ]
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "APPROVED",
+            "REJECTED",
+            "CHANGES_REQUESTED"
+          ]
+        },
+        "reviewVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9ContentVersionPublished": {
+      "$id": "platform.events.content.version.published.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "contentCode",
+        "contentType",
+        "contentVersionId",
+        "versionNumber",
+        "projectionKey",
+        "projectionVersion",
+        "contentEpoch",
+        "publicFieldSet",
+        "publishedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "contentType": {
+          "type": "string",
+          "enum": [
+            "COURSE",
+            "COURSE_UNIT",
+            "VOCABULARY",
+            "PHRASE",
+            "GRAMMAR",
+            "SENTENCE",
+            "QUESTION"
+          ]
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "versionNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionKey": {
+          "type": "string",
+          "maxLength": 192
+        },
+        "projectionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "publicFieldSet": {
+          "type": "string",
+          "const": "PUBLIC_V1"
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9ContentVersionUnpublished": {
+      "$id": "platform.events.content.version.unpublished.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "contentCode",
+        "contentVersionId",
+        "projectionKey",
+        "contentEpoch",
+        "reasonCode",
+        "unpublishedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionKey": {
+          "type": "string",
+          "maxLength": 192
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "unpublishedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9ContentVersionRolledBack": {
+      "$id": "platform.events.content.version.rolled_back.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "contentCode",
+        "fromVersionId",
+        "targetVersionId",
+        "projectionKey",
+        "contentEpoch",
+        "rolledBackAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "contentCode": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "fromVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "targetVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionKey": {
+          "type": "string",
+          "maxLength": 192
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rolledBackAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B9PublicProjectionInvalidated": {
+      "$id": "platform.events.content.public_projection.invalidated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "projectionKey",
+        "contentCode",
+        "contentEpoch",
+        "invalidationScope",
+        "reasonCode",
+        "invalidatedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "projectionKey": {
+          "type": "string",
+          "maxLength": 192
+        },
+        "contentCode": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "invalidationScope": {
+          "type": "string",
+          "enum": [
+            "CONTENT",
+            "VERSION",
+            "SITE",
+            "MANIFEST",
+            "GLOBAL"
+          ]
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "cacheTag": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "invalidatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10AssessmentAttemptSubmitted": {
+      "$id": "platform.events.assessment.attempt.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "attemptId",
+        "sessionId",
+        "contentVersionId",
+        "contentSnapshotId",
+        "contentEpoch",
+        "attemptVersion",
+        "submissionDigest",
+        "itemCount",
+        "gradingRuleVersion",
+        "submittedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "attemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentSnapshotId": {
+          "type": "string",
+          "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "attemptVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "submissionDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "gradingRuleVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10AssessmentAttemptAssessed": {
+      "$id": "platform.events.assessment.attempt.assessed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "attemptId",
+        "sessionId",
+        "contentVersionId",
+        "contentSnapshotId",
+        "attemptVersion",
+        "assessmentVersion",
+        "scoreBucket",
+        "masterySignal",
+        "mistakeCodes",
+        "assessedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "attemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentSnapshotId": {
+          "type": "string",
+          "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "attemptVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assessmentVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "scoreBucket": {
+          "type": "string",
+          "enum": [
+            "ZERO",
+            "PARTIAL",
+            "FULL",
+            "PENDING_REVIEW"
+          ]
+        },
+        "masterySignal": {
+          "type": "string",
+          "enum": [
+            "NO_SIGNAL",
+            "WEAK",
+            "STABLE",
+            "MASTERED",
+            "RETRY"
+          ]
+        },
+        "mistakeCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "maxItems": 64
+        },
+        "assessedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10LearningMasteryProjected": {
+      "$id": "platform.events.learning.mastery.projected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "projectionId",
+        "itemId",
+        "sourceAttemptId",
+        "sourceAssessmentEventId",
+        "contentVersionId",
+        "contentEpoch",
+        "fromState",
+        "toState",
+        "projectionVersion",
+        "projectionStatus",
+        "projectedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "projectionId": {
+          "type": "string",
+          "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "itemId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "sourceAttemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sourceAssessmentEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "fromState": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "LEARNING",
+            "DELAY_VERIFY_D1",
+            "DELAY_VERIFY_D7",
+            "MASTERED",
+            "REVIEW_QUEUE",
+            "REOPENED"
+          ]
+        },
+        "toState": {
+          "type": "string",
+          "enum": [
+            "LEARNING",
+            "DELAY_VERIFY_D1",
+            "DELAY_VERIFY_D7",
+            "MASTERED",
+            "REVIEW_QUEUE",
+            "REOPENED"
+          ]
+        },
+        "srsStage": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "D0",
+            "D1",
+            "D7",
+            "MASTERED"
+          ]
+        },
+        "nextReviewAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+        "projectionVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "projectionStatus": {
+          "type": "string",
+          "enum": [
+            "APPLIED",
+            "RETRYING",
+            "COMPENSATED",
+            "MANUAL_REVIEW"
+          ]
+        },
+        "projectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10LearningReviewScheduled": {
+      "$id": "platform.events.learning.review.scheduled.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "queueItemId",
+        "itemId",
+        "sourceProjectionId",
+        "queueVersion",
+        "source",
+        "state",
+        "dueAt",
+        "scheduledAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "queueItemId": {
+          "type": "string",
+          "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "itemId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "sourceProjectionId": {
+          "type": "string",
+          "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "queueVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "REVIEW",
+            "MISTAKE",
+            "RETRY"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "LEARNING",
+            "DELAY_VERIFY_D1",
+            "DELAY_VERIFY_D7",
+            "MASTERED",
+            "REVIEW_QUEUE",
+            "REOPENED"
+          ]
+        },
+        "dueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "scheduledAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10SagaStarted": {
+      "$id": "platform.events.workflow.assessment_learning.saga_started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "sagaId",
+        "sagaType",
+        "rootEventId",
+        "rootAggregateId",
+        "currentStep",
+        "sagaVersion",
+        "startedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "sagaId": {
+          "type": "string",
+          "pattern": "^saga_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sagaType": {
+          "type": "string",
+          "const": "ASSESSMENT_TO_LEARNING"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootAggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "currentStep": {
+          "type": "string",
+          "enum": [
+            "ASSESSMENT_ACCEPT",
+            "ASSESSMENT_ASSESS",
+            "LEARNING_PROJECT",
+            "REVIEW_SCHEDULE"
+          ]
+        },
+        "sagaVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10SagaCompensated": {
+      "$id": "platform.events.workflow.assessment_learning.saga_compensated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "sagaId",
+        "sagaType",
+        "failedEventId",
+        "failedStep",
+        "compensationKey",
+        "compensationAction",
+        "recoveryMode",
+        "compensatedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "sagaId": {
+          "type": "string",
+          "pattern": "^saga_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sagaType": {
+          "type": "string",
+          "const": "ASSESSMENT_TO_LEARNING"
+        },
+        "failedEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "failedStep": {
+          "type": "string",
+          "enum": [
+            "ASSESSMENT_ACCEPT",
+            "ASSESSMENT_ASSESS",
+            "LEARNING_PROJECT",
+            "REVIEW_SCHEDULE"
+          ]
+        },
+        "compensationKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+        },
+        "compensationAction": {
+          "type": "string",
+          "enum": [
+            "MARK_PROJECTION_RETRY",
+            "REVERT_PENDING_PROJECTION",
+            "REOPEN_REVIEW_QUEUE",
+            "CREATE_MANUAL_RECOVERY"
+          ]
+        },
+        "recoveryMode": {
+          "type": "string",
+          "enum": [
+            "AUTOMATIC",
+            "MANUAL_REVIEW"
+          ]
+        },
+        "compensatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B10EventReplayed": {
+      "$id": "platform.events.workflow.event.replayed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "replayId",
+        "sourceDlqId",
+        "sourceEventId",
+        "sourceEventName",
+        "consumerName",
+        "replayAttempt",
+        "replayResult",
+        "replayedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "replayId": {
+          "type": "string",
+          "pattern": "^replay_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sourceDlqId": {
+          "type": "string",
+          "pattern": "^dlq_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sourceEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "sourceEventName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+\\.v[0-9]+$"
+        },
+        "consumerName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._:-]{2,95}$"
+        },
+        "replayAttempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "replayResult": {
+          "type": "string",
+          "enum": [
+            "APPLIED",
+            "DUPLICATE_IGNORED",
+            "REQUEUED",
+            "QUARANTINED"
+          ]
+        },
+        "replayedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B11MediaStarted": {
+      "$id": "platform.events.media.started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "playbackId",
+        "principalId",
+        "assetId",
+        "contentVersionId",
+        "assetVersion",
+        "positionVersion",
+        "playbackMode"
+      ],
+      "properties": {
+        "playbackId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "assetId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "assetVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "positionVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "positionMs": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "playbackMode": {
+          "type": "string",
+          "enum": [
+            "NORMAL",
+            "SLOW",
+            "AB_REPEAT",
+            "OFFLINE"
+          ]
+        }
+      }
+    },
+    "B11MediaSegmentCompleted": {
+      "$id": "platform.events.media.segment_completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "playbackId",
+        "principalId",
+        "assetId",
+        "segmentId",
+        "segmentVersion",
+        "contentVersionId",
+        "positionMs"
+      ],
+      "properties": {
+        "playbackId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "assetId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "segmentId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "segmentVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "positionMs": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "completionPercent": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "B11MediaDownloaded": {
+      "$id": "platform.events.media.downloaded.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId",
+        "deviceRefHash",
+        "assetId",
+        "manifestId",
+        "contentVersionId",
+        "sha256",
+        "bytesDownloaded"
+      ],
+      "properties": {
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "deviceRefHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "assetId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "manifestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "bytesDownloaded": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "offlinePackageId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      }
+    },
+    "B11MediaRevoked": {
+      "$id": "platform.events.media.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assetId",
+        "rightsEpoch",
+        "reasonCode",
+        "revokedGrantCount"
+      ],
+      "properties": {
+        "assetId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "rightsEpoch": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "RIGHTS_REVOKED",
+            "CONTENT_UNPUBLISHED",
+            "USER_REQUEST",
+            "SECURITY_INCIDENT",
+            "RETENTION_EXPIRED"
+          ]
+        },
+        "revokedGrantCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "B11NotificationDelivered": {
+      "$id": "platform.events.notification.delivered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notificationId",
+        "principalId",
+        "channel",
+        "status",
+        "deliveryVersion",
+        "deliveredAt"
+      ],
+      "properties": {
+        "notificationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "IN_APP",
+            "PUSH",
+            "SMS",
+            "EMAIL"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DELIVERED",
+            "SKIPPED",
+            "FAILED"
+          ]
+        },
+        "deliveryVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "deliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "providerCode": {
+          "type": "string",
+          "maxLength": 64
+        }
+      }
+    },
+    "B11SyncEnqueued": {
+      "$id": "platform.events.sync.enqueued.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientBatchId",
+        "principalId",
+        "deviceRefHash",
+        "changeCount",
+        "baseCursor",
+        "queuedAt"
+      ],
+      "properties": {
+        "clientBatchId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "deviceRefHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "changeCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "baseCursor": {
+          "type": "string",
+          "maxLength": 512
+        },
+        "queuedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B11SyncConflictDetected": {
+      "$id": "platform.events.sync.conflict_detected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflictId",
+        "clientBatchId",
+        "principalId",
+        "entityType",
+        "entityId",
+        "localVersion",
+        "serverVersion",
+        "reasonCode"
+      ],
+      "properties": {
+        "conflictId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "clientBatchId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "entityType": {
+          "type": "string",
+          "enum": [
+            "LISTENING_PROGRESS",
+            "READING_PROGRESS",
+            "SHADOWING_PROGRESS",
+            "SPEAKING_SELF_RATING",
+            "NOTIFICATION_PREFERENCE"
+          ]
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "localVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "serverVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "VERSION_VECTOR_AHEAD",
+            "CONTENT_VERSION_CHANGED",
+            "RIGHTS_REVOKED",
+            "DUPLICATE_CLIENT_EVENT",
+            "SAFE_MERGE_UNAVAILABLE",
+            "STORAGE_FULL"
+          ]
+        },
+        "safeToRetry": {
+          "type": "boolean"
+        }
+      }
+    },
+    "B11SyncRecovered": {
+      "$id": "platform.events.sync.recovered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflictId",
+        "principalId",
+        "recoveryVersion",
+        "resolution",
+        "nextAction",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "conflictId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "recoveryVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "resolution": {
+          "type": "string",
+          "enum": [
+            "SERVER_WINS",
+            "LOCAL_RETRY",
+            "MERGED"
+          ]
+        },
+        "nextAction": {
+          "type": "string",
+          "enum": [
+            "PULL_LATEST",
+            "RETRY_CHANGE",
+            "NO_ACTION",
+            "CONTACT_SUPPORT"
+          ]
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "B11RecordingSaved": {
+      "$id": "platform.events.recording.saved.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordingId",
+        "principalId",
+        "assetId",
+        "contentVersionId",
+        "contentHash",
+        "durationMs",
+        "storageMode",
+        "status",
+        "aiScoringAvailable"
+      ],
+      "properties": {
+        "recordingId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "assetId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "durationMs": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0,
+          "maximum": 120000
+        },
+        "storageMode": {
+          "type": "string",
+          "enum": [
+            "LOCAL_ENCRYPTED",
+            "REMOTE_ENCRYPTED"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "LOCAL_ONLY",
+            "UPLOAD_PENDING",
+            "READY"
+          ]
+        },
+        "aiScoringAvailable": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "B11SpeakingPermissionRequested": {
+      "$id": "platform.events.speaking.permission_requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "principalId",
+        "deviceRefHash",
+        "permissionVersion",
+        "result"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "deviceRefHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "permissionVersion": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "REQUESTED",
+            "GRANTED",
+            "DENIED",
+            "UNAVAILABLE"
+          ]
+        }
+      }
+    },
+    "B11ShadowingCompleted": {
+      "$id": "platform.events.shadowing.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shadowingSessionId",
+        "principalId",
+        "contentVersionId",
+        "completedSegments",
+        "attemptCount",
+        "aiScoringAvailable"
+      ],
+      "properties": {
+        "shadowingSessionId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "principalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "completedSegments": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aiScoringAvailable": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    "B12GrowthSessionStarted": {
+      "$id": "platform.events.gamification.session_started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "subjectRef",
+        "ruleVersion",
+        "startedAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "ruleVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B12GrowthLedgerPosted": {
+      "$id": "platform.events.gamification.xp.ledger_posted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ledgerEntryId",
+        "subjectRef",
+        "ledgerKind",
+        "amount",
+        "ruleVersion",
+        "sourceEventId"
+      ],
+      "properties": {
+        "ledgerEntryId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "ledgerKind": {
+          "type": "string",
+          "enum": [
+            "SCORE",
+            "CURRENCY"
+          ]
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ruleVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "sourceEventId": {
+          "type": "string",
+          "maxLength": 128
+        }
+      }
+    },
+    "B12RewardGranted": {
+      "$id": "platform.events.gamification.reward.granted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "subjectRef",
+        "rewardCode",
+        "probabilityVersion",
+        "grantState"
+      ],
+      "properties": {
+        "grantId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "rewardCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "probabilityVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "grantState": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "CLAIMED",
+            "REVOKED"
+          ]
+        }
+      }
+    },
+    "B12AvatarEquipped": {
+      "$id": "platform.events.gamification.avatar.equipped.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "loadoutId",
+        "subjectRef",
+        "assetVersion",
+        "itemRefs"
+      ],
+      "properties": {
+        "loadoutId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "assetVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "itemRefs": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      }
+    },
+    "B12StudyRoomJoined": {
+      "$id": "platform.events.study_room.joined.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "roomId",
+        "seatId",
+        "subjectRef",
+        "leaseVersion",
+        "visibility"
+      ],
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "seatId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "leaseVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "PRIVATE",
+            "ROOM_ONLY",
+            "PUBLIC"
+          ]
+        }
+      }
+    },
+    "B12FocusStarted": {
+      "$id": "platform.events.study_room.focus_started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "focusId",
+        "roomId",
+        "subjectRef",
+        "durationMinutes",
+        "presetCode"
+      ],
+      "properties": {
+        "focusId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "roomId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 180
+        },
+        "presetCode": {
+          "type": "string",
+          "enum": [
+            "FOCUS",
+            "BREAK",
+            "REVIEW"
+          ]
+        }
+      }
+    },
+    "B12StudyRoomLeft": {
+      "$id": "platform.events.study_room.left.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "roomId",
+        "seatId",
+        "subjectRef",
+        "leaseVersion",
+        "reasonCode"
+      ],
+      "properties": {
+        "roomId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "seatId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "leaseVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "USER_LEFT",
+            "LEASE_EXPIRED",
+            "DISCONNECT_CLEANUP"
+          ]
+        }
+      }
+    },
+    "B12LeaderboardRefreshed": {
+      "$id": "platform.events.leaderboard.refreshed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectionId",
+        "kind",
+        "period",
+        "projectionVersion",
+        "entryCount"
+      ],
+      "properties": {
+        "projectionId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "kind": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "period": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "projectionVersion": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "entryCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "B12SocialReportCreated": {
+      "$id": "platform.events.social.report.created.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reportId",
+        "roomId",
+        "targetRef",
+        "categoryCode",
+        "state"
+      ],
+      "properties": {
+        "reportId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "roomId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "targetRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "categoryCode": {
+          "type": "string",
+          "enum": [
+            "HARASSMENT",
+            "SPAM",
+            "INAPPROPRIATE_BEHAVIOR",
+            "SAFETY"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "REVIEWING",
+            "RESOLVED",
+            "DISMISSED"
+          ]
+        }
+      }
+    },
+    "B12NotificationRequested": {
+      "$id": "platform.events.notification.requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notificationId",
+        "subjectRef",
+        "templateId",
+        "templateVersion",
+        "channel",
+        "locale"
+      ],
+      "properties": {
+        "notificationId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "subjectRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "templateId": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "templateVersion": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "IN_APP",
+            "PUSH",
+            "EMAIL"
+          ]
+        },
+        "locale": {
+          "type": "string",
+          "maxLength": 20
+        }
+      }
+    },
+    "B12NotificationRetryScheduled": {
+      "$id": "platform.events.notification.retry_scheduled.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "taskId",
+        "notificationId",
+        "attemptCount",
+        "nextAttemptAt",
+        "failureCode"
+      ],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "notificationId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "nextAttemptAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "failureCode": {
+          "type": "string",
+          "maxLength": 96
+        }
+      }
+    },
+    "B12NotificationRecoveryCompleted": {
+      "$id": "platform.events.notification.recovery.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "taskId",
+        "state",
+        "auditRef",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "SUCCEEDED",
+            "REJECTED",
+            "MANUAL_REVIEW"
+          ]
+        },
+        "auditRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "B13CommerceOrderCreated": {
+      "$id": "platform.events.commerce.order.created.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "orderId",
+        "skuId",
+        "priceSnapshotId",
+        "amountMinor",
+        "currency",
+        "state"
+      ],
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "skuId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "priceSnapshotId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "maxLength": 3
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "CREATED",
+            "PENDING_PAYMENT",
+            "PAYMENT_PENDING"
+          ]
+        }
+      }
+    },
+    "B13CommercePaymentCallback": {
+      "$id": "platform.events.commerce.payment.callback_received.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "providerEventRef",
+        "orderRef",
+        "callbackState",
+        "amountMinor",
+        "currency",
+        "verificationRef"
+      ],
+      "properties": {
+        "providerEventRef": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "orderRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "callbackState": {
+          "type": "string",
+          "enum": [
+            "VERIFIED_PAID",
+            "VERIFIED_REFUNDED",
+            "REJECTED"
+          ]
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "maxLength": 3
+        },
+        "verificationRef": {
+          "type": "string",
+          "maxLength": 128
+        }
+      }
+    },
+    "B13CommerceEntitlementActivated": {
+      "$id": "platform.events.commerce.entitlement.activated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "entitlementCode",
+        "sourceRef",
+        "startsAt",
+        "expiresAt",
+        "activationReason"
+      ],
+      "properties": {
+        "entitlementId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "entitlementCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "sourceRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "startsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "nullable": true
+        },
+        "activationReason": {
+          "type": "string",
+          "enum": [
+            "VERIFIED_PAYMENT",
+            "ACTIVATION_CODE"
+          ]
+        }
+      }
+    },
+    "B13CommerceRefundCompleted": {
+      "$id": "platform.events.commerce.refund.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundId",
+        "orderRef",
+        "state",
+        "amountMinor",
+        "currency",
+        "completedAt"
+      ],
+      "properties": {
+        "refundId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "orderRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "SUCCEEDED",
+            "REJECTED"
+          ]
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "maxLength": 3
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "B13CommerceOrderReconciled": {
+      "$id": "platform.events.commerce.order.reconciled.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "batchRef",
+        "provider",
+        "differenceCount",
+        "state",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "batchRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "provider": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "differenceCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "MATCHED",
+            "DIFF_FOUND",
+            "REPLAYED"
+          ]
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "B13SupportTicketCreated": {
+      "$id": "platform.events.support.ticket.created.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ticketId",
+        "categoryCode",
+        "priority",
+        "slaDueAt",
+        "redactionVersion"
+      ],
+      "properties": {
+        "ticketId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "categoryCode": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "priority": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "slaDueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "redactionVersion": {
+          "type": "string",
+          "maxLength": 32
+        }
+      }
+    },
+    "B13AnalyticsMetricProjected": {
+      "$id": "platform.events.analytics.metric.projected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "projectionRef",
+        "metricCode",
+        "metricVersion",
+        "windowStart",
+        "windowEnd",
+        "value",
+        "state"
+      ],
+      "properties": {
+        "projectionRef": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "metricCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "metricVersion": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "windowStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "windowEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "value": {
+          "type": "number"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "READY",
+            "STALE",
+            "UNAVAILABLE"
+          ]
+        }
+      }
+    },
+    "B13AnalyticsRecomputeRequested": {
+      "$id": "platform.events.analytics.recompute.requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "jobId",
+        "metricCode",
+        "metricVersion",
+        "windowStart",
+        "windowEnd",
+        "reasonCode"
+      ],
+      "properties": {
+        "jobId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "metricCode": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "metricVersion": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "windowStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "windowEnd": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reasonCode": {
+          "type": "string",
+          "maxLength": 96
+        }
+      }
     }
   },
   "events": [
@@ -2258,18 +5042,33 @@
     },
     {
       "eventName": "commerce.entitlement.activated.v1",
-      "domain": "entitlement",
+      "domain": "commerce",
       "version": 1,
-      "schema": "entitlement.event.v1",
+      "schema": "commerce.event.v1",
       "aggregateType": "entitlement",
       "aggregateIdField": "entitlementId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
       "payloadSchema": {
-        "$ref": "#/payloadSchemas/CommerceEntitlementActivated"
+        "$ref": "#/payloadSchemas/B13CommerceEntitlementActivated"
       },
       "compatibility": {
         "strategy": "additive",
-        "breakingChange": "发布 commerce.entitlement.activated.v2",
-        "consumerRule": "权益消费者按 entitlementId + statusVersion（由实现层补充）幂等，学习数据不因到期删除。"
+        "breakingChange": "publish commerce.entitlement.activated.v2",
+        "consumerRule": "权益只能由 commerce-service 在支付验证或激活码核销后发布；消费者按 entitlementId 幂等。"
       }
     },
     {
@@ -2327,13 +5126,28 @@
       "schema": "notification.event.v1",
       "aggregateType": "notification",
       "aggregateIdField": "notificationId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
       "payloadSchema": {
-        "$ref": "#/payloadSchemas/NotificationDelivered"
+        "$ref": "#/payloadSchemas/B11NotificationDelivered"
       },
       "compatibility": {
         "strategy": "additive",
-        "breakingChange": "发布 notification.delivered.v2",
-        "consumerRule": "providerCode 只能是供应商返回的非敏感分类码；重复回执按 notificationId + channel 幂等。"
+        "breakingChange": "publish notification.delivered.v2",
+        "consumerRule": "按 notificationId、channel 和 deliveryVersion 幂等；providerCode 仅允许非敏感分类码。"
       }
     },
     {
@@ -3061,6 +5875,2257 @@
       "compatibility": {
         "strategy": "additive"
       }
+    },
+    {
+      "eventName": "social.room.left.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "soc_room_member",
+      "aggregateIdField": "roomId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "social.focus.updated.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "soc_focus_session",
+      "aggregateIdField": "sessionId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "social.moderation.reported.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "soc_moderation_report",
+      "aggregateIdField": "reportId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "social.moderation.blocked.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "soc_user_block",
+      "aggregateIdField": "blockId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "social.moderation.muted.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "soc_room_mute",
+      "aggregateIdField": "muteId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "notifications.message_read.v1",
+      "domain": "notifications",
+      "version": 1,
+      "schema": "notifications.event.v1",
+      "aggregateType": "inf_notification_message",
+      "aggregateIdField": "messageId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "notifications.preferences_updated.v1",
+      "domain": "notifications",
+      "version": 1,
+      "schema": "notifications.event.v1",
+      "aggregateType": "inf_notification_preference",
+      "aggregateIdField": "userId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "offline.package.download_state_updated.v1",
+      "domain": "offline",
+      "version": 1,
+      "schema": "offline.event.v1",
+      "aggregateType": "inf_offline_download",
+      "aggregateIdField": "packageId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "offline.sync.conflict_recorded.v1",
+      "domain": "offline",
+      "version": 1,
+      "schema": "offline.event.v1",
+      "aggregateType": "inf_sync_change_log",
+      "aggregateIdField": "changeId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B4FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "commerce.order.created.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "com_order",
+      "aggregateIdField": "orderId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "commerce.payment.requested.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "com_payment_attempt",
+      "aggregateIdField": "attemptId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "commerce.payment.callback_received.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "com_payment_callback",
+      "aggregateIdField": "callbackId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "commerce.payment.verified.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "com_payment_attempt",
+      "aggregateIdField": "attemptId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "commerce.refund.completed.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "com_refund",
+      "aggregateIdField": "refundId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "commerce.household.changed.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "com_household_member",
+      "aggregateIdField": "householdId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "cms.content.version_saved.v1",
+      "domain": "cms",
+      "version": 1,
+      "schema": "cms.event.v1",
+      "aggregateType": "cms_content_version",
+      "aggregateIdField": "contentVersionId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "cms.import.completed.v1",
+      "domain": "cms",
+      "version": 1,
+      "schema": "cms.event.v1",
+      "aggregateType": "cms_import_job",
+      "aggregateIdField": "importJobId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "safety.precheck.blocked.v1",
+      "domain": "safety",
+      "version": 1,
+      "schema": "safety.event.v1",
+      "aggregateType": "cms_sensitive_hit",
+      "aggregateIdField": "hitId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "risk.decision.created.v1",
+      "domain": "risk",
+      "version": 1,
+      "schema": "risk.event.v1",
+      "aggregateType": "ops_risk_event",
+      "aggregateIdField": "riskEventId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "finance.reconciliation.discrepancy.v1",
+      "domain": "finance",
+      "version": 1,
+      "schema": "finance.event.v1",
+      "aggregateType": "com_reconciliation_item",
+      "aggregateIdField": "itemId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "ops.flag.updated.v1",
+      "domain": "ops",
+      "version": 1,
+      "schema": "ops.event.v1",
+      "aggregateType": "ops_feature_flag",
+      "aggregateIdField": "flagKey",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "support.ticket.created.v1",
+      "domain": "support",
+      "version": 1,
+      "schema": "support.event.v1",
+      "aggregateType": "cms_correction_ticket",
+      "aggregateIdField": "ticketId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "support.ticket.resolved.v1",
+      "domain": "support",
+      "version": 1,
+      "schema": "support.event.v1",
+      "aggregateType": "cms_correction_ticket",
+      "aggregateIdField": "ticketId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B5FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "platform.build.registered.v1",
+      "domain": "platform",
+      "version": 1,
+      "schema": "platform.event.v1",
+      "aggregateType": "plt_build_artifact",
+      "aggregateIdField": "buildId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "platform.compatibility.checked.v1",
+      "domain": "platform",
+      "version": 1,
+      "schema": "platform.event.v1",
+      "aggregateType": "plt_platform_check",
+      "aggregateIdField": "checkId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "platform.performance.degraded.v1",
+      "domain": "platform",
+      "version": 1,
+      "schema": "platform.event.v1",
+      "aggregateType": "plt_performance_budget",
+      "aggregateIdField": "budgetId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "quality.e2e.completed.v1",
+      "domain": "quality",
+      "version": 1,
+      "schema": "quality.event.v1",
+      "aggregateType": "qly_e2e_run",
+      "aggregateIdField": "runId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "quality.security.scan_completed.v1",
+      "domain": "quality",
+      "version": 1,
+      "schema": "quality.event.v1",
+      "aggregateType": "qly_security_scan",
+      "aggregateIdField": "scanId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "quality.reliability.completed.v1",
+      "domain": "quality",
+      "version": 1,
+      "schema": "quality.event.v1",
+      "aggregateType": "qly_reliability_run",
+      "aggregateIdField": "runId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "observability.alert.raised.v1",
+      "domain": "observability",
+      "version": 1,
+      "schema": "observability.event.v1",
+      "aggregateType": "obs_alert",
+      "aggregateIdField": "alertId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "data.backup.drill_completed.v1",
+      "domain": "data",
+      "version": 1,
+      "schema": "data.event.v1",
+      "aggregateType": "rel_backup_drill",
+      "aggregateIdField": "drillId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "release.gate.evaluated.v1",
+      "domain": "release",
+      "version": 1,
+      "schema": "release.event.v1",
+      "aggregateType": "rel_release_gate",
+      "aggregateIdField": "gateId",
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B6FactPayload"
+      },
+      "compatibility": {
+        "strategy": "additive"
+      }
+    },
+    {
+      "eventName": "auth.principal.mapped.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_principal",
+      "aggregateIdField": "principalId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthPrincipalMapped"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.principal.mapped.v2",
+        "consumerRule": "按 principalId 幂等；只消费映射状态和版本，不传播 IdP 原始 claims。"
+      }
+    },
+    {
+      "eventName": "auth.session.rotated.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthSessionRotated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.session.rotated.v2",
+        "consumerRule": "按 rotationId 去重；payload 不含 access/refresh token。"
+      }
+    },
+    {
+      "eventName": "auth.session.replay_detected.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthSessionReplayDetected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.session.replay_detected.v2",
+        "consumerRule": "安全消费者按 sessionId、detectionId 和 dedupeKey 去重，并保持撤销 fail-closed。"
+      }
+    },
+    {
+      "eventName": "auth.device.revoked.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_device",
+      "aggregateIdField": "deviceId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthDeviceRevoked"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.device.revoked.v2",
+        "consumerRule": "设备、WebSocket 和通知消费者按 deviceId/sessionId 幂等撤销。"
+      }
+    },
+    {
+      "eventName": "auth.consent.updated.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_consent",
+      "aggregateIdField": "consentId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthConsentUpdated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.consent.updated.v2",
+        "consumerRule": "只传 consent type/version/decision；撤回和更新事实可审计、可重放。"
+      }
+    },
+    {
+      "eventName": "auth.adult_gate.rejected.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_adult_gate",
+      "aggregateIdField": "decisionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/AuthAdultGateRejected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.adult_gate.rejected.v2",
+        "consumerRule": "拒绝事件不传出生日期、年龄原值或 K12 主体事实。"
+      }
+    },
+    {
+      "eventName": "iam.policy.version_changed.v1",
+      "domain": "iam",
+      "version": 1,
+      "schema": "iam.security.event.v1",
+      "aggregateType": "iam_policy",
+      "aggregateIdField": "policyName",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/IamPolicyVersionChanged"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 iam.policy.version_changed.v2",
+        "consumerRule": "PEP/PDP 按 policyVersion 选择策略包；未知版本默认拒绝。"
+      }
+    },
+    {
+      "eventName": "learner.profile.updated.v1",
+      "domain": "learner",
+      "version": 1,
+      "schema": "learner.event.v1",
+      "aggregateType": "learner_profile",
+      "aggregateIdField": "profileId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9LearnerProfileUpdated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learner.profile.updated.v2",
+        "consumerRule": "按 principalId/profileVersion 去重；changedFieldCodes 只表达字段代码，不传播个人身份原文。"
+      }
+    },
+    {
+      "eventName": "learner.target.updated.v1",
+      "domain": "learner",
+      "version": 1,
+      "schema": "learner.event.v1",
+      "aggregateType": "learner_target",
+      "aggregateIdField": "targetId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9LearnerTargetUpdated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learner.target.updated.v2",
+        "consumerRule": "按 targetId/targetVersion 幂等；tenantId 由服务端派生并用于消费侧隔离。"
+      }
+    },
+    {
+      "eventName": "learner.first_day.projected.v1",
+      "domain": "learner",
+      "version": 1,
+      "schema": "learner.event.v1",
+      "aggregateType": "learner_first_day_projection",
+      "aggregateIdField": "projectionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learner.first_day.projected.v2",
+        "consumerRule": "按 principalId/projectionVersion 处理；projection 只含任务引用和内容 epoch。"
+      }
+    },
+    {
+      "eventName": "content.version.submitted.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9ContentVersionSubmitted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.submitted.v2",
+        "consumerRule": "审核消费者按 contentVersionId/versionNumber 幂等；草稿 payload 不进入事件。"
+      }
+    },
+    {
+      "eventName": "content.version.reviewed.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9ContentVersionReviewed"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.reviewed.v2",
+        "consumerRule": "双审阶段按 contentVersionId/reviewStage/reviewVersion 去重；作者不得作为自己的审核者。"
+      }
+    },
+    {
+      "eventName": "content.version.published.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9ContentVersionPublished"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.published.v2",
+        "consumerRule": "公开投影按 projectionKey/contentEpoch 刷新；事件至少一次投递，消费者必须去重。"
+      }
+    },
+    {
+      "eventName": "content.version.unpublished.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9ContentVersionUnpublished"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.unpublished.v2",
+        "consumerRule": "先失效 public/learner cache，再允许恢复到明确版本；不能把下线伪装为空列表。"
+      }
+    },
+    {
+      "eventName": "content.version.rolled_back.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentCode",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9ContentVersionRolledBack"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.rolled_back.v2",
+        "consumerRule": "只切换到已验证目标版本；按 contentCode/contentEpoch 幂等并保留回滚原因。"
+      }
+    },
+    {
+      "eventName": "content.public_projection.invalidated.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_public_projection",
+      "aggregateIdField": "projectionKey",
+      "x-envelope-required": [
+        "eventId",
+        "traceId",
+        "schemaVersion",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.public_projection.invalidated.v2",
+        "consumerRule": "按 projectionKey/contentEpoch 清理 Gateway/CDN/Redis 缓存；不得用 Kafka 作为查询或事务协调器。"
+      }
+    },
+    {
+      "eventName": "assessment.attempt.submitted.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "attemptId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.attempt.submitted.v2",
+        "consumerRule": "按 attemptId/attemptVersion/submissionDigest 去重；payload 只含版本、摘要和规则元数据，不含原始作答或答案规则值。"
+      }
+    },
+    {
+      "eventName": "assessment.attempt.assessed.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "attemptId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.attempt.assessed.v2",
+        "consumerRule": "learning-service 只按 attemptId/assessmentVersion 应用一次；scoreBucket、mistakeCodes 和 masterySignal 是脱敏结果摘要。"
+      }
+    },
+    {
+      "eventName": "learning.mastery.projected.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_mastery_projection",
+      "aggregateIdField": "projectionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningMasteryProjected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.mastery.projected.v2",
+        "consumerRule": "按 sourceAssessmentEventId/itemId/projectionVersion 幂等；learning-service 是 mastery 与 SRS 唯一写 owner。"
+      }
+    },
+    {
+      "eventName": "learning.review.scheduled.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_review_queue",
+      "aggregateIdField": "queueItemId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningReviewScheduled"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.review.scheduled.v2",
+        "consumerRule": "按 queueItemId/queueVersion 幂等；日期由服务端时区和规则版本决定，客户端不能直接改 dueAt。"
+      }
+    },
+    {
+      "eventName": "workflow.assessment_learning.saga_started.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "assessment_learning_saga",
+      "aggregateIdField": "sagaId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10SagaStarted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish workflow.assessment_learning.saga_started.v2",
+        "consumerRule": "Saga 状态按 sagaId/rootEventId 幂等；workflow 只协调和补偿，不直接写 assessment/learning 表。"
+      }
+    },
+    {
+      "eventName": "workflow.assessment_learning.saga_compensated.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "assessment_learning_saga",
+      "aggregateIdField": "sagaId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10SagaCompensated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish workflow.assessment_learning.saga_compensated.v2",
+        "consumerRule": "补偿动作按 sagaId/compensationKey 幂等；不能删除 assessment 事实，只能生成 learning projection 的补偿状态或人工恢复任务。"
+      }
+    },
+    {
+      "eventName": "workflow.event.replayed.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "event_replay",
+      "aggregateIdField": "replayId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10EventReplayed"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish workflow.event.replayed.v2",
+        "consumerRule": "replayId/sourceEventId/consumerName 唯一；回放沿用原始 trace 关联但生成新的 replay eventId。"
+      }
+    },
+    {
+      "eventName": "media.started.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "media_playback",
+      "aggregateIdField": "playbackId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11MediaStarted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish media.started.v2",
+        "consumerRule": "按 playbackId、assetVersion 和 positionVersion 幂等；事件只包含媒体引用和播放摘要。"
+      }
+    },
+    {
+      "eventName": "media.segment_completed.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "media_playback",
+      "aggregateIdField": "playbackId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11MediaSegmentCompleted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish media.segment_completed.v2",
+        "consumerRule": "按 playbackId、segmentId 和 segmentVersion 去重，不发布字幕原文或隐藏内容。"
+      }
+    },
+    {
+      "eventName": "media.downloaded.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "offline_media_asset",
+      "aggregateIdField": "assetId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11MediaDownloaded"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish media.downloaded.v2",
+        "consumerRule": "按 principalId、deviceRefHash、assetId 和 checksum 幂等；不携带对象存储 URL 或原始媒体。"
+      }
+    },
+    {
+      "eventName": "media.revoked.v1",
+      "domain": "media",
+      "version": 1,
+      "schema": "media.event.v1",
+      "aggregateType": "media_asset",
+      "aggregateIdField": "assetId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11MediaRevoked"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish media.revoked.v2",
+        "consumerRule": "按 assetId 和 rightsEpoch 幂等；消费者必须使未过期授权失效，不能恢复已撤权对象。"
+      }
+    },
+    {
+      "eventName": "sync.enqueued.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_batch",
+      "aggregateIdField": "clientBatchId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11SyncEnqueued"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish sync.enqueued.v2",
+        "consumerRule": "按 clientBatchId、clientEventId 和 deviceRefHash 去重；只发布数量、版本和游标摘要。"
+      }
+    },
+    {
+      "eventName": "sync.conflict_detected.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_conflict",
+      "aggregateIdField": "conflictId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11SyncConflictDetected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish sync.conflict_detected.v2",
+        "consumerRule": "按 conflictId、entityId 和 serverVersion 幂等；冲突事件不携带变更原文或隐藏学习事实。"
+      }
+    },
+    {
+      "eventName": "sync.recovered.v1",
+      "domain": "sync",
+      "version": 1,
+      "schema": "sync.event.v1",
+      "aggregateType": "sync_conflict",
+      "aggregateIdField": "conflictId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11SyncRecovered"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish sync.recovered.v2",
+        "consumerRule": "按 conflictId、recoveryVersion 和 clientEventId 幂等；只记录明确决策和下一步动作。"
+      }
+    },
+    {
+      "eventName": "recording.saved.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "speaking_recording",
+      "aggregateIdField": "recordingId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11RecordingSaved"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish recording.saved.v2",
+        "consumerRule": "按 recordingId、contentHash 和 clientEventId 幂等；仅发布媒体引用和元数据，Phase 1 的 aiScoringAvailable 固定为 false。"
+      }
+    },
+    {
+      "eventName": "speaking.permission_requested.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "speaking_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish speaking.permission_requested.v2",
+        "consumerRule": "按 sessionId、deviceRefHash 和 permissionVersion 幂等；权限结果不能推导语音能力或评分。"
+      }
+    },
+    {
+      "eventName": "shadowing.completed.v1",
+      "domain": "speaking",
+      "version": 1,
+      "schema": "speaking.event.v1",
+      "aggregateType": "shadowing_session",
+      "aggregateIdField": "shadowingSessionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B11ShadowingCompleted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish shadowing.completed.v2",
+        "consumerRule": "按 shadowingSessionId、contentVersionId 和 completionVersion 幂等；不产生 ASR 或 AI 评分。"
+      }
+    },
+    {
+      "eventName": "gamification.session_started.v1",
+      "domain": "gamification",
+      "version": 1,
+      "schema": "gamification.event.v1",
+      "aggregateType": "growth_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12GrowthSessionStarted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish gamification.session_started.v2",
+        "consumerRule": "按 eventId、aggregateId 和 dedupeKey 幂等；只发布可重放的学习会话摘要。"
+      }
+    },
+    {
+      "eventName": "gamification.xp.ledger_posted.v1",
+      "domain": "gamification",
+      "version": 1,
+      "schema": "gamification.event.v1",
+      "aggregateType": "growth_ledger",
+      "aggregateIdField": "ledgerEntryId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12GrowthLedgerPosted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish gamification.xp.ledger_posted.v2",
+        "consumerRule": "账本事件只能由成长服务发布；消费者不得根据客户端数值重算服务端事实。"
+      }
+    },
+    {
+      "eventName": "gamification.reward.granted.v1",
+      "domain": "gamification",
+      "version": 1,
+      "schema": "gamification.event.v1",
+      "aggregateType": "reward_grant",
+      "aggregateIdField": "grantId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12RewardGranted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish gamification.reward.granted.v2",
+        "consumerRule": "奖励发放以 grantId 和 probabilityVersion 为事实；不得发布随机种子或现金价值。"
+      }
+    },
+    {
+      "eventName": "gamification.avatar.equipped.v1",
+      "domain": "gamification",
+      "version": 1,
+      "schema": "gamification.event.v1",
+      "aggregateType": "avatar_loadout",
+      "aggregateIdField": "loadoutId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12AvatarEquipped"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish gamification.avatar.equipped.v2",
+        "consumerRule": "按主体、loadoutId 和版本幂等；只携带资产清单引用。"
+      }
+    },
+    {
+      "eventName": "study_room.joined.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "study_room",
+      "aggregateIdField": "roomId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12StudyRoomJoined"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish study_room.joined.v2",
+        "consumerRule": "按 roomId、seatId 和 leaseVersion 幂等；不发布私聊或自由文本。"
+      }
+    },
+    {
+      "eventName": "study_room.focus_started.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "focus_session",
+      "aggregateIdField": "focusId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12FocusStarted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish study_room.focus_started.v2",
+        "consumerRule": "按 focusId 和 roomId 幂等；客户端只提交预设和时长边界。"
+      }
+    },
+    {
+      "eventName": "study_room.left.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "study_room",
+      "aggregateIdField": "roomId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12StudyRoomLeft"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish study_room.left.v2",
+        "consumerRule": "按 roomId、seatId 和 leaseVersion 幂等；离开事件不改变成长账本。"
+      }
+    },
+    {
+      "eventName": "leaderboard.refreshed.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "leaderboard_projection",
+      "aggregateIdField": "projectionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12LeaderboardRefreshed"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish leaderboard.refreshed.v2",
+        "consumerRule": "排行榜是投影而非事实源；按 projectionId 和 projectionVersion 幂等。"
+      }
+    },
+    {
+      "eventName": "social.report.created.v1",
+      "domain": "social",
+      "version": 1,
+      "schema": "social.event.v1",
+      "aggregateType": "social_report",
+      "aggregateIdField": "reportId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12SocialReportCreated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish social.report.created.v2",
+        "consumerRule": "只发布分类码和目标引用；举报不得携带自由文本或原始消息。"
+      }
+    },
+    {
+      "eventName": "notification.requested.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification",
+      "aggregateIdField": "notificationId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12NotificationRequested"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish notification.requested.v2",
+        "consumerRule": "按 notificationId、channel 和模板版本幂等；内容由服务端模板渲染。"
+      }
+    },
+    {
+      "eventName": "notification.retry_scheduled.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification_delivery",
+      "aggregateIdField": "taskId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12NotificationRetryScheduled"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish notification.retry_scheduled.v2",
+        "consumerRule": "重试只由 workflow/notification 服务调度；消费者按 taskId 和 attemptCount 幂等。"
+      }
+    },
+    {
+      "eventName": "notification.recovery.completed.v1",
+      "domain": "notification",
+      "version": 1,
+      "schema": "notification.event.v1",
+      "aggregateType": "notification_recovery",
+      "aggregateIdField": "taskId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B12NotificationRecoveryCompleted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish notification.recovery.completed.v2",
+        "consumerRule": "人工恢复只记录状态和审计引用，不直接改写成长或社群事实。"
+      }
+    },
+    {
+      "eventName": "commerce.order.reconciled.v1",
+      "domain": "commerce",
+      "version": 1,
+      "schema": "commerce.event.v1",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "batchRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B13CommerceOrderReconciled"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.order.reconciled.v2",
+        "consumerRule": "对账只发布差异摘要和回放状态；不跨服务直接写订单事实。"
+      }
+    },
+    {
+      "eventName": "analytics.metric.projected.v1",
+      "domain": "analytics",
+      "version": 1,
+      "schema": "analytics.event.v1",
+      "aggregateType": "metric_projection",
+      "aggregateIdField": "projectionRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B13AnalyticsMetricProjected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish analytics.metric.projected.v2",
+        "consumerRule": "指标是版本化只读投影；下游按 projectionRef、metricVersion 和窗口幂等。"
+      }
+    },
+    {
+      "eventName": "analytics.recompute.requested.v1",
+      "domain": "analytics",
+      "version": 1,
+      "schema": "analytics.event.v1",
+      "aggregateType": "analytics_recompute",
+      "aggregateIdField": "jobId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B13AnalyticsRecomputeRequested"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish analytics.recompute.requested.v2",
+        "consumerRule": "重算请求只触发可回放任务，不改变领域事实；按 jobId 和窗口幂等。"
+      }
     }
-  ]
+  ],
+  "asyncapi": {
+    "version": "3.0.0",
+    "info": {
+      "title": "语学星 IAM and authentication integration events",
+      "version": "1.0.0",
+      "description": "B8 认证、principal、会话、设备、成人 Gate、consent 和策略版本事实；事件不携带 Token、refresh credential 或原始隐私。"
+    },
+    "channels": {
+      "authPrincipalMapped": {
+        "address": "auth.principal.mapped.v1",
+        "messages": {
+          "principalMapped": {
+            "$ref": "#/payloadSchemas/AuthPrincipalMapped"
+          }
+        }
+      },
+      "authSessionRotated": {
+        "address": "auth.session.rotated.v1",
+        "messages": {
+          "sessionRotated": {
+            "$ref": "#/payloadSchemas/AuthSessionRotated"
+          }
+        }
+      },
+      "authSessionReplayDetected": {
+        "address": "auth.session.replay_detected.v1",
+        "messages": {
+          "sessionReplayDetected": {
+            "$ref": "#/payloadSchemas/AuthSessionReplayDetected"
+          }
+        }
+      },
+      "authDeviceRevoked": {
+        "address": "auth.device.revoked.v1",
+        "messages": {
+          "deviceRevoked": {
+            "$ref": "#/payloadSchemas/AuthDeviceRevoked"
+          }
+        }
+      },
+      "authConsentUpdated": {
+        "address": "auth.consent.updated.v1",
+        "messages": {
+          "consentUpdated": {
+            "$ref": "#/payloadSchemas/AuthConsentUpdated"
+          }
+        }
+      },
+      "authAdultGateRejected": {
+        "address": "auth.adult_gate.rejected.v1",
+        "messages": {
+          "adultGateRejected": {
+            "$ref": "#/payloadSchemas/AuthAdultGateRejected"
+          }
+        }
+      },
+      "iamPolicyVersionChanged": {
+        "address": "iam.policy.version_changed.v1",
+        "messages": {
+          "policyVersionChanged": {
+            "$ref": "#/payloadSchemas/IamPolicyVersionChanged"
+          }
+        }
+      },
+      "b9LearnerProfileUpdated": {
+        "address": "learner.profile.updated.v1",
+        "messages": {
+          "learnerProfileUpdated": {
+            "$ref": "#/payloadSchemas/B9LearnerProfileUpdated"
+          }
+        }
+      },
+      "b9LearnerTargetUpdated": {
+        "address": "learner.target.updated.v1",
+        "messages": {
+          "learnerTargetUpdated": {
+            "$ref": "#/payloadSchemas/B9LearnerTargetUpdated"
+          }
+        }
+      },
+      "b9LearnerFirstDayProjected": {
+        "address": "learner.first_day.projected.v1",
+        "messages": {
+          "learnerFirstDayProjected": {
+            "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected"
+          }
+        }
+      },
+      "b9ContentVersionSubmitted": {
+        "address": "content.version.submitted.v1",
+        "messages": {
+          "contentVersionSubmitted": {
+            "$ref": "#/payloadSchemas/B9ContentVersionSubmitted"
+          }
+        }
+      },
+      "b9ContentVersionReviewed": {
+        "address": "content.version.reviewed.v1",
+        "messages": {
+          "contentVersionReviewed": {
+            "$ref": "#/payloadSchemas/B9ContentVersionReviewed"
+          }
+        }
+      },
+      "b9ContentVersionPublished": {
+        "address": "content.version.published.v1",
+        "messages": {
+          "contentVersionPublished": {
+            "$ref": "#/payloadSchemas/B9ContentVersionPublished"
+          }
+        }
+      },
+      "b9ContentVersionUnpublished": {
+        "address": "content.version.unpublished.v1",
+        "messages": {
+          "contentVersionUnpublished": {
+            "$ref": "#/payloadSchemas/B9ContentVersionUnpublished"
+          }
+        }
+      },
+      "b9ContentVersionRolledBack": {
+        "address": "content.version.rolled_back.v1",
+        "messages": {
+          "contentVersionRolledBack": {
+            "$ref": "#/payloadSchemas/B9ContentVersionRolledBack"
+          }
+        }
+      },
+      "b9PublicProjectionInvalidated": {
+        "address": "content.public_projection.invalidated.v1",
+        "messages": {
+          "publicProjectionInvalidated": {
+            "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated"
+          }
+        }
+      },
+      "b10AssessmentAttemptSubmitted": {
+        "address": "assessment.attempt.submitted.v1",
+        "messages": {
+          "attemptSubmitted": {
+            "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted"
+          }
+        }
+      },
+      "b10AssessmentAttemptAssessed": {
+        "address": "assessment.attempt.assessed.v1",
+        "messages": {
+          "attemptAssessed": {
+            "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed"
+          }
+        }
+      },
+      "b10LearningMasteryProjected": {
+        "address": "learning.mastery.projected.v1",
+        "messages": {
+          "masteryProjected": {
+            "$ref": "#/payloadSchemas/B10LearningMasteryProjected"
+          }
+        }
+      },
+      "b10LearningReviewScheduled": {
+        "address": "learning.review.scheduled.v1",
+        "messages": {
+          "reviewScheduled": {
+            "$ref": "#/payloadSchemas/B10LearningReviewScheduled"
+          }
+        }
+      },
+      "b10SagaStarted": {
+        "address": "workflow.assessment_learning.saga_started.v1",
+        "messages": {
+          "sagaStarted": {
+            "$ref": "#/payloadSchemas/B10SagaStarted"
+          }
+        }
+      },
+      "b10SagaCompensated": {
+        "address": "workflow.assessment_learning.saga_compensated.v1",
+        "messages": {
+          "sagaCompensated": {
+            "$ref": "#/payloadSchemas/B10SagaCompensated"
+          }
+        }
+      },
+      "b10EventReplayed": {
+        "address": "workflow.event.replayed.v1",
+        "messages": {
+          "eventReplayed": {
+            "$ref": "#/payloadSchemas/B10EventReplayed"
+          }
+        }
+      },
+      "b11MediaStarted": {
+        "address": "media.started.v1",
+        "messages": {
+          "mediaStarted": {
+            "$ref": "#/payloadSchemas/B11MediaStarted"
+          }
+        }
+      },
+      "b11MediaSegmentCompleted": {
+        "address": "media.segment_completed.v1",
+        "messages": {
+          "mediaSegmentCompleted": {
+            "$ref": "#/payloadSchemas/B11MediaSegmentCompleted"
+          }
+        }
+      },
+      "b11MediaDownloaded": {
+        "address": "media.downloaded.v1",
+        "messages": {
+          "mediaDownloaded": {
+            "$ref": "#/payloadSchemas/B11MediaDownloaded"
+          }
+        }
+      },
+      "b11MediaRevoked": {
+        "address": "media.revoked.v1",
+        "messages": {
+          "mediaRevoked": {
+            "$ref": "#/payloadSchemas/B11MediaRevoked"
+          }
+        }
+      },
+      "b11NotificationDelivered": {
+        "address": "notification.delivered.v1",
+        "messages": {
+          "notificationDelivered": {
+            "$ref": "#/payloadSchemas/B11NotificationDelivered"
+          }
+        }
+      },
+      "b11SyncEnqueued": {
+        "address": "sync.enqueued.v1",
+        "messages": {
+          "syncEnqueued": {
+            "$ref": "#/payloadSchemas/B11SyncEnqueued"
+          }
+        }
+      },
+      "b11SyncConflictDetected": {
+        "address": "sync.conflict_detected.v1",
+        "messages": {
+          "syncConflictDetected": {
+            "$ref": "#/payloadSchemas/B11SyncConflictDetected"
+          }
+        }
+      },
+      "b11SyncRecovered": {
+        "address": "sync.recovered.v1",
+        "messages": {
+          "syncRecovered": {
+            "$ref": "#/payloadSchemas/B11SyncRecovered"
+          }
+        }
+      },
+      "b11RecordingSaved": {
+        "address": "recording.saved.v1",
+        "messages": {
+          "recordingSaved": {
+            "$ref": "#/payloadSchemas/B11RecordingSaved"
+          }
+        }
+      },
+      "b11SpeakingPermissionRequested": {
+        "address": "speaking.permission_requested.v1",
+        "messages": {
+          "speakingPermissionRequested": {
+            "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested"
+          }
+        }
+      },
+      "b11ShadowingCompleted": {
+        "address": "shadowing.completed.v1",
+        "messages": {
+          "shadowingCompleted": {
+            "$ref": "#/payloadSchemas/B11ShadowingCompleted"
+          }
+        }
+      },
+      "b12GrowthSessionStarted": {
+        "address": "gamification.session_started.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12GrowthSessionStarted"
+          }
+        }
+      },
+      "b12GrowthLedgerPosted": {
+        "address": "gamification.xp.ledger_posted.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12GrowthLedgerPosted"
+          }
+        }
+      },
+      "b12RewardGranted": {
+        "address": "gamification.reward.granted.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12RewardGranted"
+          }
+        }
+      },
+      "b12AvatarEquipped": {
+        "address": "gamification.avatar.equipped.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12AvatarEquipped"
+          }
+        }
+      },
+      "b12StudyRoomJoined": {
+        "address": "study_room.joined.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12StudyRoomJoined"
+          }
+        }
+      },
+      "b12FocusStarted": {
+        "address": "study_room.focus_started.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12FocusStarted"
+          }
+        }
+      },
+      "b12StudyRoomLeft": {
+        "address": "study_room.left.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12StudyRoomLeft"
+          }
+        }
+      },
+      "b12LeaderboardRefreshed": {
+        "address": "leaderboard.refreshed.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12LeaderboardRefreshed"
+          }
+        }
+      },
+      "b12SocialReportCreated": {
+        "address": "social.report.created.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12SocialReportCreated"
+          }
+        }
+      },
+      "b12NotificationRequested": {
+        "address": "notification.requested.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12NotificationRequested"
+          }
+        }
+      },
+      "b12NotificationRetryScheduled": {
+        "address": "notification.retry_scheduled.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12NotificationRetryScheduled"
+          }
+        }
+      },
+      "b12NotificationRecoveryCompleted": {
+        "address": "notification.recovery.completed.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B12NotificationRecoveryCompleted"
+          }
+        }
+      },
+      "b13CommerceOrderCreated": {
+        "address": "commerce.order.created.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13CommerceOrderCreated"
+          }
+        }
+      },
+      "b13CommercePaymentCallback": {
+        "address": "commerce.payment.callback_received.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13CommercePaymentCallback"
+          }
+        }
+      },
+      "b13CommerceEntitlementActivated": {
+        "address": "commerce.entitlement.activated.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13CommerceEntitlementActivated"
+          }
+        }
+      },
+      "b13CommerceRefundCompleted": {
+        "address": "commerce.refund.completed.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13CommerceRefundCompleted"
+          }
+        }
+      },
+      "b13CommerceOrderReconciled": {
+        "address": "commerce.order.reconciled.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13CommerceOrderReconciled"
+          }
+        }
+      },
+      "b13SupportTicketCreated": {
+        "address": "support.ticket.created.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13SupportTicketCreated"
+          }
+        }
+      },
+      "b13AnalyticsMetricProjected": {
+        "address": "analytics.metric.projected.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13AnalyticsMetricProjected"
+          }
+        }
+      },
+      "b13AnalyticsRecomputeRequested": {
+        "address": "analytics.recompute.requested.v1",
+        "messages": {
+          "event": {
+            "$ref": "#/payloadSchemas/B13AnalyticsRecomputeRequested"
+          }
+        }
+      }
+    },
+    "operations": {}
+  }
 }

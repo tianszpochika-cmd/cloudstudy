@@ -42,6 +42,26 @@ public final class JdbcB4DurableRepository implements B4DurableRepository {
                 rs.getTimestamp("occurred_at").toInstant(), readMap(rs.getString("payload_json"))), aggregateType, userId);
     }
 
+    @Override
+    public List<Fact> listAll(String aggregateType) {
+        return jdbc.query("""
+                SELECT aggregate_type, aggregate_id, user_id, request_id, idempotency_key, occurred_at, payload_json
+                FROM b4_durable_fact WHERE aggregate_type = ? ORDER BY id
+                """, (rs, rowNum) -> new Fact(rs.getString("aggregate_type"), rs.getString("aggregate_id"),
+                rs.getLong("user_id"), rs.getString("request_id"), rs.getString("idempotency_key"),
+                rs.getTimestamp("occurred_at").toInstant(), readMap(rs.getString("payload_json"))), aggregateType);
+    }
+
+    @Override
+    public List<Fact> listByAggregate(String aggregateType, String aggregateId) {
+        return jdbc.query("""
+                SELECT aggregate_type, aggregate_id, user_id, request_id, idempotency_key, occurred_at, payload_json
+                FROM b4_durable_fact WHERE aggregate_type = ? AND aggregate_id = ? ORDER BY id
+                """, (rs, rowNum) -> new Fact(rs.getString("aggregate_type"), rs.getString("aggregate_id"),
+                rs.getLong("user_id"), rs.getString("request_id"), rs.getString("idempotency_key"),
+                rs.getTimestamp("occurred_at").toInstant(), readMap(rs.getString("payload_json"))), aggregateType, aggregateId);
+    }
+
     private String json(Map<String, Object> value) {
         try { return objectMapper.writeValueAsString(value); }
         catch (JsonProcessingException exception) { throw new B4Exception("B4_PERSISTENCE_SERIALIZE_FAILED", "B4 fact could not be serialized", 500, true); }

@@ -1,0 +1,25 @@
+package com.englishflow.learner.domain;
+
+/** Stable domain/security outcomes for the learner service seam. */
+public enum LearnerDecisionCode {
+    ALLOWED,
+    MISSING_PRINCIPAL,
+    CLIENT_AUTHORITY_REJECTED,
+    INVALID_CONTEXT,
+    MISSING_TENANT,
+    TENANT_MISMATCH,
+    MISSING_OWNER,
+    OWNER_MISMATCH,
+    PHASE_DENIED,
+    REVOKED,
+    CONSENT_REQUIRED,
+    ROLE_DENIED,
+    PERMISSION_DENIED,
+    INVALID_GOAL,
+    INVALID_PREFERENCE,
+    INVALID_PROFILE,
+    INVALID_LEGACY_SNAPSHOT,
+    IDEMPOTENCY_CONFLICT,
+    CONCURRENT_UPDATE,
+    STORE_FAILURE
+}

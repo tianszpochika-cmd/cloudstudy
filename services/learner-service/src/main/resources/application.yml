@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: learner-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${LEARNER_SHUTDOWN_TIMEOUT:20s}
+  flyway:
+    enabled: ${LEARNER_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    schemas: ${LEARNER_SCHEMA:learner_service}
+    default-schema: ${LEARNER_SCHEMA:learner_service}
+
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  # 18088 is the fixed port already registered by the repository port authority.
+  port: ${LEARNER_SERVICE_PORT:18088}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+      otlp:
+        enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+        endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+  opentelemetry:
+    map-environment-variables: true
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  name: learner-service
+  owner: learner-service
+  schema: ${LEARNER_SCHEMA:learner_service}
+  redis-namespace: ${LEARNER_REDIS_NAMESPACE:learner}
+  port: ${LEARNER_SERVICE_PORT:18088}
+
+learner:
+  phase: ${LEARNER_PHASE:phase-1}
+  legacy-read-enabled: ${LEARNER_LEGACY_READ_ENABLED:true}
+
+security:
+  resource-server:
+    # No bearer token is treated as authentication while the G-IDP gate is closed.
+    enabled: ${LEARNER_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${LEARNER_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${LEARNER_SECURITY_JWK_SET_URI:}
+    policy-cache-ttl: ${LEARNER_POLICY_CACHE_TTL:30s}
+    pdp-timeout: ${LEARNER_PDP_TIMEOUT:250ms}

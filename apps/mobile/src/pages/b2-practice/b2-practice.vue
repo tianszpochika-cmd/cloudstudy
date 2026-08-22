@@ -1,29 +1,54 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { onHide, onShow } from '@dcloudio/uni-app'
+import { computed, onUnmounted, ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
-import B2QuestionCard, { type MobileQuestion } from '../../components/b2/B2QuestionCard.vue'
-import B2StatusPanel from '../../components/b2/B2StatusPanel.vue'
-import { mobileApiClient } from '../../api/client'
+import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
+import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
+import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
+import type { B10AnswerInput, B10AnswerResult } from '../../domain/b10'
+import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
+import { useB10LearningStore } from '../../stores/b10-learning'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 
-type ViewStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'offline' | 'error'
-const sessionStore = useSessionStore(); const engine = createAdaptivePerformanceEngine(); const performanceLevel = ref<PerformanceLevel>(engine.level); const status = ref<ViewStatus>('idle'); const message = ref<string | null>(null); const sessionId = ref<string | null>(null); const questions = ref<MobileQuestion[]>([]); const index = ref(0); const feedback = ref<{ correct: boolean | null; message: string } | null>(null); const checkpointSeq = ref(0)
-const question = computed(() => questions.value[index.value] ?? null); const progress = computed(() => questions.value.length ? Math.round(index.value / questions.value.length * 100) : 0)
-function record(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null }
-function text(value: unknown): string | null { return typeof value === 'string' && value.trim() ? value : null }
-function unwrap(value: unknown): unknown { return record(value) && 'data' in value ? value.data : value }
-function parseQuestion(value: unknown): MobileQuestion | null { if (!record(value)) return null; const id = text(value.id) ?? text(value.exerciseId) ?? text(value.questionId); const prompt = text(value.prompt) ?? text(value.stemText); if (!id || !prompt) return null; const rawType = value.type ?? value.questionType; const type: MobileQuestion['type'] = rawType === 'FILL_BLANK' || rawType === 'CLOZE' ? 'FILL_BLANK' : rawType === 'DRAG_SORTER' || rawType === 'ANAGRAM' ? 'DRAG_SORTER' : rawType === 'LISTEN' || rawType === 'AUDIO_CHOICE' ? 'LISTEN' : rawType === 'TRANSLATION' ? 'TRANSLATION' : 'CHOICE'; const options = Array.isArray(value.options) ? value.options.flatMap((entry) => record(entry) && text(entry.key) && text(entry.text) ? [{ key: text(entry.key) as string, text: text(entry.text) as string }] : []) : []; const tokens = Array.isArray(value.tokens) ? value.tokens.flatMap((entry) => record(entry) && text(entry.tokenId) && text(entry.text) ? [{ tokenId: text(entry.tokenId) as string, text: text(entry.text) as string }] : []) : []; return { id, type, prompt, sentence: text(value.sentence) ?? undefined, sourceText: text(value.sourceText) ?? undefined, audioUrl: text(value.audioUrl), options, tokens } }
+const session = useSessionStore()
+const store = useB10LearningStore()
+const engine = createAdaptivePerformanceEngine()
+const performanceLevel = ref<PerformanceLevel>(engine.level)
+const lastResult = ref<B10AnswerResult | null>(null)
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
+const exercise = computed(() => store.practice?.exercises.find((item) => !store.answerResults[String(item.exerciseId)]) ?? null)
+const answeredCount = computed(() => Object.keys(store.answerResults).length)
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
-async function load(): Promise<void> { status.value = 'loading'; message.value = null; try { const response = await mobileApiClient.request<unknown>('/assessment/sessions', { method: 'POST', data: { sessionType: 'DAILY', targetCount: 15 } }); const source = unwrap(response); if (!record(source)) throw new Error('练习服务返回了无法识别的会话。'); sessionId.value = text(source.sessionId) ?? text(source.id); const entries = Array.isArray(source.questions) ? source.questions : Array.isArray(source.exercises) ? source.exercises : []; questions.value = entries.flatMap((entry) => { const parsed = parseQuestion(entry); return parsed ? [parsed] : [] }); index.value = 0; feedback.value = null; status.value = questions.value.length ? 'ready' : 'empty' } catch (error) { status.value = 'offline'; message.value = error instanceof Error ? error.message : '练习会话暂时无法创建，未使用本地样例题目。' } }
-async function answer(value: unknown): Promise<void> { const current = question.value; if (!sessionId.value || !current || feedback.value) return; try { const response = await mobileApiClient.request<unknown>(`/assessment/sessions/${encodeURIComponent(sessionId.value)}/answers`, { method: 'POST', data: { exerciseId: current.id, answer: value, clientAnswerId: `${Date.now()}-${Math.random().toString(36).slice(2)}` } }); const source = unwrap(response); const correct = record(source) && typeof source.correct === 'boolean' ? source.correct : null; feedback.value = { correct, message: record(source) && text(source.feedback) ? text(source.feedback) as string : '判定以服务端结果为准。' } } catch (error) { status.value = 'offline'; message.value = error instanceof Error ? error.message : '答案提交失败，当前题面已保留。' } }
-function next(): void { if (index.value < questions.value.length - 1) { index.value += 1; feedback.value = null; checkpointSeq.value += 1; saveCheckpoint() } else { feedback.value = { correct: null, message: '本次题包已完成，完成状态等待服务端结算。' } } }
-function retryQuestion(): void { feedback.value = null; message.value = null }
-function saveCheckpoint(): void { if (!sessionId.value) return; getUniRuntime().setStorageSync('yx.b2.mobile.practice-checkpoint.v1', JSON.stringify({ sessionId: sessionId.value, index: index.value, checkpointSeq: checkpointSeq.value, updatedAt: new Date().toISOString() })) }
-function sync(): void { message.value = '当前没有可直接确认的同步结果，请联网后重新读取服务端会话。' }
-onShow(() => { sessionStore.restore(); if (!sessionStore.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
-onHide(() => saveCheckpoint())
+function load(): void { lastResult.value = null; void store.loadPractice() }
+async function answer(value: B10AnswerInput): Promise<void> { if (!exercise.value) return; lastResult.value = await store.submitAnswer(exercise.value.exerciseId, value) }
+function checkpoint(): void { void store.saveCheckpoint(exercise.value?.exerciseId ?? null) }
+function openReport(): void { getUniRuntime().navigateTo({ url: '/pages/b10-report/b10-report' }) }
+onShow(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
+onUnmounted(() => engine.dispose())
 </script>
-<template><view class="yx-page"><text class="yx-eyebrow">PRACTICE HUB · RULE-BASED</text><text class="yx-title">做一题，马上知道下一步。</text><text class="yx-description">题面、判分、D+1/D+7 状态都以服务端为准；Performance 档仍保留全部答题操作。</text><B2StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @sync="sync" @performance="setPerformance" /><view v-if="question" class="practice-card"><view class="progress"><text>第 {{ index + 1 }} / {{ questions.length }} 题</text><text>{{ progress }}%</text></view><progress :percent="progress" activeColor="#596bff" backgroundColor="#e6e8f0" /><B2QuestionCard :question="question" :disabled="Boolean(feedback)" :performance-level="performanceLevel" @answer="answer" /><view v-if="feedback" class="feedback" role="status"><text class="feedback__title">{{ feedback.correct === true ? '这一步已完成' : feedback.correct === false ? '先修复这个薄弱点' : '服务端暂未返回最终判定' }}</text><text>{{ feedback.message }}</text><button v-if="feedback.correct === false" class="yx-button" type="button" @click="retryQuestion">再练一次</button><button v-else class="yx-button" type="button" @click="next">下一题</button></view><view class="checkpoint"><text>断点序号：{{ checkpointSeq }}</text><button class="yx-button yx-button--secondary" type="button" @click="saveCheckpoint">保存断点</button></view></view><view v-else-if="status === 'loading'" class="yx-card"><text>正在创建练习会话…</text></view><view v-else class="yx-card empty"><text class="empty__title">{{ status === 'empty' ? '服务端没有返回题目' : '练习会话暂时不可用' }}</text><text>{{ message ?? '没有使用本地样例题目填充。' }}</text><button class="yx-button" type="button" @click="load">重新读取</button></view></view></template>
-<style scoped lang="scss">.practice-card{display:grid;gap:20rpx}.progress{display:flex;justify-content:space-between;color:#666d80;font-size:23rpx}.feedback{display:grid;gap:12rpx;padding:22rpx;border:1rpx solid #cfeee3;border-radius:16rpx;background:#f2fcf8;color:#666d80;font-size:23rpx;line-height:1.5}.feedback__title{color:#246d58;font-size:30rpx;font-weight:750}.checkpoint{display:flex;align-items:center;justify-content:space-between;color:#666d80;font-size:22rpx}.yx-button--secondary{color:#596bff;background:#fff}.empty{display:grid;gap:18rpx}.empty__title{font-size:32rpx;font-weight:750}</style>
+
+<template>
+  <view class="yx-page" :class="themeClass">
+    <text class="yx-eyebrow">{{ b10T('practice.eyebrow') }}</text>
+    <text class="yx-title">{{ b10T('practice.title') }}</text>
+    <text class="yx-description">{{ b10T('practice.description') }}</text>
+    <B10ThemeBar />
+    <B10StatusPanel :status="store.practiceStatus" :message="store.practiceMessage" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
+
+    <view v-if="exercise" class="yx-card b10-practice-card">
+      <view class="b10-practice-card__progress"><text>{{ answeredCount }} / {{ store.practice?.exercises.length ?? 0 }}</text><text>{{ exercise.questionType }}</text></view>
+      <B10ExerciseCard :exercise="exercise" :disabled="store.practiceStatus === 'loading'" @answer="answer" />
+      <view class="b10-practice-card__actions"><button class="yx-button yx-button--secondary" type="button" @click="checkpoint">{{ b10T('practice.checkpoint') }}</button><button v-if="lastResult" class="yx-button yx-button--secondary" type="button" @click="lastResult = null">{{ b10T('practice.next') }}</button></view>
+      <view v-if="lastResult" class="b10-result" role="alert"><text class="b10-result__title">{{ lastResult.isCorrect === true ? '规则命中' : lastResult.isCorrect === false ? '需要复习' : '答案已接收' }}</text><text>{{ lastResult.scoringStatus }}<template v-if="lastResult.score !== null"> · {{ lastResult.score }} / {{ lastResult.maxScore ?? 0 }}</template></text><text v-for="cause in lastResult.errorCauseCandidates" :key="cause">{{ cause }}</text><text v-if="lastResult.contentVersionStale" class="b10-result__stale">{{ b10T('common.stale') }}</text></view>
+    </view>
+
+    <view v-else-if="store.practiceStatus === 'loading'" class="yx-card b10-empty"><text>{{ b10T('practice.loading') }}</text></view>
+    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ store.practiceStatus === 'empty' ? b10T('practice.empty') : b10T('status.error') }}</text><text>{{ store.practiceMessage ?? b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <button v-if="store.practice && !exercise" class="yx-button" type="button" @click="openReport">{{ b10T('practice.complete') }}</button>
+  </view>
+</template>
+
+<style scoped lang="scss">
+.b10-practice-card{display:grid;gap:18rpx}.b10-practice-card__progress,.b10-practice-card__actions{display:flex;align-items:center;justify-content:space-between;gap:12rpx;color:var(--yx-text-secondary);font-size:23rpx}.b10-practice-card__actions{align-items:stretch}.b10-practice-card__actions .yx-button{flex:1}.b10-result{display:grid;gap:8rpx;padding:18rpx;border:1rpx solid var(--yx-success-border);border-radius:14rpx;background:var(--yx-success-soft);color:var(--yx-text-secondary);font-size:23rpx;line-height:1.5}.b10-result__title{color:var(--yx-success-strong);font-size:30rpx;font-weight:750}.b10-result__stale{color:var(--yx-warning-strong)}.b10-empty{display:grid;gap:16rpx;color:var(--yx-text-secondary);font-size:24rpx}.b10-empty__title{color:var(--yx-text-primary);font-size:32rpx;font-weight:750}.yx-button--secondary{color:var(--yx-brand);background:var(--yx-surface-card)}
+</style>

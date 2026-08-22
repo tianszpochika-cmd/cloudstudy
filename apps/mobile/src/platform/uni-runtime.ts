@@ -12,6 +12,18 @@ export interface UniRequestOptions {
   fail?: (error: unknown) => void
 }
 
+/** Keychain/Keystore bridge. Refresh tokens may use this capability only; ordinary storage is never a refresh-token fallback. */
+export interface UniSecureStorage {
+  getItem(key: string): string | null
+  setItem(key: string, value: string): void
+  removeItem(key: string): void
+}
+
+export interface UniLaunchOptions {
+  path?: string
+  query?: Record<string, string | undefined>
+}
+
 export interface UniAudioContext {
   src: string
   playbackRate?: number
@@ -40,6 +52,10 @@ export interface UniRuntime {
   navigateTo(options: { url: string }): void
   switchTab(options: { url: string }): void
   showToast(options: { title: string; icon?: 'none' | 'success' | 'error' }): void
+  getSecureStorage?: () => UniSecureStorage | undefined
+  getLaunchOptionsSync?: () => UniLaunchOptions
+  getEnterOptionsSync?: () => UniLaunchOptions
+  openURL?: (url: string) => void
   createInnerAudioContext?: () => UniAudioContext
   getFileSystemManager?: () => UniFileSystemManager
   getSecureRecordingVault?: () => UniSecureRecordingVault

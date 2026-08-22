@@ -4,6 +4,8 @@
 
 accepted
 
+> v2 架构与任务重基线注记（2026-08-22）：本 ADR 的 Phase 1 范围、canonical 状态和算法约束继续有效；其关于服务/数据库 owner 的旧域级表述由 ADR-0010 与 `v2-microservices-architecture.md` 细化。`VOC`/`ASM` 在这里表示业务语义域，不表示 v2 目标服务可以双写同一事实。B0–B6 的状态仍由历史状态报表记录；B7+ 的负责人、状态、证据和阻塞改由 `v2-B7plus-代码重塑与交互测试任务基线.md` 的任务行维护。
+
 ## 日期
 
 2026-08-20
@@ -34,14 +36,14 @@ Phase 1 只面向 18 岁以上成人与大学生，交付规则化学习闭环�
 ### 2. 统一 SRS 与掌握事实
 
 - `lrn_srs_state` 是用户学习对象 SRS 的唯一事实表；`vocab_id`、`chunk_id`、`expression_id` 是对应 canonical ID。
-- `VOC` 负责学习对象、SRS 算法状态、复习事件、排程快照、算法版本、信心度和 SRS 状态迁移。
-- `ASM` 负责题目/练习实例、作答、判分、错因、错题 cycle，以及 D+1/D+7 的验证题和验证证据；它通过版本化事件把“题目反馈”交给 `VOC`，不能复制 SM-2、Daily Stream 或 SRS 主表。
+- `VOC` 负责词汇/短语业务语义；v2 中内容定义和版本归 `content-service`，用户 SRS 算法状态、复习事件、排程快照、算法版本、信心度和 SRS 状态迁移归 `learning-service`。
+- `ASM` 负责练习实例、作答、判分、错因、错题 cycle，以及 D+1/D+7 的验证证据；题目/答案规则版本归 `content-service`，`ASM` 使用版本化题目快照并将“已评分事实”事件交给 `learning-service`，不能复制 SRS 主表或直接改写掌握度。
 - 对外跨域掌握状态统一为 `NEW`、`LEARNING`、`MASTERED`、`CONSOLIDATED`；VOC 内部可以保留 `SHORT_TERM`、`CONSOLIDATING`、`AT_RISK`、`SUSPENDED` 等解释状态，但必须通过 mapper 输出 canonical 状态。
 - 错题验证状态统一使用 `PENDING_RETRY`、`DELAY_VERIFY_D1`、`DELAY_VERIFY_D7`、`MASTERED`、`REOPENED`。历史别名 `PENDING_DELAY_VERIFY_D1/D7`、`RESOLVED` 只能用于兼容迁移映射，不得进入新 API 或新表。
 
 ### 3. 采用可审计 Agent 状态流
 
-状态总报表是唯一状态事实源。标准状态为：
+标准状态为：
 
 `未开始 → 已认领 → 进行中 → 待验收 → 已完成`
 
@@ -49,7 +51,7 @@ Phase 1 只面向 18 岁以上成人与大学生，交付规则化学习闭环�
 
 `进行中/待验收 → 阻塞`、`待验收/已完成 → 返工 → 进行中`。
 
-Agent 必须携带任务 ID、文件边界、契约/迁移/测试证据、回滚方式和未覆盖事项；没有证据只能停留在“待验收”。本 ADR 只定义规则，不直接修改 `requirements/backlog/Agent开发状态总报表.md`，由主编排器统一登记状态。
+Agent 必须携带任务 ID、文件边界、契约/迁移/测试证据、回滚方式和未覆盖事项；没有证据只能停留在“待验收”。状态事实源按任务基线分流：历史 B0–B6 由 `requirements/backlog/Agent开发状态总报表.md` 记录，B7+ 由 `requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md` 的对应任务行记录；均由主编排器基于证据统一更新。
 
 ### 4. 以 DoD Gate 作为发布条件
 
@@ -85,4 +87,5 @@ Agent 必须携带任务 ID、文件边界、契约/迁移/测试证据、回滚
 - `docs/06-design/detailed-specs/09_全站详细设计一致性审计白皮书.md`
 - `requirements/backlog/Phase-1范围冻结与跨文档基线.md`
 - `requirements/backlog/Agent开发SOP与状态流转模板.md`
+- `requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md`
 - `requirements/backlog/DoD-Gate与证据包规范.md`

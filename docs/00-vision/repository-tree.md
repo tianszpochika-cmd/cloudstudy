@@ -1,15 +1,31 @@
 # 仓库目录地图
 
+> v2 说明：前端业务项目固定为 `mobile`、`learner-web`、`admin-web`、`official-site` 四个；`miniapp-wechat` 只能是迁移/平台资源占位。后端目标服务见 [v2 微服务架构](../02-architecture/v2-microservices-architecture.md)，当前目录存在不代表实现完成。
+
 ~~~text
 语学星/
 ├─ apps/                         多端应用
 │  ├─ learner-web/               学习 Web
-│  ├─ miniapp-wechat/            微信小程序
 │  ├─ mobile/                    uni-app 移动端原生配置与打包（见 ADR-0004）；含 ios/ 与 android/
 │  ├─ official-site/             官网与 SEO
 │  └─ admin-web/                 运营/教研/客服后台
 ├─ services/                     后端运行时
-│  ├─ core-api/                  模块化核心业务 API
+│  ├─ api-gateway/               Java 25 Spring Cloud Gateway（v2 目标）
+│  ├─ iam-service/               标准 OIDC IdP 集成、租户、RBAC/ABAC（v2 目标）
+│  ├─ audit-service/             安全/管理/导出审计（v2 平台能力）
+│  ├─ workflow-service/          Saga/任务/补偿/DLQ（v2 平台能力）
+│  ├─ learner-service/           学习者档案与目标（v2 目标）
+│  ├─ content-service/           内容/题目规则版本、版权、审核、发布（v2 目标）
+│  ├─ learning-service/          学习流、SRS、进度、掌握度投影（v2 目标）
+│  ├─ assessment-service/        测评会话、作答、判分、报告快照（v2 目标）
+│  ├─ media-service/             媒体授权与处理（v2 目标）
+│  ├─ gamification-service/      成长与奖励（v2 目标）
+│  ├─ social-service/            社群与低 UGC（v2 目标）
+│  ├─ commerce-service/          订单、支付、权益（v2 目标）
+│  ├─ notification-service/      触达（v2 目标）
+│  ├─ analytics-service/         事件与分析（v2 目标）
+│  ├─ admin-ops-service/         后台聚合与审批（v2 目标）
+│  ├─ core-api/                  Java 17 迁移兼容单体
 │  ├─ ai-orchestrator/           AI 供应商、提示词和安全编排
 │  ├─ realtime-voice/            实时语音会话
 │  ├─ content-worker/            内容生产与发布任务

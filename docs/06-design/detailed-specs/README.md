@@ -1,9 +1,11 @@
-# 全量详细设计文档索引 (Detailed Design Specs)
+# 全量详细设计文档索引（v1 历史包）
 
-> **版本**：v3.3 权威基线对照落地版  
-> **关联功能矩阵**：`requirements/feature-matrix.md` (全量 980+ 项功能点)  
-> **技术架构基线**：Vue 3 (uni-app/Vite) + Java 17 (Spring Boot 3) + MySQL 8.x + Redis 7.x  
-> **文档定位**：所有前端/后端开发 Agent 与全栈工程师的**代码落地施工图纸**。
+> **状态**：历史/迁移/术语参考，不是新一轮代码落地施工图。新一轮业务需求、交互、阶段和验收的唯一基线是 [`../v2-980plus/README.md`](../v2-980plus/README.md)；服务边界以 [v2 微服务目标架构](../../02-architecture/v2-microservices-architecture.md) 为准。  
+> **版本**：v3.3 历史基线对照版  
+> **关联功能矩阵**：`requirements/feature-matrix.md`（顶部宣称 980+，当前统计待校准；显式 FEAT 记录 184 条）
+> **技术架构基线**：Vue 3 (uni-app/Vite) + Java 25 (Spring Boot 4.1 微服务) + Gateway/IAM/RBAC + MySQL 8.x + Redis 7.x  
+> **迁移兼容**：文档中历史出现的 `services/core-api` 表示 v1 兼容承载；v2 任务必须映射到目标领域服务和 `ARCH-*` 平台能力。
+> **文档定位**：用于迁移已有实现、解释历史术语和回放 v1 设计决策；不能单独作为 v2 新任务、契约或验收的依据。
 
 ---
 
@@ -22,10 +24,23 @@
 
 | **09** | [`09_全站详细设计一致性审计白皮书.md`](./09_全站详细设计一致性审计白皮书.md) | **全域横向审计** | 01 ~ 08 全量设计 | • 功能编号覆盖核验<br>• API/DDL/字段/状态机一致性<br>• 权限、幂等、审计、弱网与性能基线<br>• 未决风险与实现前置项 |
 
+## 阶段补充设计与追溯
+
+- Phase 1 原子功能补充：[phase-1/full-coverage](../phase-1/full-coverage/)。
+- Phase 2 成人 AI：[phase-2/AI成人学习与AI服务详细设计.md](../phase-2/AI成人学习与AI服务详细设计.md)。
+- Phase 3 K12 与未成年人：[phase-3/K12未成年人教师机构与合规详细设计.md](../phase-3/K12未成年人教师机构与合规详细设计.md)。
+- Phase 2 UI/UX：[phase-2/AI成人学习与实时交互UIUX详细设计.md](../phase-2/AI成人学习与实时交互UIUX详细设计.md)。
+- Phase 3 UI/UX：[phase-3/K12未成年人教师机构UIUX与页面状态详细设计.md](../phase-3/K12未成年人教师机构UIUX与页面状态详细设计.md)。
+- 全局横向基线：[shared/全局横向设计基线.md](../shared/全局横向设计基线.md)。
+- 需求追溯中心：[traceability](../traceability/)。
+- v2 后端目标架构：[v2-microservices-architecture.md](../../02-architecture/v2-microservices-architecture.md)。
+- v2 平台能力矩阵：[v2-platform-capability-matrix.md](../../02-architecture/v2-platform-capability-matrix.md)。
+
 ---
 
 ## 审计与版本约定
 
 - 02 ~ 08 的详细设计必须以 `requirements/feature-matrix.md` 的功能编号为单一映射基线；扩展运行时能力使用 `gameCode`、`contentType` 或版本字段表达，不另造 `FEAT-*` 编号。
 - REST JSON 使用 camelCase，MySQL 使用 snake_case；跨域实体优先复用 `user_id`、`content_version_id`、`vocab_id`、`expression_id`、`grammar_point_id`、`sentence_id`、`question_id`、`exercise_id`、`attempt_id`、`session_id` 等 canonical ID。
+- 每份详细设计必须补充目标 `Service Owner`、数据 owner、Gateway operation、RBAC/ABAC、事件/幂等、观测和回滚映射；旧的 `Core API` 字样不能作为 v2 服务边界。
 - 09 白皮书是设计阶段横向一致性审计记录，不替代实现阶段的 OpenAPI 生成、数据库迁移、自动化测试和跨端验收。

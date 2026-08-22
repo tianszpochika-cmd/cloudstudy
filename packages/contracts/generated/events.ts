@@ -13,6 +13,8 @@ export interface PlatformEventEnvelope<TPayload> {
   actorId: string;
   traceId: string;
   requestId: string;
+  schemaVersion?: string;
+  dedupeKey?: string;
   clientEventId?: string;
   contentVersionId?: number;
   payload: TPayload;
@@ -238,6 +240,246 @@ export type OfflinePackageSynced = { packageId: number; userId: number; assetCou
  */
 export type B4FactPayload = { aggregateId: string; userId: number; ruleVersion: string; status: string; sourceType?: string; deltaXp?: number; deltaCoins?: number; serverScore?: number; serverDurationSeconds?: number; duplicateConverted?: boolean; versionNo?: number; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B5FactPayload = { aggregateId: string; userId?: number; status: string; ruleVersion: string; amountMinor?: number; currency?: string; provider?: string; contentVersionId?: string; reasonCode?: string; decisionCode?: string; ttlSeconds?: number; rolloutPercent?: number; discrepancyCode?: string; redacted?: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B6FactPayload = { aggregateId: string; status: string; resultCode: string; ruleVersion: string; platformCode?: string; buildVersion?: string; sourceRevision?: string; passedCount?: number; failedCount?: number; criticalCount?: number; highCount?: number; duplicateWriteCount?: number; lostWriteCount?: number; rtoSeconds?: number; rpoSeconds?: number; gateDecision?: string; evidenceRef?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthPrincipalMapped = { principalId: string; provider: string; mappingStatus: "CREATED" | "LINKED" | "REJECTED"; adultGateStatus: "PENDING" | "APPROVED" | "REJECTED"; mappedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthSessionRotated = { sessionId: string; rotationId: string; deviceId: string; sessionGeneration: number; rotatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthSessionReplayDetected = { sessionId: string; deviceId: string; detectionId: string; detectionCode: "REFRESH_REUSE" | "CALLBACK_REUSE" | "STATE_REUSE"; revocationStatus: "SESSION_REVOKED" | "PENDING_REVIEW"; detectedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthDeviceRevoked = { deviceId: string; sessionId: string; reasonCode: "LOGOUT" | "KICKED" | "REPLAY_DETECTED" | "RISK_FREEZE" | "ADMIN"; revokedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthConsentUpdated = { principalId: string; consentType: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; consentVersion: string; decision: "ACCEPTED" | "WITHDRAWN"; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthAdultGateRejected = { decisionId: string; reasonCode: "UNDER_ADULT_THRESHOLD" | "EVIDENCE_REQUIRED" | "PHASE_DISABLED"; policyVersion: string; rejectedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type IamPolicyVersionChanged = { policyName: string; previousVersion: string; currentVersion: string; activationMode: "SCHEDULED" | "IMMEDIATE" | "ROLLBACK"; changedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9LearnerProfileUpdated = { tenantId: string; principalId: string; profileVersion: number; changedFieldCodes: ReadonlyArray<string>; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45 | 60; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9LearnerFirstDayProjected = { tenantId: string; principalId: string; projectionVersion: number; contentEpoch: number; readiness: "NOT_READY" | "READY" | "DEGRADED"; taskCount: number; projectedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9ContentVersionSubmitted = { tenantId: string; contentCode: string; contentType: "COURSE" | "COURSE_UNIT" | "VOCABULARY" | "PHRASE" | "GRAMMAR" | "SENTENCE" | "QUESTION"; contentVersionId: number; versionNumber: number; stateVersion: number; submittedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9ContentVersionReviewed = { tenantId: string; contentCode: string; contentVersionId: number; versionNumber: number; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; reviewedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9ContentVersionPublished = { tenantId: string; contentCode: string; contentType: "COURSE" | "COURSE_UNIT" | "VOCABULARY" | "PHRASE" | "GRAMMAR" | "SENTENCE" | "QUESTION"; contentVersionId: number; versionNumber: number; projectionKey: string; projectionVersion: number; contentEpoch: number; publicFieldSet: "PUBLIC_V1"; publishedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9ContentVersionUnpublished = { tenantId: string; contentCode: string; contentVersionId: number; projectionKey: string; contentEpoch: number; reasonCode: string; unpublishedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9ContentVersionRolledBack = { tenantId: string; contentCode: string; fromVersionId: number; targetVersionId: number; projectionKey: string; contentEpoch: number; rolledBackAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9PublicProjectionInvalidated = { tenantId: string; projectionKey: string; contentCode: string; contentVersionId?: number; contentEpoch: number; invalidationScope: "CONTENT" | "VERSION" | "SITE" | "MANIFEST" | "GLOBAL"; reasonCode: string; cacheTag?: string; invalidatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10AssessmentAttemptSubmitted = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId: string; contentEpoch: number; attemptVersion: number; submissionDigest: string; itemCount: number; gradingRuleVersion: string; submittedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10AssessmentAttemptAssessed = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId: string; attemptVersion: number; assessmentVersion: string; scoreBucket: "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; masterySignal: "NO_SIGNAL" | "WEAK" | "STABLE" | "MASTERED" | "RETRY"; mistakeCodes: ReadonlyArray<string>; assessedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningMasteryProjected = { tenantId: string; principalId: string; projectionId: string; itemId: number; sourceAttemptId: string; sourceAssessmentEventId: string; contentVersionId: number; contentEpoch: number; fromState: "NONE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; toState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; srsStage?: "NEW" | "D0" | "D1" | "D7" | "MASTERED"; nextReviewAt?: string | null; projectionVersion: number; projectionStatus: "APPLIED" | "RETRYING" | "COMPENSATED" | "MANUAL_REVIEW"; projectedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningReviewScheduled = { tenantId: string; principalId: string; queueItemId: string; itemId: number; sourceProjectionId: string; queueVersion: number; source: "NEW" | "REVIEW" | "MISTAKE" | "RETRY"; state: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; dueAt: string; scheduledAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10SagaStarted = { tenantId: string; sagaId: string; sagaType: "ASSESSMENT_TO_LEARNING"; rootEventId: string; rootAggregateId: string; currentStep: "ASSESSMENT_ACCEPT" | "ASSESSMENT_ASSESS" | "LEARNING_PROJECT" | "REVIEW_SCHEDULE"; sagaVersion: number; startedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10SagaCompensated = { tenantId: string; sagaId: string; sagaType: "ASSESSMENT_TO_LEARNING"; failedEventId: string; failedStep: "ASSESSMENT_ACCEPT" | "ASSESSMENT_ASSESS" | "LEARNING_PROJECT" | "REVIEW_SCHEDULE"; compensationKey: string; compensationAction: "MARK_PROJECTION_RETRY" | "REVERT_PENDING_PROJECTION" | "REOPEN_REVIEW_QUEUE" | "CREATE_MANUAL_RECOVERY"; recoveryMode: "AUTOMATIC" | "MANUAL_REVIEW"; compensatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10EventReplayed = { tenantId: string; replayId: string; sourceDlqId: string; sourceEventId: string; sourceEventName: string; consumerName: string; replayAttempt: number; replayResult: "APPLIED" | "DUPLICATE_IGNORED" | "REQUEUED" | "QUARANTINED"; replayedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11MediaStarted = { playbackId: string; principalId: string; assetId: string; contentVersionId: number; assetVersion: number; positionVersion: number; positionMs?: number; playbackMode: "NORMAL" | "SLOW" | "AB_REPEAT" | "OFFLINE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11MediaSegmentCompleted = { playbackId: string; principalId: string; assetId: string; segmentId: string; segmentVersion: number; contentVersionId: number; positionMs: number; completionPercent?: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11MediaDownloaded = { principalId: string; deviceRefHash: string; assetId: string; manifestId: string; contentVersionId: number; sha256: string; bytesDownloaded: number; offlinePackageId?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11MediaRevoked = { assetId: string; rightsEpoch: number; reasonCode: "RIGHTS_REVOKED" | "CONTENT_UNPUBLISHED" | "USER_REQUEST" | "SECURITY_INCIDENT" | "RETENTION_EXPIRED"; revokedGrantCount: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11NotificationDelivered = { notificationId: string; principalId: string; channel: "IN_APP" | "PUSH" | "SMS" | "EMAIL"; status: "DELIVERED" | "SKIPPED" | "FAILED"; deliveryVersion: number; deliveredAt: string; providerCode?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11SyncEnqueued = { clientBatchId: string; principalId: string; deviceRefHash: string; changeCount: number; baseCursor: string; queuedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11SyncConflictDetected = { conflictId: string; clientBatchId: string; principalId: string; entityType: "LISTENING_PROGRESS" | "READING_PROGRESS" | "SHADOWING_PROGRESS" | "SPEAKING_SELF_RATING" | "NOTIFICATION_PREFERENCE"; entityId: string; localVersion: number; serverVersion: number; reasonCode: "VERSION_VECTOR_AHEAD" | "CONTENT_VERSION_CHANGED" | "RIGHTS_REVOKED" | "DUPLICATE_CLIENT_EVENT" | "SAFE_MERGE_UNAVAILABLE" | "STORAGE_FULL"; safeToRetry?: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11SyncRecovered = { conflictId: string; principalId: string; recoveryVersion: number; resolution: "SERVER_WINS" | "LOCAL_RETRY" | "MERGED"; nextAction: "PULL_LATEST" | "RETRY_CHANGE" | "NO_ACTION" | "CONTACT_SUPPORT"; domainFactsUntouched: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11RecordingSaved = { recordingId: string; principalId: string; assetId: string; contentVersionId: number; contentHash: string; durationMs: number; storageMode: "LOCAL_ENCRYPTED" | "REMOTE_ENCRYPTED"; status: "LOCAL_ONLY" | "UPLOAD_PENDING" | "READY"; aiScoringAvailable: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11SpeakingPermissionRequested = { sessionId: string; principalId: string; deviceRefHash: string; permissionVersion: number; result: "REQUESTED" | "GRANTED" | "DENIED" | "UNAVAILABLE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11ShadowingCompleted = { shadowingSessionId: string; principalId: string; contentVersionId: number; completedSegments: number; attemptCount: number; aiScoringAvailable: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12GrowthSessionStarted = { sessionId: string; subjectRef: string; ruleVersion: string; startedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12GrowthLedgerPosted = { ledgerEntryId: string; subjectRef: string; ledgerKind: "SCORE" | "CURRENCY"; amount: number; ruleVersion: string; sourceEventId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12RewardGranted = { grantId: string; subjectRef: string; rewardCode: string; probabilityVersion: string; grantState: "AVAILABLE" | "CLAIMED" | "REVOKED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12AvatarEquipped = { loadoutId: string; subjectRef: string; assetVersion: string; itemRefs: ReadonlyArray<string>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12StudyRoomJoined = { roomId: string; seatId: string; subjectRef: string; leaseVersion: number; visibility: "PRIVATE" | "ROOM_ONLY" | "PUBLIC"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12FocusStarted = { focusId: string; roomId: string; subjectRef: string; durationMinutes: number; presetCode: "FOCUS" | "BREAK" | "REVIEW"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12StudyRoomLeft = { roomId: string; seatId: string; subjectRef: string; leaseVersion: number; reasonCode: "USER_LEFT" | "LEASE_EXPIRED" | "DISCONNECT_CLEANUP"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12LeaderboardRefreshed = { projectionId: string; kind: string; period: string; projectionVersion: string; entryCount: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12SocialReportCreated = { reportId: string; roomId: string; targetRef: string; categoryCode: "HARASSMENT" | "SPAM" | "INAPPROPRIATE_BEHAVIOR" | "SAFETY"; state: "OPEN" | "REVIEWING" | "RESOLVED" | "DISMISSED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12NotificationRequested = { notificationId: string; subjectRef: string; templateId: string; templateVersion: string; channel: "IN_APP" | "PUSH" | "EMAIL"; locale: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12NotificationRetryScheduled = { taskId: string; notificationId: string; attemptCount: number; nextAttemptAt: string; failureCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12NotificationRecoveryCompleted = { taskId: string; state: "SUCCEEDED" | "REJECTED" | "MANUAL_REVIEW"; auditRef: string; domainFactsUntouched: true; };
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -313,9 +555,11 @@ export interface NotificationCreatedEvent extends PlatformEventEnvelope<Notifica
   version: 1;
 }
 
-export interface NotificationDeliveredEvent extends PlatformEventEnvelope<NotificationDelivered> {
+export interface NotificationDeliveredEvent extends PlatformEventEnvelope<B11NotificationDelivered> {
   eventName: "notification.delivered.v1";
   version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
 }
 
 export interface NotificationReadEvent extends PlatformEventEnvelope<NotificationRead> {
@@ -558,4 +802,479 @@ export interface OfflineB4SyncAppliedEvent extends PlatformEventEnvelope<B4FactP
   version: 1;
 }
 
-export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent;
+export interface SocialRoomLeftEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.room.left.v1";
+  version: 1;
+}
+
+export interface SocialFocusUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.focus.updated.v1";
+  version: 1;
+}
+
+export interface SocialModerationReportedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.moderation.reported.v1";
+  version: 1;
+}
+
+export interface SocialModerationBlockedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.moderation.blocked.v1";
+  version: 1;
+}
+
+export interface SocialModerationMutedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "social.moderation.muted.v1";
+  version: 1;
+}
+
+export interface NotificationsMessageReadEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "notifications.message_read.v1";
+  version: 1;
+}
+
+export interface NotificationsPreferencesUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "notifications.preferences_updated.v1";
+  version: 1;
+}
+
+export interface OfflinePackageDownloadStateUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "offline.package.download_state_updated.v1";
+  version: 1;
+}
+
+export interface OfflineSyncConflictRecordedEvent extends PlatformEventEnvelope<B4FactPayload> {
+  eventName: "offline.sync.conflict_recorded.v1";
+  version: 1;
+}
+
+export interface CommerceOrderCreatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "commerce.order.created.v1";
+  version: 1;
+}
+
+export interface CommercePaymentRequestedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "commerce.payment.requested.v1";
+  version: 1;
+}
+
+export interface CommercePaymentCallbackReceivedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "commerce.payment.callback_received.v1";
+  version: 1;
+}
+
+export interface CommercePaymentVerifiedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "commerce.payment.verified.v1";
+  version: 1;
+}
+
+export interface CommerceRefundCompletedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "commerce.refund.completed.v1";
+  version: 1;
+}
+
+export interface CommerceHouseholdChangedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "commerce.household.changed.v1";
+  version: 1;
+}
+
+export interface CmsContentVersionSavedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "cms.content.version_saved.v1";
+  version: 1;
+}
+
+export interface CmsImportCompletedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "cms.import.completed.v1";
+  version: 1;
+}
+
+export interface SafetyPrecheckBlockedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "safety.precheck.blocked.v1";
+  version: 1;
+}
+
+export interface RiskDecisionCreatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "risk.decision.created.v1";
+  version: 1;
+}
+
+export interface FinanceReconciliationDiscrepancyEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "finance.reconciliation.discrepancy.v1";
+  version: 1;
+}
+
+export interface OpsFlagUpdatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "ops.flag.updated.v1";
+  version: 1;
+}
+
+export interface SupportTicketCreatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "support.ticket.created.v1";
+  version: 1;
+}
+
+export interface SupportTicketResolvedEvent extends PlatformEventEnvelope<B5FactPayload> {
+  eventName: "support.ticket.resolved.v1";
+  version: 1;
+}
+
+export interface PlatformBuildRegisteredEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "platform.build.registered.v1";
+  version: 1;
+}
+
+export interface PlatformCompatibilityCheckedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "platform.compatibility.checked.v1";
+  version: 1;
+}
+
+export interface PlatformPerformanceDegradedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "platform.performance.degraded.v1";
+  version: 1;
+}
+
+export interface QualityE2eCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "quality.e2e.completed.v1";
+  version: 1;
+}
+
+export interface QualitySecurityScanCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "quality.security.scan_completed.v1";
+  version: 1;
+}
+
+export interface QualityReliabilityCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "quality.reliability.completed.v1";
+  version: 1;
+}
+
+export interface ObservabilityAlertRaisedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "observability.alert.raised.v1";
+  version: 1;
+}
+
+export interface DataBackupDrillCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "data.backup.drill_completed.v1";
+  version: 1;
+}
+
+export interface ReleaseGateEvaluatedEvent extends PlatformEventEnvelope<B6FactPayload> {
+  eventName: "release.gate.evaluated.v1";
+  version: 1;
+}
+
+export interface AuthPrincipalMappedEvent extends PlatformEventEnvelope<AuthPrincipalMapped> {
+  eventName: "auth.principal.mapped.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthSessionRotatedEvent extends PlatformEventEnvelope<AuthSessionRotated> {
+  eventName: "auth.session.rotated.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthSessionReplayDetectedEvent extends PlatformEventEnvelope<AuthSessionReplayDetected> {
+  eventName: "auth.session.replay_detected.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthDeviceRevokedEvent extends PlatformEventEnvelope<AuthDeviceRevoked> {
+  eventName: "auth.device.revoked.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthConsentUpdatedEvent extends PlatformEventEnvelope<AuthConsentUpdated> {
+  eventName: "auth.consent.updated.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthAdultGateRejectedEvent extends PlatformEventEnvelope<AuthAdultGateRejected> {
+  eventName: "auth.adult_gate.rejected.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface IamPolicyVersionChangedEvent extends PlatformEventEnvelope<IamPolicyVersionChanged> {
+  eventName: "iam.policy.version_changed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface LearnerProfileUpdatedEvent extends PlatformEventEnvelope<B9LearnerProfileUpdated> {
+  eventName: "learner.profile.updated.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface LearnerTargetUpdatedEvent extends PlatformEventEnvelope<B9LearnerTargetUpdated> {
+  eventName: "learner.target.updated.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface LearnerFirstDayProjectedEvent extends PlatformEventEnvelope<B9LearnerFirstDayProjected> {
+  eventName: "learner.first_day.projected.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ContentVersionSubmittedEvent extends PlatformEventEnvelope<B9ContentVersionSubmitted> {
+  eventName: "content.version.submitted.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ContentVersionReviewedEvent extends PlatformEventEnvelope<B9ContentVersionReviewed> {
+  eventName: "content.version.reviewed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ContentVersionPublishedEvent extends PlatformEventEnvelope<B9ContentVersionPublished> {
+  eventName: "content.version.published.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ContentVersionUnpublishedEvent extends PlatformEventEnvelope<B9ContentVersionUnpublished> {
+  eventName: "content.version.unpublished.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ContentVersionRolledBackEvent extends PlatformEventEnvelope<B9ContentVersionRolledBack> {
+  eventName: "content.version.rolled_back.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ContentPublicProjectionInvalidatedEvent extends PlatformEventEnvelope<B9PublicProjectionInvalidated> {
+  eventName: "content.public_projection.invalidated.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AssessmentAttemptSubmittedEvent extends PlatformEventEnvelope<B10AssessmentAttemptSubmitted> {
+  eventName: "assessment.attempt.submitted.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AssessmentAttemptAssessedEvent extends PlatformEventEnvelope<B10AssessmentAttemptAssessed> {
+  eventName: "assessment.attempt.assessed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface LearningMasteryProjectedEvent extends PlatformEventEnvelope<B10LearningMasteryProjected> {
+  eventName: "learning.mastery.projected.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface LearningReviewScheduledEvent extends PlatformEventEnvelope<B10LearningReviewScheduled> {
+  eventName: "learning.review.scheduled.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowAssessmentLearningSagaStartedEvent extends PlatformEventEnvelope<B10SagaStarted> {
+  eventName: "workflow.assessment_learning.saga_started.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowAssessmentLearningSagaCompensatedEvent extends PlatformEventEnvelope<B10SagaCompensated> {
+  eventName: "workflow.assessment_learning.saga_compensated.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowEventReplayedEvent extends PlatformEventEnvelope<B10EventReplayed> {
+  eventName: "workflow.event.replayed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface MediaStartedEvent extends PlatformEventEnvelope<B11MediaStarted> {
+  eventName: "media.started.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface MediaSegmentCompletedEvent extends PlatformEventEnvelope<B11MediaSegmentCompleted> {
+  eventName: "media.segment_completed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface MediaDownloadedEvent extends PlatformEventEnvelope<B11MediaDownloaded> {
+  eventName: "media.downloaded.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface MediaRevokedEvent extends PlatformEventEnvelope<B11MediaRevoked> {
+  eventName: "media.revoked.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface SyncEnqueuedEvent extends PlatformEventEnvelope<B11SyncEnqueued> {
+  eventName: "sync.enqueued.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface SyncConflictDetectedB11Event extends PlatformEventEnvelope<B11SyncConflictDetected> {
+  eventName: "sync.conflict_detected.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface SyncRecoveredEvent extends PlatformEventEnvelope<B11SyncRecovered> {
+  eventName: "sync.recovered.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface RecordingSavedEvent extends PlatformEventEnvelope<B11RecordingSaved> {
+  eventName: "recording.saved.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface SpeakingPermissionRequestedEvent extends PlatformEventEnvelope<B11SpeakingPermissionRequested> {
+  eventName: "speaking.permission_requested.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface ShadowingCompletedEvent extends PlatformEventEnvelope<B11ShadowingCompleted> {
+  eventName: "shadowing.completed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface GamificationSessionStartedEvent extends PlatformEventEnvelope<B12GrowthSessionStarted> {
+  eventName: "gamification.session_started.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface GamificationXpLedgerPostedEvent extends PlatformEventEnvelope<B12GrowthLedgerPosted> {
+  eventName: "gamification.xp.ledger_posted.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface GamificationRewardGrantedEvent extends PlatformEventEnvelope<B12RewardGranted> {
+  eventName: "gamification.reward.granted.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface GamificationAvatarEquippedEvent extends PlatformEventEnvelope<B12AvatarEquipped> {
+  eventName: "gamification.avatar.equipped.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface StudyRoomJoinedEvent extends PlatformEventEnvelope<B12StudyRoomJoined> {
+  eventName: "study_room.joined.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface StudyRoomFocusStartedEvent extends PlatformEventEnvelope<B12FocusStarted> {
+  eventName: "study_room.focus_started.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface StudyRoomLeftEvent extends PlatformEventEnvelope<B12StudyRoomLeft> {
+  eventName: "study_room.left.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface LeaderboardRefreshedEvent extends PlatformEventEnvelope<B12LeaderboardRefreshed> {
+  eventName: "leaderboard.refreshed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface SocialReportCreatedEvent extends PlatformEventEnvelope<B12SocialReportCreated> {
+  eventName: "social.report.created.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface NotificationRequestedEvent extends PlatformEventEnvelope<B12NotificationRequested> {
+  eventName: "notification.requested.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface NotificationRetryScheduledEvent extends PlatformEventEnvelope<B12NotificationRetryScheduled> {
+  eventName: "notification.retry_scheduled.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface NotificationRecoveryCompletedEvent extends PlatformEventEnvelope<B12NotificationRecoveryCompleted> {
+  eventName: "notification.recovery.completed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent;

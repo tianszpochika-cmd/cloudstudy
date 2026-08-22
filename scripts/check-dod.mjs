@@ -68,7 +68,10 @@ const HIGH_CONFIDENCE_SECRET_PATTERNS = [
   { type: 'slack-token', pattern: /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/ },
   { type: 'stripe-live-key', pattern: /\b(?:sk|rk)_live_[A-Za-z0-9]{16,}\b/ }
 ];
-const SENSITIVE_ASSIGNMENT_PATTERN = /^\s*([A-Z][A-Z0-9_-]*(?:SECRET|TOKEN|PASSWORD|API[_-]?KEY|PRIVATE[_-]?KEY)[A-Z0-9_-]*)\s*[:=]\s*["']?([^"'#\s]+)["']?\s*$/i;
+// This check targets environment/configuration assignments. Keep the key case-sensitive
+// so ordinary lower-camel-case TypeScript object properties such as `refreshToken`
+// are not mistaken for committed credentials.
+const SENSITIVE_ASSIGNMENT_PATTERN = /^\s*([A-Z][A-Z0-9_-]*(?:SECRET|TOKEN|PASSWORD|API[_-]?KEY|PRIVATE[_-]?KEY)[A-Z0-9_-]*)\s*[:=]\s*["']?([^"'#\s]+)["']?\s*$/;
 
 function printHelp() {
   console.log(`语学星 DoD 结构预检（无外部依赖）

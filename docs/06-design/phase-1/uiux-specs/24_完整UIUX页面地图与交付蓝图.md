@@ -5,6 +5,15 @@
 > 适用端：Mobile App / H5、iPad、Web、Admin Web  
 > 产品边界：18+ 成人与大学生；规则化学习闭环；AI Tutor、AI 评分、K12 与未成年人入口不在本阶段
 
+## 0. 前端项目映射（已冻结）
+
+- `apps/mobile`：唯一的 uni-app 学习端，覆盖 Mobile H5、iOS、Android、iPad；微信小程序是后续条件编译目标。
+- `apps/learner-web`：独立的 PC Web、平板浏览器和 PWA 学习工作台，使用本蓝图的学习者信息架构但采用 Web 导航壳。
+- `apps/admin-web`：独立的 Admin Web，使用独立权限、审计和高密度后台信息架构。
+- `apps/official-site`：独立的官网公开页面，不属于登录后的学习者路由地图。
+
+本蓝图共享路由语义、状态契约和设计 Token；页面 DOM、导航壳和平台交互由对应项目分别实现。`apps/miniapp-wechat` 不作为第五个业务项目。
+
 ## 1. 这份文档解决什么问题
 
 当前需求矩阵覆盖的功能很多，但不需要把每一项都设计成一张互相孤立的页面。本蓝图把全部功能收敛为：
@@ -140,7 +149,7 @@ SRS、Mistake Repair、Checkpoint、CET 和课程练习必须复用同一套 `Pr
 | `me/privacy` | Privacy & Data | 导出、录音清理、学习进度重置、注销确认 |
 | `me/support` | Support | FAQ、工单、内容纠错、工单状态 |
 | `me/sync` | Sync & Download | 下载、同步、冲突、离线恢复 |
-| `ops/dashboard` | Admin Dashboard | 用户、留存、内容、风险、工单、财务摘要 |
+| `admin/dashboard` | Admin Dashboard | 用户、留存、内容、风险、工单、财务摘要 |
 
 ## 5. 页面族与复用规则
 

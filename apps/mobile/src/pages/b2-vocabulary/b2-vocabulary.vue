@@ -1,31 +1,60 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
-import B2StatusPanel from '../../components/b2/B2StatusPanel.vue'
-import B2VocabularyCard, { type MobileVocabularyCard } from '../../components/b2/B2VocabularyCard.vue'
-import { mobileApiClient } from '../../api/client'
+import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
+import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
+import { useB10LearningStore } from '../../stores/b10-learning'
+import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 
-type ViewStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'offline' | 'error'
-type Phase = 'FRONT' | 'REVEALING' | 'BACK' | 'SUBMITTING' | 'PENDING_SYNC' | 'ERROR'
-const session = useSessionStore(); const engine = createAdaptivePerformanceEngine(); const performanceLevel = ref<PerformanceLevel>(engine.level)
-const status = ref<ViewStatus>('idle'); const message = ref<string | null>(null); const cards = ref<MobileVocabularyCard[]>([]); const index = ref(0); const phase = ref<Phase>('FRONT'); const queueCount = ref(0)
-const currentCard = computed(() => cards.value[index.value] ?? null)
-function record(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null }
-function text(value: unknown): string | null { return typeof value === 'string' && value.trim() ? value : null }
-function number(value: unknown): number | null { return typeof value === 'number' && Number.isFinite(value) ? value : null }
-function unwrap(value: unknown): unknown { return record(value) && 'data' in value ? value.data : value }
-function parseCard(value: unknown, position: number, total: number): MobileVocabularyCard | null { if (!record(value)) return null; const item = record(value.item) ? value.item : value; const itemType = item.itemType === 'CHUNK' || item.itemType === 'EXPRESSION' ? item.itemType : 'VOCAB'; const itemId = number(item.vocabId) ?? number(item.chunkId) ?? number(item.expressionId); const title = text(value.title) ?? text(value.word) ?? text(value.text); if (itemId === null || !title) return null; const srs = record(value.srs) ? value.srs : record(value.srsSummary) ? value.srsSummary : {}; return { id: text(value.id) ?? `${itemType}-${position}`, snapshotId: number(value.snapshotId), snapshotItemId: number(value.snapshotItemId), itemType, itemId, title, phonetic: text(value.phoneticUs) ?? text(value.phoneticUk), hint: text(value.frontHint) ?? text(value.prompt), meaningCn: text(value.meaningCn), definitionEn: text(value.definitionEn), examples: Array.isArray(value.examples) ? value.examples.flatMap((entry) => record(entry) && text(entry.sentence) ? [text(entry.sentence) as string] : []) : [], masteryStatus: text(srs.masteryStatus), dueLocalDate: text(srs.nextReviewLocalDate) ?? text(srs.dueLocalDate) }
-}
+const session = useSessionStore()
+const store = useB10LearningStore()
+const engine = createAdaptivePerformanceEngine()
+const performanceLevel = ref<PerformanceLevel>(engine.level)
+const ratingOptions = [{ value: 0 as const, label: '忘了' }, { value: 1 as const, label: '模糊' }, { value: 2 as const, label: '记得' }, { value: 3 as const, label: '很熟' }]
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
-async function load(): Promise<void> { status.value = 'loading'; message.value = null; try { const response = await mobileApiClient.request<unknown>('/learning/srs/batches', { method: 'POST', data: { localDate: new Date().toISOString().slice(0, 10), timezone: 'Asia/Shanghai', dailyNewTarget: 20, maxDailyReview: 50, scheduleType: 'DAILY' } }); const source = unwrap(response); const entries = record(source) && Array.isArray(source.items) ? source.items : []; cards.value = entries.flatMap((entry, itemIndex) => { const card = parseCard(entry, itemIndex, entries.length); return card ? [card] : [] }); index.value = 0; phase.value = 'FRONT'; status.value = cards.value.length ? 'ready' : 'empty' } catch (error) { status.value = 'offline'; message.value = error instanceof Error ? error.message : '词汇批次暂时无法加载，未使用本地样例填充。' } }
-async function reveal(): Promise<void> { const card = currentCard.value; if (!card || phase.value !== 'FRONT') return; phase.value = 'REVEALING'; if (!card.meaningCn && card.itemType === 'VOCAB') { try { const response = await mobileApiClient.request<unknown>(`/vocab/items/${card.itemId}`); const source = unwrap(response); if (record(source)) { card.meaningCn = text(source.meaningCn); card.definitionEn = text(source.definitionEn); card.examples = Array.isArray(source.examples) ? source.examples.flatMap((entry) => record(entry) && text(entry.sentence) ? [text(entry.sentence) as string] : []) : [] } } catch (error) { phase.value = 'FRONT'; status.value = 'offline'; message.value = error instanceof Error ? error.message : '词卡背面暂时无法加载，答案未被伪造。'; return } } phase.value = 'BACK' }
-async function rate(quality: 0 | 1 | 2 | 3): Promise<void> { const card = currentCard.value; if (!card || phase.value !== 'BACK') return; if (card.snapshotId === null || card.snapshotItemId === null) { phase.value = 'ERROR'; message.value = '当前卡片缺少服务端批次标识，不能提交复习事件。'; return } phase.value = 'SUBMITTING'; try { await mobileApiClient.request<unknown>('/learning/srs/reviews', { method: 'POST', data: { snapshotId: card.snapshotId, snapshotItemId: card.snapshotItemId, item: { itemType: card.itemType, ...(card.itemType === 'VOCAB' ? { vocabId: card.itemId } : card.itemType === 'CHUNK' ? { chunkId: card.itemId } : { expressionId: card.itemId }) }, rawQuality: quality, answerOutcome: 'REVEALED_WITHOUT_ANSWER', responseTimeMs: 0, revealElapsedMs: 0, clientEventId: `${Date.now()}-${Math.random().toString(36).slice(2)}`, clientOccurredAt: new Date().toISOString(), baseStateVersion: null } }); moveNext() } catch { queueCount.value += 1; phase.value = 'PENDING_SYNC'; status.value = 'offline'; message.value = '本次复习已排队待同步，服务端尚未确认掌握变化。'; moveNext() } }
-function moveNext(): void { if (index.value < cards.value.length - 1) { index.value += 1; phase.value = 'FRONT' } else phase.value = 'PENDING_SYNC' }
-function sync(): void { if (queueCount.value) { message.value = '移动端同步队列将在网络恢复后重试；当前页面未伪造同步成功。' } }
-onShow(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
+function open(path: string): void { getUniRuntime().navigateTo({ url: path }) }
+function load(): void { void store.loadSrs() }
+function reveal(): void { void store.revealCard() }
+function rate(value: 0 | 1 | 2 | 3): void { void store.rateCard(value) }
+onShow(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
+onUnmounted(() => engine.dispose())
 </script>
-<template><view class="yx-page"><text class="yx-eyebrow">VOCABULARY · SRS</text><text class="yx-title">先想起来，再看答案。</text><text class="yx-description">Performance 档关闭复杂动效，但保留翻面、信心选择和待同步状态。</text><B2StatusPanel :status="status" :message="message" :queue-count="queueCount" :performance-level="performanceLevel" @retry="load" @sync="sync" @performance="setPerformance" /><B2VocabularyCard v-if="currentCard" :card="currentCard" :phase="phase" :performance-level="performanceLevel" @reveal="reveal" @rate="rate" /><view v-else-if="status === 'loading'" class="yx-card"><text>正在读取服务端词卡…</text></view><view v-else class="yx-card empty"><text class="empty__title">{{ status === 'empty' ? '今天没有可用词卡' : '词卡暂时不可用' }}</text><text>{{ message ?? '服务端没有返回已发布批次。' }}</text><button class="yx-button" type="button" @click="load">重新读取</button></view></view></template>
-<style scoped lang="scss">.empty{display:grid;gap:18rpx}.empty__title{font-size:32rpx;font-weight:750}</style>
+
+<template>
+  <view class="yx-page" :class="themeClass">
+    <text class="yx-eyebrow">{{ b10T('vocab.eyebrow') }}</text>
+    <text class="yx-title">{{ b10T('vocab.title') }}</text>
+    <text class="yx-description">{{ b10T('vocab.description') }}</text>
+    <B10ThemeBar />
+    <B10StatusPanel :status="store.status" :message="store.message" :queue-count="store.srsQueueCount" :performance-level="performanceLevel" @retry="load" @sync="store.syncSrs" @performance="setPerformance" />
+
+    <view v-if="store.currentCard" class="yx-card b10-vocab-card">
+      <view class="b10-vocab-card__meta"><text>{{ store.currentCard.sourceReason }}</text><text v-if="store.currentCard.masteryStatus">{{ store.currentCard.masteryStatus }}</text></view>
+      <text class="b10-vocab-card__word">{{ store.currentCard.title }}</text>
+      <text v-if="store.currentCard.phonetic" class="b10-vocab-card__phonetic">{{ store.currentCard.phonetic }}</text>
+      <text v-if="store.currentCard.hint && !store.currentCard.revealed" class="b10-vocab-card__hint">{{ store.currentCard.hint }}</text>
+      <text v-if="!store.currentCard.revealed" class="b10-vocab-card__privacy">正面不展示释义、例句或标准答案。</text>
+      <button v-if="!store.currentCard.revealed" class="yx-button" type="button" :disabled="store.status === 'loading'" @click="reveal">{{ store.status === 'loading' ? b10T('vocab.revealing') : b10T('vocab.reveal') }}</button>
+      <view v-else class="b10-vocab-card__back">
+        <text class="b10-vocab-card__meaning">{{ store.currentCard.meaningCn ?? b10T('vocab.noAnswer') }}</text>
+        <text v-if="store.currentCard.definitionEn" class="b10-vocab-card__definition">{{ store.currentCard.definitionEn }}</text>
+        <view v-if="store.currentCard.examples.length" class="b10-vocab-card__examples"><text v-for="example in store.currentCard.examples" :key="example">{{ example }}</text></view>
+        <text v-if="store.currentCard.dueLocalDate" class="b10-vocab-card__due">{{ b10T('vocab.due') }}：{{ store.currentCard.dueLocalDate }}</text>
+        <text class="b10-vocab-card__label">{{ b10T('vocab.rate') }}</text>
+        <view class="b10-vocab-card__ratings"><button v-for="option in ratingOptions" :key="option.value" class="b10-rating" type="button" :disabled="store.currentCard.reviewStatus !== 'PENDING'" @click="rate(option.value)">{{ option.value }} · {{ option.label }}</button></view>
+      </view>
+    </view>
+
+    <view v-else-if="store.status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
+    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ b10T('vocab.empty') }}</text><text>{{ store.message ?? b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view class="b10-links"><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-practice/b2-practice')">基础练习</button><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b10-report/b10-report')">错题与报告</button></view>
+  </view>
+</template>
+
+<style scoped lang="scss">
+.b10-vocab-card{display:grid;gap:20rpx}.b10-vocab-card__meta{display:flex;justify-content:space-between;color:var(--yx-text-tertiary);font-size:22rpx}.b10-vocab-card__word{text-align:center;font-size:76rpx;font-weight:800;line-height:1.15}.b10-vocab-card__phonetic,.b10-vocab-card__hint,.b10-vocab-card__privacy,.b10-vocab-card__definition,.b10-vocab-card__due{color:var(--yx-text-secondary);font-size:24rpx;line-height:1.6;text-align:center}.b10-vocab-card__privacy{color:var(--yx-text-tertiary);font-size:21rpx}.b10-vocab-card__back{display:grid;gap:16rpx}.b10-vocab-card__meaning{text-align:center;font-size:40rpx;font-weight:750}.b10-vocab-card__examples{display:grid;gap:10rpx;padding:18rpx;border-radius:14rpx;background:var(--yx-surface-soft);color:var(--yx-text-secondary);font-size:23rpx;line-height:1.6}.b10-vocab-card__label{color:var(--yx-text-secondary);font-size:23rpx}.b10-vocab-card__ratings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12rpx}.b10-rating{min-height:84rpx;border:1rpx solid var(--yx-border);border-radius:14rpx;color:var(--yx-text-primary);background:var(--yx-surface-card);font-size:24rpx}.b10-rating:disabled{opacity:.55}.b10-empty{display:grid;gap:16rpx;color:var(--yx-text-secondary);font-size:24rpx}.b10-empty__title{color:var(--yx-text-primary);font-size:32rpx;font-weight:750}.b10-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12rpx}.yx-button--secondary{color:var(--yx-brand);background:var(--yx-surface-card)}
+</style>

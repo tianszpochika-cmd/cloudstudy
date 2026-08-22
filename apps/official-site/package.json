@@ -7,12 +7,14 @@
     "dev": "node ../../scripts/run-fixed-port.mjs official-site-dev -- nuxt dev --host 127.0.0.1 --port 18182",
     "build": "nuxt build",
     "generate": "nuxt generate",
-    "preview": "node ../../scripts/run-fixed-port.mjs official-site-preview -- nuxt preview --host 127.0.0.1 --port 18192"
+    "preview": "node ../../scripts/run-fixed-port.mjs official-site-preview -- nuxt preview --host 127.0.0.1 --port 18192",
+    "test:b13": "node --test tests/b13-official-site.test.mjs"
   },
   "dependencies": {
     "vue": "^3.4.0",
     "nuxt": "^3.11.0",
-    "@englishflow/design-tokens": "workspace:*"
+    "@englishflow/design-tokens": "workspace:*",
+    "@englishflow/i18n": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",

@@ -1,0 +1,200 @@
+{
+  "tags": [
+    { "name": "b10-compatibility", "description": "B2/B3 legacy read-shadow, reconciliation, progressive route switch and rollback boundary" }
+  ],
+  "paths": {
+    "/internal/v1/compatibility/b10/read-shadow": {
+      "get": {
+        "tags": ["b10-compatibility"],
+        "summary": "Read a legacy/target shadow comparison without writing domain facts",
+        "operationId": "getB10CompatibilityReadShadow",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": {
+          "owner": "core-api-adapter/workflow-service",
+          "mode": "read-only",
+          "sources": ["B2/B3 legacy behavior fixture", "target service projection"],
+          "writeBoundary": "only the adapter reconciliation ledger may be written by the reconcile command; no domain table access"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B10CompatDomain" },
+          { "$ref": "#/components/parameters/B10SubjectRefHash" },
+          { "$ref": "#/components/parameters/B10FixtureVersion" }
+        ],
+        "responses": {
+          "200": { "description": "Shadow comparison", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10ReadShadowResponse" } } } },
+          "401": { "$ref": "#/components/responses/B10CompatUnauthorized" },
+          "403": { "$ref": "#/components/responses/B10CompatForbidden" },
+          "404": { "$ref": "#/components/responses/B10CompatNotFound" },
+          "503": { "$ref": "#/components/responses/B10CompatUnavailable" }
+        }
+      }
+    },
+    "/internal/v1/compatibility/b10/reconciliations": {
+      "post": {
+        "tags": ["b10-compatibility"],
+        "summary": "Record a deterministic legacy-versus-target reconciliation",
+        "operationId": "createB10CompatibilityReconciliation",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": {
+          "owner": "core-api-adapter/workflow-service",
+          "writeBoundary": "writes cmp_b10 reconciliation ledger only",
+          "comparison": "same synthetic B2/B3 input, normalized result and version/hash comparison"
+        },
+        "x-idempotency": { "required": true, "strategy": "b10-compatibility-reconciliation", "keyHeader": "Idempotency-Key", "replayBehavior": "same fixture, domain and subject reference return the original comparison" },
+        "parameters": [{ "$ref": "#/components/parameters/B10CompatIdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10ReconciliationRequest" } } } },
+        "responses": {
+          "201": { "description": "Reconciliation recorded", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10ReadShadowResponse" } } } },
+          "400": { "$ref": "#/components/responses/B10CompatBadRequest" },
+          "401": { "$ref": "#/components/responses/B10CompatUnauthorized" },
+          "403": { "$ref": "#/components/responses/B10CompatForbidden" },
+          "409": { "$ref": "#/components/responses/B10CompatConflict" }
+        }
+      }
+    },
+    "/internal/v1/compatibility/b10/route-decisions": {
+      "post": {
+        "tags": ["b10-compatibility"],
+        "summary": "Change the adapter read mode after reconciliation evidence",
+        "operationId": "createB10CompatibilityRouteDecision",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": {
+          "owner": "core-api-adapter/workflow-service",
+          "writeBoundary": "adapter route-control ledger only",
+          "cutoverGate": "safeToCutover=true and rollback window must be recorded"
+        },
+        "x-idempotency": { "required": true, "strategy": "b10-compatibility-route-decision", "keyHeader": "Idempotency-Key", "replayBehavior": "same config version and target mode return the original route decision" },
+        "parameters": [{ "$ref": "#/components/parameters/B10CompatIdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10RouteDecisionRequest" } } } },
+        "responses": {
+          "201": { "description": "Route decision recorded", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10RouteDecisionResponse" } } } },
+          "400": { "$ref": "#/components/responses/B10CompatBadRequest" },
+          "401": { "$ref": "#/components/responses/B10CompatUnauthorized" },
+          "403": { "$ref": "#/components/responses/B10CompatForbidden" },
+          "409": { "$ref": "#/components/responses/B10CompatConflict" }
+        }
+      }
+    },
+    "/internal/v1/compatibility/b10/rollbacks": {
+      "post": {
+        "tags": ["b10-compatibility"],
+        "summary": "Rollback adapter reads to a safe legacy or target mode",
+        "operationId": "createB10CompatibilityRollback",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": {
+          "owner": "core-api-adapter/workflow-service",
+          "writeBoundary": "adapter rollback ledger and route-control record only",
+          "domainFacts": "rollback never deletes or rewrites target learning/assessment/content facts"
+        },
+        "x-idempotency": { "required": true, "strategy": "b10-compatibility-rollback", "keyHeader": "Idempotency-Key", "replayBehavior": "same rollback command returns the original rollback record" },
+        "parameters": [{ "$ref": "#/components/parameters/B10CompatIdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10RollbackRequest" } } } },
+        "responses": {
+          "201": { "description": "Rollback recorded", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10RouteDecisionResponse" } } } },
+          "400": { "$ref": "#/components/responses/B10CompatBadRequest" },
+          "401": { "$ref": "#/components/responses/B10CompatUnauthorized" },
+          "403": { "$ref": "#/components/responses/B10CompatForbidden" },
+          "409": { "$ref": "#/components/responses/B10CompatConflict" }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "B10CompatDomain": { "name": "domain", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/B10CompatDomain" } },
+      "B10SubjectRefHash": { "name": "subjectRefHash", "in": "query", "required": true, "schema": { "$ref": "#/components/schemas/B10SubjectRefHash" } },
+      "B10FixtureVersion": { "name": "fixtureVersion", "in": "query", "required": true, "schema": { "type": "string", "pattern": "^b[23]-v[0-9]+$" } },
+      "B10CompatIdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 16, "maxLength": 192 } }
+    },
+    "responses": {
+      "B10CompatBadRequest": { "description": "Invalid compatibility command" },
+      "B10CompatUnauthorized": { "description": "Missing or invalid workload identity" },
+      "B10CompatForbidden": { "description": "Compatibility action is not allowed" },
+      "B10CompatNotFound": { "description": "Shadow comparison not found" },
+      "B10CompatUnavailable": { "description": "Legacy or target read source unavailable" },
+      "B10CompatConflict": { "description": "Idempotency, reconciliation or route version conflict" }
+    },
+    "schemas": {
+      "B10CompatDomain": { "type": "string", "enum": ["VOCABULARY", "ASSESSMENT", "GRAMMAR", "READING", "WRITING", "LISTENING", "SPEAKING"] },
+      "B10ReadMode": { "type": "string", "enum": ["LEGACY_READ", "SHADOW_READ", "TARGET_READ", "FALLBACK_READ"] },
+      "B10SubjectRefHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$", "description": "Synthetic or irreversible subject reference hash; raw identity is never part of this adapter contract." },
+      "B10ReconciliationStatus": { "type": "string", "enum": ["MATCH", "MISMATCH", "LEGACY_ONLY", "TARGET_ONLY", "UNAVAILABLE", "NOT_COMPARED"] },
+      "B10ReadShadow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["comparisonId", "domainCode", "subjectRefHash", "fixtureVersion", "readMode", "status", "readOnly", "safeToCutover", "comparedAt"],
+        "properties": {
+          "comparisonId": { "type": "string", "pattern": "^cmp_[A-Za-z0-9._:-]{8,127}$" },
+          "domainCode": { "$ref": "#/components/schemas/B10CompatDomain" },
+          "subjectRefHash": { "$ref": "#/components/schemas/B10SubjectRefHash" },
+          "fixtureVersion": { "type": "string", "pattern": "^b[23]-v[0-9]+$" },
+          "readMode": { "$ref": "#/components/schemas/B10ReadMode" },
+          "legacyVersion": { "type": "string", "maxLength": 96 },
+          "targetVersion": { "type": "string", "maxLength": 96 },
+          "legacySnapshotHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$", "nullable": true },
+          "targetSnapshotHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$", "nullable": true },
+          "status": { "$ref": "#/components/schemas/B10ReconciliationStatus" },
+          "differenceCodes": { "type": "array", "items": { "type": "string", "maxLength": 96 }, "maxItems": 64 },
+          "readOnly": { "type": "boolean", "const": true },
+          "safeToCutover": { "type": "boolean" },
+          "rollbackWindowEndsAt": { "type": "string", "format": "date-time", "nullable": true },
+          "comparedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B10ReconciliationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domainCode", "subjectRefHash", "fixtureVersion", "legacyVersion", "targetVersion"],
+        "properties": {
+          "domainCode": { "$ref": "#/components/schemas/B10CompatDomain" },
+          "subjectRefHash": { "$ref": "#/components/schemas/B10SubjectRefHash" },
+          "fixtureVersion": { "type": "string", "pattern": "^b[23]-v[0-9]+$" },
+          "legacyVersion": { "type": "string", "maxLength": 96 },
+          "targetVersion": { "type": "string", "maxLength": 96 },
+          "comparisonWindowStart": { "type": "string", "format": "date-time" },
+          "comparisonWindowEnd": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B10RouteDecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domainCode", "desiredMode", "expectedConfigVersion", "comparisonId", "reasonCode", "rollbackWindowEndsAt"],
+        "properties": {
+          "domainCode": { "$ref": "#/components/schemas/B10CompatDomain" },
+          "desiredMode": { "$ref": "#/components/schemas/B10ReadMode" },
+          "expectedConfigVersion": { "type": "integer", "minimum": 0 },
+          "comparisonId": { "type": "string", "pattern": "^cmp_[A-Za-z0-9._:-]{8,127}$" },
+          "reasonCode": { "type": "string", "enum": ["INITIAL_SHADOW", "MATCH_CONFIRMED", "CONTROLLED_CUTOVER", "DEPENDENCY_DEGRADED", "MANUAL_RECOVERY"] },
+          "rollbackWindowEndsAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B10RollbackRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domainCode", "targetMode", "expectedConfigVersion", "reasonCode", "comparisonId"],
+        "properties": {
+          "domainCode": { "$ref": "#/components/schemas/B10CompatDomain" },
+          "targetMode": { "type": "string", "enum": ["LEGACY_READ", "TARGET_READ", "FALLBACK_READ"] },
+          "expectedConfigVersion": { "type": "integer", "minimum": 0 },
+          "reasonCode": { "type": "string", "enum": ["MISMATCH_DETECTED", "TARGET_UNAVAILABLE", "CONTENT_PIN_UNAVAILABLE", "DLQ_BACKLOG", "MANUAL_RECOVERY"] },
+          "comparisonId": { "type": "string", "pattern": "^cmp_[A-Za-z0-9._:-]{8,127}$" }
+        }
+      },
+      "B10RouteDecision": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["domainCode", "mode", "configVersion", "fallbackAllowed", "rollbackWindowEndsAt", "updatedAt"],
+        "properties": {
+          "domainCode": { "$ref": "#/components/schemas/B10CompatDomain" },
+          "mode": { "$ref": "#/components/schemas/B10ReadMode" },
+          "configVersion": { "type": "integer", "minimum": 1 },
+          "fallbackAllowed": { "type": "boolean" },
+          "rollbackWindowEndsAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B10ReadShadowResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10ReadShadow" } } },
+      "B10RouteDecisionResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10RouteDecision" } } }
+    }
+  }
+}

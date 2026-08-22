@@ -1,4 +1,5 @@
 export * from './generated'
+export * from './gateway-test-double'
 
 export interface ApiClientRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'

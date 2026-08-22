@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: gamification-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${GAMIFICATION_SHUTDOWN_TIMEOUT:20s}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:}
+          jwk-set-uri: ${GAMIFICATION_SECURITY_JWK_SET_URI:}
+
+server:
+  address: ${GAMIFICATION_SERVER_ADDRESS:127.0.0.1}
+  port: ${GAMIFICATION_SERVICE_PORT:18094}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+
+service:
+  name: gamification-service
+  owner: gamification-service
+  schema: ${GAMIFICATION_SCHEMA:gamification_service}
+  redis-namespace: ${GAMIFICATION_REDIS_NAMESPACE:gamification}
+  port: ${GAMIFICATION_SERVICE_PORT:18094}
+
+gamification:
+  feature:
+    enabled: ${GAMIFICATION_FEATURE_ENABLED:true}
+  default-time-zone: ${GAMIFICATION_DEFAULT_TIME_ZONE:Asia/Shanghai}
+  security:
+    resource-server-enabled: ${GAMIFICATION_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${GAMIFICATION_SECURITY_JWK_SET_URI:}

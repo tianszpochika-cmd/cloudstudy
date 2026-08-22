@@ -41,20 +41,20 @@ export async function listListeningMaterials(): Promise<ListeningMaterial[]> {
   return listData<ListeningMaterial>(await mobileApiClient.request('/listening/materials?limit=20'))
 }
 
-export async function createListeningSession(materialId: number): Promise<string | null> {
+export async function createListeningSession(materialId: number, clientEventId = `b3-mobile-listen-${materialId}-${Date.now()}`): Promise<string | null> {
   const source = unwrap(await mobileApiClient.request<unknown>('/listening/sessions', {
     method: 'POST',
-    data: { materialId, contentVersionId: 301, mode: 'LISTEN' },
-    ...withKey(`b3-mobile-listen-${materialId}-${Date.now()}`),
+    data: { materialId, contentVersionId: 301, mode: 'LISTEN', clientEventId },
+    ...withKey(clientEventId),
   }))
   return isRecord(source) ? text(source.sessionId) ?? text(source.id) : null
 }
 
-export async function submitDictation(sessionId: string, segmentId: string, answer: string): Promise<DictationResult> {
+export async function submitDictation(sessionId: string, segmentId: string, answer: string, clientEventId = `b3-mobile-dictation-${Date.now()}`): Promise<DictationResult> {
   return unwrap(await mobileApiClient.request(`/listening/sessions/${encodeURIComponent(sessionId)}/dictation`, {
     method: 'POST',
-    data: { segmentId, mode: 'SENTENCE', answer, attemptNo: 1, clientEventId: `b3-mobile-dictation-${Date.now()}`, contentVersionId: 301 },
-    ...withKey(`b3-mobile-dictation-${sessionId}-${segmentId}-${Date.now()}`),
+    data: { segmentId, mode: 'SENTENCE', answer, attemptNo: 1, clientEventId, contentVersionId: 301 },
+    ...withKey(clientEventId),
   })) as DictationResult
 }
 
@@ -66,24 +66,24 @@ export async function getReadingArticle(articleId: number): Promise<ReadingArtic
   return unwrap(await mobileApiClient.request(`/reading/articles/${articleId}`)) as ReadingArticle
 }
 
-export async function saveReadingProgress(articleId: number, blockId: string, progressPercent: number, positionVersion: number): Promise<void> {
+export async function saveReadingProgress(articleId: number, blockId: string, progressPercent: number, positionVersion: number, clientEventId = `b3-mobile-reading-${articleId}-${positionVersion}`): Promise<void> {
   await mobileApiClient.request('/reading/progress', {
     method: 'PUT',
-    data: { articleId, blockId, progressPercent, positionVersion, contentVersionId: 301, clientEventId: `b3-mobile-reading-${articleId}-${positionVersion}` },
-    ...withKey(`b3-mobile-reading-${articleId}-${positionVersion}`),
+    data: { articleId, blockId, progressPercent, positionVersion, contentVersionId: 301, clientEventId },
+    ...withKey(clientEventId),
   })
 }
 export async function listReadingQuestions(articleId?: number): Promise<ReadingQuestion[]> { const suffix = articleId ? `&articleId=${articleId}` : ''; return listData<ReadingQuestion>(await mobileApiClient.request(`/reading/questions?limit=20${suffix}`)) }
-export async function submitReadingAttempt(questionId: number, answer: string): Promise<ReadingAttemptResult> { return unwrap(await mobileApiClient.request('/reading/attempts', { method: 'POST', data: { questionId, answer, contentVersionId: 301, clientEventId: `b3-mobile-reading-attempt-${Date.now()}` }, ...withKey(`b3-mobile-reading-attempt-${questionId}-${Date.now()}`) })) as ReadingAttemptResult }
+export async function submitReadingAttempt(questionId: number, answer: string, clientEventId = `b3-mobile-reading-attempt-${Date.now()}`): Promise<ReadingAttemptResult> { return unwrap(await mobileApiClient.request('/reading/attempts', { method: 'POST', data: { questionId, answer, contentVersionId: 301, clientEventId }, ...withKey(clientEventId) })) as ReadingAttemptResult }
 export async function createReadingMining(articleId: number, blockId: string): Promise<ReadingMiningResult> { return unwrap(await mobileApiClient.request('/reading/mining', { method: 'POST', data: { articleId, blockId, contentVersionId: 301, clientEventId: `b3-mobile-mining-${Date.now()}` }, ...withKey(`b3-mobile-mining-${articleId}-${blockId}-${Date.now()}`) })) as ReadingMiningResult }
 
 export async function getPhonetics(): Promise<Phoneme[]> {
   return listData<Phoneme>(await mobileApiClient.request('/phonetics/catalog?setCode=EN_48_PHASE1'))
 }
 
-export async function createRecording(sourceSegmentId: string, durationMs: number, contentHash: string): Promise<SpeakingRecording> { return unwrap(await mobileApiClient.request('/speaking/recordings', { method: 'POST', data: { sourceSegmentId, durationMs, contentHash, storageMode: 'LOCAL_ENCRYPTED', clientEventId: `b3-mobile-recording-${Date.now()}` }, ...withKey(`b3-mobile-recording-${sourceSegmentId}-${Date.now()}`) })) as SpeakingRecording }
-export async function deleteRecording(recordingId: string): Promise<void> { await mobileApiClient.request(`/speaking/recordings/${encodeURIComponent(recordingId)}`, { method: 'DELETE', ...withKey(`b3-mobile-recording-delete-${recordingId}-${Date.now()}`) }) }
-export async function submitSelfRating(recordingId: string, rating: string): Promise<void> { await mobileApiClient.request(`/speaking/recordings/${encodeURIComponent(recordingId)}/self-rating`, { method: 'POST', data: { rating, clientEventId: `b3-mobile-rating-${Date.now()}` }, ...withKey(`b3-mobile-rating-${recordingId}-${Date.now()}`) }) }
+export async function createRecording(sourceSegmentId: string, durationMs: number, contentHash: string, clientEventId = `b3-mobile-recording-${Date.now()}`): Promise<SpeakingRecording> { return unwrap(await mobileApiClient.request('/speaking/recordings', { method: 'POST', data: { sourceSegmentId, durationMs, contentHash, storageMode: 'LOCAL_ENCRYPTED', clientEventId }, ...withKey(clientEventId) })) as SpeakingRecording }
+export async function deleteRecording(recordingId: string, clientEventId = `b3-mobile-recording-delete-${recordingId}-${Date.now()}`): Promise<void> { await mobileApiClient.request(`/speaking/recordings/${encodeURIComponent(recordingId)}`, { method: 'DELETE', ...withKey(clientEventId) }) }
+export async function submitSelfRating(recordingId: string, rating: string, clientEventId = `b3-mobile-rating-${Date.now()}`): Promise<void> { await mobileApiClient.request(`/speaking/recordings/${encodeURIComponent(recordingId)}/self-rating`, { method: 'POST', data: { rating, clientEventId }, ...withKey(clientEventId) }) }
 export async function createRoleplaySession(roleplayCode = 'COFFEE_SHOP_V1'): Promise<RoleplaySession> { return unwrap(await mobileApiClient.request('/speaking/roleplay/sessions', { method: 'POST', data: { roleplayCode, contentVersionId: 301, clientEventId: `b3-mobile-roleplay-${Date.now()}` }, ...withKey(`b3-mobile-roleplay-${roleplayCode}-${Date.now()}`) })) as RoleplaySession }
 export async function submitRoleplayTurn(sessionId: string, turnIndex: number, recordingId: string, choiceCode?: string): Promise<RoleplayTurnResult> { return unwrap(await mobileApiClient.request(`/speaking/roleplay/sessions/${encodeURIComponent(sessionId)}/turns`, { method: 'POST', data: { turnIndex, recordingId, ...(choiceCode ? { choiceCode } : {}), clientEventId: `b3-mobile-roleplay-turn-${Date.now()}` }, ...withKey(`b3-mobile-roleplay-turn-${sessionId}-${turnIndex}-${Date.now()}`) })) as RoleplayTurnResult }
 

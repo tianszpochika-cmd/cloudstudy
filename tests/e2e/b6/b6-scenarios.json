@@ -1,0 +1,9 @@
+{
+  "version": "b6-e2e-v1",
+  "scenarios": [
+    { "code": "ONBOARDING_FIRST_DAY", "path": "/home?preview=1", "surface": "ONBOARDING", "requiredPlatforms": ["WEB", "H5", "ANDROID", "IOS", "IPAD"] },
+    { "code": "LEARNING_FEEDBACK_REVIEW", "path": "/practice?preview=1", "surface": "LEARNING_LOOP", "requiredPlatforms": ["WEB", "H5", "ANDROID", "IOS", "IPAD"] },
+    { "code": "CONTENT_VISIBILITY", "path": "/courses?preview=1", "surface": "CONTENT_VISIBILITY", "requiredPlatforms": ["WEB", "H5", "ANDROID", "IOS", "IPAD", "WECHAT_MINI_PROGRAM"] },
+    { "code": "ENTITLEMENT_COMMERCE", "path": "/commerce?preview=1", "surface": "COMMERCE", "requiredPlatforms": ["WEB", "H5", "ANDROID", "IOS", "IPAD"] }
+  ]
+}

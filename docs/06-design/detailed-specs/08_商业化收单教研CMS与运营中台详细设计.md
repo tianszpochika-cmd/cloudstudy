@@ -3,8 +3,9 @@
 > 文档版本：v2.0 深度施工版  
 > 基线：requirements/product-requirements.md v3.3、requirements/feature-matrix.md、AGENTS.md  
 > 功能范围：FEAT-COM-001～009、FEAT-ADM-001～010，共 19 项  
-> 服务边界：Core API（Java 17 / Spring Boot 3）+ Admin Web（Vue 3 + Element Plus）  
-> 数据边界：MySQL 8.x、Redis 7.x、S3 兼容对象存储、RabbitMQ 或 Redis Streams
+> 目标服务边界：`commerce-service`（订单/支付/权益）+ `content-service`（内容/版本/版权）+ `admin-ops-service`（后台聚合/审批）+ `analytics-service`（只读指标）；外部请求经 `api-gateway`，权限由 `iam-service`/服务侧 PEP 校验。  
+> 迁移兼容：Core API（Java 17 / Spring Boot 3）+ Admin Web（Vue 3 + Element Plus）；仅作为 v1 兼容承载。  
+> 数据边界：各目标服务独立 MySQL schema/迁移和 Redis namespace；S3 兼容对象存储；事件采用 Kafka 兼容总线 + Outbox + AsyncAPI。
 
 ## 0. 设计结论、范围和不可越界边界
 

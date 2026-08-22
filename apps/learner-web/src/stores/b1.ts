@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { fetchContinueContext, fetchDevices, fetchHomeFeed, fetchPrivacy, fetchProfile, fetchDeletion, kickDevice, kickOtherDevices, loginWithPhone, patchPrivacy, patchProfile, requestDataExport, requestDeletion, requestSmsCode, saveContinueContext, saveOnboardingProfile, sendCheckpoint, skipPlacement, startPlacement, submitPlacementStep, type AuthTokens } from '../api/b1'
 import { readAccessToken, useSessionStore } from './session'
+import { createClientId } from '../platform/client-id'
 import {
   B1_STORAGE_KEY,
   assessmentQuestions,
@@ -57,8 +58,7 @@ function readPersisted(): PersistedState | null {
 }
 
 function createDeviceId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return crypto.randomUUID()
-  return `web-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return createClientId('web')
 }
 
 function getCurrentDevice(): DeviceSession {

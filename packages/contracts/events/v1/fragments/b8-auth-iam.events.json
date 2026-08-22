@@ -1,0 +1,239 @@
+{
+  "asyncapi": {
+    "version": "3.0.0",
+    "info": {
+      "title": "语学星 IAM and authentication integration events",
+      "version": "1.0.0",
+      "description": "B8 认证、principal、会话、设备、成人 Gate、consent 和策略版本事实；事件不携带 Token、refresh credential 或原始隐私。"
+    },
+    "channels": {
+      "authPrincipalMapped": {
+        "address": "auth.principal.mapped.v1",
+        "messages": { "principalMapped": { "$ref": "#/payloadSchemas/AuthPrincipalMapped" } }
+      },
+      "authSessionRotated": {
+        "address": "auth.session.rotated.v1",
+        "messages": { "sessionRotated": { "$ref": "#/payloadSchemas/AuthSessionRotated" } }
+      },
+      "authSessionReplayDetected": {
+        "address": "auth.session.replay_detected.v1",
+        "messages": { "sessionReplayDetected": { "$ref": "#/payloadSchemas/AuthSessionReplayDetected" } }
+      },
+      "authDeviceRevoked": {
+        "address": "auth.device.revoked.v1",
+        "messages": { "deviceRevoked": { "$ref": "#/payloadSchemas/AuthDeviceRevoked" } }
+      },
+      "authConsentUpdated": {
+        "address": "auth.consent.updated.v1",
+        "messages": { "consentUpdated": { "$ref": "#/payloadSchemas/AuthConsentUpdated" } }
+      },
+      "authAdultGateRejected": {
+        "address": "auth.adult_gate.rejected.v1",
+        "messages": { "adultGateRejected": { "$ref": "#/payloadSchemas/AuthAdultGateRejected" } }
+      },
+      "iamPolicyVersionChanged": {
+        "address": "iam.policy.version_changed.v1",
+        "messages": { "policyVersionChanged": { "$ref": "#/payloadSchemas/IamPolicyVersionChanged" } }
+      }
+    }
+  },
+  "events": [
+    {
+      "eventName": "auth.principal.mapped.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_principal",
+      "aggregateIdField": "principalId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthPrincipalMapped" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.principal.mapped.v2",
+        "consumerRule": "按 principalId 幂等；只消费映射状态和版本，不传播 IdP 原始 claims。"
+      }
+    },
+    {
+      "eventName": "auth.session.rotated.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthSessionRotated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.session.rotated.v2",
+        "consumerRule": "按 rotationId 去重；payload 不含 access/refresh token。"
+      }
+    },
+    {
+      "eventName": "auth.session.replay_detected.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthSessionReplayDetected" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.session.replay_detected.v2",
+        "consumerRule": "安全消费者按 sessionId、detectionId 和 dedupeKey 去重，并保持撤销 fail-closed。"
+      }
+    },
+    {
+      "eventName": "auth.device.revoked.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_device",
+      "aggregateIdField": "deviceId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthDeviceRevoked" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.device.revoked.v2",
+        "consumerRule": "设备、WebSocket 和通知消费者按 deviceId/sessionId 幂等撤销。"
+      }
+    },
+    {
+      "eventName": "auth.consent.updated.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_consent",
+      "aggregateIdField": "consentId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthConsentUpdated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.consent.updated.v2",
+        "consumerRule": "只传 consent type/version/decision；撤回和更新事实可审计、可重放。"
+      }
+    },
+    {
+      "eventName": "auth.adult_gate.rejected.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_adult_gate",
+      "aggregateIdField": "decisionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthAdultGateRejected" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.adult_gate.rejected.v2",
+        "consumerRule": "拒绝事件不传出生日期、年龄原值或 K12 主体事实。"
+      }
+    },
+    {
+      "eventName": "iam.policy.version_changed.v1",
+      "domain": "iam",
+      "version": 1,
+      "schema": "iam.security.event.v1",
+      "aggregateType": "iam_policy",
+      "aggregateIdField": "policyName",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/IamPolicyVersionChanged" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 iam.policy.version_changed.v2",
+        "consumerRule": "PEP/PDP 按 policyVersion 选择策略包；未知版本默认拒绝。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "AuthPrincipalMapped": {
+      "$id": "platform.events.auth.principal.mapped.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principalId", "provider", "mappingStatus", "adultGateStatus", "mappedAt"],
+      "properties": {
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "provider": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$" },
+        "mappingStatus": { "type": "string", "enum": ["CREATED", "LINKED", "REJECTED"] },
+        "adultGateStatus": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "mappedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AuthSessionRotated": {
+      "$id": "platform.events.auth.session.rotated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "rotationId", "deviceId", "sessionGeneration", "rotatedAt"],
+      "properties": {
+        "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$" },
+        "rotationId": { "type": "string", "pattern": "^rot_[A-Za-z0-9._:-]{15,127}$" },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "sessionGeneration": { "type": "integer", "minimum": 1 },
+        "rotatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AuthSessionReplayDetected": {
+      "$id": "platform.events.auth.session.replay_detected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sessionId", "deviceId", "detectionId", "detectionCode", "revocationStatus", "detectedAt"],
+      "properties": {
+        "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$" },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "detectionId": { "type": "string", "pattern": "^rpl_[A-Za-z0-9._:-]{15,127}$" },
+        "detectionCode": { "type": "string", "enum": ["REFRESH_REUSE", "CALLBACK_REUSE", "STATE_REUSE"] },
+        "revocationStatus": { "type": "string", "enum": ["SESSION_REVOKED", "PENDING_REVIEW"] },
+        "detectedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AuthDeviceRevoked": {
+      "$id": "platform.events.auth.device.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deviceId", "sessionId", "reasonCode", "revokedAt"],
+      "properties": {
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$" },
+        "reasonCode": { "type": "string", "enum": ["LOGOUT", "KICKED", "REPLAY_DETECTED", "RISK_FREEZE", "ADMIN"] },
+        "revokedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AuthConsentUpdated": {
+      "$id": "platform.events.auth.consent.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principalId", "consentType", "consentVersion", "decision", "updatedAt"],
+      "properties": {
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "consentType": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] },
+        "consentVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AuthAdultGateRejected": {
+      "$id": "platform.events.auth.adult_gate.rejected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionId", "reasonCode", "policyVersion", "rejectedAt"],
+      "properties": {
+        "decisionId": { "type": "string", "pattern": "^dec_[A-Za-z0-9._:-]{15,127}$" },
+        "reasonCode": { "type": "string", "enum": ["UNDER_ADULT_THRESHOLD", "EVIDENCE_REQUIRED", "PHASE_DISABLED"] },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "rejectedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "IamPolicyVersionChanged": {
+      "$id": "platform.events.iam.policy.version_changed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policyName", "previousVersion", "currentVersion", "activationMode", "changedAt"],
+      "properties": {
+        "policyName": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
+        "previousVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "currentVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "activationMode": { "type": "string", "enum": ["SCHEDULED", "IMMEDIATE", "ROLLBACK"] },
+        "changedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

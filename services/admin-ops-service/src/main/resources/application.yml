@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: ${ADMIN_OPS_SERVICE_NAME:admin-ops-service}
+  lifecycle:
+    timeout-per-shutdown-phase: ${ADMIN_OPS_SHUTDOWN_TIMEOUT:20s}
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+server:
+  address: ${ADMIN_OPS_SERVER_ADDRESS:127.0.0.1}
+  # Provisional service-local default; root port registration is outside this task scope.
+  port: ${ADMIN_OPS_SERVICE_PORT:18096}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  otlp:
+    metrics:
+      export:
+        enabled: ${OTEL_METRICS_EXPORT_ENABLED:false}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  name: admin-ops-service
+  owner: admin-ops-service
+  schema: admin_ops_service
+  redis-namespace: admin-ops
+  port: 18096
+
+security:
+  resource-server:
+    enabled: ${ADMIN_OPS_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${ADMIN_OPS_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${ADMIN_OPS_SECURITY_JWK_SET_URI:}
+
+admin-ops:
+  phase: ${ADMIN_OPS_PHASE:PHASE_1_ADULT}
+  command-confirmation-ttl: ${ADMIN_OPS_COMMAND_CONFIRMATION_TTL:5m}
+  support-default-sla: ${ADMIN_OPS_SUPPORT_DEFAULT_SLA:48h}

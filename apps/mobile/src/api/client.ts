@@ -1,5 +1,6 @@
 import { getUniRuntime, type UniRequestOptions } from '../platform/uni-runtime'
 import { readAccessToken } from '../stores/session'
+import { getGatewayBaseUrl } from '../platform/gateway'
 
 export class MobileApiError extends Error {
   readonly status: number
@@ -14,7 +15,7 @@ export class MobileApiError extends Error {
 }
 
 export interface MobileApiClient {
-  request<TResponse>(path: string, options?: Omit<UniRequestOptions, 'url' | 'success' | 'fail'>): Promise<TResponse>
+  request<TResponse>(path: string, options?: Omit<UniRequestOptions, 'url' | 'success' | 'fail'> & { skipAuthRetry?: boolean }): Promise<TResponse>
 }
 
 function joinUrl(baseUrl: string, path: string): string {
@@ -22,20 +23,22 @@ function joinUrl(baseUrl: string, path: string): string {
   return path.startsWith('/') ? `${base}${path}` : `${base}/${path}`
 }
 
-export function createMobileApiClient(baseUrl: string): MobileApiClient {
-  return {
-    request: <TResponse>(path: string, options: Omit<UniRequestOptions, 'url' | 'success' | 'fail'> = {}) => new Promise<TResponse>((resolve, reject) => {
-      const headers = { ...(options.header ?? {}) }
+export function createMobileApiClient(baseUrl: string, onUnauthorized?: () => Promise<boolean>): MobileApiClient {
+  async function request<TResponse>(path: string, options: Omit<UniRequestOptions, 'url' | 'success' | 'fail'> & { skipAuthRetry?: boolean } = {}, retried = false): Promise<TResponse> {
+    const { skipAuthRetry, ...requestOptions } = options
+    return new Promise<TResponse>((resolve, reject) => {
+      const headers = { ...(requestOptions.header ?? {}) }
       const accessToken = readAccessToken()
-      if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`
-      }
+      if (accessToken) headers.Authorization = `Bearer ${accessToken}`
 
-      const request: UniRequestOptions = {
-        ...options,
+      const uniRequest: UniRequestOptions = {
+        ...requestOptions,
         url: joinUrl(baseUrl, path),
         header: headers,
-        success: (response) => {
+        success: async (response) => {
+          if (response.statusCode === 401 && !retried && !skipAuthRetry && onUnauthorized) {
+            if (await onUnauthorized()) { resolve(await request(path, { ...options, skipAuthRetry: true }, true)); return }
+          }
           if (response.statusCode < 200 || response.statusCode >= 300) {
             reject(new MobileApiError(`请求失败（HTTP ${response.statusCode}）`, response.statusCode, response.data))
             return
@@ -45,11 +48,18 @@ export function createMobileApiClient(baseUrl: string): MobileApiClient {
         fail: (error) => reject(new MobileApiError('网络暂时不可用，请稍后重试。', 0, error)),
       }
 
-      getUniRuntime().request(request)
-    }),
+      getUniRuntime().request(uniRequest)
+    })
+  }
+  return {
+    request,
   }
 }
 
 export const mobileApiClient = createMobileApiClient(
-  import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:18080/api/v1',
+  getGatewayBaseUrl(),
+  async () => {
+    const [{ pinia }, { useSessionStore }] = await Promise.all([import('../stores/pinia'), import('../stores/session')])
+    return useSessionStore(pinia).refreshSilently()
+  },
 )

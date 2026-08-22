@@ -1,0 +1,35 @@
+{
+  "version": "b6-platform-v1",
+  "targets": [
+    { "code": "WEB", "project": "apps/learner-web", "buildCommand": "pnpm --filter @englishflow/learner-web build", "priority": "P0", "installability": "browser" },
+    { "code": "H5", "project": "apps/mobile", "buildCommand": "pnpm --filter @englishflow/mobile build:h5", "priority": "P0", "installability": "browser" },
+    { "code": "ANDROID", "project": "apps/mobile", "buildCommand": "pnpm --filter @englishflow/mobile build:app", "priority": "P0", "installability": "native-package" },
+    { "code": "IOS", "project": "apps/mobile", "buildCommand": "pnpm --filter @englishflow/mobile build:app", "priority": "P0", "installability": "native-package" },
+    { "code": "IPAD", "project": "apps/mobile", "buildCommand": "pnpm --filter @englishflow/mobile build:app", "priority": "P1", "installability": "native-package" },
+    { "code": "WECHAT_MINI_PROGRAM", "project": "apps/mobile", "buildCommand": "pnpm --filter @englishflow/mobile build:mp-weixin", "priority": "P1.5", "installability": "mini-program-package" },
+    { "code": "WINDOWS_PWA", "project": "apps/learner-web", "buildCommand": "pnpm --filter @englishflow/learner-web build", "priority": "P2", "installability": "pwa" }
+  ],
+  "responsive": {
+    "breakpoints": [
+      { "code": "MOBILE", "minWidth": 320, "maxWidth": 639, "orientations": ["PORTRAIT", "LANDSCAPE"] },
+      { "code": "TABLET", "minWidth": 640, "maxWidth": 1023, "orientations": ["PORTRAIT", "LANDSCAPE"] },
+      { "code": "PAD", "minWidth": 1024, "maxWidth": 1279, "orientations": ["PORTRAIT", "LANDSCAPE"] },
+      { "code": "DESKTOP", "minWidth": 1280, "maxWidth": 9999, "orientations": ["LANDSCAPE"] }
+    ],
+    "checks": ["NO_HORIZONTAL_OVERFLOW", "SAFE_AREA", "KEYBOARD_AND_TOUCH", "IPAD_RAIL_SWITCH", "SINGLE_SCROLL_CONTAINER"]
+  },
+  "performance": {
+    "levels": ["Ultra", "High", "Medium", "Performance"],
+    "autoDegrade": true,
+    "autoUpgrade": false,
+    "fallbackOrder": ["Three.js", "2.5D", "SVG", "STATIC"]
+  },
+  "accessibility": {
+    "requiredChecks": ["TEXT_SCALE", "KEYBOARD_FLOW", "SCREEN_READER", "REDUCED_MOTION", "PERMISSION_FALLBACK"]
+  },
+  "releaseGate": {
+    "requiredChecks": ["COMPATIBILITY", "E2E", "SECURITY", "RELIABILITY", "BACKUP"],
+    "complianceChecks": ["PRIVACY", "COPYRIGHT", "MERCHANT", "PLATFORM_REVIEW"],
+    "failClosed": true
+  }
+}

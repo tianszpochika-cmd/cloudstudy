@@ -1,0 +1,68 @@
+spring:
+  application:
+    name: ${MEDIA_SERVICE_NAME:media-service}
+  lifecycle:
+    timeout-per-shutdown-phase: ${MEDIA_SERVICE_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${MEDIA_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  # 18092 is the B11 media-service port; root config registration is a separate integration task.
+  port: ${MEDIA_SERVICE_PORT:18092}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+media:
+  service-name: ${MEDIA_SERVICE_NAME:media-service}
+  owner: ${MEDIA_SERVICE_OWNER:media-service}
+  schema: ${MEDIA_SERVICE_SCHEMA:media_service}
+  redis-namespace: ${MEDIA_SERVICE_REDIS_NAMESPACE:media}
+  signed-url-base-url: ${MEDIA_SERVICE_SIGNED_URL_BASE_URL:https://media.example.invalid/objects}
+  signed-url-ttl: ${MEDIA_SERVICE_SIGNED_URL_TTL:PT5M}
+  max-signed-url-ttl: ${MEDIA_SERVICE_MAX_SIGNED_URL_TTL:PT15M}
+
+security:
+  resource-server:
+    # G-IDP is a prerequisite. Disabled means every non-actuator request is denied.
+    enabled: ${MEDIA_SERVICE_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${MEDIA_SERVICE_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${MEDIA_SERVICE_SECURITY_JWK_SET_URI:}

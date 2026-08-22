@@ -181,18 +181,6 @@
         "responses": { "200": { "description": "Privacy settings updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
       }
     },
-    "/api/v1/user/notifications": {
-      "get": {
-        "tags": ["B1 User"], "operationId": "getB1NotificationPreferences",
-        "responses": { "200": { "description": "Notification preferences", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      },
-      "patch": {
-        "tags": ["B1 User"], "operationId": "patchB1NotificationPreferences",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-notifications" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Notification preferences updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
     "/api/v1/user/devices/{devicePublicId}/kick": {
       "post": {
         "tags": ["B1 User"], "operationId": "kickB1UserDevice",

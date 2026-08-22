@@ -1,0 +1,24 @@
+{
+  "fixtureVersion": "b14-phase1-v1",
+  "tenantRefHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "subjectRefHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "steps": [
+    { "domain": "learner", "mode": "TARGET", "fact": "profile_projection" },
+    { "domain": "content", "mode": "TARGET", "fact": "published_content_snapshot" },
+    { "domain": "learning", "mode": "TARGET", "fact": "learning_plan_and_review" },
+    { "domain": "assessment", "mode": "TARGET", "fact": "attempt_and_report" },
+    { "domain": "media", "mode": "TARGET", "fact": "media_entitlement_reference" },
+    { "domain": "gamification", "mode": "TARGET", "fact": "trusted_growth_projection" },
+    { "domain": "social", "mode": "TARGET", "fact": "study_room_projection" },
+    { "domain": "commerce", "mode": "TARGET", "fact": "entitlement_projection" },
+    { "domain": "admin-ops", "mode": "TARGET", "fact": "redacted_projection_and_command_receipt" },
+    { "domain": "official-site", "mode": "PUBLIC_READ_ONLY", "fact": "catalog_projection" }
+  ],
+  "replay": {
+    "delivery": "at_least_once",
+    "consumer": "dedupe_by_event_id_and_aggregate_sequence",
+    "failure": "retry_then_dlq",
+    "recovery": "saga_compensation_or_manual_recovery",
+    "rawPayloadStored": false
+  }
+}

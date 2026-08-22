@@ -4,7 +4,8 @@
 > **基线 PRD**：`requirements/product-requirements.md` (PRD v3.3) §3.1 ~ §3.4、§13.7、§18.3、§18.18  
 > **功能范围**：`requirements/feature-matrix.md` ONB 域全量 22 项功能 (FEAT-ONB-001 ~ FEAT-ONB-022)  
 > **所属业务模块**：`com.englishflow.modules.onboarding` & `com.englishflow.modules.home` & `com.englishflow.modules.world`  
-> **服务承载**：`services/core-api` (Java 17 / Spring Boot 3) + `apps/mobile` / `apps/learner-web` (Vue 3 + TypeScript + uni-app)
+> **目标服务承载**：`learner-service` + `learning-service`（内容读取经 `content-service`）；外部请求经 `api-gateway`，权限由 `iam-service`/服务侧 PEP 校验。  
+> **迁移兼容**：`services/core-api`（Java 17 / Spring Boot 3）仅作为 v1 兼容路由和回滚边界；客户端仍为 `apps/mobile` / `apps/learner-web`。
 
 ---
 
@@ -532,7 +533,7 @@ sequenceDiagram
     actor User as 学员
     participant App as 客户端 (Vue3 / uni-app)
     participant Redis as Redis (断点上下文缓存)
-    participant API as Core API (Spring Boot 3)
+    participant API as Gateway → learner-service / learning-service (Java 25)
 
     User->>App: 打开 App / 首屏加载
     App->>App: 读取本地 Storage (last_active_context)

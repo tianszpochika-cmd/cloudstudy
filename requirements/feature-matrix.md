@@ -1,8 +1,33 @@
 # 语学星 (EnglishFlow) 全量功能清单与需求矩阵 (Feature Matrix)
 
-> **版本**：v3.3 权威基线对照版  
+> **版本**：v3.3 业务功能基线 + v2-980plus 架构绑定版  
 > **关联 PRD**：`requirements/product-requirements.md` (PRD v3.3 记忆与掌握闭环增强版)  
-> **文档定位**：本项目所有功能交付、阶段排期 (WBS)、测试用例覆盖与验收审计的**唯一全景台账**。
+> **文档定位**：本项目业务功能交付、阶段排期 (WBS)、测试用例覆盖与验收审计的**唯一业务全景台账**；它不单独定义微服务或平台能力。
+
+## v2 架构绑定规则
+
+- [`docs/06-design/v2-980plus/`](../docs/06-design/v2-980plus/README.md) 是下一轮开发唯一的全量业务设计与需求落地基线；本表保留 `FEAT-*` 编号、阶段统计和来源追溯。两者出现冲突时，先按 v2 更新本表和追溯台账，不能回退到 v1 详细设计。
+- Gateway、IAM/RBAC/ABAC、事件、观测、数据 owner 等平台能力使用 [`ARCH-*` 能力矩阵](../docs/02-architecture/v2-platform-capability-matrix.md)，不增加本表 980 个业务功能点。
+- 本表旧版本曾把 `Core API` 写入终端列；v2 已按真实客户端宿主修正，后端 owner 统一见下方服务映射。新任务必须映射到 v2 目标服务 owner，不能据此断言微服务已完成。
+- `V2-EXT-*` 属于 v2 范围内的待细化签收单元；未完成 v2 设计/架构/合规签收前不得进入 WBS、契约或默认路由。
+- 新任务必须同时填写 `Source Ref`、`Arch Ref`、`Service Owner`、`Client Host`、`Contract Ref` 和证据路径；详见 [ADR-0009](../docs/10-decisions/0009-v2-design-baseline-and-task-rebaseline.md)。
+
+### v2 服务 owner 映射（不增加业务功能数）
+
+| 业务域 | v2 Service Owner | 权限/平台前置 |
+|---|---|---|
+| ONB / USR | `iam-service` + `learner-service` | `ARCH-GW-001`、`ARCH-IAM-001/002` |
+| VOC / RDG | `content-service` + `learning-service` + 按需 `assessment-service` | 内容/题目定义归 content，进度/SRS 归 learning，阅读测验作答归 assessment |
+| GRM / WRT | `content-service` + `assessment-service` + `learning-service` | 题目/规则版本归 content，attempt/反馈归 assessment，掌握度投影归 learning |
+| LST / SPK | `content-service` + `media-service` + `assessment-service` + 按需 `learning-service` | 媒体/版权归 content+media，作答/录音会话/评分归 assessment，学习进度归 learning |
+| ASM | `content-service` + `assessment-service` + `learning-service` | `ARCH-API-001`、`ARCH-IAM-002`；题目规则/attempt/掌握度分别由 content/assessment/learning 拥有 |
+| GAM | `gamification-service` | `ARCH-EVT-001`、`ARCH-REL-001` |
+| SOC | `social-service` | `ARCH-IAM-002`、`ARCH-SEC-001` |
+| INF | `notification-service` + `media-service` + `workflow-service` | `ARCH-EVT-001`、`ARCH-OBS-001` |
+| COM | `commerce-service` | `ARCH-IAM-002`、`ARCH-DR-001` |
+| ADM | `admin-ops-service` + 各领域服务 | `ARCH-IAM-002`、`ARCH-OBS-001` |
+| AI2 | `ai-orchestrator` + `content-safety` + `evaluation` | Phase 2 Gate |
+| K12 | `guardian-service` + `institution-service` + `curriculum-rights-service` | Phase 3 Gate |
 
 ---
 
@@ -73,11 +98,11 @@
 | **FEAT-VOC-008** | 单词详情 | 派生词与同反义词族网 | 关联展示名词/动词/形容词衍生形态及高频近义词辨析卡片 | App/Web/H5 | Phase 1 (P0) | PRD §4.2, §5.2 |
 | **FEAT-VOC-009** | 单词详情 | 词根词缀图解拆解 | 标注前缀 (Prefix) + 词根 (Root) + 后缀 (Suffix) 逻辑图解 | App/Web/H5 | Phase 1 (P0) | PRD §5.1 |
 | **FEAT-VOC-010** | 单词详情 | 易混淆词陷阱对照 | 展示形近词/义近词对照表（如 accept vs except），标红差异字母 | App/Web/H5 | Phase 1 (P0) | PRD §4.2 |
-| **FEAT-VOC-011** | SRS 记忆引擎 | 改进型 SuperMemo SM-2 算法 | 基于回答质量 (0~3) 动态计算 Ease Factor (1.30~2.50) 与复习间隔 | Core API | Phase 1 (P0) | PRD §4.3 |
-| **FEAT-VOC-012** | SRS 记忆引擎 | 艾宾浩斯复习排程梯度 | 间隔梯度按 1天 -> 3天 -> 7天 -> 15天 -> 30天 -> 90天 递进排程 | Core API | Phase 1 (P0) | PRD §4.3.1 |
+| **FEAT-VOC-011** | SRS 记忆引擎 | 改进型 SuperMemo SM-2 算法 | 基于回答质量 (0~3) 动态计算 Ease Factor (1.30~2.50) 与复习间隔 | App/Web/H5 | Phase 1 (P0) | PRD §4.3 |
+| **FEAT-VOC-012** | SRS 记忆引擎 | 艾宾浩斯复习排程梯度 | 间隔梯度按 1天 -> 3天 -> 7天 -> 15天 -> 30天 -> 90天 递进排程 | App/Web/H5 | Phase 1 (P0) | PRD §4.3.1 |
 | **FEAT-VOC-013** | SRS 记忆引擎 | 主动回忆 (Active Recall) 交互 | 背词卡正面仅展示单词与音标，强制用户主动回忆，点击才翻面 | App/Web/H5 | Phase 1 (P0) | PRD §4.3.2 |
 | **FEAT-VOC-014** | SRS 记忆引擎 | 4 级信心度评定按钮 | 提供“完全忘了 (0) / 模糊 (1) / 顺利想起 (2) / 轻而易举 (3)”输入 | App/Web/H5 | Phase 1 (P0) | PRD §4.3.2 |
-| **FEAT-VOC-015** | SRS 记忆引擎 | 逾期复习智能平滑算法 | 断签多日后自动按遗忘权重重排，单日上限封顶，防止复习雪崩 | Core API | Phase 1 (P0) | PRD §4.3 |
+| **FEAT-VOC-015** | SRS 记忆引擎 | 逾期复习智能平滑算法 | 断签多日后自动按遗忘权重重排，单日上限封顶，防止复习雪崩 | App/Web/H5 | Phase 1 (P0) | PRD §4.3 |
 | **FEAT-VOC-016** | 单词训练 | 4 选 1 词义选择题 | 英文选中文释义，或中文释义选对应英文单词，干扰项同难度 | App/Web/H5 | Phase 1 (P0) | PRD §4.4 |
 | **FEAT-VOC-017** | 单词训练 | 听音辨词选择题 | 仅播放发音音频，在 4 个选项中选出正确释义或拼写 | App/Web/H5 | Phase 1 (P0) | PRD §4.4 |
 | **FEAT-VOC-018** | 单词训练 | 例句挖空选词填空 | 给出英文例句并挖空目标词，根据上下文选出最恰当单词 | App/Web/H5 | Phase 1 (P0) | PRD §4.4 |
@@ -87,12 +112,12 @@
 | **FEAT-VOC-022** | 个人词库 | 已掌握词库 (Mastered) | 展示所有通过 7 日延迟复验的单词，支持检索与主动“移出生词” | App/Web/H5 | Phase 1 (P0) | PRD §4.5 |
 | **FEAT-VOC-023** | 个人词库 | 词库熟练度过滤器 | 支持按 A1/A2/B1/B2 难度、掌握状态（生疏/学习中/已掌握）筛选 | App/Web/H5 | Phase 1 (P0) | PRD §4.5 |
 | **FEAT-VOC-024** | 句块 SRS | Phrase & Chunk 句块知识库 | 收录 2000+ 高频动词短语、介词搭配、习惯表达（如 take care of） | All | Phase 1 (P0) | PRD §4.6 |
-| **FEAT-VOC-025** | 句块 SRS | 句块独立 SM-2 排程 | 句块作为独立学习单元纳入 SRS 复习流，不与单个孤立单词混淆 | Core API | Phase 1 (P0) | PRD §4.6 |
+| **FEAT-VOC-025** | 句块 SRS | 句块独立 SM-2 排程 | 句块作为独立学习单元纳入 SRS 复习流，不与单个孤立单词混淆 | App/Web/H5 | Phase 1 (P0) | PRD §4.6 |
 | **FEAT-VOC-026** | 表达库 | 句子挖掘 (Sentence Mining) | 在阅读/听力中长按句子弹出 Bottom Sheet 一键收藏至表达库 | App/Web/H5 | Phase 1 (P0) | PRD §4.7 |
 | **FEAT-VOC-027** | 表达库 | 我的表达库管理 | 分类管理收藏的经典句子、金句短语，支持打标签与原声重播 | App/Web/H5 | Phase 1 (P0) | PRD §4.7 |
 | **FEAT-VOC-028** | 词根专题 | 100+ 核心词根串联课程 | 按语系和象形逻辑分类，每个词根串讲 5~10 个同根衍生词 | App/Web/H5 | Phase 1 (P0) | PRD §5.1 |
 | **FEAT-VOC-029** | 词族可视化 | 交互式词族衍生树拓扑 | 基于 SVG/Canvas 展开词根放射状衍生树（如 act -> action/active） | App/Web/H5 | Phase 1 (P1) | PRD §5.2 |
-| **FEAT-VOC-030** | 词汇防作弊 | 批量刷词行为风控 | 检测单词停留小于 300ms 的异常刷词行为，过滤 XP 并不计入打卡 | Core API | Phase 1 (P0) | PRD §4.3 |
+| **FEAT-VOC-030** | 词汇防作弊 | 批量刷词行为风控 | 检测单词停留小于 300ms 的异常刷词行为，过滤 XP 并不计入打卡 | App/Web/H5 | Phase 1 (P0) | PRD §4.3 |
 
 ---
 
@@ -150,13 +175,13 @@
 | **FEAT-ASM-001** | 交互组件 | 单选/多选卡片 (ChoiceBox) | 最小 48px 热区，支持键盘 1/2/3/4 快捷键与平滑转场动画 | App/Web/H5 | Phase 1 (P0) | PRD §4.4 |
 | **FEAT-ASM-002** | 交互组件 | 图文连线组件 (ConnectLine) | SVG 贝塞尔曲线动态拖拽连线，连错即时震动回弹 | App/Web/H5 | Phase 1 (P0) | PRD §4.4 |
 | **FEAT-ASM-003** | 交互组件 | 句子语序拖拽 (DragSorter) | 触控拖拽吸附，自动重排占位符，支持一键撤销与重置 | App/Web/H5 | Phase 1 (P0) | PRD §4.4 |
-| **FEAT-ASM-004** | 今日任务流 | Daily Stream 动态编排 | 每日按“新学 40% + 复习 40% + 错题 20%”动态打包 15~20 题沉浸流 | Core API | Phase 1 (P0) | PRD §13.1 |
+| **FEAT-ASM-004** | 今日任务流 | Daily Stream 动态编排 | 每日按“新学 40% + 复习 40% + 错题 20%”动态打包 15~20 题沉浸流 | App/Web/H5 | Phase 1 (P0) | PRD §13.1 |
 | **FEAT-ASM-005** | 今日任务流 | 批次结算与彩带动效 | 每组 15 题完成弹出结算卡片，展示正确率、用时、获取 XP | App/Web/H5 | Phase 1 (P0) | PRD §13.1 |
-| **FEAT-ASM-006** | 错题攻坚 | 错题自动归因捕获 | 做题出错自动打标（辨析错/拼写错/语法陷阱/听力漏词）写入错题表 | Core API | Phase 1 (P0) | PRD §13.4 |
-| **FEAT-ASM-007** | 错题攻坚 | 当日流末尾即时攻坚 | 当日做错的题目自动追加到今日流末尾，强制再次订正 | Core API | Phase 1 (P0) | PRD §13.4 |
-| **FEAT-ASM-008** | 掌握闭环 | 24 小时 D+1 延迟验证 | 当日订正后转为待验证态，次日复习流暗度抽检，答错重新打回 | Core API | Phase 1 (P0) | PRD §13.9 |
-| **FEAT-ASM-009** | 掌握闭环 | 7 天 D+7 二次巩固复验 | D+1 通过后进入 D+7 复验池，通过后正式转入“已掌握 (Mastered)” | Core API | Phase 1 (P0) | PRD §13.9 |
-| **FEAT-ASM-010** | 掌握闭环 | 四阶掌握度生命周期流转 | 生疏 (New) -> 学习中 (Learning) -> 已掌握 (Mastered) -> 牢固 (Consolidated) | Core API | Phase 1 (P0) | PRD §13.9 |
+| **FEAT-ASM-006** | 错题攻坚 | 错题自动归因捕获 | 做题出错自动打标（辨析错/拼写错/语法陷阱/听力漏词）写入错题表 | App/Web/H5 | Phase 1 (P0) | PRD §13.4 |
+| **FEAT-ASM-007** | 错题攻坚 | 当日流末尾即时攻坚 | 当日做错的题目自动追加到今日流末尾，强制再次订正 | App/Web/H5 | Phase 1 (P0) | PRD §13.4 |
+| **FEAT-ASM-008** | 掌握闭环 | 24 小时 D+1 延迟验证 | 当日订正后转为待验证态，次日复习流暗度抽检，答错重新打回 | App/Web/H5 | Phase 1 (P0) | PRD §13.9 |
+| **FEAT-ASM-009** | 掌握闭环 | 7 天 D+7 二次巩固复验 | D+1 通过后进入 D+7 复验池，通过后正式转入“已掌握 (Mastered)” | App/Web/H5 | Phase 1 (P0) | PRD §13.9 |
+| **FEAT-ASM-010** | 掌握闭环 | 四阶掌握度生命周期流转 | 生疏 (New) -> 学习中 (Learning) -> 已掌握 (Mastered) -> 牢固 (Consolidated) | App/Web/H5 | Phase 1 (P0) | PRD §13.9 |
 | **FEAT-ASM-011** | 错题本管理 | 错题本检索与筛选 | 支持按题型、所属词书、错误类型筛选错题，支持标记“已彻底攻克” | App/Web/H5 | Phase 1 (P0) | PRD §13.4 |
 | **FEAT-ASM-012** | 快速训练 | Quick Practice 碎片练习 | 提供 3 / 5 / 10 / 20 分钟倒计时快速刷题模式，随时随地随开随练 | App/Web/H5 | Phase 1 (P0) | PRD §13.5 |
 | **FEAT-ASM-013** | 阶段验收 | Checkpoint 关卡阶段验收测 | 每学完 1 个单元或 50 词触发 15 题验收测，通过方可解锁后续章节 | App/Web/H5 | Phase 1 (P0) | PRD §13.3 |
@@ -178,7 +203,7 @@
 | **FEAT-GAM-002** | 打卡系统 | Streak 连续学习天数 | 记录连续有效打卡天数，不同天数触发不同颜色打卡火焰动效 | App/Web/H5 | Phase 1 (P0) | PRD §14.2 |
 | **FEAT-GAM-003** | 打卡系统 | 断签灰色冰冻与破冰挑战 | 断签后火焰冰冻，支持消耗补签卡或完成 15 道紧急特训破冰解冻 | App/Web/H5 | Phase 1 (P0) | PRD §14.2 |
 | **FEAT-GAM-004** | 打卡系统 | 周末打卡保护伞 | 允许用户预设周末休息日，不中断连续学习 Streak 记录 | App/Web/H5 | Phase 1 (P1) | PRD §14.2 |
-| **FEAT-GAM-005** | 虚拟经济 | 星币 (Star Coins) 产出与消耗 | 通过学习行为获得星币，用于兑换装扮切片、补签卡与定制音效包 | Core API | Phase 1 (P0) | PRD §14.3 |
+| **FEAT-GAM-005** | 虚拟经济 | 星币 (Star Coins) 产出与消耗 | 通过学习行为获得星币，用于兑换装扮切片、补签卡与定制音效包 | App/Web/H5 | Phase 1 (P0) | PRD §14.3 |
 | **FEAT-GAM-006** | 任务中心 | 每日任务体系 (Daily Quests) | 每日刷新 3 个任务（如：背 20 个新词、复习 15 道错题、专注 15 分钟） | App/Web/H5 | Phase 1 (P0) | PRD §14.4 |
 | **FEAT-GAM-007** | 任务中心 | 每周挑战任务 (Weekly Goals) | 每周一重置挑战（如：累计打卡 5 天、完成 1 套模考、获得 500 XP） | App/Web/H5 | Phase 1 (P0) | PRD §14.4 |
 | **FEAT-GAM-008** | 成就馆 | 勋章成就系统 (Achievements) | 设立 50+ 荣誉勋章（早起鸟、夜猫子、百词斩、语法宗师等） | App/Web/H5 | Phase 1 (P0) | PRD §14.5 |
@@ -192,7 +217,7 @@
 | **FEAT-GAM-016** | 奖励箱 | 学习行为免费奖励箱 (Chest) | 达成每日目标或 Checkpoint 免费掉落，严禁任何付费购买行为 | App/Web/H5 | Phase 1 (P0) | PRD §16.7 |
 | **FEAT-GAM-017** | 奖励箱 | 奖励种类与开箱动效 | 提供青铜箱、白银箱、黄金箱、星河箱，开箱触发晃动与光柱动效 | App/Web/H5 | Phase 1 (P0) | PRD §16.8 |
 | **FEAT-GAM-018** | 奖励箱 | 掉落概率公示与开箱记录 | 界面显著位置公示各品质掉落概率（合规要求），提供历史抽取流水 | App/Web/H5 | Phase 1 (P0) | PRD §16.9 |
-| **FEAT-GAM-019** | 碎片系统 | 重复道具自动转化为碎片 | 抽中已有装扮自动按品质折算为星光碎片，集齐指定碎片可合成装扮 | Core API | Phase 1 (P0) | PRD §16.10 |
+| **FEAT-GAM-019** | 碎片系统 | 重复道具自动转化为碎片 | 抽中已有装扮自动按品质折算为星光碎片，集齐指定碎片可合成装扮 | App/Web/H5 | Phase 1 (P0) | PRD §16.10 |
 | **FEAT-GAM-020** | 收藏图鉴 | Collection Book 收集图鉴 | 陈列全量装扮与道具图鉴，点亮已拥有的道具，达成全套解锁称号 | App/Web/H5 | Phase 1 (P0) | PRD §16.13 |
 | **FEAT-GAM-021** | 学习空间 | 个人星空学习桌 (Study Space) | 3D 个人书房/星空露台场景，摆放已解锁的奖杯、绿植与打卡日历 | App/Web/H5 | Phase 1 (P1) | PRD §16.3 |
 | **FEAT-GAM-022** | 赛季系统 | 学习赛季 (Learning Season) | 每季度开启 1 季专属主题赛季，累计赛季积分逐级解锁赛季限定服饰 | App/Web/H5 | Phase 1 (P1) | PRD §16.14 |
@@ -206,7 +231,7 @@
 | **FEAT-SOC-001** | 自习室 | 主题虚拟自习室大厅 | 提供 CET4 冲刺、考研早起、雅思静音、深夜自律等多间 20~30 人房间 | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
 | **FEAT-SOC-002** | 自习室 | 虚拟座位表与状态展示 | 展示入座同桌的 Avatar 头像、昵称、专注标签（如“正在背核心词”） | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
 | **FEAT-SOC-003** | 自习室 | 番茄钟与沉浸白噪音混音 | 25/45 分钟番茄钟，提供雨声、森林、咖啡馆、壁炉等白噪音音频 | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
-| **FEAT-SOC-004** | 自习室 | 离座与挂机自动释座 | 连续 5 分钟无做题/学习行为自动判定为挂机，释出座位转为离线 | Core API | Phase 1 (P0) | PRD §15.2 |
+| **FEAT-SOC-004** | 自习室 | 离座与挂机自动释座 | 连续 5 分钟无做题/学习行为自动判定为挂机，释出座位转为离线 | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
 | **FEAT-SOC-005** | 自习室 | 0 文本风险预设打气气泡 | 严禁自由文字聊天，仅允许点击同桌发送“加油/一起上岸/太强了”气泡 | App/Web/H5 | Phase 1 (P0) | PRD §15.2, §15.4 |
 | **FEAT-SOC-006** | 排行榜 | 专注榜与学词榜 | 每日/每周按专注有效时长、掌握新词数排名，每周一凌晨结算 | App/Web/H5 | Phase 1 (P0) | PRD §15.1 |
 | **FEAT-SOC-007** | 排行榜 | 隐私保护与匿名模式 | 允许在设置中开启“隐身模式”，在公开榜单中显示为“匿名星友” | App/Web/H5 | Phase 1 (P0) | PRD §15.1 |
@@ -263,7 +288,7 @@
 | **FEAT-ADM-003** | 教研中台 | 题库管理与批量导入 | 支持 Excel/JSON 题库批量导入校验、题目查重、多题型所见即所得录入 | Admin Web | Phase 1 (P0) | PRD §20.1 |
 | **FEAT-ADM-004** | 教研中台 | 试卷智能组卷向导 | 按考种（CET4/CET6/考研）、题型分布、难度系数自动/手动组卷发布 | Admin Web | Phase 1 (P0) | PRD §20.1 |
 | **FEAT-ADM-005** | 合规双审 | 双审内容上线审批流 | 教研员录入 (Draft) -> 提交初审 (InReview) -> 主管终审 (Approved) -> 发布 (Published) | Admin Web | Phase 1 (P0) | PRD §20.2 |
-| **FEAT-ADM-006** | 合规双审 | 敏感词与涉政涉暴机器初筛 | 前置接入敏感词正则与文本安全审核 API，命中敏感词阻断提交 | Core API | Phase 1 (P0) | PRD §20.2, §0.4 |
+| **FEAT-ADM-006** | 合规双审 | 敏感词与涉政涉暴机器初筛 | 前置接入敏感词正则与文本安全审核 API，命中敏感词阻断提交 | Admin Web | Phase 1 (P0) | PRD §20.2, §0.4 |
 | **FEAT-ADM-007** | 运营中心 | 用户全景档案与风控封禁 | 检索用户学习轨迹、充值订单、作弊行为标记，支持临时/永久封号 | Admin Web | Phase 1 (P0) | PRD §20.3 |
 | **FEAT-ADM-008** | 运营中心 | 内容纠错工单处理工作台 | 查看学员前台提交的报错工单，一键定位原题修改并通知反馈用户 | Admin Web | Phase 1 (P0) | PRD §18.14 |
 | **FEAT-ADM-009** | 数据大盘 | 运营与财务核心大盘 | 实时监控 DAU、MAU、次日/7日留存率、今日付费 GMV 与转化漏斗 | Admin Web | Phase 1 (P0) | PRD §20.3 |
@@ -276,7 +301,7 @@
 | 功能编号 | 功能大类 | 功能名称 | 细分功能与验收要点 | 适用终端 | 阶段/优先级 | 关联 PRD |
 | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
 | **FEAT-AI2-001** | AI 伴学 | 智能对话导师 (AI Tutor) | 基于大模型人格化伴学，针对做题难点进行启发式引导与提问答疑 | App/Web/H5 | Phase 2 | PRD §24.1 |
-| **FEAT-AI2-002** | AI 伴学 | 长期学习记忆画像 (Long Memory) | 记住用户的薄弱语法点、易错词根与职业背景，对话中自适应定制 | Core API | Phase 2 | PRD §24.2 |
+| **FEAT-AI2-002** | AI 伴学 | 长期学习记忆画像 (Long Memory) | 记住用户的薄弱语法点、易错词根与职业背景，对话中自适应定制 | App/Web/H5 | Phase 2 | PRD §24.2 |
 | **FEAT-AI2-003** | 句法分析 | 动态即时句法 X 光机 | 用户任意输入一句英文，AI 实时生成主谓宾成分与语法切片树 | App/Web/H5 | Phase 2 | PRD §25.1 |
 | **FEAT-AI2-004** | 写作批改 | 雅思/托福/考研作文多维批改 | 针对语法错误、词汇丰富度、篇章连贯性输出打分及高阶润色建议 | App/Web/H5 | Phase 2 | PRD §26.1~§26.3 |
 | **FEAT-AI2-005** | 语音评测 | 音素级流式发音评分 (ASR) | 实时评测发音准确度、流利度、完整度，红色标出具体发错音素 | App/Web/H5 | Phase 2 | PRD §27.1~§27.3 |

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node ../../scripts/run-fixed-port.mjs admin-web-dev -- vite --host 127.0.0.1 --port 18181 --strictPort",
     "build": "vue-tsc && vite build",
+    "test:b12": "node --test tests/b12-boundaries.test.mjs",
     "preview": "node ../../scripts/run-fixed-port.mjs admin-web-preview -- vite preview --host 127.0.0.1 --port 18191 --strictPort"
   },
   "dependencies": {
@@ -15,7 +16,9 @@
     "element-plus": "^2.6.0",
     "@element-plus/icons-vue": "^2.3.0",
     "@englishflow/api-client": "workspace:*",
-    "@englishflow/contracts": "workspace:*"
+    "@englishflow/contracts": "workspace:*",
+    "@englishflow/design-tokens": "workspace:*",
+    "@englishflow/i18n": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",

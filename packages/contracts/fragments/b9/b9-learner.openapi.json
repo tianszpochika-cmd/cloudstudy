@@ -1,0 +1,364 @@
+{
+  "tags": [
+    { "name": "b9-learner", "description": "B9 learner-owned profile, target, preference and first-day read models" }
+  ],
+  "paths": {
+    "/api/v1/learner/profile": {
+      "get": {
+        "tags": ["b9-learner"],
+        "summary": "Read the authenticated learner profile",
+        "operationId": "getB9LearnerProfile",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "learner-service",
+          "tenantSource": "verified IAM context; Phase 1 is server-derived platform",
+          "resourceOwner": "authenticated principal",
+          "readModel": "lrn_profile",
+          "fieldFiltering": "self profile only; no IAM identity or private audit fields"
+        },
+        "responses": {
+          "200": { "description": "Learner profile", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerProfileResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" }
+        }
+      },
+      "patch": {
+        "tags": ["b9-learner"],
+        "summary": "Update learner-owned profile preferences",
+        "operationId": "patchB9LearnerProfile",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "learner-service",
+          "command": "learner.profile.update",
+          "tenantAndOwner": "derived from verified token and resource row; never accepted from request body"
+        },
+        "x-idempotency": { "required": true, "strategy": "learner-profile-update", "keyHeader": "Idempotency-Key", "replayBehavior": "same subject and request hash returns the original profile version" },
+        "parameters": [{ "$ref": "#/components/parameters/B9IdempotencyKey" }, { "$ref": "#/components/parameters/B9IfMatch" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerProfilePatch" } } } },
+        "responses": {
+          "200": { "description": "Profile updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerProfileResponse" } } } },
+          "400": { "$ref": "#/components/responses/B9BadRequest" },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "409": { "$ref": "#/components/responses/B9Conflict" }
+        }
+      }
+    },
+    "/api/v1/learner/targets": {
+      "get": {
+        "tags": ["b9-learner"],
+        "summary": "Read the authenticated learner target",
+        "operationId": "getB9LearnerTarget",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "readModel": "lrn_learning_target", "fieldFiltering": "self target only" },
+        "responses": {
+          "200": { "description": "Learning target", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerTargetResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "404": { "$ref": "#/components/responses/B9NotFound" }
+        }
+      },
+      "put": {
+        "tags": ["b9-learner"],
+        "summary": "Create or replace the authenticated learner target",
+        "operationId": "putB9LearnerTarget",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "command": "learner.target.upsert", "tenantAndOwner": "server-derived" },
+        "x-idempotency": { "required": true, "strategy": "learner-target-upsert", "keyHeader": "Idempotency-Key", "replayBehavior": "same subject and state version returns the original target" },
+        "parameters": [{ "$ref": "#/components/parameters/B9IdempotencyKey" }, { "$ref": "#/components/parameters/B9IfMatch" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerTargetUpsert" } } } },
+        "responses": {
+          "200": { "description": "Target saved", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerTargetResponse" } } } },
+          "400": { "$ref": "#/components/responses/B9BadRequest" },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "409": { "$ref": "#/components/responses/B9Conflict" }
+        }
+      }
+    },
+    "/api/v1/learner/preferences": {
+      "get": {
+        "tags": ["b9-learner"],
+        "summary": "Read learner UI and learning preferences",
+        "operationId": "getB9LearnerPreferences",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "readModel": "lrn_preference", "fieldFiltering": "self preference only; uiLocale and contentLocale remain separate" },
+        "responses": {
+          "200": { "description": "Learner preferences", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerPreferencesResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" }
+        }
+      },
+      "patch": {
+        "tags": ["b9-learner"],
+        "summary": "Update learner UI and learning preferences",
+        "operationId": "patchB9LearnerPreferences",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "command": "learner.preference.update", "tenantAndOwner": "server-derived" },
+        "x-idempotency": { "required": true, "strategy": "learner-preference-update", "keyHeader": "Idempotency-Key", "replayBehavior": "same subject and request hash returns the original preferences" },
+        "parameters": [{ "$ref": "#/components/parameters/B9IdempotencyKey" }, { "$ref": "#/components/parameters/B9IfMatch" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerPreferencesPatch" } } } },
+        "responses": {
+          "200": { "description": "Preferences updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LearnerPreferencesResponse" } } } },
+          "400": { "$ref": "#/components/responses/B9BadRequest" },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "409": { "$ref": "#/components/responses/B9Conflict" }
+        }
+      }
+    },
+    "/api/v1/learner/first-day": {
+      "get": {
+        "tags": ["b9-learner"],
+        "summary": "Read the deterministic first-day projection",
+        "operationId": "getB9FirstDayProjection",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "projection": "lrn_first_day_projection", "dependencies": ["content-service public learner projection"], "fieldFiltering": "self projection; task refs contain no answer rules" },
+        "responses": {
+          "200": { "description": "First-day projection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9FirstDayProjectionResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "409": { "$ref": "#/components/responses/B9Conflict" }
+        }
+      }
+    },
+    "/api/v1/learner/home": {
+      "get": {
+        "tags": ["b9-learner"],
+        "summary": "Read the learner home projection",
+        "operationId": "getB9LearnerHomeProjection",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "projection": "lrn_first_day_projection + learner home read model", "fieldFiltering": "self projection; content data is read-only and version-pinned" },
+        "responses": {
+          "200": { "description": "Learner home projection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9HomeProjectionResponse" } } } },
+          "401": { "$ref": "#/components/responses/B9Unauthorized" },
+          "403": { "$ref": "#/components/responses/B9Forbidden" },
+          "409": { "$ref": "#/components/responses/B9Conflict" }
+        }
+      }
+    },
+    "/internal/v1/learner/shadow-profile/{principalId}": {
+      "get": {
+        "tags": ["b9-learner"],
+        "summary": "Read-only legacy profile shadow adapter",
+        "operationId": "getB9LegacyLearnerProfileShadow",
+        "security": [{ "B8WorkloadIdentity": [] }],
+        "x-contract": { "owner": "learner-service", "adapter": "legacy read-only", "write": "forbidden", "source": "core-api legacy read model", "migration": "shadow comparison only; no cross-service table write" },
+        "parameters": [{ "$ref": "#/components/parameters/B9PrincipalId" }],
+        "responses": {
+          "200": { "description": "Shadow comparison result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9LegacyShadowProfileResponse" } } } },
+          "404": { "$ref": "#/components/responses/B9NotFound" },
+          "503": { "$ref": "#/components/responses/B9Unavailable" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "B9LearnerProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["principalId", "tenantId", "status", "uiLocale", "contentLocale", "timezone", "stateVersion", "updatedAt"],
+        "properties": {
+          "principalId": { "$ref": "#/components/schemas/B9PrincipalId" },
+          "tenantId": { "type": "string", "const": "platform", "description": "Phase 1 tenant is derived by the server; clients cannot select it." },
+          "status": { "type": "string", "enum": ["ONBOARDING", "ACTIVE", "SUSPENDED", "ARCHIVED"] },
+          "uiLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "timezone": { "type": "string", "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$", "maxLength": 64 },
+          "targetGoal": { "type": "string", "maxLength": 96 },
+          "proficiencyLevel": { "type": "string", "enum": ["UNKNOWN", "A1", "A2", "B1", "B2", "C1", "C2"] },
+          "stateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
+          "updatedAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9LearnerProfilePatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expectedStateVersion"],
+        "description": "只提交可由学习者修改的字段；principalId、tenantId、role、owner 和权限事实由服务端派生。",
+        "properties": {
+          "expectedStateVersion": { "$ref": "#/components/schemas/B9ExpectedStateVersion" },
+          "uiLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "timezone": { "type": "string", "maxLength": 64 },
+          "targetGoal": { "type": "string", "minLength": 1, "maxLength": 96 },
+          "proficiencyLevel": { "type": "string", "enum": ["UNKNOWN", "A1", "A2", "B1", "B2", "C1", "C2"] }
+        }
+      },
+      "B9LearnerTarget": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["targetId", "goalCode", "targetLevel", "dailyQuotaMinutes", "status", "stateVersion", "updatedAt"],
+        "properties": {
+          "targetId": { "type": "integer", "format": "int64", "minimum": 1 },
+          "goalCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
+          "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "examCode": { "type": "string", "maxLength": 64 },
+          "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45, 60] },
+          "targetDate": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["ACTIVE", "PAUSED", "COMPLETED", "ARCHIVED"] },
+          "stateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
+          "updatedAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9LearnerTargetUpsert": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expectedStateVersion", "goalCode", "targetLevel", "dailyQuotaMinutes"],
+        "description": "目标命令不接受 tenantId 或 owner/principal 字段；目标始终绑定到已验证主体。",
+        "properties": {
+          "expectedStateVersion": { "$ref": "#/components/schemas/B9ExpectedStateVersion" },
+          "goalCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
+          "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "examCode": { "type": "string", "maxLength": 64 },
+          "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45, 60] },
+          "targetDate": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["ACTIVE", "PAUSED"] }
+        }
+      },
+      "B9LearnerPreferences": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["uiLocale", "contentLocale", "timezone", "themeMode", "highContrast", "motionMode", "stateVersion", "updatedAt"],
+        "properties": {
+          "uiLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "timezone": { "type": "string", "maxLength": 64 },
+          "themeMode": { "type": "string", "enum": ["LIGHT", "DARK", "SYSTEM"] },
+          "highContrast": { "type": "boolean" },
+          "motionMode": { "type": "string", "enum": ["FULL", "REDUCED", "OFF"] },
+          "stateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
+          "updatedAt": { "$ref": "#/components/schemas/B9DateTime" }
+        }
+      },
+      "B9LearnerPreferencesPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expectedStateVersion"],
+        "description": "UI locale、content locale、主题和无障碍设置分开持久化；contentLocale 不得覆盖 UI locale。",
+        "properties": {
+          "expectedStateVersion": { "$ref": "#/components/schemas/B9ExpectedStateVersion" },
+          "uiLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "contentLocale": { "$ref": "#/components/schemas/B9Locale" },
+          "timezone": { "type": "string", "maxLength": 64 },
+          "themeMode": { "type": "string", "enum": ["LIGHT", "DARK", "SYSTEM"] },
+          "highContrast": { "type": "boolean" },
+          "motionMode": { "type": "string", "enum": ["FULL", "REDUCED", "OFF"] }
+        }
+      },
+      "B9TaskRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["taskId", "taskType", "status", "position"],
+        "properties": {
+          "taskId": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "taskType": { "type": "string", "enum": ["GOAL_SETUP", "PLACEMENT", "LESSON", "REVIEW", "CONTENT_RECOVERY"] },
+          "status": { "type": "string", "enum": ["LOCKED", "AVAILABLE", "IN_PROGRESS", "COMPLETED", "UNAVAILABLE"] },
+          "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+          "contentVersionPin": { "$ref": "#/components/schemas/B9ContentVersionId" },
+          "position": { "type": "integer", "minimum": 0 },
+          "unavailableReason": { "type": "string", "enum": ["NONE", "CONTENT_UNPUBLISHED", "RIGHTS_EXPIRED", "POLICY_DENIED", "SERVICE_DEGRADED"] }
+        }
+      },
+      "B9FirstDayProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["state", "profileReady", "targetReady", "placementStatus", "taskCount", "tasks", "contentEpoch", "projectionVersion", "generatedAt"],
+        "properties": {
+          "state": { "type": "string", "enum": ["NOT_READY", "READY", "DEGRADED"] },
+          "profileReady": { "type": "boolean" },
+          "targetReady": { "type": "boolean" },
+          "placementStatus": { "type": "string", "enum": ["NOT_STARTED", "IN_PROGRESS", "SKIPPED", "COMPLETED", "UNAVAILABLE"] },
+          "taskCount": { "type": "integer", "minimum": 0 },
+          "tasks": { "type": "array", "items": { "$ref": "#/components/schemas/B9TaskRef" }, "maxItems": 100 },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "generatedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "degradedReason": { "type": "string", "enum": ["NONE", "CONTENT_PROJECTION_STALE", "LEGACY_SHADOW_ONLY", "DEPENDENCY_UNAVAILABLE"] }
+        }
+      },
+      "B9HomeProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["projectionVersion", "contentEpoch", "generatedAt", "firstDay", "tasks"],
+        "properties": {
+          "projectionVersion": { "$ref": "#/components/schemas/B9ProjectionVersion" },
+          "contentEpoch": { "$ref": "#/components/schemas/B9ContentEpoch" },
+          "generatedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "firstDay": { "$ref": "#/components/schemas/B9FirstDayProjection" },
+          "tasks": { "type": "array", "items": { "$ref": "#/components/schemas/B9TaskRef" }, "maxItems": 100 },
+          "resume": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "contentCode": { "$ref": "#/components/schemas/B9ContentCode" },
+              "contentVersionPin": { "$ref": "#/components/schemas/B9ContentVersionId" },
+              "checkpointKey": { "type": "string", "maxLength": 128 },
+              "available": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "B9LegacyShadowProfile": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source", "profile", "legacyProfileVersion", "mappedAt", "consistent"],
+        "properties": {
+          "source": { "type": "string", "const": "LEGACY_READ_ONLY" },
+          "profile": { "$ref": "#/components/schemas/B9LearnerProfile" },
+          "legacyProfileVersion": { "type": "string", "maxLength": 64 },
+          "mappedAt": { "$ref": "#/components/schemas/B9DateTime" },
+          "consistent": { "type": "boolean" },
+          "differenceCodes": { "type": "array", "items": { "type": "string", "maxLength": 96 }, "maxItems": 32 }
+        }
+      },
+      "B9LearnerResponseMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "traceId": { "type": "string", "maxLength": 128 },
+          "requestId": { "type": "string", "maxLength": 128 },
+          "source": { "type": "string", "enum": ["LEARNER_SERVICE", "LEGACY_SHADOW"] },
+          "stale": { "type": "boolean" }
+        }
+      },
+      "B9LearnerProfileResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9LearnerProfile" }, "meta": { "$ref": "#/components/schemas/B9LearnerResponseMeta" } }
+      },
+      "B9LearnerTargetResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9LearnerTarget" }, "meta": { "$ref": "#/components/schemas/B9LearnerResponseMeta" } }
+      },
+      "B9LearnerPreferencesResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9LearnerPreferences" }, "meta": { "$ref": "#/components/schemas/B9LearnerResponseMeta" } }
+      },
+      "B9FirstDayProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9FirstDayProjection" }, "meta": { "$ref": "#/components/schemas/B9LearnerResponseMeta" } }
+      },
+      "B9HomeProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9HomeProjection" }, "meta": { "$ref": "#/components/schemas/B9LearnerResponseMeta" } }
+      },
+      "B9LegacyShadowProfileResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": { "data": { "$ref": "#/components/schemas/B9LegacyShadowProfile" }, "meta": { "$ref": "#/components/schemas/B9LearnerResponseMeta" } }
+      }
+    }
+  }
+}

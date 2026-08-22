@@ -1,6 +1,6 @@
 # MVP 范围与优先级
 
-> 本文件是 Phase 1 的执行范围，不覆盖全部 PRD 长期能力。最终技术基线：Vue 3 + TypeScript + uni-app、Spring Boot 3、MySQL 8.x、Redis 7.x；Phase 1 不启用生成式 AI。
+> 本文件是 Phase 1 的执行范围，不覆盖全部 PRD 长期能力。v2 技术基线：Vue 3 四项目、Java 25 LTS + Spring Boot 4.1 微服务/Gateway/IAM/RBAC、MySQL 8.x、Redis 7.x；现有 Spring Boot 3 `core-api` 仅作迁移兼容；Phase 1 不启用生成式 AI。
 
 ## MVP 成功条件
 
@@ -39,9 +39,23 @@
 
 ### 平台范围
 
-- 首发优先：Web/H5 + Android/iOS 包体验证。
-- 管理后台：Vue 3 + Element Plus。
-- 微信小程序作为 P1.5，不能阻塞 Web/H5 主链路。
+- 首发优先：`apps/mobile` 的移动 H5 / Android / iOS / iPad 学习链路，以及独立的 `apps/learner-web` 浏览器学习链路。
+- 管理后台：独立的 `apps/admin-web`（Vue 3 + Element Plus）。
+- 官网：独立的 `apps/official-site`，负责公开内容、下载引导、价格与合规公示，不承载登录后的学习业务。
+- 微信小程序作为 P1.5：由 `apps/mobile` 通过 uni-app 条件编译输出，不能阻塞 Web/H5 主链路，也不单独建立第二套业务项目。
+
+#### 前端项目冻结
+
+Phase 1 前端只维护以下四个独立项目；“平台”是项目的交付目标，不是额外的代码仓库或业务应用：
+
+| 项目 | 负责平台 / 场景 | 不负责 |
+|---|---|---|
+| `apps/mobile` | 移动 H5、iOS、Android、iPad；后续微信小程序 | PC Web 学习工作台、管理后台、官网公开页 |
+| `apps/learner-web` | PC Web、平板浏览器、PWA 学习工作台 | 移动 H5 的第二套页面、管理后台、官网公开页 |
+| `apps/admin-web` | 教研、审核、运营、商业化、客服和审计后台 | 学习者五 Tab、移动端业务页面 |
+| `apps/official-site` | 品牌官网、课程介绍、价格、下载、SEO 和合规公示 | 登录后的学习业务 |
+
+四个项目可共享契约、API 客户端、领域规则、设计 Token、埋点和国际化资源；页面 DOM、导航壳和平台交互按项目分别实现。
 
 ## P1：Phase 1 增强
 

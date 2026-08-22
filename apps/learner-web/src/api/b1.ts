@@ -1,4 +1,5 @@
 import { apiClient, type ApiRequestOptions } from './client'
+import { createClientId } from '../platform/client-id'
 import type {
   AssessmentReport,
   ContinueContext,
@@ -60,9 +61,7 @@ function readBoolean(value: unknown): boolean | null {
 }
 
 function withIdempotency(options: ApiRequestOptions = {}): ApiRequestOptions {
-  const key = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-    ? crypto.randomUUID()
-    : `b1-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  const key = createClientId('b1')
   return { ...options, headers: { ...(options.headers ?? {}), 'Idempotency-Key': key } }
 }
 

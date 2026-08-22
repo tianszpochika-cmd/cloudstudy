@@ -1,0 +1,808 @@
+{
+  "x-b8-idp-integration": {
+    "mode": "standard-oidc-adapter",
+    "protocol": "OIDC/OAuth2.1",
+    "pkceMethod": "S256",
+    "productionProvider": "pending-G-IDP",
+    "testDouble": "standard-oidc-provider-adapter",
+    "selfHostedTokenServer": false,
+    "note": "G-IDP 未批准前只实现适配器、契约和测试替身；不在平台内实现 OIDC 协议或 Token Server。"
+  },
+  "x-b8-compatibility": {
+    "strategy": "canonical-iam-routes-with-legacy-auth-compatibility",
+    "legacyRoutes": [
+      {
+        "legacy": "/api/v1/auth/refresh",
+        "canonical": "/api/v1/iam/session/refresh",
+        "strategy": "兼容期双路由；旧客户端继续使用旧 operationId，新客户端迁移到 iam-service owner 的 canonical operation。"
+      },
+      {
+        "legacy": "/api/v1/auth/logout",
+        "canonical": "/api/v1/iam/session/logout",
+        "strategy": "兼容期保留旧路径，不覆盖 B1 定义；两者共享撤销事实和相同错误语义。"
+      },
+      {
+        "legacy": "/api/v1/auth/sessions/{sessionId}/revoke",
+        "canonical": "/api/v1/iam/sessions/{sessionId}/revoke",
+        "strategy": "兼容期保留旧路径；服务端按已验证 principal 重新计算 session owner。"
+      }
+    ]
+  },
+  "tags": [
+    { "name": "b8-auth", "description": "标准 OIDC/OAuth 2.1 适配、会话轮换和撤销" },
+    { "name": "b8-iam", "description": "principal、设备、成人 Gate 和 consent 事实" },
+    { "name": "b8-security", "description": "统一登录后鉴权、服务侧决策和 fail-closed 语义" },
+    { "name": "b8-compliance", "description": "Phase 1 成人年龄 Gate 和最小化合规同意" }
+  ],
+  "paths": {
+    "/api/v1/auth/oidc/{provider}/authorization/start": {
+      "get": {
+        "tags": ["b8-auth"],
+        "operationId": "startB8OidcAuthorization",
+    "summary": "Start authorization code + PKCE through the approved standard IdP adapter; state, nonce and verifier are server-generated",
+        "security": [],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP" },
+        "parameters": [
+          { "$ref": "#/components/parameters/B8Provider" },
+          { "$ref": "#/components/parameters/B8RedirectUri" },
+          { "$ref": "#/components/parameters/B8ReturnTo" },
+          { "$ref": "#/components/parameters/B8UiLocale" },
+          { "$ref": "#/components/parameters/B8Theme" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Redirect URL and short-lived authorization transaction",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthorizationStartResponse" } } }
+          },
+          "400": { "$ref": "#/components/responses/B8BadRequest" },
+          "503": { "$ref": "#/components/responses/B8IdpUnavailable" }
+        }
+      }
+    },
+    "/api/v1/auth/oidc/{provider}/callback": {
+      "post": {
+        "tags": ["b8-auth"],
+        "operationId": "exchangeB8OidcCallback",
+        "summary": "Exchange an OIDC authorization code after server-side state, nonce and PKCE verification",
+        "security": [],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP" },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "oidc-callback-exchange",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一授权事务只允许一次成功交换；重放进入 session_revoked 或 replay_detected 语义，不返回第二个有效会话。"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B8Provider" },
+          { "$ref": "#/components/parameters/B8IdempotencyKey" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8OidcCallbackRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Principal mapped and session established; adult Gate/consent status is explicit",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8OidcCallbackResponse" } } }
+          },
+          "400": { "$ref": "#/components/responses/B8BadRequest" },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8PolicyDenied" },
+          "409": { "$ref": "#/components/responses/B8Conflict" },
+          "503": { "$ref": "#/components/responses/B8IdpUnavailable" }
+        }
+      }
+    },
+    "/api/v1/iam/session/refresh": {
+      "post": {
+        "tags": ["b8-auth"],
+        "operationId": "refreshB8IamSession",
+        "summary": "Rotate a refresh session through IAM",
+        "security": [],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1" },
+        "x-idempotency": {
+          "required": false,
+          "strategy": "refresh-token-rotation",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "旧 refresh credential 只能触发一次轮换；重放撤销整条会话族。"
+        },
+        "parameters": [ { "$ref": "#/components/parameters/B8IdempotencyKeyOptional" } ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionRefreshRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Rotated access and refresh credentials",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionTokenResponse" } } }
+          },
+          "400": { "$ref": "#/components/responses/B8BadRequest" },
+          "401": { "$ref": "#/components/responses/B8SessionRevoked" },
+          "409": { "$ref": "#/components/responses/B8Conflict" },
+          "429": { "$ref": "#/components/responses/B8RateLimited" }
+        }
+      }
+    },
+    "/api/v1/iam/session/logout": {
+      "post": {
+        "tags": ["b8-auth"],
+        "operationId": "logoutB8IamSession",
+        "summary": "Revoke the current verified session",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1" },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "session-logout",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复登出返回同一撤销事实，不泄露会话状态。"
+        },
+        "parameters": [ { "$ref": "#/components/parameters/B8IdempotencyKey" } ],
+        "responses": {
+          "200": {
+            "description": "Current session revoked",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionRevocationResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "409": { "$ref": "#/components/responses/B8Conflict" }
+        }
+      }
+    },
+    "/api/v1/iam/sessions/{sessionId}/revoke": {
+      "post": {
+        "tags": ["b8-iam"],
+        "operationId": "revokeB8IamSession",
+        "summary": "Revoke an owned device session after server-side owner evaluation",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "ownerFact": "server-derived" },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "session-revocation",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 principal 对同一 session 的重复撤销返回同一撤销事实。"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B8SessionId" },
+          { "$ref": "#/components/parameters/B8IdempotencyKey" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session revoked",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionRevocationResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8Forbidden" },
+          "404": { "$ref": "#/components/responses/B8NotFound" }
+        }
+      }
+    },
+    "/api/v1/iam/principal/me": {
+      "get": {
+        "tags": ["b8-iam"],
+        "operationId": "getB8CurrentPrincipal",
+        "summary": "Read the server-mapped principal and Gate/consent status",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "principalSource": "verified-token-and-iam-facts" },
+        "responses": {
+          "200": {
+            "description": "Current principal",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8PrincipalResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8Forbidden" }
+        }
+      }
+    },
+    "/api/v1/iam/devices": {
+      "get": {
+        "tags": ["b8-iam"],
+        "operationId": "listB8IamDevices",
+        "summary": "List devices and sessions owned by the verified principal",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "ownerFact": "server-derived" },
+        "responses": {
+          "200": {
+            "description": "Self-scoped device list",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8DeviceListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/iam/permissions": {
+      "get": {
+        "tags": ["b8-security"],
+        "operationId": "getB8IamPermissions",
+        "summary": "Read server-derived roles and permissions for the current principal",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "principalSource": "verified-token-and-iam-facts", "default": "deny" },
+        "responses": {
+          "200": {
+            "description": "Current authorization facts",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8PermissionsResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8Forbidden" }
+        }
+      }
+    },
+    "/api/v1/iam/devices/{deviceId}/kickout": {
+      "post": {
+        "tags": ["b8-iam"],
+        "operationId": "kickoutB8IamDevice",
+        "summary": "Kick out a device session after server-side principal ownership check",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "ownerFact": "server-derived" },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "device-kickout",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复踢出返回同一设备撤销事实。"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B8DeviceId" },
+          { "$ref": "#/components/parameters/B8IdempotencyKey" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Device session revoked",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionRevocationResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8Forbidden" },
+          "404": { "$ref": "#/components/responses/B8NotFound" }
+        }
+      }
+    },
+    "/api/v1/iam/adult-gate": {
+      "post": {
+        "tags": ["b8-compliance"],
+        "operationId": "evaluateB8AdultGate",
+        "summary": "Evaluate Phase 1 adult access without creating minor or guardian facts",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "minorFacts": "forbidden", "decisionSource": "server" },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "adult-gate-evaluation",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 principal 和 policy version 的重复 Gate 请求返回同一决定。"
+        },
+        "parameters": [ { "$ref": "#/components/parameters/B8IdempotencyKey" } ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AdultGateRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Adult Gate decision",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AdultGateResponse" } } }
+          },
+          "400": { "$ref": "#/components/responses/B8BadRequest" },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8AdultGateRequired" }
+        }
+      }
+    },
+    "/api/v1/iam/consents": {
+      "get": {
+        "tags": ["b8-compliance"],
+        "operationId": "listB8IamConsents",
+        "summary": "Read current principal consent versions",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1" },
+        "responses": {
+          "200": {
+            "description": "Self-scoped consent state",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ConsentListResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" }
+        }
+      },
+      "put": {
+        "tags": ["b8-compliance"],
+        "operationId": "updateB8IamConsent",
+        "summary": "Record an explicit consent decision",
+        "security": [ { "bearerAuth": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "principalSource": "verified-token" },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "consent-update",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 consent version 的重复决定幂等；撤回不删除历史审计事实。"
+        },
+        "parameters": [ { "$ref": "#/components/parameters/B8IdempotencyKey" } ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ConsentUpdateRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Consent updated",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8Consent" } } }
+          },
+          "400": { "$ref": "#/components/responses/B8BadRequest" },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8ConsentRequired" },
+          "409": { "$ref": "#/components/responses/B8Conflict" }
+        }
+      }
+    },
+    "/api/v1/auth/oidc/{provider}/metadata": {
+      "get": {
+        "tags": ["b8-auth"],
+        "operationId": "getB8OidcProviderMetadata",
+        "summary": "Read metadata through the standard OIDC provider adapter",
+        "security": [],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP" },
+        "parameters": [ { "$ref": "#/components/parameters/B8Provider" } ],
+        "responses": {
+          "200": {
+            "description": "Provider metadata; no client secret or token server is exposed",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8OidcProviderMetadata" } } }
+          },
+          "404": { "$ref": "#/components/responses/B8NotFound" },
+          "503": { "$ref": "#/components/responses/B8IdpUnavailable" }
+        }
+      }
+    },
+    "/api/v1/auth/oidc/{provider}/jwks": {
+      "get": {
+        "tags": ["b8-auth"],
+        "operationId": "getB8OidcProviderJwks",
+        "summary": "Read provider signing keys through the JWKS adapter seam",
+        "security": [],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP", "rotation": "supported" },
+        "parameters": [ { "$ref": "#/components/parameters/B8Provider" } ],
+        "responses": {
+          "200": {
+            "description": "Public signing keys only",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8JwksResponse" } } }
+          },
+          "404": { "$ref": "#/components/responses/B8NotFound" },
+          "503": { "$ref": "#/components/responses/B8IdpUnavailable" }
+        }
+      }
+    },
+    "/internal/v1/iam/authorization/decisions": {
+      "post": {
+        "tags": ["b8-security"],
+        "operationId": "decideB8Authorization",
+        "summary": "Evaluate a versioned IAM policy for a trusted workload",
+        "security": [ { "B8WorkloadIdentity": [] } ],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "pep": "service-side", "default": "deny", "failMode": "closed" },
+        "x-idempotency": {
+          "required": false,
+          "strategy": "policy-decision",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "短期决策缓存按 decision fingerprint 去重，不把 Kafka 当 RPC。"
+        },
+        "parameters": [ { "$ref": "#/components/parameters/B8IdempotencyKeyOptional" } ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthorizationDecisionRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Allow or deny decision with policy version",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthorizationDecisionResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8PolicyDenied" },
+          "503": { "$ref": "#/components/responses/B8PolicyDenied" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "B8WorkloadIdentity": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "OIDC workload identity",
+        "description": "仅供服务到服务调用；由受信 workload identity/mTLS 校验，不能由浏览器或客户端伪造。"
+      }
+    },
+    "parameters": {
+      "B8Provider": {
+        "name": "provider",
+        "in": "path",
+        "required": true,
+        "description": "已登记的标准 OIDC provider adapter 名称；不是 Token Server 地址。",
+        "schema": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$" }
+      },
+      "B8RedirectUri": {
+        "name": "redirectUri",
+        "in": "query",
+        "required": true,
+        "description": "必须匹配服务端登记的 redirect URI，客户端不能把任意地址注入回调。",
+        "schema": { "type": "string", "format": "uri", "maxLength": 512 }
+      },
+      "B8ReturnTo": {
+        "name": "returnTo",
+        "in": "query",
+        "required": false,
+        "description": "受控的相对返回路径；服务端只接受已登记的学习端深链，不把它当作授权事实。",
+        "schema": { "type": "string", "pattern": "^/(?!/).{0,511}$" }
+      },
+      "B8UiLocale": {
+        "name": "uiLocale",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Z][a-z]{1,3})?$", "maxLength": 16 }
+      },
+      "B8Theme": {
+        "name": "theme",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "enum": ["light", "dark", "system", "high-contrast"] }
+      },
+      "B8CodeChallenge": {
+        "name": "codeChallenge",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "pattern": "^[A-Za-z0-9_-]{43,128}$" }
+      },
+      "B8CodeChallengeMethod": {
+        "name": "codeChallengeMethod",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "const": "S256" }
+      },
+      "B8State": {
+        "name": "state",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "minLength": 16, "maxLength": 256 }
+      },
+      "B8Nonce": {
+        "name": "nonce",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string", "minLength": 16, "maxLength": 256 }
+      },
+      "B8IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "服务端按已验证 principal/session 作用域绑定请求哈希；不能携带授权事实。",
+        "schema": { "type": "string", "minLength": 16, "maxLength": 128 }
+      },
+      "B8IdempotencyKeyOptional": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "schema": { "type": "string", "minLength": 16, "maxLength": 128 }
+      },
+      "B8SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": { "$ref": "#/components/schemas/B8SessionId" }
+      },
+      "B8DeviceId": {
+        "name": "deviceId",
+        "in": "path",
+        "required": true,
+        "schema": { "$ref": "#/components/schemas/B8DeviceId" }
+      }
+    },
+    "responses": {
+      "B8BadRequest": {
+        "description": "Malformed or invalid authentication request",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8Unauthorized": {
+        "description": "Missing, invalid or expired authentication; error.code=unauthorized",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8Forbidden": {
+        "description": "Authenticated principal is not allowed; error.code=forbidden",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8AdultGateRequired": {
+        "description": "Phase 1 adult Gate rejected or incomplete; error.code=adult_gate_required",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8ConsentRequired": {
+        "description": "Required consent is missing or withdrawn; error.code=consent_required",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8SessionRevoked": {
+        "description": "Session is revoked or refresh replay was detected; error.code=session_revoked",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8PolicyDenied": {
+        "description": "Policy decision denied or policy service failed closed; error.code=policy_denied",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8Conflict": {
+        "description": "Authentication transaction or idempotency conflict",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8NotFound": {
+        "description": "Resource or registered provider not found",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8RateLimited": {
+        "description": "Rate limit exceeded",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8IdpUnavailable": {
+        "description": "Standard IdP adapter unavailable; no fallback token server is used",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      }
+    },
+    "schemas": {
+      "B8ErrorEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["requestId", "traceId", "error"],
+        "properties": {
+          "requestId": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "traceId": { "type": "string", "minLength": 8, "maxLength": 128 },
+          "error": { "$ref": "#/components/schemas/B8Error" }
+        }
+      },
+      "B8Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message", "retryable"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["invalid_request", "unauthorized", "forbidden", "adult_gate_required", "consent_required", "session_revoked", "policy_denied", "idp_unavailable", "conflict", "not_found", "rate_limited"]
+          },
+          "message": { "type": "string", "minLength": 1, "maxLength": 256, "description": "安全、可本地化的非敏感提示；不得回显 Token、IdP 原文或策略秘密。" },
+          "retryable": { "type": "boolean" },
+          "policyVersion": { "type": "string", "maxLength": 64 },
+          "details": { "type": "object", "additionalProperties": false }
+        }
+      },
+      "B8AuthorizationStartResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["authorizationUrl", "transactionId", "provider", "expiresAt"],
+        "properties": {
+          "authorizationUrl": { "type": "string", "format": "uri", "maxLength": 2048 },
+          "transactionId": { "type": "string", "pattern": "^oidc_tx_[A-Za-z0-9._:-]{15,127}$" },
+          "provider": { "type": "string", "maxLength": 32 },
+          "expiresAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B8OidcCallbackRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "state", "redirectUri"],
+        "properties": {
+          "code": { "type": "string", "minLength": 16, "maxLength": 2048, "description": "一次性授权码；服务端只向标准 IdP adapter 转发，不持久化。" },
+          "state": { "type": "string", "minLength": 16, "maxLength": 256 },
+          "redirectUri": { "type": "string", "format": "uri", "maxLength": 512 }
+        }
+      },
+      "B8OidcCallbackResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["session", "principal", "adultGate", "consentState"],
+        "properties": {
+          "session": { "$ref": "#/components/schemas/B8SessionTokenResponse" },
+          "principal": { "$ref": "#/components/schemas/B8PrincipalResponse" },
+          "adultGate": { "$ref": "#/components/schemas/B8AdultGateResponse" },
+          "consentState": { "$ref": "#/components/schemas/B8ConsentState" }
+        }
+      },
+      "B8SessionRefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["refreshToken"],
+        "x-sensitive-fields": ["refreshToken"],
+        "properties": {
+          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "敏感 Refresh Token 只经 TLS 传输；服务端只保存 hash，禁止日志、事件和普通持久化明文。" }
+        }
+      },
+      "B8SessionTokenResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["accessToken", "refreshToken", "expiresIn", "refreshExpiresIn", "sessionId"],
+        "x-sensitive-fields": ["accessToken", "refreshToken"],
+        "properties": {
+          "accessToken": { "type": "string", "minLength": 32, "maxLength": 8192, "description": "敏感 Access Token 仅经 TLS 返回并放入受控短期存储；禁止日志和事件。" },
+          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "敏感 Refresh Token 仅经 TLS 返回；服务端只保存 hash，禁止日志、事件和数据库明文。" },
+          "expiresIn": { "type": "integer", "minimum": 1, "maximum": 86400 },
+          "refreshExpiresIn": { "type": "integer", "minimum": 1, "maximum": 2592000 },
+          "deviceId": { "$ref": "#/components/schemas/B8DeviceId" },
+          "sessionId": { "$ref": "#/components/schemas/B8SessionId" },
+          "tokenType": { "type": "string", "const": "Bearer" }
+        }
+      },
+      "B8SessionRevocationResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sessionId", "status", "revokedAt"],
+        "properties": {
+          "sessionId": { "$ref": "#/components/schemas/B8SessionId" },
+          "status": { "type": "string", "const": "REVOKED" },
+          "revokedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B8PrincipalResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["principalId", "subjectType", "provider", "status", "adultGate", "consentState"],
+        "properties": {
+          "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+          "subjectType": { "type": "string", "const": "ADULT_LEARNER" },
+          "provider": { "type": "string", "maxLength": 32 },
+          "status": { "type": "string", "enum": ["ACTIVE", "RESTRICTED", "REVOKED"] },
+          "adultGate": { "$ref": "#/components/schemas/B8AdultGateResponse" },
+          "consentState": { "$ref": "#/components/schemas/B8ConsentState" },
+          "policyVersion": { "type": "string", "maxLength": 64 }
+        }
+      },
+      "B8PermissionsResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["principalId", "roles", "permissions", "adultGate"],
+        "properties": {
+          "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+          "roles": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 128 } },
+          "permissions": { "type": "array", "items": { "type": "string", "minLength": 1, "maxLength": 256 } },
+          "adultGate": { "$ref": "#/components/schemas/B8AdultGateResponse" },
+          "policyVersion": { "type": "string", "maxLength": 64 }
+        }
+      },
+      "B8Device": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["deviceId", "sessionId", "platform", "status", "lastActiveAt", "current"],
+        "properties": {
+          "deviceId": { "$ref": "#/components/schemas/B8DeviceId" },
+          "sessionId": { "$ref": "#/components/schemas/B8SessionId" },
+          "platform": { "type": "string", "enum": ["ANDROID", "IOS", "WEB", "PWA", "MINIAPP"] },
+          "status": { "type": "string", "enum": ["ACTIVE", "REVOKED", "RISK_REVIEW"] },
+          "lastActiveAt": { "type": "string", "format": "date-time" },
+          "current": { "type": "boolean" }
+        }
+      },
+      "B8DeviceListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "total"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B8Device" } },
+          "total": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "B8AdultGateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["birthYear", "policyVersion", "adultDeclaration"],
+        "properties": {
+          "birthYear": { "type": "integer", "minimum": 1900, "maximum": 2100, "description": "最小化年龄输入；仅作为待核验声明，不能成为客户端直接授权事实。服务端按当前日期、策略和证据决定。" },
+          "policyVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "adultDeclaration": { "type": "boolean", "const": true, "description": "用户声明，不等价于服务端 Gate 通过。" }
+        }
+      },
+      "B8AdultGateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "policyVersion", "evaluatedAt"],
+        "properties": {
+          "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+          "policyVersion": { "type": "string", "maxLength": 64 },
+          "evaluatedAt": { "type": "string", "format": "date-time" },
+          "retryAllowed": { "type": "boolean" }
+        }
+      },
+      "B8Consent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["consentType", "consentVersion", "decision", "updatedAt"],
+        "properties": {
+          "consentType": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] },
+          "consentVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B8ConsentState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["required", "accepted", "version"],
+        "properties": {
+          "required": { "type": "boolean" },
+          "accepted": { "type": "boolean" },
+          "version": { "type": "string", "maxLength": 64 }
+        }
+      },
+      "B8ConsentListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B8Consent" } }
+        }
+      },
+      "B8ConsentUpdateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["consentType", "consentVersion", "decision"],
+        "properties": {
+          "consentType": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] },
+          "consentVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] }
+        }
+      },
+      "B8OidcProviderMetadata": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["issuer", "authorizationEndpoint", "jwksUri", "codeChallengeMethods"],
+        "properties": {
+          "issuer": { "type": "string", "format": "uri", "maxLength": 512 },
+          "authorizationEndpoint": { "type": "string", "format": "uri", "maxLength": 1024 },
+          "jwksUri": { "type": "string", "format": "uri", "maxLength": 1024 },
+          "codeChallengeMethods": { "type": "array", "items": { "type": "string", "const": "S256" }, "minItems": 1 },
+          "scopes": { "type": "array", "items": { "type": "string", "maxLength": 64 } }
+        }
+      },
+      "B8JwksResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["keys"],
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kid", "kty", "use", "alg", "n", "e"],
+              "properties": {
+                "kid": { "type": "string", "maxLength": 128 },
+                "kty": { "type": "string", "const": "RSA" },
+                "use": { "type": "string", "const": "sig" },
+                "alg": { "type": "string", "enum": ["RS256", "RS384", "RS512"] },
+                "n": { "type": "string", "maxLength": 4096 },
+                "e": { "type": "string", "maxLength": 16 }
+              }
+            }
+          }
+        }
+      },
+      "B8AuthorizationDecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "resourceType", "resourceId", "phase"],
+        "description": "只提交待判定的动作和资源上下文；subject、tenant、owner、role、permission 和 consent 事实由验证后的 workload/principal 与服务端事实派生。",
+        "properties": {
+          "action": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
+          "resourceType": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
+          "resourceId": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "phase": { "type": "string", "enum": ["P1", "P2", "P3"] },
+          "contentRights": { "type": "string", "enum": ["PUBLISHED", "LICENSED", "INTERNAL", "UNKNOWN"] },
+          "deviceTrust": { "type": "string", "enum": ["TRUSTED", "STANDARD", "RISK_REVIEW", "UNKNOWN"] },
+          "consentRequirement": { "type": "string", "enum": ["NONE", "TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] }
+        },
+        "x-server-derived-authorization-facts": ["subject", "tenant", "owner", "role", "permission", "consent", "policyVersion"]
+      },
+      "B8AuthorizationDecisionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["decisionId", "decision", "reasonCode", "policyVersion", "evaluatedAt"],
+        "properties": {
+          "decisionId": { "type": "string", "pattern": "^dec_[A-Za-z0-9._:-]{15,127}$" },
+          "decision": { "type": "string", "enum": ["ALLOW", "DENY"] },
+          "reasonCode": { "type": "string", "enum": ["ALLOWED", "POLICY_DENIED", "ADULT_GATE_REQUIRED", "CONSENT_REQUIRED", "SESSION_REVOKED", "CONTEXT_MISSING", "POLICY_UNAVAILABLE"] },
+          "policyVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+          "evaluatedAt": { "type": "string", "format": "date-time" },
+          "cacheUntil": { "type": "string", "format": "date-time" }
+        }
+      },
+      "B8SessionId": {
+        "type": "string",
+        "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
+      },
+      "B8DeviceId": {
+        "type": "string",
+        "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 export const B2_STORAGE_KEY = 'yx.b2.learner-web.v1'
 export const B2_QUEUE_KEY = 'yx.b2.review-queue.v1'
+import { createClientId } from '../platform/client-id'
 
 export type ItemType = 'VOCAB' | 'CHUNK' | 'EXPRESSION'
 export type PerformanceLevel = 'Ultra' | 'High' | 'Medium' | 'Performance'
@@ -201,7 +202,7 @@ export function createEmptyContinueContext(): ContinueContext {
 }
 
 export function createClientEventId(prefix = 'b2'): string {
-  return typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`
+  return createClientId(prefix)
 }
 
 export function masteryLabel(status: MasteryStatus): string {

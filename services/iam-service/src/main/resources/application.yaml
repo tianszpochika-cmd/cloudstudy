@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: iam-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${IAM_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  # The IAM process is a local development boundary until deployment identity is approved.
+  address: ${IAM_SERVER_ADDRESS:127.0.0.1}
+  # 18087 is the fixed local port registered in config/local-ports.json.
+  port: ${IAM_SERVICE_PORT:18087}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+iam:
+  phase: phase-1
+  platform-tenant: platform
+  provider-mode: provider-neutral
+  # This property is intentionally validated as false in IamServiceProperties. It cannot be
+  # switched on before G-IDP/ADR approval and an external adapter implementation exists.
+  real-provider-enabled: false

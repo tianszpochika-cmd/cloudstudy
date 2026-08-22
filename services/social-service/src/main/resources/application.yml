@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: ${SOCIAL_SERVICE_NAME:social-service}
+  lifecycle:
+    timeout-per-shutdown-phase: ${SOCIAL_SERVICE_SHUTDOWN_TIMEOUT:20s}
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+server:
+  address: ${SOCIAL_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  # 18095 is intentionally local to this service; root port registration is an integration task.
+  port: ${SOCIAL_SERVICE_PORT:18095}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  name: social-service
+  owner: social-service
+  schema: social_service
+  redis-namespace: social
+  port: 18095
+
+security:
+  resource-server:
+    # No local authentication bypass. Enable only with an OIDC issuer and JWKS endpoint.
+    enabled: ${SOCIAL_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${SOCIAL_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${SOCIAL_SECURITY_JWK_SET_URI:}

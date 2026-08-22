@@ -15,10 +15,73 @@ $yx-radius-card: 16px;
 $yx-radius-button: 14px;
 
 page {
+  --yx-brand: #596bff;
+  --yx-brand-soft: #eef0ff;
+  --yx-success: #25b88a;
+  --yx-success-soft: #edf9f4;
+  --yx-success-strong: #246d58;
+  --yx-success-border: #cfeee3;
+  --yx-warning: #f2a83b;
+  --yx-warning-soft: #fff7e8;
+  --yx-warning-strong: #9b5b00;
+  --yx-danger: #e95668;
+  --yx-danger-soft: #fff8f9;
+  --yx-text-primary: #202332;
+  --yx-text-secondary: #666d80;
+  --yx-text-tertiary: #969caf;
+  --yx-surface-page: #f7f8fc;
+  --yx-surface-card: #ffffff;
+  --yx-surface-soft: #f0f3ff;
+  --yx-border: #e6e8f0;
   color: $yx-color-text-primary;
   background: $yx-color-surface-page;
   font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
 }
+
+.b10-theme--dark {
+  --yx-brand: #9ba7ff;
+  --yx-brand-soft: #2d3358;
+  --yx-success: #51d0a5;
+  --yx-success-soft: #18392f;
+  --yx-success-strong: #8ae5c7;
+  --yx-success-border: #2a725c;
+  --yx-warning: #ffca71;
+  --yx-warning-soft: #49381e;
+  --yx-warning-strong: #ffd99c;
+  --yx-danger: #ff9baa;
+  --yx-danger-soft: #48242d;
+  --yx-text-primary: #f4f6ff;
+  --yx-text-secondary: #c7ccdc;
+  --yx-text-tertiary: #9da5bb;
+  --yx-surface-page: #161925;
+  --yx-surface-card: #222638;
+  --yx-surface-soft: #2a3150;
+  --yx-border: #3d455e;
+  color: var(--yx-text-primary);
+  background: var(--yx-surface-page);
+}
+
+.b10-theme--high-contrast {
+  --yx-brand: #0037ff;
+  --yx-brand-soft: #e3eaff;
+  --yx-text-primary: #000000;
+  --yx-text-secondary: #1f2937;
+  --yx-text-tertiary: #374151;
+  --yx-surface-page: #ffffff;
+  --yx-surface-card: #ffffff;
+  --yx-surface-soft: #eef2ff;
+  --yx-border: #111827;
+  --yx-success-strong: #005b3e;
+  --yx-warning-strong: #713f12;
+  --yx-danger: #991b1b;
+  color: var(--yx-text-primary);
+  background: var(--yx-surface-page);
+}
+
+.b10-theme--dark .yx-page,
+.b10-theme--high-contrast .yx-page { background: var(--yx-surface-page); color: var(--yx-text-primary); }
+.b10-theme--dark .yx-card,
+.b10-theme--high-contrast .yx-card { border-color: var(--yx-border); background: var(--yx-surface-card); box-shadow: none; }
 
 .yx-page {
   min-height: 100vh;

@@ -16,6 +16,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const openApiPath = path.join(repoRoot, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const eventCatalogPath = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
+const schemaRegistryPath = path.join(repoRoot, 'packages', 'contracts', 'schemas', 'v1', 'registry.json');
 
 const forbiddenFieldPatterns = [
   /^(access|refresh)?token$/i,
@@ -61,8 +62,11 @@ function validateOpenApi(document) {
 
   const operationIds = new Map();
   let operationCount = 0;
+  const securitySchemes = document.components.securitySchemes ?? {};
+  assert(isRecord(securitySchemes.bearerAuth), 'OpenAPI bearerAuth security scheme is required');
+  assert(isRecord(securitySchemes.B8WorkloadIdentity), 'OpenAPI B8WorkloadIdentity security scheme is required');
   for (const [route, pathItem] of Object.entries(document.paths)) {
-    assert(route.startsWith('/api/v1/'), `route must use /api/v1 prefix: ${route}`);
+    assert(route.startsWith('/api/v1/') || route.startsWith('/internal/v1/'), `route must use /api/v1 or /internal/v1 prefix: ${route}`);
     assert(isRecord(pathItem), `path item must be an object: ${route}`);
     for (const [method, operation] of Object.entries(pathItem)) {
       if (!isHttpMethod(method)) continue;
@@ -72,6 +76,24 @@ function validateOpenApi(document) {
       assert(!operationIds.has(operation.operationId), `duplicate operationId: ${operation.operationId}`);
       operationIds.set(operation.operationId, `${method.toUpperCase()} ${route}`);
       assertRefsResolve(document, operation, `${method.toUpperCase()} ${route}`);
+      if (route.startsWith('/internal/v1/')) {
+        assert(Array.isArray(operation.security) && operation.security.length > 0, `${method.toUpperCase()} ${route} must require workload identity`);
+      }
+      if ((operation.tags ?? []).some((tag) => String(tag).toLowerCase().startsWith('b8-'))) {
+        assert(Array.isArray(operation.security), `${method.toUpperCase()} ${route} needs an explicit security declaration`);
+        const requestSchema = operation.requestBody?.content?.['application/json']?.schema;
+        const requestDocument = requestSchema ? dereference(document, requestSchema) : null;
+        walk(requestDocument, (value, location) => {
+          if (!isRecord(value)) return;
+          for (const propertyName of Object.keys(value.properties ?? {})) {
+            assert(!['tenantId', 'ownerId', 'role', 'roles', 'permission', 'permissions'].includes(propertyName), `${method.toUpperCase()} ${route} request ${location} cannot accept client authorization fact ${propertyName}`);
+          }
+        }, `${method.toUpperCase()} ${route}.request`);
+        for (const parameter of operation.parameters ?? []) {
+          const name = String(parameter.name ?? '').toLowerCase();
+          assert(!['x-role', 'x-b5-role', 'x-tenant-id', 'x-owner-id'].includes(name), `${method.toUpperCase()} ${route} cannot accept client authorization header ${parameter.name}`);
+        }
+      }
       if (isWriteMethod(method)) {
         assert(isRecord(operation['x-idempotency']), `${method.toUpperCase()} ${route} needs x-idempotency declaration`);
         assert(typeof operation['x-idempotency'].strategy === 'string', `${operation.operationId} x-idempotency.strategy is required`);
@@ -104,6 +126,11 @@ function validateOpenApi(document) {
     }
   });
 
+  const b8ErrorCodes = document.components.schemas?.B8Error?.properties?.code?.enum ?? [];
+  for (const requiredCode of ['unauthorized', 'forbidden', 'adult_gate_required', 'consent_required', 'session_revoked', 'policy_denied']) {
+    assert(b8ErrorCodes.includes(requiredCode), `B8Error must distinguish ${requiredCode}`);
+  }
+
   return { operationCount, schemaCount: Object.keys(document.components.schemas).length };
 }
 
@@ -117,6 +144,12 @@ function validateEventCatalog(catalog) {
   assert(Array.isArray(catalog.events) && catalog.events.length >= 20, 'event catalog must contain at least 20 events');
   assert(isRecord(catalog.payloadSchemas) && Object.keys(catalog.payloadSchemas).length > 0, 'event payloadSchemas is required');
   assert(Array.isArray(catalog.forbiddenPayloadFieldPatterns), 'event forbiddenPayloadFieldPatterns is required');
+  if (catalog.asyncapi) {
+    assert(catalog.asyncapi.version === '3.0.0', 'AsyncAPI projection must use version 3.0.0');
+    assert(isRecord(catalog.asyncapi.info), 'AsyncAPI projection info is required');
+    assert(isRecord(catalog.asyncapi.channels) && Object.keys(catalog.asyncapi.channels).length > 0, 'AsyncAPI projection channels are required');
+    assertRefsResolve(catalog, catalog.asyncapi, 'AsyncAPI projection');
+  }
 
   const names = new Set();
   for (const event of catalog.events) {
@@ -129,6 +162,12 @@ function validateEventCatalog(catalog) {
     assert(typeof event.domain === 'string' && /^[a-z][a-z0-9_]*$/.test(event.domain), `${event.eventName} domain is invalid`);
     assert(typeof event.aggregateType === 'string' && /^[a-z][a-z0-9_]{1,63}$/.test(event.aggregateType), `${event.eventName} aggregateType is invalid`);
     assert(isRecord(event.payloadSchema) && typeof event.payloadSchema.$ref === 'string', `${event.eventName} payloadSchema must be a local ref`);
+    if (event['x-envelope-required']) {
+      assert(Array.isArray(event['x-envelope-required']) && event['x-envelope-required'].length > 0, `${event.eventName} x-envelope-required must be a non-empty array`);
+      for (const field of event['x-envelope-required']) {
+        assert(typeof field === 'string' && catalog.envelope.properties?.[field], `${event.eventName} requires an unknown envelope field ${field}`);
+      }
+    }
     const payload = resolveJsonPointer(catalog, event.payloadSchema.$ref);
     walk(payload, (value, location) => {
       if (!isRecord(value)) return;
@@ -142,14 +181,28 @@ function validateEventCatalog(catalog) {
   return { eventCount: catalog.events.length, payloadSchemaCount: Object.keys(catalog.payloadSchemas).length };
 }
 
+function validateSchemaRegistry(registry) {
+  assert(registry.registryVersion === '1.0.0', 'JSON Schema registryVersion must be 1.0.0');
+  assert(registry.schema === 'platform.json-schema.registry.v1', 'JSON Schema registry schema is invalid');
+  assert(isRecord(registry.schemas) && Object.keys(registry.schemas).length > 0, 'JSON Schema registry must contain schemas');
+  for (const [schemaId, schema] of Object.entries(registry.schemas)) {
+    assert(/^[a-z][a-z0-9_.-]+$/.test(schemaId), `invalid JSON Schema id: ${schemaId}`);
+    assert(isRecord(schema) && typeof schema.$schema === 'string' && typeof schema.$id === 'string', `${schemaId} needs $schema and $id`);
+    assert(typeof schema.type === 'string' || isRecord(schema.properties) || Array.isArray(schema.oneOf), `${schemaId} must define a schema shape`);
+  }
+  return { schemaCount: Object.keys(registry.schemas).length };
+}
+
 export function validateContracts({ quiet = false } = {}) {
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
+  const schemaRegistry = readJson(schemaRegistryPath);
   const openApiResult = validateOpenApi(openApi);
   const eventResult = validateEventCatalog(catalog);
-  const result = { openApi: openApiResult, events: eventResult, sourceFiles: [openApiPath, eventCatalogPath] };
+  const schemaResult = validateSchemaRegistry(schemaRegistry);
+  const result = { openApi: openApiResult, events: eventResult, schemas: schemaResult, sourceFiles: [openApiPath, eventCatalogPath, schemaRegistryPath] };
   if (!quiet) {
-    console.log(`Contract validation passed: ${openApiResult.operationCount} operations, ${openApiResult.schemaCount} OpenAPI schemas, ${eventResult.eventCount} events, ${eventResult.payloadSchemaCount} event payload schemas.`);
+    console.log(`Contract validation passed: ${openApiResult.operationCount} operations, ${openApiResult.schemaCount} OpenAPI schemas, ${eventResult.eventCount} events, ${eventResult.payloadSchemaCount} event payload schemas, ${schemaResult.schemaCount} JSON Schemas.`);
   }
   return result;
 }

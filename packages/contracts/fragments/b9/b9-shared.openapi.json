@@ -1,0 +1,202 @@
+{
+  "components": {
+    "parameters": {
+      "B9IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "客户端为每次业务写命令生成的稳定幂等键；服务端按 tenant、已验证主体和命令作用域保存请求摘要并重放原结果。不得用 clientEventId 替代。",
+        "schema": { "type": "string", "minLength": 16, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]{16,128}$" }
+      },
+      "B9IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "资源状态版本的乐观并发条件；版本不匹配时返回 409，不覆盖其他写入。",
+        "schema": { "type": "string", "minLength": 1, "maxLength": 64 }
+      },
+      "B9ContentCode": {
+        "name": "contentCode",
+        "in": "path",
+        "required": true,
+        "schema": { "$ref": "#/components/schemas/B9ContentCode" }
+      },
+      "B9ProjectionKey": {
+        "name": "projectionKey",
+        "in": "path",
+        "required": true,
+        "schema": { "$ref": "#/components/schemas/B9ProjectionKey" }
+      },
+      "B9ContentVersionId": {
+        "name": "contentVersionId",
+        "in": "path",
+        "required": true,
+        "schema": { "$ref": "#/components/schemas/B9ContentVersionId" }
+      },
+      "B9PrincipalId": {
+        "name": "principalId",
+        "in": "path",
+        "required": true,
+        "schema": { "$ref": "#/components/schemas/B9PrincipalId" }
+      },
+      "B9VersionPin": {
+        "name": "versionPin",
+        "in": "query",
+        "required": false,
+        "description": "可选的已发布内容版本 pin。pin 指向已下线或版权失效版本时必须返回可区分的 410，而不是回退到其他版本。",
+        "schema": { "$ref": "#/components/schemas/B9ContentVersionId" }
+      },
+      "B9Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "maxLength": 512 }
+      },
+      "B9PageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 }
+      },
+      "B9UiLocale": {
+        "name": "uiLocale",
+        "in": "query",
+        "required": false,
+        "description": "官网或客户端 UI 语言；不覆盖内容的 contentLocale。",
+        "schema": { "$ref": "#/components/schemas/B9Locale" }
+      }
+    },
+    "responses": {
+      "B9BadRequest": {
+        "description": "请求参数、状态机或字段校验失败",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      },
+      "B9Unauthorized": {
+        "description": "缺少或无法验证的主体凭证",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      },
+      "B9Forbidden": {
+        "description": "策略、租户、资源 owner、阶段或内容权利拒绝",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      },
+      "B9NotFound": {
+        "description": "资源不存在或不属于已验证主体的可见范围",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      },
+      "B9Conflict": {
+        "description": "幂等键冲突、状态机冲突或乐观版本冲突",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      },
+      "B9Gone": {
+        "description": "版本已下线、版权已撤回或 pinned projection 已失效",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      },
+      "B9Unavailable": {
+        "description": "公开投影暂时不可用；允许官网使用受控静态降级，但不得把登录学习 API 当作官网回退源",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B9Problem" } } }
+      }
+    },
+    "schemas": {
+      "B9PrincipalId": {
+        "type": "string",
+        "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$",
+        "description": "由 IAM 映射的不可变 principal；客户端不能提交或覆盖 owner/tenant 事实。"
+      },
+      "B9ContentCode": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 128,
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{1,127}$"
+      },
+      "B9ProjectionKey": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 192,
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:/-]{1,191}$"
+      },
+      "B9ContentVersionId": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "B9Locale": {
+        "type": "string",
+        "pattern": "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-[A-Z]{2})?$",
+        "minLength": 2,
+        "maxLength": 16
+      },
+      "B9Problem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message", "traceId"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "validation_error",
+              "unauthorized",
+              "forbidden",
+              "not_found",
+              "conflict",
+              "version_conflict",
+              "idempotency_conflict",
+              "content_unpublished",
+              "content_rights_expired",
+              "projection_stale",
+              "not_ready",
+              "service_unavailable"
+            ]
+          },
+          "message": { "type": "string", "minLength": 1, "maxLength": 512 },
+          "traceId": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "requestId": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "retryable": { "type": "boolean" },
+          "details": { "type": "object", "additionalProperties": true }
+        }
+      },
+      "B9StateVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1,
+        "description": "由服务端递增的聚合状态版本；不是客户端可自由生成的时间戳。"
+      },
+      "B9ExpectedStateVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 0,
+        "description": "乐观并发写入的期望版本；新聚合尚未持久化时允许使用 0，服务端成功写入后返回从 1 开始的 B9StateVersion。"
+      },
+      "B9ProjectionVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "B9ContentEpoch": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1,
+        "description": "内容发布/下线/权利变化后单调递增的缓存失效 epoch。"
+      },
+      "B9DateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "B9CommandStatus": {
+        "type": "string",
+        "enum": ["ACCEPTED", "APPLIED", "REJECTED", "CONFLICT"]
+      },
+      "B9ContentAvailability": {
+        "type": "string",
+        "enum": ["PUBLISHED", "UNPUBLISHED", "RIGHTS_PENDING", "RIGHTS_EXPIRED", "NOT_READY"]
+      },
+      "B9ContentItemType": {
+        "type": "string",
+        "enum": ["VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "QUESTION"]
+      },
+      "B9ContentType": {
+        "type": "string",
+        "enum": ["COURSE", "COURSE_UNIT", "VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "QUESTION"]
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: notification-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${NOTIFICATION_SHUTDOWN_TIMEOUT:20s}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:}
+          jwk-set-uri: ${NOTIFICATION_SECURITY_JWK_SET_URI:}
+
+server:
+  address: ${NOTIFICATION_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  port: ${NOTIFICATION_SERVICE_PORT:18093}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+
+service:
+  name: notification-service
+  owner: notification-service
+  schema: ${NOTIFICATION_SCHEMA:notification_service}
+  redis-namespace: ${NOTIFICATION_REDIS_NAMESPACE:notification}
+  port: ${NOTIFICATION_SERVICE_PORT:18093}
+
+offline:
+  max-batch-size: ${OFFLINE_MAX_BATCH_SIZE:100}
+  conflict-policy: ${OFFLINE_CONFLICT_POLICY:EXPLICIT_CONFLICT}
+
+notification:
+  phase: ${NOTIFICATION_PHASE:phase-1}
+  max-delivery-attempts: ${NOTIFICATION_MAX_DELIVERY_ATTEMPTS:5}
+  retry-backoff: ${NOTIFICATION_RETRY_BACKOFF:PT30S}
+  security:
+    resource-server-enabled: ${NOTIFICATION_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${NOTIFICATION_SECURITY_JWK_SET_URI:}

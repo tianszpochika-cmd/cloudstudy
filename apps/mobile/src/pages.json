@@ -71,10 +71,73 @@
       }
     },
     {
+      "path": "pages/b11-listening/b11-listening",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "B11 听力与 Language Clips"
+      }
+    },
+    {
+      "path": "pages/b11-reading/b11-reading",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "B11 分级阅读"
+      }
+    },
+    {
+      "path": "pages/b11-speaking/b11-speaking",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "B11 音标与影子跟读"
+      }
+    },
+    {
       "path": "pages/world/world",
       "style": {
         "navigationStyle": "custom",
         "navigationBarTitleText": "世界"
+      }
+    },
+    {
+      "path": "pages/b5-commerce/b5-commerce",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "学习权益"
+      }
+    },
+    {
+      "path": "pages/b6-platform/b6-platform",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "端与性能"
+      }
+    },
+    {
+      "path": "pages/b4-games/b4-games",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "游戏大厅"
+      }
+    },
+    {
+      "path": "pages/b4-social/b4-social",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "虚拟自习室"
+      }
+    },
+    {
+      "path": "pages/b4-avatar/b4-avatar",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "Avatar 与衣柜"
+      }
+    },
+    {
+      "path": "pages/b4-offline/b4-offline",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "离线包"
       }
     },
     {
@@ -92,6 +155,20 @@
       }
     },
     {
+      "path": "pages/auth-callback/auth-callback",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "会话恢复"
+      }
+    },
+    {
+      "path": "pages/forbidden/forbidden",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "访问权限"
+      }
+    },
+    {
       "path": "pages/onboarding/onboarding",
       "style": { "navigationStyle": "custom", "navigationBarTitleText": "新手引导" }
     },
@@ -102,6 +179,10 @@
     {
       "path": "pages/today/today",
       "style": { "navigationStyle": "custom", "navigationBarTitleText": "今日任务" }
+    },
+    {
+      "path": "pages/b10-report/b10-report",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "错题与报告" }
     },
     {
       "path": "pages/settings/settings",

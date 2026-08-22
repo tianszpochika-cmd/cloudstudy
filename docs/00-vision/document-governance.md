@@ -1,12 +1,14 @@
 # 语学星产品与研发文档治理
 
-> 版本：v1.0
+> 版本：v2.2
 >
-> 生效日期：2026-08-20
+> 生效日期：2026-08-22
 >
 > 适用范围：Phase 1 全部产品、设计、前端、后端、数据库、内容、测试、运营与 Agent 交付
 
-本文件是文档治理地图，不替代任务状态报表。任务的负责人、状态、证据和阻塞以 [`requirements/backlog/Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 为准；本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
+本文件是文档治理地图，不替代任务状态报表。B7+ 的负责人、状态、证据和阻塞以 [`requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md`](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 为准；[`Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 只保留 B0–B6 历史状态。本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
+
+v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2-980plus/README.md)，后端技术入口为 [`docs/02-architecture/v2-microservices-architecture.md`](../02-architecture/v2-microservices-architecture.md)；旧 B0–B6 与 `core-api` 记录只保留历史/迁移语义。
 
 ## 1. 文档事实源与优先级
 
@@ -15,18 +17,19 @@
 | 优先级 | 文档/目录 | 作用 | 维护边界 |
 |---:|---|---|---|
 | 1 | `AGENTS.md` | 技术栈、架构边界、隐私与 DoD 总规则 | 关键技术路线变更必须走 ADR |
-| 2 | `requirements/product-requirements.md`、`requirements/mvp-scope.md`、`requirements/acceptance-criteria.md` | 产品目标、Phase 边界和验收底线 | 需求变更需产品负责人确认 |
-| 3 | `requirements/feature-matrix.md` | `FEAT-*` 功能编号、阶段和终端范围的唯一全景台账 | 不得在设计文档中自造功能编号 |
-| 4 | `docs/09-roadmap/roadmap.md` | 分期、优先级与全阶段发布 Gate | 不得因单个 Agent 方便而提前跨期 |
-| 5 | `docs/06-design/detailed-specs/01~09` | 交互、状态机、DDL、API 和异常分支施工图 | 发生跨域冲突时以 `09_全站详细设计一致性审计白皮书.md` 的 canonical 约束为准 |
-| 6 | `packages/contracts/`、`database/mysql/migrations/`、代码与测试 | 可执行实现与验证证据 | 必须反向链接到需求/设计/任务 |
-| 7 | `requirements/backlog/` | 任务拆分、执行 SOP、证据和状态交接 | 状态总报表由统筹 Agent 统一更新 |
+| 2 | `docs/06-design/v2-980plus/` | **新一轮开发唯一的全量业务设计与需求落地基线**：范围、用户交互、四项目宿主、阶段与验收 | `V2-EXT-*` 属于 v2 范围但未细化签收不得进入任务；冲突时以 v2 为准并同步追溯台账 |
+| 3 | `docs/02-architecture/v2-microservices-architecture.md`、`docs/02-architecture/v2-platform-capability-matrix.md`、ADR-0009/0010 | 服务边界、Gateway、IAM/RBAC、数据/事件和平台能力 | `ARCH-*` 不计入业务 Feature；技术冲突必须通过 ADR/v2 变更闭环 |
+| 4 | `requirements/product-requirements.md`、`requirements/mvp-scope.md`、`requirements/acceptance-criteria.md`、`requirements/feature-matrix.md` | 来源证据、`FEAT-*` 编号、法规/Phase 底线、统计与可测试验收 | 新需求先更新 v2 与本层追溯；本层不能以旧文案推翻 v2 |
+| 5 | `docs/09-roadmap/roadmap.md` | 分期、Platform 0、优先级与全阶段发布 Gate | 不得因单个 Agent 方便而提前跨期 |
+| 6 | `docs/06-design/detailed-specs/01~09`、旧 `phase-*`、B0–B6 | 历史实现、术语和迁移参考 | 不作为新任务需求事实源；发生冲突时以 v2 和目标架构为准 |
+| 7 | `packages/contracts/`、`database/mysql/migrations/`、代码与测试 | 可执行实现与验证证据 | 必须反向链接到需求/设计/任务 |
+| 8 | `requirements/backlog/` | 任务拆分、执行 SOP、证据和状态交接 | B7+ 以 `v2-B7plus-代码重塑与交互测试任务基线.md` 为状态事实；旧台账只作历史；v2 任务必须新增 `Source/Arch/Service/Data Owner` |
 
 有效 ADR 位于 `docs/10-decisions/`。ADR 记录架构、范围、数据所有权和不可逆约束；普通实现细节留在设计文档或代码中，不能用 ADR 代替 API、DDL 或测试。
 
 ## 2. Phase 1 范围冻结
 
-Phase 1 的执行基线标识为 `P1-BASELINE-20260820`，详细冻结表见 [`requirements/backlog/Phase-1范围冻结与跨文档基线.md`](../../requirements/backlog/Phase-1范围冻结与跨文档基线.md)，对应决策见 [`ADR-0007`](../10-decisions/0007-phase1-scope-and-development-governance.md)。摘要如下：
+Phase 1 的成人、安全和阶段约束仍然必须遵守，但新任务的执行基线在 `v2-980plus/`。`P1-BASELINE-20260820` 与 [`requirements/backlog/Phase-1范围冻结与跨文档基线.md`](../../requirements/backlog/Phase-1范围冻结与跨文档基线.md) 是 v1 历史冻结记录，只可用于迁移核对，不能覆盖 v2；对应历史决策见 [`ADR-0007`](../10-decisions/0007-phase1-scope-and-development-governance.md)。摘要如下：
 
 | 冻结项 | Phase 1 唯一执行口径 | 禁止的替代口径 |
 |---|---|---|
@@ -55,11 +58,12 @@ Phase 1 的执行基线标识为 `P1-BASELINE-20260820`，详细冻结表见 [`r
 
 | 领域 | 权威事实 | 允许被其他域消费的内容 | 明确禁止 |
 |---|---|---|---|
-| `VOC` | `vocab_id`、`chunk_id`、`expression_id`、学习对象和 `lrn_srs_state`、复习事件、排程与算法版本 | 通过事件/查询提供给练习、报告、游戏和阅读 | `ASM` 或其他域复制 SM-2/SRS 主表 |
-| `ASM` | `question_id`、`exercise_id`、`attempt_id`、判分、错因、题目错题 cycle 和 D+1/D+7 验证证据 | 向 `VOC` 发送已验证的学习反馈/复习事实 | 自己维护另一套词汇掌握度或覆盖 `VOC` 的排程 |
-| `ONB` | 目标、年龄确认、初始画像与非 AI 测评结果 | `Home`、计划和内容编排读取 | 重新定义用户年龄或另造画像表 |
-| `COM/ADM` | SKU、订单、支付验证、权益、内容版本、双审、风控和 Flag | 向学习端提供已发布版本和权益投影 | 把渠道回调原文、客户端状态或运营指标当作业务事实 |
-| `SPK` | 规则化口语素材、录音权限和回放元数据 | 学习报告可消费脱敏结果 | Phase 1 创建 RTC/ASR/AI 发音评分事实 |
+| `content-service` | `vocab_id`、`chunk_id`、`expression_id`、课程/内容版本、`question_id`、`exercise_id`、答案规则版本、版权与发布状态 | 向学习和测评提供版本化只读内容/题目快照 | `assessment` 维护题库主表、前端持有答案密钥或任何服务越权发布内容 |
+| `learning-service` | `lrn_srs_state`、复习事件/排程、学习计划、进度、`mastery_projection` | 向练习、报告、游戏提供事件或只读投影 | `assessment` 或客户端直接改 SRS/掌握度/复习状态 |
+| `assessment-service` | `attempt_id`、草稿/checkpoint、判分、错因、模考会话与报告快照 | 向 learning 发出可信已提交/已评分事实 | 自己维护另一套掌握度/SRS，或改 content 的题目/答案规则 |
+| `iam-service` / `learner-service` | IAM：principal、成人年龄 Gate、tenant、会话、角色和同意；learner：目标、偏好、学习档案 | Home、计划和内容编排按权限读取 | 创建儿童/家长/监护主体作为 Phase 1 功能，或让客户端覆盖 tenant/owner |
+| `commerce-service` / `admin-ops-service` | commerce：SKU、订单、支付验证、权益、退款与对账；admin：只读聚合、命令发起和审计关联 | 向学习端提供已发布内容和权益投影 | BFF/工作流跨域写领域事实，把渠道回调原文、客户端状态或运营指标当作事实 |
+| `media-service` / `assessment-service` | media：录音/媒体元数据、转码与短期授权 URL；assessment：规则化口语 attempt/反馈 | 学习报告可消费脱敏结果 | Phase 1 创建 RTC/ASR/AI 发音评分事实或将原始音频写入日志/事件 |
 
 跨域引用必须带 canonical ID、`contentVersionId`（如适用）、`requestId` 和幂等上下文；SQL 使用 snake_case，REST JSON 使用 camelCase。
 
@@ -75,7 +79,7 @@ Phase 1 的执行基线标识为 `P1-BASELINE-20260820`，详细冻结表见 [`r
 - 表结构变更不得直接改线上/存量表；先增加 Flyway migration，并提供空库、存量库、回滚或补偿证据。
 - 内容发布、支付、权限、同步、个人数据和学习掌握相关变更必须可审计、可回放、可回滚。
 - Agent 只提交“待验收”；统筹 Agent/评审人核验最小证据集后才将任务标为“已完成”。
-- `CHANGELOG.md` 的每条记录必须包含任务 ID、影响范围、兼容性/迁移提示、验证命令、回滚方式和未覆盖事项；本治理任务不越权修改根 `CHANGELOG.md`，规则落在 [`requirements/backlog/DoD-Gate与证据包规范.md`](../../requirements/backlog/DoD-Gate与证据包规范.md)。
+- `CHANGELOG.md` 的每条记录必须包含可追溯标识（任务 ID、ADR 或审核记录）、影响范围、兼容性/迁移提示、验证命令、回滚方式和未覆盖事项；规则落在 [`requirements/backlog/DoD-Gate与证据包规范.md`](../../requirements/backlog/DoD-Gate与证据包规范.md)。
 
 ## 5. 文档交付检查
 
@@ -93,6 +97,7 @@ Phase 1 的执行基线标识为 `P1-BASELINE-20260820`，详细冻结表见 [`r
 - 范围冻结：`requirements/backlog/Phase-1范围冻结与跨文档基线.md`
 - Agent SOP：`requirements/backlog/Agent开发SOP与状态流转模板.md`
 - Gate/证据：`requirements/backlog/DoD-Gate与证据包规范.md`
-- 研发任务基线：`requirements/backlog/开发实施总纲与功能链条任务分解.md`
-- 状态唯一事实：`requirements/backlog/Agent开发状态总报表.md`
+- v2 研发任务/状态基线：`requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md`
+- B0–B6 历史任务基线：`requirements/backlog/开发实施总纲与功能链条任务分解.md`
+- B0–B6 历史状态事实：`requirements/backlog/Agent开发状态总报表.md`
 - 端口唯一事实：`config/local-ports.json`

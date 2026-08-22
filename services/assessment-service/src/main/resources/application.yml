@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: assessment-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${ASSESSMENT_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${ASSESSMENT_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  port: ${ASSESSMENT_SERVICE_PORT:18091}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+
+service:
+  name: assessment-service
+  owner: assessment-service
+  schema: ${ASSESSMENT_SCHEMA:assessment_service}
+  redis-namespace: ${ASSESSMENT_REDIS_NAMESPACE:assessment}
+  port: ${ASSESSMENT_SERVICE_PORT:18091}
+
+assessment:
+  phase: ${ASSESSMENT_PHASE:phase-1}
+  security:
+    default-deny: ${ASSESSMENT_DEFAULT_DENY:true}
+  scoring:
+    client-visible: false
+
+security:
+  resource-server:
+    # The real IdP/JWKS gate is a later runtime step; absence of it never creates a local bypass.
+    enabled: ${ASSESSMENT_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${ASSESSMENT_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${ASSESSMENT_SECURITY_JWK_SET_URI:}

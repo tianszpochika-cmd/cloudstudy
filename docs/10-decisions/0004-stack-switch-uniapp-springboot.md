@@ -1,8 +1,10 @@
 # ADR-0004：采用 Vue 3 + uni-app + Spring Boot 3 作为产品主线
 
+> **历史决策说明**：前端四项目和跨端边界继续有效；Java 17/Spring Boot 3 的新后端主线已由 ADR-0010 取代，旧版本只作为 `core-api` 迁移兼容运行时。
+
 ## 状态
 
-accepted
+superseded（后端部分由 ADR-0010 取代；前端部分保留）
 
 ## 决策
 

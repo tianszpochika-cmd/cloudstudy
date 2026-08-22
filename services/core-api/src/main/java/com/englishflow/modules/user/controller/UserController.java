@@ -8,10 +8,8 @@ import com.englishflow.modules.user.dto.DeviceListResponse;
 import com.englishflow.modules.user.dto.KickDevicesResponse;
 import com.englishflow.modules.user.dto.LearningPreferencesResponse;
 import com.englishflow.modules.user.dto.LoginAlertResponse;
-import com.englishflow.modules.user.dto.NotificationPreferencesResponse;
 import com.englishflow.modules.user.dto.PrivacySettingsResponse;
 import com.englishflow.modules.user.dto.UpdateLearningPreferencesRequest;
-import com.englishflow.modules.user.dto.UpdateNotificationPreferencesRequest;
 import com.englishflow.modules.user.dto.UpdatePrivacySettingsRequest;
 import com.englishflow.modules.user.dto.UpdateUserProfileRequest;
 import com.englishflow.modules.user.dto.UserProfileResponse;
@@ -54,12 +52,6 @@ public final class UserController {
 
     @PatchMapping("/user/privacy")
     public PrivacySettingsResponse updatePrivacy(@RequestBody UpdatePrivacySettingsRequest body, HttpServletRequest request) { return userService.updatePrivacy(context(request), body); }
-
-    @GetMapping("/user/notifications")
-    public NotificationPreferencesResponse notifications(HttpServletRequest request) { return userService.notifications(context(request)); }
-
-    @PatchMapping("/user/notifications")
-    public NotificationPreferencesResponse updateNotifications(@RequestBody UpdateNotificationPreferencesRequest body, HttpServletRequest request) { return userService.updateNotifications(context(request), body); }
 
     @GetMapping("/user/devices")
     public DeviceListResponse devices(HttpServletRequest request) { return userService.devices(context(request)); }

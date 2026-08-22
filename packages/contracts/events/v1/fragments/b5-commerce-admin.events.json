@@ -1,0 +1,42 @@
+{
+  "events": [
+    { "eventName": "commerce.order.created.v1", "domain": "commerce", "version": 1, "schema": "commerce.event.v1", "aggregateType": "com_order", "aggregateIdField": "orderId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "commerce.payment.requested.v1", "domain": "commerce", "version": 1, "schema": "commerce.event.v1", "aggregateType": "com_payment_attempt", "aggregateIdField": "attemptId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "commerce.payment.callback_received.v1", "domain": "commerce", "version": 1, "schema": "commerce.event.v1", "aggregateType": "com_payment_callback", "aggregateIdField": "callbackId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "commerce.payment.verified.v1", "domain": "commerce", "version": 1, "schema": "commerce.event.v1", "aggregateType": "com_payment_attempt", "aggregateIdField": "attemptId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "commerce.refund.completed.v1", "domain": "commerce", "version": 1, "schema": "commerce.event.v1", "aggregateType": "com_refund", "aggregateIdField": "refundId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "commerce.household.changed.v1", "domain": "commerce", "version": 1, "schema": "commerce.event.v1", "aggregateType": "com_household_member", "aggregateIdField": "householdId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "cms.content.version_saved.v1", "domain": "cms", "version": 1, "schema": "cms.event.v1", "aggregateType": "cms_content_version", "aggregateIdField": "contentVersionId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "cms.import.completed.v1", "domain": "cms", "version": 1, "schema": "cms.event.v1", "aggregateType": "cms_import_job", "aggregateIdField": "importJobId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "safety.precheck.blocked.v1", "domain": "safety", "version": 1, "schema": "safety.event.v1", "aggregateType": "cms_sensitive_hit", "aggregateIdField": "hitId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "risk.decision.created.v1", "domain": "risk", "version": 1, "schema": "risk.event.v1", "aggregateType": "ops_risk_event", "aggregateIdField": "riskEventId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "finance.reconciliation.discrepancy.v1", "domain": "finance", "version": 1, "schema": "finance.event.v1", "aggregateType": "com_reconciliation_item", "aggregateIdField": "itemId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "ops.flag.updated.v1", "domain": "ops", "version": 1, "schema": "ops.event.v1", "aggregateType": "ops_feature_flag", "aggregateIdField": "flagKey", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "support.ticket.created.v1", "domain": "support", "version": 1, "schema": "support.event.v1", "aggregateType": "cms_correction_ticket", "aggregateIdField": "ticketId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "support.ticket.resolved.v1", "domain": "support", "version": 1, "schema": "support.event.v1", "aggregateType": "cms_correction_ticket", "aggregateIdField": "ticketId", "payloadSchema": { "$ref": "#/payloadSchemas/B5FactPayload" }, "compatibility": { "strategy": "additive" } }
+  ],
+  "payloadSchemas": {
+    "B5FactPayload": {
+      "$id": "platform.events.b5.fact.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aggregateId", "status", "ruleVersion"],
+      "properties": {
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "status": { "type": "string", "maxLength": 64 },
+        "ruleVersion": { "type": "string", "maxLength": 64 },
+        "amountMinor": { "type": "integer", "format": "int64", "minimum": 0 },
+        "currency": { "type": "string", "maxLength": 8 },
+        "provider": { "type": "string", "maxLength": 32 },
+        "contentVersionId": { "type": "string", "maxLength": 128 },
+        "reasonCode": { "type": "string", "maxLength": 64 },
+        "decisionCode": { "type": "string", "maxLength": 64 },
+        "ttlSeconds": { "type": "integer", "minimum": 0 },
+        "rolloutPercent": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "discrepancyCode": { "type": "string", "maxLength": 64 },
+        "redacted": { "type": "boolean" }
+      }
+    }
+  }
+}

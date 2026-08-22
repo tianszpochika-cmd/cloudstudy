@@ -1,0 +1,254 @@
+{
+  "events": [
+    {
+      "eventName": "assessment.attempt.submitted.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "attemptId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.attempt.submitted.v2",
+        "consumerRule": "按 attemptId/attemptVersion/submissionDigest 去重；payload 只含版本、摘要和规则元数据，不含原始作答或答案规则值。"
+      }
+    },
+    {
+      "eventName": "assessment.attempt.assessed.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "assessment_attempt",
+      "aggregateIdField": "attemptId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.attempt.assessed.v2",
+        "consumerRule": "learning-service 只按 attemptId/assessmentVersion 应用一次；scoreBucket、mistakeCodes 和 masterySignal 是脱敏结果摘要。"
+      }
+    },
+    {
+      "eventName": "learning.mastery.projected.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_mastery_projection",
+      "aggregateIdField": "projectionId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10LearningMasteryProjected" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.mastery.projected.v2",
+        "consumerRule": "按 sourceAssessmentEventId/itemId/projectionVersion 幂等；learning-service 是 mastery 与 SRS 唯一写 owner。"
+      }
+    },
+    {
+      "eventName": "learning.review.scheduled.v1",
+      "domain": "learning",
+      "version": 1,
+      "schema": "learning.event.v1",
+      "aggregateType": "learning_review_queue",
+      "aggregateIdField": "queueItemId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10LearningReviewScheduled" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.review.scheduled.v2",
+        "consumerRule": "按 queueItemId/queueVersion 幂等；日期由服务端时区和规则版本决定，客户端不能直接改 dueAt。"
+      }
+    },
+    {
+      "eventName": "workflow.assessment_learning.saga_started.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "assessment_learning_saga",
+      "aggregateIdField": "sagaId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10SagaStarted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish workflow.assessment_learning.saga_started.v2",
+        "consumerRule": "Saga 状态按 sagaId/rootEventId 幂等；workflow 只协调和补偿，不直接写 assessment/learning 表。"
+      }
+    },
+    {
+      "eventName": "workflow.assessment_learning.saga_compensated.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "assessment_learning_saga",
+      "aggregateIdField": "sagaId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10SagaCompensated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish workflow.assessment_learning.saga_compensated.v2",
+        "consumerRule": "补偿动作按 sagaId/compensationKey 幂等；不能删除 assessment 事实，只能生成 learning projection 的补偿状态或人工恢复任务。"
+      }
+    },
+    {
+      "eventName": "workflow.event.replayed.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "event_replay",
+      "aggregateIdField": "replayId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10EventReplayed" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish workflow.event.replayed.v2",
+        "consumerRule": "replayId/sourceEventId/consumerName 唯一；回放沿用原始 trace 关联但生成新的 replay eventId。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "B10AssessmentAttemptSubmitted": {
+      "$id": "platform.events.assessment.attempt.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "attemptId", "sessionId", "contentVersionId", "contentSnapshotId", "contentEpoch", "attemptVersion", "submissionDigest", "itemCount", "gradingRuleVersion", "submittedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "attemptId": { "type": "string", "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$" },
+        "sessionId": { "type": "string", "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$" },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentSnapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
+        "contentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
+        "attemptVersion": { "type": "integer", "minimum": 1 },
+        "submissionDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "itemCount": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "gradingRuleVersion": { "type": "string", "maxLength": 96 },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B10AssessmentAttemptAssessed": {
+      "$id": "platform.events.assessment.attempt.assessed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "attemptId", "sessionId", "contentVersionId", "contentSnapshotId", "attemptVersion", "assessmentVersion", "scoreBucket", "masterySignal", "mistakeCodes", "assessedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "attemptId": { "type": "string", "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$" },
+        "sessionId": { "type": "string", "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$" },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentSnapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
+        "attemptVersion": { "type": "integer", "minimum": 1 },
+        "assessmentVersion": { "type": "string", "maxLength": 96 },
+        "scoreBucket": { "type": "string", "enum": ["ZERO", "PARTIAL", "FULL", "PENDING_REVIEW"] },
+        "masterySignal": { "type": "string", "enum": ["NO_SIGNAL", "WEAK", "STABLE", "MASTERED", "RETRY"] },
+        "mistakeCodes": { "type": "array", "items": { "type": "string", "maxLength": 96 }, "maxItems": 64 },
+        "assessedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B10LearningMasteryProjected": {
+      "$id": "platform.events.learning.mastery.projected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "projectionId", "itemId", "sourceAttemptId", "sourceAssessmentEventId", "contentVersionId", "contentEpoch", "fromState", "toState", "projectionVersion", "projectionStatus", "projectedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "projectionId": { "type": "string", "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$" },
+        "itemId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "sourceAttemptId": { "type": "string", "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$" },
+        "sourceAssessmentEventId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
+        "fromState": { "type": "string", "enum": ["NONE", "LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REVIEW_QUEUE", "REOPENED"] },
+        "toState": { "type": "string", "enum": ["LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REVIEW_QUEUE", "REOPENED"] },
+        "srsStage": { "type": "string", "enum": ["NEW", "D0", "D1", "D7", "MASTERED"] },
+        "nextReviewAt": { "type": "string", "format": "date-time", "nullable": true },
+        "projectionVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "projectionStatus": { "type": "string", "enum": ["APPLIED", "RETRYING", "COMPENSATED", "MANUAL_REVIEW"] },
+        "projectedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B10LearningReviewScheduled": {
+      "$id": "platform.events.learning.review.scheduled.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "queueItemId", "itemId", "sourceProjectionId", "queueVersion", "source", "state", "dueAt", "scheduledAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "queueItemId": { "type": "string", "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$" },
+        "itemId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "sourceProjectionId": { "type": "string", "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$" },
+        "queueVersion": { "type": "integer", "format": "int64", "minimum": 1 },
+        "source": { "type": "string", "enum": ["NEW", "REVIEW", "MISTAKE", "RETRY"] },
+        "state": { "type": "string", "enum": ["LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REVIEW_QUEUE", "REOPENED"] },
+        "dueAt": { "type": "string", "format": "date-time" },
+        "scheduledAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B10SagaStarted": {
+      "$id": "platform.events.workflow.assessment_learning.saga_started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "sagaId", "sagaType", "rootEventId", "rootAggregateId", "currentStep", "sagaVersion", "startedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "sagaId": { "type": "string", "pattern": "^saga_[A-Za-z0-9._:-]{8,127}$" },
+        "sagaType": { "type": "string", "const": "ASSESSMENT_TO_LEARNING" },
+        "rootEventId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "rootAggregateId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "currentStep": { "type": "string", "enum": ["ASSESSMENT_ACCEPT", "ASSESSMENT_ASSESS", "LEARNING_PROJECT", "REVIEW_SCHEDULE"] },
+        "sagaVersion": { "type": "integer", "minimum": 1 },
+        "startedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B10SagaCompensated": {
+      "$id": "platform.events.workflow.assessment_learning.saga_compensated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "sagaId", "sagaType", "failedEventId", "failedStep", "compensationKey", "compensationAction", "recoveryMode", "compensatedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "sagaId": { "type": "string", "pattern": "^saga_[A-Za-z0-9._:-]{8,127}$" },
+        "sagaType": { "type": "string", "const": "ASSESSMENT_TO_LEARNING" },
+        "failedEventId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "failedStep": { "type": "string", "enum": ["ASSESSMENT_ACCEPT", "ASSESSMENT_ASSESS", "LEARNING_PROJECT", "REVIEW_SCHEDULE"] },
+        "compensationKey": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$" },
+        "compensationAction": { "type": "string", "enum": ["MARK_PROJECTION_RETRY", "REVERT_PENDING_PROJECTION", "REOPEN_REVIEW_QUEUE", "CREATE_MANUAL_RECOVERY"] },
+        "recoveryMode": { "type": "string", "enum": ["AUTOMATIC", "MANUAL_REVIEW"] },
+        "compensatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B10EventReplayed": {
+      "$id": "platform.events.workflow.event.replayed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "replayId", "sourceDlqId", "sourceEventId", "sourceEventName", "consumerName", "replayAttempt", "replayResult", "replayedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "replayId": { "type": "string", "pattern": "^replay_[A-Za-z0-9._:-]{8,127}$" },
+        "sourceDlqId": { "type": "string", "pattern": "^dlq_[A-Za-z0-9._:-]{8,127}$" },
+        "sourceEventId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "sourceEventName": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+\\.v[0-9]+$" },
+        "consumerName": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{2,95}$" },
+        "replayAttempt": { "type": "integer", "minimum": 1 },
+        "replayResult": { "type": "string", "enum": ["APPLIED", "DUPLICATE_IGNORED", "REQUEUED", "QUARANTINED"] },
+        "replayedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "asyncapi": {
+    "channels": {
+      "b10AssessmentAttemptSubmitted": { "address": "assessment.attempt.submitted.v1", "messages": { "attemptSubmitted": { "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted" } } },
+      "b10AssessmentAttemptAssessed": { "address": "assessment.attempt.assessed.v1", "messages": { "attemptAssessed": { "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed" } } },
+      "b10LearningMasteryProjected": { "address": "learning.mastery.projected.v1", "messages": { "masteryProjected": { "$ref": "#/payloadSchemas/B10LearningMasteryProjected" } } },
+      "b10LearningReviewScheduled": { "address": "learning.review.scheduled.v1", "messages": { "reviewScheduled": { "$ref": "#/payloadSchemas/B10LearningReviewScheduled" } } },
+      "b10SagaStarted": { "address": "workflow.assessment_learning.saga_started.v1", "messages": { "sagaStarted": { "$ref": "#/payloadSchemas/B10SagaStarted" } } },
+      "b10SagaCompensated": { "address": "workflow.assessment_learning.saga_compensated.v1", "messages": { "sagaCompensated": { "$ref": "#/payloadSchemas/B10SagaCompensated" } } },
+      "b10EventReplayed": { "address": "workflow.event.replayed.v1", "messages": { "eventReplayed": { "$ref": "#/payloadSchemas/B10EventReplayed" } } }
+    },
+    "operations": {}
+  }
+}

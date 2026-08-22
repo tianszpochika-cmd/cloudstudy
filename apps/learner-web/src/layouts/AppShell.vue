@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import { useSessionStore } from '../stores/session'
+import { authT } from '../auth/i18n'
 
 const route = useRoute()
 const session = useSessionStore()
@@ -24,6 +25,7 @@ const navItems = [
   { name: 'b3-reading', label: '阅读', icon: '▥' },
   { name: 'b3-speaking', label: '口语', icon: '◌' },
   { name: 'world', label: '世界', icon: '✧' },
+  { name: 'commerce', label: '权益', icon: '◈' },
   { name: 'courses', label: '课程', icon: '▤' },
   { name: 'me', label: '我的', icon: '◎' },
 ] as const
@@ -35,8 +37,8 @@ function choosePerformance(level: PerformanceLevel): void {
   showPerformanceMenu.value = false
 }
 
-function signOut(): void {
-  session.clear()
+async function signOut(): Promise<void> {
+  await session.logout()
 }
 
 onMounted(() => {
@@ -89,7 +91,7 @@ onUnmounted(() => {
             {{ level }}
           </button>
         </div>
-        <button class="sign-out" type="button" @click="signOut">退出登录</button>
+        <button class="sign-out" type="button" @click="signOut">{{ authT('session.logout') }}</button>
       </div>
     </aside>
 
@@ -101,7 +103,7 @@ onUnmounted(() => {
         </div>
         <div class="topbar__status" aria-label="当前会话状态">
           <span class="status-dot status-dot--success" aria-hidden="true"></span>
-          <span>本地壳已就绪</span>
+          <span>{{ session.status === 'authenticated' ? authT('session.restored') : authT('session.restoring') }}</span>
         </div>
       </header>
 

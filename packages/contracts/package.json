@@ -12,6 +12,7 @@
   "scripts": {
     "validate": "node ../../scripts/contracts/validate-contracts.mjs",
     "generate": "node ../../scripts/contracts/generate-contracts.mjs",
+    "compatibility": "node ../../scripts/contracts/compatibility-diff.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {

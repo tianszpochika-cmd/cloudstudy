@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "events": [
+    { "eventName": "platform.build.registered.v1", "domain": "platform", "version": 1, "schema": "platform.event.v1", "aggregateType": "plt_build_artifact", "aggregateIdField": "buildId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "platform.compatibility.checked.v1", "domain": "platform", "version": 1, "schema": "platform.event.v1", "aggregateType": "plt_platform_check", "aggregateIdField": "checkId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "platform.performance.degraded.v1", "domain": "platform", "version": 1, "schema": "platform.event.v1", "aggregateType": "plt_performance_budget", "aggregateIdField": "budgetId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "quality.e2e.completed.v1", "domain": "quality", "version": 1, "schema": "quality.event.v1", "aggregateType": "qly_e2e_run", "aggregateIdField": "runId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "quality.security.scan_completed.v1", "domain": "quality", "version": 1, "schema": "quality.event.v1", "aggregateType": "qly_security_scan", "aggregateIdField": "scanId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "quality.reliability.completed.v1", "domain": "quality", "version": 1, "schema": "quality.event.v1", "aggregateType": "qly_reliability_run", "aggregateIdField": "runId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "observability.alert.raised.v1", "domain": "observability", "version": 1, "schema": "observability.event.v1", "aggregateType": "obs_alert", "aggregateIdField": "alertId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "data.backup.drill_completed.v1", "domain": "data", "version": 1, "schema": "data.event.v1", "aggregateType": "rel_backup_drill", "aggregateIdField": "drillId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } },
+    { "eventName": "release.gate.evaluated.v1", "domain": "release", "version": 1, "schema": "release.event.v1", "aggregateType": "rel_release_gate", "aggregateIdField": "gateId", "payloadSchema": { "$ref": "#/payloadSchemas/B6FactPayload" }, "compatibility": { "strategy": "additive" } }
+  ],
+  "payloadSchemas": {
+    "B6FactPayload": {
+      "$id": "platform.events.b6.fact.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aggregateId", "status", "resultCode", "ruleVersion"],
+      "properties": {
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "maxLength": 64 },
+        "resultCode": { "type": "string", "maxLength": 64 },
+        "ruleVersion": { "type": "string", "maxLength": 64 },
+        "platformCode": { "type": "string", "maxLength": 64 },
+        "buildVersion": { "type": "string", "maxLength": 32 },
+        "sourceRevision": { "type": "string", "maxLength": 64 },
+        "passedCount": { "type": "integer", "minimum": 0 },
+        "failedCount": { "type": "integer", "minimum": 0 },
+        "criticalCount": { "type": "integer", "minimum": 0 },
+        "highCount": { "type": "integer", "minimum": 0 },
+        "duplicateWriteCount": { "type": "integer", "minimum": 0 },
+        "lostWriteCount": { "type": "integer", "minimum": 0 },
+        "rtoSeconds": { "type": "integer", "minimum": 0 },
+        "rpoSeconds": { "type": "integer", "minimum": 0 },
+        "gateDecision": { "type": "string", "maxLength": 32 },
+        "evidenceRef": { "type": "string", "maxLength": 255 }
+      }
+    }
+  }
+}

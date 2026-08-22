@@ -1,12 +1,14 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { pinia } from '../stores/pinia'
 import { useSessionStore } from '../stores/session'
+import { isFeatureEnabled } from '../platform/feature-gates'
 
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
     shell?: boolean
     title?: string
+    requiresAdultGate?: boolean
   }
 }
 
@@ -77,6 +79,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '学习报告' },
   },
   {
+    path: '/reports/weakness',
+    name: 'weakness-report',
+    component: () => import('../pages/B2ReportPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '错题与学习报告' },
+  },
+  {
     path: '/grammar',
     name: 'b3-grammar',
     component: () => import('../pages/B3GrammarPage.vue'),
@@ -89,29 +97,58 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '写作规则评测' },
   },
   {
+    path: '/writing/practice',
+    name: 'writing-practice',
+    component: () => import('../pages/B3WritingPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '规则写作练习' },
+  },
+  {
     path: '/listening',
     name: 'b3-listening',
-    component: () => import('../pages/B3ListeningPage.vue'),
+    component: () => import('../pages/B11ListeningPage.vue'),
+    alias: ['/courses/listening', '/practice/listening', '/reports/listening', '/clips'],
     meta: { requiresAuth: true, shell: true, title: '听力精练' },
   },
   {
     path: '/reading',
     name: 'b3-reading',
-    component: () => import('../pages/B3ReadingPage.vue'),
+    component: () => import('../pages/B11ReadingPage.vue'),
+    alias: ['/courses/reading', '/practice/reading', '/reports/reading'],
     meta: { requiresAuth: true, shell: true, title: '分级阅读' },
+  },
+  {
+    path: '/reader',
+    name: 'reader',
+    component: () => import('../pages/B11ReadingPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '沉浸阅读器' },
   },
   {
     path: '/speaking',
     name: 'b3-speaking',
-    component: () => import('../pages/B3SpeakingPage.vue'),
+    component: () => import('../pages/B11SpeakingPage.vue'),
+    alias: ['/courses/speaking', '/phonetics', '/recording', '/practice/shadowing'],
     meta: { requiresAuth: true, shell: true, title: '口语自练' },
   },
   {
     path: '/world',
     name: 'world',
-    component: () => import('../pages/EmptyPage.vue'),
-    props: { title: '世界', description: '学习地图与成长空间将在对应模块接入后呈现。' },
+    component: () => import('../pages/B4WorldPage.vue'),
     meta: { requiresAuth: true, shell: true, title: '世界' },
+  },
+  { path: '/auth/callback', name: 'auth-callback', component: () => import('../pages/AuthCallbackPage.vue') },
+  { path: '/adult-gate', name: 'adult-gate', component: () => import('../pages/AdultGatePage.vue'), meta: { requiresAuth: true, title: '成人用户 Gate' } },
+  { path: '/forbidden', name: 'forbidden', component: () => import('../pages/ForbiddenPage.vue'), meta: { requiresAuth: true, title: '访问权限' } },
+  {
+    path: '/commerce',
+    name: 'commerce',
+    component: () => import('../pages/B5CommercePage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '学习权益' },
+  },
+  {
+    path: '/platform',
+    name: 'platform',
+    component: () => import('../pages/B6PlatformPage.vue'),
+    meta: { requiresAuth: true, shell: true, title: '端与性能' },
   },
   {
     path: '/courses',
@@ -148,19 +185,22 @@ export const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const session = useSessionStore(pinia)
-  session.restore()
+  await session.restore()
 
-  const preview = to.query.preview === '1'
+  const preview = to.query.preview === '1' && isFeatureEnabled('learner.preview')
 
   if (to.meta.requiresAuth && !session.isAuthenticated && !preview) {
+    session.setReturnTo(to.fullPath)
     return { name: 'login', query: { redirect: to.fullPath } }
   }
 
   if (to.name === 'login' && session.isAuthenticated) {
-    return { name: 'home' }
+    return session.consumeReturnTo()
   }
+
+  if (to.meta.requiresAdultGate && session.adultGate === 'REQUIRED' && to.name !== 'adult-gate') return { name: 'adult-gate' }
 
   return true
 })

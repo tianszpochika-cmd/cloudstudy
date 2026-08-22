@@ -1,12 +1,14 @@
 # 技术规格与架构文档索引
 
-> 当前唯一技术基线：Vue 3 + TypeScript + uni-app + Spring Boot 3 + MySQL 8.x + Redis 7.x。所有技术规格必须引用该基线，不引入与基线冲突的替代主线。
+> 当前 v2 技术基线：Vue 3 + TypeScript + uni-app 四项目 + Java 25 LTS/Spring Boot 4.1 微服务 + Gateway/IAM/RBAC + MySQL 8.x/Redis 7.x。现有 `core-api` 的 Java 17/Spring Boot 3 仅是迁移兼容实现。
 
 ## 技术文档入口
 
 | 文档 | 作用 |
 |---|---|
 | docs/02-architecture/stack-recommendation.md | 最终技术栈、边界与禁止项 |
+| docs/02-architecture/v2-microservices-architecture.md | Gateway、IAM/RBAC、服务边界、数据/事件、运维和迁移 |
+| docs/02-architecture/v2-platform-capability-matrix.md | `ARCH-*` 平台能力、依赖、owner 和验收证据 |
 | docs/02-architecture/system-technical-architecture.md | 系统分层、服务边界、关键链路 |
 | docs/02-architecture/system-overview.md | 架构总览与阶段能力 |
 | docs/02-architecture/cross-platform-and-performance-adaptive.md | uni-app 跨端和四级性能降级 |
@@ -22,7 +24,7 @@
 ### Phase 1
 
 - Vue 3 + uni-app 学习端和 Vue 3 管理后台。
-- Spring Boot 3 模块化单体、MySQL 8.x、Redis 7.x、OSS/CDN。
+- Java 25 + Spring Boot 4.1 微服务目标、Gateway/IAM/RBAC、MySQL 8.x、Redis 7.x、OSS/CDN；旧 `core-api` 作为迁移兼容后端。
 - 规则化测评、SRS、题目评分、错题复习、报告和游戏化。
 - 不接入生成式 AI、AI 发音评分、AI 数字人、开放式 AI 聊天。
 
@@ -42,7 +44,9 @@
 1. AGENTS.md
 2. requirements/product-requirements.md
 3. requirements/mvp-scope.md
-4. docs/02-architecture/stack-recommendation.md
-5. docs/02-architecture/system-technical-architecture.md
-6. 对应模块设计文档和 OpenAPI 契约
-7. docs/10-decisions/README.md 与相关 ADR
+4. docs/06-design/v2-980plus/README.md
+5. docs/02-architecture/v2-microservices-architecture.md
+6. docs/02-architecture/stack-recommendation.md
+7. docs/02-architecture/system-technical-architecture.md
+8. 对应模块设计文档和 OpenAPI/AsyncAPI 契约
+9. docs/10-decisions/README.md 与相关 ADR

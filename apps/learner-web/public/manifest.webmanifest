@@ -1,0 +1,10 @@
+{
+  "name": "语学星",
+  "short_name": "语学星",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#F7F8FC",
+  "theme_color": "#596BFF",
+  "lang": "zh-CN",
+  "icons": []
+}

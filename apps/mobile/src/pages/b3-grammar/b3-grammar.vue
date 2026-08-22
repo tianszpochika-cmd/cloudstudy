@@ -1,35 +1,102 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { listGrammarExercises, getSentenceGraph, isB3OfflineError, listGrammarPoints, submitGrammarAttempt, submitSentenceBlocks, submitSentenceImitation } from '../../api/b3'
-import type { B3Status, GrammarPoint, SentenceGraph, SentenceSlice } from '../../domain/b3'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
-import B2StatusPanel from '../../components/b2/B2StatusPanel.vue'
+import B10ExerciseCard from '../../components/b10/B10ExerciseCard.vue'
+import B10FeedbackCard from '../../components/b10/B10FeedbackCard.vue'
+import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
+import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
+import type { B10AnswerInput, B10AssessmentSession, B10GrammarPoint, B10RuleFeedback, B10SyntaxGraph, B10WritingPrompt } from '../../domain/b10'
+import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../../api/b10'
+import { b10ContentLocale, b10ThemeMode, b10T, b10UiLocale } from '../../platform/b10-foundation'
 import { getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 
-const session = useSessionStore(); const engine = createAdaptivePerformanceEngine(); const performanceLevel = ref<PerformanceLevel>(engine.level); const status = ref<B3Status>('idle'); const message = ref<string | null>(null); const points = ref<GrammarPoint[]>([]); const graph = ref<SentenceGraph | null>(null); const exercises = ref<Array<Record<string, unknown>>>([]); const answer = ref(''); const exerciseResult = ref<Record<string, unknown> | null>(null); const blockOrder = ref<string[]>([]); const slotValues = ref<Record<string, string>>({}); const blockResult = ref<Record<string, unknown> | null>(null); const imitationResult = ref<Record<string, unknown> | null>(null)
-const activePoint = computed(() => points.value[0] ?? null); const slices = computed<SentenceSlice[]>(() => graph.value?.slices ?? []); const orderedBlocks = computed(() => blockOrder.value.map((id) => slices.value.find((item) => item.sliceId === id)).filter((item): item is SentenceSlice => Boolean(item))); const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level })
+const session = useSessionStore()
+const engine = createAdaptivePerformanceEngine()
+const performanceLevel = ref<PerformanceLevel>(engine.level)
+const status = ref<'idle' | 'loading' | 'ready' | 'empty' | 'offline' | 'forbidden' | 'stale' | 'error'>('idle')
+const message = ref<string | null>(null)
+const points = ref<B10GrammarPoint[]>([])
+const activePoint = ref<B10GrammarPoint | null>(null)
+const graph = ref<B10SyntaxGraph | null>(null)
+const grammarSession = ref<B10AssessmentSession | null>(null)
+const blockOrder = ref<string[]>([])
+const slotValues = ref<Record<string, string>>({})
+const feedback = ref<B10RuleFeedback | null>(null)
+const correctionPrompt = ref<B10WritingPrompt | null>(null)
+const correctionAnswer = ref('')
+const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
+const exercise = computed(() => grammarSession.value?.exercises.find((item) => item.position === 0) ?? grammarSession.value?.exercises[0] ?? null)
+const linearMode = computed(() => performanceLevel.value === 'Performance' || graph.value?.graphStatus === 'DEGRADED')
+const context = computed(() => ({ uiLocale: b10UiLocale.value, contentLocale: b10ContentLocale.value }))
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
-async function load(): Promise<void> { status.value = 'loading'; message.value = null; try { [points.value, exercises.value] = await Promise.all([listGrammarPoints(), listGrammarExercises()]); graph.value = points.value.length ? await getSentenceGraph(3201) : null; blockOrder.value = [...(graph.value?.blockOrder ?? graph.value?.slices?.map((item) => item.sliceId) ?? [])]; slotValues.value = { ...(graph.value?.imitationSlots ?? {}) }; status.value = graph.value ? 'ready' : 'empty' } catch (error) { status.value = isB3OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '语法服务暂时不可用，未使用本地样例填充。' } }
 function moveBlock(index: number, offset: number): void { const target = index + offset; if (target < 0 || target >= blockOrder.value.length) return; const next = [...blockOrder.value]; [next[index], next[target]] = [next[target], next[index]]; blockOrder.value = next }
-async function submitBlocks(): Promise<void> { if (graph.value) blockResult.value = await submitSentenceBlocks(graph.value.sentenceId, blockOrder.value) }
-async function submitImitation(): Promise<void> { if (graph.value) imitationResult.value = await submitSentenceImitation(graph.value.sentenceId, slotValues.value) }
-async function submitExercise(): Promise<void> { const exercise = exercises.value[0]; if (!exercise || !answer.value.trim()) return; exerciseResult.value = await submitGrammarAttempt(Number(exercise.exerciseId), { value: answer.value }) }
-onMounted(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() }); onUnmounted(() => { unsubscribe(); engine.dispose() })
+async function loadPoint(point: B10GrammarPoint): Promise<void> {
+  activePoint.value = point; graph.value = null; grammarSession.value = null; feedback.value = null; blockOrder.value = []; slotValues.value = {}; status.value = 'loading'; message.value = null
+  try {
+    if (point.sentenceId) {
+      graph.value = await b10LearningApi.getSentenceGraph(context.value, point.sentenceId)
+      blockOrder.value = [...graph.value.blockOrder]
+      slotValues.value = { ...graph.value.imitationSlots }
+    } else message.value = '当前知识点还没有发布可解析的长难句。'
+    grammarSession.value = await b10LearningApi.createGrammarSession(context.value, point.grammarPointId, point.contentVersionId, createB10ClientEventId(`grammar-session-${point.grammarPointId}`))
+    status.value = graph.value || grammarSession.value.exercises.length ? 'ready' : 'empty'
+  } catch (error) { const info = b10ErrorInfo(error, '语法服务暂时不可用。'); status.value = info.kind; message.value = info.message }
+}
+async function load(): Promise<void> {
+  status.value = 'loading'; message.value = null
+  try {
+    points.value = await b10LearningApi.listGrammarPoints(context.value)
+    correctionPrompt.value = (await b10LearningApi.listWritingPrompts(context.value, 'CORRECTION'))[0] ?? null
+    if (!points.value.length) { status.value = 'empty'; return }
+    await loadPoint(points.value[0])
+  } catch (error) { const info = b10ErrorInfo(error, '语法知识树暂时不可用。'); status.value = info.kind; message.value = info.message }
+}
+async function submitBlocks(): Promise<void> {
+  if (!grammarSession.value || !exercise.value || !graph.value || !blockOrder.value.length) return
+  try { feedback.value = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, { orderedTokenIds: blockOrder.value }, graph.value.contentVersionId, createB10ClientEventId(`grammar-blocks-${graph.value.sentenceId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { const info = b10ErrorInfo(error, '句子积木提交失败，当前顺序已保留。'); status.value = info.kind; message.value = info.message }
+}
+async function submitImitation(): Promise<void> {
+  if (!grammarSession.value || !exercise.value || !graph.value) return
+  try { feedback.value = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, { text: JSON.stringify(slotValues.value) }, graph.value.contentVersionId, createB10ClientEventId(`grammar-imitation-${graph.value.sentenceId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { const info = b10ErrorInfo(error, '仿写提交失败，草稿仍保留。'); status.value = info.kind; message.value = info.message }
+}
+async function submitExerciseAnswer(answer: B10AnswerInput): Promise<void> {
+  if (!grammarSession.value || !exercise.value) return
+  try { feedback.value = await b10LearningApi.submitGrammarAnswer(context.value, grammarSession.value.sessionId, exercise.value.exerciseId, answer, activePoint.value?.contentVersionId ?? null, createB10ClientEventId(`grammar-exercise-${exercise.value.exerciseId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { const info = b10ErrorInfo(error, '语法练习提交失败，答案仍保留。'); status.value = info.kind; message.value = info.message }
+}
+async function submitCorrection(): Promise<void> {
+  if (!correctionPrompt.value || !correctionAnswer.value.trim()) return
+  try { feedback.value = await b10LearningApi.submitCorrection(context.value, correctionPrompt.value, correctionAnswer.value, createB10ClientEventId(`correction-${correctionPrompt.value.promptId}`)); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready' }
+  catch (error) { const info = b10ErrorInfo(error, '病句改错提交失败，答案仍保留。'); status.value = info.kind; message.value = info.message }
+}
+onMounted(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
+onUnmounted(() => engine.dispose())
 </script>
 
 <template>
-  <view class="yx-page"><text class="yx-eyebrow">GRAMMAR · SENTENCE GRAPH</text><text class="yx-title">把长难句拆成可练的结构。</text><text class="yx-description">语法规则、句法节点、句子积木和仿写槽位均由服务端内容版本驱动。</text><B2StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" @sync="() => undefined" />
-    <view v-if="activePoint" class="yx-card rule-card"><text class="card-kicker">{{ activePoint.code }} · {{ activePoint.cefrLevel }}</text><text class="card-title">{{ activePoint.title }}</text><text class="card-copy">{{ activePoint.meaningCn }}</text><text class="formula">{{ activePoint.ruleFormula }}</text><view class="tags"><text v-for="tag in activePoint.trapTags" :key="tag" class="tag">{{ tag }}</text></view></view>
-    <view v-if="graph" class="yx-card graph-card"><text class="card-kicker">句法图 · {{ graph.sentenceId }}</text><text class="sentence">{{ graph.text }}</text><text v-if="graph.translation" class="translation">{{ graph.translation }}</text><view class="node-list"><view v-for="node in graph.nodes" :key="node.nodeId" class="node"><text class="node__role">{{ node.role }}</text><text>{{ node.text }}</text></view></view><text class="edge-title">{{ graph.edges.length }} 条依存边 · Performance {{ performanceLevel }}</text>
-      <view v-if="orderedBlocks.length" class="practice"><view class="practice-head"><view><text class="card-kicker">SENTENCE BLOCKS</text><text class="practice-title">调整积木顺序</text></view><button class="small-button" type="button" @click="submitBlocks">提交顺序</button></view><view v-for="(block, index) in orderedBlocks" :key="block.sliceId" class="block"><text class="block-text"><text class="block-role">{{ block.role }}</text>{{ block.text }}</text><button class="move" type="button" :disabled="index === 0" @click="moveBlock(index, -1)">↑</button><button class="move" type="button" :disabled="index === orderedBlocks.length - 1" @click="moveBlock(index, 1)">↓</button></view><text v-if="blockResult" class="feedback">{{ blockResult.correct ? '顺序正确' : '需要调整' }} · {{ blockResult.feedbackCode }}</text></view>
-      <view v-if="graph.imitationSlots" class="practice"><view class="practice-head"><view><text class="card-kicker">IMITATION</text><text class="practice-title">按结构槽位仿写</text></view><button class="small-button" type="button" @click="submitImitation">检查仿写</button></view><view v-for="(value, key) in graph.imitationSlots" :key="key" class="slot"><text>{{ key }}</text><input v-model="slotValues[key]" :placeholder="value" /></view><text v-if="imitationResult" class="feedback">{{ imitationResult.structureMatched ? '结构匹配' : '仍有槽位需要复习' }} · {{ imitationResult.feedbackCode }}</text></view>
-      <view v-if="exercises.length" class="practice"><text class="card-kicker">{{ String(exercises[0].type) }} · 规则练习</text><text class="card-copy">{{ String(exercises[0].promptText) }}</text><input v-model="answer" class="exercise-input" placeholder="填写规则答案" /><button class="yx-button" type="button" @click="submitExercise">提交练习</button><text v-if="exerciseResult" class="feedback">{{ exerciseResult.correct ? '规则命中' : '需要复习' }} · {{ exerciseResult.feedbackCode }}</text></view>
+  <view class="yx-page" :class="themeClass">
+    <text class="yx-eyebrow">{{ b10T('grammar.eyebrow') }}</text>
+    <text class="yx-title">{{ b10T('grammar.title') }}</text>
+    <B10ThemeBar />
+    <B10StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
+
+    <view v-if="points.length" class="yx-card b10-grammar-tree"><text class="b10-section-title">{{ b10T('grammar.tree') }}</text><scroll-view scroll-x class="b10-point-list"><button v-for="point in points" :key="point.grammarPointId" class="b10-point" :class="{ 'b10-point--active': activePoint?.grammarPointId === point.grammarPointId }" type="button" @click="loadPoint(point)">{{ point.code }} · {{ point.title }}</button></scroll-view><view v-if="activePoint" class="b10-rule"><text class="b10-kicker">{{ activePoint.cefrLevel }} · {{ activePoint.code }}</text><text class="b10-rule__title">{{ activePoint.title }}</text><text class="b10-rule__copy">{{ activePoint.meaningCn }}</text><text class="b10-rule__formula">{{ activePoint.ruleFormula }}</text><text v-if="activePoint.prerequisites.length" class="b10-rule__meta">前置知识点：{{ activePoint.prerequisites.join('、') }}</text><text v-if="activePoint.masteryPercent !== null" class="b10-rule__meta">掌握投影：{{ activePoint.masteryPercent }}%</text></view></view>
+
+    <view v-if="graph" class="yx-card b10-graph-card"><view class="b10-graph-card__header"><view><text class="b10-kicker">{{ b10T('grammar.sentence') }} · {{ graph.sentenceId }}</text><text class="b10-graph-card__sentence">{{ graph.text }}</text></view><text class="b10-graph-card__mode">{{ linearMode ? '2D / Linear' : performanceLevel }}</text></view><text v-if="graph.translation" class="b10-graph-card__translation">{{ graph.translation }}</text><text v-if="graph.graphStatus === 'DEGRADED' || performanceLevel === 'Performance'" class="b10-graph-card__notice">{{ b10T('grammar.degraded') }}</text><view class="b10-node-list"><view v-for="node in graph.nodes" :key="node.nodeId" class="b10-node"><text class="b10-node__role">{{ node.role }}</text><text>{{ node.text }}</text></view></view><view v-if="!linearMode && graph.edges.length" class="b10-edge-list"><text>依存关系 {{ graph.edges.length }} 条</text><text v-for="edge in graph.edges" :key="`${edge.fromNodeId}-${edge.toNodeId}`">{{ edge.fromNodeId }} → {{ edge.toNodeId }} · {{ edge.relation }}</text></view><view v-if="linearMode" class="b10-linear-list"><text v-for="slice in graph.slices" :key="slice.sliceId">{{ slice.role }}：{{ slice.text }}</text></view>
+      <view v-if="blockOrder.length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.order') }}</text><view v-for="(blockId, index) in blockOrder" :key="blockId" class="b10-block-row"><text>{{ index + 1 }}. {{ graph.slices.find((slice) => slice.sliceId === blockId)?.text ?? blockId }}</text><view><button class="b10-move" type="button" :disabled="index === 0" aria-label="上移" @click="moveBlock(index, -1)">↑</button><button class="b10-move" type="button" :disabled="index === blockOrder.length - 1" aria-label="下移" @click="moveBlock(index, 1)">↓</button></view></view><button class="yx-button" type="button" @click="submitBlocks">{{ b10T('grammar.submit') }}</button></view>
+      <view v-if="Object.keys(graph.imitationSlots).length" class="b10-practice-section"><text class="b10-section-title">{{ b10T('grammar.imitate') }}</text><view v-for="(value, key) in graph.imitationSlots" :key="key" class="b10-slot"><text>{{ key }}</text><input v-model="slotValues[key]" class="b10-input" :placeholder="value" /></view><button class="yx-button" type="button" @click="submitImitation">{{ b10T('grammar.submit') }}</button></view>
     </view>
-    <view v-else-if="status !== 'loading'" class="yx-card empty"><text>暂时没有可用的句法图。</text><button class="yx-button" type="button" @click="load">重新读取</button></view>
+    <B10ExerciseCard v-if="exercise" :exercise="exercise" @answer="submitExerciseAnswer" />
+    <B10FeedbackCard :feedback="feedback" />
+
+    <view v-if="correctionPrompt" class="yx-card b10-correction"><text class="b10-section-title">{{ b10T('grammar.correction') }}</text><text class="b10-kicker">{{ correctionPrompt.title }}</text><text>{{ correctionPrompt.taskText }}</text><textarea v-model="correctionAnswer" class="b10-textarea" maxlength="12000" placeholder="指出错误并给出规则依据。" /><button class="yx-button" type="button" @click="submitCorrection">{{ b10T('grammar.submit') }}</button></view>
+    <view v-if="status === 'empty'" class="yx-card b10-empty"><text>{{ b10T('grammar.noGraph') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
   </view>
 </template>
 
 <style scoped lang="scss">
-.rule-card,.graph-card{display:grid;gap:14rpx}.card-kicker{color:#596bff;font-size:22rpx;font-weight:700;letter-spacing:1rpx}.card-title{font-size:36rpx;font-weight:750}.card-copy,.translation{color:#666d80;font-size:25rpx;line-height:1.55}.formula{padding:18rpx;border-radius:12rpx;color:#35425e;background:#f0f3ff;font-size:27rpx}.tags,.node-list{display:flex;flex-wrap:wrap;gap:10rpx}.tag{padding:8rpx 14rpx;border-radius:999rpx;color:#596bff;background:#eef0ff;font-size:21rpx}.sentence{font-size:30rpx;line-height:1.55}.node{display:grid;gap:6rpx;min-width:210rpx;padding:16rpx;border:1rpx solid #e6e8f0;border-radius:12rpx;background:#fff;font-size:24rpx}.node__role,.block-role{color:#596bff;font-size:20rpx;font-weight:700}.edge-title{color:#777f93;font-size:22rpx}.practice{display:grid;gap:12rpx;padding-top:18rpx;border-top:1rpx solid #eef0f5}.practice-head{display:flex;justify-content:space-between;gap:12rpx;align-items:flex-start}.practice-title{display:block;margin-top:6rpx;font-size:28rpx;font-weight:700}.small-button,.move{min-height:56rpx;padding:0 14rpx;border:1rpx solid #d9dff0;border-radius:10rpx;color:#596bff;background:#fff;font-size:22rpx;line-height:56rpx}.block{display:grid;grid-template-columns:1fr auto auto;gap:8rpx;align-items:center;padding:14rpx;border:1rpx solid #e6e8f0;border-radius:12rpx}.block-text{line-height:1.5}.block-role{display:block}.slot{display:grid;grid-template-columns:120rpx 1fr;gap:10rpx;align-items:center;color:#596bff;font-size:22rpx}.slot input,.exercise-input{height:72rpx;padding:0 16rpx;border:1rpx solid #d9dce7;border-radius:10rpx;background:#fff;font-size:24rpx}.feedback{padding:12rpx;border-radius:10rpx;color:#26745f;background:#edf9f4;font-size:22rpx}.empty{display:grid;gap:16rpx;color:#666d80;font-size:26rpx}
+.b10-grammar-tree,.b10-graph-card,.b10-correction{display:grid;gap:16rpx}.b10-section-title{color:var(--yx-text-primary);font-size:29rpx;font-weight:750}.b10-point-list{display:flex;white-space:nowrap}.b10-point{display:inline-block;min-height:64rpx;margin-right:10rpx;padding:0 16rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;color:var(--yx-text-secondary);background:var(--yx-surface-card);font-size:22rpx;line-height:64rpx}.b10-point--active{border-color:var(--yx-brand);color:var(--yx-brand);background:var(--yx-brand-soft)}.b10-rule{display:grid;gap:10rpx;padding-top:16rpx;border-top:1rpx solid var(--yx-border)}.b10-kicker{color:var(--yx-brand);font-size:22rpx;font-weight:700}.b10-rule__title{font-size:34rpx;font-weight:750}.b10-rule__copy,.b10-rule__meta{color:var(--yx-text-secondary);font-size:24rpx;line-height:1.6}.b10-rule__formula{padding:16rpx;border-radius:12rpx;color:var(--yx-brand);background:var(--yx-brand-soft);font-size:26rpx}.b10-graph-card__header{display:flex;justify-content:space-between;gap:16rpx}.b10-graph-card__sentence{display:block;margin-top:8rpx;font-size:32rpx;line-height:1.55}.b10-graph-card__mode,.b10-graph-card__translation{color:var(--yx-text-secondary);font-size:22rpx;line-height:1.6}.b10-graph-card__notice{padding:12rpx;border-radius:10rpx;color:var(--yx-warning-strong);background:var(--yx-warning-soft);font-size:22rpx}.b10-node-list,.b10-edge-list,.b10-linear-list{display:grid;gap:10rpx}.b10-node{display:grid;gap:4rpx;padding:14rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;background:var(--yx-surface-card);font-size:24rpx}.b10-node__role{color:var(--yx-brand);font-size:20rpx;font-weight:700}.b10-edge-list,.b10-linear-list{padding:14rpx;border-radius:12rpx;background:var(--yx-surface-soft);color:var(--yx-text-secondary);font-size:22rpx;line-height:1.6}.b10-practice-section{display:grid;gap:12rpx;padding-top:18rpx;border-top:1rpx solid var(--yx-border)}.b10-block-row{display:flex;align-items:center;justify-content:space-between;gap:10rpx;padding:14rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;color:var(--yx-text-primary);font-size:24rpx}.b10-move{min-width:62rpx;min-height:58rpx;margin-left:8rpx;border:1rpx solid var(--yx-border);border-radius:10rpx;color:var(--yx-brand);background:var(--yx-surface-card);font-size:26rpx}.b10-slot{display:grid;grid-template-columns:140rpx 1fr;gap:10rpx;align-items:center;color:var(--yx-brand);font-size:22rpx}.b10-input,.b10-textarea{width:100%;box-sizing:border-box;padding:16rpx;border:1rpx solid var(--yx-border);border-radius:12rpx;background:var(--yx-surface-card);font-size:24rpx}.b10-input{height:72rpx}.b10-textarea{min-height:220rpx}.b10-empty{display:grid;gap:16rpx;color:var(--yx-text-secondary);font-size:24rpx}
 </style>

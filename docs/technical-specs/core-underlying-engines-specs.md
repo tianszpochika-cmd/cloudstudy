@@ -1,6 +1,6 @@
 # 跨阶段通用底层核心模块与技术规范
 
-> 本文按最终技术路线编写：Vue 3 + uni-app + Spring Boot 3 + MySQL 8.x + Redis 7.x。Phase 1 优先实现规则化学习底座，Phase 2 再接入 AI。
+> 本文按 v2 技术路线编写：Vue 3 四项目 + Java 25/Spring Boot 4.1 微服务 + Gateway/IAM/RBAC + MySQL 8.x + Redis 7.x。Phase 1 优先实现规则化学习底座，Phase 2 再接入 AI；旧 `core-api` 仅作迁移兼容。
 
 ## 1. 自适应记忆复习引擎
 
@@ -26,7 +26,7 @@
 - 答题质量、响应时间、连续错误和历史遗忘风险参与调度。
 - 错题必须回到复习队列，记录来源和触发原因。
 - 调度结果可解释、可回放、可重新计算。
-- Java Core API 负责持久化和业务调度；前端只展示结果，不复制算法事实。
+- `learning-service` 负责持久化和业务调度；前端只展示结果，不复制算法事实。迁移期间由 `core-api` 兼容承载，但不得成为 v2 新 owner。
 
 ## 2. 内容与学习对象模型
 
@@ -55,11 +55,11 @@ Phase 1 只使用确定性规则：
 
 ## 4. 数据与服务边界
 
-- Core API：Spring Boot 3 模块化单体，负责用户、课程、练习、复习、权益、订单和审计。
+- v2 服务：`iam-service`、`learner-service`、`content-service`、`learning-service`、`assessment-service`、`commerce-service` 等按 bounded context 各自拥有事实；Gateway 负责外部入口，`core-api` 仅作迁移兼容。
 - MySQL 8.x：唯一关系事实源；Flyway 管理迁移。
 - Redis 7.x：会话、排行榜、分布式锁、短期缓存和队列辅助。
 - OSS/CDN：音频、视频、图片和离线课程包。
-- OpenAPI：前后端契约单一事实源，生成 Java DTO 和 TypeScript 类型。
+- OpenAPI/AsyncAPI/JSON Schema：前后端和服务间契约单一事实源，生成 Java DTO、TypeScript 类型和事件校验器；跨服务使用 Outbox/幂等消费者，不共享写表。
 
 ## 5. Phase 2 AI 插槽
 

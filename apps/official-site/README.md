@@ -1,12 +1,39 @@
 # @englishflow/official-site (语学星官方网站)
 
-## 项目定位
-- 采用 **Vue 3 + Nuxt 3 (SSR / SSG)** 构建。
-- 面向游客、搜索引擎与移动端扫码用户的品牌展示、课程大纲预览、定价与会员方案对比、App 下载引导页。
-- 承载 ICP 备案、网安备案、增值电信业务公示及合规政策（隐私协议、用户协议、未成年人保护声明）。
+面向游客、搜索引擎与移动端扫码用户的公开官网，采用 Vue 3 + Nuxt 3 SSR/SSG。官网只负责品牌、公开课程、价格、下载、SEO 和合规公示，不承载登录后的学习、订单或权益写入。
 
-## 目录结构
-- `pages/`: 路由页面（首页、课程体系、会员方案、关于我们、合规资质）
-- `components/`: 官网 UI 组件（Hero、特性矩阵、价格对比表、下载引流）
-- `layouts/`: 官网通用顶部导航与底部 Footer
-- `public/`: 下载二维码、App 预览图、品牌 Logo
+## 公开路由
+
+- `/`：品牌首屏、学习闭环和公开课程入口
+- `/courses`：公开课程目录与筛选
+- `/pricing`：公开价格与权益说明；不创建订单
+- `/download`：学习 Web 深链与 App/小程序发布状态
+- `/about`：产品使命与阶段边界
+- `/compliance`：主体、隐私、成人阶段和未成年人保护公示
+- `/robots.txt`、`/sitemap.xml`：搜索引擎抓取入口
+
+## 源码边界
+
+- `pages/`：公开页面
+- `components/`：`SiteHeader`、`SiteFooter`、`PublicStatus` 与卡片组件
+- `layouts/`：官网公共壳
+- `server/routes/`：robots 与 sitemap，只输出公开静态信息
+- `utils/`：公开内容、公开状态、受控学习端深链、SEO 和 design-token 适配
+- `assets/css/`：只消费语义 CSS 变量；变量由现有 `@englishflow/design-tokens` 注入
+- `public/`：仅放公开品牌资源
+
+## 本地运行
+
+```bash
+pnpm --filter @englishflow/official-site dev
+pnpm --filter @englishflow/official-site build
+node --test tests/b7/official-site.test.mjs
+```
+
+可用环境变量：`NUXT_PUBLIC_SITE_URL`、`NUXT_PUBLIC_LEARNER_WEB_URL`、`NUXT_PUBLIC_DOWNLOAD_ENABLED`。官网源码不读取 `.nuxt/` 或 `.output/` 生成物；这些目录只可能由 Nuxt 构建过程产生，不能作为源码或测试输入。
+
+B13 公开商业投影只允许读取 Gateway 的公开投影接口。价格、SKU、权益、活动和下载状态都以服务端公开字段为准；官网只生成登录/结算意图的受控跳转，不创建订单、不调用支付或权益写接口。外部活动/下载地址必须配置在 `NUXT_PUBLIC_LINK_ORIGINS`（逗号分隔 allowlist）中，来源查询中的 `utm_source`、`utm_medium`、`utm_campaign`、`utm_content`、`utm_term` 会保留到受控深链。
+
+```bash
+pnpm --filter @englishflow/official-site test:b13
+```

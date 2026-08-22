@@ -1,108 +1,55 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { submitSentenceBlocks, submitSentenceImitation } from '../api/b3'
-import type { SentenceGraph, SentenceSlice } from '../domain/b3'
-import { useB3Store } from '../stores/b3'
+import { computed, onMounted, ref, watch } from 'vue'
+import B10PracticeQuestion from '../components/b10/B10PracticeQuestion.vue'
+import B10StatePanel from '../components/b10/B10StatePanel.vue'
+import { useLearningUi } from '../platform/learning-ui'
+import { useB10Store } from '../stores/b10'
+import type { B10GrammarExercise, B10PerformanceLevel } from '../domain/b10'
 
-const store = useB3Store()
-const selected = ref(0)
-const exerciseAnswer = ref('')
-const draggedBlock = ref<string | null>(null)
-const blockOrder = ref<string[]>([])
-const slotValues = ref<Record<string, string>>({})
-const blockFeedback = ref<Record<string, unknown> | null>(null)
-const imitationFeedback = ref<Record<string, unknown> | null>(null)
-const selectedExercise = computed(() => store.grammarExercises[0] ?? null)
-const sentence = computed(() => store.sentence)
-const slices = computed<SentenceSlice[]>(() => sentence.value?.slices ?? [])
-const imitationSlots = computed(() => sentence.value?.imitationSlots ?? null)
-const orderedBlocks = computed(() => blockOrder.value.map((id) => slices.value.find((item) => item.sliceId === id)).filter((item): item is SentenceSlice => Boolean(item)))
+import '../platform/b10-i18n'
+
+const ui = useLearningUi()
+const store = useB10Store()
 const graphEnabled = computed(() => store.performanceLevel !== 'Performance')
-const nodePosition = (nodeId: string): { x: number; y: number } => {
-  const index = Math.max(0, sentence.value?.nodes.findIndex((node) => node.nodeId === nodeId) ?? 0)
-  return { x: 40 + (index % 3) * 205, y: 80 + Math.floor(index / 3) * 100 }
-}
+const orderedBlocks = ref<string[]>([])
+const slotValues = ref<Record<string, string>>({})
+const exerciseAnswer = ref<unknown>(undefined)
+const selectedExercise = computed(() => store.selectedGrammarExercises[0] ?? null)
 
-watch(sentence, (value: SentenceGraph | null) => {
-  if (!value) return
-  blockOrder.value = [...(value.blockOrder ?? value.slices?.map((item) => item.sliceId) ?? [])]
-  slotValues.value = { ...(value.imitationSlots ?? {}) }
-}, { immediate: true })
+watch(() => store.grammarSentence?.blockOrder, (value) => { orderedBlocks.value = value?.length ? [...value] : store.grammarSentence?.nodes.map((node) => node.nodeId) ?? [] }, { immediate: true })
+watch(() => store.grammarSentence?.imitationSlots, (value) => { slotValues.value = value ? Object.fromEntries(Object.keys(value).map((key) => [key, ''])) : {} }, { immediate: true })
+watch(() => selectedExercise.value?.exerciseId, () => { exerciseAnswer.value = undefined })
 
-onMounted(() => { void store.loadGrammar() })
-onUnmounted(() => store.dispose())
-
-function submitExercise(): void {
-  if (!selectedExercise.value || !exerciseAnswer.value.trim()) return
-  void store.evaluateGrammar(selectedExercise.value.exerciseId, { value: exerciseAnswer.value })
-}
-
-function moveBlock(index: number, offset: number): void {
-  const target = index + offset
-  if (target < 0 || target >= blockOrder.value.length) return
-  const next = [...blockOrder.value]
-  ;[next[index], next[target]] = [next[target], next[index]]
-  blockOrder.value = next
-}
-
-function dropBlock(targetId: string): void {
-  if (!draggedBlock.value || draggedBlock.value === targetId) return
-  const next = [...blockOrder.value]
-  const from = next.indexOf(draggedBlock.value)
-  const to = next.indexOf(targetId)
-  if (from < 0 || to < 0) return
-  next.splice(from, 1)
-  next.splice(to, 0, draggedBlock.value)
-  blockOrder.value = next
-  draggedBlock.value = null
-}
-
-async function checkBlocks(): Promise<void> {
-  if (!sentence.value || !blockOrder.value.length) return
-  blockFeedback.value = await submitSentenceBlocks(sentence.value.sentenceId, blockOrder.value)
-}
-
-async function checkImitation(): Promise<void> {
-  if (!sentence.value) return
-  imitationFeedback.value = await submitSentenceImitation(sentence.value.sentenceId, slotValues.value)
-}
+onMounted(() => { store.restore(); void store.loadGrammar() })
+function retry(): void { void store.loadGrammar() }
+function sync(): void { void store.syncOffline() }
+function performance(level: B10PerformanceLevel): void { store.setPerformanceLevel(level) }
+function moveBlock(index: number, delta: number): void { const target = index + delta; if (target < 0 || target >= orderedBlocks.value.length) return; const next = [...orderedBlocks.value]; [next[index], next[target]] = [next[target], next[index]]; orderedBlocks.value = next }
+function dragStart(index: number, event: DragEvent): void { event.dataTransfer?.setData('text/plain', String(index)); if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move' }
+function dropBlock(index: number, event: DragEvent): void { const source = Number(event.dataTransfer?.getData('text/plain')); if (Number.isInteger(source)) { const next = [...orderedBlocks.value]; const [moved] = next.splice(source, 1); if (moved) next.splice(index, 0, moved); orderedBlocks.value = next } }
+function submitOrder(): void { void store.submitSentenceOrder(orderedBlocks.value) }
+function submitExercise(exercise: B10GrammarExercise): void { if (exerciseAnswer.value !== undefined) void store.submitGrammarExercise(exercise, exerciseAnswer.value) }
+function submitImitation(): void { void store.submitImitation(slotValues.value) }
 </script>
 
 <template>
-  <section class="b3-page">
-    <div class="hero"><p class="eyebrow">B3 · GRAMMAR X-RAY</p><h2>把长句拆开，找到规则。</h2><p>规则卡片、句法 DAG、可排序句子积木和仿写槽位共用版本化内容；错误会留下复习信号。</p></div>
-    <div v-if="store.status === 'loading'" class="panel">正在读取服务端语法内容…</div>
-    <div v-else-if="store.status === 'error' || store.status === 'offline'" class="panel error">{{ store.message }}<button type="button" @click="store.loadGrammar">重新读取</button></div>
-    <div v-else class="grid">
-      <article class="panel"><p class="eyebrow">规则卡片</p><button v-for="(point, index) in store.grammarPoints" :key="point.grammarPointId" class="list-item" :class="{ active: selected === index }" type="button" @click="selected = index"><span>{{ point.title }}</span><small>{{ point.cefrLevel }} · {{ point.code }}</small></button></article>
-      <article v-if="store.grammarPoints[selected]" class="panel detail">
-        <p class="eyebrow">{{ store.grammarPoints[selected].code }}</p><h3>{{ store.grammarPoints[selected].ruleFormula }}</h3><p>{{ store.grammarPoints[selected].meaningCn }}</p>
-        <div class="examples"><span>The team has completed the project.</span><span>The team has not completed the project.</span></div>
-        <div class="tags"><span v-for="tag in store.grammarPoints[selected].trapTags" :key="tag">易错：{{ tag }}</span></div>
-        <div v-if="sentence" class="sentence">
-          <strong>{{ sentence.text }}</strong><span>{{ sentence.translation }}</span>
-          <div v-if="graphEnabled" class="dag" role="img" aria-label="句法有向无环图">
-            <svg viewBox="0 0 660 210" preserveAspectRatio="xMidYMid meet">
-              <defs><marker id="b3-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#7b83a1" /></marker></defs>
-              <line v-for="edge in sentence.edges" :key="`${edge.fromNodeId}-${edge.toNodeId}`" :x1="nodePosition(edge.fromNodeId).x + 90" :y1="nodePosition(edge.fromNodeId).y + 26" :x2="nodePosition(edge.toNodeId).x" :y2="nodePosition(edge.toNodeId).y + 26" stroke="#9aa4bd" stroke-width="2" marker-end="url(#b3-arrow)" />
-              <g v-for="node in sentence.nodes" :key="node.nodeId"><rect :x="nodePosition(node.nodeId).x" :y="nodePosition(node.nodeId).y" width="180" height="52" rx="12" fill="#eef0ff" stroke="#596bff" /><text :x="nodePosition(node.nodeId).x + 12" :y="nodePosition(node.nodeId).y + 20" fill="#596bff" font-size="11">{{ node.role }}</text><text :x="nodePosition(node.nodeId).x + 12" :y="nodePosition(node.nodeId).y + 39" fill="#202332" font-size="13">{{ node.text }}</text></g>
-            </svg>
-          </div>
-          <div v-else class="fallback-graph"><span v-for="node in sentence.nodes" :key="node.nodeId"><b>{{ node.role }}</b> {{ node.text }}</span><small>Performance 模式：已降级为 2D 节点列表。</small></div>
-          <small>{{ sentence.edges.length }} 条依存边 · DAG 已校验</small>
-        </div>
-        <div v-if="slices.length" class="blocks">
-          <div class="section-heading"><div><p class="eyebrow">SENTENCE BLOCKS</p><h4>拖动或用箭头重排句子积木</h4></div><button type="button" @click="checkBlocks">提交顺序</button></div>
-          <div class="block-list"><div v-for="(block, index) in orderedBlocks" :key="block.sliceId" class="block" draggable="true" @dragstart="draggedBlock = block.sliceId" @dragover.prevent @drop="dropBlock(block.sliceId)"><span class="handle">⋮⋮</span><span><b>{{ block.role }}</b>{{ block.text }}</span><button type="button" :disabled="index === 0" @click="moveBlock(index, -1)">↑</button><button type="button" :disabled="index === orderedBlocks.length - 1" @click="moveBlock(index, 1)">↓</button></div></div>
-          <div v-if="blockFeedback" class="feedback">{{ blockFeedback.correct ? '顺序正确' : '需要调整' }} · {{ blockFeedback.feedbackCode }} · {{ blockFeedback.ruleVersion }}</div>
-        </div>
-        <div v-if="imitationSlots" class="imitation"><div class="section-heading"><div><p class="eyebrow">IMITATION</p><h4>按结构槽位仿写</h4></div><button type="button" @click="checkImitation">检查仿写</button></div><label v-for="(value, key) in imitationSlots" :key="key"><span>{{ key }}</span><input v-model="slotValues[key]" :placeholder="value"></label><div v-if="imitationFeedback" class="feedback">{{ imitationFeedback.structureMatched ? '结构匹配' : '仍有槽位需要复习' }} · {{ imitationFeedback.feedbackCode }}</div></div>
-        <div v-if="selectedExercise" class="exercise"><p class="eyebrow">{{ selectedExercise.type }} · 规则练习</p><p>{{ selectedExercise.promptText }}</p><input v-model="exerciseAnswer" placeholder="填写服务端规则答案" @keyup.enter="submitExercise"><button type="button" :disabled="!exerciseAnswer.trim()" @click="submitExercise">提交练习</button><span v-if="store.grammarAttemptResult">{{ store.grammarAttemptResult.correct ? '规则命中' : '需要复习' }} · {{ store.grammarAttemptResult.feedbackCode }}</span></div>
+  <main class="b10-page" :data-performance="store.performanceLevel" aria-labelledby="grammar-title">
+    <header class="page-heading"><div><p class="eyebrow">GRM · EXPLAINABLE PATH</p><h2 id="grammar-title">{{ ui.t('b10.grammar.title') }}</h2><p>知识树、X 光结构、练习和弱点反馈共享题目版本；Performance 档位退回线性结构。</p></div><span class="locale-pill">{{ ui.t('b10.common.ui') }} {{ ui.locale }} · {{ ui.t('b10.common.content') }} {{ ui.contentLocale }}</span></header>
+    <B10StatePanel v-if="store.grammarStatus !== 'ready' || store.grammarMessage" :status="store.grammarStatus" :message="store.grammarMessage" :queue-count="store.queueCount" module-label="GRM / GRAMMAR" :performance-level="store.performanceLevel" @retry="retry" @sync="sync" @performance="performance" />
+    <section v-if="store.grammarPoints.length" class="grammar-layout">
+      <aside class="points-panel"><h3>{{ ui.t('b10.grammar.tree') }}</h3><button v-for="point in store.grammarPoints" :key="point.grammarPointId" type="button" class="point" :class="{ active: point.grammarPointId === store.selectedGrammarPointId }" @click="store.selectGrammarPoint(point.grammarPointId)"><span>{{ point.code }}</span><strong>{{ point.title }}</strong><small>{{ store.grammarMastery.find((item) => item.grammarPointId === point.grammarPointId)?.level ?? 'REVIEW' }}</small></button></aside>
+      <article class="detail-panel"><div class="detail-heading"><div><p class="eyebrow">{{ store.selectedGrammarPoint?.code }}</p><h3>{{ store.selectedGrammarPoint?.title }}</h3><p>{{ store.selectedGrammarPoint?.ruleSummary }}</p></div><span v-if="store.selectedGrammarPoint">{{ ui.t('b10.common.version', { version: store.selectedGrammarPoint.contentVersionId }) }}</span></div><div class="tags"><span v-for="tag in store.selectedGrammarPoint?.trapTags ?? []" :key="tag">{{ tag }}</span></div>
+        <section v-if="store.grammarSentence" class="xray-section"><div class="section-heading"><div><p class="eyebrow">{{ ui.t('b10.grammar.xray') }}</p><h4>{{ store.grammarSentence.text }}</h4></div><span>{{ graphEnabled ? 'DAG' : ui.t('b10.grammar.linear') }}</span></div><p v-if="store.grammarSentence.translation" class="translation">{{ store.grammarSentence.translation }}</p><div v-if="graphEnabled && !store.grammarSentenceFallback" class="graph" role="img" aria-label="句法结构图"><svg viewBox="0 0 680 270" preserveAspectRatio="xMidYMid meet"><g v-for="(node, index) in store.grammarSentence.nodes" :key="node.nodeId" :transform="`translate(${20 + (index % 3) * 220}, ${26 + Math.floor(index / 3) * 78})`"><rect width="190" height="54" rx="12"></rect><text x="12" y="21">{{ node.role }}</text><text x="12" y="41">{{ node.text }}</text></g></svg></div><div v-else class="linear-graph"><span v-for="node in store.grammarSentence.nodes" :key="node.nodeId"><b>{{ node.role }}</b>{{ node.text }}</span><small>{{ ui.t('b10.reading.fallback') }}</small></div><div class="block-tools"><h4>句子块排序</h4><div class="block-list"><div v-for="(nodeId, index) in orderedBlocks" :key="nodeId" class="block" draggable="true" tabindex="0" @dragstart="dragStart(index, $event)" @dragover.prevent @drop="dropBlock(index, $event)" @keydown.up.prevent="moveBlock(index, -1)" @keydown.down.prevent="moveBlock(index, 1)"><span class="handle" aria-hidden="true">⠿</span><strong>{{ store.grammarSentence.nodes.find((node) => node.nodeId === nodeId)?.text ?? nodeId }}</strong><button type="button" :aria-label="ui.t('b10.grammar.previous')" :disabled="index === 0" @click="moveBlock(index, -1)">↑</button><button type="button" :aria-label="ui.t('b10.grammar.next')" :disabled="index === orderedBlocks.length - 1" @click="moveBlock(index, 1)">↓</button></div></div><button class="secondary-button" type="button" @click="submitOrder">{{ ui.t('b10.grammar.checkOrder') }}</button><p v-if="store.blockFeedback" class="feedback">{{ store.blockFeedback.message ?? store.blockFeedback.feedbackCode }}</p></div></section>
+        <section v-else class="fallback-note"><strong>{{ ui.t('b10.grammar.linear') }}</strong><p>{{ store.grammarSentenceFallback ? ui.t('b10.reading.fallback') : '选择一个包含句法结构的知识点继续。' }}</p></section>
+        <section v-if="Object.keys(store.grammarSentence?.imitationSlots ?? {}).length" class="imitation"><div class="section-heading"><div><p class="eyebrow">WRT · IMITATION</p><h4>{{ ui.t('b10.grammar.imitation') }}</h4></div><button class="secondary-button" type="button" @click="submitImitation">{{ ui.t('b10.grammar.imitationSubmit') }}</button></div><label v-for="(placeholder, key) in store.grammarSentence?.imitationSlots" :key="key"><span>{{ key }}</span><input v-model="slotValues[key]" :placeholder="placeholder"></label><p v-if="store.imitationFeedback" class="feedback">{{ store.imitationFeedback.message ?? store.imitationFeedback.feedbackCode }}</p></section>
+        <section v-if="selectedExercise" class="exercise"><div class="section-heading"><div><p class="eyebrow">ASM · RULE PRACTICE</p><h4>{{ ui.t('b10.grammar.practice') }}</h4></div><button class="secondary-button" type="button" :disabled="exerciseAnswer === undefined" @click="submitExercise(selectedExercise)">{{ ui.t('b10.grammar.submit') }}</button></div><B10PracticeQuestion :question="{ id: String(selectedExercise.exerciseId), type: selectedExercise.type === 'CHOICE' ? 'CHOICE' : selectedExercise.type === 'FILL_BLANK' ? 'FILL_BLANK' : selectedExercise.type === 'SENTENCE_BUILD' ? 'DRAG_SORTER' : 'TRANSLATION', prompt: selectedExercise.promptText, helperText: null, sentence: null, sourceText: null, placeholder: '输入规则答案', options: selectedExercise.options, tokens: selectedExercise.tokens, contentVersionId: selectedExercise.contentVersionId, contentLocale: selectedExercise.contentLocale }" :disabled="false" :performance-level="store.performanceLevel" @answer="exerciseAnswer = $event" /><p v-if="store.grammarFeedback" class="feedback">{{ store.grammarFeedback.message ?? store.grammarFeedback.feedbackCode }} <small v-if="store.grammarFeedback.ruleVersion">· {{ store.grammarFeedback.ruleVersion }}</small></p></section>
       </article>
-    </div>
-  </section>
+    </section>
+    <section v-else-if="store.grammarStatus === 'empty'" class="empty-panel"><strong>{{ ui.t('b10.grammar.noTree') }}</strong><p>{{ ui.t('b10.state.empty') }}</p></section>
+  </main>
 </template>
 
 <style scoped>
-.b3-page{display:grid;gap:24px}.hero{padding:32px;border-radius:28px;background:linear-gradient(135deg,#17213b,#4b5fd2);color:#fff}.hero h2{margin:8px 0;font-size:clamp(28px,4vw,46px)}.hero p:last-child{max-width:680px;line-height:1.7;color:#dce3ff}.eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#7b83a1}.hero .eyebrow{color:#b8c3ff}.grid{display:grid;grid-template-columns:minmax(240px,.8fr) minmax(320px,1.4fr);gap:20px}.panel{padding:24px;border-radius:22px;background:#fff;box-shadow:0 16px 40px #1f2b4b0d}.error{display:flex;gap:16px;align-items:center;color:#a13b4b}.error button{margin-left:auto}.list-item{display:grid;gap:4px;width:100%;padding:14px;border:0;border-radius:14px;background:transparent;text-align:left;cursor:pointer}.list-item:hover,.list-item.active{background:#eef0ff;color:#3e4fc5}.list-item small{color:#858ba1}.detail h3{font-size:28px}.examples{display:grid;gap:6px;padding:12px;border-radius:12px;background:#f6f8ff;color:#4e5b88}.tags{display:flex;flex-wrap:wrap;gap:8px}.tags span{padding:6px 10px;border-radius:99px;background:#f5f0ff;color:#7652a9}.sentence{display:grid;gap:12px;margin-top:26px;padding:18px;border-radius:16px;background:#f8f9fd}.sentence span{color:#6c7289}.dag{width:100%;overflow:auto;border-radius:14px;background:#fff}.dag svg{display:block;min-width:560px;height:210px}.fallback-graph{display:grid;gap:8px}.fallback-graph span{padding:10px;border-radius:10px;background:#eaf0ff}.fallback-graph b{color:#4d5bc4;margin-right:8px}.fallback-graph small{color:#7b83a1}.blocks,.imitation{display:grid;gap:12px;padding-top:12px}.section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.section-heading h4{margin:5px 0}.section-heading button,.exercise button{padding:9px 12px;border:0;border-radius:10px;background:#596bff;color:#fff;cursor:pointer}.block-list{display:grid;gap:8px}.block{display:grid;grid-template-columns:auto 1fr auto auto;gap:9px;align-items:center;padding:10px;border:1px solid #dde2f0;border-radius:12px;background:#fff;cursor:grab}.block b{display:block;color:#596bff;font-size:11px}.block button{border:0;border-radius:7px;background:#f0f3ff;color:#596bff;cursor:pointer}.block button:disabled{opacity:.3}.handle{color:#99a1b8}.feedback{padding:10px;border-radius:10px;background:#edf9f4;color:#26745f}.imitation label{display:grid;grid-template-columns:100px 1fr;gap:8px;align-items:center}.imitation label span{color:#596bff;font-size:13px;font-weight:700}.imitation input,.exercise input{padding:10px;border:1px solid #cfe8dd;border-radius:10px}.exercise{display:grid;gap:8px;margin-top:18px;padding:16px;border-radius:16px;background:#eefaf5}.exercise button:disabled{opacity:.45}@media(max-width:760px){.grid{grid-template-columns:1fr}.hero{padding:24px}.imitation label{grid-template-columns:1fr}}
+.b10-page{display:grid;gap:22px}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.page-heading h2{margin:8px 0;font-size:clamp(30px,5vw,48px);line-height:1.1}.page-heading p:not(.eyebrow){max-width:720px;margin:0;color:var(--yx-color-text-secondary);line-height:1.7}.eyebrow{margin:0;color:var(--yx-color-brand-primary);font-size:12px;font-weight:800;letter-spacing:.12em}.locale-pill{padding:9px 12px;border:1px solid var(--yx-color-border);border-radius:999px;color:var(--yx-color-text-secondary);font-size:12px}.grammar-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:20px}.points-panel,.detail-panel,.empty-panel{padding:24px;border:1px solid var(--yx-color-border);border-radius:var(--yx-radius-card);background:var(--yx-color-surface-card);box-shadow:var(--yx-shadow-card)}.points-panel{display:grid;align-content:start;gap:8px;height:max-content}.points-panel h3{margin:0 0 8px}.point{display:grid;gap:4px;width:100%;padding:13px;border:1px solid transparent;border-radius:12px;color:var(--yx-color-text-primary);background:transparent;text-align:left}.point:hover,.point.active{border-color:var(--yx-color-brand-primary);color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft)}.point span,.point small{color:var(--yx-color-text-secondary);font-size:11px}.detail-panel{display:grid;gap:18px}.detail-heading{display:flex;justify-content:space-between;gap:16px}.detail-heading h3{margin:7px 0;font-size:28px}.detail-heading p:not(.eyebrow){margin:0;color:var(--yx-color-text-secondary);line-height:1.6}.detail-heading>span{color:var(--yx-color-text-secondary);font-size:12px}.tags{display:flex;flex-wrap:wrap;gap:8px}.tags span{padding:6px 10px;border-radius:99px;color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft);font-size:12px}.xray-section,.imitation,.exercise{display:grid;gap:12px;padding-top:16px;border-top:1px solid var(--yx-color-border)}.section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.section-heading h4{margin:5px 0}.section-heading>span{color:var(--yx-color-text-secondary);font-size:12px}.translation{margin:0;color:var(--yx-color-text-secondary)}.graph{width:100%;overflow:auto;border-radius:14px;background:var(--yx-color-surface-muted)}.graph svg{display:block;min-width:580px;height:260px}.graph rect{fill:var(--yx-color-surface-card);stroke:var(--yx-color-brand-primary)}.graph text{fill:var(--yx-color-text-primary);font-size:13px}.linear-graph{display:grid;gap:8px}.linear-graph span{padding:10px;border-radius:10px;background:var(--yx-color-brand-primary-soft)}.linear-graph b{margin-right:8px;color:var(--yx-color-brand-primary)}.linear-graph small{color:var(--yx-color-text-secondary)}.block-tools{display:grid;gap:10px}.block-tools h4{margin:0}.block-list{display:grid;gap:8px}.block{display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;padding:10px;border:1px solid var(--yx-color-border);border-radius:12px;background:var(--yx-color-surface-page);cursor:grab}.block:focus-visible{outline:2px solid var(--yx-color-focus)}.block button{border:0;border-radius:7px;color:var(--yx-color-brand-primary);background:var(--yx-color-brand-primary-soft)}.block button:disabled{opacity:.35}.handle{color:var(--yx-color-text-secondary)}.secondary-button{min-height:38px;padding:0 12px;border:1px solid var(--yx-color-border);border-radius:10px;color:var(--yx-color-brand-primary);background:var(--yx-color-surface-page);font-weight:750}.fallback-note{padding:16px;border-radius:14px;background:var(--yx-color-surface-muted)}.fallback-note p{margin:7px 0 0;color:var(--yx-color-text-secondary)}.imitation label{display:grid;grid-template-columns:100px 1fr;gap:10px;align-items:center}.imitation label span{color:var(--yx-color-brand-primary);font-size:13px;font-weight:750}.imitation input{padding:10px;border:1px solid var(--yx-color-border);border-radius:10px;color:var(--yx-color-text-primary);background:var(--yx-color-surface-page)}.feedback{margin:0;padding:10px 12px;border-radius:10px;color:var(--yx-color-success);background:var(--yx-color-surface-muted);line-height:1.6}.feedback small{color:var(--yx-color-text-secondary)}.empty-panel{min-height:160px}.empty-panel p{color:var(--yx-color-text-secondary)}
+@media(max-width:760px){.page-heading{align-items:flex-start;flex-direction:column}.grammar-layout{grid-template-columns:1fr}.points-panel{order:-1}.detail-heading{align-items:flex-start;flex-direction:column}.imitation label{grid-template-columns:1fr}}
 </style>

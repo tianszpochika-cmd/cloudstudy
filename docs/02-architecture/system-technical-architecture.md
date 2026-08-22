@@ -1,8 +1,9 @@
 # 语学星系统技术架构说明书
 
 > **产品名称**：语学星 (EnglishFlow)  
-> **核心技术路线**：Vue 3 前端多端矩阵 (uni-app / Web / Nuxt 3) + Java 17 Spring Boot 3 模块化单体 + MySQL 8.x + Redis 7.x  
-> **演进原则**：严格执行三阶段业务门控，前期注重成人核心闭环，后期平滑扩展 AI 与全龄段。
+> **核心技术路线**：Vue 3 前端四项目矩阵 + Java 25 LTS/Spring Boot 4.1 微服务目标架构 + Gateway/IAM/RBAC + MySQL 8.x/Redis 7.x  
+> **迁移兼容**：`services/core-api` 仍以 Java 17/Spring Boot 3 运行，作为旧实现和回滚边界，不代表 v2 服务已全部落地。  
+> **演进原则**：严格执行三阶段业务门控，先建设平台能力和成人核心闭环，再按领域渐进拆分并扩展 AI 与受监管能力。完整边界见 [v2 微服务目标架构](./v2-microservices-architecture.md)。
 
 ---
 
@@ -15,11 +16,12 @@
                                                     │
      ┌──────────────────────┬───────────────────────┼──────────────────────┐
      ▼                      ▼                       ▼                      ▼
-【1. 官网门户】        【2. 学员端 Web/H5】    【3. 管理运营中台】     【4. 主 App 客户端】
- official-site          learner-web             admin-web              mobile (uni-app)
+【1. 官网门户】        【2. 学员端 Web】        【3. 管理运营中台】     【4. 统一 uni-app 学习端】
+official-site          learner-web             admin-web              mobile (uni-app)
 - Nuxt 3 (SSR/SSG)    - Vue 3 + Vite          - Vue 3 + Vite         - Vue 3 + uni-app
-- SEO、品牌推广、下载   - 响应式多栏/移动流式   - Element Plus         - iOS / Android / 小程序
-                      - 沉浸学习、做题、复习   - 教研/题库/用户/财务   - 原生音频/锁屏/离线/支付
+- SEO、品牌推广、下载   - PC/平板工作台、PWA    - Element Plus         - 移动 H5 / iOS / Android / iPad
+                      - 沉浸学习、做题、复习   - 教研/题库/用户/财务   - 微信小程序（P1.5 条件编译）
+                                                                      - 原生音频/锁屏/离线/支付
      └──────────────────────┴───────────────────────┼──────────────────────┘
                                                     │ HTTPS / WSS
                                                     ▼
@@ -32,7 +34,7 @@
      │                                                                                            │
      ▼                                                                                            ▼
 ┌────────────────────────────────────────────────────────┐       ┌────────────────────────────────────────────────────────┐
-│             Core API 业务核心服务 (Spring Boot 3)       │       │            Phase 2 智能与实时编排服务                   │
+│        v2 Gateway → IAM → Java 25 领域服务集群          │       │            Phase 2 智能与实时编排服务                   │
 │                                                        │       │                                                        │
 │  ┌──────────────────┐ ┌──────────────────┐             │       │  ┌──────────────────────────────────────────────────┐  │
 │  │ 1. auth          │ │ 2. user          │             │       │  │ services/ai-orchestrator (Python 3.11 + FastAPI) │  │
@@ -72,40 +74,45 @@
 1. **`apps/official-site` (官方网站)**：
    - 目标：面向全网搜索、社交分享与外部流量，提供高性能品牌展示、课程体系介绍、会员套餐对比与 App 下载引流。
    - 选型：`Vue 3 + Nuxt 3 (SSR/SSG)`，确保极致首屏渲染速度与 SEO 抓取。
-2. **`apps/learner-web` (学员端 Web/H5 响应式)**：
-   - 目标：免安装、全功能跨端学习平台。
-   - 适配：PC 桌面端呈现高效多栏工作台模式（左侧大纲/单词本、中间做题与精读、右侧解析与生词卡）；手机浏览器 H5 呈现沉浸式单栏触控流。
+2. **`apps/learner-web` (学员端 Web)**：
+   - 目标：免安装的 PC / 平板浏览器学习工作台与 PWA。
+   - 适配：PC 与平板呈现高效多栏工作台模式（左侧大纲/单词本、中间做题与精读、右侧解析与生词卡）；移动浏览器 H5 学习业务归属 `apps/mobile`。
    - 选型：`Vue 3 + Vite + Pinia + Web Audio API`。
 3. **`apps/admin-web` (管理运营中台)**：
    - 目标：教研内容制作、题库录入、学员档案、订单交易与合规审核一站式工作台。
    - 选型：`Vue 3 + Vite + Element Plus`。
-4. **`apps/mobile` (主 App / 微信小程序)**：
-   - 目标：移动端核心体验载体，输出 iOS App、Android App、微信小程序。
+4. **`apps/mobile` (统一 uni-app 学习端)**：
+   - 目标：移动端核心体验载体，输出移动 H5、iOS App、Android App 和 iPad；微信小程序作为 P1.5 条件编译目标。
    - 核心优势：原生音频后台连续播放、锁屏控制台、系统级日历/打卡推送、微信一键登录与微信/Apple 支付。
    - 选型：`Vue 3 + TypeScript + uni-app`。
 
 ---
 
-## 3. 后端 Spring Boot 3 核心业务域设计
+## 3. 后端 Java 25 微服务边界
 
-后端 `services/core-api` 采用 **DDD 领域驱动设计 + 模块化单体 (Modular Monolith)** 架构。代码组织上按业务领域严格隔离，避免大泥球式耦合：
+目标服务按 DDD bounded context 划分。每个服务拥有自己的 API、schema、迁移、缓存命名空间、事件契约和发布责任；低流量服务可以共享部署资源，但不得共享写模型。
 
-- **`modules/auth`**：多端登录（手机验证码、微信开放平台/小程序登录、Apple ID）、JWT 签发与多设备互踢。
-- **`modules/user`**：用户画像、学习偏好、未成年人身份识别与家长账号绑定。
-- **`modules/content`**：只读内容库（CEFR 词汇库、词根词缀、语法树、长难句结构、阅读/听力材料、K12 各版教材映射）。
-- **`modules/learning`**：每日学习任务流生成引擎、SM-2 艾宾浩斯记忆间隔复习算法。
-- **`modules/assessment`**：做题引擎（拼写/连线/选择/填空判分）、四六级/考研/雅思模考卷阅卷。
-- **`modules/gamification`**：星球等级成长、经验值 (XP)、成就勋章、数字形象装扮。
-- **`modules/social`**：打卡自习室、班级小组、排行榜（严格低 UGC 风险控制）。
-- **`modules/commerce`**：微信/支付宝/Apple IAP 统一收单、会员订阅状态机与权益控制。
-- **`modules/admin`**：管理后台专享数据聚合与敏感内容审计接口。
+- **`services/api-gateway`**：Spring Cloud Gateway Server WebFlux；外部路由、`/api/v1` 版本、限流、request/trace 上下文和 JWT 预校验，不写领域事实。
+- **`services/iam-service`**：OIDC/OAuth 2.1、用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略、撤销和密钥轮换。
+- **`services/learner-service`**：用户学习档案、目标、偏好、Onboarding 和个人学习设置。
+- **`services/content-service`**：课程、词汇、语法、题库、媒体引用、版本、版权、审核和发布。
+- **`services/learning-service`**：每日学习流、SRS、复习调度、进度和学习闭环事实。
+- **`services/assessment-service`**：作答、规则判分、模考、掌握度输入和报告快照。
+- **`services/media-service`**：媒体元数据、授权 URL、处理任务、版本哈希和 CDN 分发。
+- **`services/gamification-service` / `social-service`**：XP、Streak、星球、奖励；自习室、低 UGC、举报和排行榜投影。
+- **`services/commerce-service`**：SKU、订单、支付回调、订阅、权益、退款和对账；真实支付默认关闭直到合规 Gate。
+- **`services/notification-service` / `analytics-service`**：触达记录与重试；脱敏事件、指标和只读分析模型。
+- **`services/admin-ops-service`**：供 `admin-web` 使用的聚合/BFF、审批编排和操作审计关联，不复制领域事实。
+- **`services/core-api`**：迁移期旧单体；通过 Gateway 兼容路由逐域退出，不能继续作为 v2 新功能的默认 owner。
 
 ---
 
 ## 4. 架构解耦与防腐规范
 
-1. **接口契约先行**：所有前后端数据通信必须在 `packages/contracts/` 定义 OpenAPI Schema，禁止前端手写未校验接口。
-2. **禁止跨领域 Mapper 注入**：业务域之间禁止跨模块直接查询或修改对方的数据表，必须通过 Service 接口或发布内部事件 (`ApplicationEvent`)。
-3. **数据表物理前缀隔离**：虽然共享 MySQL 实例，但按模块使用独立前缀（如 `usr_`、`cnt_`、`lrn_`、`pay_`、`gam_`），确保未来具备无痛微服务拆分能力。
-4. **AI 与计算密集型隔离**：大模型调用、语音识别评测、实时 RTC 信令等一律由独立的 Python FastAPI 和 RTC 服务承载，保障 Core API 基础学习流的绝对稳定与低延迟。
+1. **接口契约先行**：所有前后端和服务间通信必须在 `packages/contracts/` 定义 OpenAPI/AsyncAPI/JSON Schema，禁止前端或服务手写未校验的裸类型。
+2. **禁止跨服务写入**：业务域之间禁止跨服务 SQL join、跨服务直接修改对方数据表或共享 ORM entity；必须通过版本化 API、事件、Saga 和补偿协作。
+3. **数据 owner 明确**：服务使用独立 schema、Flyway migration、Redis namespace 和数据库账号；MySQL 可以先共享集群，但不能共享写权限。
+4. **权限双层执行**：Gateway 预校验 + 领域服务 PEP；RBAC 结合租户、owner、phase、版权和 consent，默认拒绝，不能信任客户端角色头。
+5. **事件可回放**：Outbox 事务内落库，事件携带 eventId/traceId/schemaVersion，消费者必须去重、可重试、可进 DLQ、可回放。
+6. **AI 与计算密集型隔离**：大模型调用、语音评测、实时 RTC 信令等由独立服务承载，不能阻塞 Phase 1 规则化学习主链。
 

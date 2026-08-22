@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: ${service.name}
+  lifecycle:
+    timeout-per-shutdown-phase: ${SERVICE_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${service.port}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      validate-group-membership: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:true}
+      otlp:
+        enabled: ${OTEL_TRACING_EXPORT_ENABLED:true}
+  opentelemetry:
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  # These are deliberate fail-fast placeholders. Replace through environment or config.
+  name: ${SERVICE_NAME:}
+  owner: ${SERVICE_OWNER:}
+  schema: ${SERVICE_SCHEMA:}
+  redis-namespace: ${SERVICE_REDIS_NAMESPACE:}
+  port: ${SERVICE_PORT:0}
+
+security:
+  resource-server:
+    # G-IDP is a prerequisite. False means there is no authentication-success path.
+    enabled: ${SERVICE_RESOURCE_SERVER_ENABLED:false}
+    # Required only when enabled; no issuer discovery or fake local decoder is used.
+    issuer-uri: ${SERVICE_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${SERVICE_SECURITY_JWK_SET_URI:}
+    policy-cache-ttl: ${SERVICE_POLICY_CACHE_TTL:30s}
+    pdp-timeout: ${SERVICE_PDP_TIMEOUT:250ms}

@@ -5,12 +5,16 @@ export interface ApiRequestOptions {
   headers?: HeadersInit
   body?: unknown
   signal?: AbortSignal
+  credentials?: RequestCredentials
+  skipAuthRetry?: boolean
 }
 
 export interface ApiClientConfig {
   baseUrl: string
   getAccessToken?: () => string | null
   fetchImpl?: typeof fetch
+  credentials?: RequestCredentials
+  onUnauthorized?: () => Promise<boolean>
 }
 
 export class ApiError extends Error {
@@ -54,7 +58,7 @@ function joinUrl(baseUrl: string, path: string): string {
 export function createApiClient(config: ApiClientConfig): ApiClient {
   const fetchImpl = config.fetchImpl ?? fetch
 
-  async function request<TResponse>(path: string, options: ApiRequestOptions = {}): Promise<TResponse> {
+  async function request<TResponse>(path: string, options: ApiRequestOptions = {}, retried = false): Promise<TResponse> {
     const headers = new Headers(options.headers)
     headers.set('Accept', 'application/json')
 
@@ -74,8 +78,14 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       headers,
       body,
       signal: options.signal,
+      credentials: options.credentials ?? config.credentials,
     })
     const details = await decodeBody(response)
+
+    if (response.status === 401 && !retried && !options.skipAuthRetry && config.onUnauthorized) {
+      const refreshed = await config.onUnauthorized()
+      if (refreshed) return request(path, { ...options, skipAuthRetry: true }, true)
+    }
 
     if (!response.ok) {
       const message = typeof details === 'object' && details !== null && 'message' in details
@@ -96,12 +106,19 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
   }
 }
 
+import { getGatewayBaseUrl } from '../platform/gateway'
+
 export const apiClient = createApiClient({
-  baseUrl: import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:18080/api/v1',
+  baseUrl: getGatewayBaseUrl(),
+  credentials: 'include',
   getAccessToken: () => {
     if (typeof window === 'undefined') {
       return null
     }
     return window.sessionStorage.getItem('yx.session.access-token')
+  },
+  onUnauthorized: async () => {
+    const [{ pinia }, { useSessionStore }] = await Promise.all([import('../stores/pinia'), import('../stores/session')])
+    return useSessionStore(pinia).refreshSilently()
   },
 })

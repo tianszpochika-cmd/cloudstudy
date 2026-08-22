@@ -4,7 +4,8 @@
 > **状态**：Phase 1 实施基线（可用于 API、数据库、前端与测试拆分）  
 > **基线**：PRD v3.3 第 4.1～5.2、13.9；requirements/feature-matrix.md VOC-001～030  
 > **所属域**：com.englishflow.modules.vocabulary、com.englishflow.modules.srs  
-> **服务承载**：services/core-api（Java 17+ / Spring Boot 3 / MySQL 8 / Redis 7）  
+> **目标服务承载**：`learning-service`（SRS/学习事实）+ `content-service`（词汇/内容版本），外部请求经 `api-gateway`，权限由 `iam-service`/服务侧 PEP 校验。  
+> **迁移兼容**：`services/core-api`（Java 17+ / Spring Boot 3 / MySQL 8 / Redis 7）仅作为 v1 兼容承载。  
 > **客户端**：Vue 3 + TypeScript + uni-app（H5、iOS、Android、iPad、微信小程序）；管理端内容由教研域维护  
 > **API 单一事实源**：本文件第 8 节 OpenAPI 3 契约，Java DTO 与前端类型由 openapi-generator 生成
 
@@ -2798,7 +2799,7 @@ rate:vocab:event:{userId}:{minute}
 ## 10. Definition of Done
 
 1. FEAT-VOC-001～030 均有目标、前置、主流程、异常/边界、验收与埋点，且埋点不采集私人内容。
-2. OpenAPI 3.0.3 通过解析校验，可生成 Spring Boot 3 DTO/Controller 接口与 Vue 3/uni-app TypeScript 类型；无裸 any。
+2. OpenAPI 3.0.3 通过解析校验，可生成 Spring Boot 4.1 DTO/Controller 接口与 Vue 3/uni-app TypeScript 类型；无裸 any。
 3. MySQL DDL 覆盖词汇、释义、例句、词块、挖句、统一 SRS、复习事件、排程快照、风控审计和出站事件，CHECK/UNIQUE/索引/外键语义已评审。
 4. SM2_Q03_V1、逾期平滑、D1/D7 延迟复测、幂等、行锁、弱网和风控有单元、集成和端到端测试。
 5. Phase 1 不调用 AI、向量检索或实时发音评分；后续能力必须通过独立服务、版本化 Schema、超时降级和合规审核接入。

@@ -1,0 +1,294 @@
+{
+  "events": [
+    {
+      "eventName": "learner.profile.updated.v1",
+      "domain": "learner",
+      "version": 1,
+      "schema": "learner.event.v1",
+      "aggregateType": "learner_profile",
+      "aggregateIdField": "profileId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9LearnerProfileUpdated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learner.profile.updated.v2",
+        "consumerRule": "按 principalId/profileVersion 去重；changedFieldCodes 只表达字段代码，不传播个人身份原文。"
+      }
+    },
+    {
+      "eventName": "learner.target.updated.v1",
+      "domain": "learner",
+      "version": 1,
+      "schema": "learner.event.v1",
+      "aggregateType": "learner_target",
+      "aggregateIdField": "targetId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9LearnerTargetUpdated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learner.target.updated.v2",
+        "consumerRule": "按 targetId/targetVersion 幂等；tenantId 由服务端派生并用于消费侧隔离。"
+      }
+    },
+    {
+      "eventName": "learner.first_day.projected.v1",
+      "domain": "learner",
+      "version": 1,
+      "schema": "learner.event.v1",
+      "aggregateType": "learner_first_day_projection",
+      "aggregateIdField": "projectionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learner.first_day.projected.v2",
+        "consumerRule": "按 principalId/projectionVersion 处理；projection 只含任务引用和内容 epoch。"
+      }
+    },
+    {
+      "eventName": "content.version.submitted.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionSubmitted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.submitted.v2",
+        "consumerRule": "审核消费者按 contentVersionId/versionNumber 幂等；草稿 payload 不进入事件。"
+      }
+    },
+    {
+      "eventName": "content.version.reviewed.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionReviewed" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.reviewed.v2",
+        "consumerRule": "双审阶段按 contentVersionId/reviewStage/reviewVersion 去重；作者不得作为自己的审核者。"
+      }
+    },
+    {
+      "eventName": "content.version.published.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionPublished" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.published.v2",
+        "consumerRule": "公开投影按 projectionKey/contentEpoch 刷新；事件至少一次投递，消费者必须去重。"
+      }
+    },
+    {
+      "eventName": "content.version.unpublished.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentVersionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionUnpublished" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.unpublished.v2",
+        "consumerRule": "先失效 public/learner cache，再允许恢复到明确版本；不能把下线伪装为空列表。"
+      }
+    },
+    {
+      "eventName": "content.version.rolled_back.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_version",
+      "aggregateIdField": "contentCode",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionRolledBack" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.version.rolled_back.v2",
+        "consumerRule": "只切换到已验证目标版本；按 contentCode/contentEpoch 幂等并保留回滚原因。"
+      }
+    },
+    {
+      "eventName": "content.public_projection.invalidated.v1",
+      "domain": "content",
+      "version": 1,
+      "schema": "content.event.v1",
+      "aggregateType": "content_public_projection",
+      "aggregateIdField": "projectionKey",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish content.public_projection.invalidated.v2",
+        "consumerRule": "按 projectionKey/contentEpoch 清理 Gateway/CDN/Redis 缓存；不得用 Kafka 作为查询或事务协调器。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "B9LearnerProfileUpdated": {
+      "$id": "platform.events.learner.profile.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "profileVersion", "changedFieldCodes", "updatedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "profileVersion": { "type": "integer", "minimum": 1 },
+        "changedFieldCodes": { "type": "array", "items": { "type": "string", "maxLength": 96 }, "minItems": 1, "maxItems": 32 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9LearnerTargetUpdated": {
+      "$id": "platform.events.learner.target.updated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "targetId", "targetVersion", "goalCode", "targetLevel", "dailyQuotaMinutes", "updatedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "targetId": { "type": "integer", "minimum": 1 },
+        "targetVersion": { "type": "integer", "minimum": 1 },
+        "goalCode": { "type": "string", "maxLength": 96 },
+        "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+        "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45, 60] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9LearnerFirstDayProjected": {
+      "$id": "platform.events.learner.first_day.projected.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "projectionVersion", "contentEpoch", "readiness", "taskCount", "projectedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "projectionVersion": { "type": "integer", "minimum": 1 },
+        "contentEpoch": { "type": "integer", "minimum": 1 },
+        "readiness": { "type": "string", "enum": ["NOT_READY", "READY", "DEGRADED"] },
+        "taskCount": { "type": "integer", "minimum": 0 },
+        "projectedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9ContentVersionSubmitted": {
+      "$id": "platform.events.content.version.submitted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "contentCode", "contentType", "contentVersionId", "versionNumber", "stateVersion", "submittedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "contentCode": { "type": "string", "maxLength": 128 },
+        "contentType": { "type": "string", "enum": ["COURSE", "COURSE_UNIT", "VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "QUESTION"] },
+        "contentVersionId": { "type": "integer", "minimum": 1 },
+        "versionNumber": { "type": "integer", "minimum": 1 },
+        "stateVersion": { "type": "integer", "minimum": 1 },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9ContentVersionReviewed": {
+      "$id": "platform.events.content.version.reviewed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "contentCode", "contentVersionId", "versionNumber", "reviewStage", "decision", "reviewVersion", "reviewedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "contentCode": { "type": "string", "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "minimum": 1 },
+        "versionNumber": { "type": "integer", "minimum": 1 },
+        "reviewStage": { "type": "string", "enum": ["FIRST_REVIEW", "FINAL_REVIEW"] },
+        "decision": { "type": "string", "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"] },
+        "reviewVersion": { "type": "integer", "minimum": 1 },
+        "reviewedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9ContentVersionPublished": {
+      "$id": "platform.events.content.version.published.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "contentCode", "contentType", "contentVersionId", "versionNumber", "projectionKey", "projectionVersion", "contentEpoch", "publicFieldSet", "publishedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "contentCode": { "type": "string", "maxLength": 128 },
+        "contentType": { "type": "string", "enum": ["COURSE", "COURSE_UNIT", "VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "QUESTION"] },
+        "contentVersionId": { "type": "integer", "minimum": 1 },
+        "versionNumber": { "type": "integer", "minimum": 1 },
+        "projectionKey": { "type": "string", "maxLength": 192 },
+        "projectionVersion": { "type": "integer", "minimum": 1 },
+        "contentEpoch": { "type": "integer", "minimum": 1 },
+        "publicFieldSet": { "type": "string", "const": "PUBLIC_V1" },
+        "publishedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9ContentVersionUnpublished": {
+      "$id": "platform.events.content.version.unpublished.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "contentCode", "contentVersionId", "projectionKey", "contentEpoch", "reasonCode", "unpublishedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "contentCode": { "type": "string", "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "minimum": 1 },
+        "projectionKey": { "type": "string", "maxLength": 192 },
+        "contentEpoch": { "type": "integer", "minimum": 1 },
+        "reasonCode": { "type": "string", "maxLength": 96 },
+        "unpublishedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9ContentVersionRolledBack": {
+      "$id": "platform.events.content.version.rolled_back.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "contentCode", "fromVersionId", "targetVersionId", "projectionKey", "contentEpoch", "rolledBackAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "contentCode": { "type": "string", "maxLength": 128 },
+        "fromVersionId": { "type": "integer", "minimum": 1 },
+        "targetVersionId": { "type": "integer", "minimum": 1 },
+        "projectionKey": { "type": "string", "maxLength": 192 },
+        "contentEpoch": { "type": "integer", "minimum": 1 },
+        "rolledBackAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "B9PublicProjectionInvalidated": {
+      "$id": "platform.events.content.public_projection.invalidated.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "projectionKey", "contentCode", "contentEpoch", "invalidationScope", "reasonCode", "invalidatedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "projectionKey": { "type": "string", "maxLength": 192 },
+        "contentCode": { "type": "string", "maxLength": 128 },
+        "contentVersionId": { "type": "integer", "minimum": 1 },
+        "contentEpoch": { "type": "integer", "minimum": 1 },
+        "invalidationScope": { "type": "string", "enum": ["CONTENT", "VERSION", "SITE", "MANIFEST", "GLOBAL"] },
+        "reasonCode": { "type": "string", "maxLength": 96 },
+        "cacheTag": { "type": "string", "maxLength": 128 },
+        "invalidatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "asyncapi": {
+    "channels": {
+      "b9LearnerProfileUpdated": { "address": "learner.profile.updated.v1", "messages": { "learnerProfileUpdated": { "$ref": "#/payloadSchemas/B9LearnerProfileUpdated" } } },
+      "b9LearnerTargetUpdated": { "address": "learner.target.updated.v1", "messages": { "learnerTargetUpdated": { "$ref": "#/payloadSchemas/B9LearnerTargetUpdated" } } },
+      "b9LearnerFirstDayProjected": { "address": "learner.first_day.projected.v1", "messages": { "learnerFirstDayProjected": { "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected" } } },
+      "b9ContentVersionSubmitted": { "address": "content.version.submitted.v1", "messages": { "contentVersionSubmitted": { "$ref": "#/payloadSchemas/B9ContentVersionSubmitted" } } },
+      "b9ContentVersionReviewed": { "address": "content.version.reviewed.v1", "messages": { "contentVersionReviewed": { "$ref": "#/payloadSchemas/B9ContentVersionReviewed" } } },
+      "b9ContentVersionPublished": { "address": "content.version.published.v1", "messages": { "contentVersionPublished": { "$ref": "#/payloadSchemas/B9ContentVersionPublished" } } },
+      "b9ContentVersionUnpublished": { "address": "content.version.unpublished.v1", "messages": { "contentVersionUnpublished": { "$ref": "#/payloadSchemas/B9ContentVersionUnpublished" } } },
+      "b9ContentVersionRolledBack": { "address": "content.version.rolled_back.v1", "messages": { "contentVersionRolledBack": { "$ref": "#/payloadSchemas/B9ContentVersionRolledBack" } } },
+      "b9PublicProjectionInvalidated": { "address": "content.public_projection.invalidated.v1", "messages": { "publicProjectionInvalidated": { "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated" } } }
+    }
+  }
+}

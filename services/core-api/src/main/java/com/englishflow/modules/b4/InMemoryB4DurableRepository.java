@@ -21,4 +21,19 @@ public final class InMemoryB4DurableRepository implements B4DurableRepository {
                 .filter(fact -> aggregateType.equals(fact.aggregateType()) && fact.userId() == userId)
                 .toList());
     }
+
+    @Override
+    public List<Fact> listAll(String aggregateType) {
+        return new ArrayList<>(facts.stream()
+                .filter(fact -> aggregateType.equals(fact.aggregateType()))
+                .toList());
+    }
+
+    @Override
+    public List<Fact> listByAggregate(String aggregateType, String aggregateId) {
+        return new ArrayList<>(facts.stream()
+                .filter(fact -> aggregateType.equals(fact.aggregateType())
+                        && aggregateId.equals(fact.aggregateId()))
+                .toList());
+    }
 }

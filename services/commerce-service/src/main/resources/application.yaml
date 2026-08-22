@@ -1,0 +1,37 @@
+server:
+  address: 127.0.0.1
+  port: ${COMMERCE_SERVICE_PORT:18096}
+
+spring:
+  application:
+    name: commerce-service
+  main:
+    banner-mode: "off"
+  flyway:
+    enabled: ${COMMERCE_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${COMMERCE_OIDC_ISSUER_URI:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+commerce:
+  public-tenant-id: ${COMMERCE_PUBLIC_TENANT_ID:platform}
+  security:
+    resource-server-enabled: ${COMMERCE_RESOURCE_SERVER_ENABLED:false}
+  payment:
+    enabled: ${COMMERCE_PAYMENT_ENABLED:false}
+    environment: ${COMMERCE_PAYMENT_ENVIRONMENT:DISABLED}
+    real-providers-enabled: ${COMMERCE_REAL_PROVIDERS_ENABLED:false}
+    sandbox-secret: ${COMMERCE_SANDBOX_SECRET:change-me-in-test-only}

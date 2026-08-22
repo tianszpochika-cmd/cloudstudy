@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: ${service.name}
+  lifecycle:
+    timeout-per-shutdown-phase: ${CONTENT_SERVICE_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${CONTENT_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  # 18089 is the fixed port registered by the repository port authority.
+  port: ${CONTENT_SERVICE_PORT:18089}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  name: ${CONTENT_SERVICE_NAME:content-service}
+  owner: ${CONTENT_SERVICE_OWNER:content-service}
+  schema: ${CONTENT_SERVICE_SCHEMA:content_service}
+  redis-namespace: ${CONTENT_SERVICE_REDIS_NAMESPACE:content}
+  port: ${CONTENT_SERVICE_PORT:18089}
+
+security:
+  resource-server:
+    # G-IDP is a prerequisite. There is no local token or admin bypass when false.
+    enabled: ${CONTENT_SERVICE_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${CONTENT_SERVICE_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${CONTENT_SERVICE_SECURITY_JWK_SET_URI:}

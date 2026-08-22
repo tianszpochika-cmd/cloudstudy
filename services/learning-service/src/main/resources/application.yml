@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: learning-service
+  lifecycle:
+    timeout-per-shutdown-phase: ${LEARNING_SHUTDOWN_TIMEOUT:20s}
+
+server:
+  address: ${LEARNING_SERVICE_SERVER_ADDRESS:127.0.0.1}
+  # Reserved for the B10 service; registration is intentionally local to this service slice.
+  port: ${LEARNING_SERVICE_PORT:18090}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_ENABLED:false}
+
+service:
+  name: learning-service
+  owner: learning-service
+  schema: ${LEARNING_SCHEMA:learning_service}
+  redis-namespace: ${LEARNING_REDIS_NAMESPACE:learning}
+  port: ${LEARNING_SERVICE_PORT:18090}
+
+learning:
+  phase: ${LEARNING_PHASE:phase-1}
+  srs-rules-version: ${LEARNING_SRS_RULES_VERSION:SM2_Q03_V1}
+
+security:
+  resource-server:
+    # The real IdP/JWKS gate is a later runtime step; absence of it never creates a local bypass.
+    enabled: ${LEARNING_RESOURCE_SERVER_ENABLED:false}
+    issuer-uri: ${LEARNING_SECURITY_ISSUER_URI:}
+    jwk-set-uri: ${LEARNING_SECURITY_JWK_SET_URI:}

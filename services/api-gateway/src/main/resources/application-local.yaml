@@ -1,0 +1,26 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+gateway:
+  b12:
+    enabled: ${B12_SERVICES_ENABLED:true}
+  b13:
+    enabled: ${B13_SERVICES_ENABLED:true}
+  b14:
+    enabled: ${B14_STRANGLER_ENABLED:true}
+    # Local smoke keeps the target matrix enabled; switch individual domains
+    # to SHADOW or FALLBACK when testing a rollback without changing code.
+    route-modes:
+      learner: ${B14_ROUTE_MODE_LEARNER:TARGET}
+      content: ${B14_ROUTE_MODE_CONTENT:TARGET}
+      learning: ${B14_ROUTE_MODE_LEARNING:TARGET}
+      assessment: ${B14_ROUTE_MODE_ASSESSMENT:TARGET}
+      media: ${B14_ROUTE_MODE_MEDIA:TARGET}
+      gamification: ${B14_ROUTE_MODE_GAMIFICATION:TARGET}
+      social: ${B14_ROUTE_MODE_SOCIAL:TARGET}
+      commerce: ${B14_ROUTE_MODE_COMMERCE:TARGET}
+  compatibility:
+    # Local smoke testing only: routes remain GET/HEAD-only and never expose writes.
+    anonymous-read-enabled: true

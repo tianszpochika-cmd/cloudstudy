@@ -1,0 +1,123 @@
+import assert from 'node:assert/strict';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import test from 'node:test';
+
+const root = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..');
+const read = (relativePath) => readFileSync(join(root, relativePath), 'utf8');
+const exists = (relativePath) => existsSync(join(root, relativePath));
+
+function javaSources(relativeDirectory) {
+  const directory = join(root, relativeDirectory);
+  if (!exists(relativeDirectory)) return '';
+  const files = [];
+  const visit = (current) => {
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const absolute = join(current, entry.name);
+      if (entry.isDirectory()) visit(absolute);
+      else if (entry.name.endsWith('.java')) files.push(readFileSync(absolute, 'utf8'));
+    }
+  };
+  visit(directory);
+  return files.join('\n');
+}
+
+test('B7 Platform 0 locks Java 25, Boot 4.1 and the compatible Cloud train', () => {
+  const pom = read('services/api-gateway/pom.xml');
+  assert.match(pom, /<java\.version>25<\/java\.version>/);
+  assert.match(pom, /<maven\.compiler\.release>25<\/maven\.compiler\.release>/);
+  assert.match(pom, /<version>4\.1\.1<\/version>/);
+  assert.match(pom, /<spring-cloud\.version>2025\.1\.3<\/spring-cloud\.version>/);
+  assert.match(pom, /spring-cloud-starter-gateway-server-webflux/);
+  assert.match(pom, /spring-boot-starter-security-oauth2-resource-server/);
+  assert.match(pom, /spring-boot-starter-opentelemetry/);
+  assert.match(pom, /requireJavaVersion/);
+  assert.doesNotMatch(pom, /<java\.version>17<\/java\.version>/);
+});
+
+test('Gateway uses a required registered port and exposes health/readiness configuration', () => {
+  const application = read('services/api-gateway/src/main/resources/application.yaml');
+  assert.match(application, /address: \$\{SERVER_ADDRESS:127\.0\.0\.1\}/);
+  assert.match(application, /port: \$\{GATEWAY_PORT\}/);
+  assert.match(application, /probes:\s*\n\s*enabled: true/);
+  assert.match(application, /allowed-origins:/);
+  assert.match(application, /rate-limit:/);
+  assert.match(application, /anonymous-read-enabled: false/);
+  assert.match(application, /jwt-prevalidation-enabled: \$\{GATEWAY_JWT_PREVALIDATION_ENABLED:false\}/);
+  assert.match(read('services/api-gateway/src/main/resources/application-local.yaml'), /on-profile: local/);
+  assert.match(read('services/api-gateway/src/main/resources/application-local.yaml'), /anonymous-read-enabled: true/);
+});
+
+test('Gateway exposes only explicit v1 compatibility routes and preserves the anti-corruption boundary', () => {
+  const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
+  const boundary = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ApiVersionBoundaryGlobalFilter.java');
+  const jwtBoundary = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.java');
+  const allGatewayJava = javaSources('services/api-gateway/src/main/java');
+
+  assert.match(configuration, /\/api\/v1\/health/);
+  assert.match(configuration, /\/api\/v1\/legacy\/\*\*/);
+  assert.match(configuration, /rewritePath\("\/api\/v1\/legacy\/\(\?<segment>\.\*\)"/);
+  assert.match(configuration, /\/api\/v1\/\$\{segment\}/);
+  assert.match(configuration, /X-Compatibility-Route/);
+  assert.match(configuration, /method\(HttpMethod\.GET, HttpMethod\.HEAD\)/);
+  assert.match(configuration, /anyExchange\(\)\.denyAll\(\)/);
+  assert.match(configuration, /acceptsProfiles\(Profiles\.of\("local"\)\)/);
+  assert.doesNotMatch(configuration, /anyExchange\(\)\.permitAll\(\)/);
+  assert.match(boundary, /unsupported_api_version/);
+  assert.match(boundary, /internal_route_not_public/);
+  assert.match(configuration, /SecurityWebFilterChain/);
+  assert.match(jwtBoundary, /Presence-only boundary/);
+  assert.doesNotMatch(allGatewayJava, /@RestController|JdbcTemplate|JpaRepository|@Entity/);
+});
+
+test('Request/trace context is bounded and error mapping distinguishes edge failures', () => {
+  const correlation = read('services/api-gateway/src/main/java/com/englishflow/gateway/support/CorrelationIds.java');
+  const mapper = read('services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorMapper.java');
+  const writer = read('services/api-gateway/src/main/java/com/englishflow/gateway/support/GatewayErrorResponseWriter.java');
+  assert.match(correlation, /SAFE_ID/);
+  assert.match(correlation, /traceparent/);
+  assert.match(correlation, /UUID\.randomUUID/);
+  assert.match(mapper, /504, "upstream_timeout"/);
+  assert.match(mapper, /503, "upstream_unavailable"/);
+  assert.match(mapper, /502, "upstream_failure"/);
+  assert.match(writer, /MediaType\.APPLICATION_JSON/);
+  assert.match(writer, /X-Request-Id/);
+  assert.match(writer, /X-Trace-Id/);
+});
+
+test('CORS and rate limiting are explicit platform seams, not domain behavior', () => {
+  const configuration = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
+  const rateLimit = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/RateLimitPlaceholderGlobalFilter.java');
+  const readme = read('services/api-gateway/README.md');
+  assert.match(configuration, /CorsWebFilter/);
+  assert.match(configuration, /setAllowedOrigins/);
+  assert.match(rateLimit, /local-placeholder/);
+  assert.match(rateLimit, /TOO_MANY_REQUESTS/);
+  assert.match(readme, /does not own learner, content, order, permission or audit facts/);
+  assert.match(readme, /not a production distributed limiter/);
+});
+
+test('service-template is present and does not inherit the Java 17 core-api runtime', () => {
+  assert.ok(exists('services/service-template/pom.xml'), 'service-template/pom.xml must be created by V2-B7-PLAT-001');
+  const pom = read('services/service-template/pom.xml');
+  assert.match(pom, /<java\.version>25<\/java\.version>/);
+  assert.match(pom, /4\.1\.1/);
+  assert.match(pom, /maven-enforcer-plugin/);
+  assert.match(pom, /<version>\[25,26\)<\/version>/);
+  assert.doesNotMatch(pom, /<java\.version>17<\/java\.version>/);
+  const sources = javaSources('services/service-template/src/main/java');
+  assert.match(sources, /Health|Readiness|ConfigurationProperties/);
+  assert.doesNotMatch(sources, /@RestController|JdbcTemplate|JpaRepository|@Entity/);
+});
+
+test('B7 changes stay inside the user-authorized implementation/test roots', () => {
+  const allowedRoots = [
+    'services/api-gateway',
+    'services/service-template',
+    'tests/b7/gateway-platform.test.mjs'
+  ];
+  for (const path of allowedRoots) {
+    assert.equal(relative(root, join(root, path)).startsWith('..'), false);
+  }
+});
