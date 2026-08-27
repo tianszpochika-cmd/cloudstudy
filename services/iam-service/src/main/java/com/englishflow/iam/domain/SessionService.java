@@ -36,6 +36,17 @@ public final class SessionService {
             URI providerIssuer,
             ProviderSessionReference providerSessionReference,
             String providerRefreshToken) {
+        return open(context, deviceId, providerIssuer, "default", providerSessionReference,
+                providerRefreshToken);
+    }
+
+    public SessionRecord open(
+            ServerPrincipalContext context,
+            DeviceId deviceId,
+            URI providerIssuer,
+            String providerClientId,
+            ProviderSessionReference providerSessionReference,
+            String providerRefreshToken) {
         Objects.requireNonNull(context, "context");
         Objects.requireNonNull(deviceId, "deviceId");
         requireIssuer(providerIssuer);
@@ -48,6 +59,7 @@ public final class SessionService {
                 context.scope(),
                 deviceId,
                 providerIssuer,
+                providerClientId,
                 providerSessionReference,
                 digest,
                 0,
@@ -83,28 +95,30 @@ public final class SessionService {
             try {
                 rotation = provider.rotate(
                         current.providerIssuer(),
+                        current.providerClientId(),
                         current.providerSessionReference(),
                         presentedRefreshToken);
             } catch (RuntimeException exception) {
-                revokeLocally(current, "provider_rotation_rejected");
-                appendAudit(current.scope(), IamDecisionCode.SESSION_PROVIDER_REJECTED,
-                        "session_provider_rejected");
-                throw new IamPolicyException(
-                        IamDecisionCode.SESSION_PROVIDER_REJECTED,
+                rejectProviderRotation(current, "provider_rotation_rejected");
+                throw new IamPolicyException(IamDecisionCode.SESSION_PROVIDER_REJECTED,
                         "iam.session.provider_rejected");
             }
             if (rotation == null) {
-                revokeLocally(current, "provider_rotation_missing");
-                appendAudit(current.scope(), IamDecisionCode.SESSION_PROVIDER_REJECTED,
-                        "session_provider_rejected");
-                throw new IamPolicyException(
-                        IamDecisionCode.SESSION_PROVIDER_REJECTED,
+                rejectProviderRotation(current, "provider_rotation_missing");
+                throw new IamPolicyException(IamDecisionCode.SESSION_PROVIDER_REJECTED,
+                        "iam.session.provider_rejected");
+            }
+            Instant now = Instant.now(clock);
+            if (SecretDigests.constantTimeEquals(rotation.nextRefreshToken(), presentedRefreshToken)
+                    || !rotation.accessTokenExpiresAt().isAfter(now)) {
+                rejectProviderRotation(current, "provider_rotation_invalid");
+                throw new IamPolicyException(IamDecisionCode.SESSION_PROVIDER_REJECTED,
                         "iam.session.provider_rejected");
             }
 
             SessionRecord next = current.rotate(
                     SecretDigests.sha256Hex(rotation.nextRefreshToken()),
-                    Instant.now(clock));
+                    now);
             // The provider reference may rotate too; preserve it in a new immutable snapshot.
             next = new SessionRecord(
                     next.sessionId(),
@@ -112,6 +126,7 @@ public final class SessionService {
                     next.scope(),
                     next.deviceId(),
                     next.providerIssuer(),
+                    next.providerClientId(),
                     rotation.providerSessionReference(),
                     next.refreshTokenDigest(),
                     next.rotation(),
@@ -120,7 +135,29 @@ public final class SessionService {
                     next.updatedAt(),
                     next.revokedAt(),
                     next.revocationReason());
-            sessions.replace(next);
+            SessionRecord persisted;
+            try {
+                persisted = sessions.replaceIfCurrent(
+                                current.sessionId(),
+                                current.rotation(),
+                                current.refreshTokenDigest(),
+                                next)
+                        .orElseThrow(() -> new IamPolicyException(
+                                IamDecisionCode.SESSION_REPLAY,
+                                "iam.session.replay"));
+            } catch (IamPolicyException exception) {
+                revokeLocally(current, "rotation_compare_and_set_conflict");
+                appendAudit(current.scope(), IamDecisionCode.SESSION_REPLAY, "session_replay");
+                throw exception;
+            } catch (RuntimeException exception) {
+                revokeLocally(current, "session_store_unavailable");
+                appendAudit(current.scope(), IamDecisionCode.SESSION_STORE_UNAVAILABLE,
+                        "session_store_unavailable");
+                throw new IamPolicyException(
+                        IamDecisionCode.SESSION_STORE_UNAVAILABLE,
+                        "iam.session.store_unavailable");
+            }
+            next = persisted;
             appendAudit(next.scope(), IamDecisionCode.SESSION_ROTATED, "session_rotated");
             return new SessionRotationResult(
                     next.sessionId(),
@@ -128,11 +165,48 @@ public final class SessionService {
                     next.deviceId(),
                     next.rotation(),
                     rotation.nextRefreshToken(),
-                    rotation.accessTokenExpiresAt());
+                    rotation.accessTokenExpiresAt(),
+                    rotation.nextAccessToken());
         }
     }
 
+    /** Finds the session by the presented digest, then applies the same durable CAS rotation path. */
+    public SessionRotationResult rotateByRefreshToken(String presentedRefreshToken) {
+        String digest = SecretDigests.sha256Hex(presentedRefreshToken);
+        SessionRecord session = sessions.findByRefreshTokenDigest(digest)
+                .orElseThrow(() -> new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND,
+                        "iam.session.not_found"));
+        return rotate(session.sessionId(), presentedRefreshToken);
+    }
+
+    public SessionRecord find(SessionId sessionId) {
+        return sessions.find(sessionId).orElseThrow(() -> new IamPolicyException(
+                IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found"));
+    }
+
+    public List<SessionRecord> findByDevice(PrincipalId principalId, DeviceId deviceId) {
+        Objects.requireNonNull(principalId, "principalId");
+        Objects.requireNonNull(deviceId, "deviceId");
+        return sessions.findByDevice(principalId, deviceId);
+    }
+
+    public SessionRecord revokeOwned(PrincipalId principalId, SessionId sessionId, String reason) {
+        SessionRecord current = find(sessionId);
+        if (!current.principalId().equals(principalId)) {
+            throw new IamPolicyException(IamDecisionCode.SESSION_NOT_FOUND, "iam.session.not_found");
+        }
+        return revoke(sessionId, reason);
+    }
+
     public SessionRecord revoke(SessionId sessionId, String reason) {
+        return revoke(sessionId, reason, null);
+    }
+
+    /**
+     * Revokes the local session and, when the caller still holds the provider credential, delegates
+     * RFC 7009 revocation without persisting that credential.
+     */
+    public SessionRecord revoke(SessionId sessionId, String reason, String providerRefreshToken) {
         Objects.requireNonNull(sessionId, "sessionId");
         Objects.requireNonNull(reason, "reason");
         synchronized (locks.computeIfAbsent(sessionId, ignored -> new Object())) {
@@ -142,7 +216,14 @@ public final class SessionService {
                             "iam.session.not_found"));
             SessionRecord revoked = revokeLocally(current, reason);
             try {
-                provider.revoke(current.providerIssuer(), current.providerSessionReference());
+                if (providerRefreshToken == null || providerRefreshToken.isBlank()) {
+                    provider.revoke(current.providerIssuer(), current.providerSessionReference());
+                } else {
+                    provider.revoke(
+                            current.providerIssuer(),
+                            current.providerSessionReference(),
+                            providerRefreshToken);
+                }
             } catch (RuntimeException ignored) {
                 // Local revocation is already durable; losing provider connectivity cannot reopen it.
             }
@@ -167,6 +248,12 @@ public final class SessionService {
     private SessionRecord revokeLocally(SessionRecord current, String reason) {
         return sessions.revoke(current.sessionId(), Instant.now(clock), reason)
                 .orElseGet(() -> current.revoke(Instant.now(clock), reason));
+    }
+
+    private void rejectProviderRotation(SessionRecord current, String reason) {
+        revokeLocally(current, reason);
+        appendAudit(current.scope(), IamDecisionCode.SESSION_PROVIDER_REJECTED,
+                "session_provider_rejected");
     }
 
     private void appendAudit(TenantScope scope, IamDecisionCode code, String type) {

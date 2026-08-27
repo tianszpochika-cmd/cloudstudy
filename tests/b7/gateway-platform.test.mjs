@@ -39,7 +39,7 @@ test('B7 Platform 0 locks Java 25, Boot 4.1 and the compatible Cloud train', () 
 test('Gateway uses a required registered port and exposes health/readiness configuration', () => {
   const application = read('services/api-gateway/src/main/resources/application.yaml');
   assert.match(application, /address: \$\{SERVER_ADDRESS:127\.0\.0\.1\}/);
-  assert.match(application, /port: \$\{GATEWAY_PORT\}/);
+  assert.match(application, /port: \$\{API_GATEWAY_PORT:18070\}/);
   assert.match(application, /probes:\s*\n\s*enabled: true/);
   assert.match(application, /allowed-origins:/);
   assert.match(application, /rate-limit:/);
@@ -67,7 +67,7 @@ test('Gateway exposes only explicit v1 compatibility routes and preserves the an
   assert.match(boundary, /unsupported_api_version/);
   assert.match(boundary, /internal_route_not_public/);
   assert.match(configuration, /SecurityWebFilterChain/);
-  assert.match(jwtBoundary, /Presence-only boundary/);
+  assert.match(jwtBoundary, /header-shortcut boundary/);
   assert.doesNotMatch(allGatewayJava, /@RestController|JdbcTemplate|JpaRepository|@Entity/);
 });
 

@@ -3,6 +3,11 @@ spring:
     name: ${SOCIAL_SERVICE_NAME:social-service}
   lifecycle:
     timeout-per-shutdown-phase: ${SOCIAL_SERVICE_SHUTDOWN_TIMEOUT:20s}
+  flyway:
+    enabled: ${SOCIAL_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    schemas: ${SOCIAL_SCHEMA:social_service}
+    default-schema: ${SOCIAL_SCHEMA:social_service}
   jackson:
     deserialization:
       fail-on-unknown-properties: true

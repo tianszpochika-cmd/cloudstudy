@@ -3,6 +3,8 @@ spring:
     name: iam-service
   lifecycle:
     timeout-per-shutdown-phase: ${IAM_SHUTDOWN_TIMEOUT:20s}
+  flyway:
+    enabled: ${IAM_FLYWAY_ENABLED:false}
 
 server:
   # The IAM process is a local development boundary until deployment identity is approved.
@@ -55,7 +57,39 @@ logging:
 iam:
   phase: phase-1
   platform-tenant: platform
-  provider-mode: provider-neutral
-  # This property is intentionally validated as false in IamServiceProperties. It cannot be
-  # switched on before G-IDP/ADR approval and an external adapter implementation exists.
-  real-provider-enabled: false
+  provider-mode: ${IAM_PROVIDER_MODE:standard-oidc}
+  # The external provider must be explicitly enabled. With the default off, all login and
+  # principal creation paths fail closed; IAM never becomes a token server.
+  real-provider-enabled: ${IAM_REAL_PROVIDER_ENABLED:false}
+  # Only the disposable local Keycloak test profile may enable this. Production uses verified
+  # IdP age evidence or a separately authenticated age service.
+  local-adult-gate-enabled: false
+  oidc:
+    enabled: false
+    provider-id: standard-oidc
+    discovery-uri: http://127.0.0.1:18099/realms/yuxuexing-local/.well-known/openid-configuration
+    expected-issuer:
+    client-id: yuxuexing-learner-web
+    learner-client-id: yuxuexing-learner-web
+    admin-client-id: yuxuexing-admin-web
+    mobile-h5-client-id: yuxuexing-mobile-h5
+    mobile-app-client-id: yuxuexing-mobile-app
+    client-authentication-method: none
+    audience: yuxuexing-api
+    redirect-uris:
+      - http://127.0.0.1:18180/auth/callback
+    scopes:
+      - openid
+      - profile
+      - email
+    age-claim: age
+    request-timeout: 5s
+    discovery-cache-ttl: 5m
+    jwks-max-age: 15m
+    transaction-ttl: 5m
+  persistence:
+    enabled: false
+    jdbc-url: jdbc:mysql://127.0.0.1:13306/yuxuexing?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: yuxuexing
+    password: yuxuexing
+    schema: iam_service

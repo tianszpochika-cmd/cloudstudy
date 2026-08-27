@@ -11,14 +11,13 @@ import com.englishflow.media.domain.MediaRenditionDraft;
 import com.englishflow.media.domain.TranscodingStatus;
 import com.englishflow.media.port.MediaEventPort;
 import com.englishflow.media.port.MediaRepository;
+import com.englishflow.media.port.MediaRegistrationIdempotencyPort;
 import com.englishflow.media.port.SignedUrlPort;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /** Commands for metadata, object verification, transcoding state and revocation. */
 public final class MediaAssetCommandService {
@@ -26,17 +25,28 @@ public final class MediaAssetCommandService {
     private final MediaRepository repository;
     private final SignedUrlPort signedUrlPort;
     private final MediaEventPort eventPort;
+    private final MediaRegistrationIdempotencyPort idempotencyPort;
     private final Clock clock;
-    private final ConcurrentMap<String, RegistrationReceipt> registrationReceipts = new ConcurrentHashMap<>();
 
     public MediaAssetCommandService(
             MediaRepository repository,
             SignedUrlPort signedUrlPort,
             MediaEventPort eventPort,
             Clock clock) {
+        this(repository, signedUrlPort, eventPort,
+                new com.englishflow.media.adapter.memory.InMemoryMediaRegistrationIdempotencyStore(), clock);
+    }
+
+    public MediaAssetCommandService(
+            MediaRepository repository,
+            SignedUrlPort signedUrlPort,
+            MediaEventPort eventPort,
+            MediaRegistrationIdempotencyPort idempotencyPort,
+            Clock clock) {
         this.repository = Objects.requireNonNull(repository, "repository is required");
         this.signedUrlPort = Objects.requireNonNull(signedUrlPort, "signedUrlPort is required");
         this.eventPort = Objects.requireNonNull(eventPort, "eventPort is required");
+        this.idempotencyPort = Objects.requireNonNull(idempotencyPort, "idempotencyPort is required");
         this.clock = Objects.requireNonNull(clock, "clock is required");
     }
 
@@ -51,9 +61,9 @@ public final class MediaAssetCommandService {
         Objects.requireNonNull(draft, "draft is required");
         MediaAccessPolicy.requireWrite(context);
         String key = normalizeIdempotencyKey(idempotencyKey);
-        String scope = context.tenantId() + ":" + context.subjectId() + ":" + key;
         String fingerprint = draft.toString();
-        RegistrationReceipt previous = registrationReceipts.get(scope);
+        MediaRegistrationIdempotencyPort.RegistrationReceipt previous =
+                idempotencyPort.find(context.tenantId(), context.subjectId(), key).orElse(null);
         if (previous != null) {
             if (!previous.fingerprint().equals(fingerprint)) {
                 throw MediaOperationException.conflict(
@@ -74,7 +84,9 @@ public final class MediaAssetCommandService {
                 draft.objectVersion(), draft.checksumSha256(), draft.sizeBytes(), draft.supportsRange(),
                 draft.chunkSizeBytes(), draft.partCount(), draft.contentReference(), draft.rightsReference(), now);
         MediaAsset saved = repository.save(asset);
-        registrationReceipts.put(scope, new RegistrationReceipt(fingerprint, saved.assetId()));
+        idempotencyPort.save(
+                context.tenantId(), context.subjectId(), key,
+                new MediaRegistrationIdempotencyPort.RegistrationReceipt(fingerprint, saved.assetId()));
         publish("media.asset_registered.v1", saved, context, Map.of(
                 "checksumSha256", saved.checksumSha256(),
                 "sizeBytes", Long.toString(saved.sizeBytes()),
@@ -89,9 +101,6 @@ public final class MediaAssetCommandService {
                     "MEDIA_IDEMPOTENCY_KEY_INVALID", "Idempotency-Key is required and has an unsafe format");
         }
         return value;
-    }
-
-    private record RegistrationReceipt(String fingerprint, String assetId) {
     }
 
     public MediaAsset markActive(

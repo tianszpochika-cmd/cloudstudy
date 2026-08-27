@@ -16,6 +16,7 @@ public final class LearningSchema {
             "learning_progress",
             "srs_state",
             "review_event",
+            "review_queue_snapshot",
             "mastery_projection",
             "idempotency_record",
             "outbox_event");

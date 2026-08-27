@@ -9,8 +9,8 @@ spring:
 
 server:
   address: ${ADMIN_OPS_SERVER_ADDRESS:127.0.0.1}
-  # Provisional service-local default; root port registration is outside this task scope.
-  port: ${ADMIN_OPS_SERVICE_PORT:18096}
+  # 18097 is the fixed local port registered for admin-ops-service.
+  port: ${ADMIN_OPS_SERVICE_PORT:18097}
   shutdown: graceful
 
 management:
@@ -56,7 +56,7 @@ service:
   owner: admin-ops-service
   schema: admin_ops_service
   redis-namespace: admin-ops
-  port: 18096
+  port: 18097
 
 security:
   resource-server:

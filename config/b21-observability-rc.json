@@ -1,0 +1,675 @@
+{
+  "schemaVersion": 1,
+  "batch": "B21",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "tasks": [
+    {
+      "id": "V2-B21-OBS-003",
+      "name": "SLO、错误预算、告警路由、值班、Dashboard 与事故演练",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "acceptanceRefs": ["ARCH-OBS-001", "ARCH-REL-001", "K.observability", "L.incident-drill"]
+    },
+    {
+      "id": "V2-B21-RC-004",
+      "name": "不可变发布候选、版本签名、构建物一致性与 Phase 1 回归",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "acceptanceRefs": ["ARCH-DEP-001", "ARCH-REL-001", "K.evidence", "L.go-no-go"]
+    }
+  ],
+  "execution": {
+    "mode": "static-fixture-only",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "runtimeEvidence": null,
+    "blockedReasons": [
+      "B20 安全、隐私、内容、支付与灾备 Gate 尚未取得全部运行态证据，因此 RC 默认 NO-GO",
+      "生产等价 staging、真实 OpenTelemetry/监控/告警和事故演练 runner 尚未绑定",
+      "不可变镜像、版本签名、SBOM/provenance 与构建物一致性 artifact 尚未提供",
+      "契约、E2E、浏览器/设备、性能和安全回归尚未在固定 RC 上实际执行"
+    ]
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B21_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "B21_RUNTIME_STAGING_ORIGIN",
+      "B21_RUNTIME_OTEL_ENDPOINT",
+      "B21_RUNTIME_ALERT_EVIDENCE",
+      "B21_RUNTIME_RC_ARTIFACT_DIR",
+      "B21_RUNTIME_SIGNATURE_EVIDENCE",
+      "B21_RUNTIME_REGRESSION_EVIDENCE",
+      "B21_RUNTIME_ROLLBACK_EVIDENCE"
+    ],
+    "requiredEvidence": [
+      "B21-E-OBS-RUNTIME-SLO",
+      "B21-E-OBS-RUNTIME-ALERTING",
+      "B21-E-OBS-RUNTIME-INCIDENT",
+      "B21-E-RC-RUNTIME-IMMUTABLE",
+      "B21-E-RC-RUNTIME-REGRESSION",
+      "B21-E-RC-RUNTIME-GATE"
+    ],
+    "runtimeStatusWhenMissing": "blocked",
+    "staticValidatorCannotPromoteRuntime": true,
+    "externalEvidenceOnly": true
+  },
+  "observability": {
+    "runtimeStatus": "pending",
+    "signalStandard": {
+      "provider": "OpenTelemetry",
+      "signals": ["traces", "metrics", "logs"],
+      "requiredResourceAttributes": ["service.name", "deployment.environment", "service.version"],
+      "correlationFields": ["requestId", "traceId", "eventId", "decisionId"],
+      "sensitiveDataPolicy": "redact-or-do-not-record",
+      "exporterEndpointSource": "runtime-env-only",
+      "collectorUnavailableDecision": "degrade-and-page",
+      "runtimeStatus": "pending"
+    },
+    "slos": [
+      {
+        "id": "B21-SLO-GATEWAY-AVAILABILITY",
+        "service": "api-gateway",
+        "indicator": "successful external API requests",
+        "targetPercent": 99.9,
+        "window": "28d",
+        "owner": "synthetic:platform-oncall",
+        "status": "target-not-measured"
+      },
+      {
+        "id": "B21-SLO-LEARNING-LATENCY",
+        "service": "learning-service",
+        "indicator": "successful learning read/write latency",
+        "targetPercent": 99.0,
+        "window": "28d",
+        "owner": "synthetic:learning-oncall",
+        "status": "target-not-measured"
+      },
+      {
+        "id": "B21-SLO-AUTH-DECISION",
+        "service": "iam-service",
+        "indicator": "authenticated authorization decisions",
+        "targetPercent": 99.9,
+        "window": "28d",
+        "owner": "synthetic:identity-oncall",
+        "status": "target-not-measured"
+      }
+    ],
+    "errorBudget": {
+      "calculation": "100 - SLO target percent",
+      "unit": "percentage-points",
+      "burnRateWindows": ["5m", "1h", "6h", "3d"],
+      "exhaustionDecision": "freeze-release-and-page",
+      "budgetPolicy": "error-budget-is-consumed-by-bad-events-not-log-volume",
+      "status": "target-not-measured",
+      "runtimeStatus": "pending"
+    },
+    "alertRouting": {
+      "runtimeStatus": "pending",
+      "severityLevels": ["P0", "P1", "P2"],
+      "routes": [
+        {
+          "id": "B21-ALERT-ROUTE-P0",
+          "severity": "P0",
+          "receiver": "synthetic:primary-oncall",
+          "requiresPage": true,
+          "escalationMinutes": [5, 15, 30],
+          "auditEvent": "alert.route.dispatched.v1"
+        },
+        {
+          "id": "B21-ALERT-ROUTE-P1",
+          "severity": "P1",
+          "receiver": "synthetic:service-oncall",
+          "requiresPage": true,
+          "escalationMinutes": [15, 30, 60],
+          "auditEvent": "alert.route.dispatched.v1"
+        },
+        {
+          "id": "B21-ALERT-ROUTE-P2",
+          "severity": "P2",
+          "receiver": "synthetic:service-owner",
+          "requiresPage": false,
+          "escalationMinutes": [60, 240],
+          "auditEvent": "alert.route.dispatched.v1"
+        }
+      ],
+      "silence": {
+        "allowed": true,
+        "status": "not-executed",
+        "requiresReason": true,
+        "requiresOwner": true,
+        "requiresExpiry": true,
+        "maxDurationMinutes": 60,
+        "auditEvent": "alert.silence.created.v1",
+        "expiryMustPage": true,
+        "auditFailureDecision": "deny-silence-and-page"
+      }
+    },
+    "onCall": {
+      "ownerRegistry": "service-owner-registry",
+      "runtimeStatus": "pending",
+      "primaryTeam": "synthetic:platform-oncall",
+      "secondaryTeam": "synthetic:reliability-oncall",
+      "handoffRequiresAudit": true,
+      "escalationRequiresAcknowledgement": true,
+      "noOwnerDecision": "page-platform-and-block-release",
+      "rosterSource": "runtime-secret-store-or-approved-oncall-system"
+    },
+    "dashboards": [
+      {
+        "id": "B21-DASH-SERVICE-HEALTH",
+        "owner": "synthetic:platform-oncall",
+        "dataSources": ["otel-metrics", "otel-traces", "structured-logs"],
+        "requiredPanels": ["slo", "error-budget", "latency", "error-rate", "trace-link", "alert-state"],
+        "status": "defined"
+      },
+      {
+        "id": "B21-DASH-LEARNING-JOURNEY",
+        "owner": "synthetic:learning-oncall",
+        "dataSources": ["otel-metrics", "otel-traces", "event-projection"],
+        "requiredPanels": ["journey-success", "p95-latency", "outbox-lag", "dlq-depth", "trace-link"],
+        "status": "defined"
+      },
+      {
+        "id": "B21-DASH-RELEASE-GATE",
+        "owner": "synthetic:release-owner",
+        "dataSources": ["release-evidence-index", "alert-audit", "regression-report"],
+        "requiredPanels": ["b20-status", "rc-digest", "signature-state", "regression-state", "rollback-point", "go-no-go"],
+        "status": "defined"
+      }
+    ],
+    "incidentDrills": [
+      {
+        "id": "B21-DRILL-OTEL-TRACE-001",
+        "scenario": "gateway-error-to-domain-trace-localization",
+        "status": "pending",
+        "requiredSignals": ["trace", "metric", "log"],
+        "requiredCorrelation": ["requestId", "traceId", "eventId"],
+        "requiredOwner": "synthetic:platform-oncall",
+        "runbookSection": "triage-and-trace-localization"
+      },
+      {
+        "id": "B21-DRILL-ALERT-SILENCE-002",
+        "scenario": "expired-alert-silence-and-escalation",
+        "status": "pending",
+        "requiredSignals": ["alert", "audit", "trace"],
+        "requiredCorrelation": ["alertId", "silenceId", "traceId"],
+        "requiredOwner": "synthetic:reliability-oncall",
+        "runbookSection": "alert-acknowledgement-and-escalation"
+      },
+      {
+        "id": "B21-DRILL-ROLLBACK-003",
+        "scenario": "release-candidate-rollback-and-reconcile",
+        "status": "pending",
+        "requiredSignals": ["deployment", "trace", "audit"],
+        "requiredCorrelation": ["releaseId", "traceId", "rollbackPointId"],
+        "requiredOwner": "synthetic:release-owner",
+        "runbookSection": "rollback-and-reconciliation"
+      }
+    ]
+  },
+  "releaseCandidate": {
+    "runtimeStatus": "pending",
+    "immutableArtifactPolicy": {
+      "status": "defined",
+      "referenceMode": "oci-digest-only",
+      "mutableTagAllowed": false,
+      "sourceCommitRequired": true,
+      "lockfileDigestRequired": true,
+      "deploymentManifestDigestRequired": true,
+      "sbomRequired": true,
+      "provenanceRequired": true,
+      "noSecretsOrPii": true,
+      "signature": {
+        "required": true,
+        "scheme": "cosign",
+        "keySource": "external-approved-kms-or-vault",
+        "verificationBeforeDeploy": true,
+        "tamperDecision": "BLOCKED",
+        "status": "pending"
+      },
+      "consistency": {
+        "algorithm": "sha256",
+        "requiredBindings": ["sourceCommit", "lockfileDigest", "imageDigest", "manifestDigest", "sbomDigest", "signatureDigest"],
+        "mismatchDecision": "BLOCKED",
+        "status": "pending"
+      }
+    },
+    "regressionPolicy": {
+      "status": "defined",
+      "selectionSource": "config/b19-quality-gates.json",
+      "minimumSuites": ["phase1-smoke", "quality-static"],
+      "alwaysInclude": ["phase1-smoke", "quality-static"],
+      "requiredDomains": ["contracts", "e2e", "browser-device", "performance", "security"],
+      "changedAreaRules": [
+        {
+          "id": "B21-REG-AUTH-CONTRACTS",
+          "whenAnyChangedArea": ["auth", "gateway", "contracts"],
+          "includeSuites": ["phase1-smoke", "b18-four-app-static", "full-phase1-regression"]
+        },
+        {
+          "id": "B21-REG-LEARNING-PERFORMANCE",
+          "whenAnyChangedArea": ["learning", "assessment", "media", "offline", "performance"],
+          "includeSuites": ["phase1-smoke", "i18n-theme-performance-contract", "full-phase1-regression"]
+        },
+        {
+          "id": "B21-REG-FRONTEND-DEVICES",
+          "whenAnyChangedArea": ["learner-web", "mobile", "admin-web", "official-site", "i18n", "theme", "accessibility"],
+          "includeSuites": ["phase1-smoke", "b18-four-app-static", "i18n-theme-performance-contract", "full-phase1-regression"]
+        },
+        {
+          "id": "B21-REG-DEFAULT",
+          "whenAnyChangedArea": ["any"],
+          "includeSuites": ["phase1-smoke", "quality-static"]
+        }
+      ],
+      "browserDeviceMatrixSource": "config/b19-browser-device-matrix.json",
+      "performancePolicySource": "config/b19-quality-gates.json",
+      "securityPolicySource": "config/b20-security-gates.json",
+      "runtimeStatus": "pending"
+    },
+    "zeroBlockingDefects": {
+      "status": "not-established",
+      "blockingSeverities": ["P0", "P1"],
+      "p2Policy": "fix-before-release-or-expiring-risk-acceptance",
+      "requiredRuntimeEvidence": ["contract-report", "e2e-report", "device-report", "performance-report", "security-report"],
+      "noOpenRuntimeBlockers": true,
+      "decisionWhenAnyBlocker": "NO-GO"
+    },
+    "rollbackPoint": {
+      "status": "not-established",
+      "requiresVersionedArtifact": true,
+      "requiresPreChangeSnapshot": true,
+      "requiresRestorePoint": true,
+      "requiresOwner": true,
+      "requiresDrillEvidence": true,
+      "requiresPostRollbackReconciliation": true,
+      "owner": null,
+      "artifactRef": null,
+      "restorePointRef": null
+    }
+  },
+  "qualityGates": [
+    {
+      "id": "B21-OBS-003-SLO",
+      "task": "V2-B21-OBS-003",
+      "priority": "P0",
+      "category": "slo-and-error-budget",
+      "objective": "为 Phase 1 主链路建立可测量 SLO、错误预算和 burn-rate 发布阻断策略。",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B21-OBS-SLO-STATIC-001",
+          "kind": "otel-slo-error-budget-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-OBS-STATIC-SLO",
+          "sourcePaths": ["docs/07-operations/observability.md", "infra/observability/README.md"],
+          "assertions": [
+            { "contains": "OpenTelemetry" },
+            { "contains": "SLO" },
+            { "contains": "错误预算" },
+            { "contains": "requestId" },
+            { "contains": "traceId" },
+            { "contains": "脱敏" }
+          ],
+          "policyAssertions": ["three-signal-telemetry", "service-version-label", "measured-window-required", "error-budget-burn-blocks-release"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-OBS-SLO-RUNTIME-001",
+          "kind": "staging-slo-and-error-budget-burn",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-OBS-RUNTIME-SLO",
+          "tools": ["OpenTelemetry Collector", "metrics backend", "staging journey runner"],
+          "targets": ["api-gateway", "iam-service", "learning-service", "assessment-service", "workflow-service"],
+          "scenarios": ["healthy-window", "availability-breach", "latency-breach", "error-budget-burn", "recovery-window"],
+          "expected": "staging 的 SLI、SLO、错误预算和 burn-rate 与固定版本绑定；预算消耗达到阈值时冻结发布并通知责任人。",
+          "evidenceRequired": ["sli-window-report", "error-budget-report", "burn-rate-alert", "version-and-environment-binding"],
+          "cannotBeSatisfiedBy": ["static-target-definition", "dashboard-screenshot-only", "health-endpoint", "synthetic-log-without-metric"]
+        }
+      ],
+      "evidenceIds": ["B21-E-OBS-STATIC-SLO", "B21-E-OBS-RUNTIME-SLO"]
+    },
+    {
+      "id": "B21-OBS-003-ALERTING",
+      "task": "V2-B21-OBS-003",
+      "priority": "P0",
+      "category": "alert-routing-oncall-silence-audit",
+      "objective": "建立分级告警路由、值班升级、Dashboard 责任和可审计静默规则。",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B21-OBS-ALERT-STATIC-001",
+          "kind": "alert-correlation-and-redaction-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-OBS-STATIC-ALERTING",
+          "sourcePaths": ["docs/07-operations/observability.md", "packages/telemetry/src/index.mjs"],
+          "assertions": [
+            { "contains": "Gateway/IAM 不可用" },
+            { "contains": "告警" },
+            { "contains": "correlationId" },
+            { "contains": "assertNoSensitiveData" },
+            { "contains": "errorCode" }
+          ],
+          "policyAssertions": ["severity-route-required", "owner-and-expiry-required-for-silence", "silence-audit-required", "sensitive-fields-redacted"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-OBS-ALERT-RUNTIME-001",
+          "kind": "alert-route-escalation-and-silence-audit",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-OBS-RUNTIME-ALERTING",
+          "tools": ["metrics and alert manager", "approved staging alert runner", "audit-log query"],
+          "targets": ["P0 route", "P1 route", "P2 route", "on-call roster", "silence audit"],
+          "scenarios": ["P0-page", "P1-escalation", "P2-ticket", "expired-silence", "audit-backend-unavailable", "unowned-alert"],
+          "expected": "告警按严重级别到达责任人并完成升级；静默必须有理由、责任人和过期时间，过期或审计不可用时恢复告警。",
+          "evidenceRequired": ["alert-payload", "route-delivery-log", "acknowledgement-and-escalation", "silence-audit-record", "unowned-alert-decision"],
+          "cannotBeSatisfiedBy": ["unfired-alert-definition", "dashboard-screenshot-only", "manual-unlogged-silence", "static-roster"]
+        }
+      ],
+      "evidenceIds": ["B21-E-OBS-STATIC-ALERTING", "B21-E-OBS-RUNTIME-ALERTING"]
+    },
+    {
+      "id": "B21-OBS-003-INCIDENT",
+      "task": "V2-B21-OBS-003",
+      "priority": "P0",
+      "category": "incident-drill-and-trace-localization",
+      "objective": "通过事故演练验证 trace 定位、值班接管、Runbook、审计和恢复后的关联链路。",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B21-OBS-INCIDENT-STATIC-001",
+          "kind": "runbook-trace-correlation-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-OBS-STATIC-INCIDENT",
+          "sourcePaths": ["docs/07-operations/incident-runbook.md", "docs/07-operations/observability.md"],
+          "assertions": [
+            { "contains": "事故处理手册" },
+            { "contains": "审计证据" },
+            { "contains": "回滚过程" },
+            { "contains": "traceId" },
+            { "contains": "errorCode" }
+          ],
+          "policyAssertions": ["trace-request-event-correlation", "owner-acknowledgement", "runbook-timestamps", "rollback-reconciliation"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-OBS-INCIDENT-RUNTIME-001",
+          "kind": "incident-drill-trace-localization-and-takeover",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-OBS-RUNTIME-INCIDENT",
+          "tools": ["OpenTelemetry trace backend", "incident drill runner", "on-call acknowledgement system", "audit-log query"],
+          "targets": ["gateway", "IAM", "learning journey", "outbox/event path", "release rollback path"],
+          "scenarios": ["trace-localization", "alert-acknowledgement", "manual-takeover", "runbook-timestamp-order", "rollback-reconciliation"],
+          "expected": "从告警可定位到 requestId/traceId/eventId 和责任服务；值班接管、Runbook 动作、回滚点和恢复对账形成有序审计记录。",
+          "evidenceRequired": ["trace-span-tree", "metric-log-correlation", "acknowledgement-timeline", "runbook-action-log", "recovery-reconciliation"],
+          "cannotBeSatisfiedBy": ["trace-id-string-only", "dashboard-screenshot-only", "verbal-drill", "same-process-test-double"]
+        }
+      ],
+      "evidenceIds": ["B21-E-OBS-STATIC-INCIDENT", "B21-E-OBS-RUNTIME-INCIDENT"]
+    },
+    {
+      "id": "B21-RC-004-IMMUTABLE",
+      "task": "V2-B21-RC-004",
+      "priority": "P0",
+      "category": "immutable-rc-signature-and-artifact-consistency",
+      "objective": "生成不可变 RC，绑定版本签名、SBOM/provenance、源码和部署构建物摘要。",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B21-RC-IMMUTABLE-STATIC-001",
+          "kind": "artifact-signature-and-digest-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-RC-STATIC-IMMUTABLE",
+          "sourcePaths": ["config/b20-security-gates.json", "docs/02-architecture/v2-microservices-architecture.md"],
+          "assertions": [
+            { "contains": "immutable-digest-required" },
+            { "contains": "artifactSignatureRequired" },
+            { "contains": "signatureVerificationBeforeDeploy" },
+            { "contains": "KMS-or-Vault" },
+            { "contains": "cosign" }
+          ],
+          "policyAssertions": ["digest-pinned", "signature-before-deploy", "external-key-source", "source-to-artifact-binding", "tamper-blocks-release"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-RC-IMMUTABLE-RUNTIME-001",
+          "kind": "signed-rc-and-build-consistency",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-RC-RUNTIME-IMMUTABLE",
+          "tools": ["reproducible CI runner", "OCI registry", "cosign verifier", "SBOM/provenance verifier"],
+          "targets": ["source commit", "lockfile", "OCI image", "SBOM", "deployment manifest", "staging release"],
+          "scenarios": ["immutable-digest", "version-signature", "digest-consistency", "tampered-artifact-rejection", "unsigned-artifact-rejection"],
+          "expected": "RC 只引用不可变 digest；签名、SBOM、provenance、源码 commit、锁文件和部署 manifest 摘要一致，篡改或缺签名阻断部署。",
+          "evidenceRequired": ["rc-manifest", "source-and-lockfile-digest", "image-digest", "sbom-and-provenance", "signature-verification", "tamper-denial"],
+          "cannotBeSatisfiedBy": ["latest-tag", "local-build-only", "unsigned-artifact", "package-list-manual", "hash-field-without-verifier"]
+        }
+      ],
+      "evidenceIds": ["B21-E-RC-STATIC-IMMUTABLE", "B21-E-RC-RUNTIME-IMMUTABLE"]
+    },
+    {
+      "id": "B21-RC-004-REGRESSION",
+      "task": "V2-B21-RC-004",
+      "priority": "P0",
+      "category": "contract-e2e-device-performance-security-regression",
+      "objective": "按变更域选择完整 Phase 1 回归集，并要求契约、E2E、设备、性能和安全证据零阻断。",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B21-RC-REGRESSION-STATIC-001",
+          "kind": "regression-selection-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-RC-STATIC-REGRESSION",
+          "sourcePaths": ["config/b19-quality-gates.json", "config/b6-platform-matrix.json"],
+          "assertions": [
+            { "contains": "phase1-smoke" },
+            { "contains": "b18-four-app-static" },
+            { "contains": "full-phase1-regression" },
+            { "contains": "minimumSuites" },
+            { "contains": "whenAnyChangedArea" },
+            { "contains": "COMPATIBILITY" },
+            { "contains": "E2E" },
+            { "contains": "SECURITY" }
+          ],
+          "policyAssertions": ["changed-area-selection", "minimum-suite-always-included", "four-app-device-matrix", "performance-budget", "security-regression"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-RC-REGRESSION-RUNTIME-001",
+          "kind": "selected-phase1-regression-run",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-RC-RUNTIME-REGRESSION",
+          "tools": ["CI staging runner", "contract validator", "Playwright and native device runners", "performance runner", "security scanner"],
+          "targets": ["OpenAPI/AsyncAPI contracts", "Phase 1 E2E journey", "four frontend projects and device profiles", "performance budgets", "security regression"],
+          "scenarios": ["changed-area-selection", "contract-compatibility", "phase1-e2e", "browser-device-matrix", "performance-budget", "security-regression", "zero-blocker-report"],
+          "expected": "固定 RC 在 production-like staging 执行被选择的契约、E2E、浏览器/设备、性能和安全回归；报告绑定 commit、环境和 artifact，P0/P1 或运行阻塞项使 RC 保持 NO-GO。",
+          "evidenceRequired": ["selected-suite-manifest", "contract-report", "e2e-report", "device-report", "performance-report", "security-report", "defect-disposition"],
+          "cannotBeSatisfiedBy": ["policy-file-only", "build-success-only", "desktop-only-run", "unit-test-only", "unexecuted-command-list"]
+        }
+      ],
+      "evidenceIds": ["B21-E-RC-STATIC-REGRESSION", "B21-E-RC-RUNTIME-REGRESSION"]
+    },
+    {
+      "id": "B21-RC-004-GATE",
+      "task": "V2-B21-RC-004",
+      "priority": "P0",
+      "category": "b20-prerequisite-zero-blocker-and-rollback",
+      "objective": "在 B20 未通过、存在运行阻断或没有回滚点时明确拒绝 RC，禁止以静态成功替代 Go。",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B21-RC-GATE-STATIC-001",
+          "kind": "b20-prerequisite-and-release-blocking-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-RC-STATIC-GATE",
+          "sourcePaths": ["docs/07-operations/b20-validation.md", "config/b20-privacy-content-gates.json", "config/b20-commerce-dr-evidence.json", "config/b20-security-gates.json"],
+          "assertions": [
+            { "contains": "发布决策保持关闭" },
+            { "contains": "\"goAllowed\": false" },
+            { "contains": "\"runtimeDecision\": \"BLOCKED\"" },
+            { "contains": "\"runtimeBlocked\": true" },
+            { "contains": "\"status\": \"BLOCKED\"" }
+          ],
+          "policyAssertions": ["b20-must-pass-before-rc-go", "zero-p0-p1", "runtime-blocks-release", "rollback-point-required", "no-static-promotion"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-RC-GATE-RUNTIME-001",
+          "kind": "zero-blocker-no-go-and-rollback-point",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-RC-RUNTIME-GATE",
+          "tools": ["release workbench", "evidence index verifier", "defect tracker", "rollback drill runner"],
+          "targets": ["B20 upstream decisions", "RC evidence index", "P0/P1 defect list", "rollback artifact and restore point", "dual review record"],
+          "scenarios": ["b20-not-approved-no-go", "missing-evidence-block", "open-p0-p1-block", "missing-rollback-point", "complete-two-reviewer-decision"],
+          "expected": "B20 任一 Gate 未达到通过状态、任一必需证据缺失、P0/P1 未关闭或回滚点未演练时 RC 为 NO-GO；只有完整可回滚证据和独立复核才能进入下一 Gate。",
+          "evidenceRequired": ["upstream-gate-status", "evidence-index-integrity", "defect-zero-blocker-report", "rollback-point", "rollback-drill", "independent-review"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "single-approver", "verbal-go", "unhashed-link", "rollback-plan-without-drill"]
+        }
+      ],
+      "evidenceIds": ["B21-E-RC-STATIC-GATE", "B21-E-RC-RUNTIME-GATE"]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "B21-E-OBS-STATIC-SLO", "gateId": "B21-OBS-003-SLO", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-observability-rc.json#/qualityGates/B21-OBS-003-SLO/staticChecks/B21-OBS-SLO-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-OBS-RUNTIME-SLO", "gateId": "B21-OBS-003-SLO", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/observability/slo/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-OBS-STATIC-ALERTING", "gateId": "B21-OBS-003-ALERTING", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-observability-rc.json#/qualityGates/B21-OBS-003-ALERTING/staticChecks/B21-OBS-ALERT-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-OBS-RUNTIME-ALERTING", "gateId": "B21-OBS-003-ALERTING", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/observability/alerting/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-OBS-STATIC-INCIDENT", "gateId": "B21-OBS-003-INCIDENT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-observability-rc.json#/qualityGates/B21-OBS-003-INCIDENT/staticChecks/B21-OBS-INCIDENT-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-OBS-RUNTIME-INCIDENT", "gateId": "B21-OBS-003-INCIDENT", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/observability/incident/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-RC-STATIC-IMMUTABLE", "gateId": "B21-RC-004-IMMUTABLE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-observability-rc.json#/qualityGates/B21-RC-004-IMMUTABLE/staticChecks/B21-RC-IMMUTABLE-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-RC-RUNTIME-IMMUTABLE", "gateId": "B21-RC-004-IMMUTABLE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/rc/immutable/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-RC-STATIC-REGRESSION", "gateId": "B21-RC-004-REGRESSION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-observability-rc.json#/qualityGates/B21-RC-004-REGRESSION/staticChecks/B21-RC-REGRESSION-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-RC-RUNTIME-REGRESSION", "gateId": "B21-RC-004-REGRESSION", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/rc/regression/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-RC-STATIC-GATE", "gateId": "B21-RC-004-GATE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-observability-rc.json#/qualityGates/B21-RC-004-GATE/staticChecks/B21-RC-GATE-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-RC-RUNTIME-GATE", "gateId": "B21-RC-004-GATE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/rc/release-gate/**/*.json", "collectionPolicy": "runtime-runner-only" }
+  ],
+  "releaseGate": {
+    "status": "BLOCKED",
+    "defaultDecision": "NO-GO",
+    "requiresAllAssignedTasks": true,
+    "b20Prerequisite": {
+      "required": true,
+      "requiredBatch": "B20",
+      "requiredTasks": ["V2-B20-SEC-001", "V2-B20-PRI-002", "V2-B20-CNT-003", "V2-B20-COM-004", "V2-B20-DR-005", "V2-B20-TEST-006"],
+      "decisionRequiredForGo": "PASS",
+      "currentDecision": "BLOCKED",
+      "whenNotPass": "NO-GO",
+      "staticValidatorCannotOverride": true
+    },
+    "blockingConditions": [
+      "b20-gate-not-pass",
+      "any-required-evidence-missing",
+      "runtime-evidence-pending-or-blocked",
+      "unsigned-or-mutable-artifact",
+      "artifact-consistency-mismatch",
+      "slo-or-error-budget-not-measured",
+      "alert-route-or-silence-audit-missing",
+      "open-p0-or-p1",
+      "rollback-point-or-drill-missing",
+      "single-reviewer-or-conflicted-reviewer"
+    ],
+    "zeroBlockingDefects": {
+      "required": true,
+      "openP0": 0,
+      "openP1": 0,
+      "runtimeBlockers": 0,
+      "status": "not-established"
+    },
+    "dualReview": {
+      "required": true,
+      "independentReviewers": true,
+      "minimumReviewers": 2,
+      "samePersonCannotSatisfyBoth": true,
+      "reviewRecordStatus": "not-present"
+    },
+    "rollback": {
+      "required": true,
+      "status": "not-established",
+      "requiresVersionedArtifact": true,
+      "requiresRestorePoint": true,
+      "requiresOwner": true,
+      "requiresDrillEvidence": true,
+      "requiresPostRollbackReconciliation": true
+    }
+  },
+  "reportSchema": {
+    "id": "b21-rc-evidence-report",
+    "version": "1.0.0",
+    "jsonSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "rcDigest", "decision", "gates", "evidence", "regression", "review", "rollback"],
+      "properties": {
+        "schemaVersion": { "type": "string", "const": "1.0.0" },
+        "reportId": { "type": "string", "minLength": 1 },
+        "batch": { "type": "string", "const": "B21" },
+        "rcDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "decision": { "enum": ["NO-GO", "BLOCKED", "GO"] },
+        "gates": { "type": "array", "minItems": 1 },
+        "evidence": { "type": "array", "minItems": 1 },
+        "regression": { "type": "object" },
+        "review": { "type": "object" },
+        "rollback": { "type": "object" }
+      }
+    }
+  },
+  "syntheticFixtures": {
+    "fixturePolicy": "synthetic-references-only-no-real-subjects-no-secrets-no-production-data",
+    "trace": {
+      "traceId": "trace-ref://synthetic/b21-001",
+      "requestId": "request-ref://synthetic/b21-001",
+      "eventId": "event-ref://synthetic/b21-001",
+      "decisionId": "decision-ref://synthetic/b21-001",
+      "serviceVersion": "0.0.0-rc.synthetic"
+    },
+    "alert": {
+      "alertId": "alert-ref://synthetic/b21-001",
+      "silenceId": "silence-ref://synthetic/b21-001",
+      "owner": "synthetic:primary-oncall"
+    },
+    "rc": {
+      "sourceCommit": "commit-ref://synthetic/b21-001",
+      "lockfileDigest": "sha256:fixture-lockfile-b21",
+      "imageDigest": "sha256:fixture-image-b21",
+      "manifestDigest": "sha256:fixture-manifest-b21",
+      "sbomDigest": "sha256:fixture-sbom-b21",
+      "signatureRef": "signature-ref://synthetic/b21-001",
+      "rollbackPoint": "rollback-ref://synthetic/b21-001"
+    }
+  }
+}

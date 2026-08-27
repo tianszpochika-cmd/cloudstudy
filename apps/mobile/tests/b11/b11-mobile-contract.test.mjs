@@ -21,7 +21,7 @@ test('B11 mobile media and learning mutations are Gateway-relative and idempoten
   assert.match(api, /clientEventId/)
   assert.match(api, /contentVersion/)
   assert.match(api, new RegExp('/media/assets'))
-  assert.match(api, new RegExp('/offline/sync'))
+  assert.match(api, new RegExp('/sync/changes'))
   assert.doesNotMatch(api, /https?:\/\/(?!127\.0\.0\.1:18070)/)
 })
 
@@ -62,6 +62,14 @@ test('B11 speaking keeps microphone, hash lifecycle, local recovery and Phase 1 
   assert.match(api, /aiScoringAvailable: false/)
   assert.doesNotMatch(page + recording + api, /SpeechRecognition|webkitSpeechRecognition/)
   assert.doesNotMatch(page + recording, /audioBytes|recordingBytes|audioBase64/)
+})
+
+test('speaking pages expose demo-media fallback and no-microphone learning path', () => {
+  const b11 = read('src/pages/b11-speaking/b11-speaking.vue')
+  const b3 = read('src/pages/b3-speaking/b3-speaking.vue')
+  for (const marker of ['loadB11ListeningMaterials', 'DEMO AUDIO', 'demoAudioMessage', '2D 口型', '示范音频当前没有可播放授权地址']) assert.match(b11 + b3, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  assert.match(b11, /recordingCopy|permissionStatus/)
+  assert.match(b3, /录音权限需用户操作|没有可用录音管理器/)
 })
 
 test('B11 performance and interaction downgrade supports four levels and manual motion disable', () => {

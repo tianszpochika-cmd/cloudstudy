@@ -5,6 +5,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
 import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeoutException;
 
 public final class GatewayErrorMapper {
@@ -13,23 +14,50 @@ public final class GatewayErrorMapper {
     }
 
     public static GatewayError map(Throwable failure, String requestId, String traceId) {
-        if (failure instanceof AuthenticationException) {
+        Throwable cause = findCause(failure, AuthenticationException.class);
+        if (cause instanceof AuthenticationException) {
             return new GatewayError(401, "unauthorized", "Authentication is required.", requestId, traceId);
         }
-        if (failure instanceof AccessDeniedException) {
+        cause = findCause(failure, AccessDeniedException.class);
+        if (cause instanceof AccessDeniedException) {
             return new GatewayError(403, "forbidden", "The request is not allowed.", requestId, traceId);
         }
-        if (failure instanceof ResponseStatusException responseStatusException) {
+        cause = findCause(failure, ResponseStatusException.class);
+        if (cause instanceof ResponseStatusException responseStatusException) {
             int status = responseStatusException.getStatusCode().value();
             return new GatewayError(status, codeFor(status), messageFor(status), requestId, traceId);
         }
-        if (failure instanceof TimeoutException) {
+        if (findCause(failure, TimeoutException.class) != null
+                || findCause(failure, SocketTimeoutException.class) != null
+                || hasCauseNamed(failure, "ConnectTimeoutException")) {
             return new GatewayError(504, "upstream_timeout", "The upstream service timed out.", requestId, traceId);
         }
-        if (failure instanceof ConnectException) {
+        if (findCause(failure, ConnectException.class) != null) {
             return new GatewayError(503, "upstream_unavailable", "The upstream service is unavailable.", requestId, traceId);
         }
         return new GatewayError(502, "upstream_failure", "The upstream service failed.", requestId, traceId);
+    }
+
+    private static Throwable findCause(Throwable failure, Class<? extends Throwable> type) {
+        Throwable current = failure;
+        while (current != null) {
+            if (type.isInstance(current)) {
+                return current;
+            }
+            current = current.getCause();
+        }
+        return null;
+    }
+
+    private static boolean hasCauseNamed(Throwable failure, String simpleName) {
+        Throwable current = failure;
+        while (current != null) {
+            if (simpleName.equals(current.getClass().getSimpleName())) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 
     private static String codeFor(int status) {

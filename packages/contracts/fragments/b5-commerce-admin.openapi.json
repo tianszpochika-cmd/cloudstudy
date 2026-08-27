@@ -5,6 +5,8 @@
     "version": "5.0.0",
     "description": "B5 commercial checkout, entitlement, activation, content CMS, operations, risk, reconciliation and support contracts. Payment providers remain sandbox-gated until production credentials and runtime verification are complete."
   },
+  "x-contract-status": "historical-compatibility",
+  "x-canonical-owner": "b13",
   "tags": [
     { "name": "b5-commerce", "description": "SKU、订单、支付尝试、权益、家庭组、退款和发票" },
     { "name": "b5-payment-callback", "description": "微信、支付宝、Apple sandbox callback and replay-safe verification" },
@@ -26,7 +28,7 @@
     "/api/v1/commerce/orders/{orderId}": {
       "get": { "operationId": "getCommerceOrder", "tags": ["b5-commerce"], "parameters": [{ "$ref": "#/components/parameters/B5OrderId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "404": { "$ref": "#/components/responses/B5NotFound" } } }
     },
-    "/api/v1/commerce/orders/{orderId}/payment-attempts": {
+    "/api/v1/commerce/orders/{orderId}/payment-intents": {
       "post": { "operationId": "createPaymentAttempt", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-payment-attempt", "keyHeader": "Idempotency-Key", "replayBehavior": "同一订单和支付渠道只创建一个活跃支付尝试" }, "parameters": [{ "$ref": "#/components/parameters/B5OrderId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5PaymentAttemptRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
     },
     "/api/v1/commerce/wechat/callback": {

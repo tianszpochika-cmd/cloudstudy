@@ -1,0 +1,26 @@
+apiVersion: supply-chain.englishflow.dev/v1alpha1
+kind: ImmutableImageLock
+metadata:
+  name: englishflow-b21-rc
+spec:
+  phase: phase-1
+  releaseReference: rc-reference-required
+  images:
+    - name: api-gateway
+      image: registry.example.invalid/englishflow/api-gateway@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      signature:
+        required: true
+        tool: cosign
+        identityPolicy: approved-workload-identity
+      sbom:
+        required: true
+        format: CycloneDX
+        ref: oci://registry.example.invalid/englishflow/sbom/api-gateway@sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
+      provenance: SLSA-provenance-required
+  policy:
+    requireDigest: true
+    requireSignature: true
+    requireSBOM: true
+    rejectMutableTags: true
+    forbiddenTags:
+      - latest

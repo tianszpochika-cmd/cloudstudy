@@ -40,6 +40,21 @@ export interface ContentProjection {
   status: 'PUBLISHED' | 'UNAVAILABLE' | 'WITHDRAWN'
 }
 
+export interface LearnerContentDetail {
+  contentId: string
+  contentVersionId: string | null
+  kind: string
+  title: string
+  description: string
+  contentLocale: string
+  items: readonly {
+    itemId: string
+    itemType: string
+    text: string
+    options: readonly { key: string; text: string }[]
+  }[]
+}
+
 export interface LearnerOnboardingReadModel {
   profile: OnboardingProfile
   goals: readonly LearnerGoalOption[]
@@ -110,7 +125,9 @@ export class LearnerContentReadModelError extends Error implements ReadModelErro
 export interface LearnerContentPort {
   readOnboarding(contentLocale: string): Promise<LearnerOnboardingReadModel>
   saveOnboarding(input: SaveOnboardingInput): Promise<LearnerOnboardingReadModel | null>
+  readContent(contentId: string): Promise<LearnerContentDetail>
   readPlacement(input: { contentLocale: string; sessionId?: string | null }): Promise<PlacementReadModel>
+  startPlacement(input: { contentLocale: string; clientEventId: string }): Promise<PlacementReadModel>
   submitPlacementAnswer(input: PlacementAnswerInput): Promise<PlacementSubmitResult>
   skipPlacement(input: { fastTrackLevel: string; contentLocale: string; clientEventId: string }): Promise<PlacementSubmitResult | null>
   readHome(contentLocale: string): Promise<LearnerHomeReadModel>

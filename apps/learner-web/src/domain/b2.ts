@@ -12,9 +12,9 @@ export type B2ViewStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'offline' | 
 export type CardPhase = 'FRONT' | 'REVEALING' | 'BACK' | 'RATING' | 'SUBMITTING' | 'SYNCED' | 'PENDING_SYNC' | 'ERROR_RETRY' | 'PAUSED' | 'ABANDONED'
 
 export type LearningItemRef =
-  | { itemType: 'VOCAB'; vocabId: number }
-  | { itemType: 'CHUNK'; chunkId: number }
-  | { itemType: 'EXPRESSION'; expressionId: number }
+  | { itemType: 'VOCAB'; vocabId: number | string }
+  | { itemType: 'CHUNK'; chunkId: number | string }
+  | { itemType: 'EXPRESSION'; expressionId: number | string }
 
 export interface SrsSummary {
   srsStateId: number | null
@@ -164,6 +164,9 @@ export interface PracticeSession {
   checkpointSeq: number
   answerRevision: number
   serverNow: string | null
+  stateVersion: number
+  lastAttemptId: string | null
+  reportId: string | null
 }
 
 export interface LearningReport {

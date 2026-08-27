@@ -8,6 +8,7 @@
   },
   "services": {
     "api-gateway": {"port": 18070, "protocol": "http", "phase": "platform-0", "description": "Spring Cloud Gateway v2 external API boundary"},
+    "oidc-idp": {"port": 18099, "protocol": "http", "phase": "platform-0", "description": "Loopback-only Keycloak standard OIDC/OAuth 2.1 test provider; development only"},
     "iam-service": {"port": 18087, "protocol": "http", "phase": "platform-0", "description": "Provider-neutral IAM and OIDC adapter boundary"},
     "learner-service": {"port": 18088, "protocol": "http", "phase": "phase-1", "description": "Learner profile, goals, preferences and onboarding read model"},
     "content-service": {"port": 18089, "protocol": "http", "phase": "phase-1", "description": "Versioned content, rights, review and public projection boundary"},
@@ -39,7 +40,8 @@
     "mobile-h5-preview": {"port": 18193, "protocol": "http", "phase": "phase-1", "description": "uni-app H5 preview server when enabled"},
     "mysql": {"port": 13306, "protocol": "mysql", "phase": "phase-1", "description": "Host port mapped to container port 3306"},
     "redis": {"port": 16379, "protocol": "redis", "phase": "phase-1", "description": "Host port mapped to container port 6379"},
-    "rabbitmq-amqp": {"port": 15689, "protocol": "amqp", "phase": "phase-1", "description": "Host port mapped to container port 5672"},
+    "kafka": {"port": 19092, "protocol": "kafka", "phase": "phase-1", "description": "Kafka-compatible event broker external listener; container listener remains 9092"},
+    "rabbitmq-amqp": {"port": 15689, "protocol": "amqp", "phase": "phase-1", "description": "Host port mapped to container port 5672; v1 compatibility only"},
     "rabbitmq-management": {"port": 15690, "protocol": "http", "phase": "phase-1", "description": "Host port mapped to container port 15672"},
     "minio-api": {"port": 19000, "protocol": "http", "phase": "phase-1", "description": "Host port mapped to container port 9000"},
     "minio-console": {"port": 19001, "protocol": "http", "phase": "phase-1", "description": "Host port mapped to container port 9001"},

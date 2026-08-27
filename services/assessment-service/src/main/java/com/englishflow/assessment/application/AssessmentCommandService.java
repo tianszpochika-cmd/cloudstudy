@@ -14,7 +14,9 @@ import com.englishflow.assessment.domain.SafePayloads;
 import com.englishflow.assessment.domain.ScoringResult;
 import com.englishflow.assessment.domain.ScoringStatus;
 import com.englishflow.assessment.port.AssessmentOutboxPort;
+import com.englishflow.assessment.port.AssessmentStatePort;
 import com.englishflow.assessment.port.ContentSnapshotPort;
+import com.englishflow.assessment.adapter.memory.NoopAssessmentStatePort;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -42,22 +44,41 @@ public final class AssessmentCommandService {
 
     private final ContentSnapshotPort contentSnapshotPort;
     private final AssessmentOutboxPort outbox;
+    private final AssessmentStatePort state;
     private final RuleScoringEngine scoringEngine;
     private final Clock clock;
     private final Map<String, AssessmentSession> sessions = new LinkedHashMap<>();
     private final Map<String, AssessmentReport> reports = new LinkedHashMap<>();
     private final Map<String, AssessmentMistake> mistakes = new LinkedHashMap<>();
-    private final Map<String, IdempotencyRecord> idempotency = new LinkedHashMap<>();
+    private final Map<String, AssessmentStatePort.IdempotencyRecord> idempotency = new LinkedHashMap<>();
     private final AtomicLong reportIds = new AtomicLong(320_000);
     private final AtomicLong mistakeIds = new AtomicLong(420_000);
 
     public AssessmentCommandService(ContentSnapshotPort contentSnapshotPort,
                                     AssessmentOutboxPort outbox,
                                     Clock clock) {
+        this(contentSnapshotPort, outbox, clock, new NoopAssessmentStatePort());
+    }
+
+    public AssessmentCommandService(ContentSnapshotPort contentSnapshotPort,
+                                    AssessmentOutboxPort outbox,
+                                    Clock clock,
+                                    AssessmentStatePort state) {
         this.contentSnapshotPort = Objects.requireNonNull(contentSnapshotPort, "contentSnapshotPort is required");
         this.outbox = Objects.requireNonNull(outbox, "outbox is required");
         this.clock = Objects.requireNonNull(clock, "clock is required");
+        this.state = Objects.requireNonNull(state, "state is required");
         this.scoringEngine = new RuleScoringEngine();
+        AssessmentStatePort.RestoredState restored = this.state.load();
+        for (AssessmentSession session : restored.sessions()) sessions.put(session.sessionId(), session);
+        for (AssessmentReport report : restored.reports()) {
+            reports.put(report.sessionId(), report);
+            reportIds.accumulateAndGet(report.reportId(), Math::max);
+        }
+        for (AssessmentMistake mistake : restored.mistakes()) {
+            mistakes.put(mistakeKey(mistake), mistake);
+            mistakeIds.accumulateAndGet(mistake.mistakeId(), Math::max);
+        }
     }
 
     public Map<String, Object> createSession(AssessmentPrincipal principal, CreateSessionCommand command) {
@@ -72,6 +93,7 @@ public final class AssessmentCommandService {
             AssessmentSession session = AssessmentSession.create(principal, command.sessionType(), snapshots,
                     now(), command.durationSeconds() == null ? null : Duration.ofSeconds(command.durationSeconds()));
             sessions.put(session.sessionId(), session);
+            state.saveSession(session);
             emit(principal, command.requestId(), command.traceId(), "assessment.started.v1", "assessment_session",
                     session.sessionId(), "assessment.started:" + session.sessionId(), Map.of(
                             "sessionId", session.sessionId(),
@@ -88,23 +110,40 @@ public final class AssessmentCommandService {
         AssessmentSession session = owned(principal, sessionId);
         return idempotent(principal, "session.start:" + sessionId, key, Map.of("sessionId", sessionId), requestId, () -> {
             session.start(now());
+            state.saveSession(session);
             return sessionView(principal, session);
         });
     }
 
     public Map<String, Object> interruptSession(AssessmentPrincipal principal, String sessionId,
                                                 String requestId, String traceId) {
+        return interruptSession(principal, sessionId, "compat-interrupt-" + sessionId, requestId, traceId);
+    }
+
+    public Map<String, Object> interruptSession(AssessmentPrincipal principal, String sessionId, String key,
+                                                String requestId, String traceId) {
         AssessmentSession session = owned(principal, sessionId);
-        session.interrupt(now());
-        return sessionView(principal, session);
+        return idempotent(principal, "session.interrupt:" + sessionId, key, Map.of("sessionId", sessionId), requestId, () -> {
+            session.interrupt(now());
+            state.saveSession(session);
+            return sessionView(principal, session);
+        });
     }
 
     public Map<String, Object> resumeSession(AssessmentPrincipal principal, String sessionId,
                                              String requestId, String traceId) {
+        return resumeSession(principal, sessionId, "compat-resume-" + sessionId, requestId, traceId);
+    }
+
+    public Map<String, Object> resumeSession(AssessmentPrincipal principal, String sessionId, String key,
+                                             String requestId, String traceId) {
         AssessmentSession session = owned(principal, sessionId);
-        autoSubmitIfDue(principal, session, requestId, traceId);
-        session.resume(now());
-        return sessionView(principal, session);
+        return idempotent(principal, "session.resume:" + sessionId, key, Map.of("sessionId", sessionId), requestId, () -> {
+            autoSubmitIfDue(principal, session, requestId, traceId);
+            session.resume(now());
+            state.saveSession(session);
+            return sessionView(principal, session);
+        });
     }
 
     public Map<String, Object> getSession(AssessmentPrincipal principal, String sessionId) {
@@ -146,6 +185,8 @@ public final class AssessmentCommandService {
                         if (result.correct() != null && !result.correct()) recordMistake(principal, session, command.exerciseId(), result,
                                 command.requestId(), command.traceId());
                     }
+                    state.saveAttempt(session, attempt);
+                    state.saveSession(session);
                     ScoringResult result = attempt.scoringResult();
                     emit(principal, command.requestId(), command.traceId(), "attempt.saved.v1", "assessment_attempt",
                             String.valueOf(attempt.submissionId()), "attempt.saved:" + attempt.submissionId(), Map.of(
@@ -174,6 +215,8 @@ public final class AssessmentCommandService {
                     com.englishflow.assessment.domain.AssessmentCheckpoint checkpoint = session.saveCheckpoint(
                             new com.englishflow.assessment.domain.AssessmentCheckpoint(command.sequence(), command.currentExerciseId(),
                                     command.clientStateHash(), command.monotonicElapsedMs(), now()));
+                    state.saveCheckpoint(session.sessionId(), checkpoint);
+                    state.saveSession(session);
                     return Map.of("requestId", command.requestId(), "traceId", command.traceId(), "accepted", true,
                             "checkpointSeq", checkpoint.sequence(), "serverNow", now().toString(), "status", session.status().name());
                 });
@@ -230,6 +273,7 @@ public final class AssessmentCommandService {
                     attempt.setScoringResult(result);
                     if (result.correct() != null && !result.correct()) recordMistake(principal, session, exercise.exerciseId(), result, requestId, traceId);
                 } else result = attempt.scoringResult();
+                state.saveAttempt(session, attempt);
             }
             max += result.maxScore();
             score += result.earnedScore();
@@ -245,7 +289,9 @@ public final class AssessmentCommandService {
                 Map.of("accuracy", max == 0 ? 0 : score / max * 100, "autoSubmitted", autoSubmitted), evidence,
                 mistakesFor(principal, session));
         reports.put(session.sessionId(), report);
+        state.saveReport(report);
         session.finishSubmit(autoSubmitted, now());
+        state.saveSession(session);
         emit(principal, requestId, traceId, "assessment.submitted.v1", "assessment_session", session.sessionId(),
                 "assessment.submitted:" + session.sessionId(), Map.of("sessionId", session.sessionId(),
                         "status", session.status().name(), "completedCount", completed, "totalCount", session.exercises().size(),
@@ -261,13 +307,14 @@ public final class AssessmentCommandService {
                                ScoringResult result, String requestId, String traceId) {
         AssessmentSession.Exercise exercise = session.exercise(exerciseId);
         String category = result.errorCauseCandidates().isEmpty() ? "OTHER" : result.errorCauseCandidates().get(0);
-        String key = principal.tenantId() + ":" + principal.subjectId() + ":" + exercise.snapshot().itemId() + ":" + category;
+        String key = mistakeKey(principal.tenantId(), principal.subjectId(), exercise.snapshot().itemId(), category);
         AssessmentMistake mistake = mistakes.get(key);
         if (mistake == null) {
             mistake = new AssessmentMistake(mistakeIds.incrementAndGet(), principal, exercise.snapshot().itemId(),
                     exercise.snapshot().questionId(), category, result.ruleVersion(), result.normalizedAnswerHash(), now());
             mistakes.put(key, mistake);
         } else mistake.mergeWrong(now(), category);
+        state.saveMistake(mistake);
         emit(principal, requestId, traceId, "mastery.verification_due.v1", "assessment_mistake",
                 String.valueOf(mistake.mistakeId()), "mistake.updated:" + mistake.mistakeId() + ":" + mistake.wrongCount(),
                 Map.of("mistakeId", mistake.mistakeId(), "itemId", mistake.itemId(), "questionId", mistake.questionId(),
@@ -394,14 +441,24 @@ public final class AssessmentCommandService {
         String identity = principal.tenantId() + ":" + principal.subjectId() + ":" + operation + ":" + key;
         String digest = SafePayloads.digest(body);
         synchronized (idempotency) {
-            IdempotencyRecord existing = idempotency.get(identity);
+            AssessmentStatePort.IdempotencyRecord existing = idempotency.get(identity);
+            if (existing == null) {
+                existing = state.findIdempotency(principal.tenantId(), principal.subjectId(), operation, key).orElse(null);
+                if (existing != null) idempotency.put(identity, existing);
+            }
             if (existing != null) {
                 if (!existing.requestDigest().equals(digest)) throw AssessmentDomainException.conflict("ASM_IDEMPOTENCY_KEY_REUSE", "same key was reused with a different request");
                 return existing.response();
             }
             Map<String, Object> response = freezeMap(action.get());
-            idempotency.put(identity, new IdempotencyRecord(digest, response));
-            return response;
+            AssessmentStatePort.IdempotencyRecord stored = state.saveIdempotency(
+                    new AssessmentStatePort.IdempotencyRecord(principal.tenantId(), principal.subjectId(), operation,
+                            key, digest, response, now()));
+            if (!stored.requestDigest().equals(digest)) {
+                throw AssessmentDomainException.conflict("ASM_IDEMPOTENCY_KEY_REUSE", "same key was reused with a different request");
+            }
+            idempotency.put(identity, stored);
+            return stored.response();
         }
     }
 
@@ -415,7 +472,13 @@ public final class AssessmentCommandService {
         return Collections.unmodifiableMap(new LinkedHashMap<>(SafePayloads.copyMap(source)));
     }
 
-    private record IdempotencyRecord(String requestDigest, Map<String, Object> response) { }
+    private static String mistakeKey(AssessmentMistake mistake) {
+        return mistakeKey(mistake.tenantId(), mistake.ownerSubjectId(), mistake.itemId(), mistake.errorCategory());
+    }
+
+    private static String mistakeKey(String tenantId, String subjectId, long itemId, String category) {
+        return tenantId + ":" + subjectId + ":" + itemId + ":" + category;
+    }
 
     public record ContentReference(String contentCode, long contentVersionId, long questionId) {
         public ContentReference {

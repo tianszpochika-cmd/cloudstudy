@@ -13,7 +13,18 @@ public record SessionRotationResult(
         DeviceId deviceId,
         long rotation,
         String nextProviderRefreshToken,
-        Instant accessTokenExpiresAt) {
+        Instant accessTokenExpiresAt,
+        String nextProviderAccessToken) {
+
+    public SessionRotationResult(
+            SessionId sessionId,
+            PrincipalId principalId,
+            DeviceId deviceId,
+            long rotation,
+            String nextProviderRefreshToken,
+            Instant accessTokenExpiresAt) {
+        this(sessionId, principalId, deviceId, rotation, nextProviderRefreshToken, accessTokenExpiresAt, null);
+    }
 
     public SessionRotationResult {
         Objects.requireNonNull(sessionId, "sessionId");
@@ -21,5 +32,8 @@ public record SessionRotationResult(
         Objects.requireNonNull(deviceId, "deviceId");
         Objects.requireNonNull(nextProviderRefreshToken, "nextProviderRefreshToken");
         Objects.requireNonNull(accessTokenExpiresAt, "accessTokenExpiresAt");
+        if (nextProviderAccessToken != null && nextProviderAccessToken.isBlank()) {
+            throw new IllegalArgumentException("next provider access token must not be blank");
+        }
     }
 }

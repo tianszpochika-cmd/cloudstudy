@@ -1,0 +1,19 @@
+apiVersion: englishflow.dev/v1alpha1
+kind: SanitizedFixtureManifest
+metadata:
+  name: b21-staging-fixtures-v1
+spec:
+  policy: synthetic-references-only-no-production-data-no-raw-media-no-secrets
+  subjects:
+    - subjectRef: subject-ref://synthetic/b21/learner-001
+      tenantRef: tenant-ref://synthetic/phase1
+    - subjectRef: subject-ref://synthetic/b21/operator-001
+      tenantRef: tenant-ref://synthetic/phase1
+  datasetRef: dataset-ref://synthetic/b21/staging-fixture-v1
+  mediaRefs:
+    - media-ref://synthetic/b21/audio-001
+  forbiddenFields:
+    - email
+    - phone
+    - paymentCredential
+    - rawAudio

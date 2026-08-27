@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: englishflow-staging
+resources:
+  - namespace.yaml
+  - ../../base
+commonLabels:
+  environment: staging
+  englishflow.dev/production-like: "true"
+images:
+  - name: registry.example.invalid/englishflow/api-gateway
+    newName: registry.example.invalid/englishflow/api-gateway
+    digest: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+patches:
+  - path: deployment-patch.yaml
+  - path: external-secret-patch.yaml

@@ -12,8 +12,12 @@ function idempotencyKey(prefix: string): string {
   return createClientId(prefix)
 }
 
-function commandOptions(commandCode: string): { method: 'POST'; body: { commandCode: string }; headers: { 'Idempotency-Key': string } } {
+function moderationCommandOptions(commandCode: string): { method: 'POST'; body: { commandCode: string }; headers: { 'Idempotency-Key': string } } {
   return { method: 'POST', body: { commandCode }, headers: { 'Idempotency-Key': idempotencyKey(`b12-admin-${commandCode.toLowerCase()}`) } }
+}
+
+function recoveryCommandOptions(action: string): { method: 'POST'; body: { action: string }; headers: { 'Idempotency-Key': string } } {
+  return { method: 'POST', body: { action }, headers: { 'Idempotency-Key': idempotencyKey(`b12-admin-${action.toLowerCase()}`) } }
 }
 
 export async function listB12ModerationReports(status = 'OPEN'): Promise<unknown> {
@@ -21,7 +25,7 @@ export async function listB12ModerationReports(status = 'OPEN'): Promise<unknown
 }
 
 export async function runB12ModerationCommand(reportId: string, commandCode: string): Promise<unknown> {
-  return adminClient.request(B12_ADMIN_PATHS.moderationCommands(reportId), commandOptions(commandCode))
+  return adminClient.request(B12_ADMIN_PATHS.moderationCommands(reportId), moderationCommandOptions(commandCode))
 }
 
 export async function listB12RecoveryTasks(status = 'PENDING'): Promise<unknown> {
@@ -29,5 +33,5 @@ export async function listB12RecoveryTasks(status = 'PENDING'): Promise<unknown>
 }
 
 export async function runB12RecoveryCommand(taskId: string, commandCode: string): Promise<unknown> {
-  return adminClient.request(B12_ADMIN_PATHS.recoveryCommands(taskId), commandOptions(commandCode))
+  return adminClient.request(B12_ADMIN_PATHS.recoveryCommands(taskId), recoveryCommandOptions(commandCode))
 }

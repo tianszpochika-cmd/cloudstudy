@@ -1,0 +1,838 @@
+{
+  "schemaVersion": 1,
+  "batch": "B21",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "runtimeDecision": "BLOCKED",
+  "sourceRefs": [
+    "V2-B21-GATE-005",
+    "V2-B21-TEST-006",
+    "ARCH-DEP-001",
+    "ARCH-REL-001",
+    "ARCH-OBS-001",
+    "ARCH-DR-001"
+  ],
+  "tasks": [
+    {
+      "id": "V2-B21-GATE-005",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "scope": [
+        "product-go-no-go",
+        "architecture-go-no-go",
+        "security-go-no-go",
+        "data-go-no-go",
+        "operations-go-no-go",
+        "b20-prerequisite-blocking",
+        "known-risk-register",
+        "risk-acceptance-expiry",
+        "change-window",
+        "dual-approval",
+        "rollback-owner",
+        "rollback-drill"
+      ]
+    },
+    {
+      "id": "V2-B21-TEST-006",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "scope": [
+        "rc-evidence-index",
+        "version-environment-binding",
+        "artifact-hash",
+        "report-reproducibility",
+        "release-manifest",
+        "closed-report-schema"
+      ]
+    }
+  ],
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B21_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "B21_RUNTIME_B20_GATE_EVIDENCE",
+      "B21_RUNTIME_STAGING_RC",
+      "B21_RUNTIME_RELEASE_WORKBENCH",
+      "B21_RUNTIME_ARTIFACT_STORE",
+      "B21_RUNTIME_SIGNOFF_INDEX"
+    ],
+    "requiredEvidence": [
+      "B21-E-GATE-B20-ACCEPTANCE",
+      "B21-E-GATE-ROLE-DECISIONS",
+      "B21-E-GATE-CHANGE-WINDOW",
+      "B21-E-GATE-ROLLBACK-DRILL",
+      "B21-E-TEST-RC-ARTIFACT",
+      "B21-E-TEST-EVIDENCE-REPORT",
+      "B21-E-TEST-SIGNOFF-INDEX"
+    ],
+    "runtimeStatusWhenMissing": "blocked",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "synthetic-fixture-only",
+      "development-http-200",
+      "single-role-signoff",
+      "unsigned-artifact",
+      "unreproducible-report"
+    ]
+  },
+  "b20Prerequisite": {
+    "status": "blocked",
+    "acceptanceRequired": true,
+    "acceptanceEvidenceStatus": "pending",
+    "missingEvidenceBlocks": true,
+    "openP0P1Blocks": true,
+    "livePaymentMustRemainClosed": true,
+    "requiredTaskIds": [
+      "V2-B20-SEC-001",
+      "V2-B20-PRI-002",
+      "V2-B20-CNT-003",
+      "V2-B20-COM-004",
+      "V2-B20-DR-005",
+      "V2-B20-TEST-006"
+    ],
+    "requiredEvidence": [
+      "B20-E-SECURITY-RUNTIME",
+      "B20-E-PRIVACY-RUNTIME",
+      "B20-E-CONTENT-RUNTIME",
+      "B20-E-COMMERCE-RUNTIME",
+      "B20-E-DR-RUNTIME",
+      "B20-E-RELEASE-RUNTIME"
+    ]
+  },
+  "roleGovernance": {
+    "requiredRoles": [
+      "product",
+      "architecture",
+      "security",
+      "data",
+      "operations"
+    ],
+    "decisionStates": ["PENDING", "GO", "NO-GO", "BLOCKED"],
+    "allRequiredRolesMustDecide": true,
+    "independentDecisionRequired": true,
+    "samePersonCannotSatisfyMultipleRequiredRoles": true,
+    "missingDecisionBlocks": true,
+    "defaultDecision": "NO-GO",
+    "roleDecisions": [
+      {
+        "role": "product",
+        "decision": "PENDING",
+        "reviewerRef": "reviewer-ref://synthetic/b21-product",
+        "status": "not-present"
+      },
+      {
+        "role": "architecture",
+        "decision": "PENDING",
+        "reviewerRef": "reviewer-ref://synthetic/b21-architecture",
+        "status": "not-present"
+      },
+      {
+        "role": "security",
+        "decision": "PENDING",
+        "reviewerRef": "reviewer-ref://synthetic/b21-security",
+        "status": "not-present"
+      },
+      {
+        "role": "data",
+        "decision": "PENDING",
+        "reviewerRef": "reviewer-ref://synthetic/b21-data",
+        "status": "not-present"
+      },
+      {
+        "role": "operations",
+        "decision": "PENDING",
+        "reviewerRef": "reviewer-ref://synthetic/b21-operations",
+        "status": "not-present"
+      }
+    ]
+  },
+  "releaseGate": {
+    "status": "BLOCKED",
+    "defaultDecision": "NO-GO",
+    "allowedDecisions": ["NO-GO", "GO"],
+    "requiresAllAssignedTasks": true,
+    "requiresAllRequiredRoles": true,
+    "requiresB20Acceptance": true,
+    "requiresCompleteEvidence": true,
+    "requiredTaskIds": [
+      "V2-B21-DEP-001",
+      "V2-B21-STG-002",
+      "V2-B21-OBS-003",
+      "V2-B21-RC-004",
+      "V2-B21-GATE-005",
+      "V2-B21-TEST-006"
+    ],
+    "requiredUpstreamTasks": [
+      "V2-B20-SEC-001",
+      "V2-B20-PRI-002",
+      "V2-B20-CNT-003",
+      "V2-B20-COM-004",
+      "V2-B20-DR-005",
+      "V2-B20-TEST-006",
+      "V2-B21-DEP-001",
+      "V2-B21-STG-002",
+      "V2-B21-OBS-003",
+      "V2-B21-RC-004"
+    ],
+    "blockingConditions": [
+      "b20-gate-not-accepted",
+      "any-required-evidence-missing",
+      "runtime-evidence-pending-or-blocked",
+      "artifact-hash-missing-or-invalid",
+      "version-environment-binding-missing",
+      "report-not-reproducible",
+      "role-decision-missing-or-conflicted",
+      "risk-acceptance-expired-or-invalid",
+      "change-window-missing-or-expired",
+      "dual-approval-missing-or-conflicted",
+      "rollback-owner-missing",
+      "rollback-drill-missing",
+      "open-p0-or-p1",
+      "unapproved-live-payment"
+    ],
+    "goRequires": [
+      "b20-accepted-with-runtime-evidence",
+      "all-required-role-decisions-go",
+      "all-required-evidence-captured-and-hashed",
+      "active-change-window",
+      "unexpired-risk-review-or-no-accepted-risk",
+      "two-independent-approvers",
+      "version-and-environment-bound-rc",
+      "tested-rollback-with-named-owner",
+      "reproducible-report"
+    ],
+    "dualApproval": {
+      "required": true,
+      "minimumApprovers": 2,
+      "independentApprovers": true,
+      "samePersonCannotSatisfyBoth": true,
+      "requiredRoles": ["release-manager", "operations-owner"],
+      "status": "not-present",
+      "signatureEvidenceStatus": "pending"
+    },
+    "knownRisks": {
+      "required": true,
+      "defaultStatus": "not-reviewed",
+      "mustHaveOwner": true,
+      "mustHaveMitigation": true,
+      "openP0P1Blocks": true,
+      "riskRegisterStatus": "pending",
+      "syntheticRiskIds": [
+        "risk-ref://synthetic/b21-rc-window",
+        "risk-ref://synthetic/b21-rollback"
+      ]
+    },
+    "riskAcceptance": {
+      "allowed": true,
+      "defaultStatus": "not-present",
+      "requiresExpiration": true,
+      "requiresOwner": true,
+      "requiresTwoApprovers": true,
+      "cannotAcceptP0": true,
+      "cannotAcceptDataLoss": true,
+      "cannotOpenLivePayment": true,
+      "expiredDecision": "BLOCKED",
+      "requiredFields": [
+        "riskId",
+        "scope",
+        "residualRisk",
+        "mitigation",
+        "owner",
+        "expiresAt",
+        "approverA",
+        "approverB",
+        "rollbackPlan"
+      ]
+    },
+    "changeWindow": {
+      "required": true,
+      "status": "not-established",
+      "ticketRequired": true,
+      "timezoneRequired": true,
+      "mustBeFutureAtApproval": true,
+      "mustExpireBeforeObservationClose": true,
+      "productionTrafficChangeAllowedInPhase": false,
+      "missingOrExpiredDecision": "BLOCKED"
+    },
+    "rollback": {
+      "required": true,
+      "ownerRequired": true,
+      "ownerStatus": "not-assigned",
+      "versionedArtifactRequired": true,
+      "restorePointRequired": true,
+      "drillRequired": true,
+      "drillStatus": "pending",
+      "drillEvidenceStatus": "pending",
+      "conclusionStatus": "not-established",
+      "missingOwnerOrDrillDecision": "BLOCKED"
+    },
+    "artifactBinding": {
+      "required": true,
+      "algorithm": "SHA-256",
+      "status": "pending",
+      "sourceRevisionRequired": true,
+      "environmentRequired": true,
+      "immutableDigestRequired": true,
+      "signatureRequired": true,
+      "missingHashDecision": "NO-GO"
+    },
+    "reportReproducibility": {
+      "required": true,
+      "status": "pending",
+      "generatorVersionRequired": true,
+      "manifestDigestRequired": true,
+      "sourceRevisionRequired": true,
+      "toolVersionsRequired": true,
+      "deterministicInputRefsRequired": true,
+      "reportHashRequired": true,
+      "missingReproductionDecision": "NO-GO"
+    }
+  },
+  "syntheticFixtures": {
+    "fixturePolicy": "synthetic-references-only-no-real-signatures-no-pii-no-production-data",
+    "releaseCandidate": {
+      "versionRef": "version-ref://synthetic/b21-rc-001",
+      "sourceRevisionRef": "commit-ref://synthetic/b21-rc-001",
+      "environmentRef": "environment-ref://synthetic/staging-001",
+      "artifactDigestRef": "digest-ref://synthetic/b21-rc-001",
+      "artifactSignatureRef": "signature-ref://synthetic/b21-rc-001"
+    },
+    "roleReviewers": [
+      "reviewer-ref://synthetic/b21-product",
+      "reviewer-ref://synthetic/b21-architecture",
+      "reviewer-ref://synthetic/b21-security",
+      "reviewer-ref://synthetic/b21-data",
+      "reviewer-ref://synthetic/b21-operations"
+    ],
+    "changeWindowRef": "change-window-ref://synthetic/b21-001",
+    "rollbackOwnerRef": "owner-ref://synthetic/b21-rollback",
+    "evidenceRefs": [
+      "evidence-ref://synthetic/b21-b20",
+      "evidence-ref://synthetic/b21-rc",
+      "evidence-ref://synthetic/b21-report"
+    ]
+  },
+  "qualityGates": [
+    {
+      "id": "B21-GATE-005-GOVERNANCE",
+      "task": "V2-B21-GATE-005",
+      "category": "multi-role-go-no-go-and-release-controls",
+      "decision": "BLOCKED",
+      "evidenceIds": [
+        "B21-E-GATE-STATIC-POLICY",
+        "B21-E-GATE-STATIC-B20",
+        "B21-E-GATE-STATIC-ROLES",
+        "B21-E-GATE-STATIC-RISK",
+        "B21-E-GATE-STATIC-ROLLBACK",
+        "B21-E-GATE-B20-ACCEPTANCE",
+        "B21-E-GATE-ROLE-DECISIONS",
+        "B21-E-GATE-CHANGE-WINDOW",
+        "B21-E-GATE-RISK-REVIEW",
+        "B21-E-GATE-ROLLBACK-DRILL"
+      ],
+      "staticChecks": [
+        {
+          "id": "B21-GATE-STATIC-001",
+          "kind": "phase-one-go-no-go-policy",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-GATE-STATIC-POLICY",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "AGENTS.md"
+          ],
+          "assertions": [
+            { "contains": "V2-B21-GATE-005" },
+            { "contains": "Go/No-Go" },
+            { "contains": "Phase 1" },
+            { "contains": "默认拒绝" }
+          ]
+        },
+        {
+          "id": "B21-GATE-STATIC-002",
+          "kind": "b20-prerequisite-remains-runtime-blocked",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-GATE-STATIC-B20",
+          "sourcePaths": [
+            "config/b20-security-gates.json",
+            "config/b20-privacy-content-gates.json",
+            "config/b20-commerce-dr-evidence.json"
+          ],
+          "assertions": [
+            { "contains": "runtimeBlocked" },
+            { "contains": "\"status\": \"blocked\"" },
+            { "contains": "\"runtimeDecision\": \"BLOCKED\"" }
+          ]
+        },
+        {
+          "id": "B21-GATE-STATIC-003",
+          "kind": "platform-supply-chain-and-default-deny-anchor",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-GATE-STATIC-ROLES",
+          "sourcePaths": ["AGENTS.md"],
+          "assertions": [
+            { "contains": "OCI + Kubernetes + Helm/Kustomize + GitOps" },
+            { "contains": "SBOM" },
+            { "contains": "默认拒绝" }
+          ]
+        },
+        {
+          "id": "B21-GATE-STATIC-004",
+          "kind": "live-payment-and-unqualified-channel-remain-closed",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-GATE-STATIC-RISK",
+          "sourcePaths": ["config/b20-commerce-dr-evidence.json"],
+          "assertions": [
+            { "contains": "\"liveTrafficAllowed\": false" },
+            { "contains": "\"liveEnvironmentOverrideAllowed\": false" },
+            { "contains": "\"unqualifiedChannelDecision\": \"deny\"" }
+          ]
+        },
+        {
+          "id": "B21-GATE-STATIC-005",
+          "kind": "change-window-risk-and-rollback-controls-defined",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-GATE-STATIC-ROLLBACK",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "config/b20-commerce-dr-evidence.json"
+          ],
+          "assertions": [
+            { "contains": "变更窗口" },
+            { "contains": "回滚负责人" },
+            { "contains": "rollback" },
+            { "contains": "conclusionStatus" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-GATE-RUNTIME-001",
+          "kind": "b20-accepted-with-external-runtime-evidence",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-GATE-B20-ACCEPTANCE",
+          "tools": ["approved-release-workbench", "B20 evidence verifier"],
+          "targets": ["B20 security", "B20 privacy/content", "B20 commerce/DR"],
+          "scenarios": ["all B20 runtime evidence present", "open P0/P1 rejection", "live payment remains closed"],
+          "evidenceRequired": ["B20 gate decision", "evidence hashes", "review record"],
+          "cannotBeSatisfiedBy": ["B20 static manifest", "synthetic fixture", "HTTP-200"],
+          "expected": "B20 acceptance is externally verified or this Gate remains BLOCKED"
+        },
+        {
+          "id": "B21-GATE-RUNTIME-002",
+          "kind": "five-role-independent-go-no-go",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-GATE-ROLE-DECISIONS",
+          "tools": ["approved-release-workbench", "audit export"],
+          "targets": ["product", "architecture", "security", "data", "operations"],
+          "scenarios": ["missing role decision", "conflicted role decision", "all roles independently decide"],
+          "evidenceRequired": ["role decision", "reviewer reference", "timestamp", "audit record"],
+          "cannotBeSatisfiedBy": ["single approval", "copied signature", "static role matrix"],
+          "expected": "all five required roles independently record a decision"
+        },
+        {
+          "id": "B21-GATE-RUNTIME-003",
+          "kind": "active-change-window",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-GATE-CHANGE-WINDOW",
+          "tools": ["change-management system", "release workbench"],
+          "targets": ["staging", "release candidate"],
+          "scenarios": ["missing ticket", "expired window", "valid future window"],
+          "evidenceRequired": ["window id", "ticket", "timezone", "start/end", "approver"],
+          "cannotBeSatisfiedBy": ["local clock", "developer note", "open-ended window"],
+          "expected": "a valid, future, approved change window is bound to the RC"
+        },
+        {
+          "id": "B21-GATE-RUNTIME-004",
+          "kind": "known-risk-and-expiring-acceptance-review",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-GATE-RISK-REVIEW",
+          "tools": ["risk register", "release workbench"],
+          "targets": ["known risks", "P0/P1 findings", "risk acceptance records"],
+          "scenarios": ["expired acceptance", "P0 acceptance attempt", "owner/mitigation missing"],
+          "evidenceRequired": ["risk id", "owner", "mitigation", "expiry", "two approvers"],
+          "cannotBeSatisfiedBy": ["unowned TODO", "permanent exception", "P0 risk acceptance"],
+          "expected": "all residual risks are closed or validly accepted with expiry"
+        },
+        {
+          "id": "B21-GATE-RUNTIME-005",
+          "kind": "rollback-owner-and-drill",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-GATE-ROLLBACK-DRILL",
+          "tools": ["approved staging runner", "restore/release runner"],
+          "targets": ["RC artifact", "staging", "rollback owner"],
+          "scenarios": ["rollback drill", "restore point validation", "post-rollback reconciliation"],
+          "evidenceRequired": ["named owner", "artifact digest", "restore point", "drill result", "reconciliation"],
+          "cannotBeSatisfiedBy": ["rollback plan text", "untested image", "unnamed owner"],
+          "expected": "rollback is drilled, versioned, reconciled and owned before GO"
+        }
+      ]
+    },
+    {
+      "id": "B21-TEST-006-RC-EVIDENCE",
+      "task": "V2-B21-TEST-006",
+      "category": "rc-evidence-index-and-reproducible-report",
+      "decision": "BLOCKED",
+      "evidenceIds": [
+        "B21-E-TEST-STATIC-SCHEMA",
+        "B21-E-TEST-STATIC-BINDING",
+        "B21-E-TEST-STATIC-REPRO",
+        "B21-E-TEST-STATIC-INDEX",
+        "B21-E-TEST-RC-ARTIFACT",
+        "B21-E-TEST-EVIDENCE-REPORT",
+        "B21-E-TEST-SIGNOFF-INDEX"
+      ],
+      "staticChecks": [
+        {
+          "id": "B21-TEST-STATIC-001",
+          "kind": "closed-report-schema",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-TEST-STATIC-SCHEMA",
+          "sourcePaths": ["config/b20-commerce-dr-evidence.json"],
+          "assertions": [
+            { "contains": "reportSchema" },
+            { "contains": "additionalProperties" },
+            { "contains": "\"decision\": {\"enum\": [\"BLOCKED\", \"NO-GO\", \"GO\"]}" }
+          ]
+        },
+        {
+          "id": "B21-TEST-STATIC-002",
+          "kind": "version-environment-artifact-binding",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-TEST-STATIC-BINDING",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "AGENTS.md"
+          ],
+          "assertions": [
+            { "contains": "版本/环境绑定" },
+            { "contains": "不可变镜像" },
+            { "contains": "SBOM" }
+          ]
+        },
+        {
+          "id": "B21-TEST-STATIC-003",
+          "kind": "reproducible-release-report",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-TEST-STATIC-REPRO",
+          "sourcePaths": ["scripts/runtime/validate-b20-commerce-dr-evidence.mjs"],
+          "assertions": [
+            { "contains": "report schema must be a closed object" },
+            { "contains": "artifact-hash-missing-or-invalid" },
+            { "contains": "runtime-evidence-pending-or-blocked" }
+          ]
+        },
+        {
+          "id": "B21-TEST-STATIC-004",
+          "kind": "evidence-index-separates-static-and-runtime",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B21-E-TEST-STATIC-INDEX",
+          "sourcePaths": ["config/b20-commerce-dr-evidence.json"],
+          "assertions": [
+            { "contains": "\"class\": \"static\"" },
+            { "contains": "\"class\": \"runtime\"" },
+            { "contains": "runtime-runner-only" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B21-TEST-RUNTIME-001",
+          "kind": "immutable-signed-rc-artifact",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-TEST-RC-ARTIFACT",
+          "tools": ["CI/CD runner", "OCI registry", "signature verifier"],
+          "targets": ["source revision", "build artifact", "OCI image", "deployment manifest"],
+          "scenarios": ["digest mismatch", "missing signature", "rebuild comparison"],
+          "evidenceRequired": ["commit", "artifact digest", "signature", "SBOM", "environment"],
+          "cannotBeSatisfiedBy": ["local build", "tag-only image", "unsigned artifact"],
+          "expected": "one immutable, signed RC digest is bound to the source and staging environment"
+        },
+        {
+          "id": "B21-TEST-RUNTIME-002",
+          "kind": "complete-rc-evidence-index",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-TEST-EVIDENCE-REPORT",
+          "tools": ["release workbench", "evidence verifier"],
+          "targets": ["B20", "B21 staging", "B21 observability", "B21 RC"],
+          "scenarios": ["missing evidence", "wrong environment", "wrong artifact hash"],
+          "evidenceRequired": ["evidence id", "status", "URI", "SHA-256", "captured time", "environment"],
+          "cannotBeSatisfiedBy": ["file list without hashes", "unbound screenshot", "manual summary"],
+          "expected": "every required evidence item is indexed, hashed and bound to one RC"
+        },
+        {
+          "id": "B21-TEST-RUNTIME-003",
+          "kind": "reproducible-report-generation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-TEST-EVIDENCE-REPORT",
+          "tools": ["pinned report generator", "hash verifier"],
+          "targets": ["manifest", "evidence index", "report schema", "generated report"],
+          "scenarios": ["same inputs twice", "input mutation", "tool version drift"],
+          "evidenceRequired": ["generator version", "input digests", "source revision", "report hash"],
+          "cannotBeSatisfiedBy": ["edited PDF", "unversioned spreadsheet", "nondeterministic timestamp-only output"],
+          "expected": "same pinned inputs produce a verifiable report hash and a changed input changes the report"
+        },
+        {
+          "id": "B21-TEST-RUNTIME-004",
+          "kind": "multi-party-signoff-index",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B21-E-TEST-SIGNOFF-INDEX",
+          "tools": ["release workbench", "audit export"],
+          "targets": ["five required roles", "two release approvers", "risk acceptances"],
+          "scenarios": ["missing signer", "duplicate signer", "expired acceptance"],
+          "evidenceRequired": ["role", "decision", "reviewer ref", "signature ref", "timestamp"],
+          "cannotBeSatisfiedBy": ["single signoff", "copied identity", "unsigned email"],
+          "expected": "the report contains an auditable and independent signoff index"
+        }
+      ]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "B21-E-GATE-STATIC-POLICY", "gateId": "B21-GATE-005-GOVERNANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/qualityGates/B21-GATE-005-GOVERNANCE/staticChecks/B21-GATE-STATIC-001", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-GATE-STATIC-B20", "gateId": "B21-GATE-005-GOVERNANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/b20Prerequisite", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-GATE-STATIC-ROLES", "gateId": "B21-GATE-005-GOVERNANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/roleGovernance", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-GATE-STATIC-RISK", "gateId": "B21-GATE-005-GOVERNANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/releaseGate/riskAcceptance", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-GATE-STATIC-ROLLBACK", "gateId": "B21-GATE-005-GOVERNANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/releaseGate/rollback", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-GATE-B20-ACCEPTANCE", "gateId": "B21-GATE-005-GOVERNANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/gate/b20-acceptance/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-GATE-ROLE-DECISIONS", "gateId": "B21-GATE-005-GOVERNANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/gate/role-decisions/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-GATE-CHANGE-WINDOW", "gateId": "B21-GATE-005-GOVERNANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/gate/change-window/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-GATE-RISK-REVIEW", "gateId": "B21-GATE-005-GOVERNANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/gate/risk-review/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-GATE-ROLLBACK-DRILL", "gateId": "B21-GATE-005-GOVERNANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/gate/rollback-drill/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-TEST-STATIC-SCHEMA", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/reportSchema", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-TEST-STATIC-BINDING", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/releaseGate/artifactBinding", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-TEST-STATIC-REPRO", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/releaseGate/reportReproducibility", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-TEST-STATIC-INDEX", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-release-gate-evidence.json#/evidenceIndex", "collectionPolicy": "repository-static-validator" },
+    { "id": "B21-E-TEST-RC-ARTIFACT", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/rc/artifact/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-TEST-EVIDENCE-REPORT", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/rc/report/**/*.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "B21-E-TEST-SIGNOFF-INDEX", "gateId": "B21-TEST-006-RC-EVIDENCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/rc/signoff/**/*.json", "collectionPolicy": "runtime-runner-only" }
+  ],
+  "reportSchema": {
+    "id": "B21-RELEASE-GATE-REPORT",
+    "version": "1.0.0",
+    "closed": true,
+    "jsonSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "Phase 1 B21 release gate report",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "reportId",
+        "batch",
+        "phase",
+        "releaseCandidate",
+        "decision",
+        "decisionPolicy",
+        "roles",
+        "upstreamGates",
+        "evidence",
+        "knownRisks",
+        "riskAcceptance",
+        "changeWindow",
+        "rollback",
+        "artifactBindings",
+        "reproducibility",
+        "reportHash"
+      ],
+      "properties": {
+        "schemaVersion": { "type": "string", "const": "1.0.0" },
+        "reportId": { "type": "string", "pattern": "^B21-REPORT-[A-Z0-9-]+$" },
+        "batch": { "type": "string", "const": "B21" },
+        "phase": { "type": "string", "const": "phase-1" },
+        "releaseCandidate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "sourceRevision", "environment", "artifactDigest", "artifactSignature"],
+          "properties": {
+            "version": { "type": "string", "minLength": 1 },
+            "sourceRevision": { "type": "string", "minLength": 1 },
+            "environment": { "type": "string", "minLength": 1 },
+            "artifactDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "artifactSignature": { "type": "string", "minLength": 1 }
+          }
+        },
+        "decision": { "type": "string", "enum": ["NO-GO", "GO"] },
+        "decisionPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["defaultDecision", "missingEvidenceDecision", "goRequiresAllEvidence", "goRequiresAllRoles"],
+          "properties": {
+            "defaultDecision": { "type": "string", "const": "NO-GO" },
+            "missingEvidenceDecision": { "type": "string", "const": "NO-GO" },
+            "goRequiresAllEvidence": { "type": "boolean", "const": true },
+            "goRequiresAllRoles": { "type": "boolean", "const": true }
+          }
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "decision", "reviewerRef", "signatureRef", "decidedAt"],
+            "properties": {
+              "role": { "type": "string", "enum": ["product", "architecture", "security", "data", "operations"] },
+              "decision": { "type": "string", "enum": ["PENDING", "GO", "NO-GO", "BLOCKED"] },
+              "reviewerRef": { "type": "string", "minLength": 1 },
+              "signatureRef": { "type": ["string", "null"] },
+              "decidedAt": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "upstreamGates": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["taskId", "status", "evidenceIds"],
+            "properties": {
+              "taskId": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["pending", "blocked", "pass", "fail"] },
+              "evidenceIds": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["evidenceId", "status", "uri", "sha256", "capturedAt", "environment"],
+            "properties": {
+              "evidenceId": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["pending", "captured", "invalid", "blocked"] },
+              "uri": { "type": "string", "minLength": 1 },
+              "sha256": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+              "capturedAt": { "type": ["string", "null"] },
+              "environment": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "knownRisks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["riskId", "status", "owner", "mitigation", "expiresAt"],
+            "properties": {
+              "riskId": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["open", "mitigated", "accepted", "closed", "expired"] },
+              "owner": { "type": "string", "minLength": 1 },
+              "mitigation": { "type": "string", "minLength": 1 },
+              "expiresAt": { "type": ["string", "null"] }
+            }
+          }
+        },
+        "riskAcceptance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "riskIds", "expiresAt", "approverRefs"],
+          "properties": {
+            "status": { "type": "string", "enum": ["not-present", "accepted", "expired", "blocked"] },
+            "riskIds": { "type": "array", "items": { "type": "string" } },
+            "expiresAt": { "type": ["string", "null"] },
+            "approverRefs": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "changeWindow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["windowId", "status", "ticketRef", "startsAt", "endsAt", "timezone"],
+          "properties": {
+            "windowId": { "type": "string", "minLength": 1 },
+            "status": { "type": "string", "enum": ["not-established", "scheduled", "active", "expired", "blocked"] },
+            "ticketRef": { "type": "string", "minLength": 1 },
+            "startsAt": { "type": ["string", "null"] },
+            "endsAt": { "type": ["string", "null"] },
+            "timezone": { "type": "string", "minLength": 1 }
+          }
+        },
+        "rollback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "ownerRef", "artifactDigest", "restorePointRef", "drillEvidenceRef"],
+          "properties": {
+            "status": { "type": "string", "enum": ["not-established", "pending", "tested", "blocked"] },
+            "ownerRef": { "type": ["string", "null"] },
+            "artifactDigest": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+            "restorePointRef": { "type": ["string", "null"] },
+            "drillEvidenceRef": { "type": ["string", "null"] }
+          }
+        },
+        "artifactBindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["artifactId", "sha256", "sourceRevision", "environment", "signatureRef"],
+            "properties": {
+              "artifactId": { "type": "string", "minLength": 1 },
+              "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+              "sourceRevision": { "type": "string", "minLength": 1 },
+              "environment": { "type": "string", "minLength": 1 },
+              "signatureRef": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "reproducibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["generator", "generatorVersion", "manifestDigest", "sourceRevision", "toolVersions", "inputRefs", "reportHash"],
+          "properties": {
+            "generator": { "type": "string", "minLength": 1 },
+            "generatorVersion": { "type": "string", "minLength": 1 },
+            "manifestDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "sourceRevision": { "type": "string", "minLength": 1 },
+            "toolVersions": { "type": "object", "additionalProperties": { "type": "string" } },
+            "inputRefs": { "type": "array", "items": { "type": "string" } },
+            "reportHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          }
+        },
+        "reportHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

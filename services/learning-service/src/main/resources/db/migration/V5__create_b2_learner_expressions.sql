@@ -1,0 +1,31 @@
+-- B2 mined expressions are learner-owned facts.  The sentence source remains
+-- a reference to content-service; this table stores only the learner's copy,
+-- notes and learning intent in the learning owner schema.
+CREATE TABLE IF NOT EXISTS b2_learner_expression (
+    expression_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    tenant_id VARCHAR(64) NOT NULL DEFAULT 'platform',
+    principal_id VARCHAR(128) NOT NULL,
+    source_type VARCHAR(32) NOT NULL,
+    source_ref VARCHAR(192) NULL,
+    source_content_version VARCHAR(64) NULL,
+    sentence_text VARCHAR(5000) NOT NULL,
+    translation_cn VARCHAR(2048) NULL,
+    selected_text VARCHAR(2048) NULL,
+    range_start INT UNSIGNED NULL,
+    range_end INT UNSIGNED NULL,
+    want_to_say BOOLEAN NOT NULL DEFAULT FALSE,
+    private_note VARCHAR(2048) NULL,
+    tag_ids_json JSON NOT NULL,
+    status VARCHAR(24) NOT NULL DEFAULT 'ACTIVE',
+    create_idempotency_key VARCHAR(192) NOT NULL,
+    last_idempotency_key VARCHAR(192) NULL,
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (expression_id),
+    UNIQUE KEY uk_b2_expression_create (tenant_id, principal_id, create_idempotency_key),
+    KEY idx_b2_expression_owner (tenant_id, principal_id, status, expression_id),
+    CONSTRAINT chk_b2_expression_tenant CHECK (tenant_id = 'platform'),
+    CONSTRAINT chk_b2_expression_source CHECK (source_type IN ('READING', 'LISTENING', 'SCENARIO', 'VOCAB_EXAMPLE')),
+    CONSTRAINT chk_b2_expression_status CHECK (status IN ('ACTIVE', 'ARCHIVED', 'DELETED')),
+    CONSTRAINT chk_b2_expression_range CHECK (range_end IS NULL OR range_start IS NULL OR range_end >= range_start)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

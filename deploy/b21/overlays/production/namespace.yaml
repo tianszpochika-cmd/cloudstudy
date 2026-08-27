@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: englishflow-production
+  labels:
+    englishflow.dev/environment: production
+    englishflow.dev/production-like: "true"

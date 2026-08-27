@@ -13,6 +13,7 @@ test('B12 learner API uses server-owned chest, leaderboard and preset report end
   assert.match(api, /social\/rooms.*reports/)
   assert.match(api, /notifications\/preferences/)
   assert.match(api, /Idempotency-Key/)
+  for (const notificationType of ['ROOM_INTERACTIONS', 'FOCUS_REMINDERS', 'SYSTEM', 'DO_NOT_DISTURB']) assert.match(api, new RegExp(notificationType))
 })
 
 test('B12 learner rewards disclose free non-cash rules and server probability', () => {
@@ -28,4 +29,12 @@ test('B12 learner report UI only uses preset reasons and server returned member 
   assert.match(component, /B12_REPORT_REASONS/)
   assert.match(component, /reportUser\(/)
   assert.doesNotMatch(component, /<textarea|v-model=".*userId|placeholder=.*userId/i)
+})
+
+test('B12 learner notification parser prefers canonical server preference types over legacy aliases', () => {
+  const component = read('src/components/b12/B12SocialExtensions.vue')
+  assert.match(component, /PREFERENCE_KEY_BY_NOTIFICATION_TYPE/)
+  assert.match(component, /CANONICAL_NOTIFICATION_TYPES/)
+  assert.match(component, /canonicalSeen/)
+  assert.match(component, /delete preferenceVersions\.value\[key\]/)
 })

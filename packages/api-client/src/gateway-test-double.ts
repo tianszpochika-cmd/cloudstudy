@@ -31,10 +31,10 @@ function normalizeHeaders(input: HeadersInit | undefined): Record<string, string
   if (!input) return {}
   if (typeof Headers !== 'undefined' && input instanceof Headers) {
     const result: Record<string, string> = {}
-    input.forEach((value, key) => { result[key] = value })
+    input.forEach((value, key) => { result[key.toLowerCase()] = value })
     return result
   }
-  if (Array.isArray(input)) return Object.fromEntries(input)
+  if (Array.isArray(input)) return Object.fromEntries(input.map(([key, value]) => [String(key).toLowerCase(), String(value)]))
   return Object.fromEntries(Object.entries(input).map(([key, value]) => [key.toLowerCase(), String(value)]))
 }
 

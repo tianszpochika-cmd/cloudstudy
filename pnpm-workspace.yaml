@@ -2,3 +2,9 @@ packages:
   - apps/*
   - services/*
   - packages/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - core-js
+  - esbuild
+  - vue-demi

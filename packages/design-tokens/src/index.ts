@@ -25,6 +25,14 @@ export interface ThemeControllerOptions {
   readonly prefix?: string
 }
 
+interface ThemeMediaQuery {
+  readonly matches: boolean
+  addEventListener?(type: 'change', listener: () => void): void
+  removeEventListener?(type: 'change', listener: () => void): void
+  addListener?(listener: () => void): void
+  removeListener?(listener: () => void): void
+}
+
 export interface ThemeState {
   readonly theme: ThemeMode
   readonly resolvedTheme: ResolvedTheme
@@ -44,6 +52,26 @@ export interface ThemeController {
   subscribe(listener: (state: ThemeState) => void): () => void
   dispose(): void
 }
+
+/** WCAG-oriented thresholds exposed to adapters and components as policy, not as a color choice. */
+export const accessibilityThresholds = {
+  normalTextContrast: 4.5,
+  largeTextContrast: 3,
+  nonTextContrast: 3,
+  focusIndicatorContrast: 3,
+} as const
+
+/**
+ * Every status has a non-color marker. Components should render the marker and
+ * accessible text together with the status color so grayscale/high-contrast
+ * rendering does not lose meaning.
+ */
+export const statusSemantics = {
+  success: { marker: 'check', pattern: 'solid', labelKey: 'common.state.success' },
+  warning: { marker: 'warning', pattern: 'striped', labelKey: 'common.state.warning' },
+  danger: { marker: 'error', pattern: 'dashed', labelKey: 'common.state.error' },
+  info: { marker: 'info', pattern: 'dotted', labelKey: 'common.state.info' },
+} as const
 
 const legacyColor = {
   brandPrimary: '#596BFF',
@@ -169,6 +197,11 @@ export const atomicTokens = {
     minTouchTarget: '44px',
     focusRing: '#3B8DFF',
     maxTextScale: 2,
+    contrast: accessibilityThresholds,
+    focusOutlineWidth: '3px',
+    focusOutlineOffset: '2px',
+    focusOutlineStyle: 'solid',
+    statusSemantics,
   },
 } as const
 
@@ -220,6 +253,7 @@ export const semanticTokens = {
     focus: {
       outline: '#3B8DFF',
       outlineWidth: '3px',
+      outlineOffset: '2px',
     },
   },
   dark: {
@@ -269,6 +303,7 @@ export const semanticTokens = {
     focus: {
       outline: '#6EA8FF',
       outlineWidth: '3px',
+      outlineOffset: '2px',
     },
   },
   'high-contrast': {
@@ -318,6 +353,7 @@ export const semanticTokens = {
     focus: {
       outline: '#FFFF00',
       outlineWidth: '3px',
+      outlineOffset: '2px',
     },
   },
 } as const
@@ -338,6 +374,8 @@ export const designTokens = {
 export type DesignTokens = typeof designTokens
 export type AtomicTokens = typeof atomicTokens
 export type SemanticTokens = typeof semanticTokens
+export type AccessibilityThresholds = typeof accessibilityThresholds
+export type StatusSemantics = typeof statusSemantics
 
 function isTokenTree(value: unknown): value is TokenTree {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -424,12 +462,28 @@ export function getThemeCss(
   return toCssVariables(tokens, options)
 }
 
-export function detectSystemDark(): boolean {
+function systemMediaQuery(): ThemeMediaQuery | undefined {
   const candidate = globalThis as typeof globalThis & {
-    matchMedia?: (query: string) => { readonly matches: boolean }
+    matchMedia?: (query: string) => ThemeMediaQuery
   }
-  if (typeof candidate.matchMedia !== 'function') return false
-  return candidate.matchMedia('(prefers-color-scheme: dark)').matches
+  if (typeof candidate.matchMedia !== 'function') return undefined
+  try {
+    return candidate.matchMedia('(prefers-color-scheme: dark)')
+  } catch {
+    return undefined
+  }
+}
+
+export function detectSystemDark(): boolean {
+  return systemMediaQuery()?.matches ?? false
+}
+
+function readSystemPreference(preference: () => boolean): boolean {
+  try {
+    return Boolean(preference())
+  } catch {
+    return false
+  }
 }
 
 function isThemeMode(value: string | null): value is ThemeMode {
@@ -456,9 +510,16 @@ export function createThemeController(options: ThemeControllerOptions = {}): The
   const systemPreference = options.systemPreference ?? detectSystemDark
   const prefix = options.prefix ?? 'ef'
   let currentTheme: ThemeMode = options.initialTheme ?? 'system'
-  let currentSystemDark = systemPreference()
+  let currentSystemDark = readSystemPreference(systemPreference)
   let disposed = false
   const listeners = new Set<(state: ThemeState) => void>()
+  const mediaQuery = options.systemPreference ? undefined : systemMediaQuery()
+  const onSystemPreferenceChange = (): void => {
+    currentSystemDark = readSystemPreference(systemPreference)
+    emit()
+  }
+  if (mediaQuery?.addEventListener) mediaQuery.addEventListener('change', onSystemPreferenceChange)
+  else mediaQuery?.addListener?.(onSystemPreferenceChange)
 
   const snapshot = (): ThemeState => snapshotTheme(currentTheme, currentSystemDark, prefix)
   const emit = (): void => {
@@ -497,7 +558,7 @@ export function createThemeController(options: ThemeControllerOptions = {}): The
       return snapshot()
     },
     refresh() {
-      currentSystemDark = systemPreference()
+      currentSystemDark = readSystemPreference(systemPreference)
       emit()
       return snapshot()
     },
@@ -515,6 +576,8 @@ export function createThemeController(options: ThemeControllerOptions = {}): The
     },
     dispose() {
       disposed = true
+      if (mediaQuery?.removeEventListener) mediaQuery.removeEventListener('change', onSystemPreferenceChange)
+      else mediaQuery?.removeListener?.(onSystemPreferenceChange)
       listeners.clear()
     },
   }

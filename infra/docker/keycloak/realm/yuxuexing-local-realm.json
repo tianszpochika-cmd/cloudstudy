@@ -1,0 +1,214 @@
+{
+  "realm": "yuxuexing-local",
+  "enabled": true,
+  "displayName": "语学星本地测试 IdP",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": false,
+  "rememberMe": false,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "userProfile": {
+    "unmanagedAttributePolicy": "ADMIN_EDIT",
+    "attributes": [
+      {
+        "name": "username",
+        "displayName": "Username",
+        "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+      },
+      {
+        "name": "email",
+        "displayName": "Email",
+        "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+      },
+      {
+        "name": "firstName",
+        "displayName": "First name",
+        "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+      },
+      {
+        "name": "lastName",
+        "displayName": "Last name",
+        "permissions": { "view": ["admin", "user"], "edit": ["admin", "user"] }
+      },
+      {
+        "name": "tenant_id",
+        "displayName": "Tenant ID",
+        "permissions": { "view": ["admin"], "edit": ["admin"] }
+      },
+      {
+        "name": "device_id",
+        "displayName": "Device ID",
+        "permissions": { "view": ["admin"], "edit": ["admin"] }
+      },
+      {
+        "name": "permissions",
+        "displayName": "Permissions",
+        "multivalued": true,
+        "permissions": { "view": ["admin"], "edit": ["admin"] }
+      }
+    ]
+  },
+  "sslRequired": "NONE",
+  "passwordPolicy": "length(12) and notUsername",
+  "accessTokenLifespan": 300,
+  "accessCodeLifespan": 60,
+  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanLogin": 1800,
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 28800,
+  "clients": [
+    {
+      "clientId": "yuxuexing-learner-web",
+      "name": "语学星 learner-web 本地 PKCE",
+      "description": "Loopback-only public client for learner-web; no client secret.",
+      "enabled": true,
+      "clientAuthenticatorType": "none",
+      "redirectUris": ["http://127.0.0.1:18180/auth/callback"],
+      "webOrigins": ["http://127.0.0.1:18180"],
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://127.0.0.1:18180/"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "web-origins", "acr", "basic", "yuxuexing-identity", "yuxuexing-api"]
+    },
+    {
+      "clientId": "yuxuexing-admin-web",
+      "name": "语学星 admin-web 本地 PKCE",
+      "description": "Loopback-only public client for admin-web; permissions remain server-owned.",
+      "enabled": true,
+      "clientAuthenticatorType": "none",
+      "redirectUris": ["http://127.0.0.1:18181/auth/callback"],
+      "webOrigins": ["http://127.0.0.1:18181"],
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://127.0.0.1:18181/"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "web-origins", "acr", "basic", "yuxuexing-identity", "yuxuexing-api"]
+    },
+    {
+      "clientId": "yuxuexing-mobile-h5",
+      "name": "语学星 Mobile H5 本地 PKCE",
+      "description": "Loopback-only public client for the uni-app H5 target.",
+      "enabled": true,
+      "clientAuthenticatorType": "none",
+      "redirectUris": ["http://127.0.0.1:18183/auth/callback"],
+      "webOrigins": ["http://127.0.0.1:18183"],
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://127.0.0.1:18183/"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "web-origins", "acr", "basic", "yuxuexing-identity", "yuxuexing-api"]
+    },
+    {
+      "clientId": "yuxuexing-mobile-app",
+      "name": "语学星 Mobile App 本地 PKCE",
+      "description": "Public native-app client using the englishflow custom-scheme callback.",
+      "enabled": true,
+      "clientAuthenticatorType": "none",
+      "redirectUris": ["englishflow://auth/callback"],
+      "webOrigins": [],
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "englishflow://auth/callback"
+      },
+      "defaultClientScopes": ["profile", "email", "roles", "acr", "basic", "yuxuexing-identity", "yuxuexing-api"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      { "name": "content-editor", "description": "Local content editor for B31 real-data verification" },
+      { "name": "review-l1", "description": "Local first-stage content reviewer for B31 real-data verification" },
+      { "name": "review-l2", "description": "Local final-stage content reviewer for B31 real-data verification" },
+      { "name": "content-publisher", "description": "Local content publisher for B31 real-data verification" }
+    ]
+  },
+  "clientScopes": [
+    {
+      "name": "yuxuexing-identity",
+      "description": "Local OIDC identity subject claim required for server-side principal mapping.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "sub",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-sub-mapper",
+          "consentRequired": false,
+          "config": {
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "yuxuexing-api",
+      "description": "Local test audience only; product authorization remains server-owned.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "yuxuexing-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "yuxuexing-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ]
+}

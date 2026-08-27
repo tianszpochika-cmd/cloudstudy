@@ -41,7 +41,8 @@ public final class DefaultLearnerProfileQueryService implements LearnerProfileQu
     @Override
     public FirstDayView getFirstDay(LearnerPrincipalContext context) {
         authorize(context, "learner.onboarding.read");
-        return FirstDayView.from(FirstDayProjection.from(load(context.scope()), clock.instant()));
+        return FirstDayView.from(store.findFirstDay(context.scope())
+                .orElseGet(() -> FirstDayProjection.from(load(context.scope()), clock.instant())));
     }
 
     private LearnerProfile load(LearnerTenantScope scope) {

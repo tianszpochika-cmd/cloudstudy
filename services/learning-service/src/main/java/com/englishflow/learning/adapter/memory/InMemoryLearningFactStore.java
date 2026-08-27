@@ -12,6 +12,7 @@ import com.englishflow.learning.domain.LearningTenantScope;
 import com.englishflow.learning.domain.MasteryProjection;
 import com.englishflow.learning.domain.PlanningKey;
 import com.englishflow.learning.domain.ReviewEvent;
+import com.englishflow.learning.domain.ReviewQueueSnapshot;
 import com.englishflow.learning.domain.SrsState;
 import com.englishflow.learning.port.LearningFactStore;
 import com.englishflow.learning.port.IdempotentExecution;
@@ -37,6 +38,7 @@ public final class InMemoryLearningFactStore implements LearningFactStore {
     private final Map<String, ReviewEvent> reviewEventsById = new LinkedHashMap<>();
     private final Map<String, MasteryProjection> masteryByKey = new LinkedHashMap<>();
     private final Map<String, LearningProgress> progressByKey = new LinkedHashMap<>();
+    private final Map<String, ReviewQueueSnapshot> reviewQueuesByKey = new LinkedHashMap<>();
     private final Map<String, IdempotencyEntry> idempotency = new LinkedHashMap<>();
     private final Map<String, LearningOutboxEvent> outboxByDedupe = new LinkedHashMap<>();
 
@@ -134,6 +136,12 @@ public final class InMemoryLearningFactStore implements LearningFactStore {
     }
 
     @Override
+    public synchronized void saveReviewQueue(ReviewQueueSnapshot snapshot) {
+        LearningSchema.requireOwnedFact("review_queue_snapshot");
+        reviewQueuesByKey.put(snapshotKey(snapshot.scope(), snapshot.scheduleSnapshotId()), snapshot);
+    }
+
+    @Override
     public synchronized void appendOutbox(LearningOutboxEvent event) {
         LearningSchema.requireOwnedFact("outbox_event");
         outboxByDedupe.putIfAbsent(event.scope().storageKey() + ":" + event.dedupeKey(), event);
@@ -165,6 +173,10 @@ public final class InMemoryLearningFactStore implements LearningFactStore {
 
     private static String progressKey(LearningTenantScope scope, long planId, long taskId) {
         return scope.storageKey() + ":progress:" + planId + ":" + taskId;
+    }
+
+    private static String snapshotKey(LearningTenantScope scope, long snapshotId) {
+        return scope.storageKey() + ":queue:" + snapshotId;
     }
 
     private record IdempotencyEntry(String requestFingerprint, Object response) {

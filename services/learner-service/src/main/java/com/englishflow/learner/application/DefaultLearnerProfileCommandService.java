@@ -63,6 +63,7 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
             RequestMetadata metadata) {
         Objects.requireNonNull(command, "command is required");
         return mutate(context, metadata, "profile.update", "learner.profile.write", command.idempotencyKey(),
+                command.expectedVersion(),
                 command.fingerprint(), "learner.profile.updated.v1",
                 profile -> profile.withProfile(command.onboardingState(), command.assessmentState(),
                         command.currentLevel(), command.resumeTarget(), clock.instant()),
@@ -81,6 +82,7 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
             RequestMetadata metadata) {
         Objects.requireNonNull(command, "command is required");
         return mutate(context, metadata, "onboarding.goal", "learner.goal.write", command.idempotencyKey(),
+                command.expectedVersion(),
                 command.fingerprint(), "learner.target.updated.v1",
                 profile -> {
                     LearningGoal goal = LearningGoal.create(targetIdGenerator.nextId(context.scope()), command.goalType(),
@@ -109,7 +111,8 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
             RequestMetadata metadata) {
         Objects.requireNonNull(command, "command is required");
         return mutate(context, metadata, "preference.update", "learner.preference.write",
-                command.idempotencyKey(), command.fingerprint(), "learner.profile.updated.v1",
+                command.idempotencyKey(), command.expectedVersion(), command.fingerprint(),
+                "learner.profile.updated.v1",
                 profile -> profile.withPreferences(command.toPreferences(clock.instant()), clock.instant()),
                 profile -> Map.of(
                         "tenantId", profile.scope().tenantId(),
@@ -125,6 +128,7 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
             String operation,
             String permission,
             com.englishflow.learner.domain.IdempotencyKey idempotencyKey,
+            Long requestedExpectedVersion,
             String fingerprint,
             String eventType,
             UnaryOperator<LearnerProfile> updater,
@@ -151,7 +155,8 @@ public final class DefaultLearnerProfileCommandService implements LearnerProfile
                         .orElseGet(() -> LearnerProfile.empty(scope, clock.instant())));
         // Empty and legacy-shadow reads establish a non-persisted version-0 baseline. The first
         // learner-owned write therefore commits version 1 against expected version 0.
-        long expectedVersion = loaded.source() == ProfileSource.OWNED ? loaded.version() : 0;
+        long currentVersion = loaded.source() == ProfileSource.OWNED ? loaded.version() : 0;
+        long expectedVersion = requestedExpectedVersion == null ? currentVersion : requestedExpectedVersion;
         LearnerProfile base = loaded.source() == ProfileSource.OWNED
                 ? loaded
                 : loaded.asOwned(clock.instant());

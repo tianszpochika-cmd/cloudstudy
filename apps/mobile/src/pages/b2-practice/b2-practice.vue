@@ -24,12 +24,12 @@ function load(): void { lastResult.value = null; void store.loadPractice() }
 async function answer(value: B10AnswerInput): Promise<void> { if (!exercise.value) return; lastResult.value = await store.submitAnswer(exercise.value.exerciseId, value) }
 function checkpoint(): void { void store.saveCheckpoint(exercise.value?.exerciseId ?? null) }
 function openReport(): void { getUniRuntime().navigateTo({ url: '/pages/b10-report/b10-report' }) }
-onShow(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
+onShow(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
 onUnmounted(() => engine.dispose())
 </script>
 
 <template>
-  <view class="yx-page" :class="themeClass">
+  <view class="yx-page" :class="themeClass" :data-performance="performanceLevel">
     <text class="yx-eyebrow">{{ b10T('practice.eyebrow') }}</text>
     <text class="yx-title">{{ b10T('practice.title') }}</text>
     <text class="yx-description">{{ b10T('practice.description') }}</text>

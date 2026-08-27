@@ -8,6 +8,7 @@ export interface UniRequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   header?: Record<string, string>
   data?: unknown
+  timeout?: number
   success?: (response: UniRequestResponse) => void
   fail?: (error: unknown) => void
 }
@@ -50,8 +51,11 @@ export interface UniRuntime {
   removeStorageSync(key: string): void
   request(options: UniRequestOptions): void
   navigateTo(options: { url: string }): void
+  redirectTo?(options: { url: string }): void
+  reLaunch?(options: { url: string }): void
   switchTab(options: { url: string }): void
   showToast(options: { title: string; icon?: 'none' | 'success' | 'error' }): void
+  addInterceptor?(method: string, interceptor: { invoke?: (options: { url?: string; delta?: number }) => false | { url?: string; delta?: number } | void }): void
   getSecureStorage?: () => UniSecureStorage | undefined
   getLaunchOptionsSync?: () => UniLaunchOptions
   getEnterOptionsSync?: () => UniLaunchOptions
@@ -61,10 +65,49 @@ export interface UniRuntime {
   getSecureRecordingVault?: () => UniSecureRecordingVault
 }
 
+const TAB_BAR_PATHS = new Set([
+  '/pages/home/home',
+  '/pages/b2-practice/b2-practice',
+  '/pages/world/world',
+  '/pages/learn/learn',
+  '/pages/profile/profile',
+])
+const PENDING_NAVIGATION_QUERY_KEY = 'yx.navigation.query.v1'
+
 export function getUniRuntime(): UniRuntime {
   const runtime = globalThis as typeof globalThis & { uni?: UniRuntime }
   if (!runtime.uni) {
     throw new Error('uni-app 运行时尚未就绪。')
   }
   return runtime.uni
+}
+
+/** Use switchTab for tab-bar pages; navigateTo is rejected by uni-h5 for them. */
+export function openUniPage(url: string): void {
+  const runtime = getUniRuntime()
+  const path = url.split('?')[0]
+  if (TAB_BAR_PATHS.has(path)) {
+    const query = url.includes('?') ? url.slice(url.indexOf('?') + 1) : ''
+    if (query) {
+      const params = Object.fromEntries(new URLSearchParams(query).entries())
+      runtime.setStorageSync(PENDING_NAVIGATION_QUERY_KEY, JSON.stringify({ path, params }))
+    }
+    runtime.switchTab({ url: path })
+  }
+  else runtime.navigateTo({ url })
+}
+
+/** Read query parameters that had to cross a uni-app tab-bar switch. */
+export function consumePendingNavigationQuery(path: string): Record<string, string> {
+  const runtime = getUniRuntime()
+  const raw = runtime.getStorageSync(PENDING_NAVIGATION_QUERY_KEY)
+  runtime.removeStorageSync(PENDING_NAVIGATION_QUERY_KEY)
+  if (typeof raw !== 'string') return {}
+  try {
+    const parsed = JSON.parse(raw) as { path?: unknown; params?: unknown }
+    if (parsed.path !== path || typeof parsed.params !== 'object' || parsed.params === null) return {}
+    return Object.fromEntries(Object.entries(parsed.params).filter((entry): entry is [string, string] => typeof entry[1] === 'string'))
+  } catch {
+    return {}
+  }
 }

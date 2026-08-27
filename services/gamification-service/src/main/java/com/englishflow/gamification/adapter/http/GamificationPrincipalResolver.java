@@ -4,6 +4,8 @@ import com.englishflow.gamification.application.GamificationAccessPolicy;
 import com.englishflow.gamification.domain.GamificationDomainException;
 import com.englishflow.gamification.domain.TrustedCompletionEvent;
 import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -68,7 +70,20 @@ public final class GamificationPrincipalResolver {
     }
 
     private static Set<String> authorities(JwtAuthenticationToken jwt) {
-        return jwt.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toUnmodifiableSet());
+        Set<String> authorities = jwt.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        addClaimValues(authorities, jwt.getToken().getClaims().get("permissions"));
+        return Set.copyOf(authorities);
+    }
+
+    private static void addClaimValues(Set<String> target, Object value) {
+        if (value instanceof Collection<?> values) {
+            values.stream().filter(item -> item != null && !item.toString().isBlank())
+                    .map(Object::toString).forEach(target::add);
+        } else if (value != null) {
+            for (String item : value.toString().split("[ ,]+")) {
+                if (!item.isBlank()) target.add(item);
+            }
+        }
     }
 }

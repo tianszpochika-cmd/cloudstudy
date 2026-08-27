@@ -16,7 +16,7 @@ async function submit(): Promise<void> { if (!sessionId.value || !segment.value 
 function playAudio(): void { if (!audioSource.value) { message.value = '当前内容没有授权播放地址；未伪造音频播放。'; return } audio.value?.destroy(); const context = getUniRuntime().createInnerAudioContext?.(); if (!context) { message.value = '当前平台没有音频适配器；未伪造音频播放。'; return } audio.value = context; context.src = audioSource.value; context.playbackRate = playbackRate.value; context.play() }
 function pauseAudio(): void { audio.value?.pause() }
 function changeRate(): void { if (audio.value) audio.value.playbackRate = playbackRate.value }
-onMounted(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
+onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
 onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
 </script>
 

@@ -1,0 +1,431 @@
+{
+  "schemaVersion": 1,
+  "gate": "G1",
+  "taskId": "G1-CONTRACT-DATA-001",
+  "phase": "phase-1",
+  "status": "static-foundation",
+  "staticDecision": "PASS",
+  "defaultDecision": "BLOCKED",
+  "staticValidatorSemantics": {
+    "passMeans": "canonical-contract-rules-and-repository-source-files-are-reproducible-only",
+    "businessCompletion": false,
+    "runtimeEvidenceStatus": "pending",
+    "runtimeMissingDecision": "BLOCKED",
+    "staticValidatorCannotPromoteRuntime": true,
+    "generatedFilesAreNotSources": true,
+    "syntheticEvidenceCannotPromoteRuntime": true
+  },
+  "phaseBoundary": {
+    "currentPhase": "phase-1",
+    "futurePhases": [
+      {
+        "phase": "phase-2",
+        "defaultEnabled": false,
+        "defaultDecision": "deny",
+        "requiresGate": "G-P2"
+      },
+      {
+        "phase": "phase-3",
+        "defaultEnabled": false,
+        "defaultDecision": "deny",
+        "requiresGate": "G-P3"
+      }
+    ]
+  },
+  "contractSources": {
+    "openapi": {
+      "canonicalPath": "packages/contracts/openapi/v1/openapi.json",
+      "generatedPaths": [
+        "packages/contracts/generated/openapi.ts",
+        "packages/api-client/src/generated/index.ts"
+      ],
+      "sourceMarker": "GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json",
+      "expectedOperationCount": 374,
+      "expectedSchemaCount": 479
+    },
+    "asyncapi": {
+      "canonicalPath": "packages/contracts/events/v1/catalog.json",
+      "generatedPaths": ["packages/contracts/generated/events.ts"],
+      "sourceMarker": "GENERATED FILE. Source: packages/contracts/events/v1/catalog.json",
+      "expectedEventCount": 154,
+      "expectedPayloadSchemaCount": 110
+    },
+    "jsonSchema": {
+      "canonicalPath": "packages/contracts/schemas/v1/registry.json",
+      "generatedPaths": ["packages/contracts/generated/schemas.ts"],
+      "sourceMarker": "GENERATED FILE. Source: packages/contracts/schemas/v1/registry.json",
+      "expectedSchemaCount": 4
+    },
+    "generation": {
+      "scriptPath": "scripts/contracts/generate-contracts.mjs",
+      "validationScriptPath": "scripts/contracts/validate-contracts.mjs",
+      "compatibilityScriptPath": "scripts/contracts/compatibility-diff.mjs",
+      "singleFactSource": "packages/contracts canonical JSON; generated TypeScript is derived"
+    }
+  },
+  "operationIdPolicy": {
+    "canonicalSource": "openapi",
+    "requiredUnique": true,
+    "pattern": "^[A-Za-z][A-Za-z0-9]+$",
+    "versionPathPrefix": "/api/v1",
+    "breakingChangeDecision": "BLOCKED"
+  },
+  "eventSchemaPolicy": {
+    "canonicalSource": "asyncapi",
+    "requiredEnvelope": [
+      "eventId",
+      "eventName",
+      "schema",
+      "version",
+      "occurredAt",
+      "aggregateType",
+      "aggregateId",
+      "actorId",
+      "traceId",
+      "requestId",
+      "payload"
+    ],
+    "compatibilityStrategy": "additive-optional-payload-fields",
+    "breakingChangeAction": "publish-new-versioned-event-name",
+    "unknownFieldConsumerRule": "ignore-unknown-optional-fields",
+    "dedupeKey": "eventId",
+    "eventBusRole": "integration-facts-only-not-rpc-or-transaction-coordinator"
+  },
+  "canonicalIdentity": {
+    "sourcePath": "packages/contracts/openapi/v1/openapi.json",
+    "registryKey": "x-canonical-id-fields",
+    "requiredFields": [
+      "userId",
+      "contentVersionId",
+      "vocabId",
+      "expressionId",
+      "grammarPointId",
+      "sentenceId",
+      "questionId",
+      "exerciseId",
+      "attemptId",
+      "sessionId",
+      "requestId",
+      "traceId",
+      "eventId",
+      "aggregateId",
+      "actorId"
+    ],
+    "generatedIdType": "CanonicalInt64Id",
+    "noClientSubstitution": true
+  },
+  "stateAndSecurityPolicy": {
+    "canonicalStateValues": {
+      "mastery": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"],
+      "mistakeVerification": ["PENDING_RETRY", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REOPENED"],
+      "authorizationDecision": ["ALLOW", "DENY"],
+      "httpSecurityOutcome": [401, 403]
+    },
+    "serverDerivedAuthorizationFacts": [
+      "subject",
+      "tenant",
+      "role",
+      "permission",
+      "resource",
+      "action",
+      "owner",
+      "phase",
+      "contentRights",
+      "deviceTrust",
+      "consent",
+      "policyVersion"
+    ],
+    "forbiddenClientAuthorityFacts": [
+      "role",
+      "permission",
+      "tenantId",
+      "ownerId",
+      "phase",
+      "contentRights",
+      "ageVerified"
+    ],
+    "defaultDecision": "deny",
+    "clientAuthorityRejectionCode": "UNTRUSTED_SECURITY_FACT",
+    "tenantDerivation": "verified-principal-and-IAM-context",
+    "tenantGuardMarker": "assertTenant"
+  },
+  "dataOwnership": {
+    "sourceOfTruth": "service-owned-schema-migration-redis-namespace-and-write-permission",
+    "runtimeStatus": "pending",
+    "sharedTableWriteAllowed": false,
+    "sharedOrmEntityAllowed": false,
+    "crossServiceSqlJoinAllowed": false,
+    "services": [
+      {"service": "api-gateway", "schema": "none", "migrationRequired": false, "migrationVersion": null, "redisNamespace": "gateway", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "no-domain-write"},
+      {"service": "iam-service", "schema": "iam", "migrationRequired": true, "migrationVersion": "0016", "redisNamespace": "iam", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "learner-service", "schema": "learner", "migrationRequired": true, "migrationVersion": "0017", "redisNamespace": "learner", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "content-service", "schema": "content", "migrationRequired": true, "migrationVersion": "0008", "redisNamespace": "content", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "learning-service", "schema": "learning", "migrationRequired": true, "migrationVersion": "0018", "redisNamespace": "learning", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "assessment-service", "schema": "assessment", "migrationRequired": true, "migrationVersion": "0011", "redisNamespace": "assessment", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "media-service", "schema": "media", "migrationRequired": true, "migrationVersion": "0019", "redisNamespace": "media", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "gamification-service", "schema": "gamification", "migrationRequired": true, "migrationVersion": "0020", "redisNamespace": "gamification", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "social-service", "schema": "social", "migrationRequired": true, "migrationVersion": "0020", "redisNamespace": "social", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "commerce-service", "schema": "commerce", "migrationRequired": true, "migrationVersion": "0021", "redisNamespace": "commerce", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "notification-service", "schema": "notification", "migrationRequired": true, "migrationVersion": "0019", "redisNamespace": "notification", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "analytics-service", "schema": "analytics", "migrationRequired": true, "migrationVersion": "0021", "redisNamespace": "analytics", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "admin-ops-service", "schema": "admin_ops", "migrationRequired": true, "migrationVersion": "0021", "redisNamespace": "admin_ops", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "audit-service", "schema": "audit", "migrationRequired": true, "migrationVersion": "0004", "redisNamespace": "audit", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"},
+      {"service": "workflow-service", "schema": "workflow", "migrationRequired": true, "migrationVersion": "0003", "redisNamespace": "workflow", "ownerStatus": "declared", "runtimeStatus": "pending", "writeBoundary": "service-owned-only"}
+    ]
+  },
+  "migrationPolicy": {
+    "canonicalManifestPath": "database/mysql/migrations/migration-manifest.json",
+    "requiredEngine": "mysql-8.0",
+    "checksumAlgorithm": "sha256-normalized-utf8",
+    "runtimeDiffEvidenceStatus": "pending",
+    "emptyUpgradeDowngradeFailureRecoveryRequired": true,
+    "rollbackStrategy": "compensation-or-versioned-rollback-not-destructive-default",
+    "cannotBeSatisfiedBy": ["directory-exists", "static-sql-only", "synthetic-schema-diff", "development-http-200"]
+  },
+  "redisPolicy": {
+    "durableSourceOfTruth": "service-owned-mysql-facts",
+    "namespaceRule": "unique-service-owned-safe-namespace",
+    "runtimeNamespaceEvidenceStatus": "pending",
+    "forbiddenSegments": ["password", "secret", "token", "email", "phone", "audio", "payment"],
+    "cannotBeSatisfiedBy": ["shared-global-namespace", "redis-only-fact", "static-key-list"]
+  },
+  "crossServiceWritePolicy": {
+    "defaultDecision": "deny",
+    "prohibited": [
+      "cross-service-sql-join",
+      "shared-orm-entity",
+      "cross-service-table-write",
+      "kafka-rpc",
+      "distributed-two-phase-commit"
+    ],
+    "allowedIntegration": ["versioned-api-command", "trusted-event", "outbox", "idempotent-consumer", "saga-compensation"],
+    "sourcePaths": [
+      "docs/02-architecture/v2-microservices-architecture.md",
+      "services/service-template/README.md",
+      "services/service-template/src/main/java/com/englishflow/platform/template/data/OutboxEvent.java"
+    ],
+    "sourceMarkers": [
+      "禁止跨服务 SQL join、跨服务写表和共享 ORM entity",
+      "跨服务 SQL 或跨服务写表",
+      "Kafka is not a transaction coordinator"
+    ]
+  },
+  "checks": [
+    {
+      "id": "G1-SOURCE-STATIC-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "packages/contracts/README.md",
+        "scripts/contracts/validate-contracts.mjs",
+        "scripts/contracts/generate-contracts.mjs"
+      ],
+      "assertions": [
+        {"contains": "生成物位于 `generated/`"},
+        {"contains": "duplicate operationId"},
+        {"contains": "PlatformEventEnvelope"}
+      ]
+    },
+    {
+      "id": "G1-COMPAT-STATIC-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "scripts/contracts/compatibility-diff.mjs",
+        "packages/contracts/events/v1/catalog.json"
+      ],
+      "assertions": [
+        {"contains": "breakingChanges"},
+        {"contains": "未知可选字段忽略"},
+        {"contains": "eventId"}
+      ]
+    },
+    {
+      "id": "G1-IDENTITY-STATIC-003",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "packages/contracts/openapi/v1/openapi.json",
+        "packages/contracts/schemas/v1/registry.json"
+      ],
+      "assertions": [
+        {"contains": "x-canonical-id-fields"},
+        {"contains": "schemaVersion"},
+        {"contains": "x-server-derived-authorization-facts"}
+      ]
+    },
+    {
+      "id": "G1-DATA-STATIC-004",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "database/mysql/migrations/migration-manifest.json",
+        "services/service-template/src/main/java/com/englishflow/platform/template/data/TenantScope.java",
+        "services/service-template/src/main/java/com/englishflow/platform/template/data/RedisNamespace.java"
+      ],
+      "assertions": [
+        {"contains": "checksumAlgorithm"},
+        {"contains": "assertTenant"},
+        {"contains": "Redis is a short-lived/rebuildable namespace"}
+      ]
+    },
+    {
+      "id": "G1-SECURITY-STATIC-005",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "services/service-template/src/main/java/com/englishflow/platform/template/security/ClientAuthorityHeaderFilter.java",
+        "services/service-template/src/main/java/com/englishflow/platform/template/data/TenantScope.java"
+      ],
+      "assertions": [
+        {"contains": "UNTRUSTED_SECURITY_FACT"},
+        {"contains": "client tenant is not an authority"},
+        {"contains": "resource owner scope denied"}
+      ]
+    },
+    {
+      "id": "G1-BOUNDARY-STATIC-006",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "docs/02-architecture/v2-microservices-architecture.md",
+        "services/service-template/README.md",
+        "services/service-template/src/main/java/com/englishflow/platform/template/data/OutboxEvent.java"
+      ],
+      "assertions": [
+        {"contains": "禁止跨服务 SQL join、跨服务写表和共享 ORM entity"},
+        {"contains": "跨服务 SQL 或跨服务写表"},
+        {"contains": "Kafka is not a transaction coordinator"}
+      ]
+    }
+  ],
+  "runtimeGate": {
+    "status": "blocked",
+    "runtimeStatusWhenMissing": "blocked",
+    "requiredEnv": [
+      "G1_RUNTIME_OPENAPI_DIFF_EVIDENCE",
+      "G1_RUNTIME_ASYNCAPI_DIFF_EVIDENCE",
+      "G1_RUNTIME_JSON_SCHEMA_DIFF_EVIDENCE",
+      "G1_RUNTIME_MIGRATION_EVIDENCE",
+      "G1_RUNTIME_SCHEMA_OWNER_EVIDENCE",
+      "G1_RUNTIME_REDIS_NAMESPACE_EVIDENCE"
+    ],
+    "requiredEvidence": [
+      "G1-EV-RUNTIME-OPENAPI-DIFF",
+      "G1-EV-RUNTIME-ASYNCAPI-DIFF",
+      "G1-EV-RUNTIME-JSON-SCHEMA-DIFF",
+      "G1-EV-RUNTIME-MIGRATION",
+      "G1-EV-RUNTIME-OWNER",
+      "G1-EV-RUNTIME-REDIS"
+    ],
+    "staticValidatorCannotPromoteRuntime": true,
+    "cannotBeSatisfiedBy": [
+      "static-contract-files-only",
+      "generated-file-exists",
+      "synthetic-schema-diff",
+      "directory-exists",
+      "development-http-200"
+    ]
+  },
+  "evidenceIndex": [
+    {
+      "id": "G1-EV-STATIC-CONTRACT-SOURCES",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "artifactPathPattern": "config/g1-contract-data.json",
+      "collectionPolicy": "repository-static"
+    },
+    {
+      "id": "G1-EV-STATIC-GENERATED-PARITY",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "artifactPathPattern": "config/g1-contract-data.json",
+      "collectionPolicy": "repository-static"
+    },
+    {
+      "id": "G1-EV-STATIC-DATA-BOUNDARY",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "artifactPathPattern": "config/g1-contract-data.json",
+      "collectionPolicy": "repository-static"
+    },
+    {
+      "id": "G1-EV-RUNTIME-OPENAPI-DIFF",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G1/openapi-diff.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G1-EV-RUNTIME-ASYNCAPI-DIFF",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G1/asyncapi-diff.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G1-EV-RUNTIME-JSON-SCHEMA-DIFF",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G1/json-schema-diff.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G1-EV-RUNTIME-MIGRATION",
+      "class": "runtime",
+      "status": "blocked",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G1/migration-run.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G1-EV-RUNTIME-OWNER",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G1/schema-owner.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G1-EV-RUNTIME-REDIS",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G1/redis-namespace.json",
+      "collectionPolicy": "approved-external-runner-only"
+    }
+  ],
+  "reportSchema": {
+    "id": "g1-contract-data-report",
+    "version": "1.0.0",
+    "closed": true,
+    "missingEvidenceDecision": "BLOCKED",
+    "required": [
+      "schemaVersion",
+      "gate",
+      "phase",
+      "decision",
+      "contractSources",
+      "operationIds",
+      "eventSchemas",
+      "dataOwners",
+      "migrationDiff",
+      "redisNamespaces",
+      "evidence",
+      "reviewer",
+      "reviewedAt"
+    ]
+  }
+}

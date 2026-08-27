@@ -14,7 +14,8 @@ public record TrustedIdpAgeClaim(int age, String claimName, Instant verifiedAt) 
             throw new IllegalArgumentException("age is outside the supported range");
         }
         Objects.requireNonNull(claimName, "claimName");
-        if (claimName.isBlank() || claimName.length() > 64) {
+        if (claimName.isBlank() || claimName.length() > 64
+                || claimName.chars().anyMatch(Character::isISOControl)) {
             throw new IllegalArgumentException("claimName is invalid");
         }
         Objects.requireNonNull(verifiedAt, "verifiedAt");

@@ -4,7 +4,7 @@
   "private": true,
   "description": "语学星官方网站与SEO落地页 (Nuxt 3 / Vue 3 SSR)",
   "scripts": {
-    "dev": "node ../../scripts/run-fixed-port.mjs official-site-dev -- nuxt dev --host 127.0.0.1 --port 18182",
+    "dev": "node ../../scripts/run-fixed-port.mjs official-site-dev -- nuxt dev --host 127.0.0.1 --port 18182 --strictPort",
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "node ../../scripts/run-fixed-port.mjs official-site-preview -- nuxt preview --host 127.0.0.1 --port 18192",

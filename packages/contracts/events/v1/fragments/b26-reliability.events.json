@@ -1,0 +1,217 @@
+{
+  "version": "1.0.0",
+  "events": [
+    {
+      "eventName": "workflow.outbox.published.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "workflow_outbox",
+      "aggregateIdField": "outboxId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowOutboxPublished" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.outbox.published.v2", "consumerRule": "按 consumerGroup/eventId 去重；未知可选字段忽略；事件不携带凭证、原始身份或原始媒体。" }
+    },
+    {
+      "eventName": "workflow.event.delivery_failed.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "workflow_delivery",
+      "aggregateIdField": "failedEventId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowDeliveryFailed" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.event.delivery_failed.v2", "consumerRule": "失败事实不可变；按 failedEventId、consumerGroup 和 dedupeKey 幂等。" }
+    },
+    {
+      "eventName": "workflow.event.dead_lettered.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "workflow_dead_letter",
+      "aggregateIdField": "failedEventId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowDeadLettered" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.event.dead_lettered.v2", "consumerRule": "只记录脱敏失败摘要和恢复状态；不得由客户端直接重放或写领域事实。" }
+    },
+    {
+      "eventName": "workflow.event.replay_requested.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "workflow_replay",
+      "aggregateIdField": "replayRunId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowReplayRequested" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.event.replay_requested.v2", "consumerRule": "重放必须绑定 replayRunId、审批引用和原 eventId；仍走正常消费者去重路径。" }
+    },
+    {
+      "eventName": "workflow.event.ordering_deferred.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.event.v1",
+      "aggregateType": "workflow_ordering",
+      "aggregateIdField": "aggregateId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowOrderingDeferred" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.event.ordering_deferred.v2", "consumerRule": "同一 aggregateId 只接受单调版本；超出有界等待窗口进入 DLQ 并交人工恢复。" }
+    },
+    {
+      "eventName": "workflow.saga.compensation_requested.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.saga.v1",
+      "aggregateType": "workflow_saga",
+      "aggregateIdField": "sagaId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowCompensationRequested" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.saga.compensation_requested.v2", "consumerRule": "补偿通过版本化服务命令执行；不得用 Kafka 充当 RPC 或事务协调器。" }
+    },
+    {
+      "eventName": "workflow.saga.manual_recovery_requested.v1",
+      "domain": "workflow",
+      "version": 1,
+      "schema": "workflow.saga.v1",
+      "aggregateType": "workflow_recovery",
+      "aggregateIdField": "recoveryId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B26WorkflowManualRecoveryRequested" },
+      "x-kafka": { "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "delivery": "at-least-once", "replaySafe": true },
+      "compatibility": { "strategy": "additive", "breakingChange": "publish workflow.saga.manual_recovery_requested.v2", "consumerRule": "人工恢复必须由 workflow-service 持有审批和审计引用；客户端不能伪造权限或租户事实。" }
+    }
+  ],
+  "payloadSchemas": {
+    "B26WorkflowOutboxPublished": {
+      "$id": "platform.events.workflow.outbox.published.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outboxId", "producerService", "eventType", "aggregateId", "dedupeKey", "aggregateVersion", "publishedAt", "attempt"],
+      "properties": {
+        "outboxId": { "type": "string", "maxLength": 128 },
+        "producerService": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$" },
+        "eventType": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+\\.v[0-9]+$" },
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "dedupeKey": { "type": "string", "maxLength": 255 },
+        "aggregateVersion": { "type": "integer", "minimum": 1 },
+        "publishedAt": { "type": "string", "format": "date-time" },
+        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 }
+      }
+    },
+    "B26WorkflowDeliveryFailed": {
+      "$id": "platform.events.workflow.event.delivery_failed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failedEventId", "consumerGroup", "failureCode", "retryable", "attempt", "failedAt"],
+      "properties": {
+        "failedEventId": { "type": "string", "maxLength": 128 },
+        "consumerGroup": { "type": "string", "pattern": "^cg\\.[a-z0-9.-]+$" },
+        "failureCode": { "type": "string", "enum": ["TIMEOUT", "TEMPORARY_UNAVAILABLE", "CONFLICT_RETRYABLE", "SCHEMA_INVALID", "FORBIDDEN", "OWNER_MISMATCH", "STALE_VERSION"] },
+        "retryable": { "type": "boolean" },
+        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "failedAt": { "type": "string", "format": "date-time" },
+        "nextAttemptAt": { "type": ["string", "null"], "format": "date-time", "nullable": true }
+      }
+    },
+    "B26WorkflowDeadLettered": {
+      "$id": "platform.events.workflow.event.dead_lettered.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failedEventId", "consumerGroup", "failureCode", "attempt", "failedAt", "recoveryState"],
+      "properties": {
+        "failedEventId": { "type": "string", "maxLength": 128 },
+        "consumerGroup": { "type": "string", "pattern": "^cg\\.[a-z0-9.-]+$" },
+        "failureCode": { "type": "string", "maxLength": 64 },
+        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "failedAt": { "type": "string", "format": "date-time" },
+        "recoveryState": { "type": "string", "enum": ["PENDING_REVIEW", "REPLAY_APPROVED", "COMPENSATION_PENDING", "RESOLVED"] }
+      }
+    },
+    "B26WorkflowReplayRequested": {
+      "$id": "platform.events.workflow.event.replay_requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["replayRunId", "sourceTopic", "sourceEventId", "requestedByRef", "approvalRef", "reasonCode", "mode"],
+      "properties": {
+        "replayRunId": { "type": "string", "maxLength": 128 },
+        "sourceTopic": { "type": "string", "pattern": "^platform\\.[a-z0-9.]+\\.v[0-9]+$" },
+        "sourceEventId": { "type": "string", "maxLength": 128 },
+        "requestedByRef": { "type": "string", "maxLength": 128 },
+        "approvalRef": { "type": "string", "maxLength": 128 },
+        "reasonCode": { "type": "string", "maxLength": 96 },
+        "mode": { "type": "string", "enum": ["SINGLE_EVENT", "DLQ_BATCH"] }
+      }
+    },
+    "B26WorkflowOrderingDeferred": {
+      "$id": "platform.events.workflow.event.ordering_deferred.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aggregateId", "receivedVersion", "expectedVersion", "bufferedAt", "expiresAt", "action"],
+      "properties": {
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "receivedVersion": { "type": "integer", "minimum": 1 },
+        "expectedVersion": { "type": "integer", "minimum": 1 },
+        "bufferedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "action": { "type": "string", "enum": ["BUFFERED", "DLQ_AFTER_TIMEOUT", "STALE_SKIPPED"] }
+      }
+    },
+    "B26WorkflowCompensationRequested": {
+      "$id": "platform.events.workflow.saga.compensation_requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sagaId", "step", "aggregateId", "compensationCode", "reasonCode", "state"],
+      "properties": {
+        "sagaId": { "type": "string", "maxLength": 128 },
+        "step": { "type": "string", "maxLength": 96 },
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "compensationCode": { "type": "string", "maxLength": 96 },
+        "reasonCode": { "type": "string", "maxLength": 96 },
+        "state": { "type": "string", "enum": ["COMPENSATION_PENDING", "COMPENSATED", "MANUAL_RECOVERY"] }
+      }
+    },
+    "B26WorkflowManualRecoveryRequested": {
+      "$id": "platform.events.workflow.saga.manual_recovery_requested.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recoveryId", "sagaId", "aggregateId", "failedStep", "reasonCode", "approvalState", "runbookRef"],
+      "properties": {
+        "recoveryId": { "type": "string", "maxLength": 128 },
+        "sagaId": { "type": "string", "maxLength": 128 },
+        "aggregateId": { "type": "string", "maxLength": 128 },
+        "failedStep": { "type": "string", "maxLength": 96 },
+        "reasonCode": { "type": "string", "maxLength": 96 },
+        "approvalState": { "type": "string", "enum": ["PENDING_TWO_PERSON_REVIEW", "APPROVED", "REJECTED", "EXECUTED"] },
+        "runbookRef": { "type": "string", "maxLength": 160 }
+      }
+    }
+  },
+  "asyncapi": {
+    "channels": {
+      "platformWorkflowEvents": {
+        "address": "platform.workflow.v1",
+        "messages": {
+          "workflowOutboxPublished": { "$ref": "#/payloadSchemas/B26WorkflowOutboxPublished" },
+          "workflowDeliveryFailed": { "$ref": "#/payloadSchemas/B26WorkflowDeliveryFailed" },
+          "workflowDeadLettered": { "$ref": "#/payloadSchemas/B26WorkflowDeadLettered" },
+          "workflowReplayRequested": { "$ref": "#/payloadSchemas/B26WorkflowReplayRequested" },
+          "workflowOrderingDeferred": { "$ref": "#/payloadSchemas/B26WorkflowOrderingDeferred" },
+          "workflowCompensationRequested": { "$ref": "#/payloadSchemas/B26WorkflowCompensationRequested" },
+          "workflowManualRecoveryRequested": { "$ref": "#/payloadSchemas/B26WorkflowManualRecoveryRequested" }
+        }
+      },
+      "platformEventsDlq": {
+        "address": "platform.events.dlq.v1",
+        "messages": {
+          "workflowDeadLettered": { "$ref": "#/payloadSchemas/B26WorkflowDeadLettered" }
+        }
+      }
+    },
+    "operations": {}
+  }
+}

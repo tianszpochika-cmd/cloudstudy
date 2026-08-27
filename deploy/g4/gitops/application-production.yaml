@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: englishflow-g4-production
+spec:
+  project: englishflow
+  source:
+    path: deploy/g4/overlays/production
+    repoURL: https://example.invalid/englishflow.git
+    targetRevision: immutable-release-revision
+  destination:
+    namespace: englishflow-production
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated-sync: "false"
+    prune: "false"
+    self-heal: "false"
+  info:
+    - name: release-decision
+      value: NO-GO
+    - name: production-action
+      value: disabled

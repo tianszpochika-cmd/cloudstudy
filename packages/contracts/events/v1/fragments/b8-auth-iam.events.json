@@ -7,6 +7,14 @@
       "description": "B8 认证、principal、会话、设备、成人 Gate、consent 和策略版本事实；事件不携带 Token、refresh credential 或原始隐私。"
     },
     "channels": {
+      "authOidcAuthorizationStarted": {
+        "address": "auth.oidc.authorization.started.v1",
+        "messages": { "authorizationStarted": { "$ref": "#/payloadSchemas/AuthOidcAuthorizationStarted" } }
+      },
+      "authOidcCallbackCompleted": {
+        "address": "auth.oidc.callback.completed.v1",
+        "messages": { "callbackCompleted": { "$ref": "#/payloadSchemas/AuthOidcCallbackCompleted" } }
+      },
       "authPrincipalMapped": {
         "address": "auth.principal.mapped.v1",
         "messages": { "principalMapped": { "$ref": "#/payloadSchemas/AuthPrincipalMapped" } }
@@ -23,6 +31,10 @@
         "address": "auth.device.revoked.v1",
         "messages": { "deviceRevoked": { "$ref": "#/payloadSchemas/AuthDeviceRevoked" } }
       },
+      "iamSessionRevoked": {
+        "address": "iam.session.revoked.v1",
+        "messages": { "sessionRevoked": { "$ref": "#/payloadSchemas/IamSessionRevoked" } }
+      },
       "authConsentUpdated": {
         "address": "auth.consent.updated.v1",
         "messages": { "consentUpdated": { "$ref": "#/payloadSchemas/AuthConsentUpdated" } }
@@ -38,6 +50,36 @@
     }
   },
   "events": [
+    {
+      "eventName": "auth.oidc.authorization.started.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_authorization_transaction",
+      "aggregateIdField": "authorizationTransactionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthOidcAuthorizationStarted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.oidc.authorization.started.v2",
+        "consumerRule": "只记录 provider、intent 和事务生命周期；state、nonce、code_verifier、code_challenge 和 redirect URI 不进入事件。"
+      }
+    },
+    {
+      "eventName": "auth.oidc.callback.completed.v1",
+      "domain": "auth",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/AuthOidcCallbackCompleted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 auth.oidc.callback.completed.v2",
+        "consumerRule": "只消费 provider-backed principal/session 建立结果；不传播 authorization code、ID token、access token、refresh token 或原始 claims。"
+      }
+    },
     {
       "eventName": "auth.principal.mapped.v1",
       "domain": "auth",
@@ -99,6 +141,21 @@
       }
     },
     {
+      "eventName": "iam.session.revoked.v1",
+      "domain": "iam",
+      "version": 1,
+      "schema": "iam.auth.event.v1",
+      "aggregateType": "iam_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/IamSessionRevoked" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "发布 iam.session.revoked.v2",
+        "consumerRule": "按 sessionId 和 dedupeKey 幂等撤销；provider 断开不恢复本地 revoked 事实，payload 不含任何 token。"
+      }
+    },
+    {
       "eventName": "auth.consent.updated.v1",
       "domain": "auth",
       "version": 1,
@@ -145,6 +202,34 @@
     }
   ],
   "payloadSchemas": {
+    "AuthOidcAuthorizationStarted": {
+      "$id": "platform.events.auth.oidc.authorization.started.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authorizationTransactionId", "provider", "intent", "expiresAt", "startedAt"],
+      "properties": {
+        "authorizationTransactionId": { "type": "string", "pattern": "^oidc_tx_[A-Za-z0-9._:-]{15,127}$" },
+        "provider": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$" },
+        "intent": { "type": "string", "enum": ["login", "register"] },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "startedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "AuthOidcCallbackCompleted": {
+      "$id": "platform.events.auth.oidc.callback.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principalId", "sessionId", "deviceId", "provider", "outcome", "completedAt"],
+      "properties": {
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$" },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "provider": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,31}$" },
+        "outcome": { "type": "string", "enum": ["LOGIN", "REGISTER", "LINKED"] },
+        "adultGateStatus": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "completedAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "AuthPrincipalMapped": {
       "$id": "platform.events.auth.principal.mapped.v1.payload",
       "type": "object",
@@ -194,6 +279,21 @@
         "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
         "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$" },
         "reasonCode": { "type": "string", "enum": ["LOGOUT", "KICKED", "REPLAY_DETECTED", "RISK_FREEZE", "ADMIN"] },
+        "revokedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "IamSessionRevoked": {
+      "$id": "platform.events.iam.session.revoked.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principalId", "sessionId", "deviceId", "reasonCode", "revocationStatus", "revokedAt"],
+      "properties": {
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$" },
+        "deviceId": { "type": "string", "pattern": "^dev_[A-Za-z0-9][A-Za-z0-9._:-]{7,95}$" },
+        "reasonCode": { "type": "string", "enum": ["LOGOUT", "KICKED", "REFRESH_REUSE", "CALLBACK_REUSE", "RISK_FREEZE", "ADMIN"] },
+        "revocationStatus": { "type": "string", "const": "REVOKED" },
+        "providerRevocationStatus": { "type": "string", "enum": ["REQUESTED", "CONFIRMED", "UNAVAILABLE", "NOT_REQUIRED"] },
         "revokedAt": { "type": "string", "format": "date-time" }
       }
     },

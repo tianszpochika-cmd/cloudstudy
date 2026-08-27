@@ -1,14 +1,7 @@
 package com.englishflow.notification.config;
 
 import com.englishflow.notification.adapter.memory.InMemoryDeliveryTransport;
-import com.englishflow.notification.adapter.memory.InMemoryNotificationAuditEventStore;
-import com.englishflow.notification.adapter.memory.InMemoryNotificationConsentStore;
-import com.englishflow.notification.adapter.memory.InMemoryNotificationFactStore;
 import com.englishflow.notification.adapter.memory.InMemoryNotificationIdGenerator;
-import com.englishflow.notification.adapter.memory.InMemoryOfflineSyncStore;
-import com.englishflow.notification.adapter.memory.InMemoryOutboxEventPort;
-import com.englishflow.notification.adapter.memory.InMemoryTrustedEventReceiptStore;
-import com.englishflow.notification.adapter.memory.InMemoryWorkflowPort;
 import com.englishflow.notification.application.NotificationApplicationService;
 import com.englishflow.notification.application.OfflineSyncApplicationService;
 import com.englishflow.notification.application.NotificationRecoveryApplicationService;
@@ -16,9 +9,9 @@ import com.englishflow.notification.application.NotificationRetryApplicationServ
 import com.englishflow.notification.application.TrustedEventApplicationService;
 import com.englishflow.notification.domain.NotificationAccessPolicy;
 import com.englishflow.notification.domain.TrustedEventAllowlist;
+import com.englishflow.notification.port.DeliveryTransport;
 import com.englishflow.notification.port.NotificationAuditEventPort;
 import com.englishflow.notification.port.NotificationConsentPort;
-import com.englishflow.notification.port.DeliveryTransport;
 import com.englishflow.notification.port.NotificationFactStore;
 import com.englishflow.notification.port.NotificationIdGenerator;
 import com.englishflow.notification.port.OfflineSyncStore;
@@ -47,43 +40,8 @@ public class NotificationServiceConfiguration {
     }
 
     @Bean
-    InMemoryNotificationFactStore notificationFactStore() {
-        return new InMemoryNotificationFactStore();
-    }
-
-    @Bean
-    InMemoryOfflineSyncStore offlineSyncStore() {
-        return new InMemoryOfflineSyncStore();
-    }
-
-    @Bean
-    InMemoryWorkflowPort workflowPort() {
-        return new InMemoryWorkflowPort();
-    }
-
-    @Bean
     InMemoryDeliveryTransport deliveryTransport() {
         return new InMemoryDeliveryTransport();
-    }
-
-    @Bean
-    InMemoryOutboxEventPort outboxEventPort() {
-        return new InMemoryOutboxEventPort();
-    }
-
-    @Bean
-    InMemoryNotificationConsentStore notificationConsentStore() {
-        return new InMemoryNotificationConsentStore();
-    }
-
-    @Bean
-    InMemoryTrustedEventReceiptStore trustedEventReceiptStore() {
-        return new InMemoryTrustedEventReceiptStore();
-    }
-
-    @Bean
-    InMemoryNotificationAuditEventStore notificationAuditEventStore() {
-        return new InMemoryNotificationAuditEventStore();
     }
 
     @Bean

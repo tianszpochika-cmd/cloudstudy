@@ -480,6 +480,96 @@ export type B12NotificationRetryScheduled = { taskId: string; notificationId: st
  */
 export type B12NotificationRecoveryCompleted = { taskId: string; state: "SUCCEEDED" | "REJECTED" | "MANUAL_REVIEW"; auditRef: string; domainFactsUntouched: true; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B13CommerceOrderCreated = { orderId: string; skuId: string; priceSnapshotId: string; amountMinor: number; currency: string; state: "CREATED" | "PENDING_PAYMENT" | "PAYMENT_PENDING"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CommercePaymentCallback = { providerEventRef: string; orderRef: string; callbackState: "VERIFIED_PAID" | "VERIFIED_REFUNDED" | "REJECTED"; amountMinor: number; currency: string; verificationRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CommerceEntitlementActivated = { entitlementId: string; entitlementCode: string; sourceRef: string; startsAt: string; expiresAt: unknown; activationReason: "VERIFIED_PAYMENT" | "ACTIVATION_CODE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CommerceRefundCompleted = { refundId: string; orderRef: string; state: "SUCCEEDED" | "REJECTED"; amountMinor: number; currency: string; completedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CommerceOrderReconciled = { batchRef: string; provider: string; differenceCount: number; state: "MATCHED" | "DIFF_FOUND" | "REPLAYED"; domainFactsUntouched: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13SupportTicketCreated = { ticketId: string; categoryCode: string; priority: string; slaDueAt: string; redactionVersion: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AnalyticsMetricProjected = { projectionRef: string; metricCode: string; metricVersion: string; windowStart: string; windowEnd: string; value: number; state: "READY" | "STALE" | "UNAVAILABLE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AnalyticsRecomputeRequested = { jobId: string; metricCode: string; metricVersion: string; windowStart: string; windowEnd: string; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthOidcAuthorizationStarted = { authorizationTransactionId: string; provider: string; intent: "login" | "register"; expiresAt: string; startedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type AuthOidcCallbackCompleted = { principalId: string; sessionId: string; deviceId: string; provider: string; outcome: "LOGIN" | "REGISTER" | "LINKED"; adultGateStatus?: "PENDING" | "APPROVED" | "REJECTED"; completedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type IamSessionRevoked = { principalId: string; sessionId: string; deviceId: string; reasonCode: "LOGOUT" | "KICKED" | "REFRESH_REUSE" | "CALLBACK_REUSE" | "RISK_FREEZE" | "ADMIN"; revocationStatus: "REVOKED"; providerRevocationStatus?: "REQUESTED" | "CONFIRMED" | "UNAVAILABLE" | "NOT_REQUIRED"; revokedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowOutboxPublished = { outboxId: string; producerService: string; eventType: string; aggregateId: string; dedupeKey: string; aggregateVersion: number; publishedAt: string; attempt: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowDeliveryFailed = { failedEventId: string; consumerGroup: string; failureCode: "TIMEOUT" | "TEMPORARY_UNAVAILABLE" | "CONFLICT_RETRYABLE" | "SCHEMA_INVALID" | "FORBIDDEN" | "OWNER_MISMATCH" | "STALE_VERSION"; retryable: boolean; attempt: number; failedAt: string; nextAttemptAt?: unknown; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowDeadLettered = { failedEventId: string; consumerGroup: string; failureCode: string; attempt: number; failedAt: string; recoveryState: "PENDING_REVIEW" | "REPLAY_APPROVED" | "COMPENSATION_PENDING" | "RESOLVED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowReplayRequested = { replayRunId: string; sourceTopic: string; sourceEventId: string; requestedByRef: string; approvalRef: string; reasonCode: string; mode: "SINGLE_EVENT" | "DLQ_BATCH"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowOrderingDeferred = { aggregateId: string; receivedVersion: number; expectedVersion: number; bufferedAt: string; expiresAt: string; action: "BUFFERED" | "DLQ_AFTER_TIMEOUT" | "STALE_SKIPPED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowCompensationRequested = { sagaId: string; step: string; aggregateId: string; compensationCode: string; reasonCode: string; state: "COMPENSATION_PENDING" | "COMPENSATED" | "MANUAL_RECOVERY"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B26WorkflowManualRecoveryRequested = { recoveryId: string; sagaId: string; aggregateId: string; failedStep: string; reasonCode: string; approvalState: "PENDING_TWO_PERSON_REVIEW" | "APPROVED" | "REJECTED" | "EXECUTED"; runbookRef: string; };
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -535,9 +625,11 @@ export interface CommerceOrderPaidEvent extends PlatformEventEnvelope<CommerceOr
   version: 1;
 }
 
-export interface CommerceEntitlementActivatedEvent extends PlatformEventEnvelope<CommerceEntitlementActivated> {
+export interface CommerceEntitlementActivatedEvent extends PlatformEventEnvelope<B13CommerceEntitlementActivated> {
   eventName: "commerce.entitlement.activated.v1";
   version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
 }
 
 export interface CommerceEntitlementRevokedEvent extends PlatformEventEnvelope<CommerceEntitlementRevoked> {
@@ -1277,4 +1369,95 @@ export interface NotificationRecoveryCompletedEvent extends PlatformEventEnvelop
   dedupeKey: string;
 }
 
-export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent;
+export interface CommerceOrderReconciledEvent extends PlatformEventEnvelope<B13CommerceOrderReconciled> {
+  eventName: "commerce.order.reconciled.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AnalyticsMetricProjectedEvent extends PlatformEventEnvelope<B13AnalyticsMetricProjected> {
+  eventName: "analytics.metric.projected.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AnalyticsRecomputeRequestedEvent extends PlatformEventEnvelope<B13AnalyticsRecomputeRequested> {
+  eventName: "analytics.recompute.requested.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthOidcAuthorizationStartedEvent extends PlatformEventEnvelope<AuthOidcAuthorizationStarted> {
+  eventName: "auth.oidc.authorization.started.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface AuthOidcCallbackCompletedEvent extends PlatformEventEnvelope<AuthOidcCallbackCompleted> {
+  eventName: "auth.oidc.callback.completed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface IamSessionRevokedEvent extends PlatformEventEnvelope<IamSessionRevoked> {
+  eventName: "iam.session.revoked.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowOutboxPublishedEvent extends PlatformEventEnvelope<B26WorkflowOutboxPublished> {
+  eventName: "workflow.outbox.published.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowEventDeliveryFailedEvent extends PlatformEventEnvelope<B26WorkflowDeliveryFailed> {
+  eventName: "workflow.event.delivery_failed.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowEventDeadLetteredEvent extends PlatformEventEnvelope<B26WorkflowDeadLettered> {
+  eventName: "workflow.event.dead_lettered.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowEventReplayRequestedEvent extends PlatformEventEnvelope<B26WorkflowReplayRequested> {
+  eventName: "workflow.event.replay_requested.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowEventOrderingDeferredEvent extends PlatformEventEnvelope<B26WorkflowOrderingDeferred> {
+  eventName: "workflow.event.ordering_deferred.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowSagaCompensationRequestedEvent extends PlatformEventEnvelope<B26WorkflowCompensationRequested> {
+  eventName: "workflow.saga.compensation_requested.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export interface WorkflowSagaManualRecoveryRequestedEvent extends PlatformEventEnvelope<B26WorkflowManualRecoveryRequested> {
+  eventName: "workflow.saga.manual_recovery_requested.v1";
+  version: 1;
+  schemaVersion: string;
+  dedupeKey: string;
+}
+
+export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | AuthOidcAuthorizationStartedEvent | AuthOidcCallbackCompletedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;

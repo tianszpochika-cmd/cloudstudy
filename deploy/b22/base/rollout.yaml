@@ -1,0 +1,132 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: api-gateway
+  labels:
+    app.kubernetes.io/name: api-gateway
+    app.kubernetes.io/component: edge
+  annotations:
+    englishflow.dev/release-batch: B22
+    englishflow.dev/release-status: BLOCKED
+    englishflow.dev/b21-gate: required-and-not-accepted
+    englishflow.dev/image-signature-policy: cosign-required
+    englishflow.dev/sbom-policy: cyclonedx-required
+    englishflow.dev/release-revision: immutable-digest
+    englishflow.dev/promotion: manual-and-audited
+spec:
+  # Static template safety: no production change is enabled by this manifest.
+  paused: true
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: api-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: api-gateway
+        app.kubernetes.io/component: edge
+        app.kubernetes.io/release-batch: b22
+    spec:
+      serviceAccountName: api-gateway
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: api-gateway
+          image: registry.example.invalid/englishflow/api-gateway@sha256:1111111111111111111111111111111111111111111111111111111111111111
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: production
+            - name: B22_RELEASE_GATE
+              valueFrom:
+                configMapKeyRef:
+                  name: b22-release-flags
+                  key: release-gate
+            - name: B22_TRAFFIC_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: b22-release-flags
+                  key: traffic-mode
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: englishflow-runtime-secrets
+                  key: database-password
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: englishflow-runtime-secrets
+                  key: oidc-client-secret
+          startupProbe:
+            httpGet:
+              path: /actuator/health/startup
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+  strategy:
+    canary:
+      stableService: api-gateway-stable
+      canaryService: api-gateway-canary
+      steps:
+        - setWeight: 1
+        - pause:
+            duration: 15m
+        - analysis:
+            templates:
+              - templateName: b22-canary-health
+        - setWeight: 5
+        - pause:
+            duration: 30m
+        - analysis:
+            templates:
+              - templateName: b22-canary-health
+        - setWeight: 25
+        - pause:
+            duration: 60m
+        - analysis:
+            templates:
+              - templateName: b22-canary-health
+        - setWeight: 50
+        - pause:
+            duration: 120m
+        - analysis:
+            templates:
+              - templateName: b22-canary-health
+      abortScaleDownDelaySeconds: 300
+

@@ -332,11 +332,11 @@ CREATE TABLE IF NOT EXISTS cms_import_job (
 CREATE TABLE IF NOT EXISTS cms_import_row (
   import_row_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   import_job_id BIGINT UNSIGNED NOT NULL,
-  row_number INT UNSIGNED NOT NULL,
+  `row_number` INT UNSIGNED NOT NULL,
   normalized_key VARCHAR(256) NOT NULL,
   status VARCHAR(24) NOT NULL DEFAULT 'ACCEPTED',
   issue_code VARCHAR(64) NULL,
-  PRIMARY KEY (import_row_id), UNIQUE KEY uk_cms_import_row (import_job_id, row_number)
+  PRIMARY KEY (import_row_id), UNIQUE KEY uk_cms_import_row (import_job_id, `row_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS cms_sensitive_rule (

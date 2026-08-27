@@ -1,0 +1,830 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "batch": "G3",
+  "gate": "G3",
+  "taskId": "G3-TEST-SECURITY-OBSERVABILITY",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "PASS",
+  "staticStatus": "PASS",
+  "runtimeStatus": "blocked",
+  "runtimeDecision": "BLOCKED",
+  "defaultDecision": "NO-GO",
+  "scope": [
+    "unit-tests",
+    "integration-tests",
+    "contract-tests",
+    "e2e-tests",
+    "authorization-and-default-deny",
+    "idempotency-and-retry",
+    "weak-network-and-offline",
+    "privacy-and-redaction",
+    "performance-and-adaptive-degradation",
+    "phase-1-ai-disabled",
+    "security-scanning",
+    "requestId-traceId-otel-audit-alerting"
+  ],
+  "sourceRefs": [
+    "G3",
+    "ARCH-OBS-001",
+    "ARCH-IAM-001",
+    "ARCH-API-001",
+    "V2-B19-QA-005",
+    "V2-B20-SEC-001",
+    "V2-B21-OBS-003"
+  ],
+  "tasks": [
+    {
+      "id": "G3-TEST-SECURITY-OBSERVABILITY",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": ["G1", "G2", "V2-B19-QA-005", "V2-B20-SEC-001"],
+      "scope": [
+        "unit-integration-contract-e2e",
+        "permission-default-deny",
+        "idempotency-retry-weak-network",
+        "privacy-performance",
+        "phase-1-ai-disabled",
+        "security-scan",
+        "correlation-audit-alerting"
+      ]
+    }
+  ],
+  "execution": {
+    "mode": "static-fixture-only",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "runtimeEvidenceStatus": "pending",
+    "allowUnverifiedPass": false,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeEvidence": null,
+    "productionMutationAllowed": false,
+    "productionTrafficAllowed": false,
+    "destructiveOperationAllowed": false,
+    "realBrowserOrDeviceClaimAllowed": false,
+    "realSecurityScanClaimAllowed": false,
+    "realObservabilityClaimAllowed": false,
+    "blockedReasons": [
+      "real browser and device runs are not externally captured",
+      "approved security scanner reports are not externally captured",
+      "cross-process OpenTelemetry, audit and alert evidence is not externally captured",
+      "production or production-like traffic evidence is not present",
+      "static source markers and synthetic fixtures cannot close runtime acceptance"
+    ]
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "G3_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "G3_RUNTIME_TEST_REPORT",
+      "G3_RUNTIME_SECURITY_SCAN",
+      "G3_RUNTIME_BROWSER_DEVICE",
+      "G3_RUNTIME_PERFORMANCE",
+      "G3_RUNTIME_OBSERVABILITY",
+      "G3_RUNTIME_AUDIT_ALERT"
+    ],
+    "requiredEvidence": [
+      "G3-E-RUNTIME-TEST",
+      "G3-E-RUNTIME-SECURITY",
+      "G3-E-RUNTIME-BROWSER-DEVICE",
+      "G3-E-RUNTIME-PERFORMANCE",
+      "G3-E-RUNTIME-OBSERVABILITY",
+      "G3-E-RUNTIME-AUDIT-ALERT"
+    ],
+    "runtimeStatusWhenMissing": "blocked",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "runtimeEvidenceMustRemainPendingOrBlocked": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "requireImmutableExternalEvidence": true,
+    "requireApprovedRunner": true,
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "synthetic-fixture-only",
+      "development-http-200",
+      "local-http-200",
+      "same-process-test-double",
+      "unit-test-only",
+      "unexecuted-command-list",
+      "dashboard-screenshot-only",
+      "unfired-alert-definition",
+      "source-marker-only",
+      "fake-phase-2-ai-fixture",
+      "real-production-evidence-without-external-attestation"
+    ]
+  },
+  "safetyBoundaries": {
+    "noRealCredentials": true,
+    "noPII": true,
+    "noProductionData": true,
+    "noProductionTraffic": true,
+    "noProductionMutation": true,
+    "noPayment": true,
+    "noDeletion": true,
+    "noPhase2AI": true,
+    "syntheticFixturesOnly": true,
+    "runtimeCollectionMustUseApprovedRunner": true,
+    "runtimeCollectionMustNotWriteRepository": true,
+    "runtimeEvidenceMustBeRedacted": true
+  },
+  "phasePolicy": {
+    "currentPhase": "phase-1",
+    "adultAndUniversityLearnerOnly": true,
+    "aiStatus": "disabled",
+    "generativeAIEnabled": false,
+    "asrEnabled": false,
+    "aiScoringEnabled": false,
+    "realtimeAIEnabled": false,
+    "digitalHumanEnabled": false,
+    "phase2CapabilitiesInDefaultRoute": false,
+    "phase3CapabilitiesInDefaultRoute": false,
+    "unknownPhaseDecision": "deny",
+    "forbiddenCapabilities": [
+      "generative-ai",
+      "asr",
+      "ai-scoring",
+      "realtime-ai",
+      "digital-human",
+      "k12",
+      "guardian-account"
+    ],
+    "runtimeStatus": "pending"
+  },
+  "testPolicy": {
+    "fixtureMode": "synthetic-only",
+    "realSubjectDataAllowed": false,
+    "realMediaAllowed": false,
+    "realProductionReportAllowed": false,
+    "requiredTestKinds": ["unit", "integration", "contract", "e2e"],
+    "runtimeEvidenceClass": "runtime",
+    "staticEvidenceClass": "static",
+    "missingEvidenceDecision": "NO-GO",
+    "openP0P1Decision": "BLOCKED",
+    "e2eBrowserDeviceEvidence": "pending",
+    "weakNetworkEvidence": "pending",
+    "performanceEvidence": "pending"
+  },
+  "authorizationPolicy": {
+    "defaultEffect": "deny",
+    "unknownDecision": "deny",
+    "missingIdentityDecision": "deny",
+    "missingPolicyDecision": "deny",
+    "pdpUnavailableDecision": "deny",
+    "clientAuthorityTrusted": false,
+    "serverDerivesTenantAndOwner": true,
+    "forbiddenAuthorityFields": [
+      "X-Role",
+      "X-B5-Role",
+      "X-Tenant-Id",
+      "X-Owner-Id",
+      "tenantId",
+      "ownerId",
+      "permissions"
+    ],
+    "requiredDecisionFacts": [
+      "subject",
+      "tenant",
+      "role",
+      "permission",
+      "resource",
+      "action",
+      "owner",
+      "phase",
+      "contentRights",
+      "consent"
+    ],
+    "runtimeStatus": "pending"
+  },
+  "idempotencyAndNetworkPolicy": {
+    "writeRequestsRequire": "Idempotency-Key",
+    "duplicateCommandDecision": "same-result-no-duplicate-write",
+    "eventDeduplicationRequired": true,
+    "retryMustBeBounded": true,
+    "outboxReplayMustBeIdempotent": true,
+    "weakNetworkScenarios": ["timeout", "retry", "offline", "resume", "duplicate-submit", "out-of-order-response"],
+    "offlineRecoveryMustBeExplicit": true,
+    "unknownNetworkOutcomeDecision": "recoverable-pending",
+    "runtimeStatus": "pending"
+  },
+  "privacyPolicy": {
+    "fixtureMode": "synthetic-only",
+    "redactionRequired": true,
+    "rawSecretsAllowed": false,
+    "rawPIIAllowed": false,
+    "rawAudioAllowed": false,
+    "auditMustUseReferences": true,
+    "forbiddenFixtureFields": [
+      "password",
+      "secret",
+      "token",
+      "authorization",
+      "cookie",
+      "privateKey",
+      "rawAudio",
+      "phone",
+      "email",
+      "realName"
+    ],
+    "runtimeStatus": "pending"
+  },
+  "performancePolicy": {
+    "engine": "AdaptivePerformanceEngine",
+    "levels": ["Ultra", "High", "Medium", "Performance"],
+    "lowCapabilityFallback": "2.5D-or-2D-static",
+    "weakNetworkBudgetRequired": true,
+    "layoutThrashingForbidden": true,
+    "runtimeStatus": "pending"
+  },
+  "securityScanPolicy": {
+    "status": "pending",
+    "runtimeRequired": true,
+    "requiredScanFamilies": ["sast", "dependency", "secret", "container-image", "sbom-provenance"],
+    "requiredTools": ["Semgrep", "CodeQL", "OSV-Scanner", "Trivy", "Gitleaks", "Syft", "cosign"],
+    "highSeverityDecision": "BLOCKED",
+    "secretFindingDecision": "BLOCKED",
+    "scanEvidenceMustBeExternal": true,
+    "scanEvidenceMustBeRedacted": true
+  },
+  "observabilityPolicy": {
+    "runtimeStatus": "pending",
+    "provider": "OpenTelemetry",
+    "signals": ["traces", "metrics", "logs"],
+    "resourceAttributes": ["service.name", "service.version", "deployment.environment"],
+    "correlationFields": ["requestId", "traceId", "eventId", "decisionId"],
+    "sensitiveDataPolicy": "redact-or-do-not-record",
+    "exporterEndpointSource": "runtime-env-only",
+    "crossProcessEvidenceRequired": true,
+    "audit": {
+      "status": "pending",
+      "appendOnly": true,
+      "replayable": true,
+      "externalSinkRequired": true,
+      "requiredFields": ["eventId", "requestId", "traceId", "decisionId", "actorRef", "timestamp", "action", "outcome", "artifactRef"]
+    },
+    "alerting": {
+      "status": "pending",
+      "severityLevels": ["P0", "P1", "P2"],
+      "runtimeTriggerRequired": true,
+      "unownedAlertDecision": "PAGE-AND-BLOCK",
+      "missingTraceDecision": "BLOCKED",
+      "missingAuditDecision": "BLOCKED"
+    }
+  },
+  "controls": [
+    {"id": "G3-TEST-UNIT", "category": "unit", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-TEST-INTEGRATION", "category": "integration", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-TEST-CONTRACT", "category": "contract", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-TEST-E2E", "category": "e2e", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-SEC-AUTH", "category": "authorization-default-deny", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-REL-IDEMPOTENCY", "category": "idempotency-retry-weak-network", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-SEC-PRIVACY", "category": "privacy-redaction", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-SEC-PERFORMANCE", "category": "performance-adaptive-degradation", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-SEC-PHASE", "category": "phase-1-ai-disabled", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-SEC-SCAN", "category": "security-scanning", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-OBS-CORRELATION", "category": "request-trace-otel", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"},
+    {"id": "G3-OBS-AUDIT-ALERT", "category": "audit-alerting", "priority": "P0", "staticPolicy": "defined", "runtimeStatus": "pending"}
+  ],
+  "qualityGates": [
+    {
+      "id": "G3-TEST-UNIT",
+      "controlId": "G3-TEST-UNIT",
+      "category": "unit",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-UNIT-STATIC-001",
+          "kind": "unit-test-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-UNIT",
+          "sourcePaths": ["requirements/backlog/DoD-Gate与证据包规范.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "单元/集成/契约/E2E"},
+            {"contains": "单元、契约、逻辑集成测试"},
+            {"contains": "幂等"}
+          ],
+          "policyAssertions": ["deterministic-unit", "boundary", "idempotency", "default-deny"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-UNIT-RUNTIME-001",
+          "kind": "unit-suite-execution",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-TEST",
+          "tools": ["approved test runner", "immutable report generator"],
+          "targets": ["unit suite", "boundary and failure cases", "coverage report"],
+          "scenarios": ["normal", "boundary", "default-deny", "duplicate-command", "failure-recovery"],
+          "evidenceRequired": ["command", "tool-version", "run-id", "result-report", "commit-ref"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "unexecuted-command-list", "same-process-test-double"],
+          "expected": "the approved runner supplies an externally reproducible unit report; missing or failing evidence remains blocked"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-UNIT", "G3-E-RUNTIME-TEST"]
+    },
+    {
+      "id": "G3-TEST-INTEGRATION",
+      "controlId": "G3-TEST-INTEGRATION",
+      "category": "integration",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-INTEGRATION-STATIC-001",
+          "kind": "integration-permission-and-recovery-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-INTEGRATION",
+          "sourcePaths": ["AGENTS.md", "services/service-template/README.md"],
+          "assertions": [
+            {"contains": "服务侧鉴权"},
+            {"contains": "默认拒绝"},
+            {"contains": "PDP 超时、异常"}
+          ],
+          "policyAssertions": ["cross-service-pep", "default-deny", "failure-closed", "recovery"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-INTEGRATION-RUNTIME-001",
+          "kind": "integration-journey-and-fault-matrix",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-TEST",
+          "tools": ["approved integration runner", "service trace collector", "fault-injection harness"],
+          "targets": ["Gateway", "IAM", "domain PEP", "outbox and audit boundary"],
+          "scenarios": ["allow", "unauthenticated-deny", "cross-owner-deny", "pdp-timeout-deny", "retry-recovery"],
+          "evidenceRequired": ["cross-process-run-id", "requestId", "traceId", "decision-report", "audit-reference"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "same-process-test-double", "development-http-200", "synthetic-fixture-only"],
+          "expected": "the bound services reproduce allow and deny paths with correlated failure and recovery evidence; missing evidence remains blocked"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-INTEGRATION", "G3-E-RUNTIME-TEST"]
+    },
+    {
+      "id": "G3-TEST-CONTRACT",
+      "controlId": "G3-TEST-CONTRACT",
+      "category": "contract",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-CONTRACT-STATIC-001",
+          "kind": "api-event-schema-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-CONTRACT",
+          "sourcePaths": ["requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md", "requirements/backlog/DoD-Gate与证据包规范.md"],
+          "assertions": [
+            {"contains": "OpenAPI、AsyncAPI 或 JSON Schema"},
+            {"contains": "eventId/requestId/traceId/schemaVersion"},
+            {"contains": "Idempotency-Key"}
+          ],
+          "policyAssertions": ["contract-first", "generated-types", "correlation", "idempotency-key"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-CONTRACT-RUNTIME-001",
+          "kind": "contract-compatibility-and-envelope-run",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-TEST",
+          "tools": ["approved contract runner", "OpenAPI/AsyncAPI verifier", "generated-client verifier"],
+          "targets": ["OpenAPI", "AsyncAPI", "JSON Schema", "generated clients", "error envelope"],
+          "scenarios": ["compatible-request", "breaking-change", "invalid-envelope", "missing-idempotency", "trace-propagation"],
+          "evidenceRequired": ["schema-digest", "compatibility-report", "generated-client-report", "requestId", "traceId"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "unit-test-only", "synthetic-fixture-only", "unexecuted-command-list"],
+          "expected": "the bound contract runner produces a reproducible compatibility report and rejects breaking or uncorrelated requests"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-CONTRACT", "G3-E-RUNTIME-TEST"]
+    },
+    {
+      "id": "G3-TEST-E2E",
+      "controlId": "G3-TEST-E2E",
+      "category": "e2e",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-E2E-STATIC-001",
+          "kind": "browser-device-journey-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-E2E",
+          "sourcePaths": ["requirements/backlog/DoD-Gate与证据包规范.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "关键路径能否复现"},
+            {"contains": "组件/浏览器交互"},
+            {"contains": "真机、读屏、商店审核、真实弱网"}
+          ],
+          "policyAssertions": ["key-journey", "browser", "device", "permission", "privacy"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-E2E-RUNTIME-001",
+          "kind": "browser-device-e2e-journey",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-BROWSER-DEVICE",
+          "tools": ["approved browser runner", "approved device runner", "console and network collector"],
+          "targets": ["learner-web", "mobile H5", "admin-web", "official-site"],
+          "scenarios": ["login-to-learning-loop", "permission-denied", "privacy-redaction", "offline-recovery", "responsive-boundary"],
+          "evidenceRequired": ["browser-or-device-profile", "run-video-or-trace", "console-summary", "network-summary", "redacted-screenshot"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "development-http-200", "unit-test-only", "screenshot-only"],
+          "expected": "real browser and device runs are externally bound to a release and environment; missing or failing evidence remains blocked"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-E2E", "G3-E-RUNTIME-BROWSER-DEVICE"]
+    },
+    {
+      "id": "G3-SEC-AUTH",
+      "controlId": "G3-SEC-AUTH",
+      "category": "authorization-default-deny",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-AUTH-STATIC-001",
+          "kind": "authorization-default-deny-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-AUTH",
+          "sourcePaths": ["services/service-template/README.md", "services/api-gateway/README.md"],
+          "assertions": [
+            {"contains": "默认拒绝"},
+            {"contains": "X-Role"},
+            {"contains": "default security chain denies every non-public request"}
+          ],
+          "policyAssertions": ["default-deny", "server-authority", "client-header-untrusted", "401-403-distinction"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-AUTH-RUNTIME-001",
+          "kind": "permission-and-default-deny-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-TEST",
+          "tools": ["approved authorization runner", "OIDC test identity provider", "audit query"],
+          "targets": ["anonymous request", "expired identity", "wrong owner", "wrong tenant", "forged authority header"],
+          "scenarios": ["missing-identity-deny", "unknown-permission-deny", "forged-role-deny", "cross-tenant-deny", "pdp-unavailable-deny"],
+          "evidenceRequired": ["decision-id", "requestId", "traceId", "http-status", "audit-reference"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "client-only-check", "development-http-200"],
+          "expected": "every unverified or unauthorized decision is denied by the server and correlated to an external audit record"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-AUTH", "G3-E-RUNTIME-TEST"]
+    },
+    {
+      "id": "G3-REL-IDEMPOTENCY",
+      "controlId": "G3-REL-IDEMPOTENCY",
+      "category": "idempotency-retry-weak-network",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-IDEMPOTENCY-STATIC-001",
+          "kind": "idempotency-weak-network-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-IDEMPOTENCY",
+          "sourcePaths": ["AGENTS.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "写请求必须具备幂等键"},
+            {"contains": "弱网"},
+            {"contains": "离线"}
+          ],
+          "policyAssertions": ["idempotency-key", "bounded-retry", "offline-recovery", "duplicate-safe"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-IDEMPOTENCY-RUNTIME-001",
+          "kind": "idempotency-retry-and-weak-network-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-TEST",
+          "tools": ["approved network proxy", "idempotency replay runner", "outbox/reconciliation verifier"],
+          "targets": ["write command", "retry queue", "offline cursor", "outbox consumer"],
+          "scenarios": ["timeout-after-write", "duplicate-submit", "offline-then-resume", "out-of-order-response", "consumer-replay"],
+          "evidenceRequired": ["idempotency-key", "same-result-proof", "write-count", "replay-report", "reconciliation-report"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "single-request-success", "development-http-200"],
+          "expected": "retries and replays preserve one logical write and recover explicitly under weak network conditions"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-IDEMPOTENCY", "G3-E-RUNTIME-TEST"]
+    },
+    {
+      "id": "G3-SEC-PRIVACY",
+      "controlId": "G3-SEC-PRIVACY",
+      "category": "privacy-redaction",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-PRIVACY-STATIC-001",
+          "kind": "privacy-redaction-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-PRIVACY",
+          "sourcePaths": ["packages/telemetry/README.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "默认策略是拒绝"},
+            {"contains": "禁止密码、Token、Authorization/Cookie"},
+            {"contains": "所有测试数据只使用合成主体"}
+          ],
+          "policyAssertions": ["redact-or-drop", "synthetic-only", "no-raw-audio", "audit-reference-only"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-PRIVACY-RUNTIME-001",
+          "kind": "privacy-redaction-and-access-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-SECURITY",
+          "tools": ["approved privacy test runner", "redaction verifier", "audit export verifier"],
+          "targets": ["API errors", "logs", "telemetry", "audit export", "cross-owner reads"],
+          "scenarios": ["secret-input", "pii-input", "raw-audio-input", "forbidden-export-field", "cross-owner-read"],
+          "evidenceRequired": ["redaction-report", "forbidden-field-report", "access-denial-report", "audit-reference", "fixture-manifest"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "schema-only", "dashboard-screenshot-only"],
+          "expected": "secret and personal data are absent or redacted and unauthorized exports are denied"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-PRIVACY", "G3-E-RUNTIME-SECURITY"]
+    },
+    {
+      "id": "G3-SEC-PERFORMANCE",
+      "controlId": "G3-SEC-PERFORMANCE",
+      "category": "performance-adaptive-degradation",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-PERFORMANCE-STATIC-001",
+          "kind": "performance-and-degradation-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-PERFORMANCE",
+          "sourcePaths": ["AGENTS.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "AdaptivePerformanceEngine"},
+            {"contains": "Ultra / High / Medium / Performance"},
+            {"contains": "LCP/INP"}
+          ],
+          "policyAssertions": ["four-level-quality", "low-device-fallback", "weak-network", "no-layout-thrashing"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-PERFORMANCE-RUNTIME-001",
+          "kind": "weak-network-performance-and-quality-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-PERFORMANCE",
+          "tools": ["approved network profiler", "approved performance runner", "device capability runner"],
+          "targets": ["2G/3G/offline", "LCP", "INP", "four quality levels", "low-capability fallback"],
+          "scenarios": ["slow-network", "offline", "ultra", "high", "medium", "performance"],
+          "evidenceRequired": ["device-profile", "network-profile", "timing-report", "quality-level-report", "fallback-report"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "development-http-200", "single-device-run"],
+          "expected": "bounded network and device runs demonstrate responsive behavior and an explicit quality fallback"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-PERFORMANCE", "G3-E-RUNTIME-PERFORMANCE"]
+    },
+    {
+      "id": "G3-SEC-PHASE",
+      "controlId": "G3-SEC-PHASE",
+      "category": "phase-1-ai-disabled",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-PHASE-STATIC-001",
+          "kind": "phase-1-ai-boundary-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-PHASE",
+          "sourcePaths": ["AGENTS.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "Phase 1 不启用生成式 AI"},
+            {"contains": "没有 Gate 不得进入默认路由"},
+            {"contains": "Phase 2/3 已移出当前批次"}
+          ],
+          "policyAssertions": ["ai-disabled", "phase-gate", "no-default-route", "adult-only"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-PHASE-RUNTIME-001",
+          "kind": "phase-1-capability-and-route-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-TEST",
+          "tools": ["approved route inventory runner", "feature-flag verifier", "audit query"],
+          "targets": ["default routes", "feature flags", "AI provider configuration", "Phase 1 UI actions"],
+          "scenarios": ["phase-2-route-deny", "phase-2-provider-absent", "ai-cta-absent", "unknown-phase-deny", "audit-denial"],
+          "evidenceRequired": ["route-inventory", "flag-state", "provider-inventory", "denial-report", "audit-reference"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "fake-phase-2-ai-fixture", "hidden-ui-only", "synthetic-fixture-only"],
+          "expected": "Phase 2 and Phase 3 capabilities remain unavailable in Phase 1 default routes and unknown decisions deny"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-PHASE", "G3-E-RUNTIME-TEST"]
+    },
+    {
+      "id": "G3-SEC-SCAN",
+      "controlId": "G3-SEC-SCAN",
+      "category": "security-scanning",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-SCAN-STATIC-001",
+          "kind": "security-scan-and-secret-policy-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-SCAN",
+          "sourcePaths": ["scripts/check-dod.mjs", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md", "requirements/backlog/DoD-Gate与证据包规范.md"],
+          "assertions": [
+            {"contains": "真实密钥扫描"},
+            {"contains": "SAST"},
+            {"contains": "密钥扫描"},
+            {"contains": "扫描报告"}
+          ],
+          "policyAssertions": ["sast", "dependency", "secret", "image", "sbom", "high-severity-block"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-SCAN-RUNTIME-001",
+          "kind": "security-scanner-evidence-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-SECURITY",
+          "tools": ["Semgrep", "CodeQL", "OSV-Scanner", "Trivy", "Gitleaks", "Syft", "cosign"],
+          "targets": ["source tree", "dependency graph", "container image", "repository secrets", "SBOM and provenance"],
+          "scenarios": ["high-severity-finding", "secret-finding", "mutable-artifact", "missing-sbom", "signature-mismatch"],
+          "evidenceRequired": ["scanner-version", "scan-scope", "findings-report", "sbom-reference", "signature-reference", "redacted-log"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "tool-name-list", "unexecuted-command-list"],
+          "expected": "approved security scanners run against the bound source and artifact; any high-severity or secret finding remains blocked"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-SCAN", "G3-E-RUNTIME-SECURITY"]
+    },
+    {
+      "id": "G3-OBS-CORRELATION",
+      "controlId": "G3-OBS-CORRELATION",
+      "category": "request-trace-otel",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-OBS-CORRELATION-STATIC-001",
+          "kind": "request-trace-otel-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-CORRELATION",
+          "sourcePaths": ["services/service-template/README.md", "packages/telemetry/README.md", "AGENTS.md"],
+          "assertions": [
+            {"contains": "requestId / traceId"},
+            {"contains": "createRequestContext"},
+            {"contains": "OpenTelemetry"},
+            {"contains": "eventId/traceId/schemaVersion"}
+          ],
+          "policyAssertions": ["request-id", "trace-id", "otel-traces-metrics-logs", "event-correlation"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-OBS-CORRELATION-RUNTIME-001",
+          "kind": "cross-process-otel-correlation-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-OBSERVABILITY",
+          "tools": ["approved OTel collector", "trace and metric verifier", "structured log query"],
+          "targets": ["Gateway", "IAM", "domain service", "trace backend", "metric backend", "log backend"],
+          "scenarios": ["request-correlation", "missing-trace", "missing-metric", "sensitive-field-redaction", "cross-process-propagation"],
+          "evidenceRequired": ["requestId", "traceId", "trace-sample", "metric-query", "redacted-log-query", "resource-attributes"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "same-process-test-double", "dashboard-screenshot-only"],
+          "expected": "an externally collected cross-process trace, metric and log set is correlated and redacted"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-CORRELATION", "G3-E-RUNTIME-OBSERVABILITY"]
+    },
+    {
+      "id": "G3-OBS-AUDIT-ALERT",
+      "controlId": "G3-OBS-AUDIT-ALERT",
+      "category": "audit-alerting",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "G3-OBS-AUDIT-STATIC-001",
+          "kind": "audit-and-alert-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "G3-E-STATIC-AUDIT-ALERT",
+          "sourcePaths": ["AGENTS.md", "requirements/backlog/DoD-Gate与证据包规范.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"],
+          "assertions": [
+            {"contains": "audit-service"},
+            {"contains": "审计留痕"},
+            {"contains": "告警路由"},
+            {"contains": "P0/P1"}
+          ],
+          "policyAssertions": ["append-only-audit", "replayable-audit", "p0-p1-alert", "unowned-alert-blocks"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "G3-OBS-AUDIT-RUNTIME-001",
+          "kind": "audit-alert-escalation-runtime",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "G3-E-RUNTIME-AUDIT-ALERT",
+          "tools": ["approved alert runner", "audit-log query", "on-call acknowledgement system"],
+          "targets": ["append-only audit sink", "P0 route", "P1 route", "P2 route", "unowned alert path"],
+          "scenarios": ["audit-write", "audit-replay", "p0-page", "p1-escalation", "unowned-alert-block"],
+          "evidenceRequired": ["eventId", "requestId", "traceId", "alert-payload", "delivery-log", "acknowledgement", "audit-export"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "unfired-alert-definition", "dashboard-screenshot-only", "manual-unlogged-ticket"],
+          "expected": "audit and alert delivery are externally exercised with acknowledgement and unowned paths block acceptance"
+        }
+      ],
+      "evidenceIds": ["G3-E-STATIC-AUDIT-ALERT", "G3-E-RUNTIME-AUDIT-ALERT"]
+    }
+  ],
+  "evidenceIndex": [
+    {"id": "G3-E-STATIC-UNIT", "controlId": "G3-TEST-UNIT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-TEST-UNIT/staticChecks/G3-UNIT-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-INTEGRATION", "controlId": "G3-TEST-INTEGRATION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-TEST-INTEGRATION/staticChecks/G3-INTEGRATION-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-CONTRACT", "controlId": "G3-TEST-CONTRACT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-TEST-CONTRACT/staticChecks/G3-CONTRACT-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-E2E", "controlId": "G3-TEST-E2E", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-TEST-E2E/staticChecks/G3-E2E-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-AUTH", "controlId": "G3-SEC-AUTH", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-SEC-AUTH/staticChecks/G3-AUTH-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-IDEMPOTENCY", "controlId": "G3-REL-IDEMPOTENCY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-REL-IDEMPOTENCY/staticChecks/G3-IDEMPOTENCY-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-PRIVACY", "controlId": "G3-SEC-PRIVACY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-SEC-PRIVACY/staticChecks/G3-PRIVACY-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-PERFORMANCE", "controlId": "G3-SEC-PERFORMANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-SEC-PERFORMANCE/staticChecks/G3-PERFORMANCE-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-PHASE", "controlId": "G3-SEC-PHASE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-SEC-PHASE/staticChecks/G3-PHASE-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-SCAN", "controlId": "G3-SEC-SCAN", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-SEC-SCAN/staticChecks/G3-SCAN-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-CORRELATION", "controlId": "G3-OBS-CORRELATION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-OBS-CORRELATION/staticChecks/G3-OBS-CORRELATION-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-STATIC-AUDIT-ALERT", "controlId": "G3-OBS-AUDIT-ALERT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/g3-test-security-observability.json#/qualityGates/G3-OBS-AUDIT-ALERT/staticChecks/G3-OBS-AUDIT-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "G3-E-RUNTIME-TEST", "controlId": "G3-TEST-UNIT", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/g3/test-and-contract/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "G3-E-RUNTIME-SECURITY", "controlId": "G3-SEC-SCAN", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/g3/security-and-privacy/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "G3-E-RUNTIME-BROWSER-DEVICE", "controlId": "G3-TEST-E2E", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/g3/browser-device/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "G3-E-RUNTIME-PERFORMANCE", "controlId": "G3-SEC-PERFORMANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/g3/performance-network/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "G3-E-RUNTIME-OBSERVABILITY", "controlId": "G3-OBS-CORRELATION", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/g3/observability/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "G3-E-RUNTIME-AUDIT-ALERT", "controlId": "G3-OBS-AUDIT-ALERT", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/g3/audit-alerting/**/*.json", "collectionPolicy": "runtime-runner-only"}
+  ],
+  "syntheticFixtures": {
+    "fixturePolicy": "synthetic-references-only-no-real-subjects-no-secrets-no-production-data",
+    "subjectRef": "subject-ref://synthetic/g3-adult",
+    "requestRef": "request-ref://synthetic/g3-request",
+    "traceRef": "trace-ref://synthetic/g3-trace",
+    "auditRef": "audit-ref://synthetic/g3-audit",
+    "browserRef": "browser-ref://synthetic/g3-browser",
+    "deviceRef": "device-ref://synthetic/g3-device",
+    "scanRef": "scan-ref://synthetic/g3-scan",
+    "productionEvidence": null,
+    "phase2AiProvider": null,
+    "phase2AiEvidence": null
+  },
+  "realProductionEvidence": null,
+  "reportSchema": {
+    "id": "g3-test-security-observability-report",
+    "version": "1",
+    "closed": true,
+    "missingEvidenceDecision": "NO-GO",
+    "jsonSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "phase", "decision", "testEvidence", "securityEvidence", "observabilityEvidence", "runtimeEvidenceStatus", "reportHash"],
+      "properties": {
+        "schemaVersion": {"type": "integer", "const": 1},
+        "reportId": {"type": "string"},
+        "batch": {"type": "string", "const": "G3"},
+        "phase": {"type": "string", "const": "phase-1"},
+        "decision": {"type": "string", "enum": ["NO-GO", "GO"]},
+        "testEvidence": {"type": "object", "additionalProperties": false},
+        "securityEvidence": {"type": "object", "additionalProperties": false},
+        "observabilityEvidence": {"type": "object", "additionalProperties": false},
+        "runtimeEvidenceStatus": {"type": "string", "enum": ["pending", "blocked", "accepted"]},
+        "reportHash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

@@ -17,7 +17,9 @@ import com.englishflow.content.port.ContentRepository;
 import com.englishflow.content.port.PublicProjectionStore;
 
 import java.time.Clock;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Read-only content boundary for public, learner and trusted assessment consumers.
@@ -44,16 +46,22 @@ public final class ContentReadService {
     public PublicContentProjection read(ContentReadRequest request) {
         Objects.requireNonNull(request, "content read request is required");
         ContentDefinition content = findContent(request.contentId());
-        ContentVersion version = resolveVersion(content, request.pinnedVersionId().orElse(null), request.audience());
+        ContentVersion version = resolveVersion(content, request.pinnedVersionId().orElse(null), request.audience(),
+                request.allowPreviouslyPublishedPin());
         if (request.audience() == ContentAudience.ADMIN_PREVIEW) {
             requireAdminPreview(request.actor(), content);
         }
         if (request.audience() == ContentAudience.PUBLIC || request.audience() == ContentAudience.LEARNER) {
+            // Always evaluate publication and rights against the current fact first. A stale
+            // cache/projection row must never turn an archived or rights-expired version back
+            // into readable content.
+            PublicContentProjection safeProjection = ContentProjectionPolicy.project(
+                    content, version, request.audience(), request.channel(), clock.instant(),
+                    request.allowPreviouslyPublishedPin());
             return projectionStore.find(content.contentId(), version.versionId(), request.audience())
                     .filter(projection -> projection.versionId().equals(version.versionId()))
-                    .orElseGet(() -> ContentProjectionPolicy.project(
-                            content, version, request.audience(), request.channel(), clock.instant(),
-                            request.allowPreviouslyPublishedPin()));
+                    .filter(projection -> !projection.containsAnswerRules())
+                    .orElse(safeProjection);
         }
         if (request.audience() == ContentAudience.ASSESSMENT) {
             throw ContentOperationException.forbidden(
@@ -72,7 +80,7 @@ public final class ContentReadService {
                     "ANSWER_RULE_READ_FORBIDDEN", "only an authorized assessment service may read answer rules");
         }
         ContentDefinition content = findContent(contentId);
-        ContentVersion version = resolveVersion(content, pinnedVersionId, ContentAudience.ASSESSMENT);
+        ContentVersion version = resolveVersion(content, pinnedVersionId, ContentAudience.ASSESSMENT, false);
         return ContentProjectionPolicy.assessmentSnapshot(content, version, ContentChannel.ASSESSMENT, clock.instant());
     }
 
@@ -82,8 +90,96 @@ public final class ContentReadService {
             ContentActor actor) {
         ContentDefinition content = findContent(contentId);
         requireAdminPreview(actor, content);
-        ContentVersion version = resolveVersion(content, versionId, ContentAudience.ADMIN_PREVIEW);
+        ContentVersion version = resolveVersion(content, versionId, ContentAudience.ADMIN_PREVIEW, false);
         return ContentVersionSnapshot.from(contentId, version);
+    }
+
+    public PublicContentProjection readByCode(
+            String contentCode,
+            ContentAudience audience,
+            ContentChannel channel,
+            ContentVersionId pinnedVersionId,
+            boolean allowPreviouslyPublishedPin,
+            ContentActor actor) {
+        return readByCodeResult(contentCode, audience, channel, pinnedVersionId,
+                allowPreviouslyPublishedPin, actor).projection();
+    }
+
+    public ReadResult readByCodeResult(
+            String contentCode,
+            ContentAudience audience,
+            ContentChannel channel,
+            ContentVersionId pinnedVersionId,
+            boolean allowPreviouslyPublishedPin,
+            ContentActor actor) {
+        ContentDefinition content = repository.findByCode(contentCode).orElseThrow(() ->
+                ContentOperationException.notFound("CONTENT_NOT_FOUND", "content does not exist"));
+        if (audience == ContentAudience.LEARNER && actor == null) {
+            throw ContentOperationException.forbidden(
+                    "CONTENT_PRINCIPAL_REQUIRED", "learner content requires a verified principal");
+        }
+        if (actor != null && !actor.tenantId().equals(content.tenantId())) {
+            throw ContentOperationException.forbidden("CONTENT_TENANT_DENIED", "content tenant scope denied");
+        }
+        PublicContentProjection projection = read(new ContentReadRequest(
+                content.contentId(), audience, channel, Optional.ofNullable(pinnedVersionId),
+                allowPreviouslyPublishedPin, actor));
+        ContentVersion version = resolveVersion(
+                content, pinnedVersionId, audience, allowPreviouslyPublishedPin);
+        return new ReadResult(content.contentCode(), version.versionNumber(), content.contentEpoch(),
+                content.projectionVersion(), version.publishedAt().orElse(version.createdAt()), projection);
+    }
+
+    public List<PublicContentProjection> catalog(
+            ContentAudience audience,
+            ContentChannel channel,
+            ContentActor actor,
+            String locale,
+            String targetLevel,
+            String contentType) {
+        return catalogEntries(audience, channel, actor, locale, targetLevel, contentType).stream()
+                .map(CatalogEntry::projection)
+                .toList();
+    }
+
+    public List<CatalogEntry> catalogEntries(
+            ContentAudience audience,
+            ContentChannel channel,
+            ContentActor actor,
+            String locale,
+            String targetLevel,
+            String contentType) {
+        if (audience != ContentAudience.PUBLIC && audience != ContentAudience.LEARNER) {
+            throw ContentOperationException.badRequest("CONTENT_AUDIENCE_INVALID", "catalog audience is invalid");
+        }
+        if (audience == ContentAudience.LEARNER && actor == null) {
+            throw ContentOperationException.forbidden(
+                    "CONTENT_PRINCIPAL_REQUIRED", "learner catalog requires a verified principal");
+        }
+        return repository.findAll().stream()
+                .filter(content -> actor == null || actor.tenantId().equals(content.tenantId()))
+                .filter(content -> locale == null || locale.isBlank() || content.locale().equals(locale))
+                .filter(content -> targetLevel == null || targetLevel.isBlank()
+                        || content.targetLevel().equals(targetLevel))
+                .filter(content -> contentType == null || contentType.isBlank()
+                        || content.kind().name().equals(contentType))
+                .sorted(java.util.Comparator.comparing(ContentDefinition::contentCode))
+                .flatMap(content -> content.currentPublishedVersion()
+                        .map(version -> {
+                            try {
+                                return Optional.of(new CatalogEntry(
+                                        content.contentCode(), version.versionNumber(), content.contentEpoch(),
+                                        content.projectionVersion(), version.publishedAt().orElse(version.createdAt()),
+                                        ContentProjectionPolicy.project(
+                                                content, version, audience, channel, clock.instant(), false)));
+                            } catch (ContentOperationException exception) {
+                                if (exception.status() == 403 || exception.status() == 404) {
+                                    return Optional.<CatalogEntry>empty();
+                                }
+                                throw exception;
+                            }
+                        }).orElseGet(Optional::empty).stream())
+                .toList();
     }
 
     private ContentDefinition findContent(ContentId contentId) {
@@ -94,7 +190,8 @@ public final class ContentReadService {
     private static ContentVersion resolveVersion(
             ContentDefinition content,
             ContentVersionId requestedVersionId,
-            ContentAudience audience) {
+            ContentAudience audience,
+            boolean allowPreviouslyPublishedPin) {
         if (requestedVersionId == null) {
             return content.currentPublishedVersion().orElseThrow(() ->
                     ContentOperationException.notFound(
@@ -104,7 +201,8 @@ public final class ContentReadService {
                 ContentOperationException.notFound("CONTENT_VERSION_NOT_FOUND", "content version does not exist"));
         if (audience != ContentAudience.ADMIN_PREVIEW
                 && version.status() != com.englishflow.content.domain.ContentVersionStatus.PUBLISHED
-                && !(audience == ContentAudience.LEARNER && version.wasPublished())) {
+                && !(audience == ContentAudience.LEARNER
+                && allowPreviouslyPublishedPin && version.wasPublished())) {
             throw ContentOperationException.notFound(
                     "CONTENT_VERSION_NOT_AVAILABLE", "requested content version is not available");
         }
@@ -116,5 +214,23 @@ public final class ContentReadService {
             throw ContentOperationException.forbidden(
                     "CONTENT_PREVIEW_FORBIDDEN", "content preview requires a tenant-scoped editor");
         }
+    }
+
+    public record ReadResult(
+            String contentCode,
+            int versionNumber,
+            long contentEpoch,
+            long projectionVersion,
+            java.time.Instant publishedAt,
+            PublicContentProjection projection) {
+    }
+
+    public record CatalogEntry(
+            String contentCode,
+            int versionNumber,
+            long contentEpoch,
+            long projectionVersion,
+            java.time.Instant publishedAt,
+            PublicContentProjection projection) {
     }
 }

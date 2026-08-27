@@ -48,6 +48,16 @@ public final class UserFacts {
         return Optional.ofNullable(idempotencies.get(key));
     }
 
+    /** Durable adapters use a snapshot to persist the aggregate's append-only facts. */
+    public Map<String, EventRecord> events() {
+        return Map.copyOf(events);
+    }
+
+    /** Durable adapters use a snapshot to persist idempotent write receipts. */
+    public Map<String, IdempotencyRecord> idempotencies() {
+        return Map.copyOf(idempotencies);
+    }
+
     public void recordEvent(String eventId, String fingerprint, EventConsumptionReceipt receipt) {
         events.put(eventId, new EventRecord(fingerprint, receipt));
     }

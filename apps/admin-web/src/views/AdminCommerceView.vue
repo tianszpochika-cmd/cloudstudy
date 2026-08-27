@@ -51,7 +51,7 @@ async function resolveTicket(ticket: Row): Promise<void> {
   if (!ticketId) return
   try {
     await executeB13Command({
-      domain: 'SUPPORT', action: 'SUPPORT_RESOLVE', resourceRef: ticketId, reasonCode: 'ADMIN_SUPPORT',
+      aggregateType: 'SUPPORT', aggregateRef: ticketId, actionCode: 'SUPPORT_RESOLVE', reasonCode: 'ADMIN_SUPPORT',
     })
     ElMessage.success('工单命令已提交，等待服务端状态更新。')
     await load()

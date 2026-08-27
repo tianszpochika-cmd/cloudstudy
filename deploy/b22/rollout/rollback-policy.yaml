@@ -1,0 +1,67 @@
+apiVersion: release.englishflow.dev/v1alpha1
+kind: RollbackPolicy
+metadata:
+  name: englishflow-b22-rollback
+  labels:
+    englishflow.dev/release-batch: b22
+spec:
+  phase: phase-1
+  status: not-established
+  defaultDecision: NO-GO
+  b21GateRequired: true
+  automaticRollback:
+    enabled: true
+    triggerMode: fail-closed
+    triggers:
+      - p0-alert
+      - p1-alert
+      - error-budget-breach
+      - readiness-regression
+      - business-smoke-failure
+      - data-integrity-mismatch
+      - privacy-or-authorization-regression
+      - signature-or-digest-mismatch
+    action: abort-canary-and-route-to-last-approved-digest
+    requiresImmutableRevision: true
+    status: not-established
+  manualRollback:
+    enabled: true
+    action: restore-last-approved-release
+    requiresNamedOwner: true
+    requiresIndependentApproval: true
+    minimumApprovers: 2
+    requiresChangeRecord: true
+    status: not-established
+  restorePoint:
+    required: true
+    status: not-established
+    reference: restore-point-ref://synthetic/b22/pending
+    createdBeforeTrafficChange: true
+    immutableReferenceRequired: true
+    recoveryPointObjective: REPLACE_WITH_APPROVED_RPO
+    recoveryTimeObjective: REPLACE_WITH_APPROVED_RTO
+    dataAndEventReconciliationRequired: true
+  audit:
+    required: true
+    status: not-established
+    appendOnly: true
+    externalSinkRequired: true
+    correlationFields:
+      - releaseId
+      - sourceRevision
+      - imageDigest
+      - manifestDigest
+      - traceId
+      - requestId
+      - decisionId
+      - rollbackReason
+      - operatorRef
+      - restorePointRef
+    sensitiveDataPolicy: redact-or-do-not-record
+  noRollbackSubstitutes:
+    - pod-restart
+    - health-endpoint-only
+    - synthetic-fixture-only
+    - mutable-artifact
+    - missing-restore-point
+

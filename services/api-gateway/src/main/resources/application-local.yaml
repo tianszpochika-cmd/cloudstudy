@@ -24,3 +24,8 @@ gateway:
   compatibility:
     # Local smoke testing only: routes remain GET/HEAD-only and never expose writes.
     anonymous-read-enabled: true
+  rate-limit:
+    # Local profile exercises the real bounded limiter unless explicitly disabled.
+    enabled: ${GATEWAY_RATE_LIMIT_ENABLED:true}
+    backend: ${GATEWAY_RATE_LIMIT_BACKEND:memory}
+    fail-open: ${GATEWAY_RATE_LIMIT_FAIL_OPEN:false}

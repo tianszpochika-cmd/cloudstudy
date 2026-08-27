@@ -49,8 +49,8 @@ public class SecurityAuditGlobalFilter implements GlobalFilter, Ordered {
         }
         sink.record(new SecurityAuditRecord(
                 UUID.randomUUID().toString(),
-                safeHeader(exchange, "X-Request-Id"),
-                safeHeader(exchange, "X-Trace-Id"),
+                safeRequestId(exchange),
+                safeTraceId(exchange),
                 exchange.getRequest().getMethod().name(),
                 path,
                 status,
@@ -59,8 +59,16 @@ public class SecurityAuditGlobalFilter implements GlobalFilter, Ordered {
         ));
     }
 
-    private static String safeHeader(ServerWebExchange exchange, String name) {
-        return CorrelationIds.requestId(exchange.getRequest().getHeaders().getFirst(name), 128);
+    private static String safeRequestId(ServerWebExchange exchange) {
+        return CorrelationIds.requestId(
+                exchange.getRequest().getHeaders().getFirst("X-Request-Id"), 128);
+    }
+
+    private static String safeTraceId(ServerWebExchange exchange) {
+        return CorrelationIds.traceId(
+                exchange.getRequest().getHeaders().getFirst("X-Trace-Id"),
+                exchange.getRequest().getHeaders().getFirst("traceparent"),
+                128);
     }
 
     private static String reason(int status) {

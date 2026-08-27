@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "batch": "B26",
+  "phase": "phase-1",
+  "ownerTasks": [
+    "V2-B26-BRW-004",
+    "V2-B26-BRW-005",
+    "V2-B26-BRW-006"
+  ],
+  "gatewayBasePath": "/api/v1",
+  "execution": {
+    "mode": "static-contract-and-runtime-browser-gate",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "requiredEnvironment": [
+      "B26_GATEWAY_ORIGIN",
+      "B26_TEST_IDP_ISSUER",
+      "B26_TEST_ACCESS_TOKEN",
+      "B26_BROWSER_EVIDENCE_DIR",
+      "B26_DB_RECONCILIATION_FILE",
+      "B26_KAFKA_EVIDENCE_FILE"
+    ],
+    "blockedReasons": [
+      "B25 valid OIDC/JWT and API-to-DB-to-API runtime evidence is not closed",
+      "browser evidence runner and authenticated synthetic account are not attached",
+      "Kafka topic/outbox/consumer evidence must be produced before a full journey pass"
+    ],
+    "runtimeEvidence": null
+  },
+  "applications": [
+    {
+      "id": "learner-web",
+      "origin": "http://127.0.0.1:18180",
+      "auth": "oidc-test-idp",
+      "protectedRoutes": [
+        "/onboarding",
+        "/assessment",
+        "/home",
+        "/today",
+        "/learn",
+        "/practice",
+        "/vocabulary",
+        "/reports/weakness"
+      ],
+      "requiredStates": [
+        "loading",
+        "empty",
+        "error",
+        "permission",
+        "recovery",
+        "offline",
+        "success",
+        "partial"
+      ],
+      "runtimeAssertions": [
+        "authenticated content is read from service APIs",
+        "onboarding and practice writes include Idempotency-Key",
+        "refresh and re-login preserve server-backed state",
+        "401 and 403 remain distinct from empty data"
+      ]
+    },
+    {
+      "id": "mobile",
+      "origin": "http://127.0.0.1:18183",
+      "auth": "oidc-test-idp",
+      "protectedRoutes": [
+        "pages/onboarding/onboarding",
+        "pages/assessment/assessment",
+        "pages/home/home",
+        "pages/today/today",
+        "pages/learn/learn",
+        "pages/practice/practice",
+        "pages/b10-report/b10-report"
+      ],
+      "requiredStates": [
+        "loading",
+        "empty",
+        "error",
+        "permission",
+        "recovery",
+        "offline",
+        "success",
+        "partial"
+      ],
+      "runtimeAssertions": [
+        "anonymous deep links return to login",
+        "authenticated content is read from service APIs",
+        "writes are idempotent and never claim success offline",
+        "mobile safe-area and touch interaction remain usable"
+      ]
+    },
+    {
+      "id": "admin-web",
+      "origin": "http://127.0.0.1:18181",
+      "auth": "oidc-test-idp",
+      "protectedRoutes": [
+        "/dashboard",
+        "/content",
+        "/commerce",
+        "/audit",
+        "/governance",
+        "/support"
+      ],
+      "requiredStates": [
+        "loading",
+        "empty",
+        "error",
+        "permission",
+        "recovery",
+        "offline",
+        "success",
+        "partial"
+      ],
+      "runtimeAssertions": [
+        "server permissions decide menu and command visibility",
+        "forbidden commands return 403 rather than empty success",
+        "admin writes include Idempotency-Key"
+      ]
+    },
+    {
+      "id": "official-site",
+      "origin": "http://127.0.0.1:18182",
+      "auth": "public-only",
+      "protectedRoutes": [],
+      "requiredStates": [
+        "loading",
+        "empty",
+        "error",
+        "permission",
+        "recovery",
+        "offline",
+        "success",
+        "partial"
+      ],
+      "runtimeAssertions": [
+        "public projection remains readable without a learner session",
+        "official site does not write learner or commerce owner tables"
+      ]
+    }
+  ],
+  "viewports": [
+    { "id": "desktop", "width": 1440, "height": 900 },
+    { "id": "tablet", "width": 1024, "height": 768 },
+    { "id": "mobile-portrait", "width": 390, "height": 844 },
+    { "id": "mobile-landscape", "width": 844, "height": 390 }
+  ],
+  "scenarios": [
+    {
+      "id": "B26-BRW-004-HAPPY-PATH",
+      "kind": "authenticated-real-data",
+      "apps": ["learner-web", "mobile"],
+      "steps": [
+        "clean session",
+        "register",
+        "login",
+        "adult gate",
+        "save onboarding",
+        "read course catalog",
+        "open learning task",
+        "submit practice",
+        "submit assessment",
+        "read SRS/report/notification",
+        "refresh",
+        "logout",
+        "login again"
+      ],
+      "evidence": ["browser trace", "network log", "DB owner reconciliation", "Kafka event reconciliation"]
+    },
+    {
+      "id": "B26-BRW-005-BOUNDARIES",
+      "kind": "permission-and-recovery",
+      "apps": ["learner-web", "mobile", "admin-web"],
+      "steps": ["401", "403", "expired session", "offline read", "offline write", "retry", "deep-link return"],
+      "evidence": ["console log", "page error log", "network response", "screenshot"]
+    },
+    {
+      "id": "B26-BRW-005-UI",
+      "kind": "responsive-i18n-theme",
+      "apps": ["learner-web", "mobile", "admin-web", "official-site"],
+      "steps": ["desktop", "tablet", "mobile portrait", "mobile landscape", "zh-CN", "en-US", "light", "dark", "system", "high-contrast", "keyboard", "touch"],
+      "evidence": ["screenshot", "console log", "accessibility result"]
+    }
+  ],
+  "journey": {
+    "ownerServices": [
+      "iam-service",
+      "learner-service",
+      "content-service",
+      "learning-service",
+      "assessment-service",
+      "notification-service"
+    ],
+    "ownerFacts": [
+      "principal/session",
+      "profile/goal/preferences",
+      "published content and rights",
+      "attempt/assessment report",
+      "learning plan/mastery/SRS",
+      "notification preference/message"
+    ],
+    "readAfterWriteRequired": true,
+    "restartReadBackRequired": true,
+    "redisIsProjectionOnly": true,
+    "kafkaIsIntegrationOnly": true,
+    "allowKafkaRpc": false
+  },
+  "evidenceContract": {
+    "requiredPerCase": [
+      "runId",
+      "caseId",
+      "targetId",
+      "startedAt",
+      "finishedAt",
+      "browserOrDevice",
+      "status",
+      "consoleLog",
+      "pageErrors",
+      "networkTrace",
+      "screenshots",
+      "dbReconciliation",
+      "eventReconciliation"
+    ],
+    "passRequirements": [
+      "status-is-passed",
+      "runtimeBlocked-is-false",
+      "pageErrors-is-empty",
+      "consoleLog-has-no-error",
+      "network-trace-has-authenticated-api",
+      "db-reconciliation-matches-owner-facts",
+      "event-reconciliation-is-idempotent"
+    ],
+    "blockedRequirements": [
+      "status-is-runtimeBlocked",
+      "runtimeBlocked-is-true",
+      "blockedReason-is-present",
+      "runtimeEvidence-is-null"
+    ],
+    "consolePolicy": {
+      "failOnConsoleError": true,
+      "failOnPageError": true,
+      "ignorePatterns": []
+    },
+    "forbiddenFixtureFields": [
+      "password",
+      "clientSecret",
+      "accessToken",
+      "refreshToken",
+      "authorizationCode",
+      "privateKey",
+      "paymentCredential",
+      "rawAudio"
+    ]
+  },
+  "forbiddenDefaultCapabilities": ["phase-2-ai", "phase-3-k12", "realtime-ai", "real-payment"]
+}

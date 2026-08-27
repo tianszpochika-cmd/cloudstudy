@@ -113,12 +113,16 @@ function generateEventTypes(catalog) {
 function generateApiClientTypes(document) {
   const operations = [];
   const responseTypes = new Set();
+  const schemaNames = new Set(Object.keys(document.components?.schemas ?? {}));
   for (const [route, pathItem] of Object.entries(document.paths ?? {})) {
     for (const [method, operation] of Object.entries(pathItem)) {
       if (!isHttpMethod(method)) continue;
       const response = Object.values(operation.responses ?? {}).find((candidate) => candidate?.content?.['application/json']?.schema);
       const responseType = response ? schemaToTs(document, response.content['application/json'].schema) : 'unknown';
-      if (/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(responseType) && !['unknown', 'string', 'number', 'boolean', 'never', 'object'].includes(responseType)) responseTypes.add(responseType);
+      const referencedSchemaNames = responseType.match(/\b[A-Za-z_$][A-Za-z0-9_$]*\b/g) ?? [];
+      for (const referencedSchemaName of referencedSchemaNames) {
+        if (schemaNames.has(referencedSchemaName)) responseTypes.add(referencedSchemaName);
+      }
       operations.push(`  ${operation.operationId}: { method: ${JSON.stringify(method.toUpperCase())}; path: ${JSON.stringify(route)}; response: ${responseType}; };`);
     }
   }

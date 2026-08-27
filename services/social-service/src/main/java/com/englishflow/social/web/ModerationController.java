@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.annotation.Profile;
 
 /** Privileged moderation state transition boundary; reviewer permission is checked in the PEP. */
 @RestController
+@Profile("!local-real")
 @RequestMapping("/internal/v1/social/moderation")
 public final class ModerationController {
 

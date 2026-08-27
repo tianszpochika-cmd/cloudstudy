@@ -158,15 +158,15 @@
         "responses": { "202": { "description": "运营命令进入审批或异步执行队列", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminCommandResult" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
       }
     },
-    "/api/v1/admin/ops/commands/{commandId}/confirm": {
+    "/api/v1/admin/ops/commands/prepare": {
       "post": {
         "tags": ["B13-AdminOps"],
-        "operationId": "confirmB13AdminCommand",
+        "operationId": "prepareB13AdminCommand",
         "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13CommandId" }, { "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13CommandConfirmation" } } } },
-        "x-idempotency": { "required": true, "strategy": "admin-command-confirmation-key", "replayBehavior": "return-original-command-state" },
-        "responses": { "200": { "description": "二次确认后的命令状态", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminCommandResult" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "404": { "$ref": "#/components/responses/B13NotFound" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminCommandRequest" } } } },
+        "x-idempotency": { "required": true, "strategy": "admin-command-preparation-key", "replayBehavior": "return-original-confirmation-state" },
+        "responses": { "200": { "description": "服务端签发的二次确认挑战", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13CommandPreparation" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
       }
     },
     "/api/v1/admin/ops/metrics": {
@@ -176,6 +176,14 @@
         "security": [{ "bearerAuth": [] }],
         "parameters": [{ "$ref": "#/components/parameters/B13PageLimit" }],
         "responses": { "200": { "description": "脱敏指标投影", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/B13MetricProjection" } } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+      }
+    },
+    "/api/v1/admin/ops/audit": {
+      "get": {
+        "tags": ["B13-AdminOps"],
+        "operationId": "listB13AdminAudit",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "当前租户的脱敏追加审计记录", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AuditPage" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
       }
     },
     "/internal/v1/analytics/events": {
@@ -206,7 +214,6 @@
       "B13IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 16, "maxLength": 200 } },
       "B13OrderId": { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } },
       "B13Provider": { "name": "provider", "in": "path", "required": true, "schema": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "SANDBOX"] } },
-      "B13CommandId": { "name": "commandId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } },
       "B13PageLimit": { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 } }
     },
     "responses": {
@@ -238,12 +245,15 @@
       "B13ReconciliationResult": { "type": "object", "additionalProperties": false, "required": ["batchRef", "state", "replayed", "domainFactsUntouched"], "properties": { "batchRef": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["ACCEPTED", "REPLAYED", "FAILED"] }, "replayed": { "type": "boolean" }, "domainFactsUntouched": { "type": "boolean", "const": true } } },
       "B13AdminOrderView": { "type": "object", "additionalProperties": false, "required": ["orderRef", "state", "amountMinor", "currency", "createdAt", "redactionVersion"], "properties": { "orderRef": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "maxLength": 32 }, "amountMinor": { "type": "integer", "minimum": 0 }, "currency": { "type": "string", "maxLength": 3 }, "createdAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 } } },
       "B13AdminOrderPage": { "type": "object", "additionalProperties": false, "required": ["items", "nextCursor"], "properties": { "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/B13AdminOrderView" } }, "nextCursor": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13SupportTicketCreateRequest": { "type": "object", "additionalProperties": false, "required": ["categoryCode", "subjectCode", "priority"], "properties": { "categoryCode": { "type": "string", "maxLength": 64 }, "subjectCode": { "type": "string", "maxLength": 128 }, "priority": { "type": "string", "enum": ["LOW", "NORMAL", "HIGH", "URGENT"] }, "attachmentRefs": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 128 } } } },
+      "B13SupportTicketCreateRequest": { "type": "object", "additionalProperties": false, "required": ["categoryCode", "resourceRef", "descriptionFingerprint", "priority"], "properties": { "categoryCode": { "type": "string", "maxLength": 64 }, "resourceRef": { "type": "string", "maxLength": 160 }, "descriptionFingerprint": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }, "priority": { "type": "string", "enum": ["LOW", "NORMAL", "HIGH", "URGENT"] }, "attachments": { "type": "array", "maxItems": 5, "items": { "$ref": "#/components/schemas/B13MediaObjectRef" } } } },
+      "B13MediaObjectRef": { "type": "object", "additionalProperties": false, "required": ["objectRef", "objectVersion", "purposeCode", "contentType", "sizeBytes"], "properties": { "objectRef": { "type": "string", "maxLength": 160 }, "objectVersion": { "type": "string", "maxLength": 160 }, "purposeCode": { "type": "string", "maxLength": 160 }, "contentType": { "type": "string", "maxLength": 160 }, "sizeBytes": { "type": "integer", "minimum": 0, "maximum": 52428800 } } },
       "B13SupportTicket": { "type": "object", "additionalProperties": false, "required": ["ticketId", "categoryCode", "state", "priority", "slaDueAt", "redactionVersion"], "properties": { "ticketId": { "type": "string", "maxLength": 128 }, "categoryCode": { "type": "string", "maxLength": 64 }, "state": { "type": "string", "enum": ["OPEN", "IN_PROGRESS", "WAITING", "RESOLVED", "CLOSED"] }, "priority": { "type": "string", "maxLength": 32 }, "slaDueAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 } } },
       "B13SupportTicketPage": { "type": "object", "additionalProperties": false, "required": ["items", "nextCursor"], "properties": { "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/B13SupportTicket" } }, "nextCursor": { "type": "string", "maxLength": 128, "nullable": true } } },
       "B13AdminCommandRequest": { "type": "object", "additionalProperties": false, "required": ["aggregateType", "aggregateRef", "actionCode", "reasonCode"], "properties": { "aggregateType": { "type": "string", "maxLength": 64 }, "aggregateRef": { "type": "string", "maxLength": 128 }, "actionCode": { "type": "string", "maxLength": 64 }, "reasonCode": { "type": "string", "maxLength": 96 }, "confirmationRef": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13CommandConfirmation": { "type": "object", "additionalProperties": false, "required": ["confirmationRef", "reasonCode"], "properties": { "confirmationRef": { "type": "string", "maxLength": 128 }, "reasonCode": { "type": "string", "maxLength": 96 } } },
+      "B13CommandPreparation": { "type": "object", "additionalProperties": false, "required": ["token", "decisionId", "action", "resourceRef", "expiresAt"], "properties": { "token": { "type": "string", "maxLength": 256, "description": "一次性短时确认令牌；仅允许通过 TLS 进入内存请求头，不得写入日志、数据库、URL 或客户端持久化。" }, "decisionId": { "type": "string", "maxLength": 128 }, "action": { "type": "string", "maxLength": 64 }, "resourceRef": { "type": "string", "maxLength": 128 }, "expiresAt": { "type": "string", "format": "date-time" } }, "x-sensitive-fields": ["token"] },
       "B13AdminCommandResult": { "type": "object", "additionalProperties": false, "required": ["commandId", "state", "approvalRequired", "auditRef", "domainFactsUntouched"], "properties": { "commandId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["PENDING_APPROVAL", "CONFIRMED", "FORWARDED", "REJECTED", "COMPLETED"] }, "approvalRequired": { "type": "boolean" }, "auditRef": { "type": "string", "maxLength": 128 }, "domainFactsUntouched": { "type": "boolean", "const": true } } },
+      "B13AuditRecord": { "type": "object", "additionalProperties": false, "required": ["auditId", "operation", "resourceRef", "commandId", "traceId", "decisionId", "occurredAt", "redacted"], "properties": { "auditId": { "type": "string", "maxLength": 128 }, "operation": { "type": "string", "maxLength": 96 }, "resourceRef": { "type": "string", "maxLength": 128 }, "commandId": { "type": "string", "maxLength": 128 }, "traceId": { "type": "string", "maxLength": 160 }, "decisionId": { "type": "string", "maxLength": 128 }, "occurredAt": { "type": "string", "format": "date-time" }, "redacted": { "type": "boolean", "const": true } } },
+      "B13AuditPage": { "type": "object", "additionalProperties": false, "required": ["items", "redacted"], "properties": { "items": { "type": "array", "maxItems": 500, "items": { "$ref": "#/components/schemas/B13AuditRecord" } }, "redacted": { "type": "boolean", "const": true } } },
       "B13MetricProjection": { "type": "object", "additionalProperties": false, "required": ["metricCode", "metricVersion", "periodStart", "periodEnd", "value", "state", "generatedAt"], "properties": { "metricCode": { "type": "string", "maxLength": 96 }, "metricVersion": { "type": "string", "maxLength": 32 }, "periodStart": { "type": "string", "format": "date-time" }, "periodEnd": { "type": "string", "format": "date-time" }, "value": { "type": "number" }, "state": { "type": "string", "enum": ["READY", "STALE", "RECOMPUTING", "UNAVAILABLE"] }, "generatedAt": { "type": "string", "format": "date-time" } } },
       "B13AnalyticsEvent": { "type": "object", "additionalProperties": false, "required": ["eventId", "eventName", "schemaVersion", "aggregateType", "aggregateRef", "occurredAt", "redactionVersion", "dimensions"], "properties": { "eventId": { "type": "string", "maxLength": 128 }, "eventName": { "type": "string", "pattern": "^[a-z0-9_.-]+$", "maxLength": 96 }, "schemaVersion": { "type": "string", "maxLength": 32 }, "aggregateType": { "type": "string", "maxLength": 64 }, "aggregateRef": { "type": "string", "maxLength": 128 }, "occurredAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 }, "dimensions": { "type": "array", "maxItems": 12, "items": { "$ref": "#/components/schemas/B13MetricDimension" } } } },
       "B13MetricDimension": { "type": "object", "additionalProperties": false, "required": ["key", "value"], "properties": { "key": { "type": "string", "maxLength": 64 }, "value": { "type": "string", "maxLength": 128 } } },

@@ -1,0 +1,76 @@
+{
+  "batch": "B28",
+  "runId": "b28-runtime-20260824121425",
+  "sourceRevision": "93db302-dirty",
+  "environment": {
+    "profile": "local-real",
+    "host": "127.0.0.1",
+    "composeFile": "infra/docker/docker-compose.dev.yml",
+    "dataClass": "persisted-local-test-data",
+    "backend": "docker-compose"
+  },
+  "capturedAt": "2026-08-24T12:14:58.656Z",
+  "mode": "local-real",
+  "status": "PASS",
+  "evidenceClass": "runtime-external",
+  "provenance": {
+    "producer": "b28-runtime-probe",
+    "source": "executed-local-runtime"
+  },
+  "checks": [
+    {
+      "id": "toolchain-probe",
+      "status": "PASS",
+      "evidenceRef": "command:pnpm toolchain:check",
+      "details": {}
+    },
+    {
+      "id": "docker-compose-config",
+      "status": "PASS",
+      "evidenceRef": "command:docker compose -f infra/docker/docker-compose.dev.yml config --quiet",
+      "details": {}
+    },
+    {
+      "id": "dependency-health",
+      "status": "PASS",
+      "evidenceRef": "command:node scripts/check-local-infra.mjs --require-healthy",
+      "details": {
+        "dependencies": [
+          "mysql",
+          "redis",
+          "minio",
+          "kafka",
+          "rabbitmq",
+          "oidc-idp"
+        ]
+      }
+    },
+    {
+      "id": "flyway-migration-run",
+      "status": "PASS",
+      "evidenceRef": "commands:run-migrations/check-database/replay-b25-fixture",
+      "details": {
+        "migrationCount": 23,
+        "persistedEntityCount": 20
+      }
+    },
+    {
+      "id": "owner-schema-reconciliation",
+      "status": "PASS",
+      "evidenceRef": "command:node scripts/database/reconcile-owner-schemas.mjs --apply",
+      "details": {
+        "ownerCount": 11,
+        "totalMigratedTables": 105
+      }
+    },
+    {
+      "id": "restart-persistence",
+      "status": "PASS",
+      "evidenceRef": "commands:docker-compose-restart-mysql/check-database/validate-b25-data",
+      "details": {
+        "persistedSeedRows": 1,
+        "redisProjectionCount": 3
+      }
+    }
+  ]
+}

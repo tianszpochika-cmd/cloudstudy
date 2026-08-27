@@ -12,7 +12,8 @@ public record OidcProviderMetadata(
         URI tokenEndpoint,
         URI jwksUri,
         String clientId,
-        Set<String> scopes) {
+        Set<String> scopes,
+        Set<String> codeChallengeMethods) {
 
     public OidcProviderMetadata {
         requireEndpoint(issuer, "issuer");
@@ -27,12 +28,28 @@ public record OidcProviderMetadata(
         if (!scopes.contains("openid")) {
             throw new IllegalArgumentException("OIDC authorization requires the openid scope");
         }
+        codeChallengeMethods = codeChallengeMethods == null
+                ? Set.of("S256")
+                : Set.copyOf(new LinkedHashSet<>(codeChallengeMethods));
+        if (!codeChallengeMethods.contains("S256")) {
+            throw new IllegalArgumentException("OIDC authorization requires S256 PKCE support");
+        }
     }
 
     private static void requireEndpoint(URI endpoint, String name) {
         Objects.requireNonNull(endpoint, name);
-        if (!endpoint.isAbsolute() || endpoint.getFragment() != null || endpoint.getUserInfo() != null) {
+        if (!endpoint.isAbsolute() || endpoint.getFragment() != null || endpoint.getUserInfo() != null
+                || endpoint.getHost() == null
+                || !("https".equalsIgnoreCase(endpoint.getScheme())
+                || ("http".equalsIgnoreCase(endpoint.getScheme()) && isLoopback(endpoint.getHost())))) {
             throw new IllegalArgumentException(name + " must be an absolute URI without fragment or userinfo");
         }
+    }
+
+    private static boolean isLoopback(String host) {
+        return "localhost".equalsIgnoreCase(host)
+                || "127.0.0.1".equals(host)
+                || "[::1]".equals(host)
+                || "::1".equals(host);
     }
 }

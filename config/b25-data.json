@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "batch": "B25",
+  "phase": "phase-1",
+  "scope": [
+    "V2-B25-DATA-001",
+    "V2-B25-DATA-002",
+    "V2-B25-DATA-006"
+  ],
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "runtimeStatus": "pending",
+  "task": {
+    "status": "defined",
+    "runtimeRequired": true,
+    "defaultDecision": "deny",
+    "runtimeEvidenceRequired": [
+      "empty database migration",
+      "repeated migration",
+      "owner grant reconciliation",
+      "fixture replay and API round trip",
+      "Redis rebuild from MySQL owner rows",
+      "restart read-back"
+    ]
+  },
+  "migration": {
+    "rootFile": "database/mysql/migrations/V0023__create_phase1_real_data_b25.sql",
+    "manifestFile": "database/mysql/migrations/migration-manifest.json",
+    "rootVersion": "0023",
+    "runner": "Flyway-per-service-with-repository-compatibility-fixture",
+    "lockScope": "one-schema-one-owner",
+    "replaySafe": true,
+    "runtimeStatus": "pending"
+  },
+  "fixture": {
+    "jsonFile": "database/mysql/fixtures/b25-phase1.json",
+    "seedSql": "database/mysql/seeds/dev/V0023__b25-phase1.sql",
+    "seedRunId": "seed-b25-phase1-v1",
+    "seedVersion": "b25-phase1-v1",
+    "synthetic": true,
+    "sourceHashAlgorithm": "sha256(seedRunId)",
+    "rowDigestAlgorithm": "sha256(seedRunId|ownerService|entityType|entityKey)",
+    "replayPolicy": "upsert-only",
+    "runtimeStatus": "pending"
+  },
+  "dataOwnerPolicy": {
+    "oneSchemaOneServiceOwner": true,
+    "crossServiceWritesAllowed": false,
+    "crossServiceSqlJoinsAllowed": false,
+    "sharedOrmEntitiesAllowed": false,
+    "gatewayMayWriteDomainTables": false,
+    "coreApiMayWriteB25Tables": false,
+    "redisIsSourceOfTruth": false,
+    "ownerMismatchDecision": "stop",
+    "ownerMap": [
+      {
+        "service": "workflow-service",
+        "schema": "workflow_service",
+        "writeAuthority": "workflow-service-only",
+        "redisNamespace": "workflow",
+        "tables": [
+          "b25_fixture_run",
+          "b25_fixture_owner_binding",
+          "b25_fixture_row",
+          "b25_fixture_redis_projection"
+        ]
+      },
+      {
+        "service": "learner-service",
+        "schema": "learner_service",
+        "writeAuthority": "learner-service-only",
+        "redisNamespace": "learner",
+        "tables": [
+          "lrn_b25_profile",
+          "lrn_b25_goal",
+          "lrn_b25_preferences",
+          "lrn_b25_daily_task"
+        ]
+      },
+      {
+        "service": "content-service",
+        "schema": "content_service",
+        "writeAuthority": "content-service-only",
+        "redisNamespace": "content",
+        "tables": [
+          "cnt_b25_course",
+          "cnt_b25_unit",
+          "cnt_b25_vocabulary",
+          "cnt_b25_item",
+          "cnt_b25_answer_rule"
+        ]
+      },
+      {
+        "service": "learning-service",
+        "schema": "learning_service",
+        "writeAuthority": "learning-service-only",
+        "redisNamespace": "learning",
+        "tables": [
+          "lrn_b25_plan",
+          "lrn_b25_srs_state"
+        ]
+      },
+      {
+        "service": "assessment-service",
+        "schema": "assessment_service",
+        "writeAuthority": "assessment-service-only",
+        "redisNamespace": "assessment",
+        "tables": [
+          "asm_b25_session",
+          "asm_b25_report"
+        ]
+      },
+      {
+        "service": "media-service",
+        "schema": "media_service",
+        "writeAuthority": "media-service-only",
+        "redisNamespace": "media",
+        "tables": [
+          "med_b25_media_reference"
+        ]
+      },
+      {
+        "service": "commerce-service",
+        "schema": "commerce_service",
+        "writeAuthority": "commerce-service-only",
+        "redisNamespace": "commerce",
+        "tables": [
+          "com_b25_product",
+          "com_b25_entitlement"
+        ]
+      },
+      {
+        "service": "notification-service",
+        "schema": "notification_service",
+        "writeAuthority": "notification-service-only",
+        "redisNamespace": "notification",
+        "tables": [
+          "ntf_b25_preference",
+          "ntf_b25_message"
+        ]
+      }
+    ]
+  },
+  "expectedRows": {
+    "b25_fixture_run": 1,
+    "b25_fixture_owner_binding": 22,
+    "b25_fixture_row": 20,
+    "b25_fixture_redis_projection": 3,
+    "lrn_b25_profile": 1,
+    "lrn_b25_goal": 1,
+    "lrn_b25_preferences": 1,
+    "lrn_b25_daily_task": 1,
+    "cnt_b25_course": 1,
+    "cnt_b25_unit": 1,
+    "cnt_b25_vocabulary": 2,
+    "cnt_b25_item": 1,
+    "cnt_b25_answer_rule": 1,
+    "lrn_b25_plan": 1,
+    "lrn_b25_srs_state": 1,
+    "asm_b25_session": 1,
+    "asm_b25_report": 1,
+    "med_b25_media_reference": 2,
+    "com_b25_product": 1,
+    "com_b25_entitlement": 1,
+    "ntf_b25_preference": 1,
+    "ntf_b25_message": 1
+  },
+  "redisRebuild": {
+    "sourceOfTruth": "mysql-owner-schema",
+    "cacheMayStartEmpty": true,
+    "unavailableRedisMustNotWriteBusinessFact": true,
+    "recipes": [
+      {
+        "ownerService": "content-service",
+        "namespace": "content",
+        "keyTemplate": "content:catalog:{contentEpoch}",
+        "sourceTable": "cnt_b25_course",
+        "sourceEntityKey": "course:B25-ENGLISH-FOUNDATION",
+        "ttlSeconds": 300,
+        "rebuildVersion": "b25-v1",
+        "rebuildStrategy": "MYSQL_OWNER_ROWS"
+      },
+      {
+        "ownerService": "commerce-service",
+        "namespace": "commerce",
+        "keyTemplate": "commerce:catalog:{contentEpoch}",
+        "sourceTable": "com_b25_product",
+        "sourceEntityKey": "product:B25-ENGLISH-FOUNDATION-DEV",
+        "ttlSeconds": 300,
+        "rebuildVersion": "b25-v1",
+        "rebuildStrategy": "MYSQL_OWNER_ROWS"
+      },
+      {
+        "ownerService": "notification-service",
+        "namespace": "notification",
+        "keyTemplate": "notification:preference:{principalId}",
+        "sourceTable": "ntf_b25_preference",
+        "sourceEntityKey": "notification-preference:fixture-principal-0001",
+        "ttlSeconds": 900,
+        "rebuildVersion": "b25-v1",
+        "rebuildStrategy": "MYSQL_OWNER_ROWS"
+      }
+    ]
+  },
+  "runtime": {
+    "requiredEnvironment": [
+      "MySQL 8.x",
+      "Redis 7.x",
+      "service owner grants",
+      "Gateway and IAM runtime",
+      "B25 API fixture replay"
+    ],
+    "blockedReasons": [
+      "static fixture checks do not prove runtime migration",
+      "static fixture checks do not prove service owner grants",
+      "static fixture checks do not prove API-to-DB-to-API replay",
+      "static fixture checks do not prove Redis rebuild or restart read-back"
+    ],
+    "staticValidatorCannotPromoteRuntime": true
+  },
+  "prohibited": [
+    "real credentials",
+    "production PII",
+    "payment provider calls",
+    "raw media bytes",
+    "destructive migration SQL",
+    "cross-service SQL joins",
+    "cross-service table writes",
+    "client-supplied tenant or owner authority"
+  ]
+}

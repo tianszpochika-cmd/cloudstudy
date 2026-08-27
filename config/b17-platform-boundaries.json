@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "phase": "phase-1",
+  "defaults": {
+    "crossDomainWrite": "deny",
+    "clientAuthorityFacts": "deny",
+    "rawSensitivePayload": "deny",
+    "projectionSource": "versioned-event-or-owner-api",
+    "workflowMayWriteDomainTables": false
+  },
+  "offlineOwner": "notification-service",
+  "workflowOwner": "workflow-service/job-runner",
+  "domains": [
+    {
+      "id": "media-service",
+      "schema": "media_service",
+      "factOwner": ["mediaMetadata", "mediaRightsReference", "rendition", "signedDeliveryGrant"],
+      "readProjectionConsumers": ["content-service", "learning-service", "notification-service", "admin-ops-service"],
+      "trustedEventInputs": ["content.version.published.v1", "content.version.unpublished.v1", "media.revoked.v1"],
+      "commandOwner": "media-service",
+      "forbiddenDirectWrites": ["content-service", "learning-service", "notification-service", "admin-ops-service"]
+    },
+    {
+      "id": "notification-service",
+      "schema": "notification_service",
+      "factOwner": ["notificationPreference", "notificationMessage", "deliveryAttempt", "offlineSyncCursor", "workflowTask"],
+      "readProjectionConsumers": ["learner-service", "admin-ops-service"],
+      "trustedEventInputs": ["learning.task.completed.v1", "learning.review.scheduled.v1", "media.revoked.v1", "commerce.entitlement.activated.v1"],
+      "commandOwner": "notification-service",
+      "forbiddenDirectWrites": ["learner-service", "learning-service", "media-service", "commerce-service"]
+    },
+    {
+      "id": "gamification-service",
+      "schema": "gamification_service",
+      "factOwner": ["xpLedger", "currencyLedger", "streakProjection", "rewardGrant", "seasonProjection"],
+      "readProjectionConsumers": ["learner-service", "social-service", "admin-ops-service"],
+      "trustedEventInputs": ["learning.task.completed.v1", "assessment.attempt.assessed.v1", "learning.mastery.projected.v1"],
+      "commandOwner": "gamification-service",
+      "forbiddenDirectWrites": ["learner-service", "learning-service", "assessment-service", "commerce-service"]
+    },
+    {
+      "id": "social-service",
+      "schema": "social_service",
+      "factOwner": ["studyRoom", "seatLease", "focusSession", "moderationReport", "leaderboardProjection"],
+      "readProjectionConsumers": ["learner-service", "admin-ops-service"],
+      "trustedEventInputs": ["learning.mastery.projected.v1", "learning.task.completed.v1", "gamification.xp.ledger_posted.v1"],
+      "commandOwner": "social-service",
+      "forbiddenDirectWrites": ["learning-service", "gamification-service", "learner-service"]
+    },
+    {
+      "id": "commerce-service",
+      "schema": "commerce_service",
+      "factOwner": ["sku", "order", "paymentVerification", "entitlement", "refund", "reconciliation"],
+      "readProjectionConsumers": ["learner-service", "admin-ops-service", "notification-service"],
+      "trustedEventInputs": ["commerce.payment.verified.v1", "commerce.refund.completed.v1", "commerce.order.reconciled.v1"],
+      "commandOwner": "commerce-service",
+      "forbiddenDirectWrites": ["learner-service", "admin-ops-service", "notification-service"]
+    },
+    {
+      "id": "admin-ops-service",
+      "schema": "admin_ops_service",
+      "factOwner": ["adminProjection", "approvalCommand", "supportTicket", "operationAuditReference"],
+      "readProjectionConsumers": [],
+      "trustedEventInputs": ["content.version.reviewed.v1", "content.version.published.v1", "commerce.order.reconciled.v1", "notification.recovery.completed.v1"],
+      "commandOwner": "admin-ops-service",
+      "forbiddenDirectWrites": ["learner-service", "content-service", "learning-service", "assessment-service", "media-service", "gamification-service", "social-service", "commerce-service", "notification-service", "analytics-service"]
+    },
+    {
+      "id": "analytics-service",
+      "schema": "analytics_service",
+      "factOwner": ["sanitizedEventReceipt", "metricProjection", "recomputeState"],
+      "readProjectionConsumers": ["admin-ops-service"],
+      "trustedEventInputs": ["learning.task.completed.v1", "assessment.attempt.assessed.v1", "media.downloaded.v1", "commerce.order.reconciled.v1", "notification.delivered.v1"],
+      "commandOwner": "analytics-service",
+      "forbiddenDirectWrites": ["learner-service", "content-service", "learning-service", "assessment-service", "media-service", "gamification-service", "social-service", "commerce-service", "notification-service", "admin-ops-service"]
+    }
+  ],
+  "runtimeEvidence": {
+    "static": ["owner-matrix", "projection-only-admin", "trusted-event-allowlist", "sensitive-payload-boundary", "offline-owner"],
+    "runtime": ["Kafka-at-least-once", "consumer-dedupe", "DLQ-replay", "media-rights-revocation", "commerce-entitlement-read", "admin-command-forwarding", "analytics-redaction"]
+  }
+}

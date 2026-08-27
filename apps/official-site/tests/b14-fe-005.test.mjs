@@ -30,6 +30,17 @@ test('official site reads a controlled Gateway base URL and restores locale/them
   assert.match(app, /officialThemeController\.restore\(\)/)
 })
 
+test('official site applies explicit URL locale/theme preferences after restore', async () => {
+  const app = await read('apps/official-site/app.vue')
+  const header = await read('apps/official-site/components/SiteHeader.vue')
+  assert.match(app, /route\.query\.locale/)
+  assert.match(app, /route\.query\.theme/)
+  assert.match(app, /resolvePublicUiLocale/)
+  assert.match(app, /resolvePublicThemeMode/)
+  assert.match(header, /officialI18nAdapter\.subscribe/)
+  assert.match(header, /loginLabel/)
+})
+
 test('official site exposes all eight state semantics without color-only status', async () => {
   const state = await read('apps/official-site/utils/public-state.mjs')
   const helper = await read('apps/official-site/utils/ui-state.mjs')

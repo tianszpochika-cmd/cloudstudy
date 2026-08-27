@@ -28,6 +28,7 @@ public record SubmitReviewCommand(
     }
 
     public String fingerprint() {
-        return targetId + ":" + itemType + ":" + itemId + ":" + contentVersionId + ":" + rawQuality + ":" + confidence + ":" + reviewedAt;
+        return targetId + ":" + itemType + ":" + itemId + ":" + contentVersionId + ":" + rawQuality + ":" + confidence
+                + ":" + reviewedAt + ":" + expectedStateVersion;
     }
 }

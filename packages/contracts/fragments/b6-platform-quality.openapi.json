@@ -13,27 +13,6 @@
     { "name": "b6-release", "description": "发布候选和上线 Gate 评估" }
   ],
   "paths": {
-    "/api/v1/platform/release-matrix": {
-      "get": { "operationId": "getB6ReleaseMatrix", "tags": ["b6-platform"], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" } } }
-    },
-    "/api/v1/platform/builds": {
-      "post": { "operationId": "registerB6PlatformBuild", "tags": ["b6-platform"], "x-idempotency": { "required": true, "strategy": "b6-platform-build-register", "keyHeader": "Idempotency-Key", "replayBehavior": "同一平台、版本和源码修订只登记一个可复用构建产物" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6BuildRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" }, "409": { "$ref": "#/components/responses/B6Conflict" } } }
-    },
-    "/api/v1/platform/builds/{buildId}": {
-      "get": { "operationId": "getB6PlatformBuild", "tags": ["b6-platform"], "parameters": [{ "$ref": "#/components/parameters/B6BuildId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
-    },
-    "/api/v1/platform/compatibility-checks": {
-      "post": { "operationId": "recordB6CompatibilityCheck", "tags": ["b6-platform"], "x-idempotency": { "required": true, "strategy": "b6-platform-compatibility-check", "keyHeader": "Idempotency-Key", "replayBehavior": "同一构建、平台、视口和方向只记录一个可回放兼容性结论" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6CompatibilityCheckRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" }, "409": { "$ref": "#/components/responses/B6Conflict" } } }
-    },
-    "/api/v1/platform/performance/budget": {
-      "get": { "operationId": "getB6PerformanceBudget", "tags": ["b6-platform"], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" } } }
-    },
-    "/api/v1/platform/accessibility/checklist": {
-      "get": { "operationId": "getB6AccessibilityChecklist", "tags": ["b6-platform"], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" } } }
-    },
-    "/api/v1/platform/responsive/checklist": {
-      "get": { "operationId": "getB6ResponsiveChecklist", "tags": ["b6-platform"], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" } } }
-    },
     "/api/v1/quality/e2e-runs": {
       "post": { "operationId": "recordB6E2ERun", "tags": ["b6-quality"], "x-idempotency": { "required": true, "strategy": "b6-e2e-run-record", "keyHeader": "Idempotency-Key", "replayBehavior": "同一场景、平台和源码修订只保留一个可审计运行结果" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6E2ERunRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" } } }
     },
@@ -51,9 +30,6 @@
     },
     "/api/v1/quality/reliability-runs/{runId}": {
       "get": { "operationId": "getB6ReliabilityRun", "tags": ["b6-quality"], "parameters": [{ "$ref": "#/components/parameters/B6RunId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
-    },
-    "/api/v1/observability/dashboard": {
-      "get": { "operationId": "getB6ObservabilityDashboard", "tags": ["b6-observability"], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" } } }
     },
     "/api/v1/data-reliability/drills": {
       "post": { "operationId": "recordB6DataReliabilityDrill", "tags": ["b6-data-reliability"], "x-idempotency": { "required": true, "strategy": "b6-data-reliability-drill", "keyHeader": "Idempotency-Key", "replayBehavior": "同一备份恢复场景和源码修订只登记一次演练结果" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6DrillRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" } } }

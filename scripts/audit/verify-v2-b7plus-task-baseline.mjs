@@ -11,7 +11,7 @@ const taskIds = baseline
   .map((line) => line.match(/^\|\s*(V2-B(\d+)-[A-Z0-9]+-\d{3})\s*\|/))
   .filter(Boolean)
   .map((match) => match[1]);
-const taskCounts = Object.fromEntries([...Array(10)].map((_, index) => [String(index + 7), 0]));
+const taskCounts = Object.fromEntries([...Array(16)].map((_, index) => [String(index + 7), 0]));
 for (const taskId of taskIds) {
   const batch = taskId.match(/^V2-B(\d+)-/)?.[1];
   if (batch in taskCounts) taskCounts[batch] += 1;
@@ -28,6 +28,12 @@ const expectedCounts = {
   14: 6,
   15: 6,
   16: 6,
+  17: 6,
+  18: 6,
+  19: 6,
+  20: 6,
+  21: 6,
+  22: 4,
 };
 const expectedBatches = Object.keys(expectedCounts);
 const batchesPresent = expectedBatches.every((batch) => new RegExp(`## .*B${batch} `).test(baseline));
@@ -48,13 +54,21 @@ const architectureRefs = [
   'ARCH-SVC-001', 'ARCH-LCM-001',
 ];
 const architectureRefsPresent = architectureRefs.every((ref) => baseline.includes(ref));
-const codeOnlyBoundary = /仅设计和实施代码层开发/.test(baseline)
-  && /不把真实生产部署/.test(baseline)
-  && /代码层完成/.test(baseline);
+const scopeBoundary = (/B15–B22 为 Phase 1 运行态、测试、发布与上线任务/.test(baseline)
+  || /B15 已进入执行并完成代码\/静态预检，B16–B22 仍待认领/.test(baseline)
+  || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17–B22 尚未开发/.test(baseline)
+  || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19–B22 尚未开发/.test(baseline)
+  || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20–B22 尚未开发/.test(baseline)
+  || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20 已完成代码\/静态 Gate 基础但真实安全\/隐私\/内容\/支付\/灾备运行态被环境、资质或证据阻塞，B21–B22 尚未开发/.test(baseline)
+  || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20 已完成代码\/静态 Gate 基础但真实安全\/隐私\/内容\/支付\/灾备运行态被环境、资质或证据阻塞，B21 已完成代码\/静态发布 Gate 基础但真实 staging\/RC\/观测\/回滚\/Go-No-Go 运行态被环境或证据阻塞，B22 尚未开发/.test(baseline)
+  || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20 已完成代码\/静态 Gate 基础但真实安全\/隐私\/内容\/支付\/灾备运行态被环境、资质或证据阻塞，B21 已完成代码\/静态发布 Gate 基础但真实 staging\/RC\/观测\/回滚\/Go-No-Go 运行态被环境或证据阻塞，B22 已完成代码\/静态上线 Gate 基础但真实生产切换、迁移、观察期和 Phase 1 验收运行态被环境或证据阻塞/.test(baseline))
+  && /不启用 Phase 2 AI、Phase 3 K12/.test(baseline)
+  && /代码层完成/.test(baseline)
+  && /生产上线/.test(baseline);
 const officialSiteCoverage = [...baseline.matchAll(/V2-B\d+-OFS-\d{3}/g)].length >= 3
   && /不承载登录后的学习业务/.test(baseline);
 const phaseGates = /G-P2/.test(baseline) && /G-P3/.test(baseline)
-  && /未解冻前/.test(baseline) && /冻结/.test(baseline);
+  && /F2/.test(baseline) && /F3/.test(baseline) && /冻结/.test(baseline);
 const v2ExtIds = new Set(register.match(/V2-EXT-[A-Z0-9-]+/g) ?? []);
 const v2ExtExcluded = v2ExtIds.size === 310
   && /310 个 `V2-EXT-\*` 占位单元拆成代码任务/.test(baseline)
@@ -69,7 +83,7 @@ const checks = {
   miniappBoundary,
   frontendFoundation,
   architectureRefsPresent,
-  codeOnlyBoundary,
+  scopeBoundary,
   officialSiteCoverage,
   phaseGates,
   v2ExtExcluded,

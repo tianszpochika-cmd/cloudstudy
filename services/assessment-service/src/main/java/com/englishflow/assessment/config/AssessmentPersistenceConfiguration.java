@@ -1,0 +1,101 @@
+package com.englishflow.assessment.config;
+
+import com.englishflow.assessment.adapter.content.UnavailableContentSnapshotPort;
+import com.englishflow.assessment.adapter.jdbc.JdbcAssessmentOutbox;
+import com.englishflow.assessment.adapter.jdbc.JdbcAssessmentStatePort;
+import com.englishflow.assessment.application.AssessmentCommandService;
+import com.englishflow.assessment.port.AssessmentOutboxPort;
+import com.englishflow.assessment.port.AssessmentStatePort;
+import com.englishflow.assessment.port.ContentSnapshotPort;
+import org.flywaydb.core.Flyway;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import javax.sql.DataSource;
+import java.time.Clock;
+
+/**
+ * Runtime composition for durable assessment facts.  It is intentionally conditional: with no
+ * database flag the application exposes no assessment command controller and cannot present
+ * in-memory state as real user data.
+ */
+@Configuration(proxyBeanMethods = false)
+@EnableConfigurationProperties(AssessmentPersistenceProperties.class)
+@ConditionalOnProperty(prefix = "assessment.persistence", name = "enabled", havingValue = "true")
+public class AssessmentPersistenceConfiguration {
+
+    @Bean
+    DataSource assessmentDataSource(AssessmentPersistenceProperties properties) {
+        if (properties.getJdbcUrl() == null || properties.getJdbcUrl().isBlank()) {
+            throw new IllegalStateException("ASSESSMENT_DB_URL is required when assessment persistence is enabled");
+        }
+        if (properties.getSchema() == null || !properties.getSchema().matches("[A-Za-z0-9_]{1,64}")) {
+            throw new IllegalStateException("ASSESSMENT_SCHEMA is not a safe identifier");
+        }
+        return DataSourceBuilder.create()
+                .url(properties.getJdbcUrl())
+                .username(properties.getUsername())
+                .password(properties.getPassword())
+                .driverClassName(properties.getDriverClassName())
+                .build();
+    }
+
+    /**
+     * Assessment excludes Spring Boot's automatic DataSource configuration because the
+     * service owns an explicitly validated JDBC boundary. Flyway therefore has to be
+     * composed against that same owner DataSource explicitly; otherwise the B10 migration
+     * can be present in the jar but never reach the local schema.
+     */
+    @Bean
+    Flyway assessmentFlyway(DataSource dataSource, AssessmentPersistenceProperties properties) {
+        Flyway flyway = Flyway.configure()
+                .dataSource(dataSource)
+                .schemas(properties.getSchema())
+                .defaultSchema(properties.getSchema())
+                .createSchemas(true)
+                .baselineOnMigrate(true)
+                .baselineVersion("0")
+                .locations("classpath:db/migration")
+                .load();
+        flyway.migrate();
+        return flyway;
+    }
+
+    @Bean
+    AssessmentStatePort assessmentStatePort(JdbcTemplate jdbcTemplate,
+                                            tools.jackson.databind.ObjectMapper objectMapper,
+                                            AssessmentPersistenceProperties properties) {
+        return new JdbcAssessmentStatePort(jdbcTemplate, objectMapper, properties.getSchema());
+    }
+
+    @Bean
+    AssessmentOutboxPort assessmentOutboxPort(JdbcTemplate jdbcTemplate,
+                                               tools.jackson.databind.ObjectMapper objectMapper,
+                                               AssessmentPersistenceProperties properties) {
+        return new JdbcAssessmentOutbox(jdbcTemplate, objectMapper, properties.getSchema());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ContentSnapshotPort.class)
+    ContentSnapshotPort unavailableContentSnapshotPort() {
+        return new UnavailableContentSnapshotPort();
+    }
+
+    @Bean
+    Clock assessmentClock() {
+        return Clock.systemUTC();
+    }
+
+    @Bean
+    AssessmentCommandService assessmentCommandService(ContentSnapshotPort contentSnapshotPort,
+                                                     AssessmentOutboxPort outbox,
+                                                     AssessmentStatePort state,
+                                                     Clock clock) {
+        return new AssessmentCommandService(contentSnapshotPort, outbox, clock, state);
+    }
+}

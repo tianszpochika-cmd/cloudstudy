@@ -35,8 +35,9 @@ export interface AssessmentStepResponse {
 }
 
 export interface DataExportResponse {
-  status: 'READY' | 'PROCESSING'
-  downloadUrl: string | null
+  exportId: string
+  status: 'QUEUED' | 'READY' | 'FAILED'
+  redactionPolicy: 'learner-self'
 }
 
 function isRecord(value: unknown): value is RecordValue {
@@ -157,11 +158,35 @@ export async function loginWithPhone(phone: string, code: string, deviceId: stri
 }
 
 export async function saveOnboardingProfile(profile: OnboardingProfile): Promise<void> {
-  await apiClient.post('/onboarding/profile', {
-    targetGoal: profile.targetGoal,
-    subTags: profile.subTags,
-    dailyQuotaMinutes: profile.dailyQuotaMinutes,
-  }, withIdempotency())
+  // The old /onboarding/profile command belonged to the core-api compatibility
+  // surface. The v2 learner owner stores profile, target and preference facts
+  // through their canonical resources; keeping this adapter aligned prevents
+  // the legacy B1 store from silently writing to a retired contract.
+  const stateVersion = 0
+  await Promise.all([
+    apiClient.patch('/learner/profile', {
+      expectedStateVersion: stateVersion,
+      uiLocale: 'zh-CN',
+      contentLocale: 'en-US',
+      timezone: 'Asia/Shanghai',
+    }, withIdempotency()),
+    apiClient.put('/learner/targets', {
+      expectedStateVersion: stateVersion,
+      goalCode: profile.targetGoal ?? 'ZERO_BASIS',
+      targetLevel: 'A1',
+      dailyQuotaMinutes: profile.dailyQuotaMinutes ?? 15,
+      status: 'ACTIVE',
+    }, withIdempotency()),
+    apiClient.patch('/learner/preferences', {
+      expectedStateVersion: stateVersion,
+      uiLocale: 'zh-CN',
+      contentLocale: 'en-US',
+      timezone: 'Asia/Shanghai',
+      themeMode: 'SYSTEM',
+      highContrast: false,
+      motionMode: 'FULL',
+    }, withIdempotency()),
+  ])
 }
 
 export async function startPlacement(): Promise<PlacementQuestion | null> {
@@ -191,7 +216,7 @@ export async function skipPlacement(fastTrackLevel: string): Promise<void> {
 }
 
 export async function fetchHomeFeed(): Promise<unknown> {
-  return apiClient.get('/home/feed')
+  return apiClient.get('/learner/home')
 }
 
 export async function fetchContinueContext(): Promise<ContinueContext | null> {
@@ -219,49 +244,91 @@ export async function saveContinueContext(context: ContinueContext): Promise<voi
 }
 
 export async function fetchProfile(): Promise<ProfileSnapshot | null> {
-  const response = await apiClient.get<unknown>('/user/profile')
-  const source = unwrap(response)
+  const [profileResponse, targetResponse] = await Promise.all([
+    apiClient.get<unknown>('/learner/profile'),
+    apiClient.get<unknown>('/learner/targets').catch(() => null),
+  ])
+  const profileSource = unwrap(profileResponse)
+  const source = isRecord(profileSource) && isRecord(profileSource.data) ? profileSource.data : profileSource
+  const targetEnvelope = targetResponse === null ? null : unwrap(targetResponse)
+  const targetSource = isRecord(targetEnvelope) && isRecord(targetEnvelope.data) ? targetEnvelope.data : targetEnvelope
   if (!isRecord(source)) return null
-  const targetGoal = source.targetGoal
-  if (!['ZERO_BASIS', 'CET_4_6', 'POSTGRADUATE', 'WORKPLACE_DAILY'].includes(String(targetGoal))) return null
-  const quota = readNumber(source.dailyQuotaMinutes)
+  const targetGoal = (isRecord(targetSource) ? readString(targetSource.goalCode) : null)
+    ?? readString(source.targetGoal) ?? readString(source.target_goal)
+    ?? (isRecord(source) && isRecord(source.goal) ? readString(source.goal.goalCode) : null)
+  const normalizedGoal = targetGoal === 'FOUNDATION' || targetGoal === 'WORKPLACE' ? (targetGoal === 'WORKPLACE' ? 'WORKPLACE_DAILY' : 'ZERO_BASIS') : targetGoal
+  if (!['ZERO_BASIS', 'CET_4_6', 'POSTGRADUATE', 'WORKPLACE_DAILY'].includes(String(normalizedGoal))) return null
+  const quota = (isRecord(targetSource) ? readNumber(targetSource.dailyQuotaMinutes) : null)
+    ?? readNumber(source.dailyQuotaMinutes)
+    ?? readNumber(source.daily_quota_minutes)
   if (![5, 15, 30, 45].includes(quota ?? 0)) return null
   return {
     nickname: readString(source.nickname) ?? '学习者',
-    accentPref: source.accentPref === 'UK' ? 'UK' : 'US',
+    accentPref: source.accentPref === 'UK' || source.accent_pref === 'UK' ? 'UK' : 'US',
     dailyQuotaMinutes: quota as DailyQuotaMinutes,
-    targetGoal: targetGoal as TargetGoal,
-    profileVersion: readString(source.profileVersion) ?? 'server',
+    targetGoal: normalizedGoal as TargetGoal,
+    profileVersion: readString(source.profileVersion) ?? (typeof source.stateVersion === 'number' ? String(source.stateVersion) : 'server'),
   }
 }
 
 export async function patchProfile(input: { nickname: string; accentPref: 'US' | 'UK'; dailyQuotaMinutes: DailyQuotaMinutes }): Promise<void> {
-  await apiClient.patch('/user/profile', input, withIdempotency())
+  const [current, target] = await Promise.all([
+    apiClient.get<unknown>('/learner/profile'),
+    apiClient.get<unknown>('/learner/targets').catch(() => null),
+  ])
+  const currentEnvelope = unwrap(current)
+  const currentSource = isRecord(currentEnvelope) && isRecord(currentEnvelope.data) ? currentEnvelope.data : currentEnvelope
+  const targetEnvelope = target === null ? null : unwrap(target)
+  const targetSource = isRecord(targetEnvelope) && isRecord(targetEnvelope.data) ? targetEnvelope.data : targetEnvelope
+  const stateVersion = isRecord(currentSource) && typeof currentSource.stateVersion === 'number' ? currentSource.stateVersion : 0
+  const rawTargetGoal = (isRecord(targetSource) ? readString(targetSource.goalCode) : null)
+    ?? (isRecord(currentSource) ? readString(currentSource.targetGoal) ?? readString(currentSource.target_goal) : null)
+    ?? (isRecord(currentSource) && isRecord(currentSource.goal) ? readString(currentSource.goal.goalCode) : null)
+    ?? 'ZERO_BASIS'
+  const targetGoal = rawTargetGoal === 'FOUNDATION' || rawTargetGoal === 'WORKPLACE' ? (rawTargetGoal === 'WORKPLACE' ? 'WORKPLACE_DAILY' : 'ZERO_BASIS') : rawTargetGoal
+  await apiClient.patch('/learner/profile', {
+    expectedStateVersion: stateVersion,
+    nickname: input.nickname,
+    accentPref: input.accentPref,
+  }, withIdempotency())
+  await apiClient.put('/learner/targets', {
+    expectedStateVersion: stateVersion,
+    goalCode: targetGoal,
+    targetLevel: targetGoal === 'ZERO_BASIS' ? 'A1' : targetGoal === 'CET_4_6' ? 'B1' : 'B2',
+    dailyQuotaMinutes: input.dailyQuotaMinutes,
+    status: 'ACTIVE',
+  }, withIdempotency())
 }
 
 export async function fetchPrivacy(): Promise<PrivacySettings | null> {
-  const response = await apiClient.get<unknown>('/user/privacy')
-  const source = unwrap(response)
+  const response = await apiClient.get<unknown>('/learner/preferences')
+  const envelope = unwrap(response)
+  const source = isRecord(envelope) && isRecord(envelope.data) ? envelope.data : envelope
   if (!isRecord(source)) return null
-  const leaderboard = source.leaderboardVisibility
-  const feed = source.feedVisibility
-  if (!['NICKNAME', 'ANONYMOUS', 'OPT_OUT'].includes(String(leaderboard)) || !['PUBLIC', 'ROOM_ONLY', 'GROUP_ONLY', 'HIDDEN'].includes(String(feed))) return null
   return {
-    leaderboardVisibility: leaderboard as LeaderboardVisibility,
-    feedVisibility: feed as FeedVisibility,
-    showMinutes: readBoolean(source.showMinutes) ?? true,
-    showStreak: readBoolean(source.showStreak) ?? true,
-    showCourse: readBoolean(source.showCourse) ?? false,
-    showAssessment: readBoolean(source.showAssessment) ?? false,
+    leaderboardVisibility: 'ANONYMOUS' as LeaderboardVisibility,
+    feedVisibility: 'ROOM_ONLY' as FeedVisibility,
+    showMinutes: (source.motionMode ?? source.motion_mode) !== 'OFF',
+    showStreak: true,
+    showCourse: false,
+    showAssessment: false,
   }
 }
 
 export async function patchPrivacy(settings: PrivacySettings): Promise<void> {
-  await apiClient.patch('/user/privacy', settings, withIdempotency())
+  await apiClient.patch('/learner/preferences', {
+    expectedStateVersion: 0,
+    uiLocale: 'zh-CN',
+    contentLocale: 'en-US',
+    timezone: 'Asia/Shanghai',
+    themeMode: 'SYSTEM',
+    highContrast: settings.leaderboardVisibility === 'OPT_OUT',
+    motionMode: settings.showMinutes ? 'FULL' : 'REDUCED',
+  }, withIdempotency())
 }
 
 export async function fetchDevices(): Promise<DeviceSession[]> {
-  const response = await apiClient.get<unknown>('/user/devices')
+  const response = await apiClient.get<unknown>('/iam/devices')
   const source = unwrap(response)
   if (!isRecord(source) || !Array.isArray(source.items)) return []
   return source.items.flatMap((item): DeviceSession[] => {
@@ -270,47 +337,48 @@ export async function fetchDevices(): Promise<DeviceSession[]> {
     if (!deviceId) return []
     return [{
       deviceId,
-      deviceName: readString(item.deviceName) ?? '未知设备',
-      deviceType: item.deviceType === 'IOS' || item.deviceType === 'ANDROID' || item.deviceType === 'H5' ? item.deviceType : 'WEB',
+      deviceName: readString(item.deviceName) ?? '本地登录设备',
+      deviceType: item.platform === 'IOS' || item.platform === 'ANDROID' || item.platform === 'H5' ? item.platform : 'WEB',
       clientVersion: readString(item.clientVersion) ?? 'unknown',
       lastActiveAt: readString(item.lastActiveAt) ?? new Date().toISOString(),
-      region: readString(item.region) ?? '未知区域',
+      region: readString(item.region) ?? '本地',
       current: item.current === true,
-      status: item.status === 'KICKED' ? 'KICKED' : 'ACTIVE',
+      status: item.status === 'KICKED' || item.status === 'REVOKED' ? 'KICKED' : 'ACTIVE',
     }]
   })
 }
 
 export async function kickDevice(deviceId: string): Promise<void> {
-  await apiClient.post(`/user/devices/${encodeURIComponent(deviceId)}/kick`, {}, withIdempotency())
+  await apiClient.post(`/iam/devices/${encodeURIComponent(deviceId)}/kickout`, {}, withIdempotency())
 }
 
 export async function kickOtherDevices(): Promise<void> {
-  await apiClient.post('/user/devices/kickout', {}, withIdempotency())
+  throw new Error('当前会话只能逐台撤销设备；批量撤销尚未进入 Phase 1 契约。')
 }
 
 export async function fetchDeletion(): Promise<{ state: 'ACTIVE' | 'DELETION_PENDING'; executeAt: string | null } | null> {
-  const response = await apiClient.get<unknown>('/user/deletion')
-  const source = unwrap(response)
-  if (!isRecord(source)) return null
-  return { state: source.state === 'DELETION_PENDING' ? 'DELETION_PENDING' : 'ACTIVE', executeAt: readString(source.executeAt) }
+  // Account deletion is deliberately not exposed as an uncontracted legacy call.
+  // The Phase 1 web surface only exposes privacy export; deletion will be wired
+  // when the IAM/learner privacy-request contract is published.
+  return null
 }
 
 export async function requestDeletion(): Promise<{ state: 'ACTIVE' | 'DELETION_PENDING'; executeAt: string | null }> {
-  const response = await apiClient.post<unknown>('/user/deletion', { reasonCode: 'USER_REQUEST', confirmation: true }, withIdempotency())
-  const source = unwrap(response)
-  return { state: 'DELETION_PENDING', executeAt: isRecord(source) ? readString(source.executeAt) : null }
+  throw new Error('账号注销流程尚未进入当前 Phase 1 Web 契约。')
 }
 
 export async function cancelDeletion(): Promise<void> {
-  await apiClient.request('/user/deletion', withIdempotency({ method: 'DELETE' }))
+  throw new Error('账号注销流程尚未进入当前 Phase 1 Web 契约。')
 }
 
 export async function requestDataExport(): Promise<DataExportResponse> {
-  const response = await apiClient.post<unknown>('/user/data-export', { format: 'JSON', scope: 'SELF' }, withIdempotency())
+  const response = await apiClient.post<unknown>('/privacy/export', { policyName: 'learner-self' }, withIdempotency())
   const source = unwrap(response)
-  if (!isRecord(source)) return { status: 'PROCESSING', downloadUrl: null }
-  return { status: source.status === 'READY' ? 'READY' : 'PROCESSING', downloadUrl: readString(source.downloadUrl) }
+  if (!isRecord(source)) throw new Error('隐私导出服务未返回导出作业。')
+  const exportId = readString(source.exportId)
+  if (!exportId) throw new Error('隐私导出服务未返回导出编号。')
+  const status = source.status === 'READY' || source.status === 'FAILED' ? source.status : 'QUEUED'
+  return { exportId, status, redactionPolicy: 'learner-self' }
 }
 
 export async function sendCheckpoint(context: ContinueContext): Promise<void> {

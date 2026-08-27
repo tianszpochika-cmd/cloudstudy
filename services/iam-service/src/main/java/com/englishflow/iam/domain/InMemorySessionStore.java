@@ -23,9 +23,33 @@ public final class InMemorySessionStore implements SessionStore {
     }
 
     @Override
-    public SessionRecord replace(SessionRecord session) {
+    public Optional<SessionRecord> findByRefreshTokenDigest(String refreshTokenDigest) {
+        return sessions.values().stream()
+                .filter(value -> SecretDigests.constantTimeEquals(value.refreshTokenDigest(), refreshTokenDigest))
+                .findFirst();
+    }
+
+    @Override
+    public synchronized SessionRecord replace(SessionRecord session) {
         sessions.put(session.sessionId(), session);
         return session;
+    }
+
+    @Override
+    public synchronized Optional<SessionRecord> replaceIfCurrent(
+            SessionId sessionId,
+            long expectedRotation,
+            String expectedRefreshTokenDigest,
+            SessionRecord replacement) {
+        SessionRecord current = sessions.get(sessionId);
+        if (current == null
+                || current.rotation() != expectedRotation
+                || !SecretDigests.constantTimeEquals(
+                current.refreshTokenDigest(), expectedRefreshTokenDigest)) {
+            return Optional.empty();
+        }
+        sessions.put(sessionId, replacement);
+        return Optional.of(replacement);
     }
 
     @Override

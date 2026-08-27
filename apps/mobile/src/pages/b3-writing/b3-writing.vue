@@ -22,6 +22,11 @@ const feedback = ref<B10RuleFeedback | null>(null)
 const draftSavedAt = ref<string | null>(null)
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const context = computed(() => ({ uiLocale: b10UiLocale.value, contentLocale: b10ContentLocale.value }))
+const sourceText = computed(() => {
+  const prompt = selectedPrompt.value
+  if (!prompt?.sourceText || prompt.sourceText === prompt.taskText) return null
+  return prompt.sourceText
+})
 const storageKey = 'yx.b10.mobile.writing.draft.v1'
 let draftTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -33,7 +38,7 @@ function selectPrompt(index: number): void { selectedPrompt.value = prompts.valu
 function onInput(): void { clearTimeout(draftTimer); draftTimer = setTimeout(persistDraft, 250) }
 async function submit(): Promise<void> { if (!selectedPrompt.value || !answer.value.trim()) { message.value = '请先读取服务端题目并填写答案。'; return } status.value = 'loading'; message.value = null; const clientEventId = createB10ClientEventId(`writing-${selectedPrompt.value.promptId}`); try { feedback.value = selectedPrompt.value.promptType === 'CORRECTION' ? await b10LearningApi.submitCorrection(context.value, selectedPrompt.value, answer.value, clientEventId) : await b10LearningApi.submitWriting(context.value, selectedPrompt.value, answer.value, selectedPrompt.value.promptType === 'TRANSLATION' ? 'TRANSLATION' : 'WRITING', clientEventId); status.value = feedback.value.contentVersionStale ? 'stale' : 'ready'; message.value = feedback.value.contentVersionStale ? b10T('common.stale') : null; persistDraft() } catch (error) { const info = b10ErrorInfo(error, '写作提交失败，草稿仍保留。'); status.value = info.kind; message.value = info.message; persistDraft() } }
 watch(answer, onInput)
-onMounted(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
+onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
 onUnmounted(() => { clearTimeout(draftTimer); engine.dispose() })
 </script>
 
@@ -44,7 +49,7 @@ onUnmounted(() => { clearTimeout(draftTimer); engine.dispose() })
     <text class="yx-description">{{ b10T('writing.description') }}</text>
     <B10ThemeBar />
     <B10StatusPanel :status="status" :message="message" :performance-level="performanceLevel" @retry="load" @performance="setPerformance" />
-    <view v-if="prompts.length" class="yx-card b10-writing-card"><picker :range="prompts.map((prompt) => `${prompt.promptType} · ${prompt.title}`)" :value="Math.max(0, prompts.findIndex((prompt) => prompt.promptId === selectedPrompt?.promptId))" @change="selectPrompt(Number($event.detail.value))"><view class="b10-prompt-picker">{{ selectedPrompt?.promptType }} · {{ selectedPrompt?.title }}</view></picker><text v-if="selectedPrompt?.sourceText" class="b10-writing-card__source">{{ selectedPrompt.sourceText }}</text><text class="b10-writing-card__task">{{ selectedPrompt?.taskText }}</text><view v-if="selectedPrompt?.targetStructure?.length" class="b10-targets"><text v-for="target in selectedPrompt.targetStructure" :key="target" class="b10-target">{{ target }}</text></view><textarea v-model="answer" class="b10-textarea" maxlength="12000" placeholder="输入答案；提交后由服务端返回规则反馈。" /><view class="b10-draft-row"><text>{{ b10T('writing.draft') }}：{{ draftSavedAt ? '已保存' : '输入中' }}</text><button class="b10-draft-button" type="button" @click="persistDraft">{{ b10T('writing.save') }}</button></view><button class="yx-button" type="button" @click="submit">{{ selectedPrompt?.promptType === 'CORRECTION' ? b10T('writing.correction') : b10T('writing.submit') }}</button></view>
+    <view v-if="prompts.length" class="yx-card b10-writing-card"><picker :range="prompts.map((prompt) => `${prompt.promptType} · ${prompt.title}`)" :value="Math.max(0, prompts.findIndex((prompt) => prompt.promptId === selectedPrompt?.promptId))" @change="selectPrompt(Number($event.detail.value))"><view class="b10-prompt-picker">{{ selectedPrompt?.promptType }} · {{ selectedPrompt?.title }}</view></picker><text v-if="sourceText" class="b10-writing-card__source">{{ sourceText }}</text><text class="b10-writing-card__task">{{ selectedPrompt?.taskText }}</text><view v-if="selectedPrompt?.targetStructure?.length" class="b10-targets"><text v-for="target in selectedPrompt.targetStructure" :key="target" class="b10-target">{{ target }}</text></view><textarea v-model="answer" class="b10-textarea" maxlength="12000" placeholder="输入答案；提交后由服务端返回规则反馈。" /><view class="b10-draft-row"><text>{{ b10T('writing.draft') }}：{{ draftSavedAt ? '已保存' : '输入中' }}</text><button class="b10-draft-button" type="button" @click="persistDraft">{{ b10T('writing.save') }}</button></view><button class="yx-button" type="button" @click="submit">{{ selectedPrompt?.promptType === 'CORRECTION' ? b10T('writing.correction') : b10T('writing.submit') }}</button></view>
     <view v-else-if="status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
     <view v-else class="yx-card b10-empty"><text>{{ b10T('writing.noPrompt') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
     <B10FeedbackCard :feedback="feedback" />

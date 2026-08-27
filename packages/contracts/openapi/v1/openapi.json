@@ -153,14 +153,6 @@
       "description": "微信、支付宝、Apple sandbox callback and replay-safe verification"
     },
     {
-      "name": "b5-admin-content",
-      "description": "教研内容、版本、双审、发布回滚和导入"
-    },
-    {
-      "name": "b5-admin-operations",
-      "description": "运营指标、风险、对账、Feature Flag、审计和工单"
-    },
-    {
       "name": "b5-support",
       "description": "用户纠错和客服工单，默认仅保存脱敏引用"
     },
@@ -283,6 +275,10 @@
     {
       "name": "B13-OfficialSite",
       "description": "官网可公开的价格与权益投影"
+    },
+    {
+      "name": "b25-real-data",
+      "description": "Phase 1 local MySQL-backed learner/content/learning/assessment replay boundary"
     }
   ],
   "paths": {
@@ -1099,6 +1095,45 @@
       }
     },
     "/api/v1/assessment/placement/start": {
+      "get": {
+        "tags": [
+          "b1-onboarding"
+        ],
+        "summary": "Read the learner's current placement session",
+        "operationId": "readPlacementSession",
+        "security": [
+          {
+            "B1ContentBearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Placement session state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B1AssessmentReadResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B1OnboardingUnauthorized"
+          }
+        }
+      },
       "post": {
         "tags": [
           "b1-onboarding"
@@ -1201,95 +1236,6 @@
           },
           "403": {
             "$ref": "#/components/responses/B1OnboardingForbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/B1OnboardingConflict"
-          }
-        }
-      }
-    },
-    "/api/v1/user/devices": {
-      "get": {
-        "tags": [
-          "b1-privacy"
-        ],
-        "summary": "List the current user's active devices",
-        "operationId": "listUserDevices",
-        "security": [
-          {
-            "B1ContentBearerAuth": []
-          }
-        ],
-        "x-b1-acceptance": [
-          "B1-DEVICE-KICKOUT",
-          "B1-SCOPE-CROSS-TENANT-USER"
-        ],
-        "responses": {
-          "200": {
-            "description": "Self-scoped device list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1DeviceListResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/B1OnboardingUnauthorized"
-          }
-        }
-      }
-    },
-    "/api/v1/user/devices/kickout": {
-      "post": {
-        "tags": [
-          "b1-privacy"
-        ],
-        "summary": "Revoke one of the current user's device sessions",
-        "operationId": "kickoutUserDevice",
-        "security": [
-          {
-            "B1ContentBearerAuth": []
-          }
-        ],
-        "x-b1-acceptance": [
-          "B1-AUTH-DUAL-TOKEN-REVOKE",
-          "B1-DEVICE-KICKOUT"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "device-kickout",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "same device and request returns the original revocation"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B1IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B1KickoutRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Device session revoked"
-          },
-          "401": {
-            "$ref": "#/components/responses/B1OnboardingUnauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/B1OnboardingForbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/B1OnboardingNotFound"
           },
           "409": {
             "$ref": "#/components/responses/B1OnboardingConflict"
@@ -1724,9 +1670,20 @@
           "B1 Onboarding"
         ],
         "operationId": "completeB1DailyTask",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "migration": "B25 durable learner daily-task projection; public Gateway path is retained for compatibility"
+        },
         "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-task-plan"
+          "required": true,
+          "strategy": "principal-task-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-first-durable-task"
         },
         "parameters": [
           {
@@ -1737,6 +1694,16 @@
               "type": "string",
               "minLength": 8,
               "maxLength": 128
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 192
             }
           }
         ],
@@ -1750,6 +1717,15 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Verified JWT required"
+          },
+          "403": {
+            "description": "Tenant/owner policy denied"
+          },
+          "404": {
+            "description": "Task not found"
           }
         }
       }
@@ -1830,26 +1806,6 @@
         "responses": {
           "200": {
             "description": "Placement report",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/home/feed": {
-      "get": {
-        "tags": [
-          "B1 Onboarding"
-        ],
-        "operationId": "getB1HomeFeed",
-        "responses": {
-          "200": {
-            "description": "Today's home feed",
             "content": {
               "application/json": {
                 "schema": {
@@ -1948,310 +1904,6 @@
         "responses": {
           "200": {
             "description": "Checkpoint accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/user/profile": {
-      "get": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "getB1UserProfile",
-        "responses": {
-          "200": {
-            "description": "Self profile",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "patchB1UserProfile",
-        "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-profile"
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B1AnyData"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Profile updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/user/learning-preferences": {
-      "get": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "getB1LearningPreferences",
-        "responses": {
-          "200": {
-            "description": "Learning preferences",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "patchB1LearningPreferences",
-        "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-preferences"
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B1AnyData"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Learning preferences updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/user/privacy": {
-      "get": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "getB1PrivacySettings",
-        "responses": {
-          "200": {
-            "description": "Privacy settings",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "patchB1PrivacySettings",
-        "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-privacy"
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B1AnyData"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Privacy settings updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/user/notifications": {
-      "get": {
-        "operationId": "listB4Notifications",
-        "tags": [
-          "b4-infrastructure"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4Limit"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/user/devices/{devicePublicId}/kick": {
-      "post": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "kickB1UserDevice",
-        "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-kick-result"
-        },
-        "parameters": [
-          {
-            "name": "devicePublicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/DeviceId"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Device kicked",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Current device cannot be kicked"
-          }
-        }
-      }
-    },
-    "/api/v1/user/login-alerts": {
-      "get": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "listB1LoginAlerts",
-        "responses": {
-          "200": {
-            "description": "Self-scoped login alerts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/user/deletion": {
-      "get": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "getB1DeletionStatus",
-        "responses": {
-          "200": {
-            "description": "Deletion status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "requestB1Deletion",
-        "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-deletion"
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B1AnyData"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Deletion requested",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B1AnyData"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "B1 User"
-        ],
-        "operationId": "cancelB1Deletion",
-        "x-idempotency": {
-          "strategy": "request-key",
-          "replayBehavior": "return-original-cancellation"
-        },
-        "responses": {
-          "200": {
-            "description": "Deletion cancelled",
             "content": {
               "application/json": {
                 "schema": {
@@ -3082,15 +2734,20 @@
         }
       }
     },
-    "/api/v1/mastery/reports/daily": {
+    "/api/v1/learning/stats/daily-report": {
       "get": {
         "tags": [
           "b2-mastery"
         ],
         "operationId": "getB2DailyReport",
-        "summary": "获取学习日报聚合基础",
+        "summary": "读取 learning-service MySQL 学习日报投影",
         "x-b2-acceptance": [
           "DEV-05-012"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2LocalDate"
+          }
         ],
         "responses": {
           "200": {
@@ -3099,15 +2756,26 @@
         }
       }
     },
-    "/api/v1/mastery/reports/weekly": {
+    "/api/v1/learning/stats/weekly-report": {
       "get": {
         "tags": [
           "b2-mastery"
         ],
         "operationId": "getB2WeeklyReport",
-        "summary": "获取学习周报聚合基础",
+        "summary": "读取 learning-service MySQL 学习周报投影",
         "x-b2-acceptance": [
           "DEV-05-012"
+        ],
+        "parameters": [
+          {
+            "name": "weekStart",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -3284,7 +2952,7 @@
         }
       }
     },
-    "/api/v1/vocab/items/{vocabId}": {
+    "/api/v1/content/learner/vocabulary/{vocabularyId}": {
       "get": {
         "operationId": "getVocabDetail",
         "tags": [
@@ -4136,27 +3804,6 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/B2DailySummaryResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/notifications": {
-      "get": {
-        "operationId": "listLearningNotifications",
-        "tags": [
-          "b2-notifications"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B2NotificationStatusOptional"
-          },
-          {
-            "$ref": "#/components/parameters/B2LimitOptional"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B2NotificationPageResponse"
           }
         }
       }
@@ -5848,74 +5495,6 @@
         }
       }
     },
-    "/api/v1/gamification/profile": {
-      "get": {
-        "operationId": "getB4GamificationProfile",
-        "tags": [
-          "b4-gamification"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/gamification/ledger": {
-      "get": {
-        "operationId": "listB4GamificationLedger",
-        "tags": [
-          "b4-gamification"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4Limit"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/gamification/events": {
-      "post": {
-        "operationId": "settleB4LearningEvent",
-        "tags": [
-          "b4-gamification"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-learning-event",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "按 sourceEventId 和规则版本只结算一次"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B4LearningEventRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B4Conflict"
-          }
-        }
-      }
-    },
     "/api/v1/gamification/streak": {
       "get": {
         "operationId": "getB4Streak",
@@ -6203,19 +5782,6 @@
           },
           "409": {
             "$ref": "#/components/responses/B4Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/gamification/seasons/current": {
-      "get": {
-        "operationId": "getB4CurrentSeason",
-        "tags": [
-          "b4-gamification"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
           }
         }
       }
@@ -6732,83 +6298,6 @@
         }
       }
     },
-    "/api/v1/social/rooms/{roomId}/focus-sessions": {
-      "post": {
-        "operationId": "startB4FocusSession",
-        "tags": [
-          "b4-social"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-focus-start",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一用户只允许一个 RUNNING 专注事实"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4RoomId"
-          },
-          {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B4FocusRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B4Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/social/focus-sessions/{sessionId}": {
-      "patch": {
-        "operationId": "updateB4FocusSession",
-        "tags": [
-          "b4-social"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-focus-update",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "专注状态和服务端时长只应用一次"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4FocusSessionId"
-          },
-          {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B4FocusRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
     "/api/v1/social/rooms/{roomId}/interactions": {
       "post": {
         "tags": [
@@ -7246,102 +6735,6 @@
         }
       }
     },
-    "/api/v1/user/notifications/{messageId}/read": {
-      "put": {
-        "operationId": "markB4NotificationRead",
-        "tags": [
-          "b4-infrastructure"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-notification-read",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "通知已读状态幂等更新"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4MessageId"
-          },
-          {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/user/notifications/read-all": {
-      "put": {
-        "operationId": "markAllB4NotificationsRead",
-        "tags": [
-          "b4-infrastructure"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-notification-read-all",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "用户通知批量已读只应用一次"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/user/notification-preferences": {
-      "get": {
-        "operationId": "getB4NotificationPreferences",
-        "tags": [
-          "b4-infrastructure"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      },
-      "patch": {
-        "operationId": "updateB4NotificationPreferences",
-        "tags": [
-          "b4-infrastructure"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-notification-preferences",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "通知偏好按用户版本幂等保存"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B4NotificationPreferencesRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B4GenericResponse"
-          }
-        }
-      }
-    },
     "/api/v1/sync/offline-downloads/{downloadId}": {
       "patch": {
         "operationId": "updateB4OfflineDownload",
@@ -7612,46 +7005,6 @@
           },
           "404": {
             "$ref": "#/components/responses/B5NotFound"
-          }
-        }
-      }
-    },
-    "/api/v1/commerce/orders/{orderId}/payment-attempts": {
-      "post": {
-        "operationId": "createPaymentAttempt",
-        "tags": [
-          "b5-commerce"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "commerce-payment-attempt",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一订单和支付渠道只创建一个活跃支付尝试"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5OrderId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5PaymentAttemptRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
           }
         }
       }
@@ -8287,926 +7640,6 @@
         }
       }
     },
-    "/api/v1/admin/content": {
-      "post": {
-        "operationId": "createContentDraft",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-content-create",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一内容编码只创建一个草稿实体"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ContentDraftRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/content/{contentId}/draft": {
-      "put": {
-        "operationId": "saveContentDraft",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-content-draft-save",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "按内容和编辑版本幂等保存草稿"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ContentId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ContentSaveRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/content/{contentId}/validate": {
-      "post": {
-        "operationId": "validateContentDraft",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-content-validate",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一内容版本只生成一个结构校验结论"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ContentId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "422": {
-            "$ref": "#/components/responses/B5BadRequest"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/content/{contentId}/submit-review": {
-      "post": {
-        "operationId": "submitContentReview",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-content-submit-review",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一内容版本只进入一次双审队列"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ContentId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "202": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/reviews": {
-      "get": {
-        "operationId": "listReviewTasks",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5Cursor"
-          },
-          {
-            "$ref": "#/components/parameters/B5Limit"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/reviews/{reviewTaskId}/decision": {
-      "post": {
-        "operationId": "decideReviewTask",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-review-decision",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "审核节点和审核角色只应用一次并保留动作审计"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ReviewTaskId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ReviewDecisionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/content/{contentId}/publish": {
-      "post": {
-        "operationId": "publishContent",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-content-publish",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "已完成双审的版本只发布一次"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ContentId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/content/{contentId}/rollback": {
-      "post": {
-        "operationId": "rollbackContent",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-content-rollback",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "回滚目标版本只切换一次发布指针并审计"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ContentId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ContentSaveRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/import-jobs": {
-      "post": {
-        "operationId": "createImportJob",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-import-job",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "导入文件哈希和目标类型只创建一个任务"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ImportJobRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/import-jobs/{importJobId}": {
-      "get": {
-        "operationId": "getImportJob",
-        "tags": [
-          "b5-admin-content"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ImportJobId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "404": {
-            "$ref": "#/components/responses/B5NotFound"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/correction-tickets": {
-      "get": {
-        "operationId": "listCorrectionTickets",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/correction-tickets/{ticketId}/resolve": {
-      "post": {
-        "operationId": "resolveCorrectionTicket",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-correction-ticket-resolve",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "工单结论和状态只应用一次并保留 SLA 审计"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5TicketId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5CorrectionResolveRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/risk/users/{userId}": {
-      "get": {
-        "operationId": "getRiskProfile",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5UserId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/risk/users/{userId}/actions": {
-      "post": {
-        "operationId": "applyRiskAction",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-risk-action",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "风险动作按用户、动作和版本幂等执行并带 TTL"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5UserId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5RiskActionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/dashboard/metrics": {
-      "get": {
-        "operationId": "getDashboardMetrics",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/reconciliation/batches": {
-      "get": {
-        "operationId": "listReconciliationBatches",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/reconciliation/items/{itemId}/resolve": {
-      "post": {
-        "operationId": "resolveReconciliationItem",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-reconciliation-resolve",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "对账差异人工结论只能落一次并关联操作审计"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ReconItemId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ReconciliationResolveRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/feature-flags": {
-      "get": {
-        "operationId": "listFeatureFlags",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/feature-flags/{flagKey}": {
-      "put": {
-        "operationId": "updateFeatureFlag",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-feature-flag-update",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "Flag 版本和灰度规则按 key 幂等更新，默认关闭"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5FlagKey"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5FlagUpdateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/activation-batches": {
-      "post": {
-        "operationId": "createActivationBatch",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-activation-batch",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "激活码批次只生成一次并记录批次审计"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ActivationBatchRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/activation-codes/{code}/revoke": {
-      "post": {
-        "operationId": "revokeActivationCode",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-activation-revoke",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "激活码撤销状态只切换一次并保留审计"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5ActivationCode"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/commerce/orders/{orderId}/adjust": {
-      "post": {
-        "operationId": "adjustCommerceOrder",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-commerce-adjustment",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "人工补偿或收回权益按订单和动作引用幂等"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5OrderId"
-          },
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5OrderAdjustmentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/audit-logs": {
-      "get": {
-        "operationId": "searchAuditLogs",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5Cursor"
-          },
-          {
-            "$ref": "#/components/parameters/B5Limit"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/audit-logs/export": {
-      "post": {
-        "operationId": "exportAuditReport",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-audit-export",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一查询窗口和筛选条件只生成一个脱敏导出任务"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "responses": {
-          "202": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/reconciliation/batches/import": {
-      "post": {
-        "operationId": "importReconciliationBatch",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-reconciliation-import",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "平台对账文件哈希只导入一次，差异逐项生成"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B5ReconciliationImportRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "202": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/commerce/orders": {
-      "get": {
-        "operationId": "listAdminCommerceOrders",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5Cursor"
-          },
-          {
-            "$ref": "#/components/parameters/B5Limit"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/commerce/users/{userId}/entitlements": {
-      "get": {
-        "operationId": "getAdminUserEntitlements",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B5UserId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/admin/session": {
-      "get": {
-        "operationId": "getAdminSession",
-        "tags": [
-          "b5-admin-operations"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/release-matrix": {
-      "get": {
-        "operationId": "getB6ReleaseMatrix",
-        "tags": [
-          "b6-platform"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/builds": {
-      "post": {
-        "operationId": "registerB6PlatformBuild",
-        "tags": [
-          "b6-platform"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b6-platform-build-register",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一平台、版本和源码修订只登记一个可复用构建产物"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B6IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B6BuildRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B6Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/builds/{buildId}": {
-      "get": {
-        "operationId": "getB6PlatformBuild",
-        "tags": [
-          "b6-platform"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B6BuildId"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          },
-          "404": {
-            "$ref": "#/components/responses/B6NotFound"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/compatibility-checks": {
-      "post": {
-        "operationId": "recordB6CompatibilityCheck",
-        "tags": [
-          "b6-platform"
-        ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b6-platform-compatibility-check",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一构建、平台、视口和方向只记录一个可回放兼容性结论"
-        },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B6IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B6CompatibilityCheckRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B6Conflict"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/performance/budget": {
-      "get": {
-        "operationId": "getB6PerformanceBudget",
-        "tags": [
-          "b6-platform"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/accessibility/checklist": {
-      "get": {
-        "operationId": "getB6AccessibilityChecklist",
-        "tags": [
-          "b6-platform"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          }
-        }
-      }
-    },
-    "/api/v1/platform/responsive/checklist": {
-      "get": {
-        "operationId": "getB6ResponsiveChecklist",
-        "tags": [
-          "b6-platform"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          }
-        }
-      }
-    },
     "/api/v1/quality/e2e-runs": {
       "post": {
         "operationId": "recordB6E2ERun",
@@ -9372,19 +7805,6 @@
         }
       }
     },
-    "/api/v1/observability/dashboard": {
-      "get": {
-        "operationId": "getB6ObservabilityDashboard",
-        "tags": [
-          "b6-observability"
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B6GenericResponse"
-          }
-        }
-      }
-    },
     "/api/v1/data-reliability/drills": {
       "post": {
         "operationId": "recordB6DataReliabilityDrill",
@@ -9504,7 +7924,7 @@
           "b8-auth"
         ],
         "operationId": "startB8OidcAuthorization",
-        "summary": "Start authorization code + PKCE through the approved standard IdP adapter; state, nonce and verifier are server-generated",
+        "summary": "Start IdP-hosted registration or login with authorization code + PKCE; state, nonce and verifier are server-generated",
         "security": [],
         "x-contract": {
           "domain": "iam",
@@ -9518,6 +7938,9 @@
           },
           {
             "$ref": "#/components/parameters/B8RedirectUri"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthIntent"
           },
           {
             "$ref": "#/components/parameters/B8ReturnTo"
@@ -9550,18 +7973,89 @@
       }
     },
     "/api/v1/auth/oidc/{provider}/callback": {
-      "post": {
+      "get": {
         "tags": [
           "b8-auth"
         ],
-        "operationId": "exchangeB8OidcCallback",
-        "summary": "Exchange an OIDC authorization code after server-side state, nonce and PKCE verification",
+        "operationId": "completeB8OidcBrowserCallback",
+        "summary": "Receive the standard OIDC browser redirect and consume its one-time authorization transaction",
         "security": [],
         "x-contract": {
           "domain": "iam",
           "owner": "iam-service",
           "phase": "P1",
-          "idpGate": "G-IDP"
+          "idpGate": "G-IDP",
+          "callback": "browser-redirect"
+        },
+        "x-callback-semantics": {
+          "success": "code plus state",
+          "providerError": "error plus state; no principal or session is created",
+          "pkce": "server retrieves the verifier from the state-bound transaction",
+          "nonce": "server verifies the ID-token nonce against the state-bound transaction",
+          "replay": "state is atomically consumed once; replay is a conflict and never creates a second session"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8Provider"
+          },
+          {
+            "$ref": "#/components/parameters/B8CallbackCode"
+          },
+          {
+            "$ref": "#/components/parameters/B8State"
+          },
+          {
+            "$ref": "#/components/parameters/B8OidcCallbackError"
+          },
+          {
+            "$ref": "#/components/parameters/B8OidcCallbackErrorDescription"
+          },
+          {
+            "$ref": "#/components/parameters/B8OidcCallbackErrorUri"
+          }
+        ],
+        "responses": {
+          "303": {
+            "description": "Successful callback; redirect only to the server-allowlisted return path and establish the provider-backed session",
+            "headers": {
+              "Location": {
+                "$ref": "#/components/headers/B8CallbackLocation"
+              },
+              "Set-Cookie": {
+                "$ref": "#/components/headers/B8SessionCookie"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B8BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/B8Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B8PolicyDenied"
+          },
+          "409": {
+            "$ref": "#/components/responses/B8Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/B8IdpUnavailable"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "exchangeB8OidcCallback",
+        "summary": "Compatibility JSON callback; exchange the code only after server-side state, nonce and PKCE verification",
+        "security": [],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "idpGate": "G-IDP",
+          "callback": "native-json-compatibility"
         },
         "x-idempotency": {
           "required": true,
@@ -9589,7 +8083,7 @@
         },
         "responses": {
           "200": {
-            "description": "Principal mapped and session established; adult Gate/consent status is explicit",
+            "description": "Principal mapped and provider-backed session established; IAM never mints tokens, but the provider-issued access/refresh credentials may be relayed in this TLS-only JSON compatibility response so browser clients can call the Gateway",
             "content": {
               "application/json": {
                 "schema": {
@@ -9622,12 +8116,15 @@
           "b8-auth"
         ],
         "operationId": "refreshB8IamSession",
-        "summary": "Rotate a refresh session through IAM",
+        "summary": "Rotate an external IdP refresh credential through the provider adapter; IAM does not mint tokens",
         "security": [],
         "x-contract": {
           "domain": "iam",
           "owner": "iam-service",
-          "phase": "P1"
+          "phase": "P1",
+          "tokenIssuer": "approved-external-oidc-idp",
+          "iamTokenServer": false,
+          "refreshMechanism": "provider-adapter-only"
         },
         "x-idempotency": {
           "required": false,
@@ -9652,7 +8149,7 @@
         },
         "responses": {
           "200": {
-            "description": "Rotated access and refresh credentials",
+            "description": "External IdP-issued credentials after provider-side rotation; IAM only records the session rotation and never self-mints a token",
             "content": {
               "application/json": {
                 "schema": {
@@ -9665,13 +8162,19 @@
             "$ref": "#/components/responses/B8BadRequest"
           },
           "401": {
-            "$ref": "#/components/responses/B8SessionRevoked"
+            "$ref": "#/components/responses/B8SessionRefreshUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B8PolicyDenied"
           },
           "409": {
             "$ref": "#/components/responses/B8Conflict"
           },
           "429": {
             "$ref": "#/components/responses/B8RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/B8IdpUnavailable"
           }
         }
       }
@@ -9717,6 +8220,9 @@
           },
           "401": {
             "$ref": "#/components/responses/B8Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B8Forbidden"
           },
           "409": {
             "$ref": "#/components/responses/B8Conflict"
@@ -12008,66 +10514,6 @@
         }
       }
     },
-    "/api/v1/media/assets/{assetId}/access": {
-      "post": {
-        "tags": [
-          "B11-Media"
-        ],
-        "operationId": "createB11MediaAccess",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B11AssetId"
-          },
-          {
-            "$ref": "#/components/parameters/B11IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B11MediaAccessRequest"
-              }
-            }
-          }
-        },
-        "x-idempotency": {
-          "required": true,
-          "strategy": "tenant-principal-request-hash",
-          "replayBehavior": "return-original-until-expiry"
-        },
-        "responses": {
-          "200": {
-            "description": "短时访问引用",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B11SignedMediaUrl"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/B11Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/B11Forbidden"
-          },
-          "409": {
-            "$ref": "#/components/responses/B11Conflict"
-          },
-          "410": {
-            "description": "媒体授权已撤回或过期"
-          }
-        }
-      }
-    },
     "/api/v1/media/assets/{assetId}/content": {
       "get": {
         "tags": [
@@ -13142,6 +11588,61 @@
         "responses": {
           "201": {
             "description": "焦点会话已创建",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B12FocusSession"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B12Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B12Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B12Conflict"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "B12-Social"
+        ],
+        "operationId": "updateB12RoomFocus",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B12RoomId"
+          },
+          {
+            "$ref": "#/components/parameters/B12IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B12FocusUpdateCommand"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-room-focus-update-key",
+          "replayBehavior": "return-focus-session-state"
+        },
+        "responses": {
+          "200": {
+            "description": "焦点会话状态已更新",
             "content": {
               "application/json": {
                 "schema": {
@@ -14291,66 +12792,6 @@
         }
       }
     },
-    "/api/v1/admin/ops/commands/{commandId}/confirm": {
-      "post": {
-        "tags": [
-          "B13-AdminOps"
-        ],
-        "operationId": "confirmB13AdminCommand",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/B13CommandId"
-          },
-          {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/B13CommandConfirmation"
-              }
-            }
-          }
-        },
-        "x-idempotency": {
-          "required": true,
-          "strategy": "admin-command-confirmation-key",
-          "replayBehavior": "return-original-command-state"
-        },
-        "responses": {
-          "200": {
-            "description": "二次确认后的命令状态",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/B13AdminCommandResult"
-                }
-              }
-            }
-          },
-          "401": {
-            "$ref": "#/components/responses/B13Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/B13Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/B13NotFound"
-          },
-          "409": {
-            "$ref": "#/components/responses/B13Conflict"
-          }
-        }
-      }
-    },
     "/api/v1/admin/ops/metrics": {
       "get": {
         "tags": [
@@ -14497,6 +12938,1073 @@
           },
           "409": {
             "$ref": "#/components/responses/B13Conflict"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/profile": {
+      "get": {
+        "operationId": "b25ReadLearnerProfile",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "401": {
+            "$ref": "#/components/responses/B25Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "b25UpdateLearnerProfile",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-profile-key",
+          "replayBehavior": "return-first-durable-profile"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "409": {
+            "$ref": "#/components/responses/B25Conflict"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/targets": {
+      "get": {
+        "operationId": "b25ReadLearnerGoal",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "put": {
+        "operationId": "b25UpdateLearnerGoal",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-goal-key",
+          "replayBehavior": "return-first-durable-goal"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "409": {
+            "$ref": "#/components/responses/B25Conflict"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/preferences": {
+      "get": {
+        "operationId": "b25ReadLearnerPreferences",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "b25UpdateLearnerPreferences",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-preferences-key",
+          "replayBehavior": "return-first-durable-preferences"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/first-day": {
+      "get": {
+        "operationId": "b25ReadFirstDayProjection",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/home": {
+      "get": {
+        "operationId": "b25ReadLearnerHome",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/onboarding/daily-tasks/{taskId}/complete": {
+      "post": {
+        "operationId": "b25CompleteDailyTask",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25TaskId"
+          },
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-task-key",
+          "replayBehavior": "return-first-durable-task"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/content/learner/catalog": {
+      "get": {
+        "operationId": "b25ReadPublishedCatalog",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "403": {
+            "$ref": "#/components/responses/B25Forbidden"
+          }
+        }
+      }
+    },
+    "/internal/v1/content/learner/{contentCode}": {
+      "get": {
+        "operationId": "b25ReadPublishedContent",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25ContentCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/plan/current": {
+      "get": {
+        "operationId": "b25ReadLearningPlan",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/batches": {
+      "get": {
+        "operationId": "b25ReadSrsBatch",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "post": {
+        "operationId": "b25CreateSrsBatch",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-srs-batch-key",
+          "replayBehavior": "return-first-durable-batch"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/reviews": {
+      "post": {
+        "operationId": "b25SubmitSrsReview",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-srs-review-key",
+          "replayBehavior": "return-first-durable-srs-state"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "400": {
+            "$ref": "#/components/responses/B25BadRequest"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/reviews:sync": {
+      "post": {
+        "operationId": "b25SyncSrsReviews",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-srs-sync-key",
+          "replayBehavior": "return-first-durable-sync"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/overview": {
+      "get": {
+        "operationId": "b25ReadSrsOverview",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/start": {
+      "get": {
+        "operationId": "b25ReadPlacement",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "post": {
+        "operationId": "b25StartPlacement",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-placement-start-key",
+          "replayBehavior": "return-first-durable-session"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/submit-step": {
+      "post": {
+        "operationId": "b25SubmitPlacementStep",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-placement-answer-key",
+          "replayBehavior": "return-first-durable-answer-state"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "409": {
+            "$ref": "#/components/responses/B25Conflict"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/skip": {
+      "post": {
+        "operationId": "b25SkipPlacement",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-placement-skip-key",
+          "replayBehavior": "return-first-durable-report"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/report/{sessionId}": {
+      "get": {
+        "operationId": "b25ReadPlacementReport",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25SessionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/notifications/preferences": {
+      "get": {
+        "operationId": "b25ReadNotificationPreferences",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/notifications/preferences/{notificationType}/{channel}": {
+      "put": {
+        "operationId": "b25UpdateNotificationPreference",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-notification-preference-key",
+          "replayBehavior": "return-first-durable-preference"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/onboarding/daily-tasks/ensure": {
+      "post": {
+        "operationId": "b25EnsureDailyTask",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B25EnsureDailyTaskRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-daily-task-content-key",
+          "replayBehavior": "return-first-durable-task-projection"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "400": {
+            "$ref": "#/components/responses/B25BadRequest"
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/messages/{messageId}/read": {
+      "put": {
+        "tags": [
+          "B12-Notification"
+        ],
+        "operationId": "markB12NotificationMessageRead",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B12MessageId"
+          },
+          {
+            "$ref": "#/components/parameters/B12IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-message-read-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-read-fact"
+        },
+        "responses": {
+          "200": {
+            "description": "已读事实",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "messageId",
+                    "updated",
+                    "source"
+                  ],
+                  "properties": {
+                    "messageId": {
+                      "type": "string"
+                    },
+                    "updated": {
+                      "type": "boolean"
+                    },
+                    "source": {
+                      "type": "string",
+                      "const": "mysql"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B12Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B12Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B12NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/messages/read-all": {
+      "put": {
+        "tags": [
+          "B12-Notification"
+        ],
+        "operationId": "markAllB12NotificationMessagesRead",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B12IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-notification-read-all-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-read-count"
+        },
+        "responses": {
+          "200": {
+            "description": "批量已读事实",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "messageId",
+                    "updated",
+                    "source"
+                  ],
+                  "properties": {
+                    "messageId": {
+                      "type": "string",
+                      "const": "all"
+                    },
+                    "updated": {
+                      "type": "boolean"
+                    },
+                    "source": {
+                      "type": "string",
+                      "const": "mysql"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B12Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B12Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/signed-url": {
+      "post": {
+        "tags": [
+          "B11-Media"
+        ],
+        "operationId": "createB11MediaAccess",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B11AssetId"
+          },
+          {
+            "$ref": "#/components/parameters/B11IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B11MediaAccessRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "tenant-principal-request-hash",
+          "replayBehavior": "return-original-until-expiry"
+        },
+        "responses": {
+          "200": {
+            "description": "短时访问引用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B11SignedMediaUrl"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B11Conflict"
+          },
+          "410": {
+            "description": "媒体授权已撤回或过期"
+          }
+        }
+      }
+    },
+    "/api/v1/gamification/season": {
+      "get": {
+        "operationId": "getB4Season",
+        "tags": [
+          "b4-gamification"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B4GenericResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/commands/prepare": {
+      "post": {
+        "tags": [
+          "B13-AdminOps"
+        ],
+        "operationId": "prepareB13AdminCommand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13AdminCommandRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-command-preparation-key",
+          "replayBehavior": "return-original-confirmation-state"
+        },
+        "responses": {
+          "200": {
+            "description": "服务端签发的二次确认挑战",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B13CommandPreparation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B13Invalid"
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/audit": {
+      "get": {
+        "tags": [
+          "B13-AdminOps"
+        ],
+        "operationId": "listB13AdminAudit",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "当前租户的脱敏追加审计记录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B13AuditPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/media-progress": {
+      "put": {
+        "tags": [
+          "B11-Media"
+        ],
+        "operationId": "updateB11MediaProgress",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B11IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B11MediaProgressRequest"
+              }
+            }
+          }
+        },
+        "x-contract": {
+          "owner": "learning-service",
+          "writeModel": "b3_learning_interaction",
+          "tenantAndOwner": "server-derived from verified JWT"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-asset-position-client-event",
+          "replayBehavior": "return-first-durable-media-progress"
+        },
+        "responses": {
+          "200": {
+            "description": "媒体进度已写入 learning-service owner schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B11MediaProgressReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B11Conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/shadowing/completions": {
+      "post": {
+        "tags": [
+          "B11-Media"
+        ],
+        "operationId": "updateB11ShadowingCompletion",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B11IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B11ShadowingCompletionRequest"
+              }
+            }
+          }
+        },
+        "x-contract": {
+          "owner": "learning-service",
+          "writeModel": "b3_learning_interaction",
+          "aiScoring": "disabled in Phase 1"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "shadowing-source-segment-client-event",
+          "replayBehavior": "return-first-durable-shadowing-completion"
+        },
+        "responses": {
+          "200": {
+            "description": "跟读完成事实已写入 learning-service owner schema",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B11ShadowingCompletionReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B11Conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/onboarding/daily-tasks/ensure": {
+      "post": {
+        "operationId": "b25EnsureDailyTaskPublic",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B25EnsureDailyTaskRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-daily-task-content-key",
+          "replayBehavior": "return-first-durable-task-projection"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "400": {
+            "$ref": "#/components/responses/B25BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/B25Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B25Forbidden"
           }
         }
       }
@@ -14775,13 +14283,13 @@
         }
       },
       "VocabId": {
-        "name": "vocabId",
+        "name": "vocabularyId",
         "in": "path",
         "required": true,
         "schema": {
-          "type": "integer",
-          "format": "int64",
-          "minimum": 1
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
         }
       },
       "ChunkId": {
@@ -16056,6 +15564,119 @@
           "maximum": 100,
           "default": 50
         }
+      },
+      "B8AuthIntent": {
+        "name": "intent",
+        "in": "query",
+        "required": false,
+        "description": "仅用于选择 IdP 托管的登录或注册入口；不改变 OIDC 授权协议，也不接受本地凭据。",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "login",
+            "register"
+          ],
+          "default": "login"
+        }
+      },
+      "B8CallbackCode": {
+        "name": "code",
+        "in": "query",
+        "required": false,
+        "description": "一次性 authorization code；只在 provider 未返回 error 时出现，服务端不得持久化。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 2048
+        }
+      },
+      "B8OidcCallbackError": {
+        "name": "error",
+        "in": "query",
+        "required": false,
+        "description": "OIDC/OAuth provider 返回的标准错误码；服务端只映射为安全错误 envelope，不回显 provider 原文。",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "access_denied",
+            "account_selection_required",
+            "consent_required",
+            "interaction_required",
+            "invalid_request",
+            "invalid_scope",
+            "login_required",
+            "server_error",
+            "temporarily_unavailable",
+            "unauthorized_client",
+            "unsupported_response_type"
+          ]
+        }
+      },
+      "B8OidcCallbackErrorDescription": {
+        "name": "error_description",
+        "in": "query",
+        "required": false,
+        "description": "不可信的 provider 描述；仅供内部诊断，禁止原样返回、日志记录或作为授权事实。",
+        "schema": {
+          "type": "string",
+          "maxLength": 512
+        }
+      },
+      "B8OidcCallbackErrorUri": {
+        "name": "error_uri",
+        "in": "query",
+        "required": false,
+        "description": "provider 错误文档地址；不得作为本地 redirect 或跳转目标。",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        }
+      },
+      "B25IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 192
+        }
+      },
+      "B25TaskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "B25ContentCode": {
+        "name": "contentCode",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "B25SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "B12MessageId": {
+        "name": "messageId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
       }
     },
     "headers": {
@@ -16084,6 +15705,21 @@
         "schema": {
           "type": "string",
           "format": "date-time"
+        }
+      },
+      "B8CallbackLocation": {
+        "description": "只允许跳转到服务端登记的 returnTo/redirect URI；不得包含 code、state、access token 或 refresh token。",
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        }
+      },
+      "B8SessionCookie": {
+        "description": "可选的 provider-backed、HttpOnly、Secure、SameSite 会话 cookie；不表示 IAM 是 OAuth/OIDC Token Server。",
+        "schema": {
+          "type": "string",
+          "maxLength": 4096
         }
       }
     },
@@ -17472,7 +17108,7 @@
         }
       },
       "B8IdpUnavailable": {
-        "description": "Standard IdP adapter unavailable; no fallback token server is used",
+        "description": "Standard external IdP adapter, discovery, token exchange, refresh or JWKS is unavailable; return HTTP 503 with error.code=idp_unavailable and retryable=true; no fallback token server is used",
         "content": {
           "application/json": {
             "schema": {
@@ -17716,6 +17352,41 @@
             }
           }
         }
+      },
+      "B8SessionRefreshUnauthorized": {
+        "description": "Refresh credential is missing, invalid, expired or already used; error.code is unauthorized or session_revoked and HTTP status is 401",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B25Data": {
+        "description": "Durable owner response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B25DataEnvelope"
+            }
+          }
+        }
+      },
+      "B25Unauthorized": {
+        "description": "Verified JWT required"
+      },
+      "B25Forbidden": {
+        "description": "Tenant/owner/rights policy denied"
+      },
+      "B25Conflict": {
+        "description": "State or idempotency conflict"
+      },
+      "B25NotFound": {
+        "description": "Fact or published version not found"
+      },
+      "B25BadRequest": {
+        "description": "Invalid command"
       }
     },
     "schemas": {
@@ -19341,6 +19012,27 @@
                 "type": "boolean"
               }
             }
+          }
+        }
+      },
+      "B1AssessmentReadResponse": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "contentVersionId": {
+            "type": "string"
+          },
+          "currentQuestion": {},
+          "nextQuestion": {},
+          "report": {},
+          "isCompleted": {
+            "type": "boolean"
           }
         }
       },
@@ -24358,273 +24050,6 @@
           }
         }
       },
-      "B5ContentDraftRequest": {
-        "type": "object",
-        "required": [
-          "contentCode",
-          "contentType",
-          "title",
-          "contentHash"
-        ],
-        "properties": {
-          "contentCode": {
-            "type": "string",
-            "maxLength": 128
-          },
-          "contentType": {
-            "type": "string",
-            "enum": [
-              "COURSE",
-              "UNIT",
-              "VOCABULARY",
-              "QUESTION",
-              "MEDIA"
-            ]
-          },
-          "title": {
-            "type": "string",
-            "maxLength": 256
-          },
-          "contentHash": {
-            "type": "string",
-            "pattern": "^[a-fA-F0-9]{64}$"
-          },
-          "sourceCode": {
-            "type": "string",
-            "maxLength": 128
-          },
-          "licenseCode": {
-            "type": "string",
-            "maxLength": 128
-          },
-          "payload": {
-            "type": "object",
-            "additionalProperties": true
-          }
-        }
-      },
-      "B5ContentSaveRequest": {
-        "type": "object",
-        "required": [
-          "contentHash"
-        ],
-        "properties": {
-          "contentHash": {
-            "type": "string",
-            "pattern": "^[a-fA-F0-9]{64}$"
-          },
-          "payload": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "targetVersionId": {
-            "type": "string",
-            "maxLength": 64
-          },
-          "reasonCode": {
-            "type": "string",
-            "maxLength": 64
-          }
-        }
-      },
-      "B5ReviewDecisionRequest": {
-        "type": "object",
-        "required": [
-          "stage",
-          "decision"
-        ],
-        "properties": {
-          "stage": {
-            "type": "string",
-            "enum": [
-              "FIRST",
-              "FINAL"
-            ]
-          },
-          "decision": {
-            "type": "string",
-            "enum": [
-              "APPROVED",
-              "REJECTED",
-              "CHANGES_REQUESTED"
-            ]
-          },
-          "reasonCode": {
-            "type": "string",
-            "maxLength": 64
-          }
-        }
-      },
-      "B5ImportJobRequest": {
-        "type": "object",
-        "required": [
-          "targetType",
-          "sourceHash"
-        ],
-        "properties": {
-          "targetType": {
-            "type": "string",
-            "enum": [
-              "COURSE",
-              "UNIT",
-              "VOCABULARY",
-              "QUESTION",
-              "MEDIA"
-            ]
-          },
-          "sourceHash": {
-            "type": "string",
-            "pattern": "^[a-fA-F0-9]{64}$"
-          },
-          "rows": {
-            "type": "array",
-            "maxItems": 10000,
-            "items": {
-              "type": "object",
-              "additionalProperties": true
-            }
-          }
-        }
-      },
-      "B5CorrectionResolveRequest": {
-        "type": "object",
-        "required": [
-          "decisionCode"
-        ],
-        "properties": {
-          "decisionCode": {
-            "type": "string",
-            "enum": [
-              "FIXED",
-              "REJECTED",
-              "DUPLICATE",
-              "NO_ACTION"
-            ]
-          },
-          "resolutionRef": {
-            "type": "string",
-            "maxLength": 128
-          }
-        }
-      },
-      "B5RiskActionRequest": {
-        "type": "object",
-        "required": [
-          "actionCode"
-        ],
-        "properties": {
-          "actionCode": {
-            "type": "string",
-            "enum": [
-              "FREEZE_LOGIN",
-              "FREEZE_PAYMENT",
-              "RATE_LIMIT",
-              "UNFREEZE"
-            ]
-          },
-          "ttlSeconds": {
-            "type": "integer",
-            "minimum": 60,
-            "maximum": 2592000
-          }
-        }
-      },
-      "B5ReconciliationImportRequest": {
-        "type": "object",
-        "required": [
-          "channelCode",
-          "sourceHash",
-          "items"
-        ],
-        "properties": {
-          "channelCode": {
-            "type": "string",
-            "enum": [
-              "WECHAT",
-              "ALIPAY",
-              "APPLE"
-            ]
-          },
-          "sourceHash": {
-            "type": "string",
-            "pattern": "^[a-fA-F0-9]{64}$"
-          },
-          "items": {
-            "type": "array",
-            "maxItems": 100000,
-            "items": {
-              "type": "object",
-              "required": [
-                "channelTradeNo",
-                "orderId",
-                "amountMinor"
-              ],
-              "properties": {
-                "channelTradeNo": {
-                  "type": "string",
-                  "maxLength": 128
-                },
-                "orderId": {
-                  "type": "string",
-                  "maxLength": 64
-                },
-                "amountMinor": {
-                  "type": "integer",
-                  "format": "int64",
-                  "minimum": 0,
-                  "description": "金额使用最小货币单位，禁止浮点金额。"
-                }
-              }
-            }
-          }
-        }
-      },
-      "B5ReconciliationResolveRequest": {
-        "type": "object",
-        "required": [
-          "decisionCode"
-        ],
-        "properties": {
-          "decisionCode": {
-            "type": "string",
-            "enum": [
-              "MATCHED",
-              "REFUND_REQUIRED",
-              "MANUAL_CREDIT",
-              "IGNORE"
-            ]
-          },
-          "reasonCode": {
-            "type": "string",
-            "maxLength": 64
-          }
-        }
-      },
-      "B5FlagUpdateRequest": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "default": false
-          },
-          "rolloutPercent": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          },
-          "ruleVersion": {
-            "type": "string",
-            "maxLength": 64
-          },
-          "allowedPlatforms": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 32
-            }
-          }
-        }
-      },
       "B5SupportTicketRequest": {
         "type": "object",
         "required": [
@@ -24676,51 +24101,6 @@
           "clientMessageRef": {
             "type": "string",
             "maxLength": 128
-          }
-        }
-      },
-      "B5ActivationBatchRequest": {
-        "type": "object",
-        "required": [
-          "skuId",
-          "count",
-          "expiresAt"
-        ],
-        "properties": {
-          "skuId": {
-            "type": "string",
-            "maxLength": 64
-          },
-          "count": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 10000
-          },
-          "expiresAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "B5OrderAdjustmentRequest": {
-        "type": "object",
-        "required": [
-          "actionCode",
-          "reasonCode"
-        ],
-        "properties": {
-          "actionCode": {
-            "type": "string",
-            "enum": [
-              "GRANT_ENTITLEMENT",
-              "REVOKE_ENTITLEMENT",
-              "REFUND_MARK",
-              "CHARGEBACK_MARK"
-            ]
-          },
-          "reasonCode": {
-            "type": "string",
-            "maxLength": 64
           }
         }
       },
@@ -25270,7 +24650,9 @@
           },
           "details": {
             "type": "object",
-            "additionalProperties": false
+            "additionalProperties": true,
+            "maxProperties": 8,
+            "description": "仅允许安全、可本地化的诊断字段；不得包含 token、IdP 原文、claims、密钥或策略秘密。"
           }
         }
       },
@@ -25300,6 +24682,13 @@
           "expiresAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "intent": {
+            "type": "string",
+            "enum": [
+              "login",
+              "register"
+            ]
           }
         }
       },
@@ -25307,7 +24696,6 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "code",
           "state",
           "redirectUri"
         ],
@@ -25316,7 +24704,7 @@
             "type": "string",
             "minLength": 16,
             "maxLength": 2048,
-            "description": "一次性授权码；服务端只向标准 IdP adapter 转发，不持久化。"
+            "description": "成功回调中的一次性 authorization code；服务端只向外部标准 IdP adapter 转发，不持久化。与 error 互斥。"
           },
           "state": {
             "type": "string",
@@ -25327,7 +24715,53 @@
             "type": "string",
             "format": "uri",
             "maxLength": 512
+          },
+          "error": {
+            "type": "string",
+            "enum": [
+              "access_denied",
+              "account_selection_required",
+              "consent_required",
+              "interaction_required",
+              "invalid_request",
+              "invalid_scope",
+              "login_required",
+              "server_error",
+              "temporarily_unavailable",
+              "unauthorized_client",
+              "unsupported_response_type"
+            ]
+          },
+          "errorDescription": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "不可信 provider 文本；服务端不得原样回显或持久化。"
+          },
+          "errorUri": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048,
+            "description": "provider 文档地址；不是 redirect 目标。"
           }
+        },
+        "x-callback-validation": {
+          "successShape": [
+            "code",
+            "state",
+            "redirectUri"
+          ],
+          "errorShape": [
+            "error",
+            "state",
+            "redirectUri"
+          ],
+          "mutuallyExclusive": [
+            "code",
+            "error"
+          ],
+          "stateBoundTransaction": true,
+          "codeVerifierFromServerTransaction": true,
+          "nonceFromServerTransaction": true
         }
       },
       "B8OidcCallbackResponse": {
@@ -25341,7 +24775,7 @@
         ],
         "properties": {
           "session": {
-            "$ref": "#/components/schemas/B8SessionTokenResponse"
+            "$ref": "#/components/schemas/B8SessionEstablishedResponse"
           },
           "principal": {
             "$ref": "#/components/schemas/B8PrincipalResponse"
@@ -25368,7 +24802,7 @@
             "type": "string",
             "minLength": 32,
             "maxLength": 4096,
-            "description": "敏感 Refresh Token 只经 TLS 传输；服务端只保存 hash，禁止日志、事件和普通持久化明文。"
+            "description": "外部标准 OIDC IdP 签发的敏感 Refresh Token；只经 TLS 传输，IAM 只通过 provider adapter 轮换并保存 hash，禁止本地 Token Endpoint、日志、事件和普通持久化明文。"
           }
         }
       },
@@ -25386,18 +24820,24 @@
           "accessToken",
           "refreshToken"
         ],
+        "x-token-ownership": {
+          "issuer": "approved-external-oidc-idp",
+          "mintedByIam": false,
+          "transport": "provider-adapter",
+          "noLocalTokenEndpoint": true
+        },
         "properties": {
           "accessToken": {
             "type": "string",
             "minLength": 32,
             "maxLength": 8192,
-            "description": "敏感 Access Token 仅经 TLS 返回并放入受控短期存储；禁止日志和事件。"
+            "description": "外部标准 OIDC IdP 签发的 Access Token；IAM 不签发、不改写，客户端只经 TLS 接收并放入受控短期存储，禁止日志和事件。"
           },
           "refreshToken": {
             "type": "string",
             "minLength": 32,
             "maxLength": 4096,
-            "description": "敏感 Refresh Token 仅经 TLS 返回；服务端只保存 hash，禁止日志、事件和数据库明文。"
+            "description": "外部标准 OIDC IdP 签发的 Refresh Token；IAM 只经 provider adapter 轮换并保存 hash，禁止本地 Token Endpoint、日志、事件和数据库明文。"
           },
           "expiresIn": {
             "type": "integer",
@@ -25418,6 +24858,11 @@
           "tokenType": {
             "type": "string",
             "const": "Bearer"
+          },
+          "issuer": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 512
           }
         }
       },
@@ -25723,6 +25168,11 @@
           "jwksUri",
           "codeChallengeMethods"
         ],
+        "x-oidc-discovery": {
+          "source": "external-provider-adapter",
+          "serverSideOnly": true,
+          "tokenEndpointOwnedBy": "external-oidc-idp"
+        },
         "properties": {
           "issuer": {
             "type": "string",
@@ -25734,7 +25184,17 @@
             "format": "uri",
             "maxLength": 1024
           },
+          "tokenEndpoint": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 1024
+          },
           "jwksUri": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 1024
+          },
+          "userinfoEndpoint": {
             "type": "string",
             "format": "uri",
             "maxLength": 1024
@@ -25747,12 +25207,72 @@
             },
             "minItems": 1
           },
+          "codeChallengeMethodsSupported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "const": "S256"
+            },
+            "minItems": 1
+          },
+          "responseTypesSupported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "const": "code"
+            },
+            "minItems": 1
+          },
+          "grantTypesSupported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "authorization_code",
+                "refresh_token"
+              ]
+            },
+            "minItems": 1
+          },
           "scopes": {
             "type": "array",
             "items": {
               "type": "string",
               "maxLength": 64
+            },
+            "contains": {
+              "const": "openid"
             }
+          },
+          "scopesSupported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "contains": {
+              "const": "openid"
+            }
+          },
+          "subjectTypesSupported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "const": "public"
+            },
+            "minItems": 1
+          },
+          "idTokenSigningAlgValuesSupported": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "RS256",
+                "RS384",
+                "RS512"
+              ]
+            },
+            "minItems": 1
           }
         }
       },
@@ -25762,6 +25282,8 @@
         "required": [
           "keys"
         ],
+        "x-jwks-source": "external-oidc-idp",
+        "x-jwks-boundary": "public-signing-keys-only; never expose private key material",
         "properties": {
           "keys": {
             "type": "array",
@@ -28704,6 +28226,14 @@
           "expiresAt": {
             "$ref": "#/components/schemas/B10DateTime",
             "nullable": true
+          },
+          "reportId": {
+            "$ref": "#/components/schemas/B10ReportId",
+            "nullable": true
+          },
+          "lastAttemptId": {
+            "$ref": "#/components/schemas/B10AttemptId",
+            "nullable": true
           }
         }
       },
@@ -28831,6 +28361,10 @@
           },
           "assessedAt": {
             "$ref": "#/components/schemas/B10DateTime",
+            "nullable": true
+          },
+          "reportId": {
+            "$ref": "#/components/schemas/B10ReportId",
             "nullable": true
           }
         }
@@ -31407,7 +30941,8 @@
           "title",
           "safeBody",
           "contentVersion",
-          "createdAt"
+          "createdAt",
+          "read"
         ],
         "properties": {
           "messageId": {
@@ -31441,6 +30976,9 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "read": {
+            "type": "boolean"
           }
         }
       },
@@ -32177,7 +31715,8 @@
         "additionalProperties": false,
         "required": [
           "categoryCode",
-          "subjectCode",
+          "resourceRef",
+          "descriptionFingerprint",
           "priority"
         ],
         "properties": {
@@ -32185,9 +31724,13 @@
             "type": "string",
             "maxLength": 64
           },
-          "subjectCode": {
+          "resourceRef": {
             "type": "string",
-            "maxLength": 128
+            "maxLength": 160
+          },
+          "descriptionFingerprint": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
           },
           "priority": {
             "type": "string",
@@ -32198,12 +31741,11 @@
               "URGENT"
             ]
           },
-          "attachmentRefs": {
+          "attachments": {
             "type": "array",
             "maxItems": 5,
             "items": {
-              "type": "string",
-              "maxLength": 128
+              "$ref": "#/components/schemas/B13MediaObjectRef"
             }
           }
         }
@@ -32580,6 +32122,490 @@
             "format": "date-time"
           }
         }
+      },
+      "B8SessionEstablishedResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "deviceId",
+          "provider",
+          "status",
+          "establishedAt"
+        ],
+        "description": "Product session fact created after the external IdP verifies the authorization code and ID token. Any credential fields are provider-issued relay values, never IAM-minted values; they are not persisted or logged by IAM.",
+        "x-sensitive-fields": [
+          "accessToken",
+          "refreshToken"
+        ],
+        "properties": {
+          "sessionId": {
+            "$ref": "#/components/schemas/B8SessionId"
+          },
+          "deviceId": {
+            "$ref": "#/components/schemas/B8DeviceId"
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "status": {
+            "type": "string",
+            "const": "ACTIVE"
+          },
+          "establishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "accessToken": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 8192,
+            "description": "Provider-issued access token; TLS relay only; must never be stored or written to logging by IAM."
+          },
+          "refreshToken": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 4096,
+            "description": "Provider-issued refresh token; TLS relay only; IAM stores only a digest for rotation and must never store or log the plaintext token."
+          },
+          "accessTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tokenType": {
+            "type": "string",
+            "const": "Bearer"
+          },
+          "issuer": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 512
+          }
+        }
+      },
+      "B25DataEnvelope": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "mysql"
+            ]
+          },
+          "data": {}
+        }
+      },
+      "B25ReplayEvidence": {
+        "type": "object",
+        "required": [
+          "idempotencyKey",
+          "firstResult",
+          "replayResult"
+        ],
+        "properties": {
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "firstResult": {},
+          "replayResult": {},
+          "sameDigest": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B12FocusUpdateCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "focusId",
+          "action"
+        ],
+        "properties": {
+          "focusId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "PAUSE",
+              "RESUME",
+              "FINISH",
+              "ABORT"
+            ]
+          },
+          "clientEventId": {
+            "type": "string",
+            "maxLength": 160
+          }
+        }
+      },
+      "B13MediaObjectRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "objectRef",
+          "objectVersion",
+          "purposeCode",
+          "contentType",
+          "sizeBytes"
+        ],
+        "properties": {
+          "objectRef": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "objectVersion": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "purposeCode": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "contentType": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 52428800
+          }
+        }
+      },
+      "B13CommandPreparation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "token",
+          "decisionId",
+          "action",
+          "resourceRef",
+          "expiresAt"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "一次性短时确认令牌；仅允许通过 TLS 进入内存请求头，不得写入日志、数据库、URL 或客户端持久化。"
+          },
+          "decisionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "action": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "resourceRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-sensitive-fields": [
+          "token"
+        ]
+      },
+      "B13AuditRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "auditId",
+          "operation",
+          "resourceRef",
+          "commandId",
+          "traceId",
+          "decisionId",
+          "occurredAt",
+          "redacted"
+        ],
+        "properties": {
+          "auditId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "operation": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "resourceRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "commandId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "traceId": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "decisionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B13AuditPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "redacted"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/B13AuditRecord"
+            }
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B11MediaProgressRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "positionMs",
+          "durationMs",
+          "contentVersion",
+          "entityVersion",
+          "clientEventId"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 128
+          },
+          "positionMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "contentVersion": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "integer",
+                "minimum": 1
+              }
+            ]
+          },
+          "entityVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          }
+        }
+      },
+      "B11MediaProgressReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "positionMs",
+          "durationMs",
+          "entityVersion",
+          "status",
+          "source"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 128
+          },
+          "positionMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "entityVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "const": "RECORDED"
+          },
+          "source": {
+            "type": "string",
+            "const": "mysql"
+          }
+        }
+      },
+      "B11ShadowingCompletionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceSegmentId",
+          "contentVersion",
+          "clientEventId"
+        ],
+        "properties": {
+          "recordingId": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 128
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "contentVersion": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "integer",
+                "minimum": 1
+              }
+            ]
+          },
+          "contentVersionId": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "integer",
+                "minimum": 1
+              }
+            ]
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "aiScoringAvailable": {
+            "type": "boolean",
+            "const": false
+          }
+        }
+      },
+      "B11ShadowingCompletionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceSegmentId",
+          "contentVersion",
+          "status",
+          "aiScoringAvailable",
+          "source"
+        ],
+        "properties": {
+          "recordingId": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 128
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "contentVersion": {
+            "oneOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "integer",
+                "minimum": 1
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "const": "RECORDED"
+          },
+          "aiScoringAvailable": {
+            "type": "boolean",
+            "const": false
+          },
+          "source": {
+            "type": "string",
+            "const": "mysql"
+          }
+        }
+      },
+      "B25EnsureDailyTaskRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentCode",
+          "title"
+        ],
+        "properties": {
+          "contentCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "minutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60,
+            "default": 5
+          }
+        }
       }
     },
     "requestBodies": {},
@@ -32588,11 +32614,42 @@
   "x-b8-idp-integration": {
     "mode": "standard-oidc-adapter",
     "protocol": "OIDC/OAuth2.1",
+    "role": "relying-party-and-product-iam-control-plane",
+    "authorizationResponseType": "code",
     "pkceMethod": "S256",
+    "registrationLogin": {
+      "mechanism": "idp-hosted",
+      "entryPoint": "/api/v1/auth/oidc/{provider}/authorization/start",
+      "intentParameter": "intent",
+      "intents": [
+        "login",
+        "register"
+      ],
+      "localCredentials": false
+    },
+    "state": {
+      "generatedBy": "iam-service",
+      "storedWith": "authorization-transaction",
+      "singleUse": true,
+      "clientSupplied": false
+    },
+    "nonce": {
+      "generatedBy": "iam-service",
+      "boundTo": "authorization-transaction-and-id-token",
+      "singleUse": true,
+      "clientSupplied": false
+    },
+    "tokenOwnership": {
+      "issuer": "approved-external-oidc-idp",
+      "iamMintsAccessTokens": false,
+      "iamMintsRefreshTokens": false,
+      "iamExposesTokenEndpoint": false,
+      "refresh": "provider-adapter-only"
+    },
     "productionProvider": "pending-G-IDP",
     "testDouble": "standard-oidc-provider-adapter",
     "selfHostedTokenServer": false,
-    "note": "G-IDP 未批准前只实现适配器、契约和测试替身；不在平台内实现 OIDC 协议或 Token Server。"
+    "note": "G-IDP 未批准前只实现适配器、契约和测试替身；不在平台内实现 OIDC 协议、Token Endpoint、Token 签发或 JWKS 服务。"
   },
   "x-b8-compatibility": {
     "strategy": "canonical-iam-routes-with-legacy-auth-compatibility",

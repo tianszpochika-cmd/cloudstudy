@@ -3,6 +3,8 @@ package com.englishflow.commerce.adapter.http;
 import com.englishflow.commerce.domain.CommerceException;
 import com.englishflow.commerce.domain.CommercePrincipal;
 import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,13 +48,26 @@ public final class CommercePrincipalResolver {
     }
 
     private static Set<String> authorities(JwtAuthenticationToken jwt) {
-        return jwt.getAuthorities().stream()
+        Set<String> authorities = jwt.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 // Spring's default JWT converter prefixes OAuth scopes with
                 // SCOPE_. Commerce permissions are expressed without that
                 // transport prefix in the domain PEP.
                 .map(CommercePrincipalResolver::normalizeAuthority)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        addClaimValues(authorities, jwt.getToken().getClaims().get("permissions"));
+        return Set.copyOf(authorities);
+    }
+
+    private static void addClaimValues(Set<String> target, Object value) {
+        if (value instanceof Collection<?> values) {
+            values.stream().filter(item -> item != null && !item.toString().isBlank())
+                    .map(Object::toString).map(CommercePrincipalResolver::normalizeAuthority).forEach(target::add);
+        } else if (value != null) {
+            for (String item : value.toString().split("[ ,]+")) {
+                if (!item.isBlank()) target.add(normalizeAuthority(item));
+            }
+        }
     }
 
     private static String normalizeAuthority(String authority) {

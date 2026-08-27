@@ -1,6 +1,7 @@
 server:
   address: 127.0.0.1
   port: ${COMMERCE_SERVICE_PORT:18096}
+  shutdown: graceful
 
 spring:
   application:
@@ -25,6 +26,43 @@ management:
     health:
       probes:
         enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  name: commerce-service
+  owner: commerce-service
+  schema: ${COMMERCE_SCHEMA:commerce_service}
+  redis-namespace: ${COMMERCE_REDIS_NAMESPACE:commerce}
+  port: ${COMMERCE_SERVICE_PORT:18096}
 
 commerce:
   public-tenant-id: ${COMMERCE_PUBLIC_TENANT_ID:platform}

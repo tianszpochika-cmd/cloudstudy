@@ -7,13 +7,55 @@ spring:
       fail-on-unknown-properties: true
 server:
   address: ${ANALYTICS_SERVER_ADDRESS:127.0.0.1}
-  port: ${ANALYTICS_SERVICE_PORT:18083}
+  port: ${ANALYTICS_SERVICE_PORT:18098}
   shutdown: graceful
 management:
   endpoints:
     web:
+      base-path: /actuator
       exposure:
         include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  tracing:
+    propagation:
+      type: W3C
+    sampling:
+      probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
+    export:
+      enabled: ${OTEL_TRACING_EXPORT_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
+
+service:
+  name: analytics-service
+  owner: analytics-service
+  schema: ${ANALYTICS_SCHEMA:analytics_service}
+  redis-namespace: ${ANALYTICS_REDIS_NAMESPACE:analytics}
+  port: ${ANALYTICS_SERVICE_PORT:18098}
 analytics:
   feature-enabled: ${ANALYTICS_FEATURE_ENABLED:true}
   metric-version: ${ANALYTICS_METRIC_VERSION:analytics.v1}

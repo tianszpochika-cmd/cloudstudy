@@ -69,6 +69,49 @@ public final class ContentDefinition {
                 targetLevel, goalCode, createdBy, createdAt);
     }
 
+    /** Rebuilds the aggregate without replaying commands or fabricating a new publication fact. */
+    public static ContentDefinition rehydrate(
+            ContentId contentId,
+            String tenantId,
+            String contentCode,
+            ContentKind kind,
+            String title,
+            String locale,
+            String targetLevel,
+            String goalCode,
+            String createdBy,
+            Instant createdAt,
+            List<ContentVersion> storedVersions,
+            ContentVersionId currentPublishedVersionId,
+            long contentEpoch,
+            long projectionVersion) {
+        if (contentEpoch < 0 || projectionVersion < 0 || storedVersions == null) {
+            throw ContentOperationException.unavailable(
+                    "CONTENT_FACT_CORRUPT", "stored content definition state is invalid");
+        }
+        ContentDefinition content = new ContentDefinition(
+                contentId, tenantId, contentCode, kind, title, locale, targetLevel, goalCode,
+                createdBy, createdAt);
+        for (ContentVersion version : storedVersions) {
+            if (version == null || version.kind() != kind || content.versions.containsKey(version.versionId())) {
+                throw ContentOperationException.unavailable(
+                        "CONTENT_FACT_CORRUPT", "stored content version does not belong to its content");
+            }
+            content.versions.put(version.versionId(), version);
+        }
+        if (currentPublishedVersionId != null) {
+            ContentVersion current = content.versions.get(currentPublishedVersionId);
+            if (current == null || current.status() != ContentVersionStatus.PUBLISHED) {
+                throw ContentOperationException.unavailable(
+                        "CONTENT_FACT_CORRUPT", "published pointer does not reference a published version");
+            }
+        }
+        content.currentPublishedVersionId = currentPublishedVersionId;
+        content.contentEpoch = contentEpoch;
+        content.projectionVersion = projectionVersion;
+        return content;
+    }
+
     public synchronized ContentVersion addDraft(
             ContentVersionId versionId,
             Map<String, Object> payload,

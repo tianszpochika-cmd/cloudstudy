@@ -4,7 +4,6 @@ import java.time.Duration;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
@@ -30,11 +29,9 @@ public class ResourceServerProperties {
     private String jwkSetUri;
 
     @NotNull
-    @Positive
     private Duration policyCacheTtl = Duration.ofSeconds(30);
 
     @NotNull
-    @Positive
     private Duration pdpTimeout = Duration.ofMillis(250);
 
     public boolean isEnabled() {
@@ -77,6 +74,16 @@ public class ResourceServerProperties {
         this.pdpTimeout = pdpTimeout;
     }
 
+    @AssertTrue(message = "policy-cache-ttl must be positive")
+    public boolean isPolicyCacheTtlPositive() {
+        return isPositive(policyCacheTtl);
+    }
+
+    @AssertTrue(message = "pdp-timeout must be positive")
+    public boolean isPdpTimeoutPositive() {
+        return isPositive(pdpTimeout);
+    }
+
     @AssertTrue(message = "issuer-uri and jwk-set-uri are required when the resource server is enabled")
     public boolean isVerificationConfigurationComplete() {
         return !enabled && isBlank(issuerUri) && isBlank(jwkSetUri)
@@ -85,5 +92,9 @@ public class ResourceServerProperties {
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    private static boolean isPositive(Duration value) {
+        return value != null && !value.isZero() && !value.isNegative();
     }
 }

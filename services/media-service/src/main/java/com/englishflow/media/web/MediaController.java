@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Validated
 @RequestMapping("/internal/v1/media")
-public final class MediaController {
+public class MediaController {
 
     private final MediaAssetCommandService commandService;
     private final MediaReadService readService;

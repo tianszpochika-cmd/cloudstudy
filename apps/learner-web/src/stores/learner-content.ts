@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { learnerI18n } from '../platform/v2-foundation'
-import { readAccessToken } from './session'
+import { readAccessToken, useSessionStore } from './session'
 import { createClientId } from '../platform/client-id'
 import {
   calculateAssessmentReport,
@@ -18,8 +18,6 @@ import {
   type TargetGoal,
 } from '../domain/b1'
 import {
-  createDefaultLocalAssessment,
-  createEmptyHomeModel,
   createLocalPlacementSnapshot,
   learnerContentPort,
 } from '../api/learner-content'
@@ -36,6 +34,10 @@ import {
 
 const STORAGE_KEY = 'yx.v2.learner-content.web.v1'
 
+// The default shipped build is the local-real build.  Preview/test-double is an
+// explicit opt-in only; it must never be selected by a missing environment value.
+const LOCAL_REAL_RUNTIME = import.meta.env.VITE_RUNTIME_MODE !== 'preview'
+
 type ContentStatus = 'idle' | 'ready' | 'empty' | 'unavailable'
 
 interface LearnerContentPersistedEnvelope extends LearnerContentPersistedState {
@@ -45,6 +47,11 @@ interface LearnerContentPersistedEnvelope extends LearnerContentPersistedState {
 
 function eventId(prefix: string): string {
   return createClientId(prefix)
+}
+
+function isAdultBirthYear(value: number | null): boolean {
+  const currentYear = new Date().getFullYear()
+  return Number.isInteger(value) && (value as number) >= 1900 && (value as number) <= currentYear - 18
 }
 
 function readPersisted(): LearnerContentPersistedEnvelope | null {
@@ -94,9 +101,14 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
   const pendingAssessmentAnswers = ref<PlacementAnswerInput[]>([])
   const pendingTaskIds = ref<string[]>([])
 
-  const hasOnboardingConsent = computed(() => onboarding.value.ageConfirmed && onboarding.value.privacyConsent && onboarding.value.termsConsent)
+  const hasOnboardingConsent = computed(() => onboarding.value.ageConfirmed && isAdultBirthYear(onboarding.value.birthYear) && onboarding.value.privacyConsent && onboarding.value.termsConsent)
   const hasPreferences = computed(() => Boolean(onboarding.value.targetGoal && onboarding.value.dailyQuotaMinutes))
-  const assessmentProgress = computed(() => Math.min(assessment.value.answers.length, assessment.value.currentQuestion?.totalSteps ?? 10))
+  const assessmentProgress = computed(() => {
+    const totalSteps = assessment.value.currentQuestion?.totalSteps ?? 10
+    if (assessment.value.status === 'completed') return totalSteps
+    const questionProgress = Math.max(0, (assessment.value.currentQuestion?.stepIndex ?? 1) - 1)
+    return Math.min(Math.max(assessment.value.answers.length, questionProgress), totalSteps)
+  })
   const todayProgress = computed(() => {
     const stream = today.value?.dailyStream ?? home.value?.home?.dailyStream
     return stream && stream.targetMinutes > 0 ? Math.min(100, Math.round(stream.completedMinutes / stream.targetMinutes * 100)) : 0
@@ -133,14 +145,19 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     if (restored.value) return
     const saved = readPersisted()
     if (saved?.onboarding) onboarding.value = { ...createDefaultOnboarding(), ...saved.onboarding }
-    if (saved?.assessment) assessment.value = { ...createDefaultAssessment(), ...saved.assessment }
-    if (saved?.home) home.value = saved.home
-    if (saved?.today) today.value = saved.today
+    // On a real local run, browser storage may retain a draft or an old cache but
+    // it is never promoted to an authoritative assessment/home fact after reload.
+    // Those facts must be re-read from the owner services.
+    if (!LOCAL_REAL_RUNTIME) {
+      if (saved?.assessment) assessment.value = { ...createDefaultAssessment(), ...saved.assessment }
+      if (saved?.home) home.value = saved.home
+      if (saved?.today) today.value = saved.today
+    }
     if (saved?.onboardingOptions) onboardingOptions.value = saved.onboardingOptions
     if (saved?.onboardingQuotas) onboardingQuotas.value = saved.onboardingQuotas
     if (Array.isArray(saved?.pendingAssessmentAnswers)) pendingAssessmentAnswers.value = saved.pendingAssessmentAnswers
     if (Array.isArray(saved?.pendingTaskIds)) pendingTaskIds.value = saved.pendingTaskIds
-    if (assessment.value.answers.length > 0 && assessment.value.status !== 'completed' && !assessment.value.currentQuestion) {
+    if (!LOCAL_REAL_RUNTIME && assessment.value.answers.length > 0 && assessment.value.status !== 'completed' && !assessment.value.currentQuestion) {
       assessment.value = {
         ...assessment.value,
         resumed: true,
@@ -186,14 +203,21 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     }
   }
 
-  async function saveOnboarding(): Promise<void> {
-    if (!hasOnboardingConsent.value || !hasPreferences.value) throw new Error('请先完成成人确认、协议同意和学习目标。')
+  async function saveOnboarding(): Promise<boolean> {
+    const session = useSessionStore()
+    if (session.adultGate !== 'PASSED' || !hasOnboardingConsent.value || !hasPreferences.value) {
+      onboardingStatus.value = 'error'
+      lastError.value = session.adultGate === 'PASSED' ? '请先完成成人确认、隐私/条款同意和学习目标。' : '请先完成服务端成人 Gate。'
+      return false
+    }
     onboarding.value = { ...onboarding.value, updatedAt: new Date().toISOString() }
     persist()
     lastError.value = null
     if (!readAccessToken()) {
       syncState.value = 'local'
-      return
+      onboardingStatus.value = 'error'
+      lastError.value = '当前会话已失效，请重新登录后再保存学习目标。'
+      return false
     }
     try {
       const remote = await learnerContentPort.saveOnboarding({ profile: onboarding.value, clientEventId: eventId('onboarding') })
@@ -205,22 +229,30 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       syncState.value = 'remote'
       onboardingStatus.value = 'ready'
       persist()
+      return true
     } catch (error) {
       onboardingStatus.value = setError(error, '目标草稿已保存在本地，恢复联网后可继续同步。')
       persist()
+      return false
     }
   }
 
   async function loadAssessment(): Promise<void> {
     restore()
-    if (assessment.value.status === 'completed') {
+    if (!LOCAL_REAL_RUNTIME && assessment.value.status === 'completed') {
       assessmentStatus.value = 'ready'
       return
     }
     assessmentStatus.value = 'loading'
     lastError.value = null
     try {
-      const remote = await learnerContentPort.readPlacement({ contentLocale: learnerI18n.contentLocale, sessionId: assessment.value.sessionId })
+      let remote = await learnerContentPort.readPlacement({ contentLocale: learnerI18n.contentLocale, sessionId: assessment.value.sessionId })
+      if (remote.status === 'EMPTY') {
+        remote = await learnerContentPort.startPlacement({
+          contentLocale: learnerI18n.contentLocale,
+          clientEventId: eventId('placement-start'),
+        })
+      }
       assessment.value = {
         ...assessment.value,
         sessionId: remote.sessionId ?? assessment.value.sessionId,
@@ -236,7 +268,16 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
       persist()
     } catch (error) {
       assessmentStatus.value = setError(error, '测评入口暂时不可用，已保留可恢复草稿。')
-      if (assessmentStatus.value !== 'forbidden' && assessmentStatus.value !== 'content-unavailable') {
+      if (LOCAL_REAL_RUNTIME) {
+        // A failed read is an unavailable server fact, not a permission to invent
+        // the next question or a report in the browser.
+        assessment.value = {
+          ...assessment.value,
+          currentQuestion: null,
+          status: 'error',
+        }
+        contentStatus.value = 'unavailable'
+      } else if (assessmentStatus.value !== 'forbidden' && assessmentStatus.value !== 'content-unavailable') {
         const local = createLocalPlacementSnapshot(assessment.value.sessionId, assessment.value.answers)
         assessment.value = {
           ...assessment.value,
@@ -250,7 +291,89 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     }
   }
 
+  async function restartAssessment(): Promise<void> {
+    restore()
+    if (!LOCAL_REAL_RUNTIME) {
+      assessment.value = { ...createDefaultAssessment(), status: 'ready', currentQuestion: getLocalQuestion(0, 'offline-placement') }
+      assessmentStatus.value = 'ready'
+      persist()
+      return
+    }
+    assessmentStatus.value = 'loading'
+    lastError.value = null
+    try {
+      const remote = await learnerContentPort.startPlacement({ contentLocale: learnerI18n.contentLocale, clientEventId: eventId('placement-restart') })
+      assessment.value = { ...createDefaultAssessment(), sessionId: remote.sessionId, currentQuestion: remote.currentQuestion, report: null, status: remote.currentQuestion ? 'ready' : 'error', lastSavedAt: new Date().toISOString() }
+      assessmentStatus.value = remote.currentQuestion ? 'ready' : 'empty'
+      syncState.value = 'remote'
+    } catch (error) {
+      assessmentStatus.value = setError(error, '新的服务端测评会话暂时无法创建。')
+      assessment.value = { ...assessment.value, status: 'error', currentQuestion: null, report: null }
+    }
+    persist()
+  }
+
+  async function submitAnswerAgainstServer(selectedKey: string, timeSpentSec: number): Promise<void> {
+    const current = assessment.value.currentQuestion
+    const sessionId = assessment.value.sessionId
+    if (!current || !sessionId || assessment.value.status === 'submitting' || assessment.value.status === 'completed') return
+    if (!readAccessToken()) {
+      assessment.value.status = 'error'
+      assessmentStatus.value = 'offline'
+      lastError.value = '当前会话已失效，未提交本题；请重新登录后继续。'
+      persist()
+      return
+    }
+    const boundedTime = Math.max(0, Math.min(current.timeLimitSec, Math.round(timeSpentSec)))
+    assessment.value.status = 'submitting'
+    try {
+      const response = await learnerContentPort.submitPlacementAnswer({
+        sessionId,
+        questionId: current.questionId,
+        selectedKey,
+        timeSpentSec: boundedTime,
+        contentLocale: learnerI18n.contentLocale,
+      })
+      const answer = {
+        questionId: current.questionId,
+        stepIndex: current.stepIndex,
+        dimension: current.dimension,
+        difficulty: current.difficulty,
+        selectedKey,
+        correct: null,
+        timeSpentSec: boundedTime,
+        submittedAt: new Date().toISOString(),
+      }
+      const completed = response.isCompleted || Boolean(response.report)
+      assessment.value = {
+        ...assessment.value,
+        answers: [...assessment.value.answers, answer],
+        report: mergeAssessmentReport(assessment.value.report, response.report),
+        currentQuestion: response.nextQuestion,
+        status: completed ? 'completed' : response.nextQuestion ? 'ready' : 'error',
+        lastSavedAt: new Date().toISOString(),
+      }
+      assessmentStatus.value = completed || response.nextQuestion ? 'ready' : 'empty'
+      syncState.value = 'remote'
+      if (completed) onboarding.value = { ...onboarding.value, completed: true, updatedAt: new Date().toISOString() }
+    } catch (error) {
+      pendingAssessmentAnswers.value = [...pendingAssessmentAnswers.value, {
+        sessionId,
+        questionId: current.questionId,
+        selectedKey,
+        timeSpentSec: boundedTime,
+        contentLocale: learnerI18n.contentLocale,
+      }]
+      assessment.value.status = 'error'
+      assessmentStatus.value = setError(error, '本题尚未提交成功，服务恢复后请重试。')
+      // Keep the server-provided question visible. There is no local question or
+      // client-side score in local-real mode.
+    }
+    persist()
+  }
+
   async function submitAnswer(selectedKey: string, timeSpentSec: number): Promise<void> {
+    if (LOCAL_REAL_RUNTIME) return submitAnswerAgainstServer(selectedKey, timeSpentSec)
     const current = assessment.value.currentQuestion
     const sessionId = assessment.value.sessionId ?? 'offline-placement'
     if (!current || assessment.value.status === 'submitting' || assessment.value.status === 'completed') return
@@ -302,7 +425,41 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     persist()
   }
 
+  async function applyFastTrackAgainstServer(fastTrackLevel: 'ZERO_A1' | 'CET4_B1' | 'CET6_B2' | 'POSTGRAD_B2_PLUS'): Promise<void> {
+    if (!readAccessToken()) {
+      assessmentStatus.value = 'offline'
+      lastError.value = '当前会话已失效，未生成本地定级结果；请重新登录后重试。'
+      return
+    }
+    assessmentStatus.value = 'loading'
+    try {
+      const remote = await learnerContentPort.skipPlacement({
+        fastTrackLevel,
+        contentLocale: learnerI18n.contentLocale,
+        clientEventId: eventId('placement-skip'),
+      })
+      if (!remote?.report) {
+        assessmentStatus.value = 'empty'
+        lastError.value = '服务端尚未返回定级报告，未在本地生成替代结果。'
+        return
+      }
+      assessment.value = {
+        ...createDefaultAssessment(),
+        status: 'completed',
+        report: remote.report,
+        lastSavedAt: new Date().toISOString(),
+      }
+      onboarding.value = { ...onboarding.value, completed: true, updatedAt: new Date().toISOString() }
+      assessmentStatus.value = 'ready'
+      syncState.value = 'remote'
+    } catch (error) {
+      assessmentStatus.value = setError(error, '快速定级服务暂时不可用，未生成本地替代报告。')
+    }
+    persist()
+  }
+
   async function applyFastTrack(fastTrackLevel: 'ZERO_A1' | 'CET4_B1' | 'CET6_B2' | 'POSTGRAD_B2_PLUS'): Promise<void> {
+    if (LOCAL_REAL_RUNTIME) return applyFastTrackAgainstServer(fastTrackLevel)
     const levelMap = { ZERO_A1: { level: 1, cefrLevel: 'A1' }, CET4_B1: { level: 3, cefrLevel: 'B1' }, CET6_B2: { level: 4, cefrLevel: 'B2' }, POSTGRAD_B2_PLUS: { level: 4, cefrLevel: 'B2' } } as const
     const selected = levelMap[fastTrackLevel]
     const report: AssessmentReport = {
@@ -340,6 +497,15 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     contentStatus.value = model.contentStatus === 'UNAVAILABLE' ? 'unavailable' : model.contentStatus === 'READY' ? 'ready' : 'empty'
   }
 
+  function preserveContentProjectionAfterCompletion(model: LearnerHomeReadModel): LearnerHomeReadModel {
+    // The completion endpoint returns the updated task stream, but it does not
+    // include the content catalog. Keep the catalog already read from
+    // content-service so completing a task cannot make courses disappear.
+    const current = home.value
+    if (!current || model.content.length > 0) return model
+    return { ...model, content: current.content, contentStatus: current.contentStatus }
+  }
+
   async function loadHome(): Promise<void> {
     restore()
     homeStatus.value = 'loading'
@@ -371,7 +537,34 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     persist()
   }
 
+  async function completeTaskAgainstServer(taskId: string): Promise<void> {
+    const target = today.value ?? home.value?.today ?? home.value?.home
+    if (!target) return
+    if (!readAccessToken()) {
+      todayStatus.value = 'offline'
+      lastError.value = '当前会话已失效，任务尚未完成。'
+      return
+    }
+    pendingTaskIds.value = pendingTaskIds.value.includes(taskId) ? pendingTaskIds.value : [...pendingTaskIds.value, taskId]
+    persist()
+    try {
+      const remote = await learnerContentPort.completeTask({
+        taskId,
+        contentLocale: learnerI18n.contentLocale,
+        clientEventId: eventId(`task-${taskId}`),
+      })
+      if (!remote) throw new LearnerContentReadModelError({ code: 'NETWORK', status: 0, retryable: true, message: '服务端没有确认任务完成。' })
+      applyHomeModel(preserveContentProjectionAfterCompletion(remote))
+      pendingTaskIds.value = pendingTaskIds.value.filter((item) => item !== taskId)
+      syncState.value = 'remote'
+    } catch (error) {
+      todayStatus.value = setError(error, '任务尚未完成，服务恢复后请重试。')
+    }
+    persist()
+  }
+
   async function completeTask(taskId: string): Promise<void> {
+    if (LOCAL_REAL_RUNTIME) return completeTaskAgainstServer(taskId)
     const target = today.value ?? home.value?.today ?? home.value?.home
     if (!target) return
     const update = (snapshot: HomeSnapshot): HomeSnapshot => ({
@@ -390,7 +583,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     try {
       if (!readAccessToken()) throw new LearnerContentReadModelError({ code: 'NETWORK', status: 0, retryable: true, message: '任务已保存在本地，联网后同步。' })
       const remote = await learnerContentPort.completeTask({ taskId, contentLocale: learnerI18n.contentLocale, clientEventId: eventId(`task-${taskId}`) })
-      if (remote) applyHomeModel(remote)
+      if (remote) applyHomeModel(preserveContentProjectionAfterCompletion(remote))
       pendingTaskIds.value = pendingTaskIds.value.filter((item) => item !== taskId)
       syncState.value = 'remote'
     } catch (error) {
@@ -435,6 +628,7 @@ export const useLearnerContentStore = defineStore('learner-content', () => {
     loadOnboarding,
     saveOnboarding,
     loadAssessment,
+    restartAssessment,
     submitAnswer,
     applyFastTrack,
     loadHome,

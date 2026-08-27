@@ -31,7 +31,16 @@ public final class PolicyCache {
         if (!snapshot.signatureVerified()) {
             throw new SecurityException("unverified policy snapshot cannot enter the cache");
         }
-        current.set(new Entry(snapshot, clock.instant()));
+        Instant loadedAt = clock.instant();
+        if (!snapshot.version().isFresh(loadedAt)) {
+            throw new SecurityException("expired policy snapshot cannot enter the cache");
+        }
+        current.updateAndGet(existing -> {
+            if (existing != null && snapshot.version().isOlderThan(existing.snapshot().version())) {
+                throw new SecurityException("policy rollback rejected");
+            }
+            return new Entry(snapshot, loadedAt);
+        });
     }
 
     public Optional<PolicySnapshot> current() {

@@ -188,8 +188,27 @@ public record GatewayProperties(
             @NotNull Boolean enabled,
             @Min(1) int requestsPerWindow,
             @NotNull @DurationUnit(ChronoUnit.SECONDS) Duration window,
-            @NotBlank String keyStrategy
+            @NotBlank String keyStrategy,
+            @NotBlank String backend,
+            @Min(1) int maxKeys,
+            @NotNull Boolean failOpen
     ) {
+        @AssertTrue(message = "gateway.rate-limit.backend must be memory or redis")
+        public boolean isBackendSupported() {
+            return backend != null && Set.of("memory", "redis").contains(backend.trim().toLowerCase(Locale.ROOT));
+        }
+
+        @AssertTrue(message = "gateway.rate-limit.key-strategy must be remote-address or principal")
+        public boolean isKeyStrategySupported() {
+            return keyStrategy != null
+                    && Set.of("remote-address", "principal")
+                    .contains(keyStrategy.trim().toLowerCase(Locale.ROOT));
+        }
+
+        @AssertTrue(message = "gateway.rate-limit.fail-open must remain false for the security boundary")
+        public boolean isFailClosed() {
+            return !Boolean.TRUE.equals(failOpen);
+        }
     }
 
     public record RequestContext(
@@ -201,12 +220,25 @@ public record GatewayProperties(
         @NotNull Boolean jwtPrevalidationEnabled,
         @NotNull Boolean resourceServerEnabled,
         @NotNull Boolean auditEnabled,
-        String issuerUri
+        String issuerUri,
+        String audience
     ) {
         @AssertTrue(message = "OIDC issuer-uri is required when JWT prevalidation is enabled")
         public boolean isIssuerConfiguredWhenEnabled() {
             return (!Boolean.TRUE.equals(jwtPrevalidationEnabled) && !Boolean.TRUE.equals(resourceServerEnabled))
                     || issuerUri != null && !issuerUri.isBlank();
+        }
+
+        @AssertTrue(message = "OIDC audience is required when the resource server is enabled")
+        public boolean isAudienceConfiguredWhenEnabled() {
+            return !Boolean.TRUE.equals(resourceServerEnabled)
+                    || audience != null && !audience.isBlank();
+        }
+
+        @AssertTrue(message = "JWT prevalidation requires the Resource Server to be enabled")
+        public boolean isPrevalidationBackedByResourceServer() {
+            return !Boolean.TRUE.equals(jwtPrevalidationEnabled)
+                    || Boolean.TRUE.equals(resourceServerEnabled);
         }
     }
 }

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: englishflow-b21-production
+  namespace: argocd
+  labels:
+    englishflow.dev/phase: phase-1
+    englishflow.dev/environment: production
+spec:
+  project: englishflow-phase-1
+  source:
+    repoURL: https://git.example.invalid/englishflow/cloudstudy
+    targetRevision: REPLACE_SIGNED_RC_COMMIT_SHA
+    path: deploy/b21/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: englishflow-production
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false

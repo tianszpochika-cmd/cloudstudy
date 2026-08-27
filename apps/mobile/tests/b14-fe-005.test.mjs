@@ -47,3 +47,24 @@ test('mobile does not send client authority facts or use Math.random', async () 
   ].map(read)).then((parts) => parts.join('\n'))
   assert.doesNotMatch(source, /Math\.random|X-Role|X-Tenant|X-Owner|tenantId|ownerId/i)
 })
+
+test('mobile deep-link pages use the shared auth gate before reading protected data', async () => {
+  const pages = await Promise.all([
+    'apps/mobile/src/pages/practice/practice.vue',
+    'apps/mobile/src/pages/b2-vocabulary/b2-vocabulary.vue',
+    'apps/mobile/src/pages/profile/profile.vue',
+    'apps/mobile/src/pages/b6-platform/b6-platform.vue',
+    'apps/mobile/src/pages/settings/settings.vue',
+    'apps/mobile/src/pages/today/today.vue',
+  ].map(read)).then((parts) => parts.join('\n'))
+  assert.equal((pages.match(/ensureMobilePageAccess\('/g) ?? []).length, 6)
+})
+
+test('mobile logout schedules navigation back to the login page', async () => {
+  const auth = await read('apps/mobile/src/auth/gateway-auth.ts')
+    assert.match(auth, /function scheduleMobileLogoutRedirect\(\)/)
+    assert.match(auth, /mobileApiClient\.request\('\/iam\/session\/logout'[\s\S]*?scheduleMobileLogoutRedirect\(\)/)
+    assert.match(auth, /window\.location\.assign\(`\$\{window\.location\.origin\}\/\#\/pages\/login\/login`\)/)
+    assert.match(auth, /runtime\.reLaunch\(\{ url: '\/pages\/login\/login' \}\)/)
+    assert.match(auth, /openUniPage\('\/pages\/login\/login'\)/)
+})

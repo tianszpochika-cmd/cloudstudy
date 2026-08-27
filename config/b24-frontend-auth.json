@@ -1,0 +1,168 @@
+{
+  "version": 1,
+  "taskId": "V2-B24-FE-007",
+  "phase": "phase-1",
+  "scope": "static-and-logic-evidence-only",
+  "realLoginClaim": false,
+  "browserAcceptance": {
+    "status": "deferred",
+    "formalGate": "B26",
+    "reason": "B24-FE-007 only verifies source-level and deterministic logic boundaries; real browser, device and network evidence remains a later gate."
+  },
+  "keycloakRuntime": {
+    "status": "blocked",
+    "issuer": "http://127.0.0.1:18099/realms/yuxuexing-local",
+    "evidenceFile": "docs/07-operations/b23-validation.md",
+    "blocker": "The approved Keycloak image is not available locally and the Docker registry pull is blocked.",
+    "notClaimed": [
+      "real registration",
+      "authorization-code callback",
+      "PKCE and nonce exchange",
+      "JWKS-backed valid JWT business request",
+      "principal/session persistence after a real login"
+    ]
+  },
+  "applications": [
+    {
+      "id": "mobile",
+      "platform": "uni-app-mobile-h5",
+      "origin": "http://127.0.0.1:18183",
+      "loginPath": "/pages/login/login",
+      "protectedEntries": [
+        { "path": "/pages/home/home", "source": "apps/mobile/src/pages/home/home.vue" },
+        { "path": "/pages/onboarding/onboarding", "source": "apps/mobile/src/pages/onboarding/onboarding.vue" },
+        { "path": "/pages/assessment/assessment", "source": "apps/mobile/src/pages/assessment/assessment.vue" },
+        { "path": "/pages/today/today", "source": "apps/mobile/src/pages/today/today.vue" },
+        { "path": "/pages/practice/practice", "source": "apps/mobile/src/pages/practice/practice.vue" },
+        { "path": "/pages/b2-vocabulary/b2-vocabulary", "source": "apps/mobile/src/pages/b2-vocabulary/b2-vocabulary.vue" },
+        { "path": "/pages/b10-report/b10-report", "source": "apps/mobile/src/pages/b10-report/b10-report.vue" },
+        { "path": "/pages/profile/profile", "source": "apps/mobile/src/pages/profile/profile.vue" }
+      ],
+      "guardShape": "await session.restore() then redirect unauthenticated users to /pages/login/login"
+    },
+    {
+      "id": "learner-web",
+      "platform": "vue-web",
+      "origin": "http://127.0.0.1:18180",
+      "routerSource": "apps/learner-web/src/router/index.ts",
+      "loginPath": "/login",
+      "rootEntry": {
+        "path": "/",
+        "expected": "login",
+        "observed": "login"
+      },
+      "protectedEntries": [
+        "/home",
+        "/onboarding",
+        "/assessment",
+        "/today",
+        "/vocabulary",
+        "/learn",
+        "/practice",
+        "/reports/weakness",
+        "/me"
+      ]
+    },
+    {
+      "id": "admin-web",
+      "platform": "vue-element-plus-web",
+      "origin": "http://127.0.0.1:18181",
+      "routerSource": "apps/admin-web/src/router/index.ts",
+      "loginPath": "/login",
+      "protectedEntries": [
+        "/dashboard",
+        "/content",
+        "/commerce",
+        "/audit",
+        "/release",
+        "/governance",
+        "/support"
+      ],
+      "permissionEntries": [
+        "admin.dashboard.read",
+        "admin.content.read",
+        "admin.commerce.read",
+        "admin.audit.read",
+        "admin.release.read",
+        "admin.moderation.read",
+        "admin.support.read"
+      ]
+    },
+    {
+      "id": "official-site",
+      "platform": "nuxt-public-site",
+      "origin": "http://127.0.0.1:18182",
+      "authBoundary": "public-only",
+      "publicLinkSource": "apps/official-site/utils/public-links.mjs",
+      "foundationSource": "apps/official-site/utils/v2-foundation.ts"
+    }
+  ],
+  "returnTo": {
+    "valid": [
+      "/home",
+      "/learn?unit=unit-1#practice",
+      "/pages/practice/practice?source=deep-link#start",
+      "/dashboard?tab=content"
+    ],
+    "invalid": [
+      "https://evil.example/steal",
+      "//evil.example/steal",
+      "/%2f%2fevil.example",
+      "/\\\\evil.example",
+      "javascript:alert(1)",
+      "\u0000/home"
+    ],
+    "fallbacks": {
+      "learner-web": "/home",
+      "mobile": "/pages/home/home",
+      "admin-web": "/dashboard",
+      "official-site": "/home"
+    }
+  },
+  "oidcCallback": {
+    "requiredInputs": ["code", "state"],
+    "errorAlternative": "error/error_description may render an error state; it must not establish a session.",
+    "clientMustNotOwn": ["codeVerifier", "codeChallenge", "nonce", "transactionId"],
+    "adapterSources": [
+      "apps/learner-web/src/auth/gateway-auth.ts",
+      "apps/admin-web/src/auth/gateway-auth.ts",
+      "apps/mobile/src/auth/gateway-auth.ts"
+    ]
+  },
+  "httpSemantics": {
+    "401": {
+      "meaning": "unauthenticated-or-expired",
+      "clientAction": "attempt one controlled refresh when available, then clear session and return to login",
+      "mustNotBecome": "empty-data"
+    },
+    "403": {
+      "meaning": "authenticated-but-forbidden",
+      "clientAction": "show an explicit permission/forbidden state with server reason",
+      "mustNotBecome": "login-success-or-empty-data"
+    }
+  },
+  "adultGate": {
+    "minimumAge": 18,
+    "serverEndpoint": "/api/v1/iam/adult-gate",
+    "rejectionState": "REJECTED",
+    "rejectionRule": "A rejected or failed adult Gate must not create a learnable onboarding state or navigate into learning."
+  },
+  "i18nAndTheme": {
+    "uiLocaleField": "locale",
+    "contentLocaleField": "contentLocale",
+    "themes": ["light", "dark", "system", "high-contrast"],
+    "foundationSources": [
+      "apps/mobile/src/platform/v2-foundation.ts",
+      "apps/learner-web/src/platform/v2-foundation.ts",
+      "apps/admin-web/src/platform/v2-foundation.ts",
+      "apps/official-site/utils/v2-foundation.ts"
+    ]
+  },
+  "observedKnownGaps": {
+    "learnerWebRootEntry": [
+      "/"
+    ],
+    "mobileProtectedEntryGuards": [],
+    "onboardingAdultGateWriteBoundary": []
+  }
+}

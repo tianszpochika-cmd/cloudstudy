@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "batch": "B20",
+  "taskId": "V2-B20-SEC-001",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "task": {
+    "id": "V2-B20-SEC-001",
+    "name": "SAST、依赖与镜像扫描、秘密扫描、SBOM、KMS/Vault、最小权限和运行边界 Gate",
+    "status": "defined",
+    "runtimeRequired": true,
+    "acceptanceRefs": ["ARCH-SEC-001", "ARCH-IAM-002", "ARCH-DEP-001"]
+  },
+  "execution": {
+    "mode": "static-fixture-only",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "runtimeEvidence": null,
+    "blockedReasons": [
+      "CI 尚未绑定可复现的 SAST、依赖、镜像和秘密扫描工具链及其 SARIF/SBOM 归档",
+      "受信镜像仓库、KMS/Vault、签名验证和部署平台工作负载身份尚未提供运行凭据",
+      "Kubernetes 非 root、默认拒绝网络策略和服务间 mTLS 尚未在目标运行环境完成演练"
+    ]
+  },
+  "tooling": {
+    "sast": {
+      "required": true,
+      "tools": ["Semgrep", "CodeQL"],
+      "output": "SARIF",
+      "status": "pending",
+      "runtimeRequired": true
+    },
+    "dependency": {
+      "required": true,
+      "tools": ["OWASP Dependency-Check", "OSV-Scanner"],
+      "output": "SARIF-or-JSON",
+      "status": "pending",
+      "runtimeRequired": true
+    },
+    "image": {
+      "required": true,
+      "tools": ["Trivy", "Grype"],
+      "output": "JSON",
+      "status": "pending",
+      "runtimeRequired": true
+    },
+    "secrets": {
+      "required": true,
+      "tools": ["Gitleaks", "synthetic-fixture-scan"],
+      "output": "JSON",
+      "status": "pending",
+      "runtimeRequired": true
+    },
+    "sbomAndProvenance": {
+      "required": true,
+      "tools": ["Syft", "CycloneDX", "cosign"],
+      "formats": ["SPDX", "CycloneDX"],
+      "status": "pending",
+      "runtimeRequired": true
+    }
+  },
+  "repositorySecretPolicy": {
+    "actualSecretMaterial": "forbidden",
+    "fixtureMode": "synthetic-only",
+    "allowPlaceholderValues": ["", "change-me", "local-only", "mock"],
+    "forbiddenFixtureFields": [
+      "password",
+      "secret",
+      "privateKey",
+      "clientSecret",
+      "accessToken",
+      "refreshToken",
+      "paymentCredential",
+      "rawAudio"
+    ],
+    "forbiddenPatterns": [
+      "-----BEGIN PRIVATE KEY-----",
+      "AKIA[0-9A-Z]{16}",
+      "ghp_[A-Za-z0-9]{36}",
+      "sk-[A-Za-z0-9]{20,}",
+      "Bearer eyJ[A-Za-z0-9_-]+\\.",
+      "@gmail\\.com",
+      "@qq\\.com",
+      "@163\\.com",
+      "@outlook\\.com"
+    ],
+    "scanTargets": [
+      ".gitignore",
+      ".env.example",
+      "scripts/security/scan-synthetic-fixtures.mjs",
+      "packages/telemetry/policies/access-control.json"
+    ],
+    "redactionPolicy": "do-not-log-or-archive-secret-values; store only finding metadata and digest"
+  },
+  "kmsVault": {
+    "providerMode": "external-approved-kms-or-vault",
+    "repositorySecretMaterial": false,
+    "environmentReferenceOnly": true,
+    "signingKeySource": "KMS-or-Vault",
+    "requiredControls": [
+      "key-versioning",
+      "dual-key-rotation-window",
+      "audited-access",
+      "least-privilege-workload-policy",
+      "revocation-and-rollback"
+    ],
+    "failClosedOnUnavailable": true,
+    "runtimeStatus": "pending"
+  },
+  "leastPrivilege": {
+    "defaultEffect": "deny",
+    "serviceAccountPerService": true,
+    "crossServiceSchemaWrite": false,
+    "clientAuthorityHeadersTrusted": false,
+    "forbiddenAuthorityHeaders": [
+      "X-Role",
+      "X-B5-Role",
+      "X-Tenant-Id",
+      "X-Owner-Id",
+      "X-Subject-Id",
+      "X-Permissions",
+      "X-Policy-Version"
+    ],
+    "requiredDecisionFacts": [
+      "subject",
+      "tenant",
+      "role",
+      "permission",
+      "resource",
+      "action",
+      "owner",
+      "phase",
+      "contentRights",
+      "consent"
+    ],
+    "unknownDecision": "deny"
+  },
+  "containerRuntime": {
+    "podSecurityStandard": "restricted",
+    "runAsNonRoot": true,
+    "allowPrivilegeEscalation": false,
+    "readOnlyRootFilesystem": true,
+    "dropLinuxCapabilities": ["ALL"],
+    "seccompProfile": "RuntimeDefault",
+    "imageReference": "immutable-digest-required",
+    "runtimeStatus": "pending"
+  },
+  "networkBoundary": {
+    "localBindAddress": "127.0.0.1",
+    "defaultDenyNetworkPolicy": true,
+    "publicIngressOwner": "api-gateway",
+    "domainServicesDirectPublicIngress": false,
+    "egressAllowlistRequired": true,
+    "serviceToServiceIdentity": "mTLS-or-platform-workload-identity",
+    "runtimeStatus": "pending"
+  },
+  "mtlsAndSigning": {
+    "serviceTransport": "mTLS",
+    "clientCertificateRequiredForInternalCalls": true,
+    "certificateExpiryDecision": "deny",
+    "forwardedIdentityHeadersTrusted": false,
+    "artifactSignatureRequired": true,
+    "signatureVerificationBeforeDeploy": true,
+    "signatureKeySource": "KMS-or-Vault",
+    "runtimeStatus": "pending"
+  },
+  "controls": [
+    {
+      "id": "B20-SEC-SAST",
+      "objective": "对 Java、Node、配置和 IaC 执行可复现的 SAST，并归档 SARIF；高危结果阻断发布。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-DEPENDENCY",
+      "objective": "对 Maven、pnpm 和 transitive dependency 执行漏洞扫描，按 CVSS/可利用性阻断高危版本。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-IMAGE",
+      "objective": "对 OCI 镜像执行漏洞、配置、非 root、digest 和 provenance 检查。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-SECRETS",
+      "objective": "阻止真实密钥、令牌、PII、支付凭据和原始音频进入 Git、镜像、日志或测试夹具。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-SBOM",
+      "objective": "为构建物生成 SPDX/CycloneDX SBOM，绑定来源、锁文件、镜像 digest 和 cosign 签名。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-KMS",
+      "objective": "签名密钥只能由外部 KMS/Vault 管理，支持轮换、撤销、审计和不可用时 fail closed。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-PRIVILEGE",
+      "objective": "验证默认拒绝、服务账号隔离、服务 schema 写权限隔离和客户端 authority header 不可信。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-CONTAINER",
+      "objective": "验证 restricted Pod Security、非 root、只读根文件系统、禁止提权和能力丢弃策略。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-NETWORK",
+      "objective": "验证 Gateway 是唯一公共入口、默认拒绝网络、最小 egress 和固定边界绑定。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    },
+    {
+      "id": "B20-SEC-MTLS",
+      "objective": "验证服务间 mTLS/workload identity、证书过期拒绝和 OCI 签名部署前校验。",
+      "priority": "P0",
+      "staticPolicy": "defined",
+      "runtimeStatus": "pending"
+    }
+  ],
+  "staticChecks": [
+    {
+      "id": "B20-SEC-STATIC-001",
+      "controlId": "B20-SEC-SAST",
+      "kind": "security-policy-architecture",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-SAST",
+      "sourcePaths": ["docs/02-architecture/v2-platform-capability-matrix.md", "infra/security/README.md"],
+      "assertions": [
+        { "contains": "ARCH-SEC-001" },
+        { "contains": "漏洞扫描" }
+      ],
+      "policyAssertions": ["source-and-IaC-analysis", "SARIF-archive", "high-severity-block"]
+    },
+    {
+      "id": "B20-SEC-STATIC-002",
+      "controlId": "B20-SEC-DEPENDENCY",
+      "kind": "dependency-vulnerability-policy",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-DEPENDENCY",
+      "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md"],
+      "assertions": [
+        { "contains": "依赖/CVE 扫描" },
+        { "contains": "不可变镜像" }
+      ],
+      "policyAssertions": ["Maven-and-pnpm", "transitive-dependencies", "severity-threshold"]
+    },
+    {
+      "id": "B20-SEC-STATIC-003",
+      "controlId": "B20-SEC-IMAGE",
+      "kind": "oci-image-policy",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-IMAGE",
+      "sourcePaths": ["docs/02-architecture/v2-platform-capability-matrix.md", "docs/02-architecture/v2-microservices-architecture.md"],
+      "assertions": [
+        { "contains": "镜像签名" },
+        { "contains": "OCI 镜像" }
+      ],
+      "policyAssertions": ["digest-pinned", "trivy-or-grype", "provenance-required"]
+    },
+    {
+      "id": "B20-SEC-STATIC-004",
+      "controlId": "B20-SEC-SECRETS",
+      "kind": "secret-and-sensitive-fixture-boundary",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-SECRETS",
+      "sourcePaths": [".gitignore", "scripts/security/scan-synthetic-fixtures.mjs", "infra/security/README.md"],
+      "assertions": [
+        { "contains": "secrets/" },
+        { "contains": "findSensitiveData" },
+        { "contains": "不要放真实密钥" }
+      ],
+      "policyAssertions": ["gitleaks", "synthetic-only", "redact-before-archive"]
+    },
+    {
+      "id": "B20-SEC-STATIC-005",
+      "controlId": "B20-SEC-SBOM",
+      "kind": "sbom-provenance-signing-policy",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-SBOM",
+      "sourcePaths": ["docs/02-architecture/v2-platform-capability-matrix.md", "docs/02-architecture/v2-microservices-architecture.md"],
+      "assertions": [
+        { "contains": "SBOM" },
+        { "contains": "签名" }
+      ],
+      "policyAssertions": ["SPDX-or-CycloneDX", "cosign", "source-digest-binding"]
+    },
+    {
+      "id": "B20-SEC-STATIC-006",
+      "controlId": "B20-SEC-KMS",
+      "kind": "external-key-management-policy",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-KMS",
+      "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "services/service-template/src/main/resources/application.yml"],
+      "assertions": [
+        { "contains": "KMS/Vault" },
+        { "contains": "SERVICE_MTLS_KEY_STORE" }
+      ],
+      "policyAssertions": ["external-only", "key-rotation", "audit-access", "fail-closed"]
+    },
+    {
+      "id": "B20-SEC-STATIC-007",
+      "controlId": "B20-SEC-PRIVILEGE",
+      "kind": "least-privilege-and-authority-boundary",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-PRIVILEGE",
+      "sourcePaths": ["packages/telemetry/policies/access-control.json", "services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java"],
+      "assertions": [
+        { "contains": "\"defaultEffect\": \"deny\"" },
+        { "contains": "\"globalRoles\": []" },
+        { "contains": "X-Role" },
+        { "contains": "X-Tenant-Id" }
+      ],
+      "policyAssertions": ["server-derived-tenant", "no-client-role", "per-service-identity", "unknown-deny"]
+    },
+    {
+      "id": "B20-SEC-STATIC-008",
+      "controlId": "B20-SEC-CONTAINER",
+      "kind": "container-runtime-policy",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-CONTAINER",
+      "sourcePaths": ["infra/k8s/README.md"],
+      "assertions": [
+        { "contains": "base" },
+        { "contains": "overlays" }
+      ],
+      "policyAssertions": ["restricted", "runAsNonRoot", "readOnlyRootFilesystem", "allowPrivilegeEscalation=false", "drop=ALL", "RuntimeDefault"],
+      "implementationStatus": "deployment-manifest-runtime-proof-pending"
+    },
+    {
+      "id": "B20-SEC-STATIC-009",
+      "controlId": "B20-SEC-NETWORK",
+      "kind": "network-boundary-policy",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-NETWORK",
+      "sourcePaths": ["services/api-gateway/src/main/resources/application.yaml", "infra/docker/docker-compose.dev.yml"],
+      "assertions": [
+        { "contains": "address: ${SERVER_ADDRESS:127.0.0.1}" },
+        { "contains": "127.0.0.1:${MYSQL_HOST_PORT:-13306}:3306" }
+      ],
+      "policyAssertions": ["gateway-only-public-ingress", "default-deny-network-policy", "egress-allowlist", "loopback-local-services"]
+    },
+    {
+      "id": "B20-SEC-STATIC-010",
+      "controlId": "B20-SEC-MTLS",
+      "kind": "mtls-workload-and-artifact-signature-seam",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B20-SEC-STATIC-MTLS",
+      "sourcePaths": ["services/service-template/src/main/resources/application.yml", "services/service-template/src/main/java/com/englishflow/platform/template/security/WorkloadIdentityFilter.java"],
+      "assertions": [
+        { "contains": "SERVICE_MTLS_ENABLED:false" },
+        { "contains": "UNTRUSTED_WORKLOAD_IDENTITY" },
+        { "contains": "mTLS" }
+      ],
+      "policyAssertions": ["client-certificate", "certificate-expiry-deny", "forwarded-identity-deny", "signature-before-deploy"],
+      "implementationStatus": "deployment-certificate-runtime-proof-pending"
+    }
+  ],
+  "runtimeChecks": [
+    {
+      "id": "B20-SEC-RUNTIME-001",
+      "controlId": "B20-SEC-SAST",
+      "kind": "sast-execution",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-SAST",
+      "tools": ["Semgrep or CodeQL"],
+      "targets": ["Java services", "TypeScript/Vue apps", "IaC and workflow files"],
+      "scenarios": ["clean-baseline", "introduced-high-severity-finding", "suppression-review"],
+      "expected": "扫描在固定 commit 和工具版本上运行，SARIF 可寻址；高危结果为零或有批准的风险接受记录。",
+      "evidenceRequired": ["commit-sha", "tool-version", "sarif", "finding-disposition"],
+      "cannotBeSatisfiedBy": ["manifest-only", "typecheck-only", "mock-scan"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-002",
+      "controlId": "B20-SEC-DEPENDENCY",
+      "kind": "dependency-scan",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-DEPENDENCY",
+      "tools": ["OWASP Dependency-Check or OSV-Scanner"],
+      "targets": ["Maven dependency graph", "pnpm lockfile", "transitive packages"],
+      "scenarios": ["full-lockfile-scan", "high-cve-block", "exception-expiry"],
+      "expected": "所有生产依赖已扫描并绑定锁文件；高危/可利用漏洞不能无审批进入发布候选。",
+      "evidenceRequired": ["lockfile-digest", "dependency-report", "cve-severity", "exception-record"],
+      "cannotBeSatisfiedBy": ["pom-present", "package-install", "static-policy"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-003",
+      "controlId": "B20-SEC-IMAGE",
+      "kind": "oci-image-scan",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-IMAGE",
+      "tools": ["Trivy or Grype", "approved OCI registry"],
+      "targets": ["all Phase 1 service images", "Gateway image", "worker image"],
+      "scenarios": ["digest-pinned-image", "critical-cve-block", "shell-and-package-review", "registry-signature-verification"],
+      "expected": "每个镜像按 digest 扫描，critical/high 结果满足阻断规则，签名和 provenance 在部署前验证。",
+      "evidenceRequired": ["image-digest", "scan-json", "base-image", "signature-verification"],
+      "cannotBeSatisfiedBy": ["source-scan-only", "latest-tag", "local-build-only"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-004",
+      "controlId": "B20-SEC-SECRETS",
+      "kind": "secret-and-sensitive-data-scan",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-SECRETS",
+      "tools": ["Gitleaks", "synthetic-fixture-scan", "image-layer scanner"],
+      "targets": ["Git history", "working tree", "container layers", "test artifacts and logs"],
+      "scenarios": ["real-secret-canary-rejection", "PII-fixture-rejection", "payment-credential-rejection", "redacted-evidence"],
+      "expected": "真实凭据、PII、支付凭据、原始音频和未脱敏日志均被拒绝；证据只保留 finding metadata/digest。",
+      "evidenceRequired": ["scan-report", "history-range", "redaction-proof", "fixture-result"],
+      "cannotBeSatisfiedBy": ["current-tree-only", "placeholder-check", "self-reported-clean"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-005",
+      "controlId": "B20-SEC-SBOM",
+      "kind": "sbom-provenance-and-signature",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-SBOM",
+      "tools": ["Syft or CycloneDX", "cosign", "KMS/Vault signer"],
+      "targets": ["source commit", "build artifact", "OCI image", "deployment manifest"],
+      "scenarios": ["sbom-generation", "digest-binding", "signature-verification", "tampered-artifact-rejection"],
+      "expected": "SBOM、源码 commit、镜像 digest、签名和部署对象可互相校验；篡改或缺签名必须阻断。",
+      "evidenceRequired": ["sbom", "provenance", "signature-bundle", "verification-log"],
+      "cannotBeSatisfiedBy": ["package-list-manual", "unsigned-artifact", "latest-tag"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-006",
+      "controlId": "B20-SEC-KMS",
+      "kind": "kms-vault-rotation-and-failure",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-KMS",
+      "tools": ["approved KMS/Vault test tenant", "audit log"],
+      "targets": ["OIDC/JWKS signing keys", "mTLS material", "artifact signing key"],
+      "scenarios": ["dual-key-rotation", "revocation", "access-audit", "provider-unavailable-fail-closed", "rollback"],
+      "expected": "密钥不落 Git/镜像/普通日志；轮换、撤销、审计、回滚和 KMS/Vault 不可用时的拒绝均有证据。",
+      "evidenceRequired": ["key-version-record", "rotation-trace", "audit-event", "failure-response", "rollback-record"],
+      "cannotBeSatisfiedBy": ["empty-env-var", "local-keystore", "static-config"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-007",
+      "controlId": "B20-SEC-PRIVILEGE",
+      "kind": "least-privilege-and-header-forgery",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-PRIVILEGE",
+      "tools": ["approved test IdP", "Gateway/API test runner", "MySQL permission probe"],
+      "targets": ["Gateway", "IAM", "all Phase 1 domain services", "service DB accounts"],
+      "scenarios": ["forged-role-header", "cross-tenant", "cross-service-write", "unknown-policy-deny", "service-account-isolation"],
+      "expected": "客户端 authority header、缺 tenant、跨租户、跨 schema 写入和未知策略均被拒绝，并留下 requestId/traceId/audit 证据。",
+      "evidenceRequired": ["request-trace", "response-401-or-403", "db-deny-proof", "audit-record"],
+      "cannotBeSatisfiedBy": ["gateway-only-check", "unit-test-only", "role-fixture-without-token"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-008",
+      "controlId": "B20-SEC-CONTAINER",
+      "kind": "container-runtime-hardening",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-CONTAINER",
+      "tools": ["Kubernetes admission/policy scanner", "kubectl", "Trivy config"],
+      "targets": ["Phase 1 deployments", "pods", "service accounts"],
+      "scenarios": ["non-root-start", "privilege-escalation-rejection", "read-only-root", "capability-drop", "digest-only-deploy"],
+      "expected": "restricted Pod Security 生效，容器非 root、只读根文件系统、禁止提权、丢弃能力且镜像 digest 固定。",
+      "evidenceRequired": ["rendered-manifest", "admission-result", "pod-security-context", "runtime-uid", "image-digest"],
+      "cannotBeSatisfiedBy": ["README-only", "dockerfile-comment", "desktop-process"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-009",
+      "controlId": "B20-SEC-NETWORK",
+      "kind": "network-policy-and-ingress-boundary",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-NETWORK",
+      "tools": ["Kubernetes NetworkPolicy probe", "Gateway/API test runner", "egress monitor"],
+      "targets": ["public ingress", "domain services", "MySQL/Redis/Kafka/object storage"],
+      "scenarios": ["direct-domain-ingress-deny", "default-deny", "allowlisted-egress", "cross-namespace-deny", "Gateway-route-only"],
+      "expected": "只有 Gateway 可接受公共流量；领域服务直连、未列出的 egress 和跨命名空间访问均被拒绝。",
+      "evidenceRequired": ["network-policy", "probe-matrix", "denied-flow-log", "allowed-flow-log"],
+      "cannotBeSatisfiedBy": ["loopback-config", "docker-compose-only", "static-route-list"]
+    },
+    {
+      "id": "B20-SEC-RUNTIME-010",
+      "controlId": "B20-SEC-MTLS",
+      "kind": "mtls-and-artifact-signature-enforcement",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B20-SEC-RUNTIME-MTLS",
+      "tools": ["approved service mesh or mTLS harness", "certificate authority", "cosign verifier"],
+      "targets": ["Gateway-to-IAM", "Gateway-to-domain", "domain-to-domain", "deploy admission"],
+      "scenarios": ["valid-client-certificate", "expired-certificate", "unknown-ca", "forwarded-identity-forgery", "unsigned-image-rejection"],
+      "expected": "有效证书和签名可通过；过期/未知 CA/伪造身份头/未签名镜像均 fail closed。",
+      "evidenceRequired": ["certificate-chain", "handshake-log", "denied-request", "admission-deny", "trace-and-audit"],
+      "cannotBeSatisfiedBy": ["SERVICE_MTLS_ENABLED=false", "header-presence", "mock-certificate"]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "EV-B20-SEC-STATIC-SAST", "controlId": "B20-SEC-SAST", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-001]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-DEPENDENCY", "controlId": "B20-SEC-DEPENDENCY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-002]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-IMAGE", "controlId": "B20-SEC-IMAGE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-003]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-SECRETS", "controlId": "B20-SEC-SECRETS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-004]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-SBOM", "controlId": "B20-SEC-SBOM", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-005]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-KMS", "controlId": "B20-SEC-KMS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-006]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-PRIVILEGE", "controlId": "B20-SEC-PRIVILEGE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-007]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-CONTAINER", "controlId": "B20-SEC-CONTAINER", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-008]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-NETWORK", "controlId": "B20-SEC-NETWORK", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-009]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-STATIC-MTLS", "controlId": "B20-SEC-MTLS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-security-gates.json#staticChecks[B20-SEC-STATIC-010]", "collectionPolicy": "repository-static-validator" },
+    { "id": "EV-B20-SEC-RUNTIME-SAST", "controlId": "B20-SEC-SAST", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/sast/{runId}/report.sarif", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-DEPENDENCY", "controlId": "B20-SEC-DEPENDENCY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/dependency/{runId}/report.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-IMAGE", "controlId": "B20-SEC-IMAGE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/image/{digest}/report.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-SECRETS", "controlId": "B20-SEC-SECRETS", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/secrets/{runId}/metadata.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-SBOM", "controlId": "B20-SEC-SBOM", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/sbom/{digest}/sbom.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-KMS", "controlId": "B20-SEC-KMS", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/kms/{runId}/rotation-and-failure.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-PRIVILEGE", "controlId": "B20-SEC-PRIVILEGE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/privilege/{runId}/decision-trace.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-CONTAINER", "controlId": "B20-SEC-CONTAINER", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/container/{runId}/admission-and-runtime.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-NETWORK", "controlId": "B20-SEC-NETWORK", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/network/{runId}/probe-matrix.json", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-SEC-RUNTIME-MTLS", "controlId": "B20-SEC-MTLS", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/security/mtls/{runId}/handshake-and-admission.json", "collectionPolicy": "runtime-runner-only" }
+  ],
+  "reportSchema": {
+    "id": "b20-security-gate-report",
+    "version": "1.0.0",
+    "jsonSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "commitSha", "run", "decision", "controls", "findings", "evidence"],
+      "properties": {
+        "schemaVersion": { "type": "string", "const": "1.0.0" },
+        "reportId": { "type": "string", "minLength": 1 },
+        "batch": { "type": "string", "const": "B20" },
+        "commitSha": { "type": "string", "minLength": 7 },
+        "run": { "type": "object", "additionalProperties": false, "required": ["startedAt", "finishedAt", "toolVersions", "environment"], "properties": { "startedAt": { "type": "string" }, "finishedAt": { "type": "string" }, "toolVersions": { "type": "object" }, "environment": { "type": "string" } } },
+        "decision": { "type": "object", "additionalProperties": false, "required": ["status", "runtimePending", "unverifiedPassBlocked"], "properties": { "status": { "enum": ["pending", "pass", "fail", "blocked"] }, "runtimePending": { "type": "boolean" }, "unverifiedPassBlocked": { "type": "boolean" } } },
+        "controls": { "type": "array" },
+        "findings": { "type": "array" },
+        "evidence": { "type": "array" }
+      }
+    }
+  }
+}

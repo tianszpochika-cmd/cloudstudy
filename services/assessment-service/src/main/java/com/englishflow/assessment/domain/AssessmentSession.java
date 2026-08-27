@@ -36,6 +36,44 @@ public final class AssessmentSession {
         this.deadlineAt = deadlineAt;
     }
 
+    /** Rehydrates an aggregate without accepting any client-controlled scoring or ownership data. */
+    public static AssessmentSession restore(String sessionId, AssessmentPrincipal owner,
+                                            AssessmentSessionType type, Instant createdAt, Instant deadlineAt,
+                                            AssessmentSessionStatus status, Instant startedAt, Instant closedAt,
+                                            List<Exercise> restoredExercises,
+                                            List<AssessmentAttempt> restoredAttempts,
+                                            AssessmentCheckpoint restoredCheckpoint) {
+        owner.requireAuthenticated();
+        if (sessionId == null || sessionId.isBlank() || createdAt == null || status == null) {
+            throw AssessmentDomainException.invalid("ASM_PERSISTENCE_CORRUPT", "persisted session identity is invalid");
+        }
+        AssessmentSession session = new AssessmentSession(sessionId, owner, Objects.requireNonNull(type),
+                createdAt, deadlineAt);
+        session.status = status;
+        session.startedAt = startedAt;
+        session.closedAt = closedAt;
+        session.checkpoint = restoredCheckpoint;
+        for (Exercise exercise : restoredExercises == null ? List.<Exercise>of() : restoredExercises) {
+            if (session.exercises.put(exercise.exerciseId(), exercise) != null) {
+                throw AssessmentDomainException.invalid("ASM_PERSISTENCE_CORRUPT", "duplicate persisted exercise");
+            }
+        }
+        for (AssessmentAttempt attempt : restoredAttempts == null ? List.<AssessmentAttempt>of() : restoredAttempts) {
+            if (!session.exercises.containsKey(attempt.exerciseId())) {
+                throw AssessmentDomainException.invalid("ASM_PERSISTENCE_CORRUPT", "attempt references an unknown exercise");
+            }
+            AssessmentAttempt previous = session.latestAttempts.get(attempt.exerciseId());
+            if (previous == null || attempt.revision() > previous.revision()) {
+                session.latestAttempts.put(attempt.exerciseId(), attempt);
+            }
+            AssessmentAttempt priorSubmission = session.submissionsByClientId.put(attempt.clientSubmissionId(), attempt);
+            if (priorSubmission != null && priorSubmission.submissionId() != attempt.submissionId()) {
+                throw AssessmentDomainException.invalid("ASM_PERSISTENCE_CORRUPT", "duplicate persisted client submission");
+            }
+        }
+        return session;
+    }
+
     public static AssessmentSession create(AssessmentPrincipal owner, AssessmentSessionType type,
                                            List<ContentSnapshot> snapshots, Instant now, Duration duration) {
         Objects.requireNonNull(owner, "owner is required").requireAuthenticated();

@@ -16,7 +16,7 @@ const manifest = readJson('database/mysql/migrations/migration-manifest.json');
 const requiredRoutes = [
   '/api/v1/media/assets/{assetId}',
   '/api/v1/media/assets/{assetId}/manifest',
-  '/api/v1/media/assets/{assetId}/access',
+  '/api/v1/media/assets/{assetId}/signed-url',
   '/api/v1/media/assets/{assetId}/content',
   '/internal/v1/media/assets/{assetId}/revoke',
   '/internal/v1/compatibility/b11/media-assets/{assetId}',

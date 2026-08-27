@@ -172,6 +172,23 @@
       "sourceRefs": ["05_做题中心模考与掌握闭环详细设计.md:567-571", "05_做题中心模考与掌握闭环详细设计.md:700-733"]
     },
     {
+      "id": "learning.srs.projection",
+      "domain": "learning",
+      "purpose": "SRS 状态短期读取投影；MySQL b25_learning_srs_state 是唯一事实源，Redis 丢失后按事实重建。",
+      "keyTemplate": "learning:srs:projection:{userId}:{itemKey}",
+      "parameters": [{"name": "userId", "type": "opaqueId", "rawSensitiveAllowed": false}, {"name": "itemKey", "type": "opaqueId", "rawSensitiveAllowed": false}],
+      "redisType": "hash",
+      "valueEncoding": "json_hash_srs_state_v1",
+      "ttl": {"kind": "fixed", "seconds": 86400},
+      "owner": "learning-service",
+      "rebuildable": true,
+      "sourceOfTruth": "mysql.b25_learning_srs_state",
+      "eviction": {"policy": "volatile-ttl", "onEvict": "read_srs_state_from_mysql"},
+      "security": {"rawSensitiveAllowed": false, "forbiddenPayloadFields": ["answerKey", "rawAudio", "privateNote"], "failMode": "open_read_only"},
+      "atomicity": {"strategy": "replace_projection_after_fact_commit", "operations": ["HSET", "EXPIRE", "HGETALL"], "notAuthoritative": true},
+      "sourceRefs": ["requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md:B32-CACHE-005"]
+    },
+    {
       "id": "learning.srs.batch-lock",
       "domain": "learning",
       "purpose": "用户日期排程批次的短互斥；不替代 MySQL 行锁。",

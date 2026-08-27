@@ -3,7 +3,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
 import { createMobileB5Order, listMobileB5Entitlements, listMobileB5Orders, listMobileB5Skus, prepareMobileB5Payment } from '../../api/b5'
 import { listRecords, money, text, toEntitlement, toOrder, toSku, type MobileB5Entitlement, type MobileB5Order, type MobileB5Sku } from '../../domain/b5'
-import { getUniRuntime } from '../../platform/uni-runtime'
+import { openUniPage, getUniRuntime } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore()
@@ -28,9 +28,9 @@ async function load(): Promise<void> {
 
 async function createOrder(sku: MobileB5Sku): Promise<void> { try { await createMobileB5Order(sku.skuId); message.value = '订单已创建；支付通道按服务端发布闸门保持关闭。'; await load() } catch (error) { message.value = error instanceof Error ? error.message : '订单创建失败。' } }
 async function recover(order: MobileB5Order): Promise<void> { try { const response = await prepareMobileB5Payment(order.orderId); const data = response && typeof response === 'object' && 'data' in response ? response.data : response; message.value = data && typeof data === 'object' && 'status' in data ? `支付恢复状态：${text(data.status)}` : '支付恢复请求已提交。' } catch (error) { message.value = error instanceof Error ? error.message : '支付恢复失败。' } }
-function goBack(): void { getUniRuntime().navigateTo({ url: '/pages/world/world' }) }
+function goBack(): void { openUniPage('/pages/world/world') }
 
-onShow(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }; void load() })
+onShow(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }; void load() })
 </script>
 
 <template>

@@ -4,11 +4,12 @@ import com.englishflow.adminops.domain.AdminPrincipal;
 import com.englishflow.adminops.domain.ConfirmationChallenge;
 import com.englishflow.adminops.security.AdminOpsAuthenticationToken;
 import com.englishflow.adminops.support.SupportAction;
-import com.englishflow.adminops.support.SupportTicketDraft;
 import com.englishflow.adminops.support.SupportTicketResult;
 import com.englishflow.adminops.support.SupportTicketService;
+import com.englishflow.adminops.support.SupportTicketView;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/internal/v1/admin-ops/support")
+@RequestMapping({"/internal/v1/admin-ops/support", "/internal/v1/admin-ops"})
 public final class SupportController {
 
     private final SupportTicketService service;
@@ -33,26 +34,30 @@ public final class SupportController {
 
     @PostMapping("/tickets")
     public Map<String, Object> create(
-            @RequestBody SupportTicketDraft body,
+            @RequestBody B13SupportTicketCreateRequest body,
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
             HttpServletRequest request) {
         SupportTicketResult result = service.create(
-                principal(), body, idempotencyKey, AdminOpsHttpSupport.traceId(request));
-        return AdminOpsHttpSupport.envelope(Map.of(
-                "ticket", result.ticket(), "replayed", result.replayed(), "auditId", result.auditId()), request);
+                principal(), body.toDraft(), idempotencyKey, AdminOpsHttpSupport.traceId(request));
+        return AdminOpsHttpSupport.envelope(ticketResult(result), request);
     }
 
     @GetMapping("/tickets")
     public Map<String, Object> list(
             @RequestParam(defaultValue = "false") boolean includeAll,
             HttpServletRequest request) {
-        List<?> items = service.list(principal(), includeAll);
-        return AdminOpsHttpSupport.envelope(Map.of("items", items), request);
+        List<Map<String, Object>> items = service.list(principal(), includeAll).stream()
+                .map(SupportController::ticketView)
+                .toList();
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("items", items);
+        data.put("nextCursor", null);
+        return AdminOpsHttpSupport.envelope(data, request);
     }
 
     @GetMapping("/tickets/{ticketId}")
     public Map<String, Object> get(@PathVariable String ticketId, HttpServletRequest request) {
-        return AdminOpsHttpSupport.envelope(service.get(principal(), ticketId), request);
+        return AdminOpsHttpSupport.envelope(ticketView(service.get(principal(), ticketId)), request);
     }
 
     @PostMapping("/tickets/{ticketId}/transitions/prepare")
@@ -79,8 +84,7 @@ public final class SupportController {
         SupportTicketResult result = service.transition(
                 principal(), ticketId, action, idempotencyKey, confirmationToken,
                 AdminOpsHttpSupport.traceId(request));
-        return AdminOpsHttpSupport.envelope(Map.of(
-                "ticket", result.ticket(), "replayed", result.replayed(), "auditId", result.auditId()), request);
+        return AdminOpsHttpSupport.envelope(ticketResult(result), request);
     }
 
     private static AdminPrincipal principal() {
@@ -89,5 +93,25 @@ public final class SupportController {
             return token.adminPrincipal();
         }
         return null;
+    }
+
+    private static Map<String, Object> ticketResult(SupportTicketResult result) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("ticket", ticketView(result.ticket()));
+        data.put("replayed", result.replayed());
+        data.put("auditId", result.auditId());
+        return data;
+    }
+
+    private static Map<String, Object> ticketView(SupportTicketView ticket) {
+        Map<String, Object> view = new LinkedHashMap<>();
+        view.put("ticketId", ticket.ticketId());
+        view.put("categoryCode", ticket.category().name());
+        view.put("state", ticket.state().name());
+        view.put("priority", ticket.priority().name());
+        view.put("slaDueAt", ticket.slaDueAt());
+        view.put("redactionVersion", "admin-ops.redacted.v1");
+        view.put("slaState", ticket.slaStatus().name());
+        return view;
     }
 }

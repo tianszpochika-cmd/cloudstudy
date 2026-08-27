@@ -100,6 +100,8 @@ node scripts/check-dod.mjs
 node scripts/check-dod.mjs --json
 node scripts/check-dod.mjs --strict
 node scripts/check-dod.mjs --self-test
+pnpm g:static
+pnpm g:bootstrap --require-runtime
 ```
 
 退出码：`0` = 无阻断错误；`1` = Gate 失败（或 `--strict` 下有警告）；`2` = 参数/配置/脚本执行错误。默认的“仅有说明文件”是 warning，因为当前仓库仍处在 B0 基线建设期；进入业务发布 Gate 时必须使用 `--strict` 并补齐真实契约、migration 和测试文件。

@@ -12,8 +12,8 @@ const b4 = useB4Store()
 const responseToken = ref('')
 const itemCode = ref('')
 
-onShow(() => {
-  session.restore()
+onShow(async () => {
+  await session.restore()
   if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
   b4.restore()
   if (!b4.games.length) void b4.loadWorld()

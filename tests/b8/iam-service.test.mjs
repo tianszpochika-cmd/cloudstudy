@@ -35,9 +35,10 @@ test('OIDC seam owns server-side state, nonce and PKCE verifier without becoming
   assert.match(sources, /server-generated state, nonce and verifier/i);
   assert.match(sources, /PkceSupport\.s256Challenge/);
   assert.match(sources, /transactions\.consume\(callback\.state\(\)\)/);
-  assert.doesNotMatch(sources, /@RestController|JwtEncoder|NimbusJwtEncoder|AuthorizationServerConfiguration/);
-  assert.match(yaml, /provider-mode: provider-neutral/);
-  assert.match(yaml, /real-provider-enabled: false/);
+  assert.doesNotMatch(sources, /JwtEncoder|NimbusJwtEncoder|AuthorizationServerConfiguration/);
+  assert.match(sources, /@RestController[\s\S]*IamProviderBoundaryController/);
+  assert.match(yaml, /provider-mode: \$\{IAM_PROVIDER_MODE:standard-oidc\}/);
+  assert.match(yaml, /real-provider-enabled: \$\{IAM_REAL_PROVIDER_ENABLED:false\}/);
 });
 
 test('principal, tenant and session facts are server-owned and secret-minimal', () => {

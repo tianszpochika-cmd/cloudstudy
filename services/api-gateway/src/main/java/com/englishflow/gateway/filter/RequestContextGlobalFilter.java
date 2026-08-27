@@ -36,6 +36,11 @@ public class RequestContextGlobalFilter implements GlobalFilter, Ordered {
                 .headers(headers -> {
                     headers.set("X-Request-Id", requestId);
                     headers.set("X-Trace-Id", traceId);
+                    // Do not forward a client-controlled W3C parent. The OTel
+                    // instrumentation creates the downstream context after the
+                    // Gateway has established the bounded correlation IDs.
+                    headers.remove("traceparent");
+                    headers.remove("tracestate");
                 })
                 .build();
         var response = exchange.getResponse();

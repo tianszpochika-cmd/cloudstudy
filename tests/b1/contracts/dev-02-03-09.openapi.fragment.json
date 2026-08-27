@@ -156,11 +156,11 @@
         }
       }
     },
-    "/api/v1/user/devices": {
+    "/api/v1/iam/devices": {
       "get": {
         "tags": ["b1-privacy"],
         "summary": "List the current user's active devices",
-        "operationId": "listUserDevices",
+        "operationId": "listIamDevices",
         "security": [{"bearerAuth": []}],
         "x-b1-acceptance": ["B1-DEVICE-KICKOUT", "B1-SCOPE-CROSS-TENANT-USER"],
         "responses": {
@@ -176,14 +176,17 @@
         }
       }
     },
-    "/api/v1/user/devices/kickout": {
+    "/api/v1/iam/devices/{deviceId}/kickout": {
       "post": {
         "tags": ["b1-privacy"],
         "summary": "Revoke one of the current user's device sessions",
-        "operationId": "kickoutUserDevice",
+        "operationId": "kickoutIamDevice",
         "security": [{"bearerAuth": []}],
         "x-b1-acceptance": ["B1-AUTH-DUAL-TOKEN-REVOKE", "B1-DEVICE-KICKOUT"],
-        "parameters": [{"$ref": "#/components/parameters/B1IdempotencyKey"}],
+        "parameters": [
+          {"$ref": "#/components/parameters/B1DeviceId"},
+          {"$ref": "#/components/parameters/B1IdempotencyKey"}
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -253,6 +256,12 @@
           "maxLength": 128,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,127}$"
         }
+      },
+      "B1DeviceId": {
+        "name": "deviceId",
+        "in": "path",
+        "required": true,
+        "schema": {"type": "string", "minLength": 1, "maxLength": 128}
       },
       "B1ContentVersionId": {
         "name": "contentVersionId",

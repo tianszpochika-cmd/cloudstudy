@@ -1,4 +1,5 @@
 import { mobileApiClient, MobileApiError } from './client'
+import { listGrammarExercises as listB3GrammarExercises, submitGrammarAttempt as submitB3GrammarAttempt } from './b3'
 import { createClientId } from '../platform/client-id'
 import type {
   B10AnswerInput,
@@ -31,7 +32,7 @@ export const B10_GATEWAY_PATHS = {
   content: {
     catalog: '/content/learner/catalog',
     projection: '/content/learner',
-    vocabularyDetail: '/vocab/items',
+    vocabularyDetail: '/content/learner/vocabulary',
     grammarPoints: '/grammar/points',
     sentenceGraph: '/grammar/sentences',
     readingArticles: '/reading/articles',
@@ -49,8 +50,8 @@ export const B10_GATEWAY_PATHS = {
     sessions: '/assessment/sessions',
     masteryMistakes: '/mastery/mistakes',
     masteryVerifications: '/mastery/verifications',
-    dailyReport: '/mastery/reports/daily',
-    weeklyReport: '/mastery/reports/weekly',
+    dailyReport: '/learning/stats/daily-report',
+    weeklyReport: '/learning/stats/weekly-report',
     grammarSessions: '/grammar/practice/sessions',
     writingSubmissions: '/writing/submissions',
     corrections: '/writing/corrections',
@@ -120,6 +121,7 @@ function listFrom(value: unknown): unknown[] {
   if (Array.isArray(source)) return source
   if (!isRecord(source)) return []
   if (Array.isArray(source.items)) return source.items
+  if (Array.isArray(source.cards)) return source.cards
   if (Array.isArray(source.exercises)) return source.exercises
   if (Array.isArray(source.mistakes)) return source.mistakes
   if (Array.isArray(source.questions)) return source.questions
@@ -133,6 +135,7 @@ function mapError(error: unknown, fallback: string): B10ErrorInfo {
   const detailRecord = isRecord(details) ? details : {}
   const nestedError = isRecord(detailRecord.error) ? detailRecord.error : {}
   const message = text(nestedError.message ?? detailRecord.message, error instanceof Error ? error.message : fallback) || fallback
+  if (status === 401) return { status, message: '请先登录后再继续学习。', retryable: false, kind: 'forbidden' }
   if (status === 403) return { status, message, retryable: false, kind: 'forbidden' }
   if (status === 404 || status === 410) return { status, message: status === 410 ? '内容版本已失效，请重新读取当前版本。' : message, retryable: false, kind: 'stale' }
   if (status === 0 || status >= 500) return { status, message, retryable: true, kind: 'offline' }
@@ -143,11 +146,13 @@ function parseSrsCard(value: unknown, position: number, snapshotId: number | nul
   if (!isRecord(value)) return null
   const item = isRecord(value.item) ? value.item : value
   const itemType = item.itemType === 'PHRASE' || item.itemType === 'EXPRESSION' ? item.itemType : 'VOCAB'
-  const itemId = nullableNumber(item.vocabId ?? item.phraseId ?? item.expressionId ?? item.chunkId)
-  if (!itemId) return null
+  const numericItemId = nullableNumber(item.vocabId ?? item.phraseId ?? item.expressionId ?? item.chunkId)
+  const stringItemId = text(item.itemId ?? item.vocabularyId ?? item.vocabCode) || null
+  const itemId = numericItemId ?? stringItemId
+  if (itemId === null) return null
   const srs = isRecord(value.srsState) ? value.srsState : isRecord(value.srs) ? value.srs : {}
   const title = text(value.title ?? value.word ?? value.canonicalText ?? value.sentenceText ?? item.word ?? item.canonicalText, `学习项 ${itemId}`)
-  const contentVersion = text(value.contentVersion ?? item.contentVersion) || null
+  const contentVersion = text(value.contentVersion ?? value.contentVersionId ?? item.contentVersion) || null
   return {
     id: `${snapshotId ?? 'pending'}-${number(value.snapshotItemId, position + 1)}`,
     snapshotId,
@@ -192,7 +197,7 @@ function parseSrsBatch(value: unknown): B10SrsBatch {
 
 function parseExercise(value: unknown, sessionId: string): B10Exercise | null {
   if (!isRecord(value)) return null
-  const exerciseId = nullableNumber(value.exerciseId)
+  const exerciseId = nullableNumber(value.exerciseId ?? value.itemId)
   const questionId = nullableNumber(value.questionId) ?? exerciseId
   if (!exerciseId || !questionId) return null
   const promptValue = isRecord(value.prompt) ? value.prompt : {}
@@ -209,11 +214,11 @@ function parseExercise(value: unknown, sessionId: string): B10Exercise | null {
     itemId: nullableNumber(value.itemId),
     questionType,
     position: number(value.position, 0),
-    prompt: text(promptValue.text ?? promptValue.stemText ?? value.promptText ?? value.stemText, '请完成本题。'),
+    prompt: text(promptValue.text ?? promptValue.stemText ?? value.promptText ?? value.stemText ?? value.stem, '请完成本题。'),
     sourceText: text(promptValue.sourceText ?? value.sourceText) || null,
     options: optionsValue.flatMap((entry): Array<{ key: string; text: string }> => {
       if (!isRecord(entry)) return []
-      const key = text(entry.optionCode ?? entry.key)
+      const key = text(entry.optionCode ?? entry.key ?? entry.optionId)
       const label = text(entry.label ?? entry.text)
       return key && label ? [{ key, text: label }] : []
     }),
@@ -227,7 +232,7 @@ function parseExercise(value: unknown, sessionId: string): B10Exercise | null {
     sourceBucket: ['NEW', 'REVIEW', 'MISTAKE', 'EXAM'].includes(text(value.sourceBucket)) ? text(value.sourceBucket) as B10Exercise['sourceBucket'] : null,
     verificationStage: ['D0', 'D1', 'D7'].includes(text(value.verificationStage)) ? text(value.verificationStage) as B10Exercise['verificationStage'] : null,
     feedbackPolicy: ['IMMEDIATE', 'AFTER_SUBMIT', 'PENDING_MANUAL'].includes(text(value.feedbackPolicy)) ? text(value.feedbackPolicy) as B10Exercise['feedbackPolicy'] : 'AFTER_SUBMIT',
-    contentVersionId: nullableNumber(value.contentVersionId),
+    contentVersionId: nullableNumber(value.contentVersionId ?? (isRecord(value.pin) ? value.pin.contentVersionId : null)),
     ruleVersion: text(value.ruleVersion) || null,
   }
 }
@@ -235,7 +240,7 @@ function parseExercise(value: unknown, sessionId: string): B10Exercise | null {
 function parseAssessmentSession(value: unknown): B10AssessmentSession {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
   const sessionId = text(source.sessionId ?? source.id, 'unknown-session')
-  const exercises = listFrom(source).flatMap((item) => {
+  const exercises = listFrom(source.items ?? source).flatMap((item) => {
     const exercise = parseExercise(item, sessionId)
     return exercise ? [exercise] : []
   })
@@ -244,9 +249,10 @@ function parseAssessmentSession(value: unknown): B10AssessmentSession {
     const exerciseId = nullableNumber(item.exerciseId)
     return exerciseId ? [{ exerciseId, saved: item.saved === true, revision: number(item.revision, 0) }] : []
   }) : []
+  const pin = isRecord(source.pin) ? source.pin : {}
   return {
     sessionId,
-    sessionType: text(source.sessionType, 'DAILY_STREAM'),
+    sessionType: text(source.sessionType ?? source.mode, 'DAILY_STREAM'),
     status: text(source.status, 'IN_PROGRESS'),
     serverNow: text(source.serverNow) || null,
     deadlineAt: text(source.deadlineAt) || null,
@@ -254,26 +260,31 @@ function parseAssessmentSession(value: unknown): B10AssessmentSession {
     lastCheckpointSeq: number(source.lastCheckpointSeq, 0),
     exercises: exercises.sort((left, right) => left.position - right.position),
     answerSheet,
-    contentEpoch: number(source.contentEpoch, 0),
+    contentEpoch: number(source.contentEpoch ?? pin.contentEpoch, 0),
     degraded: source.degraded === true,
+    stateVersion: number(source.stateVersion, 1),
+    lastAttemptId: text(source.lastAttemptId) || null,
+    reportId: text(source.reportId) || null,
   }
 }
 
 function parseAnswerResult(value: unknown, exerciseId: number): B10AnswerResult {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
   return {
-    requestId: text(source.requestId) || null,
+    requestId: text(source.requestId ?? source.attemptId) || null,
     exerciseId: number(source.exerciseId, exerciseId),
-    accepted: source.accepted !== false,
-    revision: nullableNumber(source.revision),
+    accepted: source.accepted !== false && !['REJECTED', 'COMPENSATED'].includes(text(source.status)),
+    revision: nullableNumber(source.revision ?? source.attemptVersion),
     scoringStatus: ['SCORED', 'PENDING_MANUAL', 'REJECTED', 'LATE', 'ACCEPTED'].includes(text(source.scoringStatus)) ? text(source.scoringStatus) as B10AnswerResult['scoringStatus'] : 'ACCEPTED',
-    isCorrect: booleanOrNull(source.isCorrect),
+    isCorrect: booleanOrNull(source.isCorrect) ?? (text(source.scoreBucket) === 'FULL' ? true : text(source.scoreBucket) === 'ZERO' ? false : null),
     score: typeof source.score === 'number' ? source.score : null,
     maxScore: typeof source.maxScore === 'number' ? source.maxScore : null,
     errorCauseCandidates: Array.isArray(source.errorCauseCandidates) ? source.errorCauseCandidates.filter((entry): entry is string => typeof entry === 'string') : [],
     masteryEffect: text(source.masteryEffect) || null,
     deduplicated: source.deduplicated === true,
     contentVersionStale: source.contentVersionStale === true || source.status === 'CONTENT_VERSION_STALE',
+    attemptId: text(source.attemptId) || null,
+    reportId: text(source.reportId) || null,
   }
 }
 
@@ -457,8 +468,11 @@ function parseVerification(value: unknown): B10Verification | null {
 function parseReport(value: unknown, fallbackType: B10Report['reportType']): B10Report {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
   const reportType = ['EXAM_DIAGNOSTIC', 'DAILY', 'WEEKLY'].includes(text(source.reportType)) ? text(source.reportType) as B10Report['reportType'] : fallbackType
+  const scoreBucket = text(source.scoreBucket)
+  const canonicalMetrics = scoreBucket ? [{ code: 'scoreBucket', label: '评测结果', value: scoreBucket === 'FULL' ? 1 : scoreBucket === 'PARTIAL' ? 0.5 : 0, max: 1 }] : []
+  const canonicalEvidence = Array.isArray(source.mistakeCodes) ? source.mistakeCodes.filter((entry): entry is string => typeof entry === 'string').map((entry) => ({ label: entry, detail: '服务端记录为待复习项。' })) : []
   return {
-    reportId: number(source.reportId, 0),
+    reportId: text(source.reportId) || number(source.reportId, 0),
     reportType,
     status: ['GENERATING', 'READY', 'PARTIAL', 'FAILED'].includes(text(source.status)) ? text(source.status) as B10Report['status'] : 'PARTIAL',
     score: typeof source.score === 'number' ? source.score : null,
@@ -469,14 +483,14 @@ function parseReport(value: unknown, fallbackType: B10Report['reportType']): B10
       if (!isRecord(item)) return []
       const code = text(item.code)
       return code ? [{ code, label: text(item.label, code), value: number(item.value), ...(typeof item.max === 'number' ? { max: item.max } : {}) }] : []
-    }) : Object.entries(isRecord(source.metrics) ? source.metrics : {}).map(([code, value]) => ({ code, label: code, value: number(value) })),
+    }) : Object.keys(isRecord(source.metrics) ? source.metrics : {}).length ? Object.entries(isRecord(source.metrics) ? source.metrics : {}).map(([code, value]) => ({ code, label: code, value: number(value) })) : canonicalMetrics,
     evidence: Array.isArray(source.evidence) ? source.evidence.flatMap((item): Array<{ exerciseId?: number; mistakeId?: number; label: string; detail: string }> => {
       if (!isRecord(item)) return []
       const label = text(item.label ?? item.code)
       const detail = text(item.detail ?? item.explanation)
       return label && detail ? [{ label, detail, ...(nullableNumber(item.exerciseId) ? { exerciseId: nullableNumber(item.exerciseId) as number } : {}), ...(nullableNumber(item.mistakeId) ? { mistakeId: nullableNumber(item.mistakeId) as number } : {}) }] : []
-    }) : [],
-    explanation: Array.isArray(source.explanation) ? source.explanation.filter((entry): entry is string => typeof entry === 'string') : Object.values(isRecord(source.explanation) ? source.explanation : {}).filter((entry): entry is string => typeof entry === 'string'),
+    }) : canonicalEvidence,
+    explanation: Array.isArray(source.explanation) ? source.explanation.filter((entry): entry is string => typeof entry === 'string') : Object.values(isRecord(source.explanation) ? source.explanation : {}).filter((entry): entry is string => typeof entry === 'string').concat(scoreBucket ? [`服务端报告：${scoreBucket}`] : []),
   }
 }
 
@@ -508,7 +522,7 @@ export const b10LearningApi = {
     return parseSrsBatch(response)
   },
 
-  async getVocabularyDetail(context: B10RequestContext, itemId: number, contentVersion?: string | null): Promise<Partial<B10SrsCard>> {
+  async getVocabularyDetail(context: B10RequestContext, itemId: number | string, contentVersion?: string | null): Promise<Partial<B10SrsCard>> {
     const response = await mobileApiClient.request<unknown>(query(`${B10_GATEWAY_PATHS.content.vocabularyDetail}/${encodeURIComponent(String(itemId))}`, { contentLocale: context.contentLocale, contentVersion: contentVersion ?? undefined }))
     const source = isRecord(unwrap(response)) ? unwrap(response) as RecordValue : {}
     return {
@@ -524,7 +538,7 @@ export const b10LearningApi = {
     const item = card.itemType === 'VOCAB' ? { itemType: 'VOCAB', vocabId: card.itemId } : card.itemType === 'PHRASE' ? { itemType: 'PHRASE', phraseId: card.itemId } : { itemType: 'EXPRESSION', expressionId: card.itemId }
     return mobileApiClient.request<unknown>(B10_GATEWAY_PATHS.learning.srsReview, {
       method: 'POST',
-      data: { snapshotId: card.snapshotId, snapshotItemId: card.snapshotItemId, item, rawQuality: quality, answerOutcome: 'REVEALED_WITHOUT_ANSWER', responseTimeMs: 0, revealElapsedMs: 0, clientEventId, clientOccurredAt: new Date().toISOString(), baseStateVersion: card.stateVersion },
+      data: { itemId: card.itemId, snapshotId: card.snapshotId, snapshotItemId: card.snapshotItemId, item, rawQuality: quality, answerOutcome: 'REVEALED_WITHOUT_ANSWER', responseTimeMs: 0, revealElapsedMs: 0, clientEventId, clientOccurredAt: new Date().toISOString(), baseStateVersion: card.stateVersion },
       header: { ...headers(context, clientEventId), 'X-Content-Version': card.contentVersion ?? '' },
     })
   },
@@ -534,7 +548,8 @@ export const b10LearningApi = {
   },
 
   async createAssessmentSession(context: B10RequestContext, input: { sessionType: 'DAILY_STREAM' | 'QUICK_PRACTICE' | 'CHECKPOINT'; targetCount?: number }, clientEventId: string): Promise<B10AssessmentSession> {
-    const response = await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.assessment.sessions, { contentLocale: context.contentLocale }), { method: 'POST', data: { sessionType: input.sessionType, targetCount: input.targetCount ?? 15 }, header: headers(context, clientEventId) })
+    const mode = input.sessionType === 'QUICK_PRACTICE' ? 'REVIEW' : input.sessionType === 'CHECKPOINT' ? 'MOCK' : 'PRACTICE'
+    const response = await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.assessment.sessions, { contentLocale: context.contentLocale }), { method: 'POST', data: { contentVersionId: 25001, mode, clientSessionRef: clientEventId }, header: headers(context, clientEventId) })
     return parseAssessmentSession(response)
   },
 
@@ -543,17 +558,20 @@ export const b10LearningApi = {
     return parseAssessmentSession(response)
   },
 
-  async submitAssessmentAnswer(context: B10RequestContext, sessionId: string, exerciseId: number, answer: B10AnswerInput, revision: number, checkpointSeq: number, clientEventId: string): Promise<B10AnswerResult> {
-    const response = await mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.sessions}/${encodeURIComponent(sessionId)}/answers`, { method: 'POST', data: { exerciseId, clientSubmissionId: clientEventId, revision, answer, checkpointSeq, elapsedMs: 0 }, header: headers(context, clientEventId) })
+  async submitAssessmentAnswer(context: B10RequestContext, sessionId: string, exerciseId: number, answer: B10AnswerInput, revision: number, checkpointSeq: number, clientEventId: string, expectedStateVersion = 1): Promise<B10AnswerResult> {
+    const submissionId = `sub_${clientEventId.replace(/[^A-Za-z0-9._:-]/g, '').slice(0, 112)}`
+    const response = await mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.sessions}/${encodeURIComponent(sessionId)}/attempts`, { method: 'POST', data: { expectedStateVersion, submissionId, items: [{ itemId: exerciseId, sequence: 0, response: answer, clientSubmissionId: clientEventId }], clientEventId }, header: headers(context, clientEventId) })
     return parseAnswerResult(response, exerciseId)
   },
 
-  async saveAssessmentCheckpoint(context: B10RequestContext, sessionId: string, checkpointSeq: number, currentExerciseId: number | null, clientStateHash: string, clientEventId: string): Promise<unknown> {
-    return mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.sessions}/${encodeURIComponent(sessionId)}/checkpoint`, { method: 'PUT', data: { checkpointSeq, currentExerciseId, clientStateHash, monotonicElapsedMs: 0 }, header: headers(context, clientEventId) })
+  async saveAssessmentCheckpoint(context: B10RequestContext, sessionId: string, attemptId: string, checkpointSeq: number, currentExerciseId: number | null, clientStateHash: string, clientEventId: string): Promise<unknown> {
+    return mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.sessions}/${encodeURIComponent(sessionId)}/attempts/${encodeURIComponent(attemptId)}/checkpoint`, { method: 'PUT', data: { checkpointVersion: Math.max(1, checkpointSeq), itemCursor: Math.max(0, currentExerciseId ?? 0), completedItemIds: [], checkpointDigest: clientStateHash }, header: headers(context, clientEventId) })
   },
 
   async completeAssessmentSession(context: B10RequestContext, sessionId: string, clientEventId: string): Promise<B10Report> {
-    const response = await mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.sessions}/${encodeURIComponent(sessionId)}/complete`, { method: 'POST', header: headers(context, clientEventId) })
+    const session = await this.readAssessmentSession(context, sessionId)
+    if (!session.reportId) throw new Error('当前练习尚未生成服务端报告，请先提交至少一道题。')
+    const response = await mobileApiClient.request<unknown>(`/assessment/reports/${encodeURIComponent(session.reportId)}`, { header: headers(context, clientEventId) })
     return parseReport(response, 'DAILY')
   },
 
@@ -598,12 +616,20 @@ export const b10LearningApi = {
   },
 
   async createGrammarSession(context: B10RequestContext, grammarPointId: number, contentVersionId: number | null, clientEventId: string): Promise<B10AssessmentSession> {
-    const response = await mobileApiClient.request<unknown>(query(B10_GATEWAY_PATHS.assessment.grammarSessions, { contentLocale: context.contentLocale }), { method: 'POST', data: { grammarPointId, targetCount: 5, contentVersionId: contentVersionId ?? 1, mode: 'SENTENCE_BUILD' }, header: headers(context, clientEventId) })
-    return parseAssessmentSession(response)
+    const rawExercises = await listB3GrammarExercises()
+    const exercises = rawExercises.filter((item) => !isRecord(item) || item.grammarPointId === undefined || number(item.grammarPointId, grammarPointId) === grammarPointId)
+    return parseAssessmentSession({
+      sessionId: `grammar_${grammarPointId}_${clientEventId}`,
+      mode: 'PRACTICE',
+      status: 'IN_PROGRESS',
+      contentEpoch: 1,
+      stateVersion: 1,
+      items: exercises.map((item) => isRecord(item) ? item : {}),
+    })
   },
 
   async submitGrammarAnswer(context: B10RequestContext, sessionId: string, exerciseId: number, answer: B10AnswerInput, contentVersionId: number | null, clientEventId: string): Promise<B10RuleFeedback> {
-    const response = await mobileApiClient.request<unknown>(`${B10_GATEWAY_PATHS.assessment.grammarSessions}/${encodeURIComponent(sessionId)}/answers`, { method: 'POST', data: { exerciseId, answer, clientAnswerId: clientEventId, ...(contentVersionId ? { contentVersionId } : {}) }, header: headers(context, clientEventId) })
+    const response = await submitB3GrammarAttempt(exerciseId, answer as Record<string, unknown>)
     return parseRuleFeedback(response)
   },
 

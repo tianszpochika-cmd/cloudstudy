@@ -1,0 +1,63 @@
+apiVersion: release.englishflow.dev/v1alpha1
+kind: FourPlatformReleaseBinding
+metadata:
+  name: englishflow-b22-four-platform-release
+  labels:
+    englishflow.dev/release-batch: b22
+spec:
+  phase: phase-1
+  status: not-established
+  decision: NO-GO
+  releaseId: release-ref://synthetic/b22/phase1-canary
+  sourceRevision: commit-ref://synthetic/b22/signed-release-revision
+  manifestDigest: sha256:7777777777777777777777777777777777777777777777777777777777777777
+  bindingPolicy:
+    sameReleaseIdRequired: true
+    sameSourceRevisionRequired: true
+    immutableArtifactRequired: true
+    signatureRequired: true
+    sbomRequired: true
+    environmentBindingRequired: true
+    mismatchDecision: BLOCKED
+  platforms:
+    - platformId: mobile
+      projectPath: apps/mobile
+      releaseVersion: version-ref://synthetic/b22/mobile
+      artifactDigest: sha256:3333333333333333333333333333333333333333333333333333333333333333
+      signatureRef: signature-ref://synthetic/b22/mobile
+      sbomRef: sbom-ref://synthetic/b22/mobile
+      channelRef: channel-ref://synthetic/mobile-approved-channel
+      featureFlag: mobile-release-enabled
+      status: pending
+    - platformId: learner-web
+      projectPath: apps/learner-web
+      releaseVersion: version-ref://synthetic/b22/learner-web
+      artifactDigest: sha256:4444444444444444444444444444444444444444444444444444444444444444
+      signatureRef: signature-ref://synthetic/b22/learner-web
+      sbomRef: sbom-ref://synthetic/b22/learner-web
+      channelRef: channel-ref://synthetic/learner-web-approved-channel
+      featureFlag: learner-web-release-enabled
+      status: pending
+    - platformId: admin-web
+      projectPath: apps/admin-web
+      releaseVersion: version-ref://synthetic/b22/admin-web
+      artifactDigest: sha256:5555555555555555555555555555555555555555555555555555555555555555
+      signatureRef: signature-ref://synthetic/b22/admin-web
+      sbomRef: sbom-ref://synthetic/b22/admin-web
+      channelRef: channel-ref://synthetic/admin-web-approved-channel
+      featureFlag: admin-web-release-enabled
+      status: pending
+    - platformId: official-site
+      projectPath: apps/official-site
+      releaseVersion: version-ref://synthetic/b22/official-site
+      artifactDigest: sha256:6666666666666666666666666666666666666666666666666666666666666666
+      signatureRef: signature-ref://synthetic/b22/official-site
+      sbomRef: sbom-ref://synthetic/b22/official-site
+      channelRef: channel-ref://synthetic/official-site-approved-channel
+      featureFlag: official-site-release-enabled
+      status: pending
+  rolloutBinding:
+    trafficReleaseRequiresAllPlatforms: true
+    versionOrDigestMismatchDecision: BLOCKED
+    missingPlatformBindingDecision: BLOCKED
+

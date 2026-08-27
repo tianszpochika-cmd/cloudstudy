@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { renderOfficialSiteTokenStyle } from '~/utils/design-system'
+import { resolvePublicThemeMode, resolvePublicUiLocale } from '~/utils/public-projection'
 import { officialI18nAdapter, officialThemeAdapter, officialThemeController } from '~/utils/v2-foundation'
 
+const route = useRoute()
 const uiLocale = ref(officialI18nAdapter.state.locale)
 const contentLocale = ref(officialI18nAdapter.state.contentLocale)
 const unsubscribeLocale = officialI18nAdapter.subscribe((state) => {
@@ -10,9 +12,19 @@ const unsubscribeLocale = officialI18nAdapter.subscribe((state) => {
   contentLocale.value = state.contentLocale
 })
 
+function syncUrlPreferences() {
+  if (route.query.locale !== undefined) officialI18nAdapter.setLocale(resolvePublicUiLocale(route.query.locale))
+  if (route.query.theme !== undefined) officialThemeController.setTheme(resolvePublicThemeMode(route.query.theme))
+}
+
 onMounted(() => {
   officialI18nAdapter.restore()
   officialThemeController.restore()
+  syncUrlPreferences()
+})
+
+watch(() => [route.query.locale, route.query.theme], () => {
+  if (import.meta.client) syncUrlPreferences()
 })
 
 onBeforeUnmount(unsubscribeLocale)

@@ -392,7 +392,9 @@
           "attemptCount": { "type": "integer", "minimum": 0 },
           "stateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
           "startedAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "expiresAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true }
+          "expiresAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true },
+          "reportId": { "$ref": "#/components/schemas/B10ReportId", "nullable": true },
+          "lastAttemptId": { "$ref": "#/components/schemas/B10AttemptId", "nullable": true }
         }
       },
       "B10AttemptSubmission": {
@@ -432,7 +434,8 @@
           "assessmentVersion": { "type": "string", "maxLength": 96 },
           "scoreBucket": { "type": "string", "enum": ["UNASSESSED", "ZERO", "PARTIAL", "FULL", "PENDING_REVIEW"] },
           "createdAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "assessedAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true }
+          "assessedAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true },
+          "reportId": { "$ref": "#/components/schemas/B10ReportId", "nullable": true }
         }
       },
       "B10CheckpointRequest": {

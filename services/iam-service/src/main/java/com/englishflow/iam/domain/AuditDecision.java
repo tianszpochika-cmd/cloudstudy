@@ -37,6 +37,8 @@ public record AuditDecision(
         Objects.requireNonNull(occurredAt, "occurredAt");
         factsCreated = factsCreated == null ? Set.of() : Set.copyOf(factsCreated);
         factsForbidden = factsForbidden == null ? Set.of() : Set.copyOf(factsForbidden);
+        validateFacts(factsCreated);
+        validateFacts(factsForbidden);
         safeAttributes = safeAttributes == null ? Map.of() : Map.copyOf(new LinkedHashMap<>(safeAttributes));
         safeAttributes.forEach((key, value) -> {
             if (key == null || !KEY.matcher(key).matches() || containsSecretWord(key)
@@ -77,5 +79,13 @@ public record AuditDecision(
     private static boolean containsSecretWord(String value) {
         String lower = value.toLowerCase(java.util.Locale.ROOT);
         return SECRET_WORDS.stream().anyMatch(lower::contains);
+    }
+
+    private static void validateFacts(Set<String> facts) {
+        facts.forEach(fact -> {
+            if (fact == null || !KEY.matcher(fact).matches() || containsSecretWord(fact)) {
+                throw new IllegalArgumentException("audit facts must be safe non-sensitive identifiers");
+            }
+        });
     }
 }

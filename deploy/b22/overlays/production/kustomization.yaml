@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: englishflow-b22-production
+namespace: englishflow-production
+resources:
+  - namespace.yaml
+  - ../../base
+commonLabels:
+  englishflow.dev/environment: production
+  englishflow.dev/release-batch: b22
+  englishflow.dev/promotion: manual-and-audited
+images:
+  - name: registry.example.invalid/englishflow/api-gateway
+    newName: registry.example.invalid/englishflow/api-gateway
+    digest: 1111111111111111111111111111111111111111111111111111111111111111
+patches:
+  - path: rollout-patch.yaml
+  - path: feature-flags-patch.yaml
+

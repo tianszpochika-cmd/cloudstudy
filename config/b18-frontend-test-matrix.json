@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "phase": "phase-1",
+  "gatewayBasePath": "/api/v1",
+  "applications": [
+    {
+      "id": "learner-web",
+      "origin": "http://127.0.0.1:18180",
+      "auth": "oidc-test-idp",
+      "routes": ["/", "/login", "/onboarding", "/assessment", "/home", "/today", "/learn", "/practice", "/vocabulary", "/reports/weakness"],
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"]
+    },
+    {
+      "id": "mobile",
+      "origin": "http://127.0.0.1:18183",
+      "auth": "oidc-test-idp",
+      "routes": ["pages/login/login", "pages/onboarding/onboarding", "pages/assessment/assessment", "pages/home/home", "pages/today/today", "pages/learn/learn", "pages/practice/practice", "pages/b10-report/b10-report"],
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"]
+    },
+    {
+      "id": "admin-web",
+      "origin": "http://127.0.0.1:18181",
+      "auth": "oidc-test-idp",
+      "routes": ["/login", "/dashboard", "/content", "/commerce", "/audit", "/governance", "/support"],
+      "requiredPermissions": ["admin.dashboard.read", "admin.content.read", "admin.commerce.read", "admin.audit.read", "admin.support.read", "admin.support.command"]
+    },
+    {
+      "id": "official-site",
+      "origin": "http://127.0.0.1:18182",
+      "auth": "public-only",
+      "routes": ["/", "/courses", "/pricing", "/download", "/about", "/announcements", "/compliance"],
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"]
+    }
+  ],
+  "accounts": [
+    { "id": "learner-adult", "kind": "learner", "subject": "synthetic-b18-learner-adult", "fixture": "approved-adult" },
+    { "id": "admin-reviewer", "kind": "admin", "subject": "synthetic-b18-admin-reviewer", "fixture": "approved-admin-minimum-permission" },
+    { "id": "learner-forbidden", "kind": "learner", "subject": "synthetic-b18-learner-forbidden", "fixture": "adult-without-resource-permission" },
+    { "id": "public-anonymous", "kind": "public", "subject": null, "fixture": "anonymous-no-session" }
+  ],
+  "forbiddenFixtureFields": ["password", "clientSecret", "accessToken", "refreshToken", "authorization", "paymentCredential", "rawAudio"],
+  "forbiddenDefaultCapabilities": ["phase-2-ai", "phase-3-k12", "realtime-ai"]
+}

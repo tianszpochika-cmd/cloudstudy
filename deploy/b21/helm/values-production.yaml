@@ -1,0 +1,18 @@
+environment: production
+image:
+  repository: registry.example.invalid/englishflow/api-gateway
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  pullPolicy: IfNotPresent
+secrets:
+  provider: external-secret-store
+  path: kv://phase1/production/englishflow-runtime
+rollout:
+  strategy: blueGreen
+  activeService: api-gateway
+  previewService: api-gateway-preview
+  autoPromotionEnabled: false
+  rollback:
+    enabled: true
+    requiresImmutableRevision: true
+    requiresRestorePoint: true
+    requiresDataAndEventReconciliation: true

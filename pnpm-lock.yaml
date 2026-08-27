@@ -134,6 +134,9 @@ importers:
       '@dcloudio/uni-components':
         specifier: 3.0.0-alpha-4080720251125001
         version: 3.0.0-alpha-4080720251125001(@nuxt/kit@3.21.11(magicast@0.5.4))(@vueuse/core@14.3.0(vue@3.5.41(typescript@5.9.3)))(postcss@8.5.26)(rollup@4.62.4)(vue@3.5.41(typescript@5.9.3))
+      '@dcloudio/uni-h5':
+        specifier: 3.0.0-alpha-4080720251125001
+        version: 3.0.0-alpha-4080720251125001(@nuxt/kit@3.21.11(magicast@0.5.4))(@vueuse/core@14.3.0(vue@3.5.41(typescript@5.9.3)))(postcss@8.5.26)(rollup@4.62.4)(vue@3.5.41(typescript@5.9.3))
       '@dcloudio/vite-plugin-uni':
         specifier: 3.0.0-alpha-4080720251125001
         version: 3.0.0-alpha-4080720251125001(@nuxt/kit@3.21.11(magicast@0.5.4))(@vueuse/core@14.3.0(vue@3.5.41(typescript@5.9.3)))(postcss@8.5.26)(rollup@4.62.4)(vite@5.2.8(@types/node@26.2.0)(sass@1.103.0)(terser@5.50.0))(vue@3.5.41(typescript@5.9.3))

@@ -15,6 +15,7 @@ export interface ApiClientConfig {
   fetchImpl?: typeof fetch
   credentials?: RequestCredentials
   onUnauthorized?: () => Promise<boolean>
+  onForbidden?: (error: ApiError) => Promise<void>
 }
 
 export class ApiError extends Error {
@@ -55,6 +56,22 @@ function joinUrl(baseUrl: string, path: string): string {
   return path.startsWith('/') ? `${base}${path}` : `${base}/${path}`
 }
 
+function errorMessage(details: unknown, status: number): string {
+  if (typeof details === 'object' && details !== null) {
+    const source = details as Record<string, unknown>
+    const nested = typeof source.error === 'object' && source.error !== null
+      ? source.error as Record<string, unknown>
+      : null
+    const message = nested?.message ?? source.message
+    const code = nested?.code ?? source.code
+    if (typeof message === 'string' && message.trim()) {
+      return typeof code === 'string' && code.trim() ? `${message.trim()}（${code.trim()}）` : message.trim()
+    }
+    if (typeof code === 'string' && code.trim()) return code.trim()
+  }
+  return `请求失败（HTTP ${status}）`
+}
+
 export function createApiClient(config: ApiClientConfig): ApiClient {
   const fetchImpl = config.fetchImpl ?? fetch
 
@@ -88,10 +105,16 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     }
 
     if (!response.ok) {
-      const message = typeof details === 'object' && details !== null && 'message' in details
-        ? String(details.message)
-        : `请求失败（HTTP ${response.status}）`
-      throw new ApiError(message, response.status, details)
+      const message = errorMessage(details, response.status)
+      const error = new ApiError(message, response.status, details)
+      if (response.status === 403 && config.onForbidden) {
+        try {
+          await config.onForbidden(error)
+        } catch {
+          // Navigation is best-effort; the original API error remains authoritative.
+        }
+      }
+      throw error
     }
 
     return details as TResponse
@@ -119,6 +142,13 @@ export const apiClient = createApiClient({
   },
   onUnauthorized: async () => {
     const [{ pinia }, { useSessionStore }] = await Promise.all([import('../stores/pinia'), import('../stores/session')])
-    return useSessionStore(pinia).refreshSilently()
+    const session = useSessionStore(pinia)
+    const refreshed = await session.refreshSilently()
+    if (!refreshed) await session.handleUnauthorized()
+    return refreshed
+  },
+  onForbidden: async (error) => {
+    const [{ pinia }, { useSessionStore }] = await Promise.all([import('../stores/pinia'), import('../stores/session')])
+    await useSessionStore(pinia).handleForbidden(error)
   },
 })

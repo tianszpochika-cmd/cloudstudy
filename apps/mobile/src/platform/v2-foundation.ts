@@ -22,21 +22,21 @@ export const mobileI18n = createI18n({
     'zh-CN': {
       common: { state: { loading: '正在加载', empty: '暂无可用数据', error: '暂时无法完成', permission: '当前没有访问权限', recovery: '正在恢复安全快照', offline: '当前处于离线状态', success: '已完成', partial: '部分内容可用' } },
       auth: {
-        login: { title: '登录学习空间', description: '登录通过 Gateway 的受控身份深链完成，不在普通存储中保存 refresh token。', start: '打开身份服务', pending: '真实 IdP 尚未获批，当前只提供可替换登录入口。', noSuccess: '没有收到有效回调，因此不会伪造登录成功。' },
-        callback: { title: '正在恢复移动会话', restoring: '正在校验深链回调并恢复安全会话…', failed: '移动认证回调未完成。' },
+        login: { title: '登录后，马上开始学习', description: '登录一次，我们会把你带回刚才的位置；首次进入只需完成一个简短设置。', start: '登录并继续', retry: '重新准备登录', preparing: '正在准备登录…', ready: '准备好了', readyDescription: '点击下方按钮完成登录，回来后会继续为你设置学习空间。', preparingDescription: '马上就好，正在连接登录服务。', retryHint: '登录入口暂时没有响应，请稍后再试。', afterLogin: '登录完成后，你只需要确认年龄、同意必要说明并选择学习目标。', cancelled: '你取消了登录，可以随时再试。', unavailable: '登录暂时不可用', pending: '正在准备登录入口…', noSuccess: '无需选择登录方式，点击下方按钮即可继续。' },
+        callback: { title: '正在进入学习空间', restoring: '正在安全地恢复你的学习空间…', failed: '登录没有完成，请回到登录页再试一次。' },
         session: { restored: '会话已恢复', restoring: '正在恢复会话…', logout: '退出登录', logoutFailed: '撤销服务暂时不可用，已清除本地会话。' },
         forbidden: { title: '暂时没有访问权限', description: '访问权限由服务端策略决定，客户端不会使用角色、租户或 owner 字段绕过限制。', login: '返回登录', empty: '服务端尚未返回权限快照。' },
-        adult: { title: '成人用户 Gate', description: 'Phase 1 仅面向成年用户与大学生；同意事实由服务端记录。', confirm: '确认并继续', rejected: '服务端没有接受成人 Gate。' },
+        adult: { title: '开始前确认一下', description: '语学星 Phase 1 面向 18 岁以上成人与大学生。确认后即可继续设置你的学习计划。', confirm: '确认并继续', rejected: '这次确认没有完成，请检查信息后再试。' },
       },
     },
     'en-US': {
       common: { state: { loading: 'Loading', empty: 'Nothing is available', error: 'Unable to complete right now', permission: 'Access is not allowed', recovery: 'Recovering the safe snapshot', offline: 'You are offline', success: 'Completed', partial: 'Partially available' } },
       auth: {
-        login: { title: 'Sign in to learning space', description: 'Sign-in uses a controlled Gateway deep link; refresh tokens are never stored in ordinary storage.', start: 'Open identity service', pending: 'The real IdP is not approved; this is a replaceable login seam.', noSuccess: 'No valid callback was received, so no login success was fabricated.' },
-        callback: { title: 'Restoring mobile session', restoring: 'Validating deep-link callback and restoring a secure session…', failed: 'The mobile callback did not complete.' },
+        login: { title: 'Sign in, then start learning', description: 'Sign in once and we will bring you back to where you were. First-time learners only need a short setup.', start: 'Sign in and continue', retry: 'Prepare sign-in again', preparing: 'Preparing sign-in…', ready: 'You are ready to continue', readyDescription: 'Use the button below to sign in. We will finish setting up your learning space when you return.', preparingDescription: 'Almost there. Connecting to sign-in.', retryHint: 'The sign-in entry did not respond. Please try again shortly.', afterLogin: 'After sign-in, you will confirm your age, accept the required notices, and choose a learning goal.', cancelled: 'Sign-in was cancelled. You can try again whenever you are ready.', unavailable: 'Sign-in is temporarily unavailable', pending: 'Preparing sign-in…', noSuccess: 'There is no account choice to make here. Use the button below to continue.' },
+        callback: { title: 'Entering your learning space', restoring: 'Restoring your learning space securely…', failed: 'Sign-in did not complete. Return to sign-in and try again.' },
         session: { restored: 'Session restored', restoring: 'Restoring session…', logout: 'Sign out', logoutFailed: 'Revocation is unavailable; the local session was cleared.' },
         forbidden: { title: 'Access is not allowed', description: 'Server policy decides access; client role, tenant, and owner fields cannot bypass it.', login: 'Return to sign in', empty: 'The server has not returned a permission snapshot.' },
-        adult: { title: 'Adult-user gate', description: 'Phase 1 is for adults and university students; the server records consent.', confirm: 'Confirm and continue', rejected: 'The server did not accept the adult-user gate.' },
+        adult: { title: 'One quick check before we begin', description: 'Phase 1 is for adults and university students aged 18+. Confirm this once, then set up your learning plan.', confirm: 'Confirm and continue', rejected: 'This confirmation did not complete. Check the information and try again.' },
       },
     },
   },

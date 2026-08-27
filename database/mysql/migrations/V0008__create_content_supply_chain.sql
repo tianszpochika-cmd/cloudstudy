@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS content_import_batches (
 CREATE TABLE IF NOT EXISTS content_import_rows (
   import_row_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   import_batch_id BIGINT UNSIGNED NOT NULL,
-  row_number INT UNSIGNED NOT NULL,
+  `row_number` INT UNSIGNED NOT NULL,
   normalized_key VARCHAR(255) NULL,
   row_sha256 CHAR(64) NOT NULL,
   row_status VARCHAR(24) NOT NULL,
@@ -225,7 +225,7 @@ CREATE TABLE IF NOT EXISTS content_import_rows (
   row_metadata_json JSON NULL,
   created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (import_row_id),
-  UNIQUE KEY uk_content_import_row (import_batch_id, row_number),
+  UNIQUE KEY uk_content_import_row (import_batch_id, `row_number`),
   KEY idx_content_import_row_status (import_batch_id, row_status),
   CONSTRAINT fk_content_import_row_batch FOREIGN KEY (import_batch_id) REFERENCES content_import_batches (import_batch_id),
   CONSTRAINT fk_content_import_row_entity FOREIGN KEY (content_entity_id) REFERENCES content_entities (content_entity_id),

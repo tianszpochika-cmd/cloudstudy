@@ -62,12 +62,16 @@ public final class NotificationAccessPolicy {
     }
 
     public void requireManualRecovery(NotificationPrincipalContext context) {
-        requireWorkloadPermission(context, "notification.recovery");
+        requireAnyWorkloadPermission(context, Set.of("notification.recovery", "admin.recovery.command"));
     }
 
     public void requireManualRecovery(NotificationPrincipalContext context, String tenantId) {
         requireManualRecovery(context);
         requireTenant(context, tenantId);
+    }
+
+    public void requireRecoveryRead(NotificationPrincipalContext context) {
+        requireAnyWorkloadPermission(context, Set.of("notification.recovery", "admin.recovery.read"));
     }
 
     public void requireTrustedNotificationWriter(NotificationPrincipalContext context, String tenantId) {

@@ -134,7 +134,8 @@ export const useB2Store = defineStore('b2', () => {
     const context: ContinueContext = { moduleType: practice.value ? 'PRACTICE' : 'FLASHCARD', sessionId: practice.value?.sessionId ?? null, snapshotId: currentCard.value?.snapshotId ?? null, snapshotItemId: currentCard.value?.snapshotItemId ?? null, stepIndex: practice.value?.currentIndex ?? cardIndex.value, totalSteps: practice.value?.questions.length ?? cards.value.length, elapsedTimeMs, pendingEventCount: queueCount.value, updatedAt: new Date().toISOString() }
     continueContext.value = context; persist()
     if (practice.value?.sessionId) {
-      try { await savePracticeCheckpoint(practice.value.sessionId, context) } catch (error) { lastError.value = isB2OfflineError(error) ? '断点已保存在本地，网络恢复后再同步。' : '断点服务暂时不可用，已保留本地副本。' }
+      if (!practice.value.lastAttemptId) return
+      try { await savePracticeCheckpoint(practice.value.sessionId, practice.value.lastAttemptId, context) } catch (error) { lastError.value = isB2OfflineError(error) ? '断点已保存在本地，网络恢复后再同步。' : '断点服务暂时不可用，已保留本地副本。' }
     }
   }
 
@@ -152,7 +153,10 @@ export const useB2Store = defineStore('b2', () => {
     const session = practice.value; const question = currentQuestion.value
     if (!session || !question || practiceFeedback.value) return
     try {
-      const result = await submitPracticeAnswer(session.sessionId, { exerciseId: question.id, answer, clientAnswerId: createClientEventId('answer') })
+      const result = await submitPracticeAnswer(session.sessionId, { exerciseId: question.id, answer, clientAnswerId: createClientEventId('answer'), stateVersion: session.stateVersion })
+      if (result.attemptId) session.lastAttemptId = result.attemptId
+      if (result.reportId) session.reportId = result.reportId
+      session.stateVersion += 1
       practiceFeedback.value = { correct: result.correct, title: result.correct === true ? '这一步已完成' : result.correct === false ? '先修复这个薄弱点' : '服务端暂未返回判定', message: result.feedback ?? '判定以服务端结果为准。', errorCategory: result.errorCategory, nextAction: result.correct === false ? 'RETRY' : 'NEXT' }
     } catch (error) { lastError.value = isB2OfflineError(error) ? '答案已留在当前断点，联网后再提交；未伪造正确或错误。' : '答案提交失败，请保持当前题面后重试。'; status.value = isB2OfflineError(error) ? 'offline' : 'error' }
   }

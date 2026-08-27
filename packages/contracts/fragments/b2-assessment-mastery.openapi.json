@@ -80,11 +80,11 @@
     "/api/v1/mastery/verifications/{verificationId}/submit": {
       "post": { "tags": ["b2-mastery"], "operationId": "submitB2MasteryVerification", "summary": "提交 D0/D1/D7 验证答案", "x-idempotency": { "required": true, "strategy": "mastery-verification", "keyHeader": "Idempotency-Key", "replayBehavior": "同 verification 重放返回首次结果；未到 dueAt 不得通过" }, "parameters": [{ "name": "verificationId", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }, { "$ref": "#/components/parameters/B2IdempotencyKeyOptional" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2VerificationSubmission" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2VerificationResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" }, "410": { "$ref": "#/components/responses/B2Gone" } } }
     },
-    "/api/v1/mastery/reports/daily": {
-      "get": { "tags": ["b2-mastery"], "operationId": "getB2DailyReport", "summary": "获取学习日报聚合基础", "x-b2-acceptance": ["DEV-05-012"], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" } } }
+    "/api/v1/learning/stats/daily-report": {
+      "get": { "tags": ["b2-mastery"], "operationId": "getB2DailyReport", "summary": "读取 learning-service MySQL 学习日报投影", "x-b2-acceptance": ["DEV-05-012"], "parameters": [{ "$ref": "#/components/parameters/B2LocalDate" }], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" } } }
     },
-    "/api/v1/mastery/reports/weekly": {
-      "get": { "tags": ["b2-mastery"], "operationId": "getB2WeeklyReport", "summary": "获取学习周报聚合基础", "x-b2-acceptance": ["DEV-05-012"], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" } } }
+    "/api/v1/learning/stats/weekly-report": {
+      "get": { "tags": ["b2-mastery"], "operationId": "getB2WeeklyReport", "summary": "读取 learning-service MySQL 学习周报投影", "x-b2-acceptance": ["DEV-05-012"], "parameters": [{ "name": "weekStart", "in": "query", "required": false, "schema": { "type": "string", "format": "date" } }], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" } } }
     },
     "/api/v1/mastery/share-assets": {
       "post": { "tags": ["b2-mastery"], "operationId": "createB2ShareAsset", "summary": "为已完成报告创建过期分享资产", "x-idempotency": { "required": true, "strategy": "mastery-share-asset", "keyHeader": "Idempotency-Key", "replayBehavior": "同报告和模板只创建一个资产" }, "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ShareAssetRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B2ShareAssetResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }

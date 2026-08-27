@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 import com.englishflow.social.security.SocialPep;
 import com.englishflow.social.security.SocialPrincipal;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 /**
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
  * leaderboard values only move when a verified learning/growth event is consumed.</p>
  */
 @Service
+@Profile("!local-real")
 public final class SocialService {
 
     public static final ZoneId DISPLAY_ZONE = ZoneId.of("Asia/Shanghai");
@@ -379,7 +381,10 @@ public final class SocialService {
                     "qualifiedUnits", entry.qualifiedUnits, "sourceWatermark", entry.sourceWatermark,
                     "isSelf", entry.subjectId.equals(principal.subjectId()));
             if (scopedRoom != null) {
-                Seat scopedSeat = findSeat(scopedRoom, entry.subjectId);
+                Member scopedMember = scopedRoom.members.get(entry.subjectId);
+                Seat scopedSeat = scopedMember == null || !scopedMember.active()
+                        ? null
+                        : scopedRoom.seats.get(scopedMember.seatIndex);
                 if (scopedSeat != null) {
                     // A room seat is an opaque, room-scoped reference. It lets the caller
                     // report a visible member without exposing subject IDs or accepting IDs

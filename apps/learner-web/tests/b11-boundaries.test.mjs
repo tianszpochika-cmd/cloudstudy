@@ -9,7 +9,9 @@ const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8')
 
 test('B11 learner API keeps Gateway/idempotency/content-version seams', () => {
   const source = read('src/api/b11.ts')
-  for (const marker of ['/media/assets/', '/multimodal/recordings', '/sync/changes', '/notification/preferences', 'Idempotency-Key', 'clientEventId', 'contentVersionId']) assert.match(source, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  for (const marker of ['/media/assets/', '/speaking/recordings', '/sync/changes', '/notifications/preferences', '/learning/media-progress', 'Idempotency-Key', 'clientEventId', 'contentVersionId']) assert.match(source, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  assert.match(source, /source\.items/)
+  assert.match(source, /item\.renditionKey/)
   assert.match(source, /aiScoringEnabled:\s*false/)
   assert.doesNotMatch(source, /rawAudio|audioBytes|base64Audio/)
 })
@@ -28,10 +30,17 @@ test('B11 pages cover permission, playback, offline/revoked/expired and rule-onl
   const listening = read('src/pages/B11ListeningPage.vue')
   const reading = read('src/pages/B11ReadingPage.vue')
   const speaking = read('src/pages/B11SpeakingPage.vue')
-  for (const marker of ['revoked', 'expired', 'A-B', 'Language Clips', 'downloadB3Asset', 'subtitleMode', 'queueProgress']) assert.match(listening, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  for (const marker of ['revoked', 'expired', 'A-B', 'Language Clips', 'downloadB3Asset', 'subtitleMode', 'queueProgress', 'saveB11MediaProgress', 'onMediaError', 'mediaRef?.assetId', 'scorePercent', 'feedbackCode']) assert.match(listening, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
   for (const marker of ['saveCurrentReadingProgress', 'contentVersionId', 'offline', 'readingQuestions', 'readingActiveBlock']) assert.match(`${reading}\n${read('src/stores/b10.ts')}`, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
   for (const marker of ['getUserMedia', 'MediaRecorder', 'permissionState', 'encryptB3Recording', 'decryptB3Recording', 'retake', 'submitSelfRating', 'aiScoringAvailable=false']) assert.match(speaking, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
   assert.match(speaking, /不生成 AI 分数|No AI score/)
+})
+
+test('speaking pages expose media fallback and visible pre-recording action states', () => {
+  const b11 = read('src/pages/B11SpeakingPage.vue')
+  const b3 = read('src/pages/B3SpeakingPage.vue')
+  for (const marker of ['listListeningMaterials', 'DEMO AUDIO', 'demoAudioMessage', 'rating--disabled', '开始影子跟读']) assert.match(b11 + b3, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  for (const marker of ['permissionState', 'permission-banner', '示范音频当前没有可播放授权地址', 'minmax(0, 1fr)']) assert.match(b3, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
 })
 
 test('B11 routes migrate existing learning entry points without creating another app', () => {

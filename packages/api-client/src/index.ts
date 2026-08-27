@@ -1,4 +1,5 @@
 export * from './generated'
+export * from './errors'
 export * from './gateway-test-double'
 
 export interface ApiClientRequestOptions {

@@ -46,6 +46,10 @@ public final class AdultGateService {
             return reject(scope, IamDecisionCode.ADULT_AGE_EVIDENCE_MISSING,
                     "iam.adult_gate.trusted_age_required");
         }
+        if (command.trustedAgeEvidence().verifiedAt().isAfter(Instant.now(clock))) {
+            return reject(scope, IamDecisionCode.ADULT_AGE_EVIDENCE_INVALID,
+                    "iam.adult_gate.trusted_age_invalid");
+        }
         if (command.trustedAgeEvidence().age() < MINIMUM_ADULT_AGE) {
             return reject(scope, IamDecisionCode.ADULT_AGE_BELOW_MINIMUM,
                     "iam.adult_gate.adult_only");

@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "batch": "B29",
+  "phase": "phase-1",
+  "runtimeProfile": "local-real",
+  "sourceOfTruth": {
+    "taskBaseline": "requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md",
+    "runtimeServices": "config/v2-runtime-services.json",
+    "localPorts": "config/local-ports.json",
+    "ownerManifest": "config/b17-runtime-services.json"
+  },
+  "backend": {
+    "requiredProcessCount": 14,
+    "serviceOrder": [
+      "api-gateway",
+      "iam-service",
+      "learner-service",
+      "content-service",
+      "learning-service",
+      "assessment-service",
+      "media-service",
+      "notification-service",
+      "gamification-service",
+      "social-service",
+      "commerce-service",
+      "admin-ops-service",
+      "analytics-service",
+      "core-api"
+    ],
+    "gatewayServiceId": "api-gateway",
+    "legacyCompatibilityServices": ["core-api"],
+    "requiredJvmMajor": 25,
+    "independentProcessRequired": true,
+    "artifactTraceabilityFields": [
+      "pid",
+      "command",
+      "artifact",
+      "version",
+      "jvmVersion",
+      "profile"
+    ]
+  },
+  "portPolicy": {
+    "source": "config/local-ports.json",
+    "host": "127.0.0.1",
+    "bindOnlyToLoopback": true,
+    "autoIncrement": false,
+    "unique": true,
+    "portProtocol": "http"
+  },
+  "readinessPolicy": {
+    "requiredHealthStatus": "UP",
+    "requiredHttpStatus": 200,
+    "requiredLiveness": true,
+    "requiredReadiness": true,
+    "requiredGracefulShutdown": true,
+    "legacyReadinessPathUsesHealthPath": true,
+    "healthPathPrefix": "/actuator/health"
+  },
+  "gatewayPolicy": {
+    "externalIngress": "api-gateway",
+    "externalPathPrefix": "/api/v1",
+    "protectedUnauthenticatedStatuses": [401, 403],
+    "requiredResponseHeaders": ["x-request-id", "x-trace-id"],
+    "directServiceAccess": "forbidden-as-client-path"
+  },
+  "persistencePolicy": {
+    "runtimeProfile": "local-real",
+    "factAuthority": "mysql",
+    "allowedDomainMode": "jdbc",
+    "gatewayFactMode": "none",
+    "forbiddenFactModes": [
+      "mock",
+      "fake",
+      "fallback",
+      "memory",
+      "in-memory",
+      "inmemory",
+      "static",
+      "fixture-only"
+    ],
+    "mockAllowed": false,
+    "fallbackAllowed": false,
+    "inMemoryFactsAllowed": false,
+    "failClosedOnMissingPersistence": true,
+    "coreApiMayWriteV2DomainFacts": false,
+    "ownerSchemaSource": "config/b17-runtime-services.json",
+    "localRealFailClosedServices": [
+      "gamification-service",
+      "media-service",
+      "social-service",
+      "commerce-service",
+      "admin-ops-service",
+      "analytics-service"
+    ],
+    "failClosedServicesAreNotBusinessFacts": true,
+    "requiredRuntimeFlags": [
+      "memoryFactsUsed",
+      "mockUsed",
+      "fallbackUsed"
+    ],
+    "restartReadBackRequired": true
+  },
+  "observabilityPolicy": {
+    "propagation": "W3C",
+    "requiredServiceFields": [
+      "requestId",
+      "traceId",
+      "serviceId",
+      "serviceVersion",
+      "processId",
+      "jvmVersion",
+      "profile",
+      "structuredLog",
+      "logEvidenceRef"
+    ],
+    "requiredResponseHeaders": ["x-request-id", "x-trace-id"],
+    "correlationRequired": true,
+    "serviceIdentityAndVersionRequired": true
+  },
+  "runtimeGate": {
+    "evidenceFileEnv": "B29_RUNTIME_EVIDENCE_FILE",
+    "evidenceRoot": "evidence/b29",
+    "requiredMode": "local-real",
+    "runtimeEvidenceClass": "runtime-external",
+    "requiredEvidenceFields": [
+      "batch",
+      "runId",
+      "sourceRevision",
+      "environment",
+      "capturedAt",
+      "mode",
+      "status",
+      "evidenceClass",
+      "provenance",
+      "checks",
+      "services",
+      "gateway",
+      "correlation"
+    ],
+    "requiredEvidenceChecks": [
+      "process-startup",
+      "fixed-port-binding",
+      "readiness-health",
+      "gateway-external-ingress",
+      "persistence-owner-schema",
+      "observability-correlation",
+      "restart-persistence",
+      "legacy-compatibility"
+    ],
+    "externalProvenanceRequired": true,
+    "syntheticEvidenceAllowed": false,
+    "staticOnlyLabelCannotPassRuntime": true,
+    "missingEvidenceDecision": "FAIL_CLOSED",
+    "defaultDecision": "BLOCKED",
+    "validatorCannotGenerateEvidence": true
+  },
+  "staticPolicy": {
+    "readOnly": true,
+    "connectToDocker": false,
+    "connectToDatabase": false,
+    "writeRuntimeEvidence": false,
+    "requiredApplicationConfig": true,
+    "requiredMainClassAndArtifactProject": true
+  },
+  "commands": {
+    "static": "node scripts/runtime/validate-b29-backend-runtime.mjs --static-only",
+    "runtime": "B29_RUNTIME_EVIDENCE_FILE=evidence/b29/<external-run>.json node scripts/runtime/validate-b29-backend-runtime.mjs --require-runtime"
+  }
+}

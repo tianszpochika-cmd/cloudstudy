@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "baseManifest": "config/v2-runtime-services.json",
+  "host": "127.0.0.1",
+  "phase": "phase-1",
+  "defaults": {
+    "independentProcess": true,
+    "independentSchema": true,
+    "independentCredentials": true,
+    "healthPath": "/actuator/health/readiness",
+    "crossServiceSql": false,
+    "sharedOrmEntities": false,
+    "rollbackOwner": "service-owner"
+  },
+  "services": [
+    {"id":"learner-service","port":18088,"schema":"learner_service","dbCredential":"svc_learner","eventNamespace":"learner","mainClass":"com.englishflow.learner.LearnerServiceApplication","migrationPath":"services/learner-service/src/main/resources/db/migration/V1__create_learner_service_schema.sql","dependencies":["iam-service","content-service","learning-service"],"rollback":"learner-service"},
+    {"id":"content-service","port":18089,"schema":"content_service","dbCredential":"svc_content","eventNamespace":"content","mainClass":"com.englishflow.content.ContentServiceApplication","migrationPath":"services/content-service/src/main/resources/db/migration/V1__create_content_service_schema.sql","dependencies":["iam-service","media-service"],"rollback":"content-service"},
+    {"id":"learning-service","port":18090,"schema":"learning_service","dbCredential":"svc_learning","eventNamespace":"learning","mainClass":"com.englishflow.learning.LearningServiceApplication","migrationPath":"services/learning-service/src/main/resources/db/migration/V1__create_learning_service_schema.sql","dependencies":["iam-service","learner-service","content-service","assessment-service"],"rollback":"learning-service"},
+    {"id":"assessment-service","port":18091,"schema":"assessment_service","dbCredential":"svc_assessment","eventNamespace":"assessment","mainClass":"com.englishflow.assessment.AssessmentServiceApplication","migrationPath":"services/assessment-service/src/main/resources/db/migration/V1__create_assessment_service_schema.sql","dependencies":["iam-service","content-service","learning-service"],"rollback":"assessment-service"},
+    {"id":"media-service","port":18092,"schema":"media_service","dbCredential":"svc_media","eventNamespace":"media","mainClass":"com.englishflow.media.MediaServiceApplication","migrationPath":"services/media-service/src/main/resources/db/migration/V1__create_media_service_schema.sql","dependencies":["iam-service","content-service"],"rollback":"media-service"},
+    {"id":"notification-service","port":18093,"schema":"notification_service","dbCredential":"svc_notification","eventNamespace":"notification","mainClass":"com.englishflow.notification.NotificationServiceApplication","migrationPath":"services/notification-service/src/main/resources/db/migration/V1__create_notification_service_schema.sql","dependencies":["iam-service","learning-service","media-service","commerce-service","job-runner"],"rollback":"notification-service"},
+    {"id":"gamification-service","port":18094,"schema":"gamification_service","dbCredential":"svc_gamification","eventNamespace":"gamification","mainClass":"com.englishflow.gamification.GamificationServiceApplication","migrationPath":"services/gamification-service/src/main/resources/db/migration/V1__create_gamification_service_schema.sql","dependencies":["iam-service","learning-service","assessment-service"],"rollback":"gamification-service"},
+    {"id":"social-service","port":18095,"schema":"social_service","dbCredential":"svc_social","eventNamespace":"social","mainClass":"com.englishflow.social.SocialServiceApplication","migrationPath":"services/social-service/src/main/resources/db/migration/V1__create_social_service_schema.sql","dependencies":["iam-service","learning-service","gamification-service"],"rollback":"social-service"},
+    {"id":"commerce-service","port":18096,"schema":"commerce_service","dbCredential":"svc_commerce","eventNamespace":"commerce","mainClass":"com.englishflow.commerce.CommerceServiceApplication","migrationPath":"services/commerce-service/src/main/resources/db/migration/V1__create_commerce_own_schema.sql","dependencies":["iam-service"],"rollback":"commerce-service"},
+    {"id":"admin-ops-service","port":18097,"schema":"admin_ops_service","dbCredential":"svc_admin_ops","eventNamespace":"admin-ops","mainClass":"com.englishflow.adminops.AdminOpsServiceApplication","migrationPath":"services/admin-ops-service/src/main/resources/db/migration/V1__create_admin_ops_service_schema.sql","dependencies":["iam-service","content-service","commerce-service","notification-service","analytics-service","job-runner"],"rollback":"admin-ops-service"},
+    {"id":"analytics-service","port":18098,"schema":"analytics_service","dbCredential":"svc_analytics","eventNamespace":"analytics","mainClass":"com.englishflow.analytics.AnalyticsServiceApplication","migrationPath":"services/analytics-service/src/main/resources/db/migration/V1__create_analytics_projection_schema.sql","dependencies":["iam-service","job-runner"],"rollback":"analytics-service"}
+  ],
+  "compatibility": {
+    "coreApi": "legacy-compatibility-only",
+    "coreApiMayWriteDomainSchemas": false,
+    "shadowReadAndRollbackRequired": true
+  },
+  "workflow": {
+    "owner": "workflow-service/job-runner",
+    "mayWriteDomainTables": false,
+    "mustUse": ["command-contract", "compensation-event", "manual-recovery-record"]
+  },
+  "runtimeEvidence": {
+    "static": ["unique-port", "unique-schema", "unique-credential", "main-class", "readiness", "phase-boundary", "no-cross-service-sql"],
+    "runtime": ["independent-process", "health-and-readiness", "schema-migration", "credential-isolation", "fault-isolation", "rollback"]
+  }
+}

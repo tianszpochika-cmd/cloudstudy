@@ -3,6 +3,11 @@ spring:
     name: ${service.name}
   lifecycle:
     timeout-per-shutdown-phase: ${CONTENT_SERVICE_SHUTDOWN_TIMEOUT:20s}
+  flyway:
+    enabled: ${CONTENT_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    schemas: ${CONTENT_SERVICE_SCHEMA:content_service}
+    default-schema: ${CONTENT_SERVICE_SCHEMA:content_service}
 
 server:
   address: ${CONTENT_SERVICE_SERVER_ADDRESS:127.0.0.1}
@@ -57,6 +62,15 @@ service:
   schema: ${CONTENT_SERVICE_SCHEMA:content_service}
   redis-namespace: ${CONTENT_SERVICE_REDIS_NAMESPACE:content}
   port: ${CONTENT_SERVICE_PORT:18089}
+
+content:
+  persistence:
+    # disabled is deliberate: missing JDBC configuration must never become sample data.
+    mode: ${CONTENT_PERSISTENCE_MODE:disabled}
+    jdbc-url: ${CONTENT_JDBC_URL:}
+    username: ${CONTENT_JDBC_USERNAME:}
+    password: ${CONTENT_JDBC_PASSWORD:}
+    driver-class-name: ${CONTENT_JDBC_DRIVER:com.mysql.cj.jdbc.Driver}
 
 security:
   resource-server:

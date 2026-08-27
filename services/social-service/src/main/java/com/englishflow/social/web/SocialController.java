@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** HTTP boundary for member-owned social operations. */
 @RestController
+@Profile("!local-real")
 @RequestMapping("/api/v1/social")
 public final class SocialController {
 
@@ -97,6 +99,20 @@ public final class SocialController {
             HttpServletRequest request) {
         return ResponseEntity.status(201).body(envelope(
                 socialService.startFocus(principal(), roomId, body, idempotencyKey), request));
+    }
+
+    @PatchMapping("/rooms/{roomId}/focus")
+    public Map<String, Object> updateRoomFocus(
+            @PathVariable String roomId,
+            @RequestBody Map<String, Object> body,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            HttpServletRequest request) {
+        Map<String, Object> command = new java.util.LinkedHashMap<>(body == null ? Map.of() : body);
+        Object focusId = command.remove("focusId");
+        if (focusId == null) {
+            throw new IllegalArgumentException("focusId is required");
+        }
+        return envelope(socialService.updateFocus(principal(), String.valueOf(focusId), command, idempotencyKey), request);
     }
 
     @PatchMapping("/focus-sessions/{focusId}")

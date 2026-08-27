@@ -103,6 +103,93 @@ services:
     networks:
       - yuxuexing-local
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.1
+    restart: unless-stopped
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${OIDC_BOOTSTRAP_ADMIN_USERNAME:-local-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${OIDC_BOOTSTRAP_ADMIN_PASSWORD:-change-me-local-only}
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_MANAGEMENT_HEALTH_ENABLED: "true"
+      KC_HTTP_MANAGEMENT_PORT: 9000
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME: ${OIDC_IDP_HOSTNAME:-http://127.0.0.1:18099}
+      KC_HOSTNAME_STRICT: "false"
+      OIDC_REALM_NAME: ${OIDC_REALM:-yuxuexing-local}
+      OIDC_AUDIENCE: ${OIDC_API_AUDIENCE:-yuxuexing-api}
+      OIDC_LEARNER_WEB_CLIENT_ID: ${B23_OIDC_LEARNER_WEB_CLIENT_ID:-yuxuexing-learner-web}
+      OIDC_ADMIN_WEB_CLIENT_ID: ${B23_OIDC_ADMIN_WEB_CLIENT_ID:-yuxuexing-admin-web}
+      OIDC_MOBILE_H5_CLIENT_ID: ${B23_OIDC_MOBILE_H5_CLIENT_ID:-yuxuexing-mobile-h5}
+      OIDC_MOBILE_APP_CLIENT_ID: ${OIDC_MOBILE_APP_CLIENT_ID:-yuxuexing-mobile-app}
+      OIDC_LEARNER_WEB_REDIRECT_URI: ${B23_OIDC_LEARNER_WEB_REDIRECT_URIS:-http://127.0.0.1:18180/auth/callback}
+      OIDC_ADMIN_WEB_REDIRECT_URI: ${B23_OIDC_ADMIN_WEB_REDIRECT_URIS:-http://127.0.0.1:18181/auth/callback}
+      OIDC_MOBILE_H5_REDIRECT_URI: ${B23_OIDC_MOBILE_H5_REDIRECT_URIS:-http://127.0.0.1:18183/auth/callback}
+      OIDC_MOBILE_APP_REDIRECT_URI: ${OIDC_REDIRECT_URI_MOBILE_APP:-englishflow://auth/callback}
+      OIDC_LEARNER_WEB_ORIGIN: ${B18_LEARNER_TEST_ORIGIN:-http://127.0.0.1:18180}
+      OIDC_ADMIN_WEB_ORIGIN: ${B18_ADMIN_TEST_ORIGIN:-http://127.0.0.1:18181}
+      OIDC_MOBILE_H5_ORIGIN: ${B18_MOBILE_TEST_ORIGIN:-http://127.0.0.1:18183}
+    command:
+      - start-dev
+      - --import-realm
+    ports:
+      - "127.0.0.1:${OIDC_IDP_HOST_PORT:-18099}:8080"
+    volumes:
+      - yuxuexing-keycloak:/opt/keycloak/data
+      - ./keycloak/realm:/opt/keycloak/data/import:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/9000;
+          printf 'HEAD /health/ready HTTP/1.0\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3;
+          grep -q 'HTTP/1.0 200' <&3
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
+    networks:
+      - yuxuexing-local
+
+  kafka:
+    image: apache/kafka:3.9.2
+    restart: unless-stopped
+    # The official image runs as appuser by default, while a newly-created
+    # named volume is root-owned. Keep local development deterministic; the
+    # production Kafka deployment must use an explicitly provisioned volume
+    # with non-root ownership instead of this local-only override.
+    user: "0:0"
+    environment:
+      CLUSTER_ID: 4L6g3nShT-eMCtK--X86sw
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://127.0.0.1:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+    ports:
+      - "127.0.0.1:${KAFKA_HOST_PORT:-19092}:19092"
+    volumes:
+      - yuxuexing-kafka:/tmp/kraft-combined-logs
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/kafka/bin/kafka-topics.sh --bootstrap-server 127.0.0.1:19092 --list >/dev/null 2>&1
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 30s
+    networks:
+      - yuxuexing-local
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: unless-stopped
@@ -132,6 +219,8 @@ volumes:
   yuxuexing-mysql:
   yuxuexing-redis:
   yuxuexing-minio:
+  yuxuexing-keycloak:
+  yuxuexing-kafka:
   yuxuexing-rabbitmq:
 
 networks:

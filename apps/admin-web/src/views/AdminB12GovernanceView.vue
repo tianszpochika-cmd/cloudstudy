@@ -12,7 +12,7 @@ const moderationCommands = [...B12_MODERATION_COMMANDS]
 const recoveryCommands = [...B12_RECOVERY_COMMANDS]
 
 function moderationLabel(command: B12ModerationCommand): string { return ({ START_REVIEW: b12T('startReview'), RESOLVE: b12T('resolve'), DISMISS: b12T('dismiss'), ESCALATE: b12T('escalate') })[command] }
-function recoveryLabel(command: B12RecoveryCommand): string { return ({ RETRY: b12T('retryCommand'), CANCEL: b12T('cancel'), REQUEUE: b12T('requeue'), MARK_RESOLVED: b12T('markResolved') })[command] }
+function recoveryLabel(command: B12RecoveryCommand): string { return ({ RETRY: b12T('retryCommand'), REPLAY: b12T('requeue'), CANCEL: b12T('cancel'), MANUAL_REVIEW: b12T('markResolved') })[command] }
 function runModeration(reportId: string, command: B12ModerationCommand): void { void store.runModerationCommand(reportId, command) }
 function runRecovery(taskId: string, command: B12RecoveryCommand): void { void store.runRecoveryCommand(taskId, command) }
 

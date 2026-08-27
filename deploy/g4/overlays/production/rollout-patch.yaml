@@ -1,0 +1,9 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: englishflow-g4-release
+  annotations:
+    englishflow.io/production-action: disabled
+    englishflow.io/traffic-switch-enabled: "false"
+spec:
+  paused: true

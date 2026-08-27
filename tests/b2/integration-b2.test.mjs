@@ -269,7 +269,7 @@ test('existing performance engine implements all four levels and a real Performa
 test('B2 API contract exposes the vocabulary, practice, mastery, report, and notification surfaces', async () => {
   const openapi = JSON.parse(await readRoot('packages/contracts/openapi/v1/openapi.json'))
   const requiredPaths = [
-    '/api/v1/vocab/items/{vocabId}',
+    '/api/v1/content/learner/vocabulary/{vocabularyId}',
     '/api/v1/learning/srs/batches',
     '/api/v1/learning/srs/reviews',
     '/api/v1/learning/plan/current',
@@ -282,7 +282,7 @@ test('B2 API contract exposes the vocabulary, practice, mastery, report, and not
     '/api/v1/learning/mistakes/verify',
     '/api/v1/assessment/report/{sessionUuid}',
     '/api/v1/learning/stats/daily-summary',
-    '/api/v1/notifications',
+    '/api/v1/notifications/messages',
   ]
   const missingPaths = requiredPaths.filter((path) => !openapi.paths[path])
   assert.deepEqual(missingPaths, [], `B2 OpenAPI paths missing: ${missingPaths.join(', ')}`)

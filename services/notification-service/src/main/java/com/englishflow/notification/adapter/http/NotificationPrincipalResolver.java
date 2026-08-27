@@ -8,6 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +33,11 @@ public final class NotificationPrincipalResolver {
         Set<String> permissions = authorities.stream()
                 .map(value -> value.startsWith("PERM_") || value.startsWith("SCOPE_")
                         ? value.substring(value.indexOf('_') + 1) : value)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toCollection(HashSet::new));
+        // Permissions are accepted only from provider-signed JWT claims.  The default
+        // Spring converter exposes scope/role authorities, but a local/enterprise IdP may
+        // publish an explicit permissions array instead; clients cannot submit this claim.
+        permissions.addAll(claimValues(jwt, "permissions"));
         return new NotificationPrincipalContext(tenantId, principalId, deviceId, authorities, permissions);
     }
 
@@ -56,8 +62,21 @@ public final class NotificationPrincipalResolver {
         Set<String> permissions = authorities.stream()
                 .map(value -> value.startsWith("PERM_") || value.startsWith("SCOPE_")
                         ? value.substring(value.indexOf('_') + 1) : value)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toCollection(HashSet::new));
+        permissions.addAll(claimValues(jwt, "permissions"));
         return new NotificationPrincipalContext(tenantId, principalId, deviceId, authorities, permissions);
+    }
+
+    private static Set<String> claimValues(JwtAuthenticationToken authentication, String name) {
+        Object raw = authentication.getToken().getClaims().get(name);
+        if (raw instanceof Collection<?> values) {
+            return values.stream().filter(String.class::isInstance).map(String.class::cast)
+                    .filter(value -> !value.isBlank()).collect(Collectors.toUnmodifiableSet());
+        }
+        if (raw instanceof String value && !value.isBlank()) {
+            return Set.of(value);
+        }
+        return Set.of();
     }
 
     private static String claim(JwtAuthenticationToken authentication, String name) {

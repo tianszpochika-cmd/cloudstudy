@@ -218,11 +218,11 @@
     "runtimeRequired": [
       { "id": "DEV-02-001", "operationHints": ["POST /api/v1/auth/sms/send-code", "POST /api/v1/auth/login/phone"] },
       { "id": "DEV-02-002", "operationHints": ["POST /api/v1/auth/refresh", "POST /api/v1/auth/logout"] },
-      { "id": "DEV-02-003", "operationHints": ["GET /api/v1/user/profile", "PUT /api/v1/user/profile"] },
+      { "id": "DEV-02-003", "operationHints": ["GET /api/v1/learner/profile", "PATCH /api/v1/learner/profile"] },
       { "id": "DEV-02-004", "operationHints": ["POST /api/v1/assessment/placement/start"] },
       { "id": "DEV-02-005", "operationHints": ["POST /api/v1/assessment/placement/submit-step"] },
       { "id": "DEV-02-006", "operationHints": ["POST /api/v1/assessment/placement/complete"] },
-      { "id": "DEV-02-007", "operationHints": ["GET /api/v1/home/feed"] },
+      { "id": "DEV-02-007", "operationHints": ["GET /api/v1/learner/home"] },
       { "id": "DEV-02-008", "operationHints": ["GET /api/v1/learning/continue-context"] },
       { "id": "DEV-02-009", "operationHints": ["POST /api/v1/privacy/export", "POST /api/v1/account/close"] },
       { "id": "DEV-03-001", "operationHints": ["POST /api/v1/content/versions"] },
@@ -235,8 +235,8 @@
       { "id": "DEV-03-008", "operationHints": ["GET /api/v1/content/first-day-pack"] },
       { "id": "DEV-03-009", "operationHints": ["POST /api/v1/content/validate"] },
       { "id": "DEV-03-010", "operationHints": ["GET /api/v1/content/manifests/{id}"] },
-      { "id": "DEV-09-006", "operationHints": ["GET /api/v1/user/settings", "PUT /api/v1/user/settings"] },
-      { "id": "DEV-09-007", "operationHints": ["GET /api/v1/user/devices", "POST /api/v1/user/devices/kickout"] }
+      { "id": "DEV-09-006", "operationHints": ["GET /api/v1/learner/preferences", "PATCH /api/v1/learner/preferences"] },
+      { "id": "DEV-09-007", "operationHints": ["GET /api/v1/iam/devices", "POST /api/v1/iam/devices/{deviceId}/kickout"] }
     ]
   },
   "acceptanceMatrix": [

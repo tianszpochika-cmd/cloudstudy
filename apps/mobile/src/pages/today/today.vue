@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { onShow } from '@dcloudio/uni-app'
 import { getUniRuntime } from '../../platform/uni-runtime'
+import { ensureMobilePageAccess } from '../../auth/navigation'
 import { useLearnerContentStore } from '../../stores/learner-content'
 
 const store = useLearnerContentStore()
-onShow(() => { void store.loadHome() })
+onShow(async () => { if (await ensureMobilePageAccess('/pages/today/today')) void store.loadHome() })
 function complete(taskId: string): void { void store.completeTask(taskId) }
 function backHome(): void { getUniRuntime().switchTab({ url: '/pages/home/home' }) }
 </script>

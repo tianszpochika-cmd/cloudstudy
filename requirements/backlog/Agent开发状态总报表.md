@@ -10,6 +10,8 @@
 
 下一轮任务状态表必须重新建立，并为每项任务增加 `Source Ref`、`Arch Ref`、`Service Owner`、`Data Owner`、`Contract Ref`、`Security Ref` 和运行/回滚证据。旧 B0–B6 状态保留用于审计，不直接继承到 v2 WBS。
 
+> 当前 B0–B14 的跨批次执行状态不回写本历史表。2026-08-22 的代码级测试结果、四端启动烟测、B5/B9 修复、外部 TODO 和后端/基础设施环境阻塞，统一以 [`docs/07-operations/test-phase-handoff-2026-08-22.md`](../../docs/07-operations/test-phase-handoff-2026-08-22.md) 为准；本表继续只表达旧 `DEV-*` 历史。
+
 ## 1. 状态枚举
 
 | 状态 | 含义 | 谁可以设置 | 必填字段 |

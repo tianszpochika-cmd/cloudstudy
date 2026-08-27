@@ -68,7 +68,7 @@ async function submitQuestion(question: B10ReadingQuestion): Promise<void> {
 }
 function increaseFont(): void { fontScale.value = Math.min(1.35, Number((fontScale.value + 0.1).toFixed(2))) }
 function decreaseFont(): void { fontScale.value = Math.max(.85, Number((fontScale.value - 0.1).toFixed(2))) }
-onMounted(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } restore(); void load() })
+onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } restore(); void load() })
 onUnmounted(() => engine.dispose())
 </script>
 
@@ -88,7 +88,8 @@ onUnmounted(() => engine.dispose())
       <view v-if="questions.length" class="b10-reading-questions"><text class="b10-kicker">{{ b10T('reading.question') }}</text><view v-for="question in questions" :key="question.questionId" class="b10-reading-question"><text class="b10-reading-question__stem">{{ question.stemText }}</text><label v-for="option in question.options" :key="option.optionCode" class="b10-reading-question__option"><radio :value="option.optionCode" :checked="answers[String(question.questionId)] === option.optionCode" @click="answers[String(question.questionId)] = option.optionCode" />{{ option.label }}</label><button class="b10-mine" type="button" @click="submitQuestion(question)">{{ b10T('reading.submit') }}</button><text v-if="attempts[String(question.questionId)]" class="b10-reading-question__feedback">{{ attempts[String(question.questionId)].correct ? '回答正确' : '需要复习' }} · {{ attempts[String(question.questionId)].feedbackCode ?? 'server-rule' }}</text></view></view>
     </view>
     <view v-else-if="status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
-    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ b10T('reading.noArticle') }}</text><text>{{ message ?? b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view v-else-if="status === 'empty'" class="yx-card b10-empty" role="status"><text class="b10-empty__title">{{ b10T('reading.noArticle') }}</text><text>{{ b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view v-else class="yx-card b10-empty" role="alert"><text class="b10-empty__title">{{ b10T(`status.${status}`) }}</text><text>{{ message ?? b10T('status.retry') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
   </view>
 </template>
 

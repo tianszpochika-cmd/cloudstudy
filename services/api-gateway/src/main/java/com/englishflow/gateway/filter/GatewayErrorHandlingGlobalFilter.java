@@ -24,8 +24,8 @@ public class GatewayErrorHandlingGlobalFilter implements GlobalFilter, Ordered {
                     if (exchange.getResponse().isCommitted()) {
                         return Mono.error(failure);
                     }
-                    String requestId = headerOrNew(exchange, "X-Request-Id");
-                    String traceId = headerOrNew(exchange, "X-Trace-Id");
+                    String requestId = requestId(exchange);
+                    String traceId = traceId(exchange);
                     return GatewayErrorResponseWriter.write(
                             exchange,
                             GatewayErrorMapper.map(failure, requestId, traceId)
@@ -33,8 +33,15 @@ public class GatewayErrorHandlingGlobalFilter implements GlobalFilter, Ordered {
                 });
     }
 
-    private static String headerOrNew(ServerWebExchange exchange, String name) {
-        String value = exchange.getRequest().getHeaders().getFirst(name);
-        return value == null || value.isBlank() ? CorrelationIds.requestId(null, 128) : value;
+    private static String requestId(ServerWebExchange exchange) {
+        return CorrelationIds.requestId(
+                exchange.getRequest().getHeaders().getFirst("X-Request-Id"), 128);
+    }
+
+    private static String traceId(ServerWebExchange exchange) {
+        return CorrelationIds.traceId(
+                exchange.getRequest().getHeaders().getFirst("X-Trace-Id"),
+                exchange.getRequest().getHeaders().getFirst("traceparent"),
+                128);
     }
 }

@@ -1,0 +1,388 @@
+{
+  "schemaVersion": 1,
+  "gate": "G0",
+  "taskId": "G0-SCOPE-001",
+  "phase": "phase-1",
+  "status": "static-foundation",
+  "staticDecision": "PASS",
+  "defaultDecision": "BLOCKED",
+  "staticValidatorSemantics": {
+    "passMeans": "rules-and-source-files-are-reproducible-only",
+    "businessCompletion": false,
+    "runtimeEvidenceStatus": "pending",
+    "runtimeMissingDecision": "BLOCKED",
+    "staticValidatorCannotPromoteRuntime": true,
+    "syntheticEvidenceCannotPromoteRuntime": true
+  },
+  "scope": {
+    "phase1": {
+      "status": "frozen",
+      "audience": "adults-18-plus-and-university-students",
+      "learningMode": "rule-based-learning",
+      "closedLoop": [
+        "learning-goal",
+        "practice",
+        "rule-feedback",
+        "review",
+        "mastery-report"
+      ],
+      "clientHosts": [
+        "apps/mobile",
+        "apps/learner-web",
+        "apps/admin-web",
+        "apps/official-site"
+      ],
+      "allowedProductBoundaries": [
+        "adult-learner",
+        "教研审核运营客服",
+        "public-brand-course-price-download-compliance"
+      ],
+      "excludedCapabilities": [
+        "generative-ai",
+        "realtime-ai-voice",
+        "k12-minors",
+        "guardian-institution-mode",
+        "production-payment-provider-by-default"
+      ]
+    },
+    "frozenEnums": {
+      "phase": ["phase-1", "phase-2", "phase-3"],
+      "decision": ["GO", "NO-GO", "BLOCKED"],
+      "taskState": [
+        "not-started",
+        "claimed",
+        "in-progress",
+        "awaiting-acceptance",
+        "complete",
+        "blocked",
+        "rework"
+      ],
+      "masteryState": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"],
+      "mistakeVerificationState": [
+        "PENDING_RETRY",
+        "DELAY_VERIFY_D1",
+        "DELAY_VERIFY_D7",
+        "MASTERED",
+        "REOPENED"
+      ],
+      "dailyLearningMinutes": [5, 15, 30, 45],
+      "phonemeManifest": ["EN_48_PHASE1"],
+      "paymentDefault": ["disabled"]
+    },
+    "phaseLocks": [
+      {
+        "phase": "phase-2",
+        "status": "locked",
+        "defaultEnabled": false,
+        "defaultRoute": "deny",
+        "requiresGate": "G-P2",
+        "cannotBeSatisfiedBy": ["static-manifest", "client-feature-flag", "synthetic-fixture"],
+        "referenceMarkers": ["Phase 2", "通过 Gate 后启用"]
+      },
+      {
+        "phase": "phase-3",
+        "status": "locked",
+        "defaultEnabled": false,
+        "defaultRoute": "deny",
+        "requiresGate": "G-P3",
+        "cannotBeSatisfiedBy": ["static-manifest", "client-feature-flag", "synthetic-fixture"],
+        "referenceMarkers": ["Phase 3", "合规后启用"]
+      }
+    ],
+    "clientAuthority": {
+      "forbiddenFacts": [
+        "role",
+        "permission",
+        "tenantId",
+        "ownerId",
+        "phase",
+        "contentRights",
+        "ageVerified"
+      ],
+      "sourceOfTruth": "verified-principal-server-derived-tenant-and-versioned-policy",
+      "rejectionStatus": 403,
+      "rejectionCode": "UNTRUSTED_SECURITY_FACT",
+      "defaultDecision": "deny"
+    }
+  },
+  "references": {
+    "featureRefs": [
+      {
+        "id": "FEAT-ONB-001",
+        "path": "docs/06-design/traceability/01-需求设计追溯矩阵.md",
+        "marker": "FEAT-ONB-001"
+      },
+      {
+        "id": "FEAT-INF-001",
+        "path": "docs/06-design/traceability/01-需求设计追溯矩阵.md",
+        "marker": "FEAT-INF-001"
+      }
+    ],
+    "prdRefs": [
+      {
+        "id": "PRD-ATOM-0001",
+        "path": "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+        "marker": "PRD-ATOM-0001"
+      },
+      {
+        "id": "PRD-ATOM-0073",
+        "path": "docs/06-design/traceability/04-原子功能设计登记册.md",
+        "marker": "PRD-ATOM-0073"
+      }
+    ],
+    "designRefs": [
+      {
+        "id": "V2-980-0001",
+        "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+        "marker": "V2-980-0001"
+      },
+      {
+        "id": "V2-980-0405",
+        "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+        "marker": "V2-980-0405"
+      }
+    ],
+    "adrRefs": [
+      {
+        "id": "ADR-0007",
+        "path": "docs/10-decisions/0007-phase1-scope-and-development-governance.md",
+        "marker": "# ADR-0007"
+      },
+      {
+        "id": "ADR-0009",
+        "path": "docs/10-decisions/0009-v2-design-baseline-and-task-rebaseline.md",
+        "marker": "# ADR-0009"
+      },
+      {
+        "id": "ADR-0010",
+        "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+        "marker": "# ADR-0010"
+      }
+    ],
+    "architectureRefs": [
+      {
+        "id": "ARCH-PLAT-001",
+        "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+        "marker": "ARCH-PLAT-001"
+      },
+      {
+        "id": "ARCH-API-001",
+        "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+        "marker": "ARCH-API-001"
+      },
+      {
+        "id": "ARCH-IAM-002",
+        "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+        "marker": "ARCH-IAM-002"
+      },
+      {
+        "id": "ARCH-DATA-001",
+        "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+        "marker": "ARCH-DATA-001"
+      },
+      {
+        "id": "ARCH-EVT-001",
+        "path": "docs/02-architecture/v2-platform-capability-matrix.md",
+        "marker": "ARCH-EVT-001"
+      }
+    ]
+  },
+  "conflictPolicy": {
+    "precedence": [
+      "v2-980plus-signed-design-and-traceability",
+      "accepted-adr-and-v2-architecture-matrix",
+      "accepted-dod-and-backlog-governance",
+      "legacy-b0-b6-only-as-migration-input"
+    ],
+    "onConflict": "BLOCKED",
+    "requiredActions": [
+      "record-conflict",
+      "identify-impacted-scope",
+      "create-or-reference-superseding-adr",
+      "update-contract-and-evidence-index-before-code"
+    ],
+    "legacyCannotOverrideV2": true,
+    "phaseConflictCannotPromote": true,
+    "evidencePathPolicy": {
+      "staticRoots": ["config/", "packages/contracts/", "scripts/", "tests/"],
+      "runtimeRoot": "evidence/",
+      "runtimeCollectionPolicy": "approved-external-runner-only",
+      "prohibited": ["secrets", "pii", "production-url", "client-submitted-authority-facts"]
+    }
+  },
+  "checks": [
+    {
+      "id": "G0-SCOPE-STATIC-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "requirements/backlog/DoD-Gate与证据包规范.md",
+        "docs/06-design/v2-980plus/README.md",
+        "docs/10-decisions/0007-phase1-scope-and-development-governance.md"
+      ],
+      "assertions": [
+        {"contains": "| G0 | 范围与治理 |"},
+        {"contains": "唯一全量业务设计与需求落地基线"},
+        {"contains": "Phase 1 只面向 18 岁以上成人与大学生"}
+      ]
+    },
+    {
+      "id": "G0-TRACE-STATIC-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "docs/06-design/traceability/01-需求设计追溯矩阵.md",
+        "docs/06-design/traceability/03-PRD原子需求候选清单.md",
+        "docs/06-design/traceability/04-原子功能设计登记册.md",
+        "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+        "docs/02-architecture/v2-platform-capability-matrix.md"
+      ],
+      "assertions": [
+        {"contains": "FEAT-ONB-001"},
+        {"contains": "PRD-ATOM-0001"},
+        {"contains": "V2-980-0001"},
+        {"contains": "ARCH-PLAT-001"}
+      ]
+    },
+    {
+      "id": "G0-LOCK-STATIC-003",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "docs/06-design/v2-980plus/README.md",
+        "docs/10-decisions/0007-phase1-scope-and-development-governance.md",
+        "docs/10-decisions/0011-oidc-idp-selection-gate.md"
+      ],
+      "assertions": [
+        {"contains": "Phase 2"},
+        {"contains": "Phase 3"},
+        {"contains": "通过 Gate 后启用"},
+        {"contains": "fail-closed"}
+      ]
+    },
+    {
+      "id": "G0-AUTH-STATIC-004",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "services/service-template/src/main/java/com/englishflow/platform/template/security/ClientAuthorityHeaderFilter.java",
+        "services/service-template/src/main/java/com/englishflow/platform/template/data/TenantScope.java"
+      ],
+      "assertions": [
+        {"contains": "UNTRUSTED_SECURITY_FACT"},
+        {"contains": "rejectClientTenant"},
+        {"contains": "client tenant is not an authority"}
+      ]
+    },
+    {
+      "id": "G0-CONFLICT-STATIC-005",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "sourcePaths": [
+        "docs/10-decisions/0009-v2-design-baseline-and-task-rebaseline.md",
+        "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+        "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"
+      ],
+      "assertions": [
+        {"contains": "冲突"},
+        {"contains": "services/core-api"},
+        {"contains": "不能继续被描述为 v2 的最终后端架构"},
+        {"contains": "Phase 2/3 已移出当前批次"}
+      ]
+    }
+  ],
+  "runtimeGate": {
+    "status": "blocked",
+    "runtimeStatusWhenMissing": "blocked",
+    "requiredEnv": [
+      "G0_RUNTIME_SCOPE_SIGNOFF_REF",
+      "G0_RUNTIME_CONFLICT_REVIEW_REF",
+      "G0_RUNTIME_PHASE_GATE_REF"
+    ],
+    "requiredEvidence": [
+      "G0-EV-RUNTIME-SCOPE-SIGNOFF",
+      "G0-EV-RUNTIME-CONFLICT-REVIEW",
+      "G0-EV-RUNTIME-PHASE-GATE"
+    ],
+    "staticValidatorCannotPromoteRuntime": true,
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "test-fixture-only",
+      "directory-exists",
+      "client-feature-flag",
+      "development-http-200"
+    ]
+  },
+  "evidenceIndex": [
+    {
+      "id": "G0-EV-STATIC-SCOPE",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "artifactPathPattern": "config/g0-scope-governance.json",
+      "collectionPolicy": "repository-static"
+    },
+    {
+      "id": "G0-EV-STATIC-TRACE",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "artifactPathPattern": "config/g0-scope-governance.json",
+      "collectionPolicy": "repository-static"
+    },
+    {
+      "id": "G0-EV-STATIC-AUTH",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "artifactPathPattern": "config/g0-scope-governance.json",
+      "collectionPolicy": "repository-static"
+    },
+    {
+      "id": "G0-EV-RUNTIME-SCOPE-SIGNOFF",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G0/scope-signoff.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G0-EV-RUNTIME-CONFLICT-REVIEW",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G0/conflict-review.json",
+      "collectionPolicy": "approved-external-runner-only"
+    },
+    {
+      "id": "G0-EV-RUNTIME-PHASE-GATE",
+      "class": "runtime",
+      "status": "blocked",
+      "runtimeRequired": true,
+      "artifactPathPattern": "evidence/G0/phase-gate.json",
+      "collectionPolicy": "approved-external-runner-only"
+    }
+  ],
+  "reportSchema": {
+    "id": "g0-scope-governance-report",
+    "version": "1.0.0",
+    "closed": true,
+    "missingEvidenceDecision": "BLOCKED",
+    "required": [
+      "schemaVersion",
+      "gate",
+      "phase",
+      "decision",
+      "scopeRefs",
+      "conflicts",
+      "evidence",
+      "reviewer",
+      "reviewedAt"
+    ]
+  }
+}

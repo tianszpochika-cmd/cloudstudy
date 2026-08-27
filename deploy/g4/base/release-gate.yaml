@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: englishflow-g4-release-gate
+  labels:
+    englishflow.io/gate: g4
+data:
+  status: BLOCKED
+  decision: NO-GO
+  production-action: disabled
+  compatibility-window-required: "true"
+  rollback-evidence-required: "true"
+  append-only-audit: "true"
+  stop-expansion-on-mismatch: "true"
+  restore-point-required: "true"
+  payment-real-traffic: "false"
+  content-dual-approval: "true"
+  platform-gateway-only: "true"

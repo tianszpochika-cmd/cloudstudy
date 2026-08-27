@@ -51,7 +51,7 @@ B10 的 8 项任务已经形成可测试的代码层切片，可以进入测试�
 | `pnpm contracts:compatibility` | 通过，0 breaking change |
 | `pnpm db:validate` | 通过，18 个迁移和 fixture 静态校验通过 |
 | `pnpm ports:check` | 通过；18090/18091 及全表固定端口均空闲 |
-| `pnpm tasks:v2:check` / `pnpm dod:check` | 均通过；B7–B16 共 69 项任务、DoD 5/5 |
+| `pnpm tasks:v2:check` / `pnpm dod:check` | 执行当时均通过；旧 B7–B16 共 69 项任务、DoD 5/5；当前任务基线已重设为 B7–B22 共 103 项 |
 
 ## 测试阶段入口
 

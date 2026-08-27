@@ -3,6 +3,11 @@ spring:
     name: learning-service
   lifecycle:
     timeout-per-shutdown-phase: ${LEARNING_SHUTDOWN_TIMEOUT:20s}
+  flyway:
+    enabled: ${LEARNING_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    schemas: ${LEARNING_SCHEMA:learning_service}
+    default-schema: ${LEARNING_SCHEMA:learning_service}
 
 server:
   address: ${LEARNING_SERVICE_SERVER_ADDRESS:127.0.0.1}
@@ -49,6 +54,13 @@ service:
 learning:
   phase: ${LEARNING_PHASE:phase-1}
   srs-rules-version: ${LEARNING_SRS_RULES_VERSION:SM2_Q03_V1}
+  persistence:
+    # Allowed values: jdbc, memory-fixture, fail-closed. Default is deliberately fail-closed.
+    mode: ${LEARNING_PERSISTENCE_MODE:fail-closed}
+    jdbc-url: ${LEARNING_JDBC_URL:}
+    username: ${LEARNING_JDBC_USERNAME:}
+    password: ${LEARNING_JDBC_PASSWORD:}
+    driver-class-name: ${LEARNING_JDBC_DRIVER:com.mysql.cj.jdbc.Driver}
 
 security:
   resource-server:

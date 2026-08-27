@@ -41,6 +41,7 @@ export default defineNuxtConfig({
         '/pricing',
         '/download',
         '/about',
+        '/announcements',
         '/compliance',
         '/robots.txt',
         '/sitemap.xml',

@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "1.0.0",
+  "batch": "B26",
+  "taskIds": ["V2-B26-EVT-001", "V2-B26-EVT-002"],
+  "phase": "phase-1",
+  "mode": "static-only",
+  "status": "static-foundation",
+  "staticDecision": "PASS",
+  "runtimeStatus": "pending",
+  "defaultDecision": "NO-GO",
+  "scope": [
+    "Kafka topic and ACL baseline",
+    "service-owned MySQL Outbox",
+    "at-least-once delivery",
+    "idempotent consumers",
+    "bounded retry and DLQ",
+    "operator-approved replay",
+    "same-aggregate ordering and out-of-order recovery",
+    "Saga compensation and manual recovery boundary"
+  ],
+  "sourceRefs": [
+    "config/g1-contract-data.json",
+    "config/g2-implementation-interaction.json",
+    "config/g3-test-security-observability.json",
+    "packages/contracts/events/v1/catalog.json",
+    "packages/telemetry/schemas/telemetry-event.schema.json",
+    "packages/telemetry/policies/telemetry-events.json",
+    "requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md"
+  ],
+  "execution": {
+    "defaultAction": "static-validate-only",
+    "connectToExternalServicesByDefault": false,
+    "writeDatabaseByDefault": false,
+    "createTopicsByDefault": false,
+    "runtimeEvidenceStatus": "pending",
+    "runtimeEvidence": null,
+    "staticValidatorCannotPromoteRuntime": true,
+    "syntheticEvidenceCannotPromoteRuntime": true,
+    "noUnverifiedKafkaClaim": true
+  },
+  "runtimeGate": {
+    "status": "blocked",
+    "runtimeStatusWhenMissing": "blocked",
+    "requiredEvidence": [
+      "B26-EV-KAFKA-TOPIC-ACL",
+      "B26-EV-OUTBOX-DELIVERY",
+      "B26-EV-CONSUMER-DEDUPE",
+      "B26-EV-RETRY-DLQ-REPLAY",
+      "B26-EV-ORDERING-SAGA-RECOVERY"
+    ],
+    "externalEvidenceRequired": true,
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "event-fragment-only",
+      "unit-test-only",
+      "synthetic-fixture-only",
+      "health-http-200",
+      "unexecuted-command-list",
+      "empty-topic",
+      "same-process-test-double"
+    ]
+  },
+  "safety": {
+    "syntheticOnly": true,
+    "realCredentialsAllowed": false,
+    "realSecretsAllowed": false,
+    "realPiiAllowed": false,
+    "rawMediaAllowed": false,
+    "paymentCredentialsAllowed": false,
+    "productionMutationAllowed": false,
+    "clientAuthorityHeadersForbidden": true,
+    "serverDerivedAuthorizationOnly": true,
+    "forbiddenClientAuthorityFacts": [
+      "role",
+      "permission",
+      "tenantId",
+      "ownerId",
+      "phase",
+      "contentRights",
+      "ageVerified"
+    ],
+    "forbiddenHeaders": [
+      "Authorization-from-client-payload",
+      "Cookie-from-event-payload",
+      "X-Role",
+      "X-B5-Role",
+      "X-Tenant-Id",
+      "X-Owner-Id"
+    ],
+    "forbiddenPayloadFieldPatterns": [
+      "password",
+      "secret",
+      "token",
+      "authorization",
+      "cookie",
+      "rawAudio",
+      "recordingBytes",
+      "paymentCredential",
+      "jws",
+      "answerKey",
+      "rawAnswer"
+    ]
+  },
+  "broker": {
+    "type": "kafka-compatible",
+    "protocol": "kafka",
+    "fixedLocalEndpoint": {
+      "host": "127.0.0.1",
+      "port": 19092,
+      "sourcePath": "config/local-ports.json",
+      "sourceKey": "kafka.port",
+      "listener": "external"
+    },
+    "nonLocalBootstrapServers": "runtime-env-only",
+    "authentication": "runtime-configured-workload-identity",
+    "credentialsSource": "runtime-env-only",
+    "tlsConfigurationSource": "runtime-env-only",
+    "connectByDefault": false,
+    "topicNaming": "platform.<domain>.v1",
+    "defaultPartitionKey": "aggregateId",
+    "defaultDelivery": "at-least-once",
+    "aclMode": "deny-by-default-explicit-workload-principal",
+    "aclWildcardAllowed": false,
+    "adminClientInApplication": false,
+    "healthProbe": {
+      "required": true,
+      "check": "metadata-only",
+      "mutating": false,
+      "runtimeStatus": "pending"
+    }
+  },
+  "topics": [
+    {
+      "name": "platform.learning.v1",
+      "ownerService": "learning-service",
+      "purpose": "learning plan, SRS and mastery integration facts",
+      "partitions": 12,
+      "partitionKey": "aggregateId",
+      "retentionMs": 604800000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.learning-service",
+      "consumerGroups": [
+        { "name": "cg.assessment-from-learning.v1", "service": "assessment-service", "principal": "cg.assessment-from-learning.v1", "replayEnabled": true },
+        { "name": "cg.notification-from-learning.v1", "service": "notification-service", "principal": "cg.notification-from-learning.v1", "replayEnabled": true },
+        { "name": "cg.workflow-from-learning.v1", "service": "workflow-service", "principal": "cg.workflow-from-learning.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.learning-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.assessment-from-learning.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.notification-from-learning.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-learning.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.assessment.v1",
+      "ownerService": "assessment-service",
+      "purpose": "assessment attempt and scoring integration facts",
+      "partitions": 12,
+      "partitionKey": "aggregateId",
+      "retentionMs": 604800000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.assessment-service",
+      "consumerGroups": [
+        { "name": "cg.learning-from-assessment.v1", "service": "learning-service", "principal": "cg.learning-from-assessment.v1", "replayEnabled": true },
+        { "name": "cg.workflow-from-assessment.v1", "service": "workflow-service", "principal": "cg.workflow-from-assessment.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.assessment-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.learning-from-assessment.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-assessment.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.content.v1",
+      "ownerService": "content-service",
+      "purpose": "published content and visibility integration facts",
+      "partitions": 12,
+      "partitionKey": "aggregateId",
+      "retentionMs": 604800000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.content-service",
+      "consumerGroups": [
+        { "name": "cg.learner-from-content.v1", "service": "learner-service", "principal": "cg.learner-from-content.v1", "replayEnabled": true },
+        { "name": "cg.learning-from-content.v1", "service": "learning-service", "principal": "cg.learning-from-content.v1", "replayEnabled": true },
+        { "name": "cg.assessment-from-content.v1", "service": "assessment-service", "principal": "cg.assessment-from-content.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.content-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.learner-from-content.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.learning-from-content.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.assessment-from-content.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.notification.v1",
+      "ownerService": "notification-service",
+      "purpose": "notification request and delivery facts",
+      "partitions": 6,
+      "partitionKey": "aggregateId",
+      "retentionMs": 259200000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.notification-service",
+      "consumerGroups": [
+        { "name": "cg.workflow-from-notification.v1", "service": "workflow-service", "principal": "cg.workflow-from-notification.v1", "replayEnabled": true },
+        { "name": "cg.analytics-from-notification.v1", "service": "analytics-service", "principal": "cg.analytics-from-notification.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.notification-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-notification.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.analytics-from-notification.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.workflow.v1",
+      "ownerService": "workflow-service",
+      "purpose": "reliability facts, Saga transitions and recovery records",
+      "partitions": 6,
+      "partitionKey": "aggregateId",
+      "retentionMs": 2592000000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.workflow-service",
+      "consumerGroups": [
+        { "name": "cg.workflow-reliability.v1", "service": "workflow-service", "principal": "cg.workflow-reliability.v1", "replayEnabled": true },
+        { "name": "cg.workflow-manual-recovery.v1", "service": "workflow-service", "principal": "cg.workflow-manual-recovery.v1", "replayEnabled": true },
+        { "name": "cg.audit-from-workflow.v1", "service": "audit-service", "principal": "cg.audit-from-workflow.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.workflow-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.workflow-reliability.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.workflow-manual-recovery.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-workflow.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.events.dlq.v1",
+      "ownerService": "workflow-service",
+      "purpose": "failed event envelope and bounded manual recovery queue",
+      "partitions": 6,
+      "partitionKey": "aggregateId",
+      "retentionMs": 2592000000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.workflow-service",
+      "consumerGroups": [
+        { "name": "cg.workflow-manual-recovery-dlq.v1", "service": "workflow-service", "principal": "cg.workflow-manual-recovery-dlq.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.workflow-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.workflow-manual-recovery-dlq.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    }
+  ],
+  "outbox": {
+    "storage": "service-owned-mysql",
+    "tablePattern": "<service>_outbox_event",
+    "sameTransactionAsAggregate": true,
+    "publishAfterCommit": true,
+    "eventImmutableAfterCommit": true,
+    "delivery": "at-least-once",
+    "exactlyOnceClaim": false,
+    "publisher": {
+      "claimStrategy": "row-lock-skip-locked",
+      "leaseMs": 30000,
+      "batchSize": 100,
+      "maxInFlight": 100,
+      "publishConfirmation": "broker-ack-before-mark-published",
+      "offsetOrState": "service-owned-outbox-state"
+    },
+    "stateModel": ["PENDING", "PUBLISHING", "PUBLISHED", "RETRY", "DLQ"],
+    "requiredFields": [
+      "eventId",
+      "eventName",
+      "requestId",
+      "traceId",
+      "schemaVersion",
+      "aggregateId",
+      "dedupeKey",
+      "payload"
+    ],
+    "forbiddenCoordination": ["kafka-rpc", "distributed-two-phase-commit", "shared-table-write"]
+  },
+  "consumerReliability": {
+    "atLeastOnce": true,
+    "deduplication": {
+      "required": true,
+      "uniqueKey": ["consumerGroup", "eventId"],
+      "secondaryKey": "dedupeKey",
+      "storage": "consumer-service-owned-idempotency-record",
+      "effectAndDeduplicationMustBeAtomic": true,
+      "offsetCommitAfterEffect": true,
+      "duplicateEffectForbidden": true
+    },
+    "retry": {
+      "bounded": true,
+      "maxAttempts": 5,
+      "backoff": "exponential-with-jitter",
+      "baseDelayMs": 1000,
+      "maxDelayMs": 60000,
+      "retryableFailureCodes": ["TIMEOUT", "TEMPORARY_UNAVAILABLE", "CONFLICT_RETRYABLE"],
+      "nonRetryableFailureCodes": ["SCHEMA_INVALID", "FORBIDDEN", "OWNER_MISMATCH", "STALE_VERSION"],
+      "exhaustedAction": "route-to-dlq"
+    },
+    "dlq": {
+      "topic": "platform.events.dlq.v1",
+      "requiredOriginalFields": ["eventId", "requestId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "requiredFailureFields": ["consumerGroup", "failureCode", "attempt", "failedAt", "recoveryState"],
+      "preserveRawAuthorizationHeaders": false,
+      "operatorOnly": true,
+      "domainFactsDirectWriteAllowed": false
+    },
+    "replay": {
+      "source": "immutable-outbox-or-dlq-record",
+      "sameConsumerPath": true,
+      "replayRunIdRequired": true,
+      "dedupeStillEnabled": true,
+      "auditRequired": true,
+      "operatorApprovalRequired": true,
+      "clientTriggered": false,
+      "directDomainWrite": false,
+      "maxBatchSize": 1000,
+      "runtimeStatus": "pending"
+    },
+    "ordering": {
+      "partitionKey": "aggregateId",
+      "sameAggregateOrdered": true,
+      "crossAggregateOrder": "not-guaranteed",
+      "sequenceField": "payload.aggregateVersion",
+      "outOfOrderPolicy": "bounded-hold-then-dlq",
+      "maxBufferSize": 100,
+      "maxWaitMs": 30000,
+      "staleEventPolicy": "dedupe-audit-and-skip",
+      "manualRecoveryOwner": "workflow-service",
+      "runtimeStatus": "pending"
+    }
+  },
+  "saga": {
+    "coordinator": "workflow-service",
+    "integrationFactsOnly": true,
+    "commandsViaVersionedApi": true,
+    "kafkaRpc": false,
+    "twoPhaseCommit": false,
+    "compensation": {
+      "required": true,
+      "idempotent": true,
+      "versioned": true,
+      "neverDirectlyWritesForeignSchema": true,
+      "failureState": "COMPENSATION_PENDING"
+    },
+    "manualRecovery": {
+      "requiredFor": ["compensation-exhausted", "irreconcilable-ordering-gap", "schema-incompatible-event"],
+      "owner": "workflow-service",
+      "approvalRequired": true,
+      "twoPersonReview": true,
+      "clientTriggered": false,
+      "auditReferenceRequired": true
+    }
+  },
+  "eventEnvelope": {
+    "required": [
+      "eventId",
+      "eventName",
+      "schema",
+      "version",
+      "occurredAt",
+      "aggregateType",
+      "aggregateId",
+      "actorId",
+      "traceId",
+      "requestId",
+      "schemaVersion",
+      "dedupeKey",
+      "payload"
+    ],
+    "serverOwned": ["eventId", "occurredAt", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey"],
+    "partitionKey": "aggregateId",
+    "payloadMustBeObject": true,
+    "immutableAfterCommit": true
+  },
+  "eventRouting": [
+    { "eventName": "workflow.outbox.published.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
+    { "eventName": "workflow.event.delivery_failed.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
+    { "eventName": "workflow.event.dead_lettered.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-manual-recovery.v1", "cg.audit-from-workflow.v1"] },
+    { "eventName": "workflow.event.replay_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.workflow-manual-recovery.v1"] },
+    { "eventName": "workflow.event.ordering_deferred.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.workflow-manual-recovery.v1"] },
+    { "eventName": "workflow.saga.compensation_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
+    { "eventName": "workflow.saga.manual_recovery_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-manual-recovery.v1", "cg.audit-from-workflow.v1"] }
+  ],
+  "telemetryBridge": {
+    "eventContractIsSeparateFromTelemetryEnvelope": true,
+    "schemaPath": "packages/telemetry/schemas/telemetry-event.schema.json",
+    "policyPath": "packages/telemetry/policies/telemetry-events.json",
+    "requiredCorrelationFields": ["eventId", "requestId", "traceId"],
+    "schemaVersionMapping": "eventName-and-eventVersion",
+    "sensitiveDataPolicy": "redact-or-do-not-record",
+    "rawEventPayloadInLogs": false,
+    "runtimeStatus": "pending"
+  }
+}

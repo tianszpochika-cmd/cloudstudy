@@ -20,7 +20,10 @@ export function useOfficialSiteLinks() {
   }
 
   function authLink(returnTo = '/home') {
-    return buildGatewayAuthLink(gatewayBaseUrl, { returnTo, locale: officialI18nAdapter.state.locale, theme: officialThemeController.resolvedTheme, redirectUri: buildLearnerLink(learnerWebUrl, '/auth/callback'), campaignParams: campaignParams() })
+    // Keep SSR and the first client render deterministic. The browser's system
+    // preference may differ from the server, while the Gateway contract also
+    // accepts the unresolved `system` mode and can resolve it at the boundary.
+    return buildGatewayAuthLink(gatewayBaseUrl, { returnTo, locale: officialI18nAdapter.state.locale, theme: officialThemeController.theme, redirectUri: buildLearnerLink(learnerWebUrl, '/auth/callback'), campaignParams: campaignParams() })
   }
 
   function publicLink(value: string | null | undefined, fallback: string | null = null) {

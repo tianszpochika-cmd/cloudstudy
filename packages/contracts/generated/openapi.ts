@@ -375,6 +375,11 @@ export type B1ErrorResponse = { requestId: string; traceId: string; error: { err
 /**
  * Generated from the contract source.
  */
+export type B1AssessmentReadResponse = { status?: string; sessionId?: string; contentVersionId?: string; currentQuestion?: unknown; nextQuestion?: unknown; report?: unknown; isCompleted?: boolean; [key: string]: unknown; };
+
+/**
+ * Generated from the contract source.
+ */
 export type B1AssessmentStartResponse = { sessionId: string; assessmentVersionId: string; questionId: number; rulesVersion: string; };
 
 /**
@@ -1110,67 +1115,12 @@ export type B5InvoiceRequest = { orderId: string; invoiceType: "PERSONAL" | "ORG
 /**
  * Generated from the contract source.
  */
-export type B5ContentDraftRequest = { contentCode: string; contentType: "COURSE" | "UNIT" | "VOCABULARY" | "QUESTION" | "MEDIA"; title: string; contentHash: string; sourceCode?: string; licenseCode?: string; payload?: { [key: string]: unknown; }; };
-
-/**
- * Generated from the contract source.
- */
-export type B5ContentSaveRequest = { contentHash: string; payload?: { [key: string]: unknown; }; targetVersionId?: string; reasonCode?: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B5ReviewDecisionRequest = { stage: "FIRST" | "FINAL"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reasonCode?: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B5ImportJobRequest = { targetType: "COURSE" | "UNIT" | "VOCABULARY" | "QUESTION" | "MEDIA"; sourceHash: string; rows?: ReadonlyArray<{ [key: string]: unknown; }>; };
-
-/**
- * Generated from the contract source.
- */
-export type B5CorrectionResolveRequest = { decisionCode: "FIXED" | "REJECTED" | "DUPLICATE" | "NO_ACTION"; resolutionRef?: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B5RiskActionRequest = { actionCode: "FREEZE_LOGIN" | "FREEZE_PAYMENT" | "RATE_LIMIT" | "UNFREEZE"; ttlSeconds?: number; };
-
-/**
- * Generated from the contract source.
- */
-export type B5ReconciliationImportRequest = { channelCode: "WECHAT" | "ALIPAY" | "APPLE"; sourceHash: string; items: ReadonlyArray<{ channelTradeNo: string; orderId: string; amountMinor: number; }>; };
-
-/**
- * Generated from the contract source.
- */
-export type B5ReconciliationResolveRequest = { decisionCode: "MATCHED" | "REFUND_REQUIRED" | "MANUAL_CREDIT" | "IGNORE"; reasonCode?: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B5FlagUpdateRequest = { enabled?: boolean; rolloutPercent?: number; ruleVersion?: string; allowedPlatforms?: ReadonlyArray<string>; };
-
-/**
- * Generated from the contract source.
- */
 export type B5SupportTicketRequest = { ticketType: "CONTENT_CORRECTION" | "PAYMENT" | "ACCOUNT" | "OTHER"; resourceRef: string; descriptionHash: string; attachmentRefs?: ReadonlyArray<string>; };
 
 /**
  * Generated from the contract source.
  */
 export type B5SupportMessageRequest = { messageHash: string; clientMessageRef: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B5ActivationBatchRequest = { skuId: string; count: number; expiresAt: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B5OrderAdjustmentRequest = { actionCode: "GRANT_ENTITLEMENT" | "REVOKE_ENTITLEMENT" | "REFUND_MARK" | "CHARGEBACK_MARK"; reasonCode: string; };
 
 /**
  * Generated from the contract source.
@@ -1230,22 +1180,22 @@ export type B8ErrorEnvelope = { requestId: string; traceId: string; error: B8Err
 /**
  * Generated from the contract source.
  */
-export type B8Error = { code: "invalid_request" | "unauthorized" | "forbidden" | "adult_gate_required" | "consent_required" | "session_revoked" | "policy_denied" | "idp_unavailable" | "conflict" | "not_found" | "rate_limited"; message: string; retryable: boolean; policyVersion?: string; details?: Record<string, never>; };
+export type B8Error = { code: "invalid_request" | "unauthorized" | "forbidden" | "adult_gate_required" | "consent_required" | "session_revoked" | "policy_denied" | "idp_unavailable" | "conflict" | "not_found" | "rate_limited"; message: string; retryable: boolean; policyVersion?: string; details?: { [key: string]: unknown; }; };
 
 /**
  * Generated from the contract source.
  */
-export type B8AuthorizationStartResponse = { authorizationUrl: string; transactionId: string; provider: string; expiresAt: string; };
+export type B8AuthorizationStartResponse = { authorizationUrl: string; transactionId: string; provider: string; expiresAt: string; intent?: "login" | "register"; };
 
 /**
  * Generated from the contract source.
  */
-export type B8OidcCallbackRequest = { code: string; state: string; redirectUri: string; };
+export type B8OidcCallbackRequest = { code?: string; state: string; redirectUri: string; error?: "access_denied" | "account_selection_required" | "consent_required" | "interaction_required" | "invalid_request" | "invalid_scope" | "login_required" | "server_error" | "temporarily_unavailable" | "unauthorized_client" | "unsupported_response_type"; errorDescription?: string; errorUri?: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8OidcCallbackResponse = { session: B8SessionTokenResponse; principal: B8PrincipalResponse; adultGate: B8AdultGateResponse; consentState: B8ConsentState; };
+export type B8OidcCallbackResponse = { session: B8SessionEstablishedResponse; principal: B8PrincipalResponse; adultGate: B8AdultGateResponse; consentState: B8ConsentState; };
 
 /**
  * Generated from the contract source.
@@ -1255,7 +1205,7 @@ export type B8SessionRefreshRequest = { refreshToken: string; };
 /**
  * Generated from the contract source.
  */
-export type B8SessionTokenResponse = { accessToken: string; refreshToken: string; expiresIn: number; refreshExpiresIn: number; deviceId?: B8DeviceId; sessionId: B8SessionId; tokenType?: "Bearer"; };
+export type B8SessionTokenResponse = { accessToken: string; refreshToken: string; expiresIn: number; refreshExpiresIn: number; deviceId?: B8DeviceId; sessionId: B8SessionId; tokenType?: "Bearer"; issuer?: string; };
 
 /**
  * Generated from the contract source.
@@ -1310,7 +1260,7 @@ export type B8ConsentUpdateRequest = { consentType: "TERMS" | "PRIVACY" | "ADULT
 /**
  * Generated from the contract source.
  */
-export type B8OidcProviderMetadata = { issuer: string; authorizationEndpoint: string; jwksUri: string; codeChallengeMethods: ReadonlyArray<"S256">; scopes?: ReadonlyArray<string>; };
+export type B8OidcProviderMetadata = { issuer: string; authorizationEndpoint: string; tokenEndpoint?: string; jwksUri: string; userinfoEndpoint?: string; codeChallengeMethods: ReadonlyArray<"S256">; codeChallengeMethodsSupported?: ReadonlyArray<"S256">; responseTypesSupported?: ReadonlyArray<"code">; grantTypesSupported?: ReadonlyArray<"authorization_code" | "refresh_token">; scopes?: ReadonlyArray<string>; scopesSupported?: ReadonlyArray<string>; subjectTypesSupported?: ReadonlyArray<"public">; idTokenSigningAlgValuesSupported?: ReadonlyArray<"RS256" | "RS384" | "RS512">; };
 
 /**
  * Generated from the contract source.
@@ -1825,7 +1775,7 @@ export type B10CreateAssessmentSessionRequest = { contentVersionId: B10Int64Id; 
 /**
  * Generated from the contract source.
  */
-export type B10AssessmentSession = { sessionId: B10SessionId; status: "IN_PROGRESS" | "SUBMITTED" | "ASSESSED" | "EXPIRED" | "CANCELLED"; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; pin: B10ContentVersionPin; items: ReadonlyArray<B10LearnerContentItem>; attemptCount?: number; stateVersion: B10StateVersion; startedAt: B10DateTime; expiresAt?: B10DateTime | null; };
+export type B10AssessmentSession = { sessionId: B10SessionId; status: "IN_PROGRESS" | "SUBMITTED" | "ASSESSED" | "EXPIRED" | "CANCELLED"; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; pin: B10ContentVersionPin; items: ReadonlyArray<B10LearnerContentItem>; attemptCount?: number; stateVersion: B10StateVersion; startedAt: B10DateTime; expiresAt?: B10DateTime | null; reportId?: B10ReportId | null; lastAttemptId?: B10AttemptId | null; };
 
 /**
  * Generated from the contract source.
@@ -1840,7 +1790,7 @@ export type B10SubmitAttemptRequest = { expectedStateVersion: B10StateVersion; s
 /**
  * Generated from the contract source.
  */
-export type B10Attempt = { attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; status: "ACCEPTED" | "ASSESSING" | "ASSESSED" | "REJECTED" | "COMPENSATED"; itemCount: number; submissionDigest: B10Sha256; pin: B10ContentVersionPin; assessmentVersion?: string; scoreBucket?: "UNASSESSED" | "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; createdAt: B10DateTime; assessedAt?: B10DateTime | null; };
+export type B10Attempt = { attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; status: "ACCEPTED" | "ASSESSING" | "ASSESSED" | "REJECTED" | "COMPENSATED"; itemCount: number; submissionDigest: B10Sha256; pin: B10ContentVersionPin; assessmentVersion?: string; scoreBucket?: "UNASSESSED" | "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; createdAt: B10DateTime; assessedAt?: B10DateTime | null; reportId?: B10ReportId | null; };
 
 /**
  * Generated from the contract source.
@@ -2215,7 +2165,237 @@ export type B12NotificationPreferenceCommand = { enabled: boolean; locale: strin
 /**
  * Generated from the contract source.
  */
-export type B12NotificationMessage = { messageId: string; notificationType: string; channel: "IN_APP" | "PUSH" | "EMAIL"; title: string; safeBody: string; contentVersion: string; createdAt: string; };
+export type B12NotificationMessage = { messageId: string; notificationType: string; channel: "IN_APP" | "PUSH" | "EMAIL"; title: string; safeBody: string; contentVersion: string; createdAt: string; read: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13Problem = { code: string; message: string; traceRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13Sku = { skuId: string; title: string; description: string; billingPeriod: "ONE_TIME" | "MONTH" | "QUARTER" | "YEAR"; currency: string; amountMinor: number; availability: "PUBLISHED" | "COMING_SOON" | "UNAVAILABLE"; entitlementCode: string; priceSnapshotId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13PublicCatalog = { catalogVersion: string; uiLocale: string; contentLocale: string; plans: ReadonlyArray<B13PublicPlan>; publishedAt: string | null; checkoutPath: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13PublicPlan = { planId: string; name: string; displayPrice: string; unit: string; features: ReadonlyArray<string>; availability: "available" | "coming-soon" | "unavailable"; entitlementCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13Entitlement = { entitlementId: string; entitlementCode: string; state: "PENDING" | "ACTIVE" | "GRACE" | "EXPIRED" | "REVOKED"; startsAt: string; expiresAt: string; sourceRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13Order = { orderId: string; skuId: string; priceSnapshotId: string; state: "PENDING_PAYMENT" | "PAYMENT_PENDING" | "PAID" | "FULFILLED" | "CANCELLED" | "REFUND_PENDING" | "REFUNDED" | "EXPIRED"; currency: string; amountMinor: number; channel: "WECHAT" | "ALIPAY" | "APPLE" | "SANDBOX"; createdAt: string; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13OrderPage = { items: ReadonlyArray<B13Order>; nextCursor: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13OrderCreateRequest = { skuId: string; priceSnapshotId: string; channel: "WECHAT" | "ALIPAY" | "APPLE" | "SANDBOX"; sourcePlatform: "MOBILE" | "WEB" | "PWA"; region?: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13PaymentReadiness = { enabled: boolean; reasonCode: string; providers: ReadonlyArray<B13ProviderReadiness>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13ProviderReadiness = { provider: string; enabled: boolean; sandbox: boolean; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13PaymentIntentRequest = { provider: "WECHAT" | "ALIPAY" | "APPLE" | "SANDBOX"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13PaymentIntentResult = { orderId: string; state: string; provider: string; payable: boolean; reasonCode: string; intentRef?: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13RefundRequest = { reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13Refund = { refundId: string; orderId: string; state: "REQUESTED" | "PROCESSING" | "SUCCEEDED" | "REJECTED"; reasonCode: string; createdAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13ActivationRedeemRequest = { code: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13ProviderCallback = { providerEventRef: string; orderRef: string; callbackState: "VERIFIED_PAID" | "VERIFIED_REFUNDED" | "REJECTED"; amountMinor: number; currency: string; occurredAt: string; verificationRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CallbackResult = { providerEventRef: string; state: "ACCEPTED" | "REPLAYED" | "REJECTED"; replayed: boolean; entitlementActivated: boolean; reasonCode?: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13ReconciliationRequest = { batchRef: string; provider: string; windowStart: string; windowEnd: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13ReconciliationResult = { batchRef: string; state: "ACCEPTED" | "REPLAYED" | "FAILED"; replayed: boolean; domainFactsUntouched: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AdminOrderView = { orderRef: string; state: string; amountMinor: number; currency: string; createdAt: string; redactionVersion: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AdminOrderPage = { items: ReadonlyArray<B13AdminOrderView>; nextCursor: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13SupportTicketCreateRequest = { categoryCode: string; resourceRef: string; descriptionFingerprint: string; priority: "LOW" | "NORMAL" | "HIGH" | "URGENT"; attachments?: ReadonlyArray<B13MediaObjectRef>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13SupportTicket = { ticketId: string; categoryCode: string; state: "OPEN" | "IN_PROGRESS" | "WAITING" | "RESOLVED" | "CLOSED"; priority: string; slaDueAt: string; redactionVersion: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13SupportTicketPage = { items: ReadonlyArray<B13SupportTicket>; nextCursor: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AdminCommandRequest = { aggregateType: string; aggregateRef: string; actionCode: string; reasonCode: string; confirmationRef?: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CommandConfirmation = { confirmationRef: string; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AdminCommandResult = { commandId: string; state: "PENDING_APPROVAL" | "CONFIRMED" | "FORWARDED" | "REJECTED" | "COMPLETED"; approvalRequired: boolean; auditRef: string; domainFactsUntouched: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13MetricProjection = { metricCode: string; metricVersion: string; periodStart: string; periodEnd: string; value: number; state: "READY" | "STALE" | "RECOMPUTING" | "UNAVAILABLE"; generatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AnalyticsEvent = { eventId: string; eventName: string; schemaVersion: string; aggregateType: string; aggregateRef: string; occurredAt: string; redactionVersion: string; dimensions: ReadonlyArray<B13MetricDimension>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13MetricDimension = { key: string; value: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AnalyticsReceipt = { eventId: string; state: "ACCEPTED" | "REPLAYED" | "REJECTED"; replayed: boolean; redactionVersion: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13RecomputeRequest = { metricCode: string; metricVersion: string; windowStart: string; windowEnd: string; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13RecomputeJob = { jobId: string; metricCode: string; state: "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED"; replayed: boolean; requestedAt: string; };
+
+/**
+ * Product session fact created after the external IdP verifies the authorization code and ID token. Any credential fields are provider-issued relay values, never IAM-minted values; they are not persisted or logged by IAM.
+ */
+export type B8SessionEstablishedResponse = { sessionId: B8SessionId; deviceId: B8DeviceId; provider: string; status: "ACTIVE"; establishedAt: string; expiresAt?: string; accessToken?: string; refreshToken?: string; accessTokenExpiresAt?: string; tokenType?: "Bearer"; issuer?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B25DataEnvelope = { source?: "mysql"; data?: unknown; [key: string]: unknown; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B25ReplayEvidence = { idempotencyKey: string; firstResult: unknown; replayResult: unknown; sameDigest?: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B12FocusUpdateCommand = { focusId: string; action: "PAUSE" | "RESUME" | "FINISH" | "ABORT"; clientEventId?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13MediaObjectRef = { objectRef: string; objectVersion: string; purposeCode: string; contentType: string; sizeBytes: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13CommandPreparation = { token: string; decisionId: string; action: string; resourceRef: string; expiresAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AuditRecord = { auditId: string; operation: string; resourceRef: string; commandId: string; traceId: string; decisionId: string; occurredAt: string; redacted: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B13AuditPage = { items: ReadonlyArray<B13AuditRecord>; redacted: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11MediaProgressRequest = { assetId: string; sessionId?: string | null; positionMs: number; durationMs: number; contentVersion: string | number; entityVersion: number; clientEventId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11MediaProgressReceipt = { assetId: string; sessionId?: string | null; positionMs: number; durationMs: number; entityVersion: number; status: "RECORDED"; source: "mysql"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11ShadowingCompletionRequest = { recordingId?: string | null; sourceSegmentId: string; contentVersion: string | number; contentVersionId?: string | number; clientEventId: string; aiScoringAvailable?: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B11ShadowingCompletionReceipt = { recordingId?: string | null; sourceSegmentId: string; contentVersion: string | number; status: "RECORDED"; aiScoringAvailable: false; source: "mysql"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B25EnsureDailyTaskRequest = { contentCode: string; title: string; minutes?: number; };
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
@@ -2253,10 +2433,9 @@ export interface ApiOperationRegistry {
   signContentMediaAccess: { method: "POST"; path: "/api/v1/content/media/{mediaAssetId}/signed-access"; request: B1MediaAccessRequest; response: B1SignedMediaAccess; idempotent: true };
   getContentOfflineManifest: { method: "GET"; path: "/api/v1/content/offline/manifests/{manifestCode}"; request: never; response: B1OfflineManifest; idempotent: false };
   getPublishedContent: { method: "GET"; path: "/api/v1/content/{contentId}"; request: never; response: unknown; idempotent: false };
+  readPlacementSession: { method: "GET"; path: "/api/v1/assessment/placement/start"; request: never; response: B1AssessmentReadResponse; idempotent: false };
   startPlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/start"; request: never; response: B1AssessmentStartResponse; idempotent: true };
   submitPlacementStep: { method: "POST"; path: "/api/v1/assessment/placement/submit-step"; request: B1AssessmentStepRequest; response: B1AssessmentStepResponse; idempotent: true };
-  listUserDevices: { method: "GET"; path: "/api/v1/user/devices"; request: never; response: B1DeviceListResponse; idempotent: false };
-  kickoutUserDevice: { method: "POST"; path: "/api/v1/user/devices/kickout"; request: B1KickoutRequest; response: unknown; idempotent: true };
   createPrivacyExport: { method: "POST"; path: "/api/v1/privacy/export"; request: B1PrivacyExportRequest; response: B1PrivacyExportResponse; idempotent: true };
   sendB1SmsCode: { method: "POST"; path: "/api/v1/auth/sms/send-code"; request: B1SmsCodeRequest; response: B1AnyData; idempotent: true };
   loginB1Phone: { method: "POST"; path: "/api/v1/auth/login/phone"; request: B1PhoneLoginRequest; response: B1AuthTokenResponse; idempotent: true };
@@ -2274,22 +2453,9 @@ export interface ApiOperationRegistry {
   reorderB1DailyTasks: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/reorder"; request: never; response: B1AnyData; idempotent: true };
   skipB1Placement: { method: "POST"; path: "/api/v1/assessment/placement/skip"; request: B1PlacementSkipRequest; response: B1AnyData; idempotent: true };
   getB1PlacementReport: { method: "GET"; path: "/api/v1/assessment/placement/report/{sessionId}"; request: never; response: B1AnyData; idempotent: false };
-  getB1HomeFeed: { method: "GET"; path: "/api/v1/home/feed"; request: never; response: B1AnyData; idempotent: false };
   getB1ContinueContext: { method: "GET"; path: "/api/v1/learning/continue-context"; request: never; response: B1AnyData; idempotent: false };
   saveB1ContinueContext: { method: "PUT"; path: "/api/v1/learning/continue-context"; request: B1AnyData; response: B1AnyData; idempotent: true };
   saveB1LearningCheckpoint: { method: "PUT"; path: "/api/v1/sync/checkpoints/{lessonId}"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  getB1UserProfile: { method: "GET"; path: "/api/v1/user/profile"; request: never; response: B1AnyData; idempotent: false };
-  patchB1UserProfile: { method: "PATCH"; path: "/api/v1/user/profile"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  getB1LearningPreferences: { method: "GET"; path: "/api/v1/user/learning-preferences"; request: never; response: B1AnyData; idempotent: false };
-  patchB1LearningPreferences: { method: "PATCH"; path: "/api/v1/user/learning-preferences"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  getB1PrivacySettings: { method: "GET"; path: "/api/v1/user/privacy"; request: never; response: B1AnyData; idempotent: false };
-  patchB1PrivacySettings: { method: "PATCH"; path: "/api/v1/user/privacy"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  listB4Notifications: { method: "GET"; path: "/api/v1/user/notifications"; request: never; response: unknown; idempotent: false };
-  kickB1UserDevice: { method: "POST"; path: "/api/v1/user/devices/{devicePublicId}/kick"; request: never; response: B1AnyData; idempotent: true };
-  listB1LoginAlerts: { method: "GET"; path: "/api/v1/user/login-alerts"; request: never; response: B1AnyData; idempotent: false };
-  getB1DeletionStatus: { method: "GET"; path: "/api/v1/user/deletion"; request: never; response: B1AnyData; idempotent: false };
-  requestB1Deletion: { method: "POST"; path: "/api/v1/user/deletion"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  cancelB1Deletion: { method: "DELETE"; path: "/api/v1/user/deletion"; request: never; response: B1AnyData; idempotent: true };
   getB2DailyStream: { method: "GET"; path: "/api/v1/assessment/daily-stream"; request: never; response: unknown; idempotent: false };
   createB10AssessmentSession: { method: "POST"; path: "/api/v1/assessment/sessions"; request: B10CreateAssessmentSessionRequest; response: B10AssessmentSessionResponse; idempotent: true };
   getB10AssessmentSession: { method: "GET"; path: "/api/v1/assessment/sessions/{sessionId}"; request: never; response: B10AssessmentSessionResponse; idempotent: false };
@@ -2315,13 +2481,13 @@ export interface ApiOperationRegistry {
   startB2MistakeRetry: { method: "POST"; path: "/api/v1/mastery/mistakes/{mistakeId}/retry"; request: never; response: unknown; idempotent: true };
   listB2MasteryVerifications: { method: "GET"; path: "/api/v1/mastery/verifications"; request: never; response: unknown; idempotent: false };
   submitB2MasteryVerification: { method: "POST"; path: "/api/v1/mastery/verifications/{verificationId}/submit"; request: B2VerificationSubmission; response: unknown; idempotent: true };
-  getB2DailyReport: { method: "GET"; path: "/api/v1/mastery/reports/daily"; request: never; response: unknown; idempotent: false };
-  getB2WeeklyReport: { method: "GET"; path: "/api/v1/mastery/reports/weekly"; request: never; response: unknown; idempotent: false };
+  getB2DailyReport: { method: "GET"; path: "/api/v1/learning/stats/daily-report"; request: never; response: unknown; idempotent: false };
+  getB2WeeklyReport: { method: "GET"; path: "/api/v1/learning/stats/weekly-report"; request: never; response: unknown; idempotent: false };
   createB2ShareAsset: { method: "POST"; path: "/api/v1/mastery/share-assets"; request: B2ShareAssetRequest; response: unknown; idempotent: true };
   listWordbooks: { method: "GET"; path: "/api/v1/vocab/wordbooks"; request: never; response: unknown; idempotent: false };
   activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; request: { active: true; }; response: unknown; idempotent: true };
   listWordbookItems: { method: "GET"; path: "/api/v1/vocab/wordbooks/{wordbookId}/items"; request: never; response: unknown; idempotent: false };
-  getVocabDetail: { method: "GET"; path: "/api/v1/vocab/items/{vocabId}"; request: never; response: unknown; idempotent: false };
+  getVocabDetail: { method: "GET"; path: "/api/v1/content/learner/vocabulary/{vocabularyId}"; request: never; response: unknown; idempotent: false };
   getChunkDetail: { method: "GET"; path: "/api/v1/vocab/chunks/{chunkId}"; request: never; response: unknown; idempotent: false };
   getRootTopic: { method: "GET"; path: "/api/v1/vocab/roots/{rootId}"; request: never; response: unknown; idempotent: false };
   listUserLibrary: { method: "GET"; path: "/api/v1/vocab/library"; request: never; response: unknown; idempotent: false };
@@ -2348,7 +2514,6 @@ export interface ApiOperationRegistry {
   getLearningMistakeQueue: { method: "GET"; path: "/api/v1/learning/mistakes/queue"; request: never; response: unknown; idempotent: false };
   verifyLearningMistake: { method: "POST"; path: "/api/v1/learning/mistakes/verify"; request: B2LegacyMistakeVerifyRequest; response: unknown; idempotent: true };
   getDailyLearningSummary: { method: "GET"; path: "/api/v1/learning/stats/daily-summary"; request: never; response: unknown; idempotent: false };
-  listLearningNotifications: { method: "GET"; path: "/api/v1/notifications"; request: never; response: unknown; idempotent: false };
   listB3GrammarPoints: { method: "GET"; path: "/api/v1/grammar/points"; request: never; response: unknown; idempotent: false };
   getB3GrammarPoint: { method: "GET"; path: "/api/v1/grammar/points/{grammarPointId}"; request: never; response: unknown; idempotent: false };
   getB3SentenceGraph: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}"; request: never; response: unknown; idempotent: false };
@@ -2407,9 +2572,6 @@ export interface ApiOperationRegistry {
   updateB3ShadowingProgress: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"; request: B3ShadowingProgressRequest; response: unknown; idempotent: true };
   createB3RoleplaySession: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions"; request: B3RoleplaySessionRequest; response: unknown; idempotent: true };
   submitB3RoleplayTurn: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions/{roleplaySessionId}/turns"; request: B3RoleplayTurnRequest; response: unknown; idempotent: true };
-  getB4GamificationProfile: { method: "GET"; path: "/api/v1/gamification/profile"; request: never; response: unknown; idempotent: false };
-  listB4GamificationLedger: { method: "GET"; path: "/api/v1/gamification/ledger"; request: never; response: unknown; idempotent: false };
-  settleB4LearningEvent: { method: "POST"; path: "/api/v1/gamification/events"; request: B4LearningEventRequest; response: unknown; idempotent: true };
   getB4Streak: { method: "GET"; path: "/api/v1/gamification/streak"; request: never; response: unknown; idempotent: false };
   updateB4StreakSettings: { method: "PUT"; path: "/api/v1/gamification/streak/settings"; request: B4StreakSettingsRequest; response: unknown; idempotent: true };
   rescueB4Streak: { method: "POST"; path: "/api/v1/gamification/streak/rescue"; request: B4RescueRequest; response: unknown; idempotent: true };
@@ -2423,7 +2585,6 @@ export interface ApiOperationRegistry {
   getB4Collection: { method: "GET"; path: "/api/v1/gamification/collection"; request: never; response: unknown; idempotent: false };
   listB4Catalog: { method: "GET"; path: "/api/v1/gamification/catalog"; request: never; response: unknown; idempotent: false };
   redeemB4CatalogItem: { method: "POST"; path: "/api/v1/gamification/catalog/{catalogItemId}/redeem"; request: never; response: unknown; idempotent: true };
-  getB4CurrentSeason: { method: "GET"; path: "/api/v1/gamification/seasons/current"; request: never; response: unknown; idempotent: false };
   listB4SeasonRewards: { method: "GET"; path: "/api/v1/gamification/seasons/{seasonId}/rewards"; request: never; response: unknown; idempotent: false };
   getB4AvatarProfile: { method: "GET"; path: "/api/v1/avatar/profile"; request: never; response: unknown; idempotent: false };
   saveB4AvatarProfile: { method: "PUT"; path: "/api/v1/avatar/profile"; request: B4AvatarRequest; response: unknown; idempotent: true };
@@ -2445,8 +2606,6 @@ export interface ApiOperationRegistry {
   getB4SocialRoom: { method: "GET"; path: "/api/v1/social/rooms/{roomId}"; request: never; response: unknown; idempotent: false };
   joinB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/join"; request: B4JoinRoomRequest; response: unknown; idempotent: true };
   leaveB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/leave"; request: never; response: unknown; idempotent: true };
-  startB4FocusSession: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/focus-sessions"; request: B4FocusRequest; response: unknown; idempotent: true };
-  updateB4FocusSession: { method: "PATCH"; path: "/api/v1/social/focus-sessions/{sessionId}"; request: B4FocusRequest; response: unknown; idempotent: true };
   recordB12RoomInteraction: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/interactions"; request: B12PresetInteraction; response: B12InteractionResult; idempotent: true };
   getB12Leaderboard: { method: "GET"; path: "/api/v1/social/leaderboards"; request: never; response: B12Leaderboard; idempotent: false };
   createB4SocialWsTicket: { method: "POST"; path: "/api/v1/social/ws-ticket"; request: B4WsTicketRequest; response: unknown; idempotent: true };
@@ -2459,84 +2618,44 @@ export interface ApiOperationRegistry {
   createB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports"; request: B4ReportRequest; response: unknown; idempotent: true };
   createB4Block: { method: "POST"; path: "/api/v1/social/moderation/blocks"; request: B4BlockRequest; response: unknown; idempotent: true };
   createB4RoomMute: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/mutes"; request: B4MuteRequest; response: unknown; idempotent: true };
-  markB4NotificationRead: { method: "PUT"; path: "/api/v1/user/notifications/{messageId}/read"; request: never; response: unknown; idempotent: true };
-  markAllB4NotificationsRead: { method: "PUT"; path: "/api/v1/user/notifications/read-all"; request: never; response: unknown; idempotent: true };
-  getB4NotificationPreferences: { method: "GET"; path: "/api/v1/user/notification-preferences"; request: never; response: unknown; idempotent: false };
-  updateB4NotificationPreferences: { method: "PATCH"; path: "/api/v1/user/notification-preferences"; request: B4NotificationPreferencesRequest; response: unknown; idempotent: true };
   updateB4OfflineDownload: { method: "PATCH"; path: "/api/v1/sync/offline-downloads/{downloadId}"; request: B4OfflineDownloadRequest; response: unknown; idempotent: true };
   cleanupB4OfflineDownload: { method: "POST"; path: "/api/v1/sync/offline-downloads/{downloadId}/cleanup"; request: never; response: unknown; idempotent: true };
   appealB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports/{reportId}/appeal"; request: B4AppealRequest; response: unknown; idempotent: true };
-  listCommerceSkus: { method: "GET"; path: "/api/v1/commerce/skus"; request: never; response: unknown; idempotent: false };
+  listB13CommerceSkus: { method: "GET"; path: "/api/v1/commerce/skus"; request: never; response: ReadonlyArray<B13Sku>; idempotent: false };
   getCommerceSku: { method: "GET"; path: "/api/v1/commerce/skus/{skuId}"; request: never; response: unknown; idempotent: false };
-  listCommerceOrders: { method: "GET"; path: "/api/v1/commerce/orders"; request: never; response: unknown; idempotent: false };
-  createCommerceOrder: { method: "POST"; path: "/api/v1/commerce/orders"; request: B5CreateOrderRequest; response: unknown; idempotent: true };
+  listB13CommerceOrders: { method: "GET"; path: "/api/v1/commerce/orders"; request: never; response: B13OrderPage; idempotent: false };
+  createB13CommerceOrder: { method: "POST"; path: "/api/v1/commerce/orders"; request: B13OrderCreateRequest; response: B13Order; idempotent: true };
   getCommerceOrder: { method: "GET"; path: "/api/v1/commerce/orders/{orderId}"; request: never; response: unknown; idempotent: false };
-  createPaymentAttempt: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-attempts"; request: B5PaymentAttemptRequest; response: unknown; idempotent: true };
   receiveWechatCallback: { method: "POST"; path: "/api/v1/commerce/wechat/callback"; request: B5ProviderCallbackRequest; response: unknown; idempotent: true };
   receiveAlipayNotify: { method: "POST"; path: "/api/v1/commerce/alipay/notify"; request: B5ProviderCallbackRequest; response: unknown; idempotent: true };
   verifyAppleTransaction: { method: "POST"; path: "/api/v1/commerce/apple/transactions/verify"; request: B5AppleVerificationRequest; response: unknown; idempotent: true };
   scanAppleRecovery: { method: "POST"; path: "/api/v1/commerce/apple/recovery/scan"; request: B5AppleVerificationRequest; response: unknown; idempotent: true };
   receiveAppleNotification: { method: "POST"; path: "/api/v1/commerce/apple/notifications"; request: B5ProviderCallbackRequest; response: unknown; idempotent: true };
-  getMyEntitlements: { method: "GET"; path: "/api/v1/commerce/entitlements/me"; request: never; response: unknown; idempotent: false };
+  listB13MyEntitlements: { method: "GET"; path: "/api/v1/commerce/entitlements/me"; request: never; response: ReadonlyArray<B13Entitlement>; idempotent: false };
   createHousehold: { method: "POST"; path: "/api/v1/commerce/households"; request: B5HouseholdRequest; response: unknown; idempotent: true };
   createHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/{householdId}/invitations"; request: B5InvitationRequest; response: unknown; idempotent: true };
   acceptHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/invitations/accept"; request: B5InvitationAcceptRequest; response: unknown; idempotent: true };
   removeHouseholdMember: { method: "DELETE"; path: "/api/v1/commerce/households/{householdId}/members/{memberUserId}"; request: never; response: unknown; idempotent: true };
-  redeemActivationCode: { method: "POST"; path: "/api/v1/commerce/activation-codes/redeem"; request: B5ActivationRedeemRequest; response: unknown; idempotent: true };
-  requestCommerceRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: B5RefundRequest; response: unknown; idempotent: true };
+  redeemB13ActivationCode: { method: "POST"; path: "/api/v1/commerce/activation-codes/redeem"; request: B13ActivationRedeemRequest; response: B13Entitlement; idempotent: true };
+  requestB13OrderRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: B13RefundRequest; response: B13Refund; idempotent: true };
   listInvoices: { method: "GET"; path: "/api/v1/commerce/invoices"; request: never; response: unknown; idempotent: false };
   createInvoice: { method: "POST"; path: "/api/v1/commerce/invoices"; request: B5InvoiceRequest; response: unknown; idempotent: true };
   listSupportTickets: { method: "GET"; path: "/api/v1/support/tickets"; request: never; response: unknown; idempotent: false };
   createSupportTicket: { method: "POST"; path: "/api/v1/support/tickets"; request: B5SupportTicketRequest; response: unknown; idempotent: true };
   getSupportTicket: { method: "GET"; path: "/api/v1/support/tickets/{ticketId}"; request: never; response: unknown; idempotent: false };
   addSupportTicketMessage: { method: "POST"; path: "/api/v1/support/tickets/{ticketId}/messages"; request: B5SupportMessageRequest; response: unknown; idempotent: true };
-  createContentDraft: { method: "POST"; path: "/api/v1/admin/content"; request: B5ContentDraftRequest; response: unknown; idempotent: true };
-  saveContentDraft: { method: "PUT"; path: "/api/v1/admin/content/{contentId}/draft"; request: B5ContentSaveRequest; response: unknown; idempotent: true };
-  validateContentDraft: { method: "POST"; path: "/api/v1/admin/content/{contentId}/validate"; request: never; response: unknown; idempotent: true };
-  submitContentReview: { method: "POST"; path: "/api/v1/admin/content/{contentId}/submit-review"; request: never; response: unknown; idempotent: true };
-  listReviewTasks: { method: "GET"; path: "/api/v1/admin/reviews"; request: never; response: unknown; idempotent: false };
-  decideReviewTask: { method: "POST"; path: "/api/v1/admin/reviews/{reviewTaskId}/decision"; request: B5ReviewDecisionRequest; response: unknown; idempotent: true };
-  publishContent: { method: "POST"; path: "/api/v1/admin/content/{contentId}/publish"; request: never; response: unknown; idempotent: true };
-  rollbackContent: { method: "POST"; path: "/api/v1/admin/content/{contentId}/rollback"; request: B5ContentSaveRequest; response: unknown; idempotent: true };
-  createImportJob: { method: "POST"; path: "/api/v1/admin/import-jobs"; request: B5ImportJobRequest; response: unknown; idempotent: true };
-  getImportJob: { method: "GET"; path: "/api/v1/admin/import-jobs/{importJobId}"; request: never; response: unknown; idempotent: false };
-  listCorrectionTickets: { method: "GET"; path: "/api/v1/admin/correction-tickets"; request: never; response: unknown; idempotent: false };
-  resolveCorrectionTicket: { method: "POST"; path: "/api/v1/admin/correction-tickets/{ticketId}/resolve"; request: B5CorrectionResolveRequest; response: unknown; idempotent: true };
-  getRiskProfile: { method: "GET"; path: "/api/v1/admin/risk/users/{userId}"; request: never; response: unknown; idempotent: false };
-  applyRiskAction: { method: "POST"; path: "/api/v1/admin/risk/users/{userId}/actions"; request: B5RiskActionRequest; response: unknown; idempotent: true };
-  getDashboardMetrics: { method: "GET"; path: "/api/v1/admin/dashboard/metrics"; request: never; response: unknown; idempotent: false };
-  listReconciliationBatches: { method: "GET"; path: "/api/v1/admin/reconciliation/batches"; request: never; response: unknown; idempotent: false };
-  resolveReconciliationItem: { method: "POST"; path: "/api/v1/admin/reconciliation/items/{itemId}/resolve"; request: B5ReconciliationResolveRequest; response: unknown; idempotent: true };
-  listFeatureFlags: { method: "GET"; path: "/api/v1/admin/feature-flags"; request: never; response: unknown; idempotent: false };
-  updateFeatureFlag: { method: "PUT"; path: "/api/v1/admin/feature-flags/{flagKey}"; request: B5FlagUpdateRequest; response: unknown; idempotent: true };
-  createActivationBatch: { method: "POST"; path: "/api/v1/admin/activation-batches"; request: B5ActivationBatchRequest; response: unknown; idempotent: true };
-  revokeActivationCode: { method: "POST"; path: "/api/v1/admin/activation-codes/{code}/revoke"; request: never; response: unknown; idempotent: true };
-  adjustCommerceOrder: { method: "POST"; path: "/api/v1/admin/commerce/orders/{orderId}/adjust"; request: B5OrderAdjustmentRequest; response: unknown; idempotent: true };
-  searchAuditLogs: { method: "GET"; path: "/api/v1/admin/audit-logs"; request: never; response: unknown; idempotent: false };
-  exportAuditReport: { method: "POST"; path: "/api/v1/admin/audit-logs/export"; request: never; response: unknown; idempotent: true };
-  importReconciliationBatch: { method: "POST"; path: "/api/v1/admin/reconciliation/batches/import"; request: B5ReconciliationImportRequest; response: unknown; idempotent: true };
-  listAdminCommerceOrders: { method: "GET"; path: "/api/v1/admin/commerce/orders"; request: never; response: unknown; idempotent: false };
-  getAdminUserEntitlements: { method: "GET"; path: "/api/v1/admin/commerce/users/{userId}/entitlements"; request: never; response: unknown; idempotent: false };
-  getAdminSession: { method: "GET"; path: "/api/v1/admin/session"; request: never; response: unknown; idempotent: false };
-  getB6ReleaseMatrix: { method: "GET"; path: "/api/v1/platform/release-matrix"; request: never; response: unknown; idempotent: false };
-  registerB6PlatformBuild: { method: "POST"; path: "/api/v1/platform/builds"; request: B6BuildRequest; response: unknown; idempotent: true };
-  getB6PlatformBuild: { method: "GET"; path: "/api/v1/platform/builds/{buildId}"; request: never; response: unknown; idempotent: false };
-  recordB6CompatibilityCheck: { method: "POST"; path: "/api/v1/platform/compatibility-checks"; request: B6CompatibilityCheckRequest; response: unknown; idempotent: true };
-  getB6PerformanceBudget: { method: "GET"; path: "/api/v1/platform/performance/budget"; request: never; response: unknown; idempotent: false };
-  getB6AccessibilityChecklist: { method: "GET"; path: "/api/v1/platform/accessibility/checklist"; request: never; response: unknown; idempotent: false };
-  getB6ResponsiveChecklist: { method: "GET"; path: "/api/v1/platform/responsive/checklist"; request: never; response: unknown; idempotent: false };
   recordB6E2ERun: { method: "POST"; path: "/api/v1/quality/e2e-runs"; request: B6E2ERunRequest; response: unknown; idempotent: true };
   getB6E2ERun: { method: "GET"; path: "/api/v1/quality/e2e-runs/{runId}"; request: never; response: unknown; idempotent: false };
   recordB6SecurityScan: { method: "POST"; path: "/api/v1/quality/security-scans"; request: B6SecurityScanRequest; response: unknown; idempotent: true };
   getB6SecurityScan: { method: "GET"; path: "/api/v1/quality/security-scans/{scanId}"; request: never; response: unknown; idempotent: false };
   recordB6ReliabilityRun: { method: "POST"; path: "/api/v1/quality/reliability-runs"; request: B6ReliabilityRunRequest; response: unknown; idempotent: true };
   getB6ReliabilityRun: { method: "GET"; path: "/api/v1/quality/reliability-runs/{runId}"; request: never; response: unknown; idempotent: false };
-  getB6ObservabilityDashboard: { method: "GET"; path: "/api/v1/observability/dashboard"; request: never; response: unknown; idempotent: false };
   recordB6DataReliabilityDrill: { method: "POST"; path: "/api/v1/data-reliability/drills"; request: B6DrillRequest; response: unknown; idempotent: true };
   getB6DataReliabilityDrill: { method: "GET"; path: "/api/v1/data-reliability/drills/{drillId}"; request: never; response: unknown; idempotent: false };
   evaluateB6ReleaseGate: { method: "POST"; path: "/api/v1/release/gates/evaluate"; request: B6ReleaseGateRequest; response: unknown; idempotent: true };
   getB6ReleaseGate: { method: "GET"; path: "/api/v1/release/gates/{gateId}"; request: never; response: unknown; idempotent: false };
   startB8OidcAuthorization: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/authorization/start"; request: never; response: B8AuthorizationStartResponse; idempotent: false };
+  completeB8OidcBrowserCallback: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/callback"; request: never; response: unknown; idempotent: false };
   exchangeB8OidcCallback: { method: "POST"; path: "/api/v1/auth/oidc/{provider}/callback"; request: B8OidcCallbackRequest; response: B8OidcCallbackResponse; idempotent: true };
   refreshB8IamSession: { method: "POST"; path: "/api/v1/iam/session/refresh"; request: B8SessionRefreshRequest; response: B8SessionTokenResponse; idempotent: true };
   logoutB8IamSession: { method: "POST"; path: "/api/v1/iam/session/logout"; request: never; response: B8SessionRevocationResponse; idempotent: true };
@@ -2585,7 +2704,6 @@ export interface ApiOperationRegistry {
   getB10LearningMasteryProjection: { method: "GET"; path: "/api/v1/learning/mastery/{itemId}"; request: never; response: B10MasteryProjectionResponse; idempotent: false };
   getB11MediaAsset: { method: "GET"; path: "/api/v1/media/assets/{assetId}"; request: never; response: B11MediaAsset; idempotent: false };
   getB11MediaManifest: { method: "GET"; path: "/api/v1/media/assets/{assetId}/manifest"; request: never; response: B11MediaManifest; idempotent: false };
-  createB11MediaAccess: { method: "POST"; path: "/api/v1/media/assets/{assetId}/access"; request: B11MediaAccessRequest; response: B11SignedMediaUrl; idempotent: true };
   streamB11MediaContent: { method: "GET"; path: "/api/v1/media/assets/{assetId}/content"; request: never; response: B11MediaContentRange; idempotent: false };
   revokeB11MediaAsset: { method: "POST"; path: "/internal/v1/media/assets/{assetId}/revoke"; request: B11MediaRevocation; response: unknown; idempotent: true };
   getB11MediaCompatibility: { method: "GET"; path: "/internal/v1/compatibility/b11/media-assets/{assetId}"; request: never; response: B11MediaCompatibility; idempotent: false };
@@ -2611,6 +2729,7 @@ export interface ApiOperationRegistry {
   recoverB12StudyRoomSeat: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/recover"; request: B12RoomCommand; response: B12RoomState; idempotent: true };
   renewB12StudyRoomLease: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/lease/renew"; request: B12RoomCommand; response: B12RoomState; idempotent: true };
   startB12RoomFocus: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusCommand; response: B12FocusSession; idempotent: true };
+  updateB12RoomFocus: { method: "PATCH"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusUpdateCommand; response: B12FocusSession; idempotent: true };
   updateB12SocialVisibility: { method: "PATCH"; path: "/api/v1/social/me/visibility"; request: B12VisibilityCommand; response: B12Visibility; idempotent: true };
   createB12SocialReport: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/reports"; request: B12ReportCommand; response: B12Report; idempotent: true };
   getB12SocialReport: { method: "GET"; path: "/api/v1/social/reports/{reportId}"; request: never; response: B12Report; idempotent: false };
@@ -2625,6 +2744,52 @@ export interface ApiOperationRegistry {
   listB12NotificationPreferences: { method: "GET"; path: "/api/v1/notifications/preferences"; request: never; response: ReadonlyArray<B12NotificationPreference>; idempotent: false };
   updateB12NotificationPreference: { method: "PUT"; path: "/api/v1/notifications/preferences/{notificationType}/{channel}"; request: B12NotificationPreferenceCommand; response: B12NotificationPreference; idempotent: true };
   listB12Notifications: { method: "GET"; path: "/api/v1/notifications/messages"; request: never; response: ReadonlyArray<B12NotificationMessage>; idempotent: false };
+  getB13PublicCommerceCatalog: { method: "GET"; path: "/api/v1/public/commerce/catalog"; request: never; response: B13PublicCatalog; idempotent: false };
+  getB13CommerceReadiness: { method: "GET"; path: "/api/v1/commerce/readiness"; request: never; response: B13PaymentReadiness; idempotent: false };
+  prepareB13PaymentIntent: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-intents"; request: B13PaymentIntentRequest; response: B13PaymentIntentResult; idempotent: true };
+  consumeB13PaymentProviderCallback: { method: "POST"; path: "/internal/v1/commerce/providers/{provider}/callbacks"; request: B13ProviderCallback; response: B13CallbackResult; idempotent: true };
+  replayB13CommerceReconciliation: { method: "POST"; path: "/internal/v1/commerce/reconciliation/replay"; request: B13ReconciliationRequest; response: B13ReconciliationResult; idempotent: true };
+  listB13AdminCommerceOrders: { method: "GET"; path: "/api/v1/admin/ops/commerce/orders"; request: never; response: B13AdminOrderPage; idempotent: false };
+  listB13SupportTickets: { method: "GET"; path: "/api/v1/admin/ops/tickets"; request: never; response: B13SupportTicketPage; idempotent: false };
+  createB13SupportTicket: { method: "POST"; path: "/api/v1/admin/ops/tickets"; request: B13SupportTicketCreateRequest; response: B13SupportTicket; idempotent: true };
+  submitB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands"; request: B13AdminCommandRequest; response: B13AdminCommandResult; idempotent: true };
+  listB13AdminMetrics: { method: "GET"; path: "/api/v1/admin/ops/metrics"; request: never; response: ReadonlyArray<B13MetricProjection>; idempotent: false };
+  ingestB13AnalyticsEvent: { method: "POST"; path: "/internal/v1/analytics/events"; request: B13AnalyticsEvent; response: B13AnalyticsReceipt; idempotent: true };
+  requestB13AnalyticsRecompute: { method: "POST"; path: "/internal/v1/analytics/recompute"; request: B13RecomputeRequest; response: B13RecomputeJob; idempotent: true };
+  b25ReadLearnerProfile: { method: "GET"; path: "/internal/v1/learner/profile"; request: never; response: unknown; idempotent: false };
+  b25UpdateLearnerProfile: { method: "PATCH"; path: "/internal/v1/learner/profile"; request: never; response: unknown; idempotent: true };
+  b25ReadLearnerGoal: { method: "GET"; path: "/internal/v1/learner/targets"; request: never; response: unknown; idempotent: false };
+  b25UpdateLearnerGoal: { method: "PUT"; path: "/internal/v1/learner/targets"; request: never; response: unknown; idempotent: true };
+  b25ReadLearnerPreferences: { method: "GET"; path: "/internal/v1/learner/preferences"; request: never; response: unknown; idempotent: false };
+  b25UpdateLearnerPreferences: { method: "PATCH"; path: "/internal/v1/learner/preferences"; request: never; response: unknown; idempotent: true };
+  b25ReadFirstDayProjection: { method: "GET"; path: "/internal/v1/learner/first-day"; request: never; response: unknown; idempotent: false };
+  b25ReadLearnerHome: { method: "GET"; path: "/internal/v1/learner/home"; request: never; response: unknown; idempotent: false };
+  b25CompleteDailyTask: { method: "POST"; path: "/internal/v1/learner/onboarding/daily-tasks/{taskId}/complete"; request: never; response: unknown; idempotent: true };
+  b25ReadPublishedCatalog: { method: "GET"; path: "/internal/v1/content/learner/catalog"; request: never; response: unknown; idempotent: false };
+  b25ReadPublishedContent: { method: "GET"; path: "/internal/v1/content/learner/{contentCode}"; request: never; response: unknown; idempotent: false };
+  b25ReadLearningPlan: { method: "GET"; path: "/internal/v1/learning/plan/current"; request: never; response: unknown; idempotent: false };
+  b25ReadSrsBatch: { method: "GET"; path: "/internal/v1/learning/srs/batches"; request: never; response: unknown; idempotent: false };
+  b25CreateSrsBatch: { method: "POST"; path: "/internal/v1/learning/srs/batches"; request: never; response: unknown; idempotent: true };
+  b25SubmitSrsReview: { method: "POST"; path: "/internal/v1/learning/srs/reviews"; request: never; response: unknown; idempotent: true };
+  b25SyncSrsReviews: { method: "POST"; path: "/internal/v1/learning/srs/reviews:sync"; request: never; response: unknown; idempotent: true };
+  b25ReadSrsOverview: { method: "GET"; path: "/internal/v1/learning/srs/overview"; request: never; response: unknown; idempotent: false };
+  b25ReadPlacement: { method: "GET"; path: "/internal/v1/assessment/placement/start"; request: never; response: unknown; idempotent: false };
+  b25StartPlacement: { method: "POST"; path: "/internal/v1/assessment/placement/start"; request: never; response: unknown; idempotent: true };
+  b25SubmitPlacementStep: { method: "POST"; path: "/internal/v1/assessment/placement/submit-step"; request: never; response: unknown; idempotent: true };
+  b25SkipPlacement: { method: "POST"; path: "/internal/v1/assessment/placement/skip"; request: never; response: unknown; idempotent: true };
+  b25ReadPlacementReport: { method: "GET"; path: "/internal/v1/assessment/placement/report/{sessionId}"; request: never; response: unknown; idempotent: false };
+  b25ReadNotificationPreferences: { method: "GET"; path: "/internal/v1/notifications/preferences"; request: never; response: unknown; idempotent: false };
+  b25UpdateNotificationPreference: { method: "PUT"; path: "/internal/v1/notifications/preferences/{notificationType}/{channel}"; request: never; response: unknown; idempotent: true };
+  b25EnsureDailyTask: { method: "POST"; path: "/internal/v1/learner/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: unknown; idempotent: true };
+  markB12NotificationMessageRead: { method: "PUT"; path: "/api/v1/notifications/messages/{messageId}/read"; request: never; response: { messageId: string; updated: boolean; source: "mysql"; }; idempotent: true };
+  markAllB12NotificationMessagesRead: { method: "PUT"; path: "/api/v1/notifications/messages/read-all"; request: never; response: { messageId: "all"; updated: boolean; source: "mysql"; }; idempotent: true };
+  createB11MediaAccess: { method: "POST"; path: "/api/v1/media/assets/{assetId}/signed-url"; request: B11MediaAccessRequest; response: B11SignedMediaUrl; idempotent: true };
+  getB4Season: { method: "GET"; path: "/api/v1/gamification/season"; request: never; response: unknown; idempotent: false };
+  prepareB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands/prepare"; request: B13AdminCommandRequest; response: B13CommandPreparation; idempotent: true };
+  listB13AdminAudit: { method: "GET"; path: "/api/v1/admin/ops/audit"; request: never; response: B13AuditPage; idempotent: false };
+  updateB11MediaProgress: { method: "PUT"; path: "/api/v1/learning/media-progress"; request: B11MediaProgressRequest; response: B11MediaProgressReceipt; idempotent: true };
+  updateB11ShadowingCompletion: { method: "POST"; path: "/api/v1/speaking/shadowing/completions"; request: B11ShadowingCompletionRequest; response: B11ShadowingCompletionReceipt; idempotent: true };
+  b25EnsureDailyTaskPublic: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: unknown; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

@@ -22,11 +22,18 @@ public class ApiVersionBoundaryGlobalFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getPath().value();
         boolean externalApi = path.equals("/api") || path.startsWith("/api/");
         boolean supportedVersion = path.equals("/api/v1") || path.startsWith("/api/v1/");
-        boolean internalRoute = path.equals("/internal") || path.startsWith("/internal/");
+        boolean internalRoute = path.equals("/internal")
+                || path.startsWith("/internal/")
+                || path.equals("/api/v1/internal")
+                || path.startsWith("/api/v1/internal/");
 
         if ((externalApi && !supportedVersion) || internalRoute) {
-            String requestId = header(exchange, "X-Request-Id");
-            String traceId = header(exchange, "X-Trace-Id");
+            String requestId = CorrelationIds.requestId(
+                    exchange.getRequest().getHeaders().getFirst("X-Request-Id"), 128);
+            String traceId = CorrelationIds.traceId(
+                    exchange.getRequest().getHeaders().getFirst("X-Trace-Id"),
+                    exchange.getRequest().getHeaders().getFirst("traceparent"),
+                    128);
             return GatewayErrorResponseWriter.write(exchange, new GatewayError(
                     404,
                     internalRoute ? "internal_route_not_public" : "unsupported_api_version",
@@ -36,10 +43,5 @@ public class ApiVersionBoundaryGlobalFilter implements GlobalFilter, Ordered {
             ));
         }
         return chain.filter(exchange);
-    }
-
-    private static String header(ServerWebExchange exchange, String name) {
-        String value = exchange.getRequest().getHeaders().getFirst(name);
-        return value == null || value.isBlank() ? CorrelationIds.requestId(null, 128) : value;
     }
 }

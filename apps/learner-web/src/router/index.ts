@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { pinia } from '../stores/pinia'
 import { useSessionStore } from '../stores/session'
 import { isFeatureEnabled } from '../platform/feature-gates'
+import { safeReturnTo } from '../auth/gateway-auth'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -16,7 +17,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'welcome',
-    component: () => import('../pages/WelcomePage.vue'),
+    redirect: { name: 'login' },
   },
   {
     path: '/login',
@@ -62,8 +63,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/learn',
     name: 'learn',
-    component: () => import('../pages/EmptyPage.vue'),
-    props: { title: '学习', description: '学习任务与课程将在学习契约接入后呈现。' },
+    component: () => import('../pages/LearningLoopPage.vue'),
     meta: { requiresAuth: true, shell: true, title: '学习' },
   },
   {
@@ -136,7 +136,9 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, shell: true, title: '世界' },
   },
   { path: '/auth/callback', name: 'auth-callback', component: () => import('../pages/AuthCallbackPage.vue') },
-  { path: '/adult-gate', name: 'adult-gate', component: () => import('../pages/AdultGatePage.vue'), meta: { requiresAuth: true, title: '成人用户 Gate' } },
+  // Kept as a compatibility URL for old bookmarks. The visible first-run
+  // experience is the single onboarding flow, not a separate gate page.
+  { path: '/adult-gate', name: 'adult-gate', redirect: { name: 'onboarding' }, meta: { requiresAuth: true, title: '开始设置' } },
   { path: '/forbidden', name: 'forbidden', component: () => import('../pages/ForbiddenPage.vue'), meta: { requiresAuth: true, title: '访问权限' } },
   {
     path: '/commerce',
@@ -153,16 +155,20 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/courses',
     name: 'courses',
-    component: () => import('../pages/EmptyPage.vue'),
-    props: { title: '课程', description: '课程内容将在内容契约接入后呈现。' },
+    component: () => import('../pages/CoursesPage.vue'),
     meta: { requiresAuth: true, shell: true, title: '课程' },
   },
   {
     path: '/me',
     name: 'me',
-    component: () => import('../pages/EmptyPage.vue'),
-    props: { title: '我的', description: '个人设置与学习报告将在用户服务接入后呈现。' },
+    redirect: { name: 'settings', params: { section: 'profile' } },
     meta: { requiresAuth: true, shell: true, title: '我的' },
+  },
+  {
+    path: '/settings',
+    name: 'settings-root',
+    redirect: { name: 'settings', params: { section: 'profile' } },
+    meta: { requiresAuth: true, shell: true, title: '设置' },
   },
   {
     path: '/settings/:section',
@@ -200,7 +206,13 @@ router.beforeEach(async (to) => {
     return session.consumeReturnTo()
   }
 
-  if (to.meta.requiresAdultGate && session.adultGate === 'REQUIRED' && to.name !== 'adult-gate') return { name: 'adult-gate' }
+  const adultGateExempt = new Set(['adult-gate', 'onboarding', 'forbidden'])
+  if (to.meta.requiresAuth && !adultGateExempt.has(String(to.name)) && session.adultGate !== 'PASSED') {
+    session.setReturnTo(to.fullPath)
+    return { name: 'onboarding', query: { redirect: safeReturnTo(to.fullPath) } }
+  }
+
+  if (to.name === 'adult-gate' && session.adultGate === 'PASSED') return session.consumeReturnTo()
 
   return true
 })

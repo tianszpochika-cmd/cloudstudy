@@ -21,6 +21,7 @@ public final class NotificationMessage {
     private final Map<String, String> structuredAttributes;
     private final Instant notBefore;
     private final boolean templateOnly;
+    private final boolean read;
     private final long version;
     private final Instant createdAt;
 
@@ -28,13 +29,21 @@ public final class NotificationMessage {
             NotificationChannel channel, String templateKey, String templateVersion, String title,
             String safeBody, String contentVersion, long version, Instant createdAt) {
         this(messageId, tenantId, principalId, notificationType, channel, templateKey, templateVersion,
-                "zh-CN", Map.of(), title, safeBody, contentVersion, version, createdAt, createdAt, false);
+                "zh-CN", Map.of(), title, safeBody, contentVersion, version, createdAt, createdAt, false, false);
+    }
+
+    /** JDBC projection constructor; read is a notification-owned fact. */
+    public NotificationMessage(String messageId, String tenantId, String principalId, String notificationType,
+            NotificationChannel channel, String templateKey, String templateVersion, String title,
+            String safeBody, String contentVersion, long version, Instant createdAt, boolean read) {
+        this(messageId, tenantId, principalId, notificationType, channel, templateKey, templateVersion,
+                "zh-CN", Map.of(), title, safeBody, contentVersion, version, createdAt, createdAt, false, read);
     }
 
     private NotificationMessage(String messageId, String tenantId, String principalId, String notificationType,
             NotificationChannel channel, String templateKey, String templateVersion, String locale,
             Map<String, String> structuredAttributes, String title, String safeBody, String contentVersion,
-            long version, Instant createdAt, Instant notBefore, boolean templateOnly) {
+            long version, Instant createdAt, Instant notBefore, boolean templateOnly, boolean read) {
         this.messageId = require(messageId, "messageId");
         this.tenantId = require(tenantId, "tenantId");
         this.principalId = require(principalId, "principalId");
@@ -61,6 +70,7 @@ public final class NotificationMessage {
         this.createdAt = createdAt;
         this.notBefore = notBefore;
         this.templateOnly = templateOnly;
+        this.read = read;
     }
 
     /** Compatibility constructor for template-only producers. */
@@ -69,7 +79,7 @@ public final class NotificationMessage {
             Instant notBefore) {
         this(messageId, tenantId, principalId, dedupeKey, channel, templateKey, templateVersion,
                 locale == null || locale.isBlank() ? "zh-CN" : locale, Map.of(), templateKey, dedupeKey,
-                "v1", 1, notBefore, notBefore, true);
+                "v1", 1, notBefore, notBefore, true, false);
     }
 
     /** Template-only message used by trusted event consumers; it cannot carry free-form body text. */
@@ -77,10 +87,18 @@ public final class NotificationMessage {
             String notificationType, NotificationChannel channel, String templateId, String templateVersion,
             String locale, Map<String, String> structuredAttributes, String contentVersion,
             long version, Instant createdAt, Instant notBefore) {
+        return trustedTemplate(messageId, tenantId, principalId, notificationType, channel, templateId,
+                templateVersion, locale, structuredAttributes, contentVersion, version, createdAt, notBefore, false);
+    }
+
+    public static NotificationMessage trustedTemplate(String messageId, String tenantId, String principalId,
+            String notificationType, NotificationChannel channel, String templateId, String templateVersion,
+            String locale, Map<String, String> structuredAttributes, String contentVersion,
+            long version, Instant createdAt, Instant notBefore, boolean read) {
         String safeTemplateReference = require(templateId, "templateId");
         return new NotificationMessage(messageId, tenantId, principalId, notificationType, channel,
                 safeTemplateReference, templateVersion, locale, structuredAttributes,
-                safeTemplateReference, safeTemplateReference, contentVersion, version, createdAt, notBefore, true);
+                safeTemplateReference, safeTemplateReference, contentVersion, version, createdAt, notBefore, true, read);
     }
 
     public String messageId() { return messageId; }
@@ -98,6 +116,7 @@ public final class NotificationMessage {
     public Map<String, String> structuredAttributes() { return structuredAttributes; }
     public Instant notBefore() { return notBefore; }
     public boolean templateOnly() { return templateOnly; }
+    public boolean isRead() { return read; }
     public long version() { return version; }
     public Instant createdAt() { return createdAt; }
     public String dedupeKey() { return notificationType; }
@@ -118,6 +137,7 @@ public final class NotificationMessage {
     public Map<String, String> getStructuredAttributes() { return structuredAttributes; }
     public Instant getNotBefore() { return notBefore; }
     public boolean isTemplateOnly() { return templateOnly; }
+    public boolean getRead() { return read; }
     public long getVersion() { return version; }
     public Instant getCreatedAt() { return createdAt; }
 

@@ -9,8 +9,8 @@ import { useB4Store } from '../../stores/b4'
 const session = useSessionStore()
 const b4 = useB4Store()
 
-onShow(() => {
-  session.restore()
+onShow(async () => {
+  await session.restore()
   if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
   b4.restore()
   if (!b4.offlinePackages.length) void b4.loadWorld()

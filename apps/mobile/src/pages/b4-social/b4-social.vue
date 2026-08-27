@@ -23,8 +23,8 @@ const focusSeconds = computed(() => {
   return Number.isFinite(start) ? Math.max(serverSeconds, Math.floor((now.value - start) / 1000)) : serverSeconds
 })
 
-onShow(() => {
-  session.restore()
+onShow(async () => {
+  await session.restore()
   if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return }
   b4.restore()
   if (!b4.rooms.length) void b4.loadWorld()

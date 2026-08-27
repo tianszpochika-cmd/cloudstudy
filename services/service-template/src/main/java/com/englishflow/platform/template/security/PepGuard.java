@@ -64,8 +64,19 @@ public final class PepGuard {
                 () -> pdpPort.evaluate(context, pdpTimeout));
         try {
             PdpDecision pdpDecision = future.get(pdpTimeout.toMillis(), TimeUnit.MILLISECONDS);
-            if (pdpDecision == null || !pdpDecision.completed()) {
+            if (pdpDecision == null) {
                 return Decision.deny(context, DecisionReason.PDP_INVALID, null, now);
+            }
+            if (!pdpDecision.completed()) {
+                return Decision.deny(
+                        context,
+                        pdpDecision.reason() == DecisionReason.PDP_UNAVAILABLE
+                                ? DecisionReason.PDP_UNAVAILABLE : DecisionReason.PDP_INVALID,
+                        pdpDecision.policyVersion(),
+                        now);
+            }
+            if (!pdpDecision.isBoundTo(context)) {
+                return Decision.deny(context, DecisionReason.PDP_INVALID, pdpDecision.policyVersion(), now);
             }
             if (pdpDecision.revocationStatus() != RevocationStatus.CONFIRMED_ACTIVE) {
                 DecisionReason reason = pdpDecision.revocationStatus() == RevocationStatus.REVOKED
@@ -75,6 +86,18 @@ public final class PepGuard {
             }
             if (pdpDecision.policyVersion() == null || !pdpDecision.policyVersion().isFresh(now)) {
                 return Decision.deny(context, DecisionReason.POLICY_STALE, pdpDecision.policyVersion(), now);
+            }
+            Optional<PolicyVersion> cachedVersion = policyCache.current().map(PolicySnapshot::version);
+            if (cachedVersion.isPresent() && pdpDecision.policyVersion().isOlderThan(cachedVersion.get())) {
+                return Decision.deny(
+                        context,
+                        DecisionReason.POLICY_VERSION_MISMATCH,
+                        pdpDecision.policyVersion(),
+                        now);
+            }
+            if (pdpDecision.effect() == DecisionEffect.ALLOW
+                    && pdpDecision.reason() != DecisionReason.ALLOWED) {
+                return Decision.deny(context, DecisionReason.PDP_INVALID, pdpDecision.policyVersion(), now);
             }
             if (pdpDecision.effect() != DecisionEffect.ALLOW) {
                 DecisionReason reason = pdpDecision.reason() == DecisionReason.ALLOWED

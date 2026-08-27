@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  replicas: 3
+  template:
+    metadata:
+      annotations:
+        englishflow.dev/production-promotion: manual-and-audited
+    spec:
+      containers:
+        - name: api-gateway
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: production

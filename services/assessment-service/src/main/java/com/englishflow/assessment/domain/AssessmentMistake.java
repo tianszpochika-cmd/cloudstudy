@@ -44,6 +44,32 @@ public final class AssessmentMistake {
         reasonTrace.add(Map.of("ruleVersion", ruleVersion, "errorCategory", errorCategory, "occurredAt", occurredAt.toString()));
     }
 
+    /** Rehydrates a mistake fact without changing its server-derived history. */
+    public static AssessmentMistake restore(long mistakeId, AssessmentPrincipal owner, long itemId,
+                                            long questionId, String errorCategory, String ruleVersion,
+                                            String answerHash, int wrongCount, MistakeStatus mistakeStatus,
+                                            MasteryStatus masteryStatus, Instant firstErrorAt, Instant lastErrorAt,
+                                            Instant nextActionAt, List<Map<String, Object>> restoredReasonTrace) {
+        if (wrongCount < 1 || firstErrorAt == null || lastErrorAt == null || nextActionAt == null
+                || mistakeStatus == null || masteryStatus == null) {
+            throw AssessmentDomainException.invalid("ASM_PERSISTENCE_CORRUPT", "persisted mistake state is invalid");
+        }
+        AssessmentMistake mistake = new AssessmentMistake(mistakeId, owner, itemId, questionId, errorCategory,
+                ruleVersion, answerHash, firstErrorAt);
+        mistake.wrongCount = wrongCount;
+        mistake.mistakeStatus = mistakeStatus;
+        mistake.masteryStatus = masteryStatus;
+        mistake.lastErrorAt = lastErrorAt;
+        mistake.nextActionAt = nextActionAt;
+        mistake.reasonTrace.clear();
+        if (restoredReasonTrace != null) {
+            for (Map<String, Object> trace : restoredReasonTrace) {
+                mistake.reasonTrace.add(Map.copyOf(SafePayloads.copyMap(trace)));
+            }
+        }
+        return mistake;
+    }
+
     public void mergeWrong(Instant occurredAt, String additionalCategory) {
         wrongCount++;
         lastErrorAt = occurredAt;

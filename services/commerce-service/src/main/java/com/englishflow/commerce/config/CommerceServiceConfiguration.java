@@ -1,5 +1,9 @@
 package com.englishflow.commerce.config;
 
+import com.englishflow.commerce.adapter.jdbc.JdbcCommerceAuditPort;
+import com.englishflow.commerce.adapter.jdbc.JdbcCommerceIdempotencyPort;
+import com.englishflow.commerce.adapter.jdbc.JdbcCommerceOutboxPort;
+import com.englishflow.commerce.adapter.jdbc.JdbcCommerceStore;
 import com.englishflow.commerce.adapter.memory.HmacPaymentSignatureVerifier;
 import com.englishflow.commerce.adapter.memory.InMemoryAuditPort;
 import com.englishflow.commerce.adapter.memory.InMemoryCommerceStore;
@@ -18,29 +22,73 @@ import com.englishflow.commerce.application.ports.PaymentProviderRegistry;
 import com.englishflow.commerce.application.security.CommerceAccessPolicy;
 import com.englishflow.commerce.domain.PaymentGate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 @EnableConfigurationProperties(CommerceProperties.class)
 public class CommerceServiceConfiguration {
-    @Bean CommerceStore commerceStore() { return new InMemoryCommerceStore(); }
-    @Bean IdempotencyPort commerceIdempotency() { return new InMemoryIdempotencyPort(); }
-    @Bean AuditPort commerceAudit() { return new InMemoryAuditPort(); }
-    @Bean OutboxPort commerceOutbox() { return new InMemoryOutboxPort(); }
+    @Bean
+    @Profile("!local-real")
+    CommerceStore commerceStore() { return new InMemoryCommerceStore(); }
+
+    @Bean
+    @Profile("local-real")
+    CommerceStore localRealCommerceStore(JdbcTemplate jdbc) { return new JdbcCommerceStore(jdbc); }
+
+    @Bean
+    @Profile("!local-real")
+    IdempotencyPort commerceIdempotency() { return new InMemoryIdempotencyPort(); }
+
+    @Bean
+    @Profile("local-real")
+    IdempotencyPort localRealCommerceIdempotency(JdbcTemplate jdbc, ObjectMapper mapper) { return new JdbcCommerceIdempotencyPort(jdbc, mapper); }
+
+    @Bean
+    @Profile("!local-real")
+    AuditPort commerceAudit() { return new InMemoryAuditPort(); }
+
+    @Bean
+    @Profile("local-real")
+    AuditPort localRealCommerceAudit(JdbcTemplate jdbc, ObjectMapper mapper) { return new JdbcCommerceAuditPort(jdbc, mapper); }
+
+    @Bean
+    @Profile("!local-real")
+    OutboxPort commerceOutbox() { return new InMemoryOutboxPort(); }
+
+    @Bean
+    @Profile("local-real")
+    OutboxPort localRealCommerceOutbox(JdbcTemplate jdbc, ObjectMapper mapper) { return new JdbcCommerceOutboxPort(jdbc, mapper); }
+
     @Bean CommerceClock commerceClock() { return new SystemCommerceClock(); }
     @Bean CommerceAccessPolicy commerceAccessPolicy() { return new CommerceAccessPolicy(); }
 
-    @Bean HmacPaymentSignatureVerifier paymentSignatureVerifier(CommerceProperties properties) {
+    @Bean
+    @Profile("!local-real")
+    HmacPaymentSignatureVerifier paymentSignatureVerifier(CommerceProperties properties) {
         return new HmacPaymentSignatureVerifier(properties.payment().sandboxSecret());
     }
 
-    @Bean SandboxPaymentProvider sandboxPaymentProvider(HmacPaymentSignatureVerifier verifier) {
+    @Bean
+    @Profile("!local-real")
+    SandboxPaymentProvider sandboxPaymentProvider(HmacPaymentSignatureVerifier verifier) {
         return new SandboxPaymentProvider(verifier);
     }
 
-    @Bean PaymentProviderRegistry paymentProviderRegistry(SandboxPaymentProvider sandbox) {
+    @Bean
+    @Profile("!local-real")
+    PaymentProviderRegistry paymentProviderRegistry(SandboxPaymentProvider sandbox) {
         return new PaymentProviderRegistry(java.util.List.<PaymentProviderPort>of(sandbox));
+    }
+
+    @Bean
+    @Profile("local-real")
+    PaymentProviderRegistry localRealPaymentProviderRegistry() {
+        // No provider SDK/credential and no durable payment adapter is enabled in local-real.
+        return new PaymentProviderRegistry(java.util.List.of());
     }
 
     @Bean PaymentGate paymentGate(CommerceProperties properties) {
@@ -56,4 +104,5 @@ public class CommerceServiceConfiguration {
             PaymentGate gate, CommerceClock clock) {
         return new CommerceApplicationService(store, idempotency, audit, outbox, providers, access, gate, clock);
     }
+
 }

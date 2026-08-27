@@ -18,6 +18,10 @@ app.config.errorHandler = (error, _instance, info) => {
   console.error(`[语学星] 未捕获的 Vue 错误：${info}`, error)
 }
 
-void router.isReady().then(() => {
-  app.mount('#app')
+// Mount immediately so a slow/offline session restore never leaves a blank
+// browser viewport. App.vue displays an accessible startup state until the
+// router's guarded initial navigation settles.
+app.mount('#app')
+void router.isReady().catch((error) => {
+  console.error('[语学星] 初始路由恢复失败。', error)
 })

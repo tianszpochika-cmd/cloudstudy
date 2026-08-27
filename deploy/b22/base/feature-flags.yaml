@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: b22-release-flags
+  labels:
+    app.kubernetes.io/part-of: englishflow
+    app.kubernetes.io/release-batch: b22
+  annotations:
+    englishflow.dev/feature-flag-policy: fail-closed
+    englishflow.dev/change-control: signed-gitops-commit-and-audit
+data:
+  release-gate: BLOCKED
+  default-decision: NO-GO
+  traffic-mode: disabled
+  canary-enabled: "false"
+  controlled-expansion-enabled: "false"
+  mobile-release-enabled: "false"
+  learner-web-release-enabled: "false"
+  admin-web-release-enabled: "false"
+  official-site-release-enabled: "false"
+  live-payment-enabled: "false"
+  b21-acceptance: pending
+

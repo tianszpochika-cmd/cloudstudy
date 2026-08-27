@@ -1,17 +1,57 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getDashboardMetrics, listFeatureFlags, updateFeatureFlag } from '../api/b5'
-import { num, recordList, toFlag, type AdminFlag, unwrap } from '../domain/b5'
+import { getDashboardMetrics } from '../api/b5'
+import { isRecord, recordList, unwrap } from '../domain/b5'
 
 const loading = ref(true)
 const metrics = ref<Record<string, unknown>>({})
-const flags = ref<AdminFlag[]>([])
-async function load(): Promise<void> { loading.value = true; try { const [metricResponse, flagResponse] = await Promise.all([getDashboardMetrics(), listFeatureFlags()]); const metricData = unwrap(metricResponse); metrics.value = metricData && typeof metricData === 'object' ? metricData as Record<string, unknown> : {}; flags.value = recordList(flagResponse).map(toFlag) } catch (error) { ElMessage.error(error instanceof Error ? error.message : '运营数据读取失败') } finally { loading.value = false } }
-async function toggle(flag: AdminFlag): Promise<void> { try { const response = await updateFeatureFlag(flag.flagKey, { enabled: !flag.enabled, rolloutPercent: flag.rolloutPercent, ruleVersion: flag.ruleVersion, allowedPlatforms: flag.allowedPlatforms }); Object.assign(flag, toFlag((unwrap(response) ?? {}) as Record<string, unknown>)); ElMessage.success('Flag 已保存，审计记录已追加') } catch (error) { ElMessage.error(error instanceof Error ? error.message : 'Flag 保存失败') } }
+const metricRows = computed(() => Array.isArray(metrics.value.rows) ? metrics.value.rows.filter(isRecord) : [])
+
+async function load(): Promise<void> {
+  loading.value = true
+  try {
+    const source = unwrap(await getDashboardMetrics())
+    if (isRecord(source)) metrics.value = source
+    else if (Array.isArray(source)) metrics.value = { rows: source }
+    else metrics.value = { rows: recordList(source) }
+  } catch (error) {
+    metrics.value = { unavailable: true }
+    ElMessage.warning(error instanceof Error ? error.message : '运营指标暂时不可用')
+  } finally {
+    loading.value = false
+  }
+}
+
 onMounted(() => { void load() })
 </script>
 
 <template>
-  <div class="view-stack"><div class="view-intro"><div><span class="admin-header__eyebrow">B5 · OPS-ANALYTICS</span><h2>数据要可解释，开关要可回滚。</h2><p>缺失指标显示为未完成，不把 0 当作真实业务事实；所有 Flag 默认关闭并带版本审计。</p></div><el-button :loading="loading" @click="load">刷新</el-button></div><el-row :gutter="16"><el-col :span="6"><el-card shadow="never" class="metric-card"><span>DAU</span><strong>{{ metrics.DAU ?? '—' }}</strong><small>{{ metrics.completeness ?? '待接入' }}</small></el-card></el-col><el-col :span="6"><el-card shadow="never" class="metric-card"><span>已支付订单</span><strong>{{ num((metrics.commerce as Record<string, unknown> | undefined)?.ordersPaid) }}</strong><small>服务端订单快照</small></el-card></el-col><el-col :span="6"><el-card shadow="never" class="metric-card"><span>生效权益</span><strong>{{ num((metrics.commerce as Record<string, unknown> | undefined)?.entitlementsActive) }}</strong><small>不含过期状态</small></el-card></el-col><el-col :span="6"><el-card shadow="never" class="metric-card"><span>GMV（分）</span><strong>{{ metrics.GMV_MINOR ?? '—' }}</strong><small>金额最小单位</small></el-card></el-col></el-row><el-card shadow="never"><template #header><div class="card-header"><span>Feature Flag / 发布闸门</span><el-tag type="warning">默认关闭</el-tag></div></template><el-table :data="flags" stripe><el-table-column prop="flagKey" label="Flag" min-width="240" /><el-table-column label="状态" width="110"><template #default="scope"><el-switch v-model="scope.row.enabled" @change="toggle(scope.row)" /></template></el-table-column><el-table-column prop="rolloutPercent" label="灰度 %" width="100" /><el-table-column prop="ruleVersion" label="规则版本" width="150" /><el-table-column label="平台" min-width="260"><template #default="scope"><el-tag v-for="platform in scope.row.allowedPlatforms" :key="platform" size="small" effect="plain">{{ platform }}</el-tag></template></el-table-column></el-table></el-card></div>
+  <div class="view-stack">
+    <div class="view-intro">
+      <div>
+        <span class="admin-header__eyebrow">B5 · OPS-ANALYTICS</span>
+        <h2>数据要可解释，来源要可追溯。</h2>
+        <p>运营指标统一读取 B13 analytics projection；历史兼容端点不再由浏览器调用。</p>
+      </div>
+      <el-button :loading="loading" @click="load">刷新</el-button>
+    </div>
+    <el-row :gutter="16">
+      <el-col :span="8"><el-card shadow="never" class="metric-card"><span>指标条目</span><strong>{{ Array.isArray(metrics.rows) ? metrics.rows.length : (metrics.unavailable ? '—' : Object.keys(metrics).length) }}</strong><small>服务端投影，不把缺失伪装成 0</small></el-card></el-col>
+      <el-col :span="8"><el-card shadow="never" class="metric-card"><span>数据来源</span><strong>B13</strong><small>Gateway → analytics-service</small></el-card></el-col>
+      <el-col :span="8"><el-card shadow="never" class="metric-card"><span>发布开关</span><strong>受控</strong><small>Feature Flag 由发布系统管理，页面不再调用历史接口</small></el-card></el-col>
+    </el-row>
+    <el-alert v-if="metrics.unavailable" title="指标投影暂时不可用" description="当前服务没有可用的持久化投影，页面保持真实的不可用状态，不显示假数据。请先完成 analytics owner 的本地持久化配置。" type="warning" :closable="false" show-icon />
+    <el-card v-else shadow="never">
+      <template #header><div class="card-header"><span>当前指标投影</span><el-tag type="success">B13 canonical</el-tag></div></template>
+      <el-table v-if="metricRows.length" :data="metricRows" stripe>
+        <el-table-column prop="metricId" label="指标" min-width="220" />
+        <el-table-column prop="metricVersion" label="口径" width="150" />
+        <el-table-column prop="state" label="状态" width="140" />
+        <el-table-column prop="totalValue" label="值" width="140" />
+        <el-table-column prop="periodStart" label="日期" min-width="160" />
+      </el-table>
+      <el-empty v-else description="暂无可见指标投影" />
+    </el-card>
+  </div>
 </template>

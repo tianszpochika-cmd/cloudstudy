@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS media_assets (
   bucket_name VARCHAR(128) NOT NULL,
   object_key VARCHAR(512) NOT NULL,
   object_version VARCHAR(128) NULL,
+  object_identity_hash BINARY(32) GENERATED ALWAYS AS (
+    UNHEX(SHA2(CONCAT_WS(CHAR(0), storage_provider, bucket_name, object_key, COALESCE(object_version, '')), 256))
+  ) STORED,
   content_hash CHAR(64) NOT NULL,
   content_hash_algorithm VARCHAR(16) NOT NULL DEFAULT 'SHA-256',
   mime_type VARCHAR(128) NOT NULL,
@@ -44,7 +47,7 @@ CREATE TABLE IF NOT EXISTS media_assets (
   PRIMARY KEY (media_asset_id),
   UNIQUE KEY uk_media_asset_uuid (asset_uuid),
   UNIQUE KEY uk_media_asset_key_version (asset_key, object_version),
-  UNIQUE KEY uk_media_object_version (storage_provider, bucket_name, object_key, object_version),
+  UNIQUE KEY uk_media_object_version (object_identity_hash),
   KEY idx_media_hash_kind (content_hash, asset_kind),
   KEY idx_media_owner_visibility (owner_type, owner_id, visibility, storage_status),
   KEY idx_media_status_retention (storage_status, retention_until, media_asset_id),

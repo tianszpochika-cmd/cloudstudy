@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "java": {
+    "requiredMajor": 25,
+    "legacyCompatibilityMajor": 17,
+    "source": "AGENTS.md"
+  },
+  "maven": {
+    "minimumVersion": "3.9.9",
+    "runtimeRequiredFor": "B15"
+  },
+  "spring": {
+    "bootVersion": "4.1.1",
+    "cloudReleaseTrain": "2025.1.3"
+  },
+  "v2Services": [
+    "api-gateway",
+    "iam-service",
+    "learner-service",
+    "content-service",
+    "learning-service",
+    "assessment-service",
+    "media-service",
+    "notification-service",
+    "gamification-service",
+    "social-service",
+    "commerce-service",
+    "admin-ops-service",
+    "analytics-service",
+    "service-template"
+  ],
+  "legacyServices": ["core-api"]
+}

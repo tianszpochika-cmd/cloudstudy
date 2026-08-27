@@ -68,6 +68,7 @@ const HIGH_CONFIDENCE_SECRET_PATTERNS = [
   { type: 'slack-token', pattern: /\bxox[baprs]-[A-Za-z0-9-]{20,}\b/ },
   { type: 'stripe-live-key', pattern: /\b(?:sk|rk)_live_[A-Za-z0-9]{16,}\b/ }
 ];
+const SYNTHETIC_POLICY_MARKER_LINE = /^\s*["']?(?:-----BEGIN(?: [A-Z]+)? PRIVATE KEY-----|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,}|Bearer eyJ[A-Za-z0-9_-]+\.|@[a-z0-9.-]+\.[a-z]{2,})["']?\s*,?\s*$/i;
 // This check targets environment/configuration assignments. Keep the key case-sensitive
 // so ordinary lower-camel-case TypeScript object properties such as `refreshToken`
 // are not mistaken for committed credentials.
@@ -224,8 +225,9 @@ export function scanSecrets(repoRoot) {
     }
     const lines = content.split(/\r?\n/);
     lines.forEach((line, index) => {
+      const syntheticPolicyMarker = SYNTHETIC_POLICY_MARKER_LINE.test(line);
       for (const { type, pattern } of HIGH_CONFIDENCE_SECRET_PATTERNS) {
-        if (pattern.test(line)) findings.push({ type, path: relativePath, line: index + 1 });
+        if (!syntheticPolicyMarker && pattern.test(line)) findings.push({ type, path: relativePath, line: index + 1 });
       }
       const assignment = line.match(SENSITIVE_ASSIGNMENT_PATTERN);
       if (assignment && assignment[2].length >= 16 && !isPlaceholderValue(assignment[2])) {

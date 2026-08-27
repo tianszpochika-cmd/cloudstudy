@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: b22-release-flags
+data:
+  release-gate: BLOCKED
+  default-decision: NO-GO
+  traffic-mode: disabled
+  canary-enabled: "false"
+  controlled-expansion-enabled: "false"
+  mobile-release-enabled: "false"
+  learner-web-release-enabled: "false"
+  admin-web-release-enabled: "false"
+  official-site-release-enabled: "false"
+  live-payment-enabled: "false"
+  b21-acceptance: pending
+

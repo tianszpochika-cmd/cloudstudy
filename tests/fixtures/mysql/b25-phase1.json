@@ -1,0 +1,30 @@
+{
+  "fixtureVersion": 1,
+  "synthetic": true,
+  "seedRunId": "seed-b25-phase1-v1",
+  "tenant": "platform",
+  "principalId": "fixture-principal-b25",
+  "course": {
+    "contentCode": "course-b25-basics",
+    "contentVersionId": 25001,
+    "availability": "PUBLISHED",
+    "rightsStatus": "VALID",
+    "contentLocale": "en-US",
+    "targetLevel": "A1"
+  },
+  "items": [
+    { "itemId": "b25-item-001", "itemType": "VOCABULARY", "displayOrder": 1, "mediaRef": "fixture/core-foundation/audio-placeholder-v1" },
+    { "itemId": "b25-item-002", "itemType": "ASSESSMENT", "displayOrder": 2, "mediaRef": "fixture/core-foundation/audio-placeholder-v1" }
+  ],
+  "ownerFacts": {
+    "learnerProfile": true,
+    "learnerGoal": true,
+    "learnerPreferences": true,
+    "dailyTask": true,
+    "learningPlan": true,
+    "srsState": true,
+    "assessmentRuleProjection": true,
+    "notificationPreference": true
+  },
+  "cleanup": { "marker": "seed-b25-phase1-v1", "destructiveSql": false }
+}

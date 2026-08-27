@@ -1,6 +1,7 @@
 package com.englishflow.gamification.adapter.http;
 
 import com.englishflow.gamification.domain.GamificationDomainException;
+import com.englishflow.gamification.domain.GamificationPersistenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,12 @@ public final class GamificationApiExceptionHandler {
     ResponseEntity<ApiError> handle(GamificationDomainException exception) {
         return ResponseEntity.status(status(exception.code()))
                 .body(new ApiError(exception.code().name(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(GamificationPersistenceException.class)
+    ResponseEntity<ApiError> handle(GamificationPersistenceException exception) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ApiError("PERSISTENCE_UNAVAILABLE", exception.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

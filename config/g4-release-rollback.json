@@ -1,0 +1,689 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "id": "G4-RELEASE-ROLLBACK",
+  "batch": "G4",
+  "taskId": "V2-G4-REL-ROLLBACK-001",
+  "phase": "phase-1",
+  "mode": "static-baseline",
+  "status": "BLOCKED",
+  "defaultDecision": "NO-GO",
+  "productionAction": "disabled",
+  "scope": {
+    "title": "Phase 1 发布与回滚 Gate",
+    "included": [
+      "CHANGELOG entry and API/event/database compatibility window",
+      "expand-contract migration, backup/restore point and rollback evidence",
+      "content copyright, dual approval, withdrawal and version restore Gate",
+      "payment sandbox, signature, idempotency, refund and reconciliation Gate",
+      "Gateway/IAM/service PEP/platform health and four-client binding Gate",
+      "immutable OCI artifact, signature, SBOM, provenance and audit evidence",
+      "production approval, maintenance ownership, stop-expansion and rollback evidence"
+    ],
+    "excluded": [
+      "kubectl execution",
+      "helm execution",
+      "docker execution",
+      "real production release",
+      "real traffic switch",
+      "destructive database migration",
+      "real payment operation"
+    ]
+  },
+  "sourceRefs": [
+    "requirements/backlog/DoD-Gate与证据包规范.md#1-gate分层",
+    "requirements/backlog/DoD-Gate与证据包规范.md#5-changelog规则",
+    "docs/02-architecture/v2-platform-capability-matrix.md#arch-lcm-001",
+    "docs/02-architecture/v2-platform-capability-matrix.md#arch-dr-001",
+    "requirements/acceptance-criteria.md#l-phase-1-发布与上线验收",
+    "requirements/acceptance-criteria.md#j-v2-架构迁移验收",
+    "config/b20-commerce-dr-evidence.json",
+    "config/b20-privacy-content-gates.json",
+    "config/b21-release-gate-evidence.json",
+    "config/b22-production-rollout.json",
+    "config/b22-data-reconciliation.json",
+    "config/b22-observation-acceptance.json"
+  ],
+  "upstreamGates": {
+    "required": ["G0", "G1", "G2", "G3", "B20", "B21", "B22"],
+    "status": "blocked",
+    "requiredDecision": "GO",
+    "currentDecision": "NO-GO",
+    "missingEvidenceDecision": "NO-GO",
+    "staticEvidenceCannotPromoteRuntime": true,
+    "syntheticEvidenceCannotPromoteRuntime": true,
+    "allRequiredBeforeRelease": true
+  },
+  "changelog": {
+    "status": "pending",
+    "runtimeRequired": true,
+    "sourcePath": "CHANGELOG.md",
+    "entryRequired": true,
+    "entryId": "V2-G4-REL-ROLLBACK-001",
+    "releaseIdMustBeBound": true,
+    "requiredFields": [
+      "scope",
+      "change",
+      "dataOrConfig",
+      "verification",
+      "rollback",
+      "uncovered"
+    ],
+    "compatibilityWindowRef": "evidence-ref://runtime/g4/compatibility-window",
+    "missingEvidenceDecision": "NO-GO",
+    "staticEntryCannotCloseGate": true
+  },
+  "compatibilityWindow": {
+    "status": "pending",
+    "runtimeRequired": true,
+    "legacySystem": "core-api",
+    "newEntryPoint": "api-gateway",
+    "externalRoutePrefix": "/api/v1",
+    "windowMode": "bounded-read-compatibility-window",
+    "windowDays": 30,
+    "windowStart": null,
+    "windowEnd": null,
+    "legacyReadAllowed": true,
+    "legacyWriteAllowed": false,
+    "newOwnerWriteOnly": true,
+    "apiBackwardCompatible": true,
+    "eventBackwardCompatible": true,
+    "databaseExpandContractRequired": true,
+    "clientDeprecationNoticeRequired": true,
+    "expiryRequiresAudit": true,
+    "mismatchDecision": "STOP_EXPANSION_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "routePairs": [
+      {
+        "legacyRoute": "/legacy/core-api/learner",
+        "gatewayRoute": "/api/v1/learner",
+        "owner": "learner-service",
+        "operationId": "getLearnerProfile"
+      },
+      {
+        "legacyRoute": "/legacy/core-api/content",
+        "gatewayRoute": "/api/v1/content",
+        "owner": "content-service",
+        "operationId": "getPublishedContent"
+      },
+      {
+        "legacyRoute": "/legacy/core-api/learning",
+        "gatewayRoute": "/api/v1/learning",
+        "owner": "learning-service",
+        "operationId": "getLearningPlan"
+      }
+    ],
+    "requiredEvidence": [
+      "route-parity",
+      "api-compatibility-diff",
+      "event-schema-compatibility",
+      "client-deprecation-notice",
+      "expiry-audit"
+    ]
+  },
+  "immutableArtifactPolicy": {
+    "status": "pending",
+    "registry": "registry.example.invalid/englishflow",
+    "requireDigest": true,
+    "requireSignature": true,
+    "requireSBOM": true,
+    "requireProvenance": true,
+    "signatureTool": "cosign-keyless-or-approved-kms",
+    "sbomFormat": " SPDX-2.3-or-CycloneDX-1.6 ",
+    "mutableTagAllowed": false,
+    "sameDigestAcrossPromotion": true,
+    "releaseIdAndSourceRevisionBindingRequired": true,
+    "forbiddenReferences": ["latest", "floating-tag", "branch-tag", "unverified-registry"],
+    "artifacts": [
+      {
+        "id": "api-gateway",
+        "image": "registry.example.invalid/englishflow/api-gateway@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/api-gateway-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/api-gateway-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/api-gateway-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "iam-service",
+        "image": "registry.example.invalid/englishflow/iam-service@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/iam-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/iam-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/iam-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "learner-service",
+        "image": "registry.example.invalid/englishflow/learner-service@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/learner-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/learner-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/learner-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "content-service",
+        "image": "registry.example.invalid/englishflow/content-service@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/content-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/content-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/content-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "learning-service",
+        "image": "registry.example.invalid/englishflow/learning-service@sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/learning-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/learning-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/learning-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "assessment-service",
+        "image": "registry.example.invalid/englishflow/assessment-service@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/assessment-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/assessment-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/assessment-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "media-service",
+        "image": "registry.example.invalid/englishflow/media-service@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/media-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/media-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/media-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      },
+      {
+        "id": "admin-ops-service",
+        "image": "registry.example.invalid/englishflow/admin-ops-service@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "signatureRef": "evidence-ref://runtime/g4/artifacts/admin-ops-service-signature",
+        "sbomRef": "evidence-ref://runtime/g4/artifacts/admin-ops-service-sbom",
+        "provenanceRef": "evidence-ref://runtime/g4/artifacts/admin-ops-service-provenance",
+        "signatureStatus": "pending",
+        "sbomStatus": "pending",
+        "provenanceStatus": "pending"
+      }
+    ]
+  },
+  "backupRestore": {
+    "status": "not-established",
+    "required": true,
+    "runtimeRequired": true,
+    "rpoMinutes": 15,
+    "rtoMinutes": 60,
+    "restorePoint": {
+      "status": "not-established",
+      "type": "mysql-pitr-plus-immutable-backup",
+      "createdBeforeTrafficChange": true,
+      "immutable": true,
+      "integrityCheckRequired": true,
+      "sourceRevision": null,
+      "artifactDigest": null,
+      "capturedAt": null,
+      "evidenceRef": null
+    },
+    "sources": [
+      {"id": "mysql-pitr", "owner": "data-platform", "required": true, "status": "pending"},
+      {"id": "redis-snapshot", "owner": "data-platform", "required": true, "status": "pending"},
+      {"id": "kafka-offset-and-dlq", "owner": "workflow-service", "required": true, "status": "pending"},
+      {"id": "object-storage-version", "owner": "media-service", "required": true, "status": "pending"}
+    ],
+    "recoveryScenarios": [
+      "empty-database-restore",
+      "partial-service-failure",
+      "failed-expand-migration",
+      "rollback-after-canary-mismatch",
+      "event-offset-replay-and-deduplication"
+    ],
+    "dataAndEventReconciliationRequired": true,
+    "cannotBeSatisfiedBy": ["process-restart", "directory-exists", "synthetic-fixture", "health-http-200"]
+  },
+  "migrationRollback": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "strategy": "expand-contract-forward-compatible",
+    "migrationRunner": "owner-service-flyway-runner",
+    "lockRequired": true,
+    "lockScope": "service-schema-and-migration-version",
+    "destructiveDowngradeAllowed": false,
+    "rollbackMode": "version-bound-restore-plus-owner-compensation",
+    "crossServiceTableWriteAllowed": false,
+    "twoPhaseCommitAllowed": false,
+    "legacyWriteAllowed": false,
+    "compatibilityWindowRequired": true,
+    "requiredScenarios": [
+      "empty-schema-forward-migration",
+      "existing-schema-expand-migration",
+      "contract-read-during-window",
+      "failed-migration-lock-release",
+      "rollback-to-approved-restore-point",
+      "outbox-and-consumer-offset-reconciliation"
+    ],
+    "failureDecision": "STOP_EXPANSION_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "rollbackEvidence": {
+      "status": "pending",
+      "runtimeRequired": true,
+      "versionBound": true,
+      "ownerRequired": true,
+      "compensationRequired": true,
+      "auditRequired": true,
+      "evidenceRef": "evidence-ref://runtime/g4/migration-rollback"
+    }
+  },
+  "contentGate": {
+    "status": "blocked",
+    "defaultDecision": "NO-GO",
+    "runtimeRequired": true,
+    "draftIsolationRequired": true,
+    "copyrightAndSourceRequired": true,
+    "dualApprovalRequired": true,
+    "minimumIndependentApprovals": 2,
+    "versionedReleaseRequired": true,
+    "withdrawAndRestoreRequired": true,
+    "learnerCannotSeeDraft": true,
+    "requiredChecks": [
+      "copyright-source-and-license",
+      "draft-isolation",
+      "dual-review-approval",
+      "published-version-binding",
+      "withdrawal-and-specific-version-restore",
+      "content-audit-trail"
+    ],
+    "requiredEvidence": [
+      "content-copyright-report",
+      "content-dual-approval",
+      "content-withdraw-restore-replay",
+      "content-audit-export"
+    ],
+    "missingEvidenceDecision": "NO-GO"
+  },
+  "paymentGate": {
+    "status": "disabled",
+    "defaultDecision": "NO-GO",
+    "runtimeRequired": true,
+    "realPaymentEnabled": false,
+    "sandboxOnly": true,
+    "merchantQualificationRequired": true,
+    "channelSignatureVerificationRequired": true,
+    "webhookIdempotencyRequired": true,
+    "refundAndReconciliationRequired": true,
+    "entitlementAuditRequired": true,
+    "privateKeyInRepositoryAllowed": false,
+    "paymentTrafficSwitchRequiresIndependentApproval": true,
+    "requiredEvidence": [
+      "merchant-and-platform-qualification",
+      "sandbox-signature-verification",
+      "webhook-duplicate-delivery",
+      "refund-and-reconciliation",
+      "payment-audit-and-secret-scan"
+    ],
+    "missingEvidenceDecision": "NO-GO"
+  },
+  "platformGate": {
+    "status": "blocked",
+    "defaultDecision": "NO-GO",
+    "runtimeRequired": true,
+    "externalTrafficGatewayOnly": true,
+    "gatewayRoutePrefix": "/api/v1",
+    "gatewayRouteRollbackRequired": true,
+    "domainServicesValidateJwt": true,
+    "domainServicesEnforcePep": true,
+    "clientRoleHeadersIgnored": true,
+    "clientTenantAndOwnerFieldsUntrusted": true,
+    "directDomainTrafficPublic": false,
+    "healthAndReadinessRequired": true,
+    "sloAndAlertingRequired": true,
+    "fourPlatformBindingRequired": true,
+    "platforms": [
+      {"id": "mobile", "projectPath": "apps/mobile", "status": "pending", "releaseFlag": "mobile-release-enabled"},
+      {"id": "learner-web", "projectPath": "apps/learner-web", "status": "pending", "releaseFlag": "learner-web-release-enabled"},
+      {"id": "admin-web", "projectPath": "apps/admin-web", "status": "pending", "releaseFlag": "admin-web-release-enabled"},
+      {"id": "official-site", "projectPath": "apps/official-site", "status": "pending", "releaseFlag": "official-site-release-enabled"}
+    ],
+    "requiredEvidence": [
+      "gateway-route-and-direct-access-test",
+      "service-side-pep-test",
+      "health-readiness-and-graceful-shutdown",
+      "slo-error-budget-and-alert-routing",
+      "four-platform-version-binding"
+    ],
+    "missingEvidenceDecision": "NO-GO"
+  },
+  "trafficPlan": {
+    "status": "blocked",
+    "trafficSwitchAllowed": false,
+    "automaticPromotion": false,
+    "manualApprovalRequired": true,
+    "minimumIndependentApprovals": 2,
+    "stages": [
+      {"id": "canary-1", "trafficPercent": 1, "enabled": false, "status": "blocked", "decision": "NO-GO"},
+      {"id": "canary-5", "trafficPercent": 5, "enabled": false, "status": "blocked", "decision": "NO-GO"},
+      {"id": "canary-25", "trafficPercent": 25, "enabled": false, "status": "blocked", "decision": "NO-GO"},
+      {"id": "canary-50", "trafficPercent": 50, "enabled": false, "status": "blocked", "decision": "NO-GO"},
+      {"id": "canary-100", "trafficPercent": 100, "enabled": false, "status": "blocked", "decision": "NO-GO"}
+    ],
+    "expansionRequires": [
+      "no-open-p0-p1",
+      "error-budget-within-limit",
+      "data-and-event-reconciliation",
+      "backup-restore-point",
+      "content-gate",
+      "payment-gate",
+      "platform-gate",
+      "independent-approval",
+      "append-only-audit"
+    ]
+  },
+  "approvals": {
+    "status": "pending",
+    "runtimeRequired": true,
+    "requiredRoles": ["product", "architecture", "security", "data", "operations"],
+    "minimumIndependentApprovals": 5,
+    "dualControlForReleaseAndRollback": true,
+    "approvalRefs": [
+      "evidence-ref://runtime/g4/approval/product",
+      "evidence-ref://runtime/g4/approval/architecture",
+      "evidence-ref://runtime/g4/approval/security",
+      "evidence-ref://runtime/g4/approval/data",
+      "evidence-ref://runtime/g4/approval/operations"
+    ],
+    "missingApprovalDecision": "NO-GO",
+    "staticApprovalCannotCloseGate": true
+  },
+  "maintenance": {
+    "status": "pending",
+    "runtimeRequired": true,
+    "namedOwnerRequired": true,
+    "ownerRef": "evidence-ref://runtime/g4/maintenance-owner",
+    "windowRequired": true,
+    "runbookRef": "evidence-ref://runtime/g4/maintenance-runbook",
+    "supportHandoffRequired": true,
+    "incidentEscalationRequired": true,
+    "signoffRequired": true
+  },
+  "stopExpansionConditions": [
+    {"id": "p0-or-p1-open", "action": "FREEZE_EXPANSION_AND_ROLLBACK_OR_MANUAL_TAKEOVER"},
+    {"id": "data-or-event-mismatch", "action": "STOP_EXPANSION_AND_RECONCILE_BEFORE_RETRY"},
+    {"id": "security-or-privacy-regression", "action": "DISABLE_RELEASE_AND_ESCALATE_SECURITY"},
+    {"id": "content-copyright-or-review-failure", "action": "BLOCK_CONTENT_RELEASE_AND_WITHDRAW_IF_NEEDED"},
+    {"id": "payment-integrity-or-refund-failure", "action": "KEEP_PAYMENT_DISABLED_AND_STOP_ENTITLEMENT_CHANGE"},
+    {"id": "platform-health-or-pep-gap", "action": "FREEZE_TRAFFIC_AND_ROLLBACK_ROUTE"},
+    {"id": "error-budget-exhausted", "action": "STOP_EXPANSION_UNTIL_SLO_RECOVERS"},
+    {"id": "missing-backup-or-restore-point", "action": "BLOCK_RELEASE_UNTIL_RESTORE_POINT_IS_VERIFIED"},
+    {"id": "missing-independent-approval", "action": "BLOCK_RELEASE_AND_MAINTENANCE_WINDOW"},
+    {"id": "audit-or-evidence-gap", "action": "STOP_EXPANSION_AND_RECORD_MANUAL_TAKEOVER"}
+  ],
+  "rollback": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "automatic": {
+      "enabled": true,
+      "status": "pending",
+      "triggerSources": ["p0-p1", "error-budget", "health", "data-mismatch", "security"],
+      "rollbackTargetMustBeDigestBound": true,
+      "evidenceRequired": true
+    },
+    "manual": {
+      "enabled": true,
+      "status": "pending",
+      "requiresNamedOwner": true,
+      "requiresIndependentApproval": true,
+      "minimumApprovers": 2,
+      "requiresMaintenanceWindowOrIncident": true,
+      "evidenceRequired": true
+    },
+    "restorePoint": {
+      "required": true,
+      "status": "not-established",
+      "createdBeforeTrafficChange": true,
+      "integrityCheckRequired": true,
+      "restoreAndReconcileRequired": true
+    },
+    "sequence": [
+      "freeze-expansion-and-disable-flags",
+      "preserve-request-trace-and-audit-context",
+      "stop-new-owner-writes-or-enter-approved-compatibility-mode",
+      "restore-version-bound-artifact-and-owner-schema",
+      "reconcile-row-count-canonical-digest-and-tenant-scope",
+      "reconcile-outbox-events-consumer-offsets-and-dlq",
+      "run-owner-service-saga-compensation",
+      "verify-content-payment-platform-gates",
+      "record-independent-rollback-approval-and-report"
+    ],
+    "mismatchDecision": "ROLLBACK_OR_MANUAL_TAKEOVER",
+    "audit": {
+      "required": true,
+      "status": "pending",
+      "appendOnly": true,
+      "externalSinkRequired": true,
+      "fields": ["eventId", "requestId", "traceId", "releaseId", "sourceRevision", "artifactDigest", "actorRef", "decision", "reason", "timestamp"]
+    },
+    "evidenceRef": "evidence-ref://runtime/g4/rollback"
+  },
+  "audit": {
+    "status": "pending",
+    "runtimeRequired": true,
+    "required": true,
+    "appendOnly": true,
+    "externalSinkRequired": true,
+    "retentionDays": 2555,
+    "redactionRequired": true,
+    "correlationFields": ["eventId", "requestId", "traceId", "releaseId", "sourceRevision", "artifactDigest"],
+    "secretAndPiiFree": true,
+    "rollbackEvidenceRequired": true,
+    "missingEvidenceDecision": "NO-GO"
+  },
+  "releaseChecks": {
+    "staticChecks": [
+      {
+        "id": "g4-static-immutable-artifact",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/oci/image-lock.yaml"],
+        "assertions": [{"contains": "immutable-digest-required: \"true\""}, {"contains": "signature-required: \"true\""}, {"contains": "sbom-required: \"true\""}]
+      },
+      {
+        "id": "g4-static-manual-canary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/rollout.yaml"],
+        "assertions": [{"contains": "manual-approval-required: \"true\""}, {"contains": "traffic: 1"}, {"contains": "traffic: 100"}]
+      },
+      {
+        "id": "g4-static-flags-disabled",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/feature-flags.yaml"],
+        "assertions": [{"contains": "release-enabled: \"false\""}, {"contains": "traffic-switch-enabled: \"false\""}]
+      },
+      {
+        "id": "g4-static-release-blocked",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/release-gate.yaml"],
+        "assertions": [{"contains": "status: BLOCKED"}, {"contains": "decision: NO-GO"}, {"contains": "production-action: disabled"}]
+      },
+      {
+        "id": "g4-static-backup-restore",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/backup-restore.yaml"],
+        "assertions": [{"contains": "restore-point-required: \"true\""}, {"contains": "restore-point-status: not-established"}, {"contains": "integrity-check-required: \"true\""}]
+      },
+      {
+        "id": "g4-static-compatibility-window",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/compatibility-window.yaml"],
+        "assertions": [{"contains": "compatibility-window-required: \"true\""}, {"contains": "legacy-write-allowed: \"false\""}, {"contains": "expiry-audit-required: \"true\""}]
+      },
+      {
+        "id": "g4-static-platform-boundary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/network-policy.yaml"],
+        "assertions": [{"contains": "external-entrypoint: api-gateway"}, {"contains": "direct-domain-ingress: denied"}, {"contains": "service-side-pep: required"}]
+      },
+      {
+        "id": "g4-static-approval-maintenance",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/maintenance-approval.yaml"],
+        "assertions": [{"contains": "minimum-independent-approvals: \"5\""}, {"contains": "named-maintenance-owner-required: \"true\""}, {"contains": "signoff-status: pending"}]
+      },
+      {
+        "id": "g4-static-gitops-manual",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/gitops/application-production.yaml"],
+        "assertions": [{"contains": "automated-sync: \"false\""}, {"contains": "prune: \"false\""}, {"contains": "self-heal: \"false\""}]
+      },
+      {
+        "id": "g4-static-audit-rollback",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "sourcePaths": ["deploy/g4/base/release-gate.yaml"],
+        "assertions": [{"contains": "rollback-evidence-required: \"true\""}, {"contains": "append-only-audit: \"true\""}, {"contains": "stop-expansion-on-mismatch: \"true\""}]
+      }
+    ],
+    "runtimeChecks": [
+      {"id": "g4-runtime-changelog", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["changelog-entry", "release-id-binding"], "cannotBeSatisfiedBy": ["static-manifest", "synthetic-evidence", "directory-exists"]},
+      {"id": "g4-runtime-compatibility", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["route-parity", "api-event-compatibility"], "cannotBeSatisfiedBy": ["static-manifest", "synthetic-evidence", "directory-exists"]},
+      {"id": "g4-runtime-artifact", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["signature-verification", "sbom-and-provenance"], "cannotBeSatisfiedBy": ["image-name", "mutable-tag", "synthetic-evidence"]},
+      {"id": "g4-runtime-backup-restore", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["restore-point-integrity", "rpo-rto-recovery-replay"], "cannotBeSatisfiedBy": ["process-restart", "health-http-200", "synthetic-evidence"]},
+      {"id": "g4-runtime-migration-rollback", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["migration-replay", "rollback-replay"], "cannotBeSatisfiedBy": ["directory-exists", "dry-run-only", "synthetic-evidence"]},
+      {"id": "g4-runtime-content", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["copyright-and-dual-approval", "withdraw-restore"], "cannotBeSatisfiedBy": ["draft-fixture", "static-manifest", "synthetic-evidence"]},
+      {"id": "g4-runtime-payment", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["sandbox-signature", "refund-reconciliation"], "cannotBeSatisfiedBy": ["fake-success", "static-flag", "synthetic-evidence"]},
+      {"id": "g4-runtime-platform", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["gateway-and-pep", "four-platform-binding"], "cannotBeSatisfiedBy": ["directory-exists", "development-http-200", "synthetic-evidence"]},
+      {"id": "g4-runtime-approvals", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["independent-approvals", "maintenance-signoff"], "cannotBeSatisfiedBy": ["config-entry", "self-approval", "synthetic-evidence"]},
+      {"id": "g4-runtime-stop-conditions", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["alert-stop-test", "error-budget-observation"], "cannotBeSatisfiedBy": ["alert-config-only", "static-manifest", "synthetic-evidence"]},
+      {"id": "g4-runtime-rollback", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["rollback-execution", "rollback-audit"], "cannotBeSatisfiedBy": ["rollback-plan-only", "directory-exists", "synthetic-evidence"]},
+      {"id": "g4-runtime-report", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["go-no-go-report", "immutable-evidence-index"], "cannotBeSatisfiedBy": ["agent-assertion", "static-manifest", "synthetic-evidence"]}
+    ]
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "G4_REQUIRE_RUNTIME",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeStatusWhenMissing": "blocked",
+    "requiredEnv": [
+      "G4_RUNTIME_CHANGELOG_EVIDENCE",
+      "G4_RUNTIME_COMPATIBILITY_EVIDENCE",
+      "G4_RUNTIME_ARTIFACT_EVIDENCE",
+      "G4_RUNTIME_BACKUP_RESTORE_EVIDENCE",
+      "G4_RUNTIME_MIGRATION_ROLLBACK_EVIDENCE",
+      "G4_RUNTIME_CONTENT_GATE_EVIDENCE",
+      "G4_RUNTIME_PAYMENT_GATE_EVIDENCE",
+      "G4_RUNTIME_PLATFORM_GATE_EVIDENCE",
+      "G4_RUNTIME_APPROVAL_EVIDENCE",
+      "G4_RUNTIME_MAINTENANCE_EVIDENCE",
+      "G4_RUNTIME_AUDIT_EVIDENCE",
+      "G4_RUNTIME_RELEASE_REPORT"
+    ],
+    "requiredEvidence": [
+      "changelog-entry",
+      "compatibility-window",
+      "immutable-artifact",
+      "backup-restore",
+      "migration-rollback",
+      "content-gate",
+      "payment-gate",
+      "platform-gate",
+      "approvals-maintenance",
+      "stop-condition-observation",
+      "rollback-audit",
+      "go-no-go-report"
+    ],
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "synthetic-fixture-only",
+      "directory-exists",
+      "development-http-200",
+      "agent-assertion",
+      "unapproved-traffic-change"
+    ]
+  },
+  "evidenceIndex": [
+    {"id": "g4-static-immutable-artifact", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/oci/image-lock.yaml"},
+    {"id": "g4-static-manual-canary", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/rollout.yaml"},
+    {"id": "g4-static-flags-disabled", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/feature-flags.yaml"},
+    {"id": "g4-static-release-blocked", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/release-gate.yaml"},
+    {"id": "g4-static-backup-restore", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/backup-restore.yaml"},
+    {"id": "g4-static-compatibility-window", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/compatibility-window.yaml"},
+    {"id": "g4-static-platform-boundary", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/network-policy.yaml"},
+    {"id": "g4-static-approval-maintenance", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/maintenance-approval.yaml"},
+    {"id": "g4-static-gitops-manual", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/gitops/application-production.yaml"},
+    {"id": "g4-static-audit-rollback", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator", "artifactPathPattern": "deploy/g4/base/release-gate.yaml"},
+    {"id": "g4-runtime-changelog", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/changelog-entry.json"},
+    {"id": "g4-runtime-compatibility", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/compatibility-window.json"},
+    {"id": "g4-runtime-artifact", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/artifact-verification.json"},
+    {"id": "g4-runtime-backup-restore", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/backup-restore.json"},
+    {"id": "g4-runtime-migration-rollback", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/migration-rollback.json"},
+    {"id": "g4-runtime-content", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/content-gate.json"},
+    {"id": "g4-runtime-payment", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/payment-gate.json"},
+    {"id": "g4-runtime-platform", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/platform-gate.json"},
+    {"id": "g4-runtime-approvals", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/approvals-maintenance.json"},
+    {"id": "g4-runtime-stop-conditions", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/stop-conditions.json"},
+    {"id": "g4-runtime-rollback", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/rollback-audit.json"},
+    {"id": "g4-runtime-report", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "approved-runtime-runner-only", "artifactPathPattern": "evidence/g4/go-no-go-report.json"}
+  ],
+  "reportSchema": {
+    "id": "g4-release-rollback-report",
+    "version": "1.0.0",
+    "closed": true,
+    "missingEvidenceDecision": "NO-GO",
+    "required": [
+      "releaseId",
+      "sourceRevision",
+      "artifactDigests",
+      "changelog",
+      "compatibilityWindow",
+      "migration",
+      "rollback",
+      "backupRestore",
+      "contentGate",
+      "paymentGate",
+      "platformGate",
+      "approvals",
+      "maintenance",
+      "stopConditions",
+      "audit",
+      "evidenceRefs",
+      "decision"
+    ],
+    "decisionEnum": ["NO-GO", "BLOCKED", "GO"],
+    "goRequiresAllRuntimeEvidence": true,
+    "goRequiresRestorePoint": true,
+    "goRequiresRollbackEvidence": true
+  }
+}

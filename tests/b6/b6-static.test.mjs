@@ -18,21 +18,18 @@ test('B6 backlog is the expected 13-task code-development slice', () => {
   assert.equal(b6TaskIds.length, 13)
 })
 
-test('B6 contract covers platform, quality, reliability and release gate APIs', () => {
+test('B6 contract covers quality, reliability and release gate APIs', () => {
   const openapi = readJson('packages/contracts/openapi/v1/openapi.json')
   for (const route of [
-    '/api/v1/platform/release-matrix',
-    '/api/v1/platform/builds',
-    '/api/v1/platform/compatibility-checks',
-    '/api/v1/platform/performance/budget',
-    '/api/v1/platform/accessibility/checklist',
     '/api/v1/quality/e2e-runs',
     '/api/v1/quality/security-scans',
     '/api/v1/quality/reliability-runs',
-    '/api/v1/observability/dashboard',
     '/api/v1/data-reliability/drills',
     '/api/v1/release/gates/evaluate',
   ]) assert.ok(openapi.paths[route], `missing B6 route ${route}`)
+  for (const retired of ['/api/v1/platform/release-matrix', '/api/v1/platform/builds', '/api/v1/observability/dashboard']) {
+    assert.equal(openapi.paths[retired], undefined, `retired B6 route still present: ${retired}`)
+  }
   assert.equal(openapi.paths['/api/v1/release/gates/evaluate'].post['x-idempotency'].strategy, 'b6-release-gate-evaluate')
 })
 

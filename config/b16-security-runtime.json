@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "phase": "phase-1",
+  "defaultDecision": "deny",
+  "gateway": {
+    "serviceId": "api-gateway",
+    "portKey": "api-gateway",
+    "publicPrefix": "/api/v1",
+    "directConnectAllowed": false,
+    "requiresRequestId": true,
+    "requiresTraceId": true,
+    "errorEnvelope": "application/json",
+    "corsAllowlistSource": "gateway.cors.allowed-origins",
+    "rateLimitDistributed": true,
+    "forbiddenAuthorityHeaders": [
+      "X-Role",
+      "X-B5-Role",
+      "X-Tenant-Id",
+      "X-Owner-Id"
+    ]
+  },
+  "oidc": {
+    "protocol": "OIDC/OAuth2.1",
+    "providerMode": "external-approved-idp",
+    "gIdpGate": "closed",
+    "issuerEnv": "OIDC_ISSUER_URI",
+    "jwksEnv": "OIDC_JWK_SET_URI",
+    "authorizationCodeFlow": true,
+    "pkceMethod": "S256",
+    "stateRequired": true,
+    "nonceRequired": true,
+    "refreshRotationRequired": true,
+    "keyRotationRequired": true,
+    "sessionRevocationRequired": true,
+    "failClosedOnProviderUnavailable": true,
+    "tokenServerInRepository": false,
+    "testIdp": {
+      "mode": "external-or-ephemeral-fixture",
+      "issuerEnv": "B16_TEST_IDP_ISSUER_URI",
+      "jwksEnv": "B16_TEST_IDP_JWKS_URI",
+      "authorizationEndpointEnv": "B16_TEST_IDP_AUTHORIZATION_ENDPOINT",
+      "tokenEndpointEnv": "B16_TEST_IDP_TOKEN_ENDPOINT",
+      "requiresSyntheticKeys": true,
+      "forbidProductionCredentials": true,
+      "forbidInRepositoryTokenServer": true
+    }
+  },
+  "iam": {
+    "serviceId": "iam-service",
+    "portKey": "iam-service",
+    "platformTenant": "platform",
+    "serverOwnedFacts": [
+      "principal",
+      "tenant",
+      "device",
+      "session",
+      "adultGate",
+      "consent",
+      "audit"
+    ],
+    "tenantDerivation": "server-owned-principal-mapping",
+    "adultMinimumAge": 18,
+    "minorDomainEnabled": false,
+    "auditReplayRequired": true
+  },
+  "pep": {
+    "resourceServerRequired": true,
+    "policyVersionRequired": true,
+    "securityCacheMustBeBounded": true,
+    "pdpUnknownDecision": "deny",
+    "revocationUnknownDecision": "deny",
+    "checks": [
+      "subject",
+      "tenant",
+      "role",
+      "permission",
+      "resource",
+      "action",
+      "owner",
+      "phase",
+      "contentRights",
+      "consent"
+    ],
+    "domainServices": [
+      "learner-service",
+      "content-service",
+      "learning-service",
+      "assessment-service",
+      "media-service",
+      "gamification-service",
+      "social-service",
+      "commerce-service",
+      "notification-service",
+      "analytics-service",
+      "admin-ops-service"
+    ]
+  },
+  "workloadIdentity": {
+    "transport": "mTLS-or-platform-workload-identity",
+    "clientAuthorityHeadersTrusted": false,
+    "credentialRotationRequired": true,
+    "certificateExpiryDecision": "deny",
+    "minimumPrivilegeRequired": true
+  },
+  "runtimeEvidence": {
+    "static": [
+      "manifest",
+      "contract",
+      "configuration",
+      "forbidden-header",
+      "default-deny"
+    ],
+    "runtime": [
+      "gateway-to-iam-login",
+      "pkce-refresh-logout",
+      "gateway-to-domain-pep",
+      "cross-tenant-deny",
+      "revocation",
+      "provider-fault-fail-closed",
+      "direct-connect-deny"
+    ],
+    "runtimePrerequisites": [
+      "java-25",
+      "maven-3.9.9-or-newer",
+      "docker-or-equivalent",
+      "approved-test-idp-or-ephemeral-fixture"
+    ]
+  }
+}

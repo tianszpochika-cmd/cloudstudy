@@ -6,21 +6,21 @@ import B10StatusPanel from '../../components/b10/B10StatusPanel.vue'
 import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
 import { useB10LearningStore } from '../../stores/b10-learning'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
-import { getUniRuntime } from '../../platform/uni-runtime'
-import { useSessionStore } from '../../stores/session'
+import { openUniPage } from '../../platform/uni-runtime'
+import { ensureMobilePageAccess } from '../../auth/navigation'
 
-const session = useSessionStore()
 const store = useB10LearningStore()
 const engine = createAdaptivePerformanceEngine()
 const performanceLevel = ref<PerformanceLevel>(engine.level)
 const ratingOptions = [{ value: 0 as const, label: '忘了' }, { value: 1 as const, label: '模糊' }, { value: 2 as const, label: '记得' }, { value: 3 as const, label: '很熟' }]
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
+const completed = computed(() => Boolean(store.batch && store.batch.items.length > 0 && !store.currentCard && store.currentIndex >= store.batch.items.length))
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
-function open(path: string): void { getUniRuntime().navigateTo({ url: path }) }
+function open(path: string): void { openUniPage(path) }
 function load(): void { void store.loadSrs() }
 function reveal(): void { void store.revealCard() }
 function rate(value: 0 | 1 | 2 | 3): void { void store.rateCard(value) }
-onShow(() => { session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } load() })
+onShow(async () => { if (await ensureMobilePageAccess('/pages/b2-vocabulary/b2-vocabulary')) load() })
 onUnmounted(() => engine.dispose())
 </script>
 
@@ -49,9 +49,12 @@ onUnmounted(() => engine.dispose())
       </view>
     </view>
 
+    <view v-else-if="completed" class="yx-card b10-empty"><text class="b10-empty__title">今日复习已完成</text><text>本批次的复习事件已逐条获得服务端确认；若有待同步项，状态栏会保留队列。</text><button class="yx-button" type="button" @click="load">刷新复习队列</button></view>
+    <view v-else-if="store.status === 'idle'" class="yx-card b10-empty"><text class="b10-empty__title">等待读取词汇批次</text><text>身份与页面初始化完成后，将从学习服务读取当前复习队列。</text></view>
     <view v-else-if="store.status === 'loading'" class="yx-card b10-empty"><text>{{ b10T('status.loading') }}</text></view>
-    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">{{ b10T('vocab.empty') }}</text><text>{{ store.message ?? b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
-    <view class="b10-links"><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b2-practice/b2-practice')">基础练习</button><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b10-report/b10-report')">错题与报告</button></view>
+    <view v-else-if="store.status === 'empty'" class="yx-card b10-empty"><text class="b10-empty__title">{{ b10T('vocab.empty') }}</text><text>{{ store.message ?? b10T('status.noSample') }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view v-else class="yx-card b10-empty"><text class="b10-empty__title">词汇批次暂时不可用</text><text>{{ store.message ?? '请根据上方状态重试；未确认的复习不会被显示为已完成。' }}</text><button class="yx-button" type="button" @click="load">{{ b10T('status.retry') }}</button></view>
+    <view class="b10-links"><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/assessment/assessment')">基础练习</button><button class="yx-button yx-button--secondary" type="button" @click="open('/pages/b10-report/b10-report')">错题与报告</button></view>
   </view>
 </template>
 

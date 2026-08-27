@@ -91,9 +91,11 @@
     "/api/v1/onboarding/daily-tasks/{taskId}/complete": {
       "post": {
         "tags": ["B1 Onboarding"], "operationId": "completeB1DailyTask",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-task-plan" },
-        "parameters": [{ "name": "taskId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } }],
-        "responses": { "200": { "description": "Task completed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": { "owner": "learner-service", "migration": "B25 durable learner daily-task projection; public Gateway path is retained for compatibility" },
+        "x-idempotency": { "required": true, "strategy": "principal-task-key", "keyHeader": "Idempotency-Key", "replayBehavior": "return-first-durable-task" },
+        "parameters": [{ "name": "taskId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } }, { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 192 } }],
+        "responses": { "200": { "description": "Task completed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "401": { "description": "Verified JWT required" }, "403": { "description": "Tenant/owner policy denied" }, "404": { "description": "Task not found" } }
       }
     },
     "/api/v1/onboarding/daily-tasks/reorder": {
@@ -118,12 +120,6 @@
         "responses": { "200": { "description": "Placement report", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
       }
     },
-    "/api/v1/home/feed": {
-      "get": {
-        "tags": ["B1 Onboarding"], "operationId": "getB1HomeFeed",
-        "responses": { "200": { "description": "Today's home feed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
     "/api/v1/learning/continue-context": {
       "get": {
         "tags": ["B1 Onboarding"], "operationId": "getB1ContinueContext",
@@ -143,73 +139,6 @@
         "parameters": [{ "name": "lessonId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 128 } }],
         "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
         "responses": { "200": { "description": "Checkpoint accepted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
-    "/api/v1/user/profile": {
-      "get": {
-        "tags": ["B1 User"], "operationId": "getB1UserProfile",
-        "responses": { "200": { "description": "Self profile", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      },
-      "patch": {
-        "tags": ["B1 User"], "operationId": "patchB1UserProfile",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-profile" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Profile updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
-    "/api/v1/user/learning-preferences": {
-      "get": {
-        "tags": ["B1 User"], "operationId": "getB1LearningPreferences",
-        "responses": { "200": { "description": "Learning preferences", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      },
-      "patch": {
-        "tags": ["B1 User"], "operationId": "patchB1LearningPreferences",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-preferences" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Learning preferences updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
-    "/api/v1/user/privacy": {
-      "get": {
-        "tags": ["B1 User"], "operationId": "getB1PrivacySettings",
-        "responses": { "200": { "description": "Privacy settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      },
-      "patch": {
-        "tags": ["B1 User"], "operationId": "patchB1PrivacySettings",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-privacy" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Privacy settings updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
-    "/api/v1/user/devices/{devicePublicId}/kick": {
-      "post": {
-        "tags": ["B1 User"], "operationId": "kickB1UserDevice",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-kick-result" },
-        "parameters": [{ "name": "devicePublicId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/DeviceId" } }],
-        "responses": { "200": { "description": "Device kicked", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "409": { "description": "Current device cannot be kicked" } }
-      }
-    },
-    "/api/v1/user/login-alerts": {
-      "get": {
-        "tags": ["B1 User"], "operationId": "listB1LoginAlerts",
-        "responses": { "200": { "description": "Self-scoped login alerts", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      }
-    },
-    "/api/v1/user/deletion": {
-      "get": {
-        "tags": ["B1 User"], "operationId": "getB1DeletionStatus",
-        "responses": { "200": { "description": "Deletion status", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      },
-      "post": {
-        "tags": ["B1 User"], "operationId": "requestB1Deletion",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-deletion" },
-        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Deletion requested", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
-      },
-      "delete": {
-        "tags": ["B1 User"], "operationId": "cancelB1Deletion",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-cancellation" },
-        "responses": { "200": { "description": "Deletion cancelled", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
       }
     }
   },

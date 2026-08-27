@@ -32,6 +32,8 @@ import {
   type TargetGoal,
 } from '../domain/b1'
 
+const LOCAL_REAL_RUNTIME = import.meta.env.VITE_RUNTIME_MODE !== 'preview'
+
 interface PersistedState {
   onboarding?: OnboardingProfile
   assessment?: AssessmentSnapshot
@@ -315,7 +317,14 @@ export const useB1Store = defineStore('b1', () => {
     continueContext.value = { ...current, ...input, updatedAt: new Date().toISOString(), status: 'ACTIVE' }
     persist()
     if (!readAccessToken()) return
-    try { await saveContinueContext(continueContext.value); await sendCheckpoint(continueContext.value); syncState.value = 'synced' } catch (error) { markSyncError(error, '断点已保存在本地，恢复联网后会继续同步。') }
+    try {
+      await saveContinueContext(continueContext.value)
+      // In local-real mode the learning-service owner is authoritative. The legacy
+      // checkpoint endpoint belongs to the compatibility core-api and must not turn
+      // a successful v2 write into a false error.
+      if (!LOCAL_REAL_RUNTIME) await sendCheckpoint(continueContext.value)
+      syncState.value = 'synced'
+    } catch (error) { markSyncError(error, '断点已保存在本地，恢复联网后会继续同步。') }
   }
 
   function completeContinue(): void {
@@ -338,16 +347,18 @@ export const useB1Store = defineStore('b1', () => {
     accountActionStatus.value = 'loading'
     lastError.value = null
     if (!readAccessToken()) { accountActionStatus.value = 'ready'; return }
-    try {
-      const [remoteProfile, remotePrivacy, remoteDevices, remoteDeletion] = await Promise.all([fetchProfile(), fetchPrivacy(), fetchDevices(), fetchDeletion()])
-      if (remoteProfile) profile.value = remoteProfile
-      if (remotePrivacy) privacy.value = remotePrivacy
-      if (remoteDevices.length) devices.value = remoteDevices
-      if (remoteDeletion) deletion.value = remoteDeletion
+    const results = await Promise.allSettled([fetchProfile(), fetchPrivacy(), fetchDevices(), fetchDeletion()])
+    const [remoteProfile, remotePrivacy, remoteDevices, remoteDeletion] = results
+    if (remoteProfile.status === 'fulfilled' && remoteProfile.value) profile.value = remoteProfile.value
+    if (remotePrivacy.status === 'fulfilled' && remotePrivacy.value) privacy.value = remotePrivacy.value
+    if (remoteDevices.status === 'fulfilled' && remoteDevices.value.length) devices.value = remoteDevices.value
+    if (remoteDeletion.status === 'fulfilled' && remoteDeletion.value) deletion.value = remoteDeletion.value
+    const failed = results.find((result) => result.status === 'rejected')
+    if (failed?.status === 'rejected') {
       accountActionStatus.value = 'ready'
-    } catch (error) {
-      accountActionStatus.value = isOnline() ? 'error' : 'offline'
-      markSyncError(error, '账号服务暂时不可用，页面保留本地设置。')
+      lastError.value = '账户资料、偏好和设备已从本地服务读取；注销请求暂未开放。'
+    } else {
+      accountActionStatus.value = 'ready'
     }
     persist()
   }
@@ -387,7 +398,8 @@ export const useB1Store = defineStore('b1', () => {
     try {
       const response = await requestDataExport()
       accountActionStatus.value = 'ready'
-      return response.downloadUrl
+      lastError.value = `隐私导出作业已创建：${response.exportId}（${response.status}）。`
+      return response.exportId
     } catch (error) {
       accountActionStatus.value = isOnline() ? 'error' : 'offline'
       markSyncError(error, '导出申请需要已接入的隐私服务，当前未提交成功。')

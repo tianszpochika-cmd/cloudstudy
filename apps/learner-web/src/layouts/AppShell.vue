@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import { useSessionStore } from '../stores/session'
 import { authT } from '../auth/i18n'
@@ -91,7 +91,7 @@ onUnmounted(() => {
             {{ level }}
           </button>
         </div>
-        <button class="sign-out" type="button" @click="signOut">{{ authT('session.logout') }}</button>
+        <button class="sign-out" type="button" @click="signOut">{{ authT('session.logoutAction') }}</button>
       </div>
     </aside>
 
@@ -108,11 +108,9 @@ onUnmounted(() => {
       </header>
 
       <div class="app-shell__content">
-        <RouterView v-slot="{ Component }">
-          <KeepAlive>
-            <component :is="Component" />
-          </KeepAlive>
-        </RouterView>
+        <!-- AppShell wraps top-level routes; the page component is supplied by
+             App.vue's outer RouterView and must be rendered through the slot. -->
+        <slot />
       </div>
     </main>
 

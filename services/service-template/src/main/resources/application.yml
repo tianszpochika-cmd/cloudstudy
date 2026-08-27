@@ -8,6 +8,17 @@ server:
   address: ${SERVER_ADDRESS:127.0.0.1}
   port: ${service.port}
   shutdown: graceful
+  ssl:
+    # mTLS is disabled until the deployment platform injects a service certificate and trust
+    # store. Never commit the stores or their passwords to the repository.
+    enabled: ${SERVICE_MTLS_ENABLED:false}
+    client-auth: ${SERVICE_MTLS_CLIENT_AUTH:need}
+    key-store: ${SERVICE_MTLS_KEY_STORE:}
+    key-store-password: ${SERVICE_MTLS_KEY_STORE_PASSWORD:}
+    trust-store: ${SERVICE_MTLS_TRUST_STORE:}
+    trust-store-password: ${SERVICE_MTLS_TRUST_STORE_PASSWORD:}
+    key-store-type: ${SERVICE_MTLS_KEY_STORE_TYPE:PKCS12}
+    trust-store-type: ${SERVICE_MTLS_TRUST_STORE_TYPE:PKCS12}
 
 management:
   endpoints:
@@ -69,3 +80,10 @@ security:
     jwk-set-uri: ${SERVICE_SECURITY_JWK_SET_URI:}
     policy-cache-ttl: ${SERVICE_POLICY_CACHE_TTL:30s}
     pdp-timeout: ${SERVICE_PDP_TIMEOUT:250ms}
+  workload-identity:
+    enabled: ${SERVICE_WORKLOAD_IDENTITY_ENABLED:false}
+    required: ${SERVICE_WORKLOAD_IDENTITY_REQUIRED:false}
+    service-id: ${SERVICE_WORKLOAD_IDENTITY_SERVICE_ID:${SERVICE_NAME:}}
+    allowed-callers: ${SERVICE_WORKLOAD_ALLOWED_CALLERS:}
+    key-store: ${SERVICE_MTLS_KEY_STORE:}
+    trust-store: ${SERVICE_MTLS_TRUST_STORE:}

@@ -23,8 +23,8 @@ const galaxyNodes = computed(() => mapNodes.map((node) => {
   return { ...node, status: serverNode?.status ?? 'UNKNOWN', progress: serverNode?.progress ?? 0, requiredProgress: serverNode?.requiredProgress ?? 0, progressPercent: serverNode?.progressPercent ?? 0 }
 }))
 
-onShow(() => {
-  session.restore()
+onShow(async () => {
+  await session.restore()
   if (!session.isAuthenticated) {
     getUniRuntime().navigateTo({ url: '/pages/login/login' })
     return

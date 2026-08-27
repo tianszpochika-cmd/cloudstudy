@@ -10,6 +10,7 @@
     "runtimeCheckCommand": "node scripts/check-local-infra.mjs",
     "strictRuntimeCheckCommand": "node scripts/check-local-infra.mjs --require-healthy"
   },
+  "requiredDependencies": ["mysql", "redis", "minio", "kafka", "rabbitmq", "oidc-idp"],
   "services": {
     "mysql": {
       "composeService": "mysql",
@@ -68,6 +69,41 @@
       ],
       "volume": "yuxuexing-minio",
       "healthcheckMarker": "minio/health/live"
+    },
+    "oidc-idp": {
+      "composeService": "keycloak",
+      "image": "quay.io/keycloak/keycloak:26.7.1",
+      "bindings": [
+        {
+          "portKey": "oidc-idp",
+          "hostPort": 18099,
+          "containerPort": 8080,
+          "protocol": "http",
+          "hostPortEnv": "OIDC_IDP_HOST_PORT"
+        }
+      ],
+      "volume": "yuxuexing-keycloak",
+      "healthcheckMarker": "health/ready",
+      "credentials": [
+        "OIDC_BOOTSTRAP_ADMIN_USERNAME",
+        "OIDC_BOOTSTRAP_ADMIN_PASSWORD"
+      ],
+      "purpose": "Loopback-only standard OIDC/OAuth 2.1 test provider; no application token server"
+    },
+    "kafka": {
+      "composeService": "kafka",
+      "image": "apache/kafka:3.9.2",
+      "bindings": [
+        {
+          "portKey": "kafka",
+          "hostPort": 19092,
+          "containerPort": 19092,
+          "protocol": "kafka",
+          "hostPortEnv": "KAFKA_HOST_PORT"
+        }
+      ],
+      "volume": "yuxuexing-kafka",
+      "healthcheckMarker": "kafka-topics.sh"
     },
     "rabbitmq": {
       "composeService": "rabbitmq",

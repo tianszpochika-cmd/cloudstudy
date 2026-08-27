@@ -68,6 +68,64 @@ public final class ContentVersion {
         return new ContentVersion(versionId, versionNumber, kind, payload, rights, editor, releaseNote, createdAt);
     }
 
+    /**
+     * Rebuilds an immutable version fact from the content-service-owned store.
+     *
+     * <p>This is deliberately separate from {@link #draft}; adapters must not recreate a stored
+     * version by replaying commands because that would change review and publication history.</p>
+     */
+    public static ContentVersion rehydrate(
+            ContentVersionId versionId,
+            int versionNumber,
+            ContentKind kind,
+            java.util.Map<String, Object> payload,
+            String persistedHash,
+            ContentRights rights,
+            String editor,
+            String releaseNote,
+            Instant createdAt,
+            ContentVersionStatus status,
+            String firstReviewer,
+            String finalReviewer,
+            String publisher,
+            Instant publishedAt,
+            Instant archivedAt,
+            ContentVersionId rollbackOfVersionId,
+            int firstReviewVersion,
+            int finalReviewVersion,
+            long stateVersion) {
+        if (status == null || stateVersion < 1 || firstReviewVersion < 0 || finalReviewVersion < 0) {
+            throw ContentOperationException.unavailable(
+                    "CONTENT_FACT_CORRUPT", "stored content version state is invalid");
+        }
+        ContentPayload validatedPayload = ContentSchemaValidator.validate(kind, payload);
+        ContentVersion version = new ContentVersion(
+                versionId, versionNumber, kind, validatedPayload, rights, editor, releaseNote, createdAt);
+        if (persistedHash == null || !persistedHash.equals(version.contentHash)) {
+            throw ContentOperationException.unavailable(
+                    "CONTENT_FACT_CORRUPT", "stored content payload hash does not match its payload");
+        }
+        if (status == ContentVersionStatus.PUBLISHED && publishedAt == null) {
+            throw ContentOperationException.unavailable(
+                    "CONTENT_FACT_CORRUPT", "published content version has no publication time");
+        }
+        if (status == ContentVersionStatus.ARCHIVED && archivedAt == null) {
+            throw ContentOperationException.unavailable(
+                    "CONTENT_FACT_CORRUPT", "archived content version has no archive time");
+        }
+        version.status = status;
+        version.firstReviewer = normalizeNullableActor(firstReviewer);
+        version.finalReviewer = normalizeNullableActor(finalReviewer);
+        version.publisher = normalizeNullableActor(publisher);
+        version.publishedAt = publishedAt;
+        version.archivedAt = archivedAt;
+        version.rollbackOfVersionId = rollbackOfVersionId;
+        version.firstReviewVersion = firstReviewVersion;
+        version.finalReviewVersion = finalReviewVersion;
+        version.stateVersion = stateVersion;
+        return version;
+    }
+
     public synchronized void replaceDraft(
             ContentPayload replacement,
             ContentRights replacementRights,
@@ -309,5 +367,12 @@ public final class ContentVersion {
             throw ContentOperationException.badRequest("ACTOR_INVALID", field + " is required");
         }
         return actor.trim();
+    }
+
+    private static String normalizeNullableActor(String actor) {
+        if (actor == null) {
+            return null;
+        }
+        return requireActor(actor, "stored actor");
     }
 }

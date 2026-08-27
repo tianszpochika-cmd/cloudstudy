@@ -57,4 +57,26 @@ public final class RewardGrant {
     public String rewardCode() {
         return rewardCode;
     }
+
+    /** Rehydrates a previously claimed grant from the service-owned ledger. */
+    public void restoreClaim(String outcomeCode, Instant restoredClaimedAt) {
+        if (outcomeCode == null || outcomeCode.isBlank() || restoredClaimedAt == null) {
+            return;
+        }
+        this.outcome = new RewardOutcome(outcomeCode, outcomeCode);
+        this.claimed = true;
+        this.claimedAt = restoredClaimedAt;
+    }
+
+    public String sourceEventId() {
+        return sourceEventId;
+    }
+
+    public String probabilityVersion() {
+        return probabilityVersion;
+    }
+
+    public Instant grantedAt() {
+        return grantedAt;
+    }
 }

@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "B22-PRODUCTION-ROLLOUT",
+  "version": "1.0.0",
+  "batch": "B22",
+  "taskId": "V2-B22-REL-001",
+  "phase": "phase-1",
+  "status": "BLOCKED",
+  "defaultDecision": "NO-GO",
+  "productionAction": "disabled",
+  "designBasis": {
+    "businessSource": "docs/06-design/v2-980plus/README.md",
+    "architectureRefs": ["ARCH-REL-001", "ARCH-DEP-001", "ARCH-OBS-001"],
+    "upstreamBatch": "B21",
+    "taskScope": [
+      "production canary and controlled expansion",
+      "feature flags",
+      "four-platform release binding",
+      "pre-release health and critical-journey smoke",
+      "automatic and manual rollback"
+    ]
+  },
+  "b21Prerequisite": {
+    "status": "blocked",
+    "required": true,
+    "requiredDecision": "GO",
+    "currentDecision": "BLOCKED",
+    "acceptanceEvidenceStatus": "pending",
+    "requiredEvidence": [
+      "b21-go-no-go-decision",
+      "b21-immutable-rc",
+      "b21-staging-and-migration",
+      "b21-observability-and-alerting",
+      "b21-rollback-drill"
+    ],
+    "missingEvidenceDecision": "BLOCKED",
+    "openP0P1Decision": "BLOCKED",
+    "staticEvidenceCannotPromote": true,
+    "syntheticFixtureCannotPromote": true
+  },
+  "releaseCandidate": {
+    "status": "not-established",
+    "releaseId": "release-ref://synthetic/b22/phase1-canary",
+    "sourceRevision": "commit-ref://synthetic/b22/signed-release-revision",
+    "environment": "production-canary",
+    "artifactDigest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+    "signatureRef": "signature-ref://synthetic/b22/production-canary",
+    "sbomRef": "sbom-ref://synthetic/b22/production-canary",
+    "statusDecision": "NO-GO"
+  },
+  "immutableArtifactPolicy": {
+    "status": "not-established",
+    "registry": "registry.example.invalid/englishflow",
+    "requireDigest": true,
+    "requireSignature": true,
+    "signatureTool": "cosign",
+    "requireSBOM": true,
+    "sbomFormat": "CycloneDX",
+    "requireProvenance": true,
+    "mutableTagAllowed": false,
+    "forbiddenReferences": ["latest", "floating-tag", "unpinned-image"],
+    "sameDigestAcrossPromotion": true,
+    "artifacts": [
+      {
+        "id": "api-gateway",
+        "image": "registry.example.invalid/englishflow/api-gateway@sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "signatureRef": "signature-ref://synthetic/b22/api-gateway",
+        "signatureStatus": "pending",
+        "sbomRef": "sbom-ref://synthetic/b22/api-gateway",
+        "sbomStatus": "pending"
+      },
+      {
+        "id": "mobile",
+        "image": "registry.example.invalid/englishflow/mobile@sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "signatureRef": "signature-ref://synthetic/b22/mobile",
+        "signatureStatus": "pending",
+        "sbomRef": "sbom-ref://synthetic/b22/mobile",
+        "sbomStatus": "pending"
+      },
+      {
+        "id": "learner-web",
+        "image": "registry.example.invalid/englishflow/learner-web@sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "signatureRef": "signature-ref://synthetic/b22/learner-web",
+        "signatureStatus": "pending",
+        "sbomRef": "sbom-ref://synthetic/b22/learner-web",
+        "sbomStatus": "pending"
+      },
+      {
+        "id": "admin-web",
+        "image": "registry.example.invalid/englishflow/admin-web@sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "signatureRef": "signature-ref://synthetic/b22/admin-web",
+        "signatureStatus": "pending",
+        "sbomRef": "sbom-ref://synthetic/b22/admin-web",
+        "sbomStatus": "pending"
+      },
+      {
+        "id": "official-site",
+        "image": "registry.example.invalid/englishflow/official-site@sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "signatureRef": "signature-ref://synthetic/b22/official-site",
+        "signatureStatus": "pending",
+        "sbomRef": "sbom-ref://synthetic/b22/official-site",
+        "sbomStatus": "pending"
+      }
+    ]
+  },
+  "fourPlatformBinding": {
+    "status": "not-established",
+    "decision": "NO-GO",
+    "releaseId": "release-ref://synthetic/b22/phase1-canary",
+    "sourceRevision": "commit-ref://synthetic/b22/signed-release-revision",
+    "sameReleaseIdRequired": true,
+    "sameSourceRevisionRequired": true,
+    "environmentBindingRequired": true,
+    "versionOrDigestMismatchDecision": "BLOCKED",
+    "platforms": [
+      { "platformId": "mobile", "projectPath": "apps/mobile", "versionRef": "version-ref://synthetic/b22/mobile", "artifactDigest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "featureFlag": "mobile-release-enabled", "channelRef": "channel-ref://synthetic/mobile", "status": "pending" },
+      { "platformId": "learner-web", "projectPath": "apps/learner-web", "versionRef": "version-ref://synthetic/b22/learner-web", "artifactDigest": "sha256:3333333333333333333333333333333333333333333333333333333333333333", "featureFlag": "learner-web-release-enabled", "channelRef": "channel-ref://synthetic/learner-web", "status": "pending" },
+      { "platformId": "admin-web", "projectPath": "apps/admin-web", "versionRef": "version-ref://synthetic/b22/admin-web", "artifactDigest": "sha256:4444444444444444444444444444444444444444444444444444444444444444", "featureFlag": "admin-web-release-enabled", "channelRef": "channel-ref://synthetic/admin-web", "status": "pending" },
+      { "platformId": "official-site", "projectPath": "apps/official-site", "versionRef": "version-ref://synthetic/b22/official-site", "artifactDigest": "sha256:5555555555555555555555555555555555555555555555555555555555555555", "featureFlag": "official-site-release-enabled", "channelRef": "channel-ref://synthetic/official-site", "status": "pending" }
+    ]
+  },
+  "featureFlags": {
+    "status": "disabled",
+    "failClosed": true,
+    "releaseDecision": "NO-GO",
+    "b21Acceptance": "pending",
+    "flags": [
+      { "name": "canary-enabled", "defaultValue": false, "status": "disabled", "requiresAudit": true },
+      { "name": "controlled-expansion-enabled", "defaultValue": false, "status": "disabled", "requiresAudit": true },
+      { "name": "mobile-release-enabled", "defaultValue": false, "status": "disabled", "requiresAudit": true },
+      { "name": "learner-web-release-enabled", "defaultValue": false, "status": "disabled", "requiresAudit": true },
+      { "name": "admin-web-release-enabled", "defaultValue": false, "status": "disabled", "requiresAudit": true },
+      { "name": "official-site-release-enabled", "defaultValue": false, "status": "disabled", "requiresAudit": true }
+    ]
+  },
+  "canaryPlan": {
+    "status": "blocked",
+    "automaticPromotion": false,
+    "manualApprovalRequired": true,
+    "minimumIndependentApprovals": 2,
+    "controlledExpansionDefault": false,
+    "stages": [
+      { "id": "canary-1", "trafficPercent": 1, "enabled": false, "status": "blocked", "decision": "NO-GO", "observationWindow": "15m" },
+      { "id": "canary-5", "trafficPercent": 5, "enabled": false, "status": "blocked", "decision": "NO-GO", "observationWindow": "30m" },
+      { "id": "canary-25", "trafficPercent": 25, "enabled": false, "status": "blocked", "decision": "NO-GO", "observationWindow": "60m" },
+      { "id": "canary-50", "trafficPercent": 50, "enabled": false, "status": "blocked", "decision": "NO-GO", "observationWindow": "120m" },
+      { "id": "full-100", "trafficPercent": 100, "enabled": false, "status": "blocked", "decision": "NO-GO", "observationWindow": "approved-observation-window" }
+    ],
+    "promotionPolicy": "freeze-expansion-on-any-stop-condition"
+  },
+  "preReleaseChecks": {
+    "staticChecks": [
+      { "id": "B22-REL-STATIC-001", "kind": "architecture-and-task-source", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-platform-capability-matrix.md", "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md"], "assertions": [{ "contains": "ARCH-REL-001" }, { "contains": "V2-B22-REL-001" }, { "contains": "生产环境小流量/金丝雀发布" }] },
+      { "id": "B22-REL-STATIC-002", "kind": "b21-prerequisite-boundary", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["config/b21-release-gate-evidence.json", "scripts/runtime/validate-b21-release-gate-evidence.mjs"], "assertions": [{ "contains": "BLOCKED" }, { "contains": "runtime evidence remains pending" }] },
+      { "id": "B22-REL-STATIC-003", "kind": "immutable-artifact-policy", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["deploy/b22/oci/image-lock.yaml", "deploy/b22/base/rollout.yaml"], "assertions": [{ "contains": "requireDigest: true" }, { "contains": "requireSignature: true" }, { "contains": "requireSBOM: true" }, { "contains": "paused: true" }] },
+      { "id": "B22-REL-STATIC-004", "kind": "four-platform-binding", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["deploy/b22/release/version-binding.yaml"], "assertions": [{ "contains": "mobile" }, { "contains": "learner-web" }, { "contains": "admin-web" }, { "contains": "official-site" }] },
+      { "id": "B22-REL-STATIC-005", "kind": "feature-flag-fail-closed", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["deploy/b22/base/feature-flags.yaml"], "assertions": [{ "contains": "release-gate: BLOCKED" }, { "contains": "traffic-mode: disabled" }, { "contains": "feature-flag-policy: fail-closed" }] },
+      { "id": "B22-REL-STATIC-006", "kind": "canary-expansion-policy", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["deploy/b22/rollout/expansion-policy.yaml"], "assertions": [{ "contains": "trafficPercent: 1" }, { "contains": "trafficPercent: 5" }, { "contains": "trafficPercent: 25" }, { "contains": "trafficPercent: 50" }, { "contains": "trafficPercent: 100" }, { "contains": "p0-or-p1-alert" }] },
+      { "id": "B22-REL-STATIC-007", "kind": "rollback-and-restore-contract", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["deploy/b22/rollout/rollback-policy.yaml"], "assertions": [{ "contains": "automaticRollback:" }, { "contains": "manualRollback:" }, { "contains": "restorePoint:" }, { "contains": "appendOnly: true" }] },
+      { "id": "B22-REL-STATIC-008", "kind": "no-production-action-default", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["deploy/b22/base/release-prerequisite.yaml", "deploy/b22/gitops/application-production.yaml"], "assertions": [{ "contains": "staticTemplateOnly: true" }, { "contains": "release-status: BLOCKED" }, { "contains": "REPLACE_SIGNED_B22_COMMIT_SHA" }] }
+    ],
+    "runtimeChecks": [
+      { "id": "B22-REL-RUNTIME-001", "kind": "b21-go-no-go-acceptance", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["signed decision", "five-role signoff", "decision timestamp"], "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only"] },
+      { "id": "B22-REL-RUNTIME-002", "kind": "immutable-signed-artifact", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["source revision", "digest", "signature", "SBOM", "provenance"], "cannotBeSatisfiedBy": ["tag-only-artifact", "local-build", "unsigned-artifact"] },
+      { "id": "B22-REL-RUNTIME-003", "kind": "pre-release-health-smoke", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["startup", "readiness", "liveness", "health response", "critical journey result"], "cannotBeSatisfiedBy": ["development-http-200", "synthetic-fixture-only"] },
+      { "id": "B22-REL-RUNTIME-004", "kind": "four-platform-release-evidence", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["four versions", "four digests", "four signatures", "environment binding"], "cannotBeSatisfiedBy": ["single-platform-build", "tag-only-artifact"] },
+      { "id": "B22-REL-RUNTIME-005", "kind": "canary-observation", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["traffic stage", "SLO", "error budget", "alert trace", "approval"], "cannotBeSatisfiedBy": ["static-manifest-only", "unapproved-traffic-change"] },
+      { "id": "B22-REL-RUNTIME-006", "kind": "stop-condition-sentinel", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["P0/P1", "data integrity", "security/privacy", "alert routing"], "cannotBeSatisfiedBy": ["dashboard-screenshot-only", "synthetic-fixture-only"] },
+      { "id": "B22-REL-RUNTIME-007", "kind": "automatic-rollback", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["trigger", "last approved digest", "rollback timestamp", "result"], "cannotBeSatisfiedBy": ["pod-restart", "health-endpoint-only"] },
+      { "id": "B22-REL-RUNTIME-008", "kind": "manual-rollback-and-restore-point", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["named owner", "independent approval", "restore point", "recovery result"], "cannotBeSatisfiedBy": ["missing-restore-point", "single-operator-claim"] },
+      { "id": "B22-REL-RUNTIME-009", "kind": "audit-correlation", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["release id", "trace id", "request id", "decision id", "operator ref"], "cannotBeSatisfiedBy": ["edited-summary", "unbound-log-line"] }
+    ]
+  },
+  "stopExpansionConditions": [
+    { "id": "p0-or-p1-alert", "action": "freeze-and-evaluate-rollback", "severity": ["P0", "P1"] },
+    { "id": "data-integrity-mismatch", "action": "freeze-and-rollback", "severity": ["critical"] },
+    { "id": "security-or-privacy-regression", "action": "freeze-and-rollback", "severity": ["critical"] },
+    { "id": "error-budget-exhausted", "action": "freeze-and-evaluate-rollback", "severity": ["high"] },
+    { "id": "alert-routing-or-trace-gap", "action": "freeze-expansion", "severity": ["high"] },
+    { "id": "missing-restore-point", "action": "block-traffic-change", "severity": ["critical"] },
+    { "id": "missing-independent-approval", "action": "block-expansion", "severity": ["high"] }
+  ],
+  "rollback": {
+    "status": "not-established",
+    "automatic": { "enabled": true, "status": "pending", "triggerPolicy": "fail-closed", "action": "abort-canary-and-route-to-last-approved-digest", "requiresImmutableRevision": true },
+    "manual": { "enabled": true, "status": "pending", "requiresNamedOwner": true, "requiresIndependentApproval": true, "minimumApprovers": 2, "requiresChangeRecord": true },
+    "restorePoint": { "required": true, "status": "not-established", "reference": "restore-point-ref://synthetic/b22/pending", "createdBeforeTrafficChange": true, "immutableReferenceRequired": true, "dataAndEventReconciliationRequired": true },
+    "audit": { "required": true, "status": "not-established", "appendOnly": true, "externalSinkRequired": true, "sensitiveDataPolicy": "redact-or-do-not-record", "correlationFields": ["releaseId", "sourceRevision", "imageDigest", "traceId", "requestId", "decisionId", "rollbackReason", "operatorRef", "restorePointRef"] }
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B22_REQUIRE_RUNTIME",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeStatusWhenMissing": "blocked",
+    "requiredEnv": [
+      "B22_RUNTIME_B21_ACCEPTANCE_EVIDENCE_REF",
+      "B22_RUNTIME_RELEASE_ARTIFACT_EVIDENCE_REF",
+      "B22_RUNTIME_FOUR_PLATFORM_BINDING_EVIDENCE_REF",
+      "B22_RUNTIME_HEALTH_SMOKE_EVIDENCE_REF",
+      "B22_RUNTIME_CANARY_OBSERVATION_EVIDENCE_REF",
+      "B22_RUNTIME_ROLLBACK_EVIDENCE_REF",
+      "B22_RUNTIME_AUDIT_EVIDENCE_REF"
+    ],
+    "requiredEvidence": ["B21 acceptance", "signed artifact", "health smoke", "four-platform binding", "canary observation", "stop-condition evaluation", "rollback", "audit"],
+    "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "local-development", "development-http-200", "unapproved-traffic-change", "unsigned-artifact"]
+  },
+  "evidenceIndex": [
+    { "id": "B22-E-STATIC-ARCH", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-B21", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-ARTIFACT", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-PLATFORMS", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-FLAGS", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-CANARY", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-ROLLBACK", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-STATIC-NO-ACTION", "class": "static", "status": "defined", "collectionPolicy": "repository-static-validator" },
+    { "id": "B22-E-RUNTIME-EXTERNAL", "class": "runtime", "status": "pending", "collectionPolicy": "runtime-runner-only" }
+  ],
+  "reportSchema": {
+    "id": "B22-PRODUCTION-ROLLOUT-REPORT",
+    "version": "1.0.0",
+    "closed": true,
+    "required": ["releaseId", "sourceRevision", "environment", "decision", "stage", "artifactBindings", "smoke", "stopConditions", "rollback", "audit", "reportHash"],
+    "missingEvidenceDecision": "NO-GO"
+  }
+}

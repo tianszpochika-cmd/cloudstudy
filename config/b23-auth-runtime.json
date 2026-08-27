@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "batch": "B23",
+  "phase": "phase-1",
+  "defaultDecision": "deny",
+  "goal": "local-standard-oidc-registration-login-and-service-side-authorization",
+  "idp": {
+    "mode": "external-standard-oidc-local-runtime",
+    "provider": "keycloak",
+    "protocol": "OIDC/OAuth2.1",
+    "issuerEnv": "B23_TEST_IDP_ISSUER_URI",
+    "issuer": "http://127.0.0.1:18099/realms/yuxuexing-local",
+    "authorizationEndpoint": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/auth",
+    "tokenEndpoint": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/token",
+    "jwksUri": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/certs",
+    "audience": "yuxuexing-api",
+    "registrationEnabled": true,
+    "pkceMethod": "S256",
+    "clientSecretInRepository": false,
+    "platformTokenServer": false
+  },
+  "clients": {
+    "learnerWeb": {
+      "clientIdEnv": "B23_OIDC_LEARNER_WEB_CLIENT_ID",
+      "redirectUrisEnv": "B23_OIDC_LEARNER_WEB_REDIRECT_URIS"
+    },
+    "mobileH5": {
+      "clientIdEnv": "B23_OIDC_MOBILE_H5_CLIENT_ID",
+      "redirectUrisEnv": "B23_OIDC_MOBILE_H5_REDIRECT_URIS"
+    },
+    "adminWeb": {
+      "clientIdEnv": "B23_OIDC_ADMIN_WEB_CLIENT_ID",
+      "redirectUrisEnv": "B23_OIDC_ADMIN_WEB_REDIRECT_URIS"
+    }
+  },
+  "iam": {
+    "serviceId": "iam-service",
+    "portKey": "iam-service",
+    "principalPersistence": "mysql-iam-owner",
+    "sessionPersistence": "mysql-iam-owner",
+    "refreshCredentialStorage": "sha256-digest-only",
+    "tenantDerivation": "server-owned-principal",
+    "adultMinimumAge": 18,
+    "adultGateDecision": "fail-closed",
+    "revocationDecision": "fail-closed"
+  },
+  "gateway": {
+    "serviceId": "api-gateway",
+    "portKey": "api-gateway",
+    "resourceServerEnabledEnv": "GATEWAY_RESOURCE_SERVER_ENABLED",
+    "issuerEnv": "OIDC_ISSUER_URI",
+    "protectedApiDefault": "authenticated",
+    "publicPaths": [
+      "/actuator/health/**",
+      "/api/v1/health",
+      "/api/v1/public/commerce/catalog",
+      "/api/v1/auth/oidc/**"
+    ],
+    "forbiddenClientAuthorityHeaders": [
+      "X-Role",
+      "X-B5-Role",
+      "X-Tenant-Id",
+      "X-Owner-Id"
+    ]
+  },
+  "runtimeEvidence": {
+    "static": [
+      "oidc-contract",
+      "local-idp-config",
+      "pkce-state-nonce",
+      "jwks-issuer-audience",
+      "principal-session-migration",
+      "gateway-default-deny"
+    ],
+    "runtime": [
+      "registration",
+      "authorization-code-callback",
+      "principal-me",
+      "valid-jwt-to-protected-api",
+      "invalid-jwt-401",
+      "revoked-jwt-401",
+      "client-authority-header-rejected",
+      "provider-unavailable-fail-closed"
+    ],
+    "requiredPrerequisites": [
+      "java-25",
+      "maven-3.9.9-or-newer",
+      "docker-or-equivalent",
+      "mysql-8",
+      "redis-7"
+    ]
+  }
+}

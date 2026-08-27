@@ -28,8 +28,9 @@ const requiredRoutes = [
   '/api/v1/admin/ops/commerce/orders',
   '/api/v1/admin/ops/tickets',
   '/api/v1/admin/ops/commands',
-  '/api/v1/admin/ops/commands/{commandId}/confirm',
+  '/api/v1/admin/ops/commands/prepare',
   '/api/v1/admin/ops/metrics',
+  '/api/v1/admin/ops/audit',
   '/internal/v1/analytics/events',
   '/internal/v1/analytics/recompute',
 ]

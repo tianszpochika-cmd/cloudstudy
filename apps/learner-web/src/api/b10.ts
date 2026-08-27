@@ -34,8 +34,11 @@ export const B10_GATEWAY_ROUTES = {
     vocabularySync: '/learning/srs/reviews:sync',
     readingProgress: '/reading/progress',
     readingMining: '/reading/mining',
-    reportDaily: '/mastery/reports/daily',
-    reportWeekly: '/mastery/reports/weekly',
+    grammarBlocks: '/grammar/sentences',
+    grammarImitation: '/grammar/sentences',
+    writingHistory: '/writing/history',
+    reportDaily: '/learning/stats/daily-report',
+    reportWeekly: '/learning/stats/weekly-report',
   },
   assessment: {
     sessions: '/assessment/sessions',
@@ -45,7 +48,7 @@ export const B10_GATEWAY_ROUTES = {
     proofreading: '/writing/corrections',
   },
   content: {
-    vocabularyItem: '/vocab/items',
+    vocabularyItem: '/content/learner/vocabulary',
     vocabularyChunk: '/vocab/chunks',
     vocabularyExpression: '/vocab/expressions',
     readingArticles: '/reading/articles',
@@ -58,7 +61,6 @@ export const B10_GATEWAY_ROUTES = {
     writingTemplates: '/writing/templates',
     writingMaterials: '/writing/materials',
     proofreadingExercises: '/writing/proofreading/exercises',
-    writingHistory: '/writing/history',
   },
 } as const
 
@@ -79,6 +81,7 @@ function numberValue(value: unknown): number | null { return typeof value === 'n
 function boolValue(value: unknown): boolean | null { return typeof value === 'boolean' ? value : null }
 function recordValue(value: unknown): RecordValue { return isRecord(value) ? value : {} }
 function contentVersionId(value: RecordValue): number | null { return numberValue(value.contentVersionId) ?? numberValue(value.versionId) }
+function pinnedContentVersionId(value: RecordValue): number | null { return contentVersionId(value) ?? contentVersionId(recordValue(value.pin)) }
 function contentLocale(value: RecordValue): string { return stringValue(value.contentLocale) ?? learnerI18n.contentLocale ?? 'en-US' }
 
 function listFrom(value: unknown, keys: string[] = ['items', 'records', 'questions']): unknown[] {
@@ -114,14 +117,16 @@ function assertPublished(value: RecordValue): void {
   if (['WITHDRAWN', 'UNPUBLISHED', 'REVOKED', 'EXPIRED'].includes(status ?? '') || rights === 'REVOKED' || availability === 'WITHDRAWN') throw new B10ContentStaleError()
 }
 
-function parseItem(value: unknown): { itemType: B10VocabularyCard['itemType']; itemId: number } | null {
+function parseItem(value: unknown): { itemType: B10VocabularyCard['itemType']; itemId: number | string } | null {
   const source = recordValue(value)
   const id = numberValue(source.vocabId) ?? numberValue(source.chunkId) ?? numberValue(source.expressionId) ?? numberValue(source.itemId)
-  if (id === null) return null
+  const textId = stringValue(source.vocabularyId) ?? stringValue(source.itemId)
+  const resolvedId = id ?? textId
+  if (resolvedId === null) return null
   const rawType = stringValue(source.itemType)?.toUpperCase()
-  if (rawType === 'CHUNK' || numberValue(source.chunkId) !== null) return { itemType: 'CHUNK', itemId: id }
-  if (rawType === 'EXPRESSION' || numberValue(source.expressionId) !== null) return { itemType: 'EXPRESSION', itemId: id }
-  return { itemType: 'VOCAB', itemId: id }
+  if (rawType === 'CHUNK' || numberValue(source.chunkId) !== null) return { itemType: 'CHUNK', itemId: resolvedId }
+  if (rawType === 'EXPRESSION' || numberValue(source.expressionId) !== null) return { itemType: 'EXPRESSION', itemId: resolvedId }
+  return { itemType: 'VOCAB', itemId: resolvedId }
 }
 
 function parseSrs(value: unknown): B10VocabularyCard['srs'] {
@@ -129,10 +134,10 @@ function parseSrs(value: unknown): B10VocabularyCard['srs'] {
   if (!Object.keys(source).length) return null
   return {
     stateVersion: numberValue(source.stateVersion) ?? 0,
-    masteryStatus: stringValue(source.masteryStatus) ?? 'NEW',
+    masteryStatus: stringValue(source.masteryStatus) ?? stringValue(source.stage) ?? 'NEW',
     delayedVerifyStage: stringValue(source.delayedVerifyStage) ?? 'NONE',
     riskBand: stringValue(source.riskBand) ?? 'UNKNOWN',
-    dueLocalDate: stringValue(source.dueLocalDate),
+    dueLocalDate: stringValue(source.dueLocalDate) ?? stringValue(source.dueAt),
     nextReviewLocalDate: stringValue(source.nextReviewLocalDate),
     reviewCount: numberValue(source.reviewCount) ?? 0,
     consecutiveCorrect: numberValue(source.consecutiveCorrect) ?? 0,
@@ -187,13 +192,13 @@ function parseVocabularyCard(value: unknown, position: number, total: number): B
 
 function parsePracticeQuestion(value: unknown): B10PracticeQuestion | null {
   const source = recordValue(value)
-  const id = stringValue(source.id) ?? (numberValue(source.exerciseId) !== null ? String(source.exerciseId) : null) ?? (numberValue(source.questionId) !== null ? String(source.questionId) : null)
-  const prompt = stringValue(source.prompt) ?? stringValue(source.stemText)
-  const rawType = stringValue(source.type ?? source.questionType)?.toUpperCase()
+  const id = stringValue(source.id) ?? (numberValue(source.exerciseId) !== null ? String(source.exerciseId) : null) ?? (numberValue(source.questionId) !== null ? String(source.questionId) : null) ?? (numberValue(source.itemId) !== null ? String(source.itemId) : null)
+  const prompt = stringValue(source.prompt) ?? stringValue(source.stemText) ?? stringValue(source.stem)
+  const rawType = stringValue(source.type ?? source.questionType)?.toUpperCase() ?? (stringValue(source.itemType) ? 'CHOICE' : null)
   if (!id || !prompt || !['CHOICE', 'FILL_BLANK', 'CLOZE', 'DRAG_SORTER', 'ANAGRAM', 'TRANSLATION'].includes(rawType ?? '')) return null
   const options = arrayValue(source.options).flatMap((entry) => {
     const item = recordValue(entry)
-    const key = stringValue(item.key) ?? stringValue(item.optionKey) ?? stringValue(item.optionCode)
+    const key = stringValue(item.key) ?? stringValue(item.optionKey) ?? stringValue(item.optionCode) ?? stringValue(item.optionId)
     const text = stringValue(item.text) ?? stringValue(item.label)
     return key && text ? [{ key, text }] : []
   })
@@ -214,7 +219,7 @@ function parsePracticeQuestion(value: unknown): B10PracticeQuestion | null {
     placeholder: stringValue(source.placeholder),
     options,
     tokens,
-    contentVersionId: contentVersionId(source),
+    contentVersionId: pinnedContentVersionId(source),
     contentLocale: contentLocale(source),
   }
 }
@@ -225,16 +230,22 @@ function parseSession(value: unknown): B10PracticeSession | null {
   if (!sessionId) return null
   const statusValue = stringValue(source.status)?.toUpperCase()
   const allowedStatuses: B10PracticeSession['status'][] = ['CREATED', 'IN_PROGRESS', 'COMPLETED', 'INTERRUPTED', 'AUTO_SUBMITTED', 'EXPIRED']
-  const questions = listFrom(source.questions ?? source.exercises, ['items', 'questions', 'exercises']).flatMap((item) => { const question = parsePracticeQuestion(item); return question ? [question] : [] })
+  const questions = listFrom(source.items ?? source.questions ?? source.exercises, ['items', 'questions', 'exercises']).flatMap((item) => { const question = parsePracticeQuestion(item); return question ? [question] : [] })
+  const mode = stringValue(source.mode)?.toUpperCase()
+  const status = statusValue === 'SUBMITTED' || statusValue === 'ASSESSED' ? 'COMPLETED' : statusValue
+  const pin = recordValue(source.pin)
   return {
     sessionId,
-    sessionType: source.sessionType === 'QUICK' || source.sessionType === 'CHECKPOINT' ? source.sessionType : 'DAILY',
-    status: allowedStatuses.includes(statusValue as B10PracticeSession['status']) ? statusValue as B10PracticeSession['status'] : 'CREATED',
+    sessionType: mode === 'REVIEW' ? 'QUICK' : mode === 'MOCK' ? 'CHECKPOINT' : 'DAILY',
+    status: allowedStatuses.includes(status as B10PracticeSession['status']) ? status as B10PracticeSession['status'] : 'CREATED',
     questions,
     currentIndex: numberValue(source.currentIndex) ?? 0,
     checkpointSeq: numberValue(source.checkpointSeq) ?? 0,
     answerRevision: numberValue(source.answerRevision) ?? 0,
-    contentVersionId: contentVersionId(source),
+    contentVersionId: pinnedContentVersionId(source),
+    stateVersion: numberValue(source.stateVersion) ?? 1,
+    lastAttemptId: stringValue(source.lastAttemptId),
+    reportId: stringValue(source.reportId),
   }
 }
 
@@ -250,6 +261,8 @@ function parseFeedback(value: unknown): B10Feedback {
     ruleVersion: stringValue(source.ruleVersion),
     nextAction: nextAction === 'RETRY' || nextAction === 'REVIEW' || nextAction === 'NEXT' ? nextAction : correct === false ? 'RETRY' : 'NEXT',
     evidence: stringValue(source.evidence) ?? stringValue(source.evidenceText),
+    attemptId: stringValue(source.attemptId),
+    reportId: stringValue(source.reportId),
   }
 }
 
@@ -453,7 +466,19 @@ export async function listVocabularyBatch(input: { localDate?: string; dailyNewT
   const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.learning.vocabularyBatch, { localDate, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai', dailyNewTarget: input.dailyNewTarget ?? 20, maxDailyReview: input.maxDailyReview ?? 50, scheduleType: 'DAILY' }, withB10Headers(`b10-srs-batch-${localDate}`))
   const source = recordValue(unwrap(response))
   const items = listFrom(source.items ?? source.cards, ['items', 'cards'])
-  return items.flatMap((item, index) => { const card = parseVocabularyCard(item, index, items.length); return card ? [card] : [] })
+  const cards = await Promise.all(items.map(async (item, index) => {
+    const raw = recordValue(item)
+    const itemId = stringValue(raw.itemId) ?? stringValue(raw.vocabularyId)
+    let enriched: unknown = raw
+    if (itemId) enriched = { ...raw, ...(await getVocabularyFront(itemId)) }
+    return parseVocabularyCard(enriched, index, items.length)
+  }))
+  return cards.flatMap((card) => card ? [card] : [])
+}
+
+async function getVocabularyFront(itemId: string | number): Promise<RecordValue> {
+  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.vocabularyItem}/${encodeURIComponent(String(itemId))}?projection=front`, withB10Headers())
+  return recordValue(unwrap(response))
 }
 
 export async function getVocabularyDetail(card: Pick<B10VocabularyCard, 'itemType' | 'itemId' | 'contentVersionId'>): Promise<B10VocabularyBack> {
@@ -467,7 +492,10 @@ export async function getVocabularyDetail(card: Pick<B10VocabularyCard, 'itemTyp
 }
 
 export async function submitVocabularyReview(event: B10ReviewEvent): Promise<B10ReviewResult> {
-  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.learning.vocabularyReview, event, withB10Headers(event.clientEventId))
+  const payload = typeof event.itemId === 'string'
+    ? { itemId: event.itemId, quality: event.rawQuality, clientEventId: event.clientEventId }
+    : event
+  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.learning.vocabularyReview, payload, withB10Headers(event.clientEventId))
   const source = recordValue(unwrap(response))
   const status = stringValue(source.status)?.toUpperCase()
   const effectiveQuality = numberValue(source.effectiveQuality)
@@ -486,7 +514,9 @@ export async function syncVocabularyReviews(events: B10ReviewEvent[]): Promise<B
 }
 
 export async function createPracticeSession(sessionType: 'DAILY' | 'QUICK' | 'CHECKPOINT', targetCount = 15): Promise<B10PracticeSession> {
-  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.sessions, { sessionType, targetCount }, withB10Headers(`b10-practice-session-${sessionType}`))
+  const mode = sessionType === 'QUICK' ? 'REVIEW' : sessionType === 'CHECKPOINT' ? 'MOCK' : 'PRACTICE'
+  const stableKey = `b10-practice-session-${sessionType}`
+  const response = await apiClient.post<unknown>(B10_GATEWAY_ROUTES.assessment.sessions, { contentVersionId: 25001, mode, clientSessionRef: stableKey, ...(targetCount > 0 ? { itemIds: undefined } : {}) }, withB10Headers(stableKey))
   const session = parseSession(response)
   if (!session) throw new Error('练习服务返回了无法识别的会话。')
   return session
@@ -498,12 +528,38 @@ export async function getPracticeSession(sessionId: string): Promise<B10Practice
   return session
 }
 
-export async function submitPracticeAnswer(sessionId: string, payload: { exerciseId: string; answer: unknown; clientAnswerId: string; contentVersionId: number | null }, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.assessment.sessions}/${encodeURIComponent(sessionId)}/answers`, payload, withB10Headers(stableKey)))
+export async function submitPracticeAnswer(sessionId: string, payload: { exerciseId: string; answer: unknown; clientAnswerId: string; contentVersionId: number | null; stateVersion: number }, stableKey: string): Promise<B10Feedback> {
+  const itemId = Number(payload.exerciseId)
+  if (!Number.isSafeInteger(itemId) || itemId <= 0) throw new Error('练习题缺少合法的服务端 itemId。')
+  const response = await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.assessment.sessions}/${encodeURIComponent(sessionId)}/attempts`, {
+    expectedStateVersion: payload.stateVersion,
+    submissionId: `sub_${payload.clientAnswerId.replace(/[^A-Za-z0-9._:-]/g, '').slice(0, 112)}`,
+    items: [{ itemId, sequence: 0, response: isRecord(payload.answer) ? payload.answer : { text: String(payload.answer ?? '') }, clientSubmissionId: payload.clientAnswerId }],
+    clientEventId: payload.clientAnswerId,
+  }, withB10Headers(stableKey))
+  const source = recordValue(unwrap(response))
+  const scoreBucket = stringValue(source.scoreBucket)?.toUpperCase()
+  return {
+    ...parseFeedback({ ...source, correct: scoreBucket === 'FULL' ? true : scoreBucket === 'ZERO' ? false : null, message: scoreBucket ? `服务端已完成判分：${scoreBucket}` : '服务端已接收本次作答。' }),
+    attemptId: stringValue(source.attemptId),
+    reportId: stringValue(source.reportId),
+  }
 }
 
-export async function savePracticeCheckpoint(sessionId: string, payload: { checkpointSeq: number; currentIndex: number; elapsedTimeMs: number; answerRevision: number }, stableKey: string): Promise<void> {
-  await apiClient.put(`${B10_GATEWAY_ROUTES.assessment.sessions}/${encodeURIComponent(sessionId)}/checkpoint`, payload, withB10Headers(stableKey))
+export async function savePracticeCheckpoint(sessionId: string, attemptId: string, payload: { checkpointSeq: number; currentIndex: number; elapsedTimeMs: number; answerRevision: number }, stableKey: string): Promise<void> {
+  const digest = await checkpointDigest({ sessionId, attemptId, ...payload })
+  await apiClient.put(`${B10_GATEWAY_ROUTES.assessment.sessions}/${encodeURIComponent(sessionId)}/attempts/${encodeURIComponent(attemptId)}/checkpoint`, { checkpointVersion: Math.max(1, payload.checkpointSeq), itemCursor: Math.max(0, payload.currentIndex), completedItemIds: [], checkpointDigest: digest }, withB10Headers(stableKey))
+}
+
+async function checkpointDigest(value: unknown): Promise<string> {
+  const serialized = JSON.stringify(value)
+  if (globalThis.crypto?.subtle) {
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(serialized))
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
+  }
+  let hash = 2166136261
+  for (const char of serialized) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619)
+  return `${Math.abs(hash).toString(16).padStart(8, '0')}${'0'.repeat(56)}`
 }
 
 export async function getLearningReport(reportType: 'DAILY' | 'WEEKLY' = 'DAILY', date = new Date().toISOString().slice(0, 10)): Promise<B10Report> {
@@ -520,7 +576,10 @@ export async function listReadingArticles(): Promise<B10ReadingArticle[]> {
 }
 
 export async function getReadingArticle(articleId: number): Promise<B10ReadingArticle> {
-  const article = parseReadingArticle(await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.readingArticles}/${articleId}`, withB10Headers()))
+  // Detail responses use the same Gateway `{ source, data }` envelope as the
+  // list projection.  The list path unwraps through listFrom(), so the detail
+  // path must do the same before applying the published-article parser.
+  const article = parseReadingArticle(unwrap(await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.readingArticles}/${articleId}`, withB10Headers())))
   if (!article) throw new Error('阅读内容数据暂时无法读取。')
   return article
 }
@@ -558,8 +617,8 @@ export async function saveReadingProgress(payload: { articleId: number; blockId:
   await apiClient.put(B10_GATEWAY_ROUTES.learning.readingProgress, { ...payload, clientEventId: stableKey }, withB10Headers(stableKey))
 }
 
-export async function createReadingMining(articleId: number, blockId: string, contentVersionId: number, stableKey: string): Promise<void> {
-  await apiClient.post(B10_GATEWAY_ROUTES.learning.readingMining, { articleId, blockId, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey))
+export async function createReadingMining(articleId: number, blockId: string, selectedText: string, contentVersionId: number, stableKey: string): Promise<void> {
+  await apiClient.post(B10_GATEWAY_ROUTES.learning.readingMining, { articleId, blockId, selectedText, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey))
 }
 
 export async function listGrammarPoints(): Promise<B10GrammarPoint[]> {
@@ -588,11 +647,11 @@ export async function submitGrammarAttempt(exerciseId: number, answer: unknown, 
 }
 
 export async function submitSentenceBlocks(sentenceId: number, blockOrder: string[], contentVersionId: number, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.content.grammarSentences}/${sentenceId}/blocks`, { blockOrder, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey)))
+  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.learning.grammarBlocks}/${sentenceId}/blocks`, { blockOrder, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey)))
 }
 
 export async function submitSentenceImitation(sentenceId: number, slotValues: Record<string, string>, contentVersionId: number, stableKey: string): Promise<B10Feedback> {
-  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.content.grammarSentences}/${sentenceId}/imitation`, { slotValues, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey)))
+  return parseFeedback(await apiClient.post<unknown>(`${B10_GATEWAY_ROUTES.learning.grammarImitation}/${sentenceId}/imitation`, { slotValues, contentVersionId, clientEventId: stableKey }, withB10Headers(stableKey)))
 }
 
 export async function listWritingPrompts(): Promise<B10WritingPrompt[]> {
@@ -616,7 +675,7 @@ export async function listProofreadingExercises(): Promise<B10ProofreadingIssue[
 }
 
 export async function listWritingHistory(): Promise<B10WritingHistoryItem[]> {
-  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.content.writingHistory}${query({ limit: 20 })}`, withB10Headers())
+  const response = await apiClient.get<unknown>(`${B10_GATEWAY_ROUTES.learning.writingHistory}${query({ limit: 20 })}`, withB10Headers())
   return listFrom(response).flatMap((item) => { const history = parseWritingHistory(item); return history ? [history] : [] })
 }
 

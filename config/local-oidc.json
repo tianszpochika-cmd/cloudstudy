@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "provider": "keycloak",
+  "image": "quay.io/keycloak/keycloak:26.7.1",
+  "testOnly": true,
+  "productionUse": false,
+  "tokenServerInRepository": false,
+  "host": "127.0.0.1",
+  "portKey": "oidc-idp",
+  "port": 18099,
+  "baseUrl": "http://127.0.0.1:18099",
+  "realm": "yuxuexing-local",
+  "issuer": "http://127.0.0.1:18099/realms/yuxuexing-local",
+  "endpoints": {
+    "discovery": "http://127.0.0.1:18099/realms/yuxuexing-local/.well-known/openid-configuration",
+    "authorization": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/auth",
+    "token": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/token",
+    "jwks": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/certs",
+    "userinfo": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/userinfo",
+    "logout": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/logout"
+  },
+  "protocol": {
+    "standard": "OIDC/OAuth2.1",
+    "grant": "authorization_code",
+    "pkce": "S256",
+    "implicitFlow": false,
+    "resourceOwnerPasswordGrant": false,
+    "refreshTokenRotation": true,
+    "registration": {
+      "endUserSelfRegistration": true,
+      "dynamicClientRegistration": false
+    }
+  },
+  "adminBootstrap": {
+    "usernameEnv": "OIDC_BOOTSTRAP_ADMIN_USERNAME",
+    "passwordEnv": "OIDC_BOOTSTRAP_ADMIN_PASSWORD",
+    "passwordCommitted": false
+  },
+  "audience": "yuxuexing-api",
+  "audienceClaim": "aud",
+  "audienceMapper": "yuxuexing-api-audience",
+  "scopes": ["openid", "yuxuexing-identity", "yuxuexing-api"],
+  "discovery": {
+    "requiredFields": [
+      "issuer",
+      "authorization_endpoint",
+      "token_endpoint",
+      "jwks_uri",
+      "userinfo_endpoint",
+      "end_session_endpoint"
+    ],
+    "requiredResponseType": "code",
+    "requiredGrantType": "authorization_code",
+    "requiredCodeChallengeMethod": "S256"
+  },
+  "jwks": {
+    "uri": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/certs",
+    "requiredKeyUse": "sig",
+    "requiredSigningAlgorithm": "RS256",
+    "requireKeyId": true,
+    "publicKeysOnly": true
+  },
+  "registrationPolicy": {
+    "selfRegistration": true,
+    "dynamicClientRegistration": false,
+    "registrationEmailAsUsername": false,
+    "verifyEmail": false,
+    "loginWithEmail": true,
+    "duplicateEmails": false,
+    "passwordReset": false,
+    "editUsername": false,
+    "passwordPolicy": "length(12) and notUsername"
+  },
+  "redirectPolicy": {
+    "match": "exact",
+    "wildcardsAllowed": false,
+    "fragmentsAllowed": false,
+    "crossClientReuseAllowed": false
+  },
+  "clients": [
+    {
+      "id": "learner-web",
+      "clientId": "yuxuexing-learner-web",
+      "type": "public-pkce",
+      "redirectUris": ["http://127.0.0.1:18180/auth/callback"],
+      "logoutRedirectUris": ["http://127.0.0.1:18180/"],
+      "webOrigins": ["http://127.0.0.1:18180"]
+    },
+    {
+      "id": "admin-web",
+      "clientId": "yuxuexing-admin-web",
+      "type": "public-pkce",
+      "redirectUris": ["http://127.0.0.1:18181/auth/callback"],
+      "logoutRedirectUris": ["http://127.0.0.1:18181/"],
+      "webOrigins": ["http://127.0.0.1:18181"]
+    },
+    {
+      "id": "mobile-h5",
+      "clientId": "yuxuexing-mobile-h5",
+      "type": "public-pkce",
+      "redirectUris": ["http://127.0.0.1:18183/auth/callback"],
+      "logoutRedirectUris": ["http://127.0.0.1:18183/"],
+      "webOrigins": ["http://127.0.0.1:18183"]
+    },
+    {
+      "id": "mobile-app",
+      "clientId": "yuxuexing-mobile-app",
+      "type": "public-pkce",
+      "redirectUris": ["englishflow://auth/callback"],
+      "logoutRedirectUris": ["englishflow://auth/callback"],
+      "webOrigins": []
+    }
+  ],
+  "data": {
+    "volume": "yuxuexing-keycloak",
+    "realmImport": "infra/docker/keycloak/realm/yuxuexing-local-realm.json",
+    "syntheticAccountPolicy": "register through the local realm; do not commit passwords; remove accounts after a test run"
+  }
+}

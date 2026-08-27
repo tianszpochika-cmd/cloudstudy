@@ -25,7 +25,7 @@ const pathNames = Object.keys(contract.paths);
 test("B2 contract is valid JSON and exposes DEV-04-001..009 foundations", () => {
   for (const path of [
     "/api/v1/vocab/wordbooks",
-    "/api/v1/vocab/items/{vocabId}",
+    "/api/v1/content/learner/vocabulary/{vocabularyId}",
     "/api/v1/vocab/chunks/{chunkId}",
     "/api/v1/vocab/expressions",
     "/api/v1/vocab/offline/cards",

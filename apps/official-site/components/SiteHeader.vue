@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { siteNavigation } from '~/utils/site-content.mjs'
-import { officialI18n } from '~/utils/v2-foundation'
+import { officialI18n, officialI18nAdapter } from '~/utils/v2-foundation'
 
 const route = useRoute()
 const { authLink } = useOfficialSiteLinks()
 const isMenuOpen = ref(false)
+const uiLocale = ref(officialI18nAdapter.state.locale)
+const unsubscribeLocale = officialI18nAdapter.subscribe((state) => { uiLocale.value = state.locale })
 
 const loginLink = computed(() => authLink('/home'))
+const loginLabel = computed(() => officialI18n.t('auth.login.start', undefined, { locale: uiLocale.value }))
+const loginTitle = computed(() => officialI18n.t('auth.login.publicOnly', undefined, { locale: uiLocale.value }))
 
 function isActive(path: string): boolean {
   if (path === '/') return route.path === '/'
@@ -19,6 +23,7 @@ function closeMenu() {
 }
 
 watch(() => route.fullPath, closeMenu)
+onBeforeUnmount(unsubscribeLocale)
 </script>
 
 <template>
@@ -57,7 +62,7 @@ watch(() => route.fullPath, closeMenu)
         >
           {{ item.label }}
         </NuxtLink>
-        <a class="button button-small button-primary nav-cta" :href="loginLink" :title="officialI18n.t('auth.login.publicOnly')" @click="closeMenu">{{ officialI18n.t('auth.login.start') }}</a>
+        <a class="button button-small button-primary nav-cta" :href="loginLink" :title="loginTitle" @click="closeMenu">{{ loginLabel }}</a>
       </nav>
     </div>
   </header>

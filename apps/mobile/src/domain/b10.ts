@@ -24,7 +24,7 @@ export interface B10SrsCard {
   snapshotItemId: number
   sequenceNo: number
   itemType: B10ItemType
-  itemId: number
+  itemId: number | string
   title: string
   sourceReason: string
   contentVersion: string | null
@@ -85,6 +85,9 @@ export interface B10AssessmentSession {
   answerSheet: Array<{ exerciseId: number; saved: boolean; revision: number }>
   contentEpoch: number
   degraded: boolean
+  stateVersion: number
+  lastAttemptId: string | null
+  reportId: string | null
 }
 
 export interface B10AnswerResult {
@@ -100,6 +103,8 @@ export interface B10AnswerResult {
   masteryEffect: string | null
   deduplicated: boolean
   contentVersionStale: boolean
+  attemptId?: string | null
+  reportId?: string | null
 }
 
 export type B10AnswerInput =
@@ -135,7 +140,7 @@ export interface B10Verification {
 }
 
 export interface B10Report {
-  reportId: number
+  reportId: number | string
   reportType: 'EXAM_DIAGNOSTIC' | 'DAILY' | 'WEEKLY'
   status: 'GENERATING' | 'READY' | 'PARTIAL' | 'FAILED'
   score: number | null

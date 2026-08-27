@@ -13,10 +13,7 @@ public final class RedirectUriAllowlist {
     private final Set<String> allowed;
 
     public RedirectUriAllowlist(Set<URI> allowedRedirectUris) {
-        if (allowedRedirectUris == null || allowedRedirectUris.isEmpty()) {
-            throw new IllegalArgumentException("at least one redirect URI is required");
-        }
-        this.allowed = allowedRedirectUris.stream()
+        this.allowed = (allowedRedirectUris == null ? Set.<URI>of() : allowedRedirectUris).stream()
                 .map(RedirectUriAllowlist::canonical)
                 .collect(Collectors.toUnmodifiableSet());
     }

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: englishflow-g4-oci-image-lock
+data:
+  immutable-digest-required: "true"
+  signature-required: "true"
+  sbom-required: "true"
+  provenance-required: "true"
+  mutable-tag-allowed: "false"
+  same-digest-across-promotion: "true"
+  api-gateway: registry.example.invalid/englishflow/api-gateway@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  iam-service: registry.example.invalid/englishflow/iam-service@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  learner-service: registry.example.invalid/englishflow/learner-service@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+  content-service: registry.example.invalid/englishflow/content-service@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd

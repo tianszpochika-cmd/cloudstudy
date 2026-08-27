@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "batch": "B26",
+  "scope": "V2-B26-EVT-003",
+  "phase": "phase-1",
+  "mode": "preview-static",
+  "status": "static-foundation",
+  "runtimeStatus": "pending",
+  "defaultDecision": "deny",
+  "sourceContracts": {
+    "auth": "config/b23-auth-runtime.json",
+    "data": "config/b25-data.json",
+    "openapi": [
+      "packages/contracts/openapi/v1/openapi.json",
+      "packages/contracts/fragments/b25/b25-phase1-real-data.openapi.json"
+    ],
+    "events": [
+      "packages/contracts/events/v1/catalog.json",
+      "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+      "packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json"
+    ]
+  },
+  "execution": {
+    "defaultMode": "preview",
+    "allowedModes": ["preview", "static"],
+    "writesDatabase": false,
+    "publishesKafka": false,
+    "networkCalls": false,
+    "mintsJwt": false,
+    "usesProvidedJwt": false,
+    "claimsApiDbKafkaSuccess": false,
+    "allowUnverifiedPass": false,
+    "runtimeEvidence": null,
+    "blockers": [
+      "B25 API-to-DB-to-API runtime Gate is still pending",
+      "External OIDC issuer, JWKS and a real authenticated test account are required",
+      "Kafka topic, producer outbox and consumer offset reconciliation are not attached",
+      "Browser/device evidence and restart read-back are not produced by a static preview"
+    ]
+  },
+  "authBoundary": {
+    "protocol": "OIDC/OAuth2.1",
+    "issuerSource": "external-runtime-only",
+    "tokenSource": "external-idp-issued-access-token",
+    "tokenValue": null,
+    "syntheticJwt": false,
+    "clientMayMintJwt": false,
+    "tenantSource": "verified-jwt-server-derived",
+    "principalSource": "verified-jwt-server-derived",
+    "requiredClaims": ["iss", "sub", "aud", "exp"],
+    "forbiddenClientAuthorityHeaders": ["X-Role", "X-B5-Role", "X-Tenant-Id", "X-Owner-Id"]
+  },
+  "correlation": {
+    "requiredFields": ["eventId", "requestId", "traceId", "dedupeKey"],
+    "traceId": "one-journey-root-correlation",
+    "requestId": "one-api-command-or-read",
+    "eventId": "one-versioned-event-envelope-or-null-when-no-event",
+    "dedupeKey": "one-idempotent-business-effect",
+    "previewValuesAreSynthetic": true,
+    "rawCredentialOrPiiAllowed": false
+  },
+  "dataOwnership": {
+    "oneSchemaOneServiceOwner": true,
+    "crossServiceSqlJoins": false,
+    "crossServiceWrites": false,
+    "sharedTableWrites": false,
+    "gatewayMayWriteDomainTables": false,
+    "workflowMayWriteDomainTables": false,
+    "redisIsProjectionOnly": true,
+    "kafkaIsIntegrationOnly": true,
+    "allowKafkaRpc": false,
+    "ownerServices": [
+      {
+        "service": "iam-service",
+        "schema": "iam_service",
+        "tables": [
+          "iam_oidc_authorization_transaction",
+          "iam_principal",
+          "iam_external_identity",
+          "iam_session",
+          "iam_consent",
+          "iam_decision_audit"
+        ]
+      },
+      {
+        "service": "learner-service",
+        "schema": "learner_service",
+        "tables": [
+          "b25_learner_profile",
+          "b25_learner_goal",
+          "b25_learner_preferences",
+          "b25_learner_daily_task",
+          "learner_idempotency_record",
+          "learner_outbox_event"
+        ]
+      },
+      {
+        "service": "content-service",
+        "schema": "content_service",
+        "tables": [
+          "b25_content_course",
+          "b25_content_unit",
+          "b25_content_vocabulary",
+          "b25_content_item",
+          "b25_content_answer_rule",
+          "content_outbox_event"
+        ]
+      },
+      {
+        "service": "assessment-service",
+        "schema": "assessment_service",
+        "tables": [
+          "b25_assessment_item_rule",
+          "b25_assessment_session",
+          "b25_assessment_report",
+          "b25_assessment_idempotency",
+          "assessment_attempt",
+          "assessment_outbox_event"
+        ]
+      },
+      {
+        "service": "learning-service",
+        "schema": "learning_service",
+        "tables": [
+          "b25_learning_plan",
+          "b25_learning_srs_state",
+          "b25_learning_review",
+          "learning_plan",
+          "learning_task",
+          "mastery_projection",
+          "learning_outbox_event",
+          "learning_runtime_outbox_event"
+        ]
+      },
+      {
+        "service": "notification-service",
+        "schema": "notification_service",
+        "tables": [
+          "b25_notification_preference",
+          "b25_notification_message",
+          "notification_message",
+          "notification_idempotency",
+          "notification_outbox_event"
+        ]
+      }
+    ]
+  },
+  "eventTransport": {
+    "delivery": "at-least-once",
+    "outboxRequired": true,
+    "partitionKey": "aggregateId",
+    "consumerDeduplication": true,
+    "dlqAndReplayRequired": true,
+    "schemaCompatibility": "backward-compatible-or-new-version",
+    "rpc": false,
+    "requestReply": false,
+    "staticPreviewPublishesNothing": true
+  },
+  "steps": [
+    {
+      "index": 1,
+      "id": "register",
+      "label": "注册",
+      "kind": "external-oidc-registration",
+      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_oidc_authorization_transaction", "iam_principal", "iam_external_identity"]},
+      "api": {
+        "gateway": [{"method": "GET", "path": "/api/v1/auth/oidc/standard-oidc/authorization/start", "auth": "public-oidc-entry"}],
+        "owner": [{"method": "GET", "path": "/internal/v1/iam/oidc/authorization/start", "auth": "server-owned-transaction"}],
+        "external": "registration-at-approved-oidc-provider",
+        "idempotencyHeader": null
+      },
+      "writeSet": ["iam_oidc_authorization_transaction", "iam_principal", "iam_external_identity"],
+      "readSet": [],
+      "event": {"required": false, "name": null, "address": null, "producerService": "iam-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["external registration redirect", "server-owned state and PKCE", "no credential in route or log"]},
+        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_oidc_authorization_transaction", "iam_principal", "iam_external_identity"], "checks": ["principal identity mapping", "issuer-subject hash binding", "no token plaintext"]},
+        "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
+        "blockers": ["external IdP registration and callback evidence is runtime-only"]
+      }
+    },
+    {
+      "index": 2,
+      "id": "login",
+      "label": "登录",
+      "kind": "oidc-login-callback",
+      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_oidc_authorization_transaction", "iam_external_identity", "iam_session", "iam_principal"]},
+      "api": {
+        "gateway": [
+          {"method": "GET", "path": "/api/v1/auth/oidc/standard-oidc/authorization/start", "auth": "public-oidc-entry"},
+          {"method": "GET", "path": "/api/v1/auth/oidc/standard-oidc/callback", "auth": "public-callback-state-code"}
+        ],
+        "owner": [{"method": "POST", "path": "/internal/v1/iam/oidc/callback", "auth": "server-verifies-provider-token"}],
+        "external": "authorization-code-plus-pkce-at-approved-oidc-provider",
+        "idempotencyHeader": null
+      },
+      "writeSet": ["iam_external_identity", "iam_session", "iam_principal"],
+      "readSet": ["iam_oidc_authorization_transaction"],
+      "event": {"required": false, "name": null, "address": null, "producerService": "iam-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["code and state accepted once", "JWKS issuer audience and expiry verified", "protected API returns authenticated response"]},
+        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_session", "iam_external_identity", "iam_principal"], "checks": ["refresh token digest only", "server-derived platform tenant", "session read-back after restart"]},
+        "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
+        "blockers": ["no valid runtime access token or JWKS evidence is supplied to static preview"]
+      }
+    },
+    {
+      "index": 3,
+      "id": "adult-gate",
+      "label": "成人 Gate",
+      "kind": "adult-gate",
+      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_principal", "iam_consent", "iam_decision_audit"]},
+      "api": {
+        "gateway": [{"method": "POST", "path": "/api/v1/iam/adult-gate", "auth": "verified-jwt"}],
+        "owner": [{"method": "POST", "path": "/internal/v1/iam/adult-gate", "auth": "service-pep"}],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
+      },
+      "writeSet": ["iam_principal", "iam_consent", "iam_decision_audit"],
+      "readSet": ["iam_principal"],
+      "event": {"required": false, "name": null, "address": null, "producerService": "iam-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["verified principal only", "rejected adult gate is explicit 403/denied", "Idempotency-Key replay has no second effect"]},
+        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_principal", "iam_consent", "iam_decision_audit"], "checks": ["adult decision and consent version", "decision audit requestId and traceId", "no client tenant or owner authority"]},
+        "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
+        "blockers": ["adult-gate runtime decision is not represented by static fixture success"]
+      }
+    },
+    {
+      "index": 4,
+      "id": "goal",
+      "label": "保存学习目标",
+      "kind": "learner-onboarding-write",
+      "owner": {"service": "learner-service", "schema": "learner_service", "tables": ["b25_learner_profile", "b25_learner_goal", "b25_learner_preferences"]},
+      "api": {
+        "gateway": [
+          {"method": "POST", "path": "/api/v1/onboarding/profile", "auth": "verified-jwt"},
+          {"method": "PUT", "path": "/api/v1/learner/targets", "auth": "verified-jwt"}
+        ],
+        "owner": [
+          {"method": "PATCH", "path": "/internal/v1/learner/profile", "auth": "service-pep"},
+          {"method": "PUT", "path": "/internal/v1/learner/targets", "auth": "service-pep"}
+        ],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
+      },
+      "writeSet": ["b25_learner_profile", "b25_learner_goal", "b25_learner_preferences"],
+      "readSet": [],
+      "event": {"required": false, "name": null, "address": null, "producerService": "learner-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["authenticated response source is mysql", "tenant and principal derive from JWT", "same idempotency key returns first durable result"]},
+        "db": {"status": "pending", "schema": "learner_service", "tables": ["b25_learner_profile", "b25_learner_goal", "b25_learner_preferences"], "checks": ["goal and profile owner rows", "no cross-service table write", "read-after-write and restart read-back"]},
+        "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
+        "blockers": ["B25 learner API-to-DB-to-API evidence must close before this step can pass"]
+      }
+    },
+    {
+      "index": 5,
+      "id": "course",
+      "label": "读取课程",
+      "kind": "published-content-read",
+      "owner": {"service": "content-service", "schema": "content_service", "tables": ["b25_content_course", "b25_content_unit", "b25_content_vocabulary", "b25_content_item"]},
+      "api": {
+        "gateway": [
+          {"method": "GET", "path": "/api/v1/content/learner/catalog", "auth": "verified-jwt"},
+          {"method": "GET", "path": "/api/v1/content/learner/{contentCode}", "auth": "verified-jwt"}
+        ],
+        "owner": [
+          {"method": "GET", "path": "/internal/v1/content/learner/catalog", "auth": "service-pep"},
+          {"method": "GET", "path": "/internal/v1/content/learner/{contentCode}", "auth": "service-pep"}
+        ],
+        "external": null,
+        "idempotencyHeader": null
+      },
+      "writeSet": [],
+      "readSet": ["b25_content_course", "b25_content_unit", "b25_content_vocabulary", "b25_content_item"],
+      "event": {"required": false, "name": null, "address": null, "producerService": "content-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["published and rights-valid rows only", "answer rule is not returned", "response source is mysql owner"]},
+        "db": {"status": "pending", "schema": "content_service", "tables": ["b25_content_course", "b25_content_unit", "b25_content_vocabulary", "b25_content_item"], "checks": ["content version and rights binding", "no answer rule leakage", "Redis is optional projection only"]},
+        "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
+        "blockers": ["published catalog API read-back is not executed in static mode"]
+      }
+    },
+    {
+      "index": 6,
+      "id": "practice",
+      "label": "开始并提交练习",
+      "kind": "practice-session-write",
+      "owner": {"service": "assessment-service", "schema": "assessment_service", "tables": ["b25_assessment_item_rule", "b25_assessment_session", "b25_assessment_idempotency"]},
+      "api": {
+        "gateway": [
+          {"method": "POST", "path": "/api/v1/assessment/placement/start", "auth": "verified-jwt"},
+          {"method": "POST", "path": "/api/v1/assessment/placement/submit-step", "auth": "verified-jwt"}
+        ],
+        "owner": [
+          {"method": "POST", "path": "/internal/v1/assessment/placement/start", "auth": "service-pep"},
+          {"method": "POST", "path": "/internal/v1/assessment/placement/submit-step", "auth": "service-pep"}
+        ],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
+      },
+      "writeSet": ["b25_assessment_session", "b25_assessment_idempotency"],
+      "readSet": ["b25_assessment_item_rule"],
+      "event": {"required": false, "name": null, "address": null, "producerService": "assessment-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["session is authenticated and content-version pinned", "answer rule remains server-owned", "duplicate command is idempotent"]},
+        "db": {"status": "pending", "schema": "assessment_service", "tables": ["b25_assessment_item_rule", "b25_assessment_session", "b25_assessment_idempotency"], "checks": ["session owner and status", "no client score or answer-rule authority", "read-after-write"]},
+        "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
+        "blockers": ["practice command is not sent by a static preview"]
+      }
+    },
+    {
+      "index": 7,
+      "id": "grading",
+      "label": "服务端判分",
+      "kind": "assessment-grading-and-event",
+      "owner": {"service": "assessment-service", "schema": "assessment_service", "tables": ["b25_assessment_session", "b25_assessment_report", "assessment_outbox_event"]},
+      "api": {
+        "gateway": [{"method": "POST", "path": "/api/v1/assessment/placement/submit-step", "auth": "verified-jwt"}],
+        "owner": [{"method": "POST", "path": "/internal/v1/assessment/placement/submit-step", "auth": "service-pep"}],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
+      },
+      "writeSet": ["b25_assessment_session", "b25_assessment_report", "assessment_outbox_event"],
+      "readSet": ["b25_assessment_item_rule"],
+      "event": {
+        "required": true,
+        "name": "assessment.attempt.submitted.v1",
+        "address": "assessment.attempt.submitted.v1",
+        "producerService": "assessment-service",
+        "consumerServices": ["learning-service", "workflow-service"],
+        "outboxTable": "assessment_outbox_event",
+        "emissionStatus": "planned-not-emitted",
+        "eventId": null,
+        "rpc": false,
+        "payloadPolicy": "versioned-summary-no-raw-answer-no-answer-rule"
+      },
+      "secondaryEvent": {"name": "assessment.attempt.assessed.v1", "address": "assessment.attempt.assessed.v1", "emissionStatus": "planned-not-emitted", "eventId": null},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["server-derived score bucket", "assessment response carries requestId and traceId", "replay has no second effect"]},
+        "db": {"status": "pending", "schema": "assessment_service", "tables": ["b25_assessment_session", "b25_assessment_report", "assessment_outbox_event"], "checks": ["session/report owner rows", "outbox event and dedupe key", "report version matches attempt"]},
+        "kafka": {"status": "pending", "topic": null, "address": "assessment.attempt.submitted.v1", "checks": ["outbox-to-topic reconciliation", "eventId and schemaVersion", "aggregate partition order", "consumer offset and DLQ accounting", "duplicate delivery no second effect"], "rpc": false},
+        "blockers": ["Kafka broker/topic/producer/consumer runtime evidence is absent"]
+      }
+    },
+    {
+      "index": 8,
+      "id": "mastery-srs",
+      "label": "掌握度与 SRS",
+      "kind": "learning-projection-and-srs",
+      "owner": {"service": "learning-service", "schema": "learning_service", "tables": ["b25_learning_plan", "b25_learning_srs_state", "b25_learning_review", "learning_runtime_outbox_event"]},
+      "api": {
+        "gateway": [
+          {"method": "POST", "path": "/api/v1/learning/srs/reviews", "auth": "verified-jwt"},
+          {"method": "GET", "path": "/api/v1/learning/srs/overview", "auth": "verified-jwt"}
+        ],
+        "owner": [
+          {"method": "POST", "path": "/internal/v1/learning/srs/reviews", "auth": "service-pep"},
+          {"method": "GET", "path": "/internal/v1/learning/srs/overview", "auth": "service-pep"}
+        ],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
+      },
+      "writeSet": ["b25_learning_srs_state", "b25_learning_review", "learning_runtime_outbox_event"],
+      "readSet": ["b25_learning_plan"],
+      "consumes": {"eventName": "assessment.attempt.assessed.v1", "sourceService": "assessment-service", "sourceReferenceOnly": true, "crossServiceSqlJoin": false},
+      "event": {
+        "required": true,
+        "name": "learning.mastery.projected.v1",
+        "address": "learning.mastery.projected.v1",
+        "producerService": "learning-service",
+        "consumerServices": ["workflow-service", "notification-service"],
+        "outboxTable": "learning_runtime_outbox_event",
+        "emissionStatus": "planned-not-emitted",
+        "eventId": null,
+        "rpc": false,
+        "payloadPolicy": "versioned-mastery-summary-no-raw-answer"
+      },
+      "secondaryEvent": {"name": "learning.review.scheduled.v1", "address": "learning.review.scheduled.v1", "emissionStatus": "planned-not-emitted", "eventId": null},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["server computes SRS next state", "client quality is bounded input only", "read-after-write overview"]},
+        "db": {"status": "pending", "schema": "learning_service", "tables": ["b25_learning_plan", "b25_learning_srs_state", "b25_learning_review", "learning_runtime_outbox_event"], "checks": ["mastery and SRS owner rows", "source assessment event dedupe", "restart read-back"]},
+        "kafka": {"status": "pending", "topic": null, "address": "learning.mastery.projected.v1", "checks": ["consumer dedupe by sourceAssessmentEventId/itemId/projectionVersion", "outbox-to-topic reconciliation", "offset continuity and DLQ recovery"], "rpc": false},
+        "blockers": ["assessment event has not been produced and learning consumer has not been replayed"]
+      }
+    },
+    {
+      "index": 9,
+      "id": "report",
+      "label": "读取学习报告",
+      "kind": "assessment-report-read",
+      "owner": {"service": "assessment-service", "schema": "assessment_service", "tables": ["b25_assessment_report", "b25_assessment_session"]},
+      "api": {
+        "gateway": [{"method": "GET", "path": "/api/v1/assessment/placement/report/{sessionId}", "auth": "verified-jwt"}],
+        "owner": [{"method": "GET", "path": "/internal/v1/assessment/placement/report/{sessionId}", "auth": "service-pep"}],
+        "external": null,
+        "idempotencyHeader": null
+      },
+      "writeSet": [],
+      "readSet": ["b25_assessment_report", "b25_assessment_session"],
+      "event": {"required": true, "name": "report.generated.v1", "address": "report.generated.v1", "producerService": "assessment-service", "consumerServices": ["learner-service", "notification-service"], "outboxTable": "assessment_outbox_event", "emissionStatus": "planned-not-emitted", "eventId": null, "rpc": false, "payloadPolicy": "report-reference-and-version-only"},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["report belongs to verified principal", "report calculation version is visible", "missing report is explicit not empty success"]},
+        "db": {"status": "pending", "schema": "assessment_service", "tables": ["b25_assessment_report", "b25_assessment_session"], "checks": ["report/session binding", "score and level are server facts", "read-after-write"]},
+        "kafka": {"status": "pending", "topic": null, "address": "report.generated.v1", "checks": ["report event id and dedupe key", "event consumer reconciliation"], "rpc": false},
+        "blockers": ["report event and authenticated report API read-back are not executed"]
+      }
+    },
+    {
+      "index": 10,
+      "id": "notification",
+      "label": "读取通知",
+      "kind": "notification-read",
+      "owner": {"service": "notification-service", "schema": "notification_service", "tables": ["b25_notification_preference", "b25_notification_message", "notification_outbox_event"]},
+      "api": {
+        "gateway": [{"method": "GET", "path": "/api/v1/notifications/messages", "auth": "verified-jwt"}],
+        "owner": [{"method": "GET", "path": "/internal/v1/notifications/messages", "auth": "service-pep"}],
+        "external": null,
+        "idempotencyHeader": null
+      },
+      "writeSet": [],
+      "readSet": ["b25_notification_preference", "b25_notification_message"],
+      "consumes": {"eventName": "report.generated.v1", "sourceService": "assessment-service", "sourceReferenceOnly": true, "crossServiceSqlJoin": false},
+      "event": {"required": true, "name": "notification.requested.v1", "address": "notification.requested.v1", "producerService": "notification-service", "consumerServices": ["workflow-service"], "outboxTable": "notification_outbox_event", "emissionStatus": "planned-not-emitted", "eventId": null, "rpc": false, "payloadPolicy": "template-reference-no-raw-content"},
+      "reconciliation": {
+        "api": {"status": "pending", "checks": ["messages are scoped to verified principal", "notification preference is server-owned", "read-after-write and re-login preserve state"]},
+        "db": {"status": "pending", "schema": "notification_service", "tables": ["b25_notification_preference", "b25_notification_message"], "checks": ["notification owner rows", "template/version reference", "restart read-back"]},
+        "kafka": {"status": "pending", "topic": null, "address": "notification.requested.v1", "checks": ["notification dedupe by id/channel/template", "outbox-to-topic reconciliation", "delivery/DLQ accounting"], "rpc": false},
+        "blockers": ["notification event and authenticated message read-back are not executed"]
+      }
+    }
+  ]
+}

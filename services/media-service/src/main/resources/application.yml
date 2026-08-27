@@ -1,6 +1,13 @@
 spring:
   application:
     name: ${MEDIA_SERVICE_NAME:media-service}
+  flyway:
+    enabled: ${MEDIA_FLYWAY_ENABLED:false}
+    baseline-on-migrate: ${MEDIA_FLYWAY_BASELINE_ON_MIGRATE:true}
+    baseline-version: ${MEDIA_FLYWAY_BASELINE_VERSION:0}
+    locations: classpath:db/migration
+    schemas: ${MEDIA_SERVICE_SCHEMA:media_service}
+    default-schema: ${MEDIA_SERVICE_SCHEMA:media_service}
   lifecycle:
     timeout-per-shutdown-phase: ${MEDIA_SERVICE_SHUTDOWN_TIMEOUT:20s}
 

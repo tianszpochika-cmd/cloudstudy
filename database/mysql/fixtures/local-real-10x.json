@@ -1,0 +1,71 @@
+{
+  "fixtureId": "local-real-10x-v1",
+  "synthetic": true,
+  "tenantId": "platform",
+  "fixtureDate": "2026-08-26",
+  "subjects": 10,
+  "rowsPerFunction": 10,
+  "functionalCheckItems": 118,
+  "b3ResourceTypes": [
+    "GRAMMAR_POINT",
+    "GRAMMAR_EXERCISE",
+    "SENTENCE",
+    "LISTENING_MATERIAL",
+    "LISTENING_CLIP",
+    "READING_ARTICLE",
+    "READING_QUESTION",
+    "DICTIONARY_ENTRY",
+    "PHONEME",
+    "MINIMAL_PAIR",
+    "WRITING_PROMPT",
+    "WRITING_TEMPLATE",
+    "WRITING_MATERIAL",
+    "PROOFREADING"
+  ],
+  "gamificationFeatureKeys": [
+    "quests",
+    "achievements",
+    "collection",
+    "catalog",
+    "season-rewards",
+    "avatar-profile",
+    "avatar-items",
+    "avatar-loadouts",
+    "avatar-resources",
+    "study-space",
+    "game-catalog"
+  ],
+  "databaseOwners": [
+    "iam-service",
+    "learner-service",
+    "content-service",
+    "learning-service",
+    "assessment-service",
+    "media-service",
+    "notification-service",
+    "gamification-service",
+    "social-service",
+    "commerce-service",
+    "admin-ops-service",
+    "analytics-service"
+  ],
+  "excludedFromBusinessRowCount": [
+    "api-gateway",
+    "service-template",
+    "content-worker",
+    "notification-worker",
+    "analytics-worker",
+    "job-runner",
+    "core-api",
+    "outbox tables",
+    "idempotency tables",
+    "event dedupe and receipt tables"
+  ],
+  "dataPolicy": {
+    "onlyLocalDatabase": true,
+    "noRawAudio": true,
+    "noPersonalInformation": true,
+    "noCredentialsOrTokens": true,
+    "repeatableUpserts": true
+  }
+}

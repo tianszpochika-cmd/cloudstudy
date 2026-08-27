@@ -96,5 +96,15 @@ test('B9 frontend migration keeps public site read-only and uses shared locale/t
   assert.doesNotMatch(adminAdapter, /\/admin\/reviews/);
   assert.match(official, /public|course|price|download|compliance/i);
   assert.match(official, /public\/site\/projection/);
-  assert.doesNotMatch(official, /refreshToken|sessionStorage|localStorage|Authorization\s*:/i);
+  assert.doesNotMatch(official, /refreshToken|sessionStorage|Authorization\s*:/i);
+
+  // The public site may persist UI-only locale/theme preferences through the
+  // shared foundation adapter, but it must never persist business sessions.
+  const storageFiles = filesUnder('apps/official-site')
+    .filter((file) => /\b(?:localStorage|sessionStorage)\b/i.test(fs.readFileSync(file, 'utf8')))
+    .map((file) => path.relative(root, file).split(path.sep).join('/'));
+  assert.deepEqual(storageFiles, ['apps/official-site/utils/v2-foundation.ts']);
+  const foundation = fs.readFileSync(path.join(root, 'apps/official-site/utils/v2-foundation.ts'), 'utf8');
+  assert.match(foundation, /localeStorage:\s*browserStorage/);
+  assert.match(foundation, /storage:\s*browserStorage/);
 });

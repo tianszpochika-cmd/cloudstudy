@@ -1,5 +1,7 @@
 package com.englishflow.iam.domain;
 
+import com.englishflow.iam.oidc.VerifiedOidcIdentity;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Objects;
@@ -15,8 +17,12 @@ public final class PrincipalMappingService {
         this.clock = Objects.requireNonNull(clock, "clock");
     }
 
-    public PrincipalMapping mapVerifiedIdentity(ExternalIdentity identity) {
-        Objects.requireNonNull(identity, "identity");
+    public PrincipalMapping mapVerifiedIdentity(VerifiedOidcIdentity verifiedIdentity) {
+        Objects.requireNonNull(verifiedIdentity, "verifiedIdentity");
+        if (verifiedIdentity.verifiedAt().isAfter(Instant.now(clock))) {
+            throw new IamPolicyException(IamDecisionCode.OIDC_IDENTITY_INVALID, "iam.oidc.identity_invalid");
+        }
+        ExternalIdentity identity = verifiedIdentity.externalIdentity();
         return mappings.findByExternalIdentity(identity)
                 .orElseGet(() -> mappings.createIfAbsent(
                         new PrincipalMapping(identity, PrincipalId.random(), Instant.now(clock))));

@@ -17,10 +17,10 @@ function withKey(prefix: string): { headers: { 'Idempotency-Key': string } } {
   return { headers: { 'Idempotency-Key': idempotencyKey(prefix) } }
 }
 
-export async function getB4Profile(): Promise<unknown> { return apiClient.get('/gamification/profile') }
-export async function getB4Ledger(limit = 20): Promise<unknown> { return apiClient.get(`/gamification/ledger?limit=${limit}`) }
+export async function getB4Profile(): Promise<unknown> { return apiClient.get('/gamification/me/summary') }
+export async function getB4Ledger(limit = 20): Promise<unknown> { return apiClient.get(`/gamification/me/ledger?limit=${limit}`) }
 export async function settleB4LearningEvent(sourceType: string, sourceEventId: string): Promise<unknown> {
-  return apiClient.post('/gamification/events', { sourceType, sourceEventId }, withKey(`b4-learning-${sourceEventId}`))
+  throw new Error(`Trusted gamification settlement is server-owned (${sourceType}:${sourceEventId})`)
 }
 export async function getB4Streak(): Promise<unknown> { return apiClient.get('/gamification/streak') }
 export async function saveB4StreakSettings(timeZone: string, weekendProtectionEnabled: boolean): Promise<unknown> {
@@ -33,13 +33,39 @@ export async function listB4Quests(): Promise<unknown> { return apiClient.get('/
 export async function claimB4Quest(questId: string): Promise<unknown> {
   return apiClient.post(`/gamification/quests/${encodeURIComponent(questId)}/claim`, {}, withKey(`b4-quest-${questId}`))
 }
-export async function getB4Season(): Promise<unknown> { return apiClient.get('/gamification/seasons/current') }
-export async function listB4Chests(): Promise<unknown> { return apiClient.get('/gamification/chests') }
+export async function getB4Season(): Promise<unknown> { return apiClient.get('/gamification/season') }
+export async function listB4Chests(): Promise<unknown> {
+  const raw = await apiClient.get<unknown>('/gamification/me/rewards')
+  const source = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? raw as Record<string, unknown> : {}
+  const items = Array.isArray(source.items) ? source.items : []
+  return { items: items.flatMap((value) => {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return []
+    const item = value as Record<string, unknown>
+    const grantId = typeof item.grantId === 'string' ? item.grantId : null
+    if (!grantId) return []
+    return [{ chestGrantId: grantId, chestType: 'LEARNING_REWARD', kind: 'FREE_LEARNING_REWARD', status: item.state === 'CLAIMED' ? 'OPENED' : 'GRANTED', probabilityVersion: item.probabilityVersion, createdAt: item.issuedAt }]
+  }) }
+}
 export async function getB4ChestProbability(chestGrantId: string): Promise<unknown> {
-  return apiClient.get(`/gamification/chests/${encodeURIComponent(chestGrantId)}/probability`)
+  const raw = await apiClient.get<unknown>(`/gamification/me/rewards/${encodeURIComponent(chestGrantId)}/probability`)
+  const source = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? raw as Record<string, unknown> : {}
+  const tiers = Array.isArray(source.tiers) ? source.tiers : []
+  const mappedTiers = tiers.map((value) => {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return value
+    const tier = value as Record<string, unknown>
+    return { tierCode: tier.tierCode, weightBps: tier.basisPoints, itemProbabilityMode: 'SERVER_POOL' }
+  })
+  const totalWeightBps = tiers.reduce((sum, value) => {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return sum
+    const basisPoints = (value as Record<string, unknown>).basisPoints
+    return typeof basisPoints === 'number' ? sum + basisPoints : sum
+  }, 0)
+  return { probability: { chestGrantId, chestType: 'LEARNING_REWARD', probabilityVersion: source.probabilityVersion, algorithmVersion: 'server', tiers: mappedTiers, totalWeightBps, disclosedBeforeClaim: true } }
 }
 export async function openB4Chest(chestGrantId: string): Promise<unknown> {
-  return apiClient.post(`/gamification/chests/${encodeURIComponent(chestGrantId)}/open`, {}, withKey(`b4-chest-open-${chestGrantId}`))
+  const raw = await apiClient.post<unknown>(`/gamification/me/rewards/${encodeURIComponent(chestGrantId)}/claim`, { commandCode: 'CLAIM' }, withKey(`b4-chest-open-${chestGrantId}`))
+  const source = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? raw as Record<string, unknown> : {}
+  return { result: { chestGrantId, opened: source.state === 'CLAIMED' || source.state === 'ALREADY_CLAIMED', replayed: source.replayed === true, outcomeCode: source.outcomeCode, probabilityVersion: source.probabilityVersion } }
 }
 
 export async function getB4AvatarProfile(): Promise<unknown> { return apiClient.get('/avatar/profile') }
@@ -88,16 +114,20 @@ export async function leaveB4Room(roomId: string): Promise<unknown> {
   return apiClient.post(`/social/rooms/${encodeURIComponent(roomId)}/leave`, {}, withKey(`b4-room-leave-${roomId}`))
 }
 export async function startB4Focus(roomId: string, durationMinutes: 25 | 45 = 25): Promise<unknown> {
-  return apiClient.post(`/social/rooms/${encodeURIComponent(roomId)}/focus-sessions`, { durationMinutes }, withKey(`b4-focus-start-${roomId}-${durationMinutes}`))
+  return apiClient.post(`/social/rooms/${encodeURIComponent(roomId)}/focus`, { durationMinutes, clientEventId: idempotencyKey(`b4-focus-start-${roomId}`) }, withKey(`b4-focus-start-${roomId}-${durationMinutes}`))
 }
-export async function updateB4Focus(sessionId: string, action: B4FocusAction): Promise<unknown> {
-  return apiClient.patch(`/social/focus-sessions/${encodeURIComponent(sessionId)}`, { action }, withKey(`b4-focus-${sessionId}-${action}`))
+export async function updateB4Focus(roomId: string, sessionId: string, action: B4FocusAction): Promise<unknown> {
+  const command = action === 'COMPLETE' ? 'FINISH' : action === 'AUTO_RELEASE' ? 'ABORT' : action
+  return apiClient.patch(`/social/rooms/${encodeURIComponent(roomId)}/focus`, { focusId: sessionId, action: command, clientEventId: idempotencyKey(`b4-focus-${sessionId}-${action}`) }, withKey(`b4-focus-${sessionId}-${action}`))
 }
 export async function sendB4Interaction(roomId: string, interactionCode: B4InteractionCode): Promise<unknown> {
-  return apiClient.post(`/social/rooms/${encodeURIComponent(roomId)}/interactions`, { interactionCode }, withKey(`b4-interaction-${roomId}-${interactionCode}`))
+  return apiClient.post(`/social/rooms/${encodeURIComponent(roomId)}/interactions`, { presetCode: interactionCode, targetSeatIndex: 0, clientEventId: idempotencyKey(`b4-interaction-${roomId}`) }, withKey(`b4-interaction-${roomId}-${interactionCode}`))
 }
 export async function getB4SocialLeaderboard(roomId: string): Promise<unknown> {
-  return apiClient.get(`/social/leaderboards?roomId=${encodeURIComponent(roomId)}`)
+  const raw = await apiClient.get<unknown>(`/social/leaderboards?kind=FOCUS_MINUTES&period=DAY&roomId=${encodeURIComponent(roomId)}`)
+  const source = typeof raw === 'object' && raw !== null && !Array.isArray(raw) ? raw as Record<string, unknown> : {}
+  const data = typeof source.data === 'object' && source.data !== null && !Array.isArray(source.data) ? source.data as Record<string, unknown> : source
+  return { leaderboard: { ...data, roomId, items: Array.isArray(data.entries) ? data.entries : [] } }
 }
 export async function createB4ModerationReport(reasonCode: B4ReportReason, targetUserId: string, roomId?: string): Promise<unknown> {
   return apiClient.post('/social/moderation/reports', { reasonCode, targetUserId, ...(roomId ? { roomId } : {}) }, withKey(`b4-report-${targetUserId}-${reasonCode}`))
@@ -108,19 +138,51 @@ export async function appealB4ModerationReport(reportId: string, appealCode: 'FA
 export async function createB4WsTicket(roomId?: string): Promise<unknown> {
   return apiClient.post('/social/ws-ticket', { ...(roomId ? { roomId } : {}) }, withKey('b4-ws-ticket'))
 }
-export async function listB4Notifications(): Promise<unknown> { return apiClient.get('/user/notifications?limit=20') }
+export async function listB4Notifications(): Promise<unknown> {
+  const raw = await apiClient.get<unknown>('/notifications/messages?limit=20')
+  return { items: Array.isArray(raw) ? raw.map((value) => {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) return value
+    const item = value as Record<string, unknown>
+    return { messageId: item.messageId, title: item.title, body: item.safeBody, category: item.notificationType, createdAt: item.createdAt, read: item.read === true }
+  }) : [] }
+}
 export async function readB4Notification(messageId: string): Promise<unknown> {
-  return apiClient.put(`/user/notifications/${encodeURIComponent(messageId)}/read`, {}, withKey(`b4-notification-${messageId}`))
+  return apiClient.put(`/notifications/messages/${encodeURIComponent(messageId)}/read`, {}, withKey(`b4-notification-${messageId}`))
 }
 export async function readAllB4Notifications(): Promise<unknown> {
-  return apiClient.put('/user/notifications/read-all', {}, withKey('b4-notification-all'))
+  return apiClient.put('/notifications/messages/read-all', {}, withKey('b4-notification-all'))
 }
-export async function getB4NotificationPreferences(): Promise<unknown> { return apiClient.get('/user/notification-preferences') }
+export async function getB4NotificationPreferences(): Promise<unknown> {
+  const raw = await apiClient.get<unknown>('/notifications/preferences')
+  const items = Array.isArray(raw) ? raw : []
+  const flags = { roomInteractions: true, focusReminders: true, system: true, doNotDisturb: false }
+  let version = 0
+  for (const value of items) {
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) continue
+    const item = value as Record<string, unknown>
+    const type = typeof item.notificationType === 'string' ? item.notificationType : ''
+    if (type === 'ROOM_INTERACTIONS') flags.roomInteractions = item.enabled !== false
+    if (type === 'FOCUS_REMINDERS') flags.focusReminders = item.enabled !== false
+    if (type === 'SYSTEM') flags.system = item.enabled !== false
+    if (type === 'DO_NOT_DISTURB') flags.doNotDisturb = item.enabled === true
+    if (typeof item.version === 'number') version = Math.max(version, item.version)
+  }
+  return { preferences: { ...flags, version } }
+}
 export async function saveB4NotificationPreferences(preferences: Record<string, boolean>): Promise<unknown> {
-  return apiClient.patch('/user/notification-preferences', preferences, withKey('b4-notification-preferences'))
+  const mapping = [['roomInteractions', 'ROOM_INTERACTIONS'], ['focusReminders', 'FOCUS_REMINDERS'], ['system', 'SYSTEM'], ['doNotDisturb', 'DO_NOT_DISTURB']] as const
+  const results = await Promise.all(mapping.map(([key, type]) => apiClient.put(`/notifications/preferences/${type}/IN_APP`, { enabled: preferences[key] === true, locale: 'zh-CN' }, withKey(`b4-notification-preferences-${type}`))))
+  let version = 0
+  for (const value of results) {
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      const candidate = (value as Record<string, unknown>).version
+      if (typeof candidate === 'number') version = Math.max(version, candidate)
+    }
+  }
+  return { preferences: { ...preferences, version } }
 }
 
-export async function listB4OfflinePackages(): Promise<unknown> { return apiClient.get('/sync/offline-packages?limit=20') }
+export async function listB4OfflinePackages(): Promise<unknown> { return apiClient.get('/sync/offline-packages') }
 export async function authorizeB4OfflinePackage(packageId: string): Promise<unknown> {
   return apiClient.post(`/sync/offline-packages/${encodeURIComponent(packageId)}/authorize`, {}, withKey(`b4-offline-authorize-${packageId}`))
 }

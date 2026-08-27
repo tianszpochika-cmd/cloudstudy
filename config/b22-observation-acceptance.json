@@ -1,0 +1,863 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "batch": "B22",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "scope": "V2-B22-OPS-003+V2-B22-TEST-004",
+  "runtimeDecision": "BLOCKED",
+  "sourceRefs": [
+    "V2-B22-OPS-003",
+    "V2-B22-TEST-004",
+    "ARCH-REL-001",
+    "ARCH-OBS-001",
+    "ARCH-DR-001"
+  ],
+  "tasks": [
+    {
+      "id": "V2-B22-OPS-003",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": ["V2-B22-REL-001", "V2-B22-DATA-002", "V2-B21-GATE-005"],
+      "scope": [
+        "short-and-long-production-observation-windows",
+        "slo-and-error-budget-measurement",
+        "otel-trace-metric-log-correlation",
+        "alert-escalation-and-on-call",
+        "customer-support-tickets",
+        "incident-drill-and-review",
+        "p0-p1-stop-and-rollback",
+        "user-feedback",
+        "legacy-risk-owner-and-expiry",
+        "audit-trail"
+      ]
+    },
+    {
+      "id": "V2-B22-TEST-004",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": ["V2-B22-REL-001", "V2-B22-DATA-002", "V2-B22-OPS-003"],
+      "scope": [
+        "phase1-launch-acceptance-report",
+        "production-smoke-and-key-journeys",
+        "permission-and-privacy-evidence",
+        "backup-and-restore-evidence",
+        "release-artifact-hash-version-environment-binding",
+        "maintenance-owner",
+        "p1-close-or-transfer"
+      ]
+    }
+  ],
+  "execution": {
+    "mode": "static-fixture-only",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeEvidence": null,
+    "productionMutationAllowed": false,
+    "trafficSwitchAllowed": false,
+    "destructiveOperationAllowed": false,
+    "paymentOperationAllowed": false,
+    "blockedReasons": [
+      "B21 Go/No-Go and runtime evidence are not accepted",
+      "production short and long observation windows are not measured",
+      "Phase 1 launch acceptance report is not externally reproduced",
+      "production artifact, version, environment and audit bindings are pending"
+    ]
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B22_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "B22_RUNTIME_B21_GATE_EVIDENCE",
+      "B22_RUNTIME_PRODUCTION_OBSERVATION",
+      "B22_RUNTIME_PRODUCTION_REPORT",
+      "B22_RUNTIME_ARTIFACT_BINDING",
+      "B22_RUNTIME_INCIDENT_AUDIT",
+      "B22_RUNTIME_MAINTENANCE_SIGNOFF"
+    ],
+    "requiredEvidence": [
+      "B22-E-OPS-RUNTIME-B21",
+      "B22-E-OPS-RUNTIME-OBSERVATION",
+      "B22-E-OPS-RUNTIME-INCIDENT",
+      "B22-E-TEST-RUNTIME-REPORT",
+      "B22-E-TEST-RUNTIME-BINDING",
+      "B22-E-TEST-RUNTIME-MAINTENANCE"
+    ],
+    "runtimeStatusWhenMissing": "blocked",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "runtimeEvidenceMustRemainPendingOrBlocked": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "synthetic-fixture-only",
+      "development-http-200",
+      "local-http-200",
+      "dashboard-screenshot-only",
+      "unfired-alert-definition",
+      "same-process-test-double",
+      "verbal-or-unlogged-signoff",
+      "unreproducible-report",
+      "missing-artifact-hash",
+      "open-p0-or-p1"
+    ]
+  },
+  "safetyBoundaries": {
+    "noRealCredentials": true,
+    "noPII": true,
+    "noProductionData": true,
+    "noPayment": true,
+    "noDeletion": true,
+    "noTrafficSwitch": true,
+    "noProductionMutation": true,
+    "allowedEvidenceMaterial": ["synthetic-reference", "redacted-metadata", "externally-captured-hash", "audited-report-reference"],
+    "runtimeCollectionMustUseApprovedRunner": true,
+    "runtimeCollectionMustNotWriteRepository": true
+  },
+  "b21Prerequisite": {
+    "required": true,
+    "requiredBatch": "B21",
+    "requiredTasks": [
+      "V2-B21-DEP-001",
+      "V2-B21-STG-002",
+      "V2-B21-OBS-003",
+      "V2-B21-RC-004",
+      "V2-B21-GATE-005",
+      "V2-B21-TEST-006"
+    ],
+    "requiredDecision": "GO",
+    "currentDecision": "BLOCKED",
+    "status": "blocked",
+    "runtimeEvidenceStatus": "pending",
+    "acceptanceEvidenceStatus": "pending",
+    "missingEvidenceBlocks": true,
+    "staticValidatorCannotOverride": true,
+    "requiredEvidence": [
+      "B21-E-GATE-B20-ACCEPTANCE",
+      "B21-E-GATE-ROLE-DECISIONS",
+      "B21-E-GATE-CHANGE-WINDOW",
+      "B21-E-GATE-ROLLBACK-DRILL",
+      "B21-E-TEST-RC-ARTIFACT",
+      "B21-E-TEST-EVIDENCE-REPORT",
+      "B21-E-TEST-SIGNOFF-INDEX",
+      "B21-E-OBS-RUNTIME-SLO",
+      "B21-E-OBS-RUNTIME-ALERTING",
+      "B21-E-OBS-RUNTIME-INCIDENT"
+    ],
+    "sourceManifests": [
+      "config/b21-deployment-staging.json",
+      "config/b21-observability-rc.json",
+      "config/b21-release-gate-evidence.json"
+    ]
+  },
+  "observationPolicy": {
+    "status": "pending",
+    "environment": "production",
+    "realObservationRequired": true,
+    "syntheticObservationCannotCloseGate": true,
+    "developmentHttp200CannotCloseGate": true,
+    "windows": {
+      "short": {
+        "id": "B22-OBS-SHORT",
+        "duration": "24h",
+        "purpose": "canary-health-and-business-safety",
+        "environment": "production",
+        "realTrafficRequired": true,
+        "productionLikeOnly": true,
+        "status": "pending",
+        "runtimeRequired": true,
+        "evidenceId": "B22-E-OPS-RUNTIME-OBSERVATION"
+      },
+      "long": {
+        "id": "B22-OBS-LONG",
+        "duration": "7d",
+        "purpose": "stability-support-and-error-budget-observation",
+        "environment": "production",
+        "realTrafficRequired": true,
+        "productionLikeOnly": true,
+        "status": "pending",
+        "runtimeRequired": true,
+        "evidenceId": "B22-E-OPS-RUNTIME-OBSERVATION"
+      }
+    },
+    "closeConditions": [
+      "both-windows-captured-from-production",
+      "slo-and-error-budget-measured",
+      "no-unresolved-p0-or-p1",
+      "incident-and-support-evidence-reconciled",
+      "audit-records-are-immutable-and-replayable"
+    ]
+  },
+  "observability": {
+    "runtimeStatus": "pending",
+    "signalStandard": {
+      "provider": "OpenTelemetry",
+      "signals": ["traces", "metrics", "logs"],
+      "requiredResourceAttributes": ["service.name", "service.version", "deployment.environment"],
+      "correlationFields": ["requestId", "traceId", "eventId", "decisionId"],
+      "sensitiveDataPolicy": "redact-or-do-not-record",
+      "exporterEndpointSource": "runtime-env-only",
+      "runtimeStatus": "pending"
+    },
+    "slis": [
+      {"id": "B22-SLI-AVAILABILITY", "indicator": "successful-user-request-rate", "status": "not-measured", "windowRefs": ["B22-OBS-SHORT", "B22-OBS-LONG"]},
+      {"id": "B22-SLI-LATENCY", "indicator": "p95-and-p99-latency", "status": "not-measured", "windowRefs": ["B22-OBS-SHORT", "B22-OBS-LONG"]},
+      {"id": "B22-SLI-LEARNING-COMPLETION", "indicator": "key-learning-journey-completion", "status": "not-measured", "windowRefs": ["B22-OBS-SHORT", "B22-OBS-LONG"]}
+    ],
+    "slos": [
+      {"id": "B22-SLO-AVAILABILITY", "service": "gateway-and-learning-path", "indicator": "successful-user-request-rate", "targetPercent": 99.9, "status": "target-not-measured"},
+      {"id": "B22-SLO-LATENCY", "service": "gateway-and-learning-path", "indicator": "p95-request-latency", "targetPercent": 99.0, "status": "target-not-measured"},
+      {"id": "B22-SLO-JOURNEY", "service": "phase1-key-journeys", "indicator": "journey-completion-without-blocker", "targetPercent": 99.0, "status": "target-not-measured"}
+    ],
+    "errorBudget": {
+      "status": "target-not-measured",
+      "measurementRequired": true,
+      "windowRefs": ["B22-OBS-SHORT", "B22-OBS-LONG"],
+      "observedBurnRate": null,
+      "consumedPercent": null,
+      "remainingPercent": null,
+      "overrunDecision": "STOP-EXPANSION-AND-ROLLBACK",
+      "exhaustionDecision": "FREEZE-RELEASE-AND-PAGE",
+      "overrunBlocksAcceptance": true,
+      "runtimeEvidenceStatus": "pending"
+    },
+    "alertRouting": {
+      "runtimeStatus": "pending",
+      "severityLevels": ["P0", "P1", "P2"],
+      "escalationRequired": true,
+      "routes": [
+        {"severity": "P0", "action": "page-primary-oncall-and-incident-commander", "ackDeadline": "15m", "escalationAfter": "15m"},
+        {"severity": "P1", "action": "page-primary-oncall-and-service-owner", "ackDeadline": "30m", "escalationAfter": "30m"},
+        {"severity": "P2", "action": "create-support-or-operations-ticket", "ackDeadline": "4h", "escalationAfter": "4h"}
+      ],
+      "unownedAlertDecision": "PAGE-PLATFORM-AND-BLOCK-ACCEPTANCE",
+      "silence": {
+        "status": "not-executed",
+        "requiresReason": true,
+        "requiresOwner": true,
+        "requiresExpiry": true,
+        "expiryMustPage": true,
+        "auditRequired": true
+      }
+    },
+    "dashboards": [
+      {"id": "B22-DASH-SLO", "scope": "slo-error-budget", "status": "pending"},
+      {"id": "B22-DASH-USER-JOURNEY", "scope": "key-journey-and-business-smoke", "status": "pending"},
+      {"id": "B22-DASH-INCIDENT", "scope": "alerts-incidents-support-and-audit", "status": "pending"}
+    ],
+    "customerSupport": {
+      "status": "pending",
+      "ticketSystemRequired": true,
+      "ticketEvidenceRequired": true,
+      "requiredFields": ["ticketRef", "severity", "createdAt", "acknowledgedAt", "ownerRef", "resolutionOrEscalation", "releaseVersion", "observationWindowRef"],
+      "redactedViewOnly": true,
+      "rawPiiAllowed": false,
+      "attachmentPolicy": "reference-only-no-raw-user-data",
+      "slaBreachesEscalate": true
+    },
+    "onCall": {
+      "status": "pending",
+      "handoffRequiresAudit": true,
+      "acknowledgementRequired": true,
+      "escalationChainRequired": true,
+      "noOwnerDecision": "PAGE-PLATFORM-AND-BLOCK-ACCEPTANCE",
+      "rosterEvidenceStatus": "pending"
+    },
+    "incidentDrills": [
+      {"id": "B22-DRILL-P0-STOP", "scenario": "P0-stop-expansion-and-rollback", "status": "pending", "runtimeRequired": true},
+      {"id": "B22-DRILL-P1-ESCALATE", "scenario": "P1-alert-support-and-oncall-escalation", "status": "pending", "runtimeRequired": true},
+      {"id": "B22-DRILL-OBS-RECOVERY", "scenario": "observability-loss-and-recovery-audit", "status": "pending", "runtimeRequired": true}
+    ],
+    "incidentReview": {
+      "status": "pending",
+      "required": true,
+      "requiredFields": ["incidentRef", "timeline", "impact", "rootCauseOrUnknown", "actions", "ownerRef", "dueAt", "auditRef"],
+      "blamelessReviewRequired": true,
+      "unresolvedP0P1Blocks": true
+    },
+    "userFeedback": {
+      "status": "pending",
+      "sources": ["redacted-support-tickets", "in-product-feedback-summary", "store-review-summary"],
+      "mustCoverShortAndLongWindow": true,
+      "mustBindToReleaseVersion": true,
+      "rawTextAndPiiAllowed": false,
+      "unresolvedCriticalFeedbackDecision": "BLOCK-ACCEPTANCE-AND-ESCALATE"
+    },
+    "legacyRisks": {
+      "status": "pending",
+      "required": true,
+      "mustHaveOwner": true,
+      "mustHaveExpiry": true,
+      "expiredDecision": "BLOCKED",
+      "items": [
+        {"riskId": "risk-ref://synthetic/b22-legacy-routing", "status": "pending", "ownerRef": null, "expiresAt": null, "mitigationRef": "mitigation-ref://synthetic/b22-legacy-routing"},
+        {"riskId": "risk-ref://synthetic/b22-legacy-observability", "status": "pending", "ownerRef": null, "expiresAt": null, "mitigationRef": "mitigation-ref://synthetic/b22-legacy-observability"}
+      ]
+    },
+    "auditTrail": {
+      "status": "pending",
+      "required": true,
+      "appendOnly": true,
+      "replayable": true,
+      "requiredFields": ["eventId", "requestId", "traceId", "decisionId", "actorRef", "timestamp", "action", "outcome", "artifactRef"],
+      "retentionPolicyRef": "policy-ref://synthetic/b22-audit-retention",
+      "missingAuditDecision": "BLOCKED"
+    }
+  },
+  "releaseAcceptance": {
+    "status": "pending",
+    "phase": "phase-1",
+    "runtimeEvidenceStatus": "pending",
+    "requiredEvidenceDomains": ["production-smoke", "key-journeys", "permission", "privacy", "backup", "release", "monitoring", "support", "audit"],
+    "keyJourneySmoke": [
+      {"id": "B22-SMOKE-AUTH-LEARN", "journey": "login-to-goal-to-practice-to-feedback-to-review", "status": "pending", "runtimeRequired": true, "productionLikeRequired": true, "evidenceId": "B22-E-TEST-RUNTIME-REPORT"},
+      {"id": "B22-SMOKE-RECOVERY", "journey": "session-recovery-and-idempotent-retry", "status": "pending", "runtimeRequired": true, "productionLikeRequired": true, "evidenceId": "B22-E-TEST-RUNTIME-REPORT"},
+      {"id": "B22-SMOKE-PERMISSION", "journey": "authenticated-user-and-denied-admin-action", "status": "pending", "runtimeRequired": true, "productionLikeRequired": true, "evidenceId": "B22-E-TEST-RUNTIME-REPORT"},
+      {"id": "B22-SMOKE-FOUR-END", "journey": "learner-web-mobile-admin-and-official-boundaries", "status": "pending", "runtimeRequired": true, "productionLikeRequired": true, "evidenceId": "B22-E-TEST-RUNTIME-REPORT"}
+    ],
+    "permissionPrivacyEvidence": {
+      "status": "pending",
+      "permissionDeniedAndTenantScopeRequired": true,
+      "privacyRedactionAndConsentRequired": true,
+      "productionSubjectDataAllowed": false,
+      "evidenceId": "B22-E-TEST-RUNTIME-REPORT"
+    },
+    "backupEvidence": {
+      "status": "pending",
+      "backupAndRestoreRequired": true,
+      "rpoRtoRequired": true,
+      "restorePointRequired": true,
+      "postRestoreReconciliationRequired": true,
+      "destructiveDowngradeAllowed": false,
+      "evidenceId": "B22-E-TEST-RUNTIME-REPORT"
+    },
+    "releaseEvidence": {
+      "status": "pending",
+      "requiresB21GoEvidence": true,
+      "requiresRollbackPoint": true,
+      "requiresVersionedRelease": true,
+      "evidenceId": "B22-E-TEST-RUNTIME-BINDING"
+    },
+    "artifactBinding": {
+      "status": "pending",
+      "algorithm": "SHA-256",
+      "immutableDigestOnly": true,
+      "requiredFields": ["releaseVersion", "sourceRevision", "lockfileDigest", "artifactDigest", "manifestDigest", "environmentRef", "artifactSignatureRef"],
+      "sourceRevision": null,
+      "lockfileDigest": null,
+      "artifactDigest": null,
+      "manifestDigest": null,
+      "environmentRef": null,
+      "artifactSignatureRef": null,
+      "missingBindingDecision": "NO-GO",
+      "evidenceId": "B22-E-TEST-RUNTIME-BINDING"
+    },
+    "maintenanceOwner": {
+      "status": "not-assigned",
+      "required": true,
+      "ownerRef": null,
+      "handoffEvidenceStatus": "pending",
+      "scopeMustInclude": ["on-call", "incident-review", "legacy-risks", "P1-follow-up", "audit-retention"],
+      "missingOwnerDecision": "BLOCKED"
+    },
+    "p1Disposition": {
+      "status": "pending",
+      "openP1": 0,
+      "allowedActions": ["close", "transfer"],
+      "closeRequires": ["verified-fix", "regression-evidence", "independent-review", "audit-record"],
+      "transferRequires": ["named-maintenance-owner", "expiry", "mitigation", "acceptance-record"],
+      "noOpenP1ForGo": true,
+      "missingDispositionDecision": "BLOCKED"
+    },
+    "reportReproducibility": {
+      "status": "pending",
+      "generatorVersionRequired": true,
+      "manifestDigestRequired": true,
+      "sourceRevisionRequired": true,
+      "toolVersionsRequired": true,
+      "deterministicInputRefsRequired": true,
+      "reportHashRequired": true,
+      "missingReproductionDecision": "NO-GO",
+      "evidenceId": "B22-E-TEST-RUNTIME-REPORT"
+    }
+  },
+  "releaseGate": {
+    "status": "BLOCKED",
+    "defaultDecision": "NO-GO",
+    "allowedDecisions": ["NO-GO", "BLOCKED", "GO"],
+    "requiresB21Go": true,
+    "requiresBothObservationWindows": true,
+    "requiresCompleteEvidence": true,
+    "requiresReproducibleReport": true,
+    "requiresMaintenanceOwner": true,
+    "requiresNoOpenP0P1": true,
+    "blockingConditions": [
+      "b21-gate-not-go",
+      "b21-runtime-evidence-pending-or-blocked",
+      "b22-rel-or-data-prerequisite-missing",
+      "any-required-evidence-missing",
+      "short-observation-window-missing",
+      "long-observation-window-missing",
+      "slo-or-error-budget-not-measured",
+      "error-budget-exhausted-or-overrun",
+      "otel-trace-metric-log-missing",
+      "alert-escalation-or-oncall-missing",
+      "customer-support-ticket-evidence-missing",
+      "incident-drill-or-review-missing",
+      "open-p0-or-p1",
+      "stop-or-rollback-decision-missing",
+      "user-feedback-missing",
+      "legacy-risk-owner-or-expiry-missing",
+      "audit-trail-missing",
+      "production-smoke-or-key-journey-missing",
+      "permission-or-privacy-evidence-missing",
+      "backup-or-restore-evidence-missing",
+      "release-evidence-missing",
+      "artifact-hash-version-environment-binding-missing",
+      "report-not-reproducible",
+      "maintenance-owner-missing",
+      "p1-not-closed-or-transferred",
+      "synthetic-or-development-http-200-only"
+    ],
+    "stopRollback": {
+      "openP0": 0,
+      "openP1": 0,
+      "status": "not-established",
+      "anyOpenDecision": "STOP-EXPANSION-AND-ROLLBACK",
+      "errorBudgetOverrunDecision": "STOP-EXPANSION-AND-ROLLBACK",
+      "requiresImmutableArtifact": true,
+      "requiresRestorePoint": true,
+      "requiresNamedOwner": true,
+      "requiresPostRollbackReconciliation": true
+    },
+    "dualReview": {
+      "required": true,
+      "minimumReviewers": 2,
+      "independentReviewers": true,
+      "samePersonCannotSatisfyBoth": true,
+      "status": "not-present"
+    },
+    "maintenance": {
+      "required": true,
+      "ownerStatus": "not-assigned",
+      "handoffStatus": "pending",
+      "p1CloseOrTransferRequired": true
+    }
+  },
+  "reportSchema": {
+    "id": "b22-phase1-launch-acceptance-report",
+    "version": "1.0.0",
+    "closed": true,
+    "jsonSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "reportId",
+        "batch",
+        "phase",
+        "releaseCandidate",
+        "observation",
+        "decision",
+        "decisionPolicy",
+        "gates",
+        "keyJourneys",
+        "evidence",
+        "upstreamGates",
+        "artifactBinding",
+        "permissionPrivacy",
+        "backup",
+        "incidents",
+        "userFeedback",
+        "knownRisks",
+        "maintenance",
+        "p1Disposition",
+        "rollback",
+        "auditTrail",
+        "reproducibility",
+        "reportHash"
+      ],
+      "properties": {
+        "schemaVersion": {"type": "string", "const": "1.0.0"},
+        "reportId": {"type": "string", "minLength": 1},
+        "batch": {"type": "string", "const": "B22"},
+        "phase": {"type": "string", "const": "phase-1"},
+        "releaseCandidate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["releaseVersion", "sourceRevision", "artifactDigest", "environmentRef"],
+          "properties": {
+            "releaseVersion": {"type": "string", "minLength": 1},
+            "sourceRevision": {"type": "string", "minLength": 1},
+            "artifactDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+            "environmentRef": {"type": "string", "minLength": 1}
+          }
+        },
+        "observation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["shortWindow", "longWindow", "slo", "errorBudget"],
+          "properties": {
+            "shortWindow": {"type": "object", "additionalProperties": false, "required": ["status", "evidenceRef"], "properties": {"status": {"enum": ["pending", "blocked", "complete"]}, "evidenceRef": {"type": "string"}}},
+            "longWindow": {"type": "object", "additionalProperties": false, "required": ["status", "evidenceRef"], "properties": {"status": {"enum": ["pending", "blocked", "complete"]}, "evidenceRef": {"type": "string"}}},
+            "slo": {"type": "object", "additionalProperties": false, "required": ["status", "reportRef"], "properties": {"status": {"enum": ["pending", "blocked", "measured"]}, "reportRef": {"type": "string"}}},
+            "errorBudget": {"type": "object", "additionalProperties": false, "required": ["status", "consumedPercent", "decision"], "properties": {"status": {"enum": ["pending", "blocked", "within-budget", "exhausted"]}, "consumedPercent": {"type": ["number", "null"]}, "decision": {"enum": ["CONTINUE", "STOP-EXPANSION-AND-ROLLBACK", "BLOCKED"]}}}
+          }
+        },
+        "decision": {"enum": ["NO-GO", "BLOCKED", "GO"]},
+        "decisionPolicy": {"type": "object", "additionalProperties": false, "required": ["b21MustBeGo", "noOpenP0P1", "runtimeEvidenceRequired", "reportMustBeReproducible"], "properties": {"b21MustBeGo": {"const": true}, "noOpenP0P1": {"const": true}, "runtimeEvidenceRequired": {"const": true}, "reportMustBeReproducible": {"const": true}}},
+        "gates": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["gateId", "status", "evidenceIds"], "properties": {"gateId": {"type": "string"}, "status": {"enum": ["pending", "blocked", "pass"]}, "evidenceIds": {"type": "array", "minItems": 1}}}},
+        "keyJourneys": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["journeyId", "status", "evidenceRef"], "properties": {"journeyId": {"type": "string"}, "status": {"enum": ["pending", "blocked", "pass"]}, "evidenceRef": {"type": "string"}}}},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["evidenceId", "class", "status", "sha256", "releaseVersion", "environmentRef"], "properties": {"evidenceId": {"type": "string"}, "class": {"enum": ["runtime"]}, "status": {"enum": ["pending", "blocked", "captured"]}, "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "releaseVersion": {"type": "string"}, "environmentRef": {"type": "string"}}}},
+        "upstreamGates": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["batch", "decision", "evidenceRef"], "properties": {"batch": {"type": "string"}, "decision": {"enum": ["BLOCKED", "NO-GO", "GO"]}, "evidenceRef": {"type": "string"}}}},
+        "artifactBinding": {"type": "object", "additionalProperties": false, "required": ["algorithm", "artifactDigest", "sourceRevision", "environmentRef", "status"], "properties": {"algorithm": {"const": "SHA-256"}, "artifactDigest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "sourceRevision": {"type": "string"}, "environmentRef": {"type": "string"}, "status": {"enum": ["pending", "blocked", "verified"]}}},
+        "permissionPrivacy": {"type": "object", "additionalProperties": false, "required": ["permissionStatus", "privacyStatus", "evidenceRef"], "properties": {"permissionStatus": {"enum": ["pending", "blocked", "verified"]}, "privacyStatus": {"enum": ["pending", "blocked", "verified"]}, "evidenceRef": {"type": "string"}}},
+        "backup": {"type": "object", "additionalProperties": false, "required": ["status", "restorePointRef", "reconciliationRef"], "properties": {"status": {"enum": ["pending", "blocked", "verified"]}, "restorePointRef": {"type": "string"}, "reconciliationRef": {"type": "string"}}},
+        "incidents": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["incidentRef", "status", "reviewRef"], "properties": {"incidentRef": {"type": "string"}, "status": {"enum": ["none", "open", "closed", "blocked"]}, "reviewRef": {"type": "string"}}}},
+        "userFeedback": {"type": "object", "additionalProperties": false, "required": ["status", "summaryRef"], "properties": {"status": {"enum": ["pending", "blocked", "reviewed"]}, "summaryRef": {"type": "string"}}},
+        "knownRisks": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["riskId", "status", "ownerRef", "expiresAt"], "properties": {"riskId": {"type": "string"}, "status": {"enum": ["open", "accepted", "closed", "transferred"]}, "ownerRef": {"type": "string"}, "expiresAt": {"type": "string"}}}},
+        "maintenance": {"type": "object", "additionalProperties": false, "required": ["ownerRef", "handoffRef", "status"], "properties": {"ownerRef": {"type": "string"}, "handoffRef": {"type": "string"}, "status": {"enum": ["pending", "blocked", "accepted"]}}},
+        "p1Disposition": {"type": "object", "additionalProperties": false, "required": ["action", "p1Refs", "evidenceRef"], "properties": {"action": {"enum": ["close", "transfer"]}, "p1Refs": {"type": "array"}, "evidenceRef": {"type": "string"}}},
+        "rollback": {"type": "object", "additionalProperties": false, "required": ["status", "artifactDigest", "restorePointRef", "ownerRef"], "properties": {"status": {"enum": ["pending", "blocked", "verified"]}, "artifactDigest": {"type": "string"}, "restorePointRef": {"type": "string"}, "ownerRef": {"type": "string"}}},
+        "auditTrail": {"type": "object", "additionalProperties": false, "required": ["status", "auditRef", "correlationFields"], "properties": {"status": {"enum": ["pending", "blocked", "verified"]}, "auditRef": {"type": "string"}, "correlationFields": {"type": "array", "minItems": 4}}},
+        "reproducibility": {"type": "object", "additionalProperties": false, "required": ["status", "generatorVersion", "manifestDigest", "inputRefs"], "properties": {"status": {"enum": ["pending", "blocked", "verified"]}, "generatorVersion": {"type": "string"}, "manifestDigest": {"type": "string"}, "inputRefs": {"type": "array", "minItems": 1}}},
+        "reportHash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    }
+  },
+  "qualityGates": [
+    {
+      "id": "B22-OPS-003-OBSERVATION",
+      "task": "V2-B22-OPS-003",
+      "category": "real-observation-windows-slo-and-otel",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B22-OPS-OBS-STATIC-001",
+          "kind": "observation-window-and-slo-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B22-E-OPS-STATIC-OBSERVATION",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "docs/07-operations/observability.md",
+            "config/b21-observability-rc.json"
+          ],
+          "assertions": [
+            {"contains": "V2-B22-OPS-003"},
+            {"contains": "上线观察期"},
+            {"contains": "SLO/错误预算"},
+            {"contains": "OpenTelemetry"},
+            {"contains": "\"provider\": \"OpenTelemetry\""},
+            {"contains": "\"signals\": [\"traces\", \"metrics\", \"logs\"]"}
+          ],
+          "policyAssertions": ["short-and-long-real-window", "slo-measurement", "error-budget-measurement", "otel-trace-metric-log"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B22-OPS-OBS-RUNTIME-001",
+          "kind": "short-and-long-production-observation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B22-E-OPS-RUNTIME-OBSERVATION",
+          "tools": ["approved production observation runner", "OpenTelemetry trace metric log backend", "SLO calculator"],
+          "targets": ["24h short window", "7d long window", "production release version", "production environment"],
+          "scenarios": ["short-window-capture", "long-window-capture", "slo-measurement", "error-budget-burn-rate", "missing-signal"],
+          "evidenceRequired": ["window-start-end", "release-version", "environment-ref", "trace-sample-index", "metric-report", "redacted-log-report", "error-budget-report"],
+          "cannotBeSatisfiedBy": ["development-http-200", "synthetic-fixture-only", "dashboard-screenshot-only", "target-definition-without-measurement"],
+          "expected": "both real production windows and SLO/error budget reports are externally collected; missing or overrun budget remains BLOCKED"
+        }
+      ],
+      "evidenceIds": ["B22-E-OPS-STATIC-OBSERVATION", "B22-E-OPS-RUNTIME-OBSERVATION"]
+    },
+    {
+      "id": "B22-OPS-003-ESCALATION",
+      "task": "V2-B22-OPS-003",
+      "category": "alert-escalation-support-and-oncall",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B22-OPS-ESC-STATIC-001",
+          "kind": "alert-support-oncall-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B22-E-OPS-STATIC-ESCALATION",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "docs/07-operations/observability.md",
+            "docs/07-operations/incident-runbook.md",
+            "config/b21-observability-rc.json"
+          ],
+          "assertions": [
+            {"contains": "真实告警"},
+            {"contains": "客服/应急值班"},
+            {"contains": "用户反馈"},
+            {"contains": "告警"},
+            {"contains": "立即限制访问"},
+            {"contains": "\"runtimeStatus\": \"pending\""}
+          ],
+          "policyAssertions": ["severity-routing", "escalation-chain", "ticket-evidence", "oncall-ack", "silence-audit"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B22-OPS-ESC-RUNTIME-001",
+          "kind": "alert-escalation-customer-support-and-oncall",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B22-E-OPS-RUNTIME-INCIDENT",
+          "tools": ["approved alert runner", "on-call acknowledgement system", "support ticket system", "audit-log query"],
+          "targets": ["P0 route", "P1 route", "P2 route", "customer support queue", "on-call roster"],
+          "scenarios": ["p0-page-and-escalation", "p1-page-and-ticket", "p2-ticket", "unowned-alert", "expired-silence", "ticket-sla-breach"],
+          "evidenceRequired": ["alert-payload", "delivery-log", "acknowledgement", "escalation-timeline", "redacted-ticket-record", "silence-audit"],
+          "cannotBeSatisfiedBy": ["unfired-alert-definition", "static-roster", "manual-unlogged-ticket", "dashboard-screenshot-only"],
+          "expected": "alerts reach on-call and support with audited acknowledgement and escalation; missing owner or audit blocks acceptance"
+        }
+      ],
+      "evidenceIds": ["B22-E-OPS-STATIC-ESCALATION", "B22-E-OPS-RUNTIME-INCIDENT"]
+    },
+    {
+      "id": "B22-OPS-003-INCIDENT",
+      "task": "V2-B22-OPS-003",
+      "category": "incident-drill-review-stop-rollback-risk-and-audit",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B22-OPS-INC-STATIC-001",
+          "kind": "incident-stop-rollback-risk-audit-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B22-E-OPS-STATIC-INCIDENT",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "docs/07-operations/incident-runbook.md",
+            "AGENTS.md",
+            "config/b21-release-gate-evidence.json"
+          ],
+          "assertions": [
+            {"contains": "任何 P0/P1"},
+            {"contains": "回滚决策"},
+            {"contains": "审计留痕"},
+            {"contains": "保存审计证据"},
+            {"contains": "默认拒绝"},
+            {"contains": "\"riskAcceptance\""}
+          ],
+          "policyAssertions": ["p0-p1-stop-expansion", "rollback-point", "incident-review", "risk-owner-expiry", "append-only-audit"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B22-OPS-INC-RUNTIME-001",
+          "kind": "incident-drill-review-and-rollback-decision",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B22-E-OPS-RUNTIME-B21",
+          "tools": ["incident drill runner", "release rollback runner", "defect tracker", "audit-log query"],
+          "targets": ["P0/P1 defect state", "rollback artifact", "restore point", "incident review", "legacy risk register"],
+          "scenarios": ["open-p0-stop", "open-p1-stop", "error-budget-overrun-stop", "rollback-and-reconcile", "incident-review", "expired-legacy-risk"],
+          "evidenceRequired": ["stop-decision", "rollback-decision", "restore-point", "post-rollback-reconciliation", "incident-review", "risk-owner-and-expiry", "audit-record"],
+          "cannotBeSatisfiedBy": ["rollback-plan-without-drill", "verbal-review", "closed-fixture-defect", "unowned-risk", "static-audit-schema"],
+          "expected": "P0/P1, budget overrun, missing owner/expiry or failed audit causes stop and rollback; drill and review remain pending until externally evidenced"
+        }
+      ],
+      "evidenceIds": ["B22-E-OPS-STATIC-INCIDENT", "B22-E-OPS-RUNTIME-B21"]
+    },
+    {
+      "id": "B22-TEST-004-ACCEPTANCE",
+      "task": "V2-B22-TEST-004",
+      "category": "phase1-report-and-key-journey-smoke",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B22-TEST-ACCEPT-STATIC-001",
+          "kind": "launch-acceptance-report-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B22-E-TEST-STATIC-REPORT",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "config/b21-release-gate-evidence.json",
+            "docs/07-operations/b21-validation.md"
+          ],
+          "assertions": [
+            {"contains": "V2-B22-TEST-004"},
+            {"contains": "生产 smoke"},
+            {"contains": "关键旅程"},
+            {"contains": "权限"},
+            {"contains": "隐私"},
+            {"contains": "备份"},
+            {"contains": "additionalProperties"}
+          ],
+          "policyAssertions": ["closed-report-schema", "phase1-only", "key-journey-smoke", "permission-privacy-backup"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B22-TEST-ACCEPT-RUNTIME-001",
+          "kind": "production-smoke-and-key-journey-report",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B22-E-TEST-RUNTIME-REPORT",
+          "tools": ["approved production smoke runner", "contract and journey verifier", "report generator"],
+          "targets": ["four Phase 1 frontend boundaries", "login and learning loop", "recovery", "permission denial", "privacy path"],
+          "scenarios": ["production-smoke", "key-journey", "permission-denied", "privacy-redaction", "backup-restore-reference"],
+          "evidenceRequired": ["journey-manifest", "run-results", "console-and-error-summary", "permission-report", "privacy-report", "backup-reference"],
+          "cannotBeSatisfiedBy": ["development-http-200", "synthetic-fixture-only", "unit-test-only", "unexecuted-command-list"],
+          "expected": "Phase 1 smoke and key journeys are run in the bound environment and included in a reproducible report; missing evidence is BLOCKED"
+        }
+      ],
+      "evidenceIds": ["B22-E-TEST-STATIC-REPORT", "B22-E-TEST-RUNTIME-REPORT"]
+    },
+    {
+      "id": "B22-TEST-004-EVIDENCE",
+      "task": "V2-B22-TEST-004",
+      "category": "permission-privacy-backup-release-and-artifact-binding",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B22-TEST-EVIDENCE-STATIC-001",
+          "kind": "evidence-binding-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B22-E-TEST-STATIC-BINDING",
+          "sourcePaths": [
+            "AGENTS.md",
+            "docs/07-operations/b21-validation.md",
+            "config/b21-release-gate-evidence.json",
+            "config/b21-deployment-staging.json"
+          ],
+          "assertions": [
+            {"contains": "SBOM"},
+            {"contains": "artifact 哈希、版本、环境"},
+            {"contains": "版本签名"},
+            {"contains": "\"artifactBinding\""},
+            {"contains": "runtime-runner-only"},
+            {"contains": "\"runtimeStatus\": \"blocked\""}
+          ],
+          "policyAssertions": ["sha256-binding", "source-version-environment", "immutable-artifact", "runtime-evidence-only"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B22-TEST-EVIDENCE-RUNTIME-001",
+          "kind": "permission-privacy-backup-release-evidence-binding",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B22-E-TEST-RUNTIME-BINDING",
+          "tools": ["approved evidence verifier", "artifact and signature verifier", "backup restore verifier", "permission/privacy test runner"],
+          "targets": ["B21 Go evidence", "release artifact", "source revision", "environment", "backup restore point", "permission/privacy evidence"],
+          "scenarios": ["missing-hash", "version-environment-mismatch", "unsigned-artifact", "permission-denied", "privacy-redaction", "backup-reconcile"],
+          "evidenceRequired": ["sha256-artifact", "signature-verification", "source-revision", "environment-binding", "permission-report", "privacy-report", "backup-report"],
+          "cannotBeSatisfiedBy": ["hash-field-without-verifier", "mutable-tag", "development-http-200", "backup-plan-without-restore", "synthetic-fixture-only"],
+          "expected": "all release, permission, privacy and backup evidence is immutable, hashed, version/environment bound and externally checked"
+        }
+      ],
+      "evidenceIds": ["B22-E-TEST-STATIC-BINDING", "B22-E-TEST-RUNTIME-BINDING"]
+    },
+    {
+      "id": "B22-TEST-004-MAINTENANCE",
+      "task": "V2-B22-TEST-004",
+      "category": "maintenance-owner-p1-disposition-and-reproducibility",
+      "decision": "BLOCKED",
+      "staticChecks": [
+        {
+          "id": "B22-TEST-MAINT-STATIC-001",
+          "kind": "maintenance-and-p1-source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B22-E-TEST-STATIC-MAINTENANCE",
+          "sourcePaths": [
+            "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+            "docs/07-operations/b21-validation.md",
+            "requirements/acceptance-criteria.md",
+            "AGENTS.md"
+          ],
+          "assertions": [
+            {"contains": "正式关闭/转入维护"},
+            {"contains": "维护责任"},
+            {"contains": "P1"},
+            {"contains": "报告可复现"},
+            {"contains": "审计"}
+          ],
+          "policyAssertions": ["maintenance-owner", "p1-close-or-transfer", "report-reproducibility", "audit-retention"]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B22-TEST-MAINT-RUNTIME-001",
+          "kind": "maintenance-handoff-p1-disposition-and-reproducible-report",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B22-E-TEST-RUNTIME-MAINTENANCE",
+          "tools": ["launch report generator", "evidence index verifier", "maintenance workbench", "audit export"],
+          "targets": ["report inputs and generator", "maintenance owner", "P1 disposition", "legacy risk register", "audit archive"],
+          "scenarios": ["missing-input", "hash-mismatch", "unreproducible-report", "p1-close", "p1-transfer-with-expiry", "owner-handoff"],
+          "evidenceRequired": ["generator-version", "tool-versions", "input-index", "report-hash", "owner-handoff", "P1-close-or-transfer", "audit-export"],
+          "cannotBeSatisfiedBy": ["unreproducible-report", "unowned-p1", "permanent-risk-exception", "verbal-handoff", "static-manifest-only"],
+          "expected": "the acceptance report reproduces from immutable inputs and every P1 is closed or transferred to a named owner with expiry before maintenance"
+        }
+      ],
+      "evidenceIds": ["B22-E-TEST-STATIC-MAINTENANCE", "B22-E-TEST-RUNTIME-MAINTENANCE"]
+    }
+  ],
+  "evidenceIndex": [
+    {"id": "B22-E-OPS-STATIC-OBSERVATION", "gateId": "B22-OPS-003-OBSERVATION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-observation-acceptance.json#/qualityGates/B22-OPS-003-OBSERVATION/staticChecks/B22-OPS-OBS-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "B22-E-OPS-RUNTIME-OBSERVATION", "gateId": "B22-OPS-003-OBSERVATION", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/production-observation/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B22-E-OPS-STATIC-ESCALATION", "gateId": "B22-OPS-003-ESCALATION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-observation-acceptance.json#/qualityGates/B22-OPS-003-ESCALATION/staticChecks/B22-OPS-ESC-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "B22-E-OPS-RUNTIME-INCIDENT", "gateId": "B22-OPS-003-ESCALATION", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/alerting-support-oncall/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B22-E-OPS-STATIC-INCIDENT", "gateId": "B22-OPS-003-INCIDENT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-observation-acceptance.json#/qualityGates/B22-OPS-003-INCIDENT/staticChecks/B22-OPS-INC-STATIC-001", "collectionPolicy": "repository-static-validator"},
+    {"id": "B22-E-OPS-RUNTIME-B21", "gateId": "B22-OPS-003-INCIDENT", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/incident-drill-review/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B22-E-TEST-STATIC-REPORT", "gateId": "B22-TEST-004-ACCEPTANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-observation-acceptance.json#/reportSchema", "collectionPolicy": "repository-static-validator"},
+    {"id": "B22-E-TEST-RUNTIME-REPORT", "gateId": "B22-TEST-004-ACCEPTANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/phase1-launch-report/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B22-E-TEST-STATIC-BINDING", "gateId": "B22-TEST-004-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-observation-acceptance.json#/releaseAcceptance/artifactBinding", "collectionPolicy": "repository-static-validator"},
+    {"id": "B22-E-TEST-RUNTIME-BINDING", "gateId": "B22-TEST-004-EVIDENCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/release-binding-permission-privacy-backup/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B22-E-TEST-STATIC-MAINTENANCE", "gateId": "B22-TEST-004-MAINTENANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-observation-acceptance.json#/releaseAcceptance/maintenanceOwner", "collectionPolicy": "repository-static-validator"},
+    {"id": "B22-E-TEST-RUNTIME-MAINTENANCE", "gateId": "B22-TEST-004-MAINTENANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/maintenance-and-audit/**/*.json", "collectionPolicy": "runtime-runner-only"}
+  ],
+  "syntheticFixtures": {
+    "fixturePolicy": "synthetic-references-only-no-real-subjects-no-secrets-no-production-data-no-payment-no-deletion-no-traffic-switch",
+    "observation": {
+      "shortWindowRef": "window-ref://synthetic/b22-short",
+      "longWindowRef": "window-ref://synthetic/b22-long",
+      "traceRef": "trace-ref://synthetic/b22-observation",
+      "metricRef": "metric-ref://synthetic/b22-observation",
+      "logRef": "log-ref://synthetic/b22-observation"
+    },
+    "support": {
+      "ticketRef": "ticket-ref://synthetic/b22-support",
+      "onCallRef": "oncall-ref://synthetic/b22-oncall",
+      "incidentRef": "incident-ref://synthetic/b22-incident"
+    },
+    "report": {
+      "reportRef": "report-ref://synthetic/b22-acceptance",
+      "releaseVersionRef": "version-ref://synthetic/b22-release",
+      "sourceRevisionRef": "commit-ref://synthetic/b22-release",
+      "environmentRef": "environment-ref://synthetic/production",
+      "artifactDigest": "sha256:fixture-artifact-b22",
+      "reportHash": "sha256:fixture-report-b22"
+    },
+    "ownersAndRisks": {
+      "maintenanceOwnerRef": "owner-ref://synthetic/b22-maintenance",
+      "riskRef": "risk-ref://synthetic/b22-legacy",
+      "expiryRef": "expiry-ref://synthetic/b22-legacy"
+    }
+  }
+}

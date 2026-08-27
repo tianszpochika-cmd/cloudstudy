@@ -113,6 +113,7 @@ export interface ContinueContext {
 
 export interface DailyTask {
   id: string
+  contentCode: string | null
   title: string
   description: string
   kind: 'NEW' | 'REVIEW' | 'MISTAKE'
@@ -344,9 +345,9 @@ export function createDefaultHome(onboarding: OnboardingProfile, report: Assessm
   const target = onboarding.targetGoal ?? 'ZERO_BASIS'
   const minutes = onboarding.dailyQuotaMinutes ?? 15
   const tasks: DailyTask[] = [
-    { id: 'today-new', title: '新知输入', description: '掌握今日核心词与短语', kind: 'NEW', minutes: Math.max(3, Math.round(minutes * 0.4)), count: 12, completed: false },
-    { id: 'today-review', title: '到期复习', description: '用主动回忆修复即将遗忘内容', kind: 'REVIEW', minutes: Math.max(2, Math.round(minutes * 0.35)), count: 8, completed: false },
-    { id: 'today-mistake', title: '错题修复', description: '重新理解最近答错的知识点', kind: 'MISTAKE', minutes: Math.max(2, minutes - Math.max(3, Math.round(minutes * 0.4)) - Math.max(2, Math.round(minutes * 0.35))), count: report ? 3 : 0, completed: false },
+    { id: 'today-new', contentCode: null, title: '新知输入', description: '掌握今日核心词与短语', kind: 'NEW', minutes: Math.max(3, Math.round(minutes * 0.4)), count: 12, completed: false },
+    { id: 'today-review', contentCode: null, title: '到期复习', description: '用主动回忆修复即将遗忘内容', kind: 'REVIEW', minutes: Math.max(2, Math.round(minutes * 0.35)), count: 8, completed: false },
+    { id: 'today-mistake', contentCode: null, title: '错题修复', description: '重新理解最近答错的知识点', kind: 'MISTAKE', minutes: Math.max(2, minutes - Math.max(3, Math.round(minutes * 0.4)) - Math.max(2, Math.round(minutes * 0.35))), count: report ? 3 : 0, completed: false },
   ]
   return {
     streakDays: 3,

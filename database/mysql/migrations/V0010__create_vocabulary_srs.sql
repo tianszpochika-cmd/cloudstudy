@@ -394,5 +394,5 @@ CREATE TABLE IF NOT EXISTS lrn_learning_outbox (
   PRIMARY KEY (outbox_id),
   UNIQUE KEY uk_outbox_dedupe (dedupe_key),
   KEY idx_outbox_pending (publish_status, next_attempt_at, outbox_id),
-  CONSTRAINT chk_outbox_status CHECK (publish_status IN ('PENDING','PUBLISHED','FAILED'))
+  CONSTRAINT chk_learning_outbox_status CHECK (publish_status IN ('PENDING','PUBLISHED','FAILED'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='复习结果事件出站';

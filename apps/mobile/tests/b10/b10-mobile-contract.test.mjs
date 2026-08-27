@@ -29,6 +29,15 @@ test('B10 mobile mutations carry stable idempotency ids and never send answer ke
   assert.match(store, /queuedReviews/) 
 })
 
+test('B10 mobile SRS review carries the B25 top-level item id', () => {
+  const api = read('src/api/b10.ts')
+  const store = read('src/stores/b10-learning.ts')
+  assert.match(api, /data:\s*\{\s*itemId:\s*card\.itemId/)
+  assert.match(api, /rawQuality:\s*quality/)
+  assert.match(store, /return \{ itemId: card\.itemId, snapshotId:/)
+  assert.match(api, /itemId: number \| string/)
+})
+
 test('B10 mobile covers recovery states, content-version staleness and performance downgrade', () => {
   const domain = read('src/domain/b10.ts')
   const status = read('src/components/b10/B10StatusPanel.vue')
@@ -47,4 +56,10 @@ test('B10 mobile routes expose the report page without a miniapp project', () =>
   const pages = read('src/pages.json')
   assert.match(pages, /pages\/b10-report\/b10-report/)
   assert.doesNotMatch(pages, /miniapp|mini-app|apps\/miniapp-wechat/)
+})
+
+test('H5 placement reads encode locale and optional session id as query parameters', () => {
+  const source = read('src/api/learner-content.ts')
+  assert.match(source, /type QueryParams = string \| Record<string, string \| null \| undefined>/)
+  assert.match(source, /query\('\/assessment\/placement\/start', \{ contentLocale, \.\.\.\(sessionId \? \{ sessionId \} : \{\}\) \}\)/)
 })

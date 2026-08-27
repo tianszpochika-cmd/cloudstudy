@@ -1,6 +1,6 @@
 export const B12_MODERATION_COMMANDS = ['START_REVIEW', 'RESOLVE', 'DISMISS', 'ESCALATE'] as const
 export type B12ModerationCommand = (typeof B12_MODERATION_COMMANDS)[number]
-export const B12_RECOVERY_COMMANDS = ['RETRY', 'CANCEL', 'REQUEUE', 'MARK_RESOLVED'] as const
+export const B12_RECOVERY_COMMANDS = ['RETRY', 'REPLAY', 'CANCEL', 'MANUAL_REVIEW'] as const
 export type B12RecoveryCommand = (typeof B12_RECOVERY_COMMANDS)[number]
 
 export type B12AdminViewState = 'idle' | 'loading' | 'ready' | 'empty' | 'permission' | 'recovery' | 'error' | 'success'

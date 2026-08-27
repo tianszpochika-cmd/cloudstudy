@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: englishflow-g4-maintenance-approval
+data:
+  minimum-independent-approvals: "5"
+  named-maintenance-owner-required: "true"
+  signoff-status: pending
+  support-handoff-required: "true"
+  incident-escalation-required: "true"
+  rollback-owner-required: "true"
+  maintenance-window-required: "true"

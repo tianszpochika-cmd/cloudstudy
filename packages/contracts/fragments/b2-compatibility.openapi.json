@@ -101,17 +101,6 @@
         "parameters": [{ "$ref": "#/components/parameters/B2LocalDateOptional" }],
         "responses": { "200": { "$ref": "#/components/responses/B2DailySummaryResponse" } }
       }
-    },
-    "/api/v1/notifications": {
-      "get": {
-        "operationId": "listLearningNotifications",
-        "tags": ["b2-notifications"],
-        "parameters": [
-          { "$ref": "#/components/parameters/B2NotificationStatusOptional" },
-          { "$ref": "#/components/parameters/B2LimitOptional" }
-        ],
-        "responses": { "200": { "$ref": "#/components/responses/B2NotificationPageResponse" } }
-      }
     }
   },
   "components": {

@@ -27,6 +27,16 @@ public final class AssessmentAttempt {
         this.submittedAt = Objects.requireNonNull(submittedAt, "submittedAt is required");
     }
 
+    /** Rehydrates a server-owned attempt from the assessment store. */
+    public static AssessmentAttempt restore(long submissionId, long exerciseId, String clientSubmissionId,
+                                             int revision, Map<String, Object> answer, Instant submittedAt,
+                                             ScoringResult scoringResult) {
+        AssessmentAttempt attempt = new AssessmentAttempt(submissionId, exerciseId, clientSubmissionId,
+                revision, answer, submittedAt);
+        if (scoringResult != null) attempt.setScoringResult(scoringResult);
+        return attempt;
+    }
+
     public long submissionId() { return submissionId; }
     public long exerciseId() { return exerciseId; }
     public String clientSubmissionId() { return clientSubmissionId; }

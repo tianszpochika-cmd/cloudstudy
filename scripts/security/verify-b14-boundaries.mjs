@@ -31,7 +31,17 @@ const httpPepServices = new Set([
   'api-gateway',
 ]);
 
+// B25/B31/B32 deliberately close durable owner persistence for these services.
+// The B14 boundary is still responsible for preventing ORM/shared-table drift;
+// it must not reject the owner service's own JDBC adapter as if it were a
+// cross-service write.
+const ownerPersistenceServices = new Set([
+  'learner-service', 'content-service', 'learning-service', 'assessment-service', 'notification-service',
+  'media-service', 'gamification-service', 'social-service', 'commerce-service', 'admin-ops-service', 'analytics-service',
+]);
+
 const forbiddenClientFacts = /headers\.(?:set|append)\(\s*['"]x-(?:b5-role|role|tenant-id|owner-id|user-id|principal-id)['"]|localStorage\.(?:role|tenant|owner)|sessionStorage\.(?:role|tenant|owner)/i;
+const forbiddenOrm = /EntityManager|JpaRepository|@Entity/i;
 const forbiddenSql = /JdbcTemplate|EntityManager|JpaRepository|@Entity|\b(?:INSERT\s+INTO|UPDATE\s+\S+\s+SET|DELETE\s+FROM)\b/i;
 const forbiddenSecret = /(?:-----BEGIN (?:RSA |EC )?PRIVATE KEY-----|\b(?:sk|rk|ghp|github_pat|AKIA)[-_][A-Za-z0-9_-]{12,}|Bearer\s+[A-Za-z0-9._~-]{32,})/;
 const forbiddenEventKeys = new Set([
@@ -96,7 +106,14 @@ export function verifyB14Boundaries() {
     if (!/(?:tenant(?:Id|_id)|TenantScope|Principal|Authorization|AccessPolicy)/i.test(source)) {
       fail(`${service}: no tenant/principal/PEP marker found`);
     }
-    if (forbiddenSql.test(source)) {
+    if (ownerPersistenceServices.has(service)) {
+      if (forbiddenOrm.test(source)) {
+        fail(`${service}: ORM/shared entity marker found; owner persistence must remain an explicit JDBC adapter`);
+      }
+      if (!/(?:JdbcTemplate|jdbc|persistence\.mode)/i.test(source)) {
+        fail(`${service}: owner persistence service has no explicit JDBC boundary marker`);
+      }
+    } else if (forbiddenSql.test(source)) {
       fail(`${service}: direct ORM/JDBC or SQL write marker found in target service source`);
     }
     if (forbiddenSecret.test(source)) {

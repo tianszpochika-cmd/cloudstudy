@@ -1,0 +1,581 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "batch": "B27",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "scope": "V2-B27-QUAL-003+V2-B27-STG-004",
+  "runtimeDecision": "BLOCKED",
+  "sourceRefs": [
+    "V2-B27-QUAL-003",
+    "V2-B27-STG-004",
+    "ARCH-SEC-001",
+    "ARCH-OBS-001",
+    "ARCH-REL-001",
+    "ARCH-DEP-001",
+    "ARCH-A11Y-001"
+  ],
+  "tasks": [
+    {
+      "id": "V2-B27-QUAL-003",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": ["V2-B26-EVT-001", "V2-B26-EVT-002", "V2-B26-BRW-005"],
+      "scope": [
+        "authorization-boundary-and-tenant-isolation",
+        "cors-and-preflight-boundary",
+        "rate-limit-and-abuse-controls",
+        "oidc-jwks-rotation-and-fail-closed",
+        "web-vitals-and-api-latency",
+        "adaptive-performance-low-device-fallback",
+        "keyboard-and-screen-reader-navigation",
+        "contrast-and-touch-targets",
+        "privacy-redaction-in-logs-traces-evidence"
+      ]
+    },
+    {
+      "id": "V2-B27-STG-004",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": ["V2-B21-DEP-001", "V2-B21-RC-004", "V2-B22-REL-001", "V2-B26-BRW-006"],
+      "scope": [
+        "production-like-kubernetes-staging",
+        "immutable-oci-digest-release",
+        "external-secret-injection",
+        "migration-and-restore-point",
+        "startup-readiness-liveness-probes",
+        "default-deny-network-policy",
+        "openapi-asyncapi-and-four-platform-binding",
+        "opentelemetry-sbom-provenance",
+        "backup-restore-and-rollback-point",
+        "dual-independent-multi-role-go-no-go"
+      ]
+    }
+  ],
+  "execution": {
+    "mode": "static-fixture-only",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeEvidence": null,
+    "productionMutationAllowed": false,
+    "trafficSwitchAllowed": false,
+    "secretMaterialAllowed": false,
+    "paymentOperationAllowed": false,
+    "destructiveOperationAllowed": false,
+    "blockedReasons": [
+      "B26 runtime and authenticated cross-service evidence is not accepted",
+      "security, performance and accessibility evidence requires approved runtime runners",
+      "production-like staging deployment and migration evidence is pending",
+      "immutable artifact signature, SBOM and provenance verification is pending",
+      "backup, restore, rollback and independent Go/No-Go records are pending"
+    ]
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B27_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "B27_RUNTIME_SECURITY_EVIDENCE",
+      "B27_RUNTIME_PERFORMANCE_EVIDENCE",
+      "B27_RUNTIME_ACCESSIBILITY_EVIDENCE",
+      "B27_RUNTIME_PRIVACY_EVIDENCE",
+      "B27_RUNTIME_STAGING_EVIDENCE",
+      "B27_RUNTIME_MIGRATION_EVIDENCE",
+      "B27_RUNTIME_ARTIFACT_EVIDENCE",
+      "B27_RUNTIME_BACKUP_ROLLBACK_EVIDENCE",
+      "B27_RUNTIME_GO_NO_GO_EVIDENCE"
+    ],
+    "requiredEvidence": [
+      "authenticated authorization and denial matrix",
+      "CORS, rate-limit and JWKS rotation traces",
+      "Web Vitals and API latency run by target and device",
+      "low-device degradation and accessibility runner output",
+      "redacted privacy evidence and log/trace review",
+      "production-like staging deployment transcript",
+      "migration, probe, network-policy and contract verification",
+      "OCI signature/SBOM/provenance binding",
+      "backup restore and rollback reconciliation",
+      "independent multi-role Go/No-Go decision record"
+    ],
+    "runtimeStatusWhenMissing": "blocked",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "runtimeEvidenceMustRemainPendingOrBlocked": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "synthetic-fixture-only",
+      "development-http-200",
+      "local-browser-smoke",
+      "same-process-test-double",
+      "unfired-alert-definition",
+      "desktop-only-run",
+      "automated-lint-only",
+      "single-operator-claim",
+      "unsigned-artifact",
+      "mutable-tag",
+      "unredacted-log-or-screenshot"
+    ]
+  },
+  "securityQuality": {
+    "defaultDecision": "BLOCKED",
+    "authorization": {
+      "defaultDeny": true,
+      "gatewayJwtPreValidation": true,
+      "serviceSidePepRequired": true,
+      "pdpFailureDecision": "fail-closed",
+      "revocationOrPolicyVersionFailureDecision": "fail-closed",
+      "clientRoleHeadersTrusted": false,
+      "clientTenantHeadersTrusted": false,
+      "tenantDerivedServerSide": true,
+      "ownerAndResourceCheckRequired": true,
+      "crossTenantAccessDecision": "deny",
+      "requiredDecisionInputs": ["subject", "tenant", "role", "permission", "resource", "action", "owner", "phase", "contentRights"]
+    },
+    "cors": {
+      "policy": "explicit-runtime-origin-allowlist",
+      "allowedOriginsSource": "runtime-env-only",
+      "wildcardOriginAllowed": false,
+      "originReflectionAllowed": false,
+      "credentialsAllowed": true,
+      "varyOriginRequired": true,
+      "allowHeaders": ["Authorization", "Content-Type", "Idempotency-Key", "X-Request-Id", "X-Trace-Id", "X-Device-Id", "X-Client-Version", "X-Timezone", "X-UI-Locale", "X-Content-Locale", "X-Snapshot-Id", "X-Performance-Level", "traceparent"],
+      "exposedHeaders": ["X-Request-Id"],
+      "preflightRequired": true,
+      "preflightDeniedOriginStatus": 403,
+      "privateNetworkAccessAllowed": false
+    },
+    "rateLimiting": {
+      "algorithm": "token-bucket",
+      "enforcementPoint": "gateway-and-sensitive-service",
+      "dimensions": ["route", "subject-or-anonymous-key", "source-network", "tenant"],
+      "clientSuppliedRoleDimensionAllowed": false,
+      "responseStatus": 429,
+      "retryAfterRequired": true,
+      "failOpenOnLimiterFailure": false,
+      "sensitiveRouteOverrides": ["auth", "registration", "assessment-submit", "admin-export"]
+    },
+    "jwks": {
+      "protocol": "OIDC-OAuth2.1",
+      "issuerSource": "runtime-env-only",
+      "jwksUriSource": "runtime-env-only",
+      "allowedAlgorithms": ["RS256", "ES256"],
+      "forbiddenAlgorithms": ["none", "HS256"],
+      "issuerAndAudienceValidation": true,
+      "clockSkewSecondsMaximum": 60,
+      "keyRotationRequired": true,
+      "unknownKeyDecision": "fail-closed",
+      "jwksUnavailableDecision": "fail-closed",
+      "expiredTokenDecision": "401",
+      "missingScopeDecision": "403",
+      "tokenForwardingToLogs": false
+    },
+    "privacyRedaction": {
+      "policy": "redact-or-do-not-record",
+      "redactFields": ["authorization", "access_token", "refresh_token", "id_token", "cookie", "password", "phone", "email", "audio", "payment"],
+      "redactSources": ["application-logs", "traces", "metrics", "browser-network", "screenshots", "support-export", "backup-manifest"],
+      "rawPiiAllowed": false,
+      "rawMediaAllowed": false,
+      "productionCredentialsAllowed": false,
+      "paymentCredentialsAllowed": false,
+      "hashingPolicy": "keyed-reference-only-runtime-secret",
+      "evidenceMustBeReproducibleWithoutPii": true
+    }
+  },
+  "performance": {
+    "targets": ["mobile-h5", "learner-web", "admin-web", "official-site", "ios", "android", "ipad", "wechat-mini-program", "pwa"],
+    "webVitals": {
+      "measurement": "real-browser-runtime",
+      "lcpP75MsMaximum": 2500,
+      "inpP75MsMaximum": 200,
+      "clsP75Maximum": 0.1,
+      "ttfbP75MsMaximum": 800,
+      "routeAndDeviceMatrixRequired": true,
+      "coldLoadAndAuthenticatedRouteRequired": true,
+      "status": "not-measured",
+      "runtimeRequired": true
+    },
+    "apiLatency": {
+      "measurement": "gateway-trace-runtime",
+      "readP95MsMaximum": 500,
+      "writeP95MsMaximum": 800,
+      "criticalAuthP95MsMaximum": 1000,
+      "errorRateMaximumPercent": 1,
+      "status": "not-measured",
+      "runtimeRequired": true
+    },
+    "adaptivePerformance": {
+      "engine": "AdaptivePerformanceEngine",
+      "levels": ["Ultra", "High", "Medium", "Performance"],
+      "lowDeviceSignals": ["low-memory", "low-cpu", "thermal-throttle", "reduced-motion", "slow-network"],
+      "performanceMode": {
+        "disable": ["three-dimensional-rendering", "particles", "complex-canvas", "nonessential-motion"],
+        "retain": ["text-content", "static-illustration", "basic-audio", "keyboard-and-touch-actions"],
+        "userCanExit": true,
+        "persisted": true,
+        "noBlockingFallback": true
+      },
+      "status": "not-measured",
+      "runtimeRequired": true
+    }
+  },
+  "accessibility": {
+    "targets": ["learner-web", "admin-web", "official-site", "mobile-h5", "ios", "android", "ipad"],
+    "standard": "WCAG-2.2-AA",
+    "keyboard": {
+      "coreJourneysKeyboardComplete": true,
+      "visibleFocusRequired": true,
+      "focusOrderRequired": true,
+      "escapeClosesTransientUi": true,
+      "noUnrecoverableFocusTrap": true,
+      "skipNavigationRequired": true
+    },
+    "screenReader": {
+      "semanticHeadingsRequired": true,
+      "accessibleNamesRequired": true,
+      "liveStatusAndErrorAnnouncementsRequired": true,
+      "loadingEmptyErrorPermissionStatesRequired": true,
+      "testedWith": ["NVDA", "VoiceOver", "TalkBack"]
+    },
+    "contrast": {
+      "normalTextMinimum": 4.5,
+      "largeTextMinimum": 3,
+      "nonTextAndFocusMinimum": 3,
+      "colorOnlyStatusForbidden": true,
+      "highContrastModeRequired": true
+    },
+    "touch": {
+      "minimumTargetCssPx": 44,
+      "spacingOrOverlapReviewRequired": true,
+      "portraitAndLandscapeRequired": true
+    },
+    "status": "not-measured",
+    "runtimeRequired": true
+  },
+  "stagingRelease": {
+    "environment": "production-like-staging",
+    "productionLike": true,
+    "status": "BLOCKED",
+    "trafficSwitchAllowed": false,
+    "productionDataAllowed": false,
+    "rawMediaAllowed": false,
+    "paymentCredentialsAllowed": false,
+    "allowedDifferences": ["namespace", "scale", "synthetic-endpoints", "approval-identities", "traffic-volume"],
+    "forbiddenDifferences": ["business-rules", "authorization-policy", "schema-shape", "event-envelope", "secret-material", "artifact-digest"],
+    "oci": {
+      "registrySource": "runtime-env-only",
+      "releaseReference": "release-ref://synthetic/b27/rc-pending",
+      "requireDigest": true,
+      "mutableTagAllowed": false,
+      "sameDigestAcrossPromotion": true,
+      "requireSignature": true,
+      "signatureTool": "cosign",
+      "requireSBOM": true,
+      "sbomFormat": "CycloneDX",
+      "requireProvenance": true,
+      "provenanceStandard": "SLSA",
+      "verificationStatus": "pending",
+      "artifacts": [
+        { "id": "api-gateway", "image": "registry.example.invalid/englishflow/api-gateway@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/api-gateway@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "provenanceStatus": "pending" },
+        { "id": "iam-service", "image": "registry.example.invalid/englishflow/iam-service@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/iam-service@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "provenanceStatus": "pending" },
+        { "id": "learner-service", "image": "registry.example.invalid/englishflow/learner-service@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/learner-service@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "provenanceStatus": "pending" },
+        { "id": "content-service", "image": "registry.example.invalid/englishflow/content-service@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/content-service@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd", "provenanceStatus": "pending" },
+        { "id": "learning-service", "image": "registry.example.invalid/englishflow/learning-service@sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/learning-service@sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "provenanceStatus": "pending" },
+        { "id": "assessment-service", "image": "registry.example.invalid/englishflow/assessment-service@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/assessment-service@sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "provenanceStatus": "pending" },
+        { "id": "media-service", "image": "registry.example.invalid/englishflow/media-service@sha256:0000000000000000000000000000000000000000000000000000000000000000", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/media-service@sha256:0000000000000000000000000000000000000000000000000000000000000000", "provenanceStatus": "pending" },
+        { "id": "gamification-service", "image": "registry.example.invalid/englishflow/gamification-service@sha256:1111111111111111111111111111111111111111111111111111111111111111", "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/gamification-service@sha256:1111111111111111111111111111111111111111111111111111111111111111", "provenanceStatus": "pending" },
+        { "id": "notification-service", "image": "registry.example.invalid/englishflow/notification-service@sha256:2222222222222222222222222222222222222222222222222222222222222222", "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/notification-service@sha256:2222222222222222222222222222222222222222222222222222222222222222", "provenanceStatus": "pending" },
+        { "id": "audit-service", "image": "registry.example.invalid/englishflow/audit-service@sha256:3333333333333333333333333333333333333333333333333333333333333333", "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/audit-service@sha256:3333333333333333333333333333333333333333333333333333333333333333", "provenanceStatus": "pending" },
+        { "id": "workflow-service", "image": "registry.example.invalid/englishflow/workflow-service@sha256:4444444444444444444444444444444444444444444444444444444444444444", "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/workflow-service@sha256:4444444444444444444444444444444444444444444444444444444444444444", "provenanceStatus": "pending" },
+        { "id": "mobile", "image": "registry.example.invalid/englishflow/mobile@sha256:5555555555555555555555555555555555555555555555555555555555555555", "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/mobile@sha256:5555555555555555555555555555555555555555555555555555555555555555", "provenanceStatus": "pending" },
+        { "id": "learner-web", "image": "registry.example.invalid/englishflow/learner-web@sha256:6666666666666666666666666666666666666666666666666666666666666666", "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/learner-web@sha256:6666666666666666666666666666666666666666666666666666666666666666", "provenanceStatus": "pending" },
+        { "id": "admin-web", "image": "registry.example.invalid/englishflow/admin-web@sha256:7777777777777777777777777777777777777777777777777777777777777777", "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/admin-web@sha256:7777777777777777777777777777777777777777777777777777777777777777", "provenanceStatus": "pending" },
+        { "id": "official-site", "image": "registry.example.invalid/englishflow/official-site@sha256:8888888888888888888888888888888888888888888888888888888888888888", "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888", "signatureStatus": "pending", "sbomRef": "oci://registry.example.invalid/englishflow/sbom/official-site@sha256:8888888888888888888888888888888888888888888888888888888888888888", "provenanceStatus": "pending" }
+      ]
+    },
+    "secrets": {
+      "injectionMode": "external-secret-store-only",
+      "literalSecretValuesAllowed": false,
+      "productionSecretAccessAllowed": false,
+      "secretStoreReference": "runtime-env-only",
+      "secretKeyRefsRequired": true,
+      "secretRotationRequired": true,
+      "auditWithoutValueCapture": true,
+      "forbiddenSources": ["repository", "image-layer", "configmap", "command-line", "browser-bundle"]
+    },
+    "deployment": {
+      "orchestrator": "Kubernetes",
+      "packaging": ["Helm", "Kustomize"],
+      "promotion": "GitOps-signed-commit",
+      "namespaceSource": "environment-binding",
+      "runAsNonRoot": true,
+      "readOnlyRootFilesystem": true,
+      "allowPrivilegeEscalation": false,
+      "automountServiceAccountToken": false,
+      "gracefulShutdownRequired": true,
+      "probes": ["startup", "readiness", "liveness"],
+      "networkPolicy": {
+        "defaultDeny": true,
+        "ingressOnlyFromApprovedGateway": true,
+        "egressAllowlistRequired": true,
+        "crossNamespaceWildcardAllowed": false,
+        "status": "pending"
+      }
+    },
+    "migration": {
+      "owner": "database-migration-runner",
+      "schemaOwnershipRequired": true,
+      "backupBeforeMigration": true,
+      "forwardCompatible": true,
+      "destructiveDowngradeAllowed": false,
+      "rollbackMode": "restore-and-reconcile",
+      "stages": ["empty-database", "forward-upgrade", "controlled-downgrade", "failed-migration-recovery"],
+      "status": "pending",
+      "runtimeRequired": true,
+      "requiredEvidence": ["migration-transcript", "schema-diff", "restore-point", "reconciliation-report"]
+    },
+    "contractBinding": {
+      "openapiSource": "packages/contracts/openapi",
+      "asyncapiSource": "packages/contracts/events",
+      "generatedClientsRequired": true,
+      "contractValidationRequired": true,
+      "fourPlatformBindingRequired": true,
+      "sameSourceRevisionRequired": true,
+      "manifestDigestRequired": true,
+      "eventEnvelopeVersionRequired": true,
+      "status": "pending"
+    },
+    "observability": {
+      "provider": "OpenTelemetry",
+      "signals": ["traces", "metrics", "logs"],
+      "requiredResourceAttributes": ["service.name", "service.version", "deployment.environment"],
+      "correlationFields": ["requestId", "traceId", "eventId", "decisionId", "releaseId"],
+      "sensitiveDataPolicy": "redact-or-do-not-record",
+      "exporterEndpointSource": "runtime-env-only",
+      "status": "pending"
+    },
+    "supplyChain": {
+      "sbomRequired": true,
+      "sbomFormat": "CycloneDX",
+      "provenanceRequired": true,
+      "provenanceStandard": "SLSA",
+      "signatureRequired": true,
+      "verificationTool": "cosign",
+      "dependencyScanRequired": true,
+      "status": "pending"
+    },
+    "backup": {
+      "facts": ["mysql", "redis-rebuild-source", "kafka-event-log", "minio-object-metadata"],
+      "backupBeforeChange": true,
+      "restoreTestRequired": true,
+      "pointInTimeReferenceRequired": true,
+      "immutableEvidenceRequired": true,
+      "status": "not-established",
+      "runtimeRequired": true
+    },
+    "rollback": {
+      "status": "not-established",
+      "automatic": {
+        "enabled": true,
+        "failClosed": true,
+        "lastApprovedDigestRequired": true,
+        "triggerConditions": ["p0-or-p1", "data-integrity-mismatch", "security-regression", "error-budget-breach"]
+      },
+      "manual": {
+        "enabled": true,
+        "namedOwnerRequired": true,
+        "independentApprovalRequired": true,
+        "minimumApprovers": 2,
+        "changeRecordRequired": true
+      },
+      "restorePoint": {
+        "required": true,
+        "reference": "restore-point-ref://synthetic/b27/pending",
+        "createdBeforeTrafficChange": true,
+        "immutableReferenceRequired": true,
+        "dataAndEventReconciliationRequired": true
+      },
+      "audit": {
+        "appendOnly": true,
+        "externalSinkRequired": true,
+        "sensitiveDataPolicy": "redact-or-do-not-record",
+        "status": "pending"
+      }
+    },
+    "goNoGo": {
+      "status": "BLOCKED",
+      "defaultDecision": "NO-GO",
+      "minimumIndependentApprovers": 2,
+      "requiredRoles": ["product", "architecture", "security", "data", "operations"],
+      "samePersonCannotSatisfyBothApprovals": true,
+      "selfApprovalAllowed": false,
+      "decisionRecordRequired": true,
+      "changeWindowRequired": true,
+      "openP0MustEqual": 0,
+      "openP1MustEqual": 0,
+      "p2RequiresDisposition": true,
+      "runtimeEvidenceStatus": "pending",
+      "approvalStatus": "not-present"
+    }
+  },
+  "qualityGates": [
+    {
+      "id": "B27-QUAL-003-SECURITY",
+      "task": "V2-B27-QUAL-003",
+      "staticChecks": [
+        {
+          "id": "B27-QUAL-STATIC-001",
+          "kind": "security-boundary-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["config/b20-security-gates.json", "config/b20-privacy-content-gates.json"],
+          "assertions": [
+            { "sourcePath": "config/b20-security-gates.json", "contains": "fail-closed" },
+            { "sourcePath": "config/b20-security-gates.json", "contains": "JWKS" },
+            { "sourcePath": "config/b20-privacy-content-gates.json", "contains": "versioned-redacted-json" }
+          ]
+        },
+        {
+          "id": "B27-QUAL-STATIC-002",
+          "kind": "performance-and-degradation-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["config/b19-quality-gates.json", "packages/performance/src/index.ts"],
+          "assertions": [
+            { "sourcePath": "config/b19-quality-gates.json", "contains": "web-vitals" },
+            { "sourcePath": "config/b19-quality-gates.json", "contains": "PERFORMANCE_LEVELS" },
+            { "sourcePath": "config/b19-quality-gates.json", "contains": "prefers-reduced-motion" }
+          ]
+        },
+        {
+          "id": "B27-QUAL-STATIC-003",
+          "kind": "accessibility-and-privacy-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["config/b19-quality-gates.json", "config/b20-privacy-content-gates.json"],
+          "assertions": [
+            { "sourcePath": "config/b19-quality-gates.json", "contains": "screen-reader-and-contrast" },
+            { "sourcePath": "config/b19-quality-gates.json", "contains": "keyboard-navigation" },
+            { "sourcePath": "config/b20-privacy-content-gates.json", "contains": "synthetic-references-only-no-real-subjects-no-raw-media-no-secrets" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        { "id": "B27-QUAL-RUNTIME-001", "kind": "authorization-cors-rate-limit-jwks", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["allow-deny-matrix", "cors-preflight-trace", "429-trace", "jwks-rotation-trace"], "cannotBeSatisfiedBy": ["static-manifest-only", "mock-token", "client-role-header"] },
+        { "id": "B27-QUAL-RUNTIME-002", "kind": "web-vitals-api-latency", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["web-vitals-json", "api-trace-percentiles", "route-device-network-matrix"], "cannotBeSatisfiedBy": ["typecheck", "build-only", "desktop-only-run"] },
+        { "id": "B27-QUAL-RUNTIME-003", "kind": "adaptive-performance-degradation", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["device-profile", "render-policy-log", "fallback-screen-recording"], "cannotBeSatisfiedBy": ["source-level-level-list", "desktop-only-run"] },
+        { "id": "B27-QUAL-RUNTIME-004", "kind": "keyboard-screen-reader-contrast-touch", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["keyboard-trace", "screen-reader-transcript", "accessibility-tree", "contrast-report", "touch-target-report"], "cannotBeSatisfiedBy": ["dom-query", "automated-lint-only", "static-token-check"] },
+        { "id": "B27-QUAL-RUNTIME-005", "kind": "privacy-redaction", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["redacted-log-sample", "trace-field-review", "evidence-index"], "cannotBeSatisfiedBy": ["regex-only", "verbal-review", "unredacted-screenshot"] }
+      ]
+    },
+    {
+      "id": "B27-STG-004-RELEASE",
+      "task": "V2-B27-STG-004",
+      "staticChecks": [
+        {
+          "id": "B27-STG-STATIC-001",
+          "kind": "production-like-staging-and-oci",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/oci/image-lock.yaml", "deploy/b22/oci/image-lock.yaml"],
+          "assertions": [
+            { "sourcePath": "config/b21-deployment-staging.json", "contains": "productionLike" },
+            { "sourcePath": "deploy/b21/oci/image-lock.yaml", "contains": "rejectMutableTags: true" },
+            { "sourcePath": "deploy/b22/oci/image-lock.yaml", "contains": "requireProvenance: true" }
+          ]
+        },
+        {
+          "id": "B27-STG-STATIC-002",
+          "kind": "secret-probe-network-and-migration",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["deploy/b21/base/deployment.yaml", "deploy/b21/base/external-secret.yaml", "deploy/b21/base/network-policy.yaml", "deploy/b21/staging/migration-plan.yaml"],
+          "assertions": [
+            { "sourcePath": "deploy/b21/base/deployment.yaml", "contains": "startupProbe:" },
+            { "sourcePath": "deploy/b21/base/deployment.yaml", "contains": "readinessProbe:" },
+            { "sourcePath": "deploy/b21/base/external-secret.yaml", "contains": "ExternalSecret" },
+            { "sourcePath": "deploy/b21/base/network-policy.yaml", "contains": "NetworkPolicy" },
+            { "sourcePath": "deploy/b21/staging/migration-plan.yaml", "contains": "restore-and-reconcile" }
+          ]
+        },
+        {
+          "id": "B27-STG-STATIC-003",
+          "kind": "contract-observability-and-release-binding",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["deploy/b22/release/version-binding.yaml", "config/b22-observation-acceptance.json"],
+          "assertions": [
+            { "sourcePath": "deploy/b22/release/version-binding.yaml", "contains": "FourPlatformReleaseBinding" },
+            { "sourcePath": "deploy/b22/release/version-binding.yaml", "contains": "sameReleaseIdRequired: true" },
+            { "sourcePath": "config/b22-observation-acceptance.json", "contains": "OpenTelemetry" }
+          ]
+        },
+        {
+          "id": "B27-STG-STATIC-004",
+          "kind": "backup-rollback-and-go-no-go",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "sourcePaths": ["deploy/b22/rollout/rollback-policy.yaml", "config/b21-release-gate-evidence.json", "deploy/b22/base/release-prerequisite.yaml"],
+          "assertions": [
+            { "sourcePath": "deploy/b22/rollout/rollback-policy.yaml", "contains": "automaticRollback:" },
+            { "sourcePath": "deploy/b22/rollout/rollback-policy.yaml", "contains": "restorePoint:" },
+            { "sourcePath": "config/b21-release-gate-evidence.json", "contains": "independent" },
+            { "sourcePath": "deploy/b22/base/release-prerequisite.yaml", "contains": "defaultDecision: NO-GO" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        { "id": "B27-STG-RUNTIME-001", "kind": "production-like-staging-deploy", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["signed-gitops-revision", "deployment-transcript", "four-platform-health"], "cannotBeSatisfiedBy": ["local-development", "development-http-200", "static-manifest-only"] },
+        { "id": "B27-STG-RUNTIME-002", "kind": "migration-probe-and-network-policy", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["migration-transcript", "restore-point", "probe-history", "network-policy-test"], "cannotBeSatisfiedBy": ["health-endpoint-only", "pod-restart", "same-process-test-double"] },
+        { "id": "B27-STG-RUNTIME-003", "kind": "contract-observability-and-supply-chain", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["openapi-asyncapi-validation", "version-binding", "otel-correlation", "signature-sbom-provenance"], "cannotBeSatisfiedBy": ["source-manifest-only", "unsigned-artifact", "unbound-log-line"] },
+        { "id": "B27-STG-RUNTIME-004", "kind": "backup-restore-rollback-reconciliation", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["backup-record", "restore-result", "rollback-result", "data-event-reconciliation"], "cannotBeSatisfiedBy": ["backup-definition-only", "pod-restart", "missing-restore-point"] },
+        { "id": "B27-STG-RUNTIME-005", "kind": "multi-role-go-no-go", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "evidenceRequired": ["two-independent-approvals", "role-signoff-index", "change-window", "p0-p1-disposition"], "cannotBeSatisfiedBy": ["single-operator-claim", "verbal-or-unlogged-signoff", "static-manifest-only"] }
+      ]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "B27-E-QUAL-STATIC-SECURITY", "gateId": "B27-QUAL-003-SECURITY", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-QUAL-STATIC-PERFORMANCE", "gateId": "B27-QUAL-003-SECURITY", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-QUAL-STATIC-A11Y-PRIVACY", "gateId": "B27-QUAL-003-SECURITY", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-STG-STATIC-OCI", "gateId": "B27-STG-004-RELEASE", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-STG-STATIC-DEPLOY", "gateId": "B27-STG-004-RELEASE", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-STG-STATIC-CONTRACT", "gateId": "B27-STG-004-RELEASE", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-STG-STATIC-ROLLBACK", "gateId": "B27-STG-004-RELEASE", "class": "static", "status": "defined", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "B27-E-QUAL-RUNTIME", "gateId": "B27-QUAL-003-SECURITY", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "B27-E-STG-RUNTIME", "gateId": "B27-STG-004-RELEASE", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" }
+  ],
+  "reportSchema": {
+    "id": "B27-QUALITY-RELEASE-REPORT",
+    "version": "1.0.0",
+    "closed": true,
+    "missingEvidenceDecision": "NO-GO",
+    "jsonSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "decision", "quality", "staging", "artifacts", "evidence", "approvals", "rollback", "reportHash"],
+      "properties": {
+        "schemaVersion": { "type": "integer" },
+        "reportId": { "type": "string" },
+        "batch": { "const": "B27" },
+        "decision": { "enum": ["BLOCKED", "NO-GO", "GO"] },
+        "quality": { "type": "object" },
+        "staging": { "type": "object" },
+        "artifacts": { "type": "array" },
+        "evidence": { "type": "array" },
+        "approvals": { "type": "array" },
+        "rollback": { "type": "object" },
+        "reportHash": { "type": "string" }
+      }
+    }
+  }
+}

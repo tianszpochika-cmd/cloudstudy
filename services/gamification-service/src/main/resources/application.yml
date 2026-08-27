@@ -3,6 +3,11 @@ spring:
     name: gamification-service
   lifecycle:
     timeout-per-shutdown-phase: ${GAMIFICATION_SHUTDOWN_TIMEOUT:20s}
+  flyway:
+    enabled: ${GAMIFICATION_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    schemas: ${GAMIFICATION_SCHEMA:gamification_service}
+    default-schema: ${GAMIFICATION_SCHEMA:gamification_service}
   security:
     oauth2:
       resourceserver:
@@ -55,6 +60,7 @@ gamification:
   feature:
     enabled: ${GAMIFICATION_FEATURE_ENABLED:true}
   default-time-zone: ${GAMIFICATION_DEFAULT_TIME_ZONE:Asia/Shanghai}
+  local-feature-state-enabled: ${GAMIFICATION_LOCAL_FEATURE_STATE_ENABLED:true}
   security:
     resource-server-enabled: ${GAMIFICATION_RESOURCE_SERVER_ENABLED:false}
     issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:}

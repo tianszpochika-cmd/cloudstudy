@@ -18,6 +18,7 @@
 | 服务 | 固定端口 | 启动形态 | 备注 |
 |---|---:|---|---|
 | API Gateway | 18070 | Spring Cloud Gateway | v2 外部 API 统一入口；仅做路由、边界策略、请求上下文和观测，不承载领域写入 |
+| Local OIDC test IdP | 18099 | Docker Keycloak | loopback-only `yuxuexing-local` realm；标准 OIDC/OAuth 2.1 测试提供方，不是仓库内 Token Server |
 | IAM Service | 18087 | Spring Boot | v2 provider-neutral IAM/OIDC adapter；G-IDP 通过前仅运行测试替身/本地配置 |
 | Learner Service | 18088 | Spring Boot | v2 学习者档案、目标、偏好和 Onboarding read model；独立 schema |
 | Content Service | 18089 | Spring Boot | v2 内容版本、版权、审核发布和公开读投影；独立 schema |
@@ -49,6 +50,7 @@
 | Mobile H5 preview | 18193 | uni-app preview | 预览端口 |
 | MySQL host | 13306 | Docker host mapping | 容器内仍为 3306 |
 | Redis host | 16379 | Docker host mapping | 容器内仍为 6379 |
+| Kafka-compatible broker | 19092 | Docker host mapping | v2 事件平台外部 listener；容器内 broker listener 为 9092 |
 | RabbitMQ AMQP | 15689 | Docker host mapping | v1 兼容事件/任务依赖；容器内仍为 5672 |
 | RabbitMQ management | 15690 | Docker host mapping | v1 兼容管理端；容器内仍为 15672 |
 | MinIO API | 19000 | Docker host mapping | 容器内仍为 9000 |

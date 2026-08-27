@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { B10AnswerInput, B10AnswerResult, B10AssessmentSession, B10Mistake, B10Report, B10RequestContext, B10SrsBatch } from '../domain/b10'
+import type { B10AnswerInput, B10AnswerResult, B10AssessmentSession, B10Mistake, B10Report, B10RequestContext, B10SrsBatch, B10SrsCard } from '../domain/b10'
 import { b10LearningApi, b10ErrorInfo, createB10ClientEventId } from '../api/b10'
 import { b10ContentLocale, b10UiLocale } from '../platform/b10-foundation'
 import { getUniRuntime } from '../platform/uni-runtime'
@@ -22,6 +22,45 @@ interface PersistedState {
 function context(): B10RequestContext { return { uiLocale: b10UiLocale.value, contentLocale: b10ContentLocale.value } }
 function nowId(prefix: string): string { return createB10ClientEventId(prefix) }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value) }
+const CONFIRMED_SRS_STATUSES = ['ACCEPTED', 'DUPLICATE', 'RISK_FILTERED'] as const
+
+function responseRecord(value: unknown): Record<string, unknown> {
+  let source = value
+  if (isRecord(source) && isRecord(source.data)) source = source.data
+  else if (isRecord(source) && isRecord(source.result)) source = source.result
+  return isRecord(source) ? source : {}
+}
+
+function responseStatus(value: unknown): string | null {
+  const status = responseRecord(value).status
+  return typeof status === 'string' && status.trim() ? status.trim().toUpperCase() : null
+}
+
+function responseMessage(value: unknown, fallback: string): string {
+  const source = responseRecord(value)
+  for (const candidate of [source.feedbackCode, source.message, source.explanation]) if (typeof candidate === 'string' && candidate.trim()) return candidate.trim()
+  return fallback
+}
+
+function responseItems(value: unknown): unknown[] {
+  const source = responseRecord(value)
+  const items = source.results ?? source.items
+  return Array.isArray(items) ? items : []
+}
+
+function isConfirmedSrsStatus(status: string | null): boolean {
+  return status !== null && (CONFIRMED_SRS_STATUSES as readonly string[]).includes(status)
+}
+
+function applyRemoteSrsView(card: B10SrsCard, value: unknown): void {
+  const source = responseRecord(value)
+  const masteryStatus = source.masteryStatus ?? source.stage
+  if (masteryStatus === 'NEW' || masteryStatus === 'LEARNING' || masteryStatus === 'MASTERED' || masteryStatus === 'CONSOLIDATED') card.masteryStatus = masteryStatus
+  const due = source.nextReviewLocalDate ?? source.dueLocalDate ?? source.dueAt
+  if (typeof due === 'string' && due.trim()) card.dueLocalDate = due.trim()
+  const stateVersion = typeof source.stateVersion === 'number' ? source.stateVersion : typeof source.stateVersion === 'string' ? Number(source.stateVersion) : NaN
+  if (Number.isFinite(stateVersion)) card.stateVersion = stateVersion
+}
 
 async function hashState(value: unknown): Promise<string> {
   const serialized = JSON.stringify(value)
@@ -107,7 +146,7 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
 
   function reviewPayload(card: NonNullable<typeof currentCard.value>, quality: 0 | 1 | 2 | 3, clientEventId: string): Record<string, unknown> {
     const item = card.itemType === 'VOCAB' ? { itemType: 'VOCAB', vocabId: card.itemId } : card.itemType === 'PHRASE' ? { itemType: 'PHRASE', phraseId: card.itemId } : { itemType: 'EXPRESSION', expressionId: card.itemId }
-    return { snapshotId: card.snapshotId, snapshotItemId: card.snapshotItemId, item, rawQuality: quality, answerOutcome: 'REVEALED_WITHOUT_ANSWER', responseTimeMs: 0, revealElapsedMs: 0, clientEventId, clientOccurredAt: new Date().toISOString(), baseStateVersion: card.stateVersion }
+    return { itemId: card.itemId, snapshotId: card.snapshotId, snapshotItemId: card.snapshotItemId, item, rawQuality: quality, answerOutcome: 'REVEALED_WITHOUT_ANSWER', responseTimeMs: 0, revealElapsedMs: 0, clientEventId, clientOccurredAt: new Date().toISOString(), baseStateVersion: card.stateVersion }
   }
 
   async function rateCard(quality: 0 | 1 | 2 | 3, card = currentCard.value): Promise<void> {
@@ -117,7 +156,20 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     const payload = reviewPayload(card, quality, clientEventId)
     card.reviewStatus = 'SUBMITTING'; status.value = 'loading'; message.value = null
     try {
-      await b10LearningApi.submitSrsReview(context(), card, quality, clientEventId)
+      const response = await b10LearningApi.submitSrsReview(context(), card, quality, clientEventId)
+      const remoteStatus = responseStatus(response)
+      if (remoteStatus === 'PENDING_SYNC') {
+        if (!queuedReviews.value.some((item) => item.clientEventId === clientEventId)) queuedReviews.value.push({ clientEventId, payload, cardId: card.id })
+        card.reviewStatus = 'QUEUED'; status.value = 'offline'; message.value = '本次复习已排队待同步，服务端尚未确认掌握变化。'; currentIndex.value = Math.min(currentIndex.value + 1, batch.value?.items.length ?? currentIndex.value + 1); persist(); return
+      }
+      if (!isConfirmedSrsStatus(remoteStatus)) {
+        card.reviewStatus = remoteStatus === 'CONFLICT' ? 'STALE' : 'FAILED'
+        status.value = remoteStatus === 'CONFLICT' ? 'stale' : 'error'
+        message.value = responseMessage(response, '服务端未确认本次复习，当前卡片未推进。')
+        persist()
+        return
+      }
+      applyRemoteSrsView(card, response)
       card.reviewStatus = 'ACCEPTED'; status.value = 'ready'; message.value = '复习已记录。'; currentIndex.value = Math.min(currentIndex.value + 1, batch.value?.items.length ?? currentIndex.value + 1); persist()
     } catch (error) {
       const info = b10ErrorInfo(error, '复习提交失败。')
@@ -133,9 +185,21 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     if (!queuedReviews.value.length) return
     status.value = 'loading'; message.value = null
     try {
-      await b10LearningApi.syncSrsReviews(context(), queuedReviews.value.map((item) => item.payload), nowId('srs-sync'))
-      for (const item of queuedReviews.value) { const card = batch.value?.items.find((entry) => entry.id === item.cardId); if (card) card.reviewStatus = 'ACCEPTED' }
-      queuedReviews.value = []; status.value = 'ready'; message.value = '待同步复习已提交。'; persist()
+      const queued = [...queuedReviews.value]
+      const response = await b10LearningApi.syncSrsReviews(context(), queued.map((item) => item.payload), nowId('srs-sync'))
+      const results = responseItems(response)
+      const remaining: QueuedReview[] = []
+      for (const [index, item] of queued.entries()) {
+        const result = results[index]
+        const remoteStatus = responseStatus(result)
+        const card = batch.value?.items.find((entry) => entry.id === item.cardId)
+        if (isConfirmedSrsStatus(remoteStatus)) { if (card) { applyRemoteSrsView(card, result); card.reviewStatus = 'ACCEPTED' } }
+        else { if (card) card.reviewStatus = remoteStatus === 'CONFLICT' ? 'STALE' : 'FAILED'; remaining.push(item) }
+      }
+      queuedReviews.value = remaining
+      if (remaining.length) { status.value = results.some((result) => responseStatus(result) === 'CONFLICT') ? 'stale' : 'offline'; message.value = '部分复习未获服务端确认，队列仍保留。' }
+      else { status.value = 'ready'; message.value = '待同步复习已提交。' }
+      persist()
     } catch (error) {
       const info = b10ErrorInfo(error, '同步失败，队列仍保留。'); status.value = info.kind; message.value = info.message; persist()
     }
@@ -158,8 +222,12 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
     const revision = (practice.value.answerSheet.find((item) => item.exerciseId === exerciseId)?.revision ?? 0) + 1
     const clientEventId = nowId(`assessment-answer-${exerciseId}`)
     try {
-      const result = await b10LearningApi.submitAssessmentAnswer(context(), practice.value.sessionId, exerciseId, answer, revision, practice.value.lastCheckpointSeq, clientEventId)
-      answerResults.value[String(exerciseId)] = result; practiceStatus.value = result.contentVersionStale ? 'stale' : 'ready'; practiceMessage.value = result.contentVersionStale ? '题目版本已失效，请重新读取会话。' : null; persist(); return result
+      const result = await b10LearningApi.submitAssessmentAnswer(context(), practice.value.sessionId, exerciseId, answer, revision, practice.value.lastCheckpointSeq, clientEventId, practice.value.stateVersion)
+      answerResults.value[String(exerciseId)] = result
+      if (result.attemptId) practice.value.lastAttemptId = result.attemptId
+      if (result.reportId) practice.value.reportId = result.reportId
+      practice.value.stateVersion += 1
+      practiceStatus.value = result.contentVersionStale ? 'stale' : 'ready'; practiceMessage.value = result.contentVersionStale ? '题目版本已失效，请重新读取会话。' : null; persist(); return result
     } catch (error) {
       const info = b10ErrorInfo(error, '答案提交失败，当前答案已保留。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist(); return null
     }
@@ -168,7 +236,8 @@ export const useB10LearningStore = defineStore('mobile-b10-learning', () => {
   async function saveCheckpoint(exerciseId: number | null): Promise<void> {
     if (!practice.value) return
     practice.value.lastCheckpointSeq += 1; const clientEventId = nowId(`assessment-checkpoint-${practice.value.lastCheckpointSeq}`)
-    try { await b10LearningApi.saveAssessmentCheckpoint(context(), practice.value.sessionId, practice.value.lastCheckpointSeq, exerciseId, await hashState({ exerciseId, answeredExerciseIds: Object.keys(answers.value).map(Number).sort() }), clientEventId); persist() }
+    if (!practice.value.lastAttemptId) return
+    try { await b10LearningApi.saveAssessmentCheckpoint(context(), practice.value.sessionId, practice.value.lastAttemptId, practice.value.lastCheckpointSeq, exerciseId, await hashState({ exerciseId, answeredExerciseIds: Object.keys(answers.value).map(Number).sort() }), clientEventId); persist() }
     catch (error) { const info = b10ErrorInfo(error, '断点保存失败，当前作答仍保留在本机。'); practiceStatus.value = info.kind; practiceMessage.value = info.message; persist() }
   }
 

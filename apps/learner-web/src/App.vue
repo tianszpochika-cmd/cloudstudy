@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { onErrorCaptured, ref } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import AppShell from './layouts/AppShell.vue'
 
 const errorMessage = ref<string | null>(null)
+const booting = ref(true)
+const router = useRouter()
+
+void router.isReady().finally(() => {
+  booting.value = false
+})
 
 onErrorCaptured((error) => {
   errorMessage.value = error instanceof Error ? error.message : '页面出现了暂时无法恢复的错误。'
@@ -16,7 +22,12 @@ function retry(): void {
 </script>
 
 <template>
-  <div v-if="errorMessage" class="fatal-error" role="alert">
+  <main v-if="booting" class="app-startup" role="status" aria-live="polite">
+    <span class="app-startup__mark" aria-hidden="true">✦</span>
+    <h1>语学星</h1>
+    <p>正在恢复安全会话并准备学习空间…</p>
+  </main>
+  <div v-else-if="errorMessage" class="fatal-error" role="alert">
     <div class="fatal-error__card">
       <span class="fatal-error__icon" aria-hidden="true">!</span>
       <h1>页面暂时不可用</h1>

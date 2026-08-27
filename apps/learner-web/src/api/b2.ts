@@ -27,6 +27,11 @@ function isRecord(value: unknown): value is RecordValue { return typeof value ==
 function unwrap(value: unknown): unknown { return isRecord(value) && 'data' in value ? value.data : value }
 function stringValue(value: unknown): string | null { return typeof value === 'string' && value.trim() ? value : null }
 function numberValue(value: unknown): number | null { return typeof value === 'number' && Number.isFinite(value) ? value : null }
+function itemIdValue(value: unknown): number | string | null {
+  const numeric = numberValue(value)
+  if (numeric !== null) return numeric
+  return stringValue(value)
+}
 function boolValue(value: unknown): boolean | null { return typeof value === 'boolean' ? value : null }
 function arrayValue(value: unknown): unknown[] { return Array.isArray(value) ? value : [] }
 
@@ -39,11 +44,14 @@ function withB2Headers(options: ApiRequestOptions = {}, stableKey?: string): Api
 function parseItem(value: unknown): LearningItemRef | null {
   if (!isRecord(value)) return null
   const itemType = value.itemType
-  const id = numberValue(value.vocabId) ?? numberValue(value.chunkId) ?? numberValue(value.expressionId)
+  const vocabId = itemIdValue(value.vocabId ?? value.vocabularyId ?? (itemType === 'VOCAB' ? value.itemId : null))
+  const chunkId = itemIdValue(value.chunkId ?? (itemType === 'CHUNK' ? value.itemId : null))
+  const expressionId = itemIdValue(value.expressionId ?? (itemType === 'EXPRESSION' ? value.itemId : null))
+  const id = vocabId ?? chunkId ?? expressionId
   if (id === null) return null
-  if (itemType === 'VOCAB' && numberValue(value.vocabId) !== null) return { itemType, vocabId: id }
-  if (itemType === 'CHUNK' && numberValue(value.chunkId) !== null) return { itemType, chunkId: id }
-  if (itemType === 'EXPRESSION' && numberValue(value.expressionId) !== null) return { itemType, expressionId: id }
+  if (itemType === 'VOCAB' && vocabId !== null) return { itemType, vocabId }
+  if (itemType === 'CHUNK' && chunkId !== null) return { itemType, chunkId }
+  if (itemType === 'EXPRESSION' && expressionId !== null) return { itemType, expressionId }
   return null
 }
 
@@ -99,14 +107,14 @@ function parseCard(value: unknown, position = 0, total = 0): VocabularyCard | nu
 
 function parseQuestion(value: unknown): PracticeQuestion | null {
   if (!isRecord(value)) return null
-  const id = stringValue(value.id) ?? stringValue(value.exerciseId) ?? stringValue(value.questionId)
-  const prompt = stringValue(value.prompt) ?? stringValue(value.stemText)
-  const type = value.type ?? value.questionType
+  const id = stringValue(value.id) ?? stringValue(value.exerciseId) ?? stringValue(value.questionId) ?? stringValue(value.itemId)
+  const prompt = stringValue(value.prompt) ?? stringValue(value.stemText) ?? stringValue(value.stem)
+  const type = value.type ?? value.questionType ?? 'CHOICE'
   if (!id || !prompt) return null
   const base = { id, prompt, helperText: stringValue(value.helperText), explanation: stringValue(value.explanation), item: parseItem(value.item) }
   const options = arrayValue(value.options).flatMap((entry) => {
     if (!isRecord(entry)) return []
-    const key = stringValue(entry.key) ?? stringValue(entry.optionKey)
+    const key = stringValue(entry.key) ?? stringValue(entry.optionKey) ?? stringValue(entry.optionId)
     const text = stringValue(entry.text) ?? stringValue(entry.label)
     return key && text ? [{ key, text }] : []
   })
@@ -131,9 +139,22 @@ function parseSession(value: unknown): PracticeSession | null {
   if (!isRecord(source)) return null
   const sessionId = stringValue(source.sessionId) ?? stringValue(source.id)
   if (!sessionId) return null
-  const sessionType = source.sessionType === 'QUICK' || source.sessionType === 'CHECKPOINT' ? source.sessionType : 'DAILY'
-  const status = ['CREATED', 'IN_PROGRESS', 'COMPLETED', 'INTERRUPTED', 'EXPIRED'].includes(String(source.status)) ? source.status as PracticeSession['status'] : 'CREATED'
-  return { sessionId, sessionType, status, questions: arrayValue(source.questions ?? source.exercises).flatMap((item) => { const question = parseQuestion(item); return question ? [question] : [] }), currentIndex: numberValue(source.currentIndex) ?? 0, checkpointSeq: numberValue(source.checkpointSeq) ?? 0, answerRevision: numberValue(source.answerRevision) ?? 0, serverNow: stringValue(source.serverNow) }
+  const mode = stringValue(source.mode)?.toUpperCase()
+  const statusValue = stringValue(source.status)?.toUpperCase()
+  const status = statusValue === 'SUBMITTED' || statusValue === 'ASSESSED' ? 'COMPLETED' : statusValue
+  return {
+    sessionId,
+    sessionType: mode === 'REVIEW' ? 'QUICK' : mode === 'MOCK' ? 'CHECKPOINT' : 'DAILY',
+    status: ['CREATED', 'IN_PROGRESS', 'COMPLETED', 'INTERRUPTED', 'EXPIRED'].includes(String(status)) ? status as PracticeSession['status'] : 'CREATED',
+    questions: arrayValue(source.items ?? source.questions ?? source.exercises).flatMap((item) => { const question = parseQuestion(item); return question ? [question] : [] }),
+    currentIndex: numberValue(source.currentIndex) ?? 0,
+    checkpointSeq: numberValue(source.checkpointSeq) ?? 0,
+    answerRevision: numberValue(source.answerRevision) ?? 0,
+    serverNow: stringValue(source.serverNow),
+    stateVersion: numberValue(source.stateVersion) ?? 1,
+    lastAttemptId: stringValue(source.lastAttemptId),
+    reportId: stringValue(source.reportId),
+  }
 }
 
 function parseReviewResult(value: unknown): ReviewResult {
@@ -168,7 +189,11 @@ export async function createSrsBatch(input: { localDate?: string; dailyNewTarget
 
 export async function fetchVocabDetail(item: LearningItemRef, snapshotId: number | null): Promise<VocabularyCardBack> {
   const id = item.itemType === 'VOCAB' ? item.vocabId : item.itemType === 'CHUNK' ? item.chunkId : item.expressionId
-  const path = item.itemType === 'VOCAB' ? `/vocab/items/${id}` : item.itemType === 'CHUNK' ? `/vocab/chunks/${id}` : `/vocab/expressions/${id}`
+  // Keep the public contract owner-specific: vocabulary front/back is content,
+  // while chunks and mined expressions use the canonical /vocab resources.
+  // The former /content/learner/{chunks|expressions} paths were never part of
+  // the merged OpenAPI contract and caused a 404 after a card reveal.
+  const path = item.itemType === 'VOCAB' ? `/content/learner/vocabulary/${encodeURIComponent(String(id))}` : item.itemType === 'CHUNK' ? `/vocab/chunks/${encodeURIComponent(String(id))}` : `/vocab/expressions/${encodeURIComponent(String(id))}`
   const response = await apiClient.get<unknown>(path, snapshotId === null ? undefined : { headers: { 'X-Snapshot-Id': String(snapshotId) } })
   const back = parseBack(unwrap(response))
   if (!back) throw new Error('服务端暂未返回可展示的词卡背面内容。')
@@ -188,7 +213,9 @@ export async function syncReviewEvents(events: ReviewEventInput[]): Promise<Revi
 }
 
 export async function createPracticeSession(sessionType: 'DAILY' | 'QUICK' | 'CHECKPOINT', targetCount = 15): Promise<PracticeSession> {
-  const response = await apiClient.post<unknown>('/assessment/sessions', { sessionType, targetCount }, withB2Headers())
+  const mode = sessionType === 'QUICK' ? 'REVIEW' : sessionType === 'CHECKPOINT' ? 'MOCK' : 'PRACTICE'
+  const stableKey = `b2-practice-session-${sessionType}`
+  const response = await apiClient.post<unknown>('/assessment/sessions', { contentVersionId: 25001, mode, clientSessionRef: stableKey }, withB2Headers({}, stableKey))
   const session = parseSession(response)
   if (!session) throw new Error('练习服务返回了无法识别的会话。')
   return session
@@ -201,19 +228,40 @@ export async function fetchPracticeSession(sessionId: string): Promise<PracticeS
   return session
 }
 
-export async function submitPracticeAnswer(sessionId: string, answer: { exerciseId: string; answer: unknown; clientAnswerId: string }): Promise<{ correct: boolean | null; feedback: string | null; errorCategory: string | null }> {
-  const response = await apiClient.post<unknown>(`/assessment/sessions/${encodeURIComponent(sessionId)}/answers`, answer, withB2Headers())
+export async function submitPracticeAnswer(sessionId: string, answer: { exerciseId: string; answer: unknown; clientAnswerId: string; stateVersion: number }): Promise<{ correct: boolean | null; feedback: string | null; errorCategory: string | null; attemptId: string | null; reportId: string | null }> {
+  const itemId = Number(answer.exerciseId)
+  if (!Number.isSafeInteger(itemId) || itemId <= 0) throw new Error('练习题缺少合法的服务端 itemId。')
+  const response = await apiClient.post<unknown>(`/assessment/sessions/${encodeURIComponent(sessionId)}/attempts`, {
+    expectedStateVersion: answer.stateVersion,
+    submissionId: `sub_${answer.clientAnswerId.replace(/[^A-Za-z0-9._:-]/g, '').slice(0, 112)}`,
+    items: [{ itemId, sequence: 0, response: isRecord(answer.answer) ? answer.answer : { text: String(answer.answer ?? '') }, clientSubmissionId: answer.clientAnswerId }],
+    clientEventId: answer.clientAnswerId,
+  }, withB2Headers({}, answer.clientAnswerId))
   const source = unwrap(response)
   const record = isRecord(source) ? source : {}
-  return { correct: boolValue(record.correct), feedback: stringValue(record.feedback) ?? stringValue(record.explanation), errorCategory: stringValue(record.errorCategory) }
+  const scoreBucket = stringValue(record.scoreBucket)?.toUpperCase()
+  return { correct: scoreBucket === 'FULL' ? true : scoreBucket === 'ZERO' ? false : null, feedback: scoreBucket ? `服务端已完成判分：${scoreBucket}` : '服务端已接收本次作答。', errorCategory: null, attemptId: stringValue(record.attemptId), reportId: stringValue(record.reportId) }
 }
 
-export async function savePracticeCheckpoint(sessionId: string, context: ContinueContext): Promise<void> {
-  await apiClient.put(`/assessment/sessions/${encodeURIComponent(sessionId)}/checkpoint`, { checkpointSeq: context.stepIndex, currentIndex: context.stepIndex, elapsedTimeMs: context.elapsedTimeMs, pendingEventCount: context.pendingEventCount, updatedAt: context.updatedAt }, withB2Headers({}, `b2-checkpoint-${sessionId}-${context.updatedAt}`))
+export async function savePracticeCheckpoint(sessionId: string, attemptId: string, context: ContinueContext): Promise<void> {
+  const stableKey = `b2-checkpoint-${sessionId}-${context.updatedAt}`
+  const digest = await checkpointDigest({ sessionId, attemptId, context })
+  await apiClient.put(`/assessment/sessions/${encodeURIComponent(sessionId)}/attempts/${encodeURIComponent(attemptId)}/checkpoint`, { checkpointVersion: Math.max(1, context.stepIndex), itemCursor: Math.max(0, context.stepIndex), completedItemIds: [], checkpointDigest: digest }, withB2Headers({}, stableKey))
+}
+
+async function checkpointDigest(value: unknown): Promise<string> {
+  const serialized = JSON.stringify(value)
+  if (globalThis.crypto?.subtle) {
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(serialized))
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
+  }
+  let hash = 2166136261
+  for (const char of serialized) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619)
+  return `${Math.abs(hash).toString(16).padStart(8, '0')}${'0'.repeat(56)}`
 }
 
 export async function fetchLearningReport(reportType: 'DAILY' | 'WEEKLY', date = new Date().toISOString().slice(0, 10)): Promise<LearningReport> {
-  const path = reportType === 'DAILY' ? `/mastery/reports/daily?date=${encodeURIComponent(date)}` : `/mastery/reports/weekly?weekStart=${encodeURIComponent(date)}`
+  const path = reportType === 'DAILY' ? `/learning/stats/daily-report?date=${encodeURIComponent(date)}` : `/learning/stats/weekly-report?weekStart=${encodeURIComponent(date)}`
   const response = await apiClient.get<unknown>(path)
   const report = parseReport(response, reportType)
   if (!report) throw new Error('报告服务暂未返回可展示的报告快照。')

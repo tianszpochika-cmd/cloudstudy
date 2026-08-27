@@ -5,12 +5,10 @@ type RecordValue = Record<string, unknown>
 
 export const B11_GATEWAY_ROUTES = {
   manifest: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/manifest`,
-  access: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/access`,
-  legacySignedUrl: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/signed-url`,
-  notificationPreferences: '/settings/notifications',
-  legacyNotificationPreferences: '/notification/preferences',
+  signedUrl: (assetId: string) => `/media/assets/${encodeURIComponent(assetId)}/signed-url`,
+  notificationPreferences: '/notifications/preferences',
   offlineChanges: '/sync/changes',
-  recordings: '/multimodal/recordings',
+  recordings: '/speaking/recordings',
 } as const
 
 function withB11Headers(idempotencyKey?: string): { headers: Headers } {
@@ -32,15 +30,19 @@ function unwrap(value: unknown): unknown {
 }
 
 function stringValue(value: unknown, fallback = ''): string { return typeof value === 'string' ? value : fallback }
-function numberValue(value: unknown, fallback = 0): number { return typeof value === 'number' && Number.isFinite(value) ? value : fallback }
+function numberValue(value: unknown, fallback = 0): number {
+  const parsed = typeof value === 'number' ? value : typeof value === 'string' && value.trim() ? Number(value) : NaN
+  return Number.isFinite(parsed) ? parsed : fallback
+}
 
 function parseManifest(value: unknown): B11MediaManifest {
   const source = record(unwrap(value))
-  const renditions = Array.isArray(source.renditions) ? source.renditions.flatMap((entry) => {
+  const renditionEntries = Array.isArray(source.renditions) ? source.renditions : Array.isArray(source.items) ? source.items : []
+  const renditions = renditionEntries.flatMap((entry) => {
     const item = record(entry)
-    const renditionId = stringValue(item.renditionId)
-    return renditionId ? [{ renditionId, codec: stringValue(item.codec), mimeType: stringValue(item.mimeType), byteLength: numberValue(item.byteLength), checksumSha256: stringValue(item.checksumSha256), status: stringValue(item.status, 'PENDING') as B11MediaManifest['renditions'][number]['status'] }] : []
-  }) : []
+    const renditionId = stringValue(item.renditionId, stringValue(item.renditionKey))
+    return renditionId ? [{ renditionId, codec: stringValue(item.codec), mimeType: stringValue(item.mimeType), byteLength: numberValue(item.byteLength, numberValue(item.sizeBytes)), checksumSha256: stringValue(item.checksumSha256, stringValue(item.segmentHash)), status: stringValue(item.status, 'PENDING') as B11MediaManifest['renditions'][number]['status'] }] : []
+  })
   const segments = Array.isArray(source.segments) ? source.segments.flatMap((entry) => {
     const item = record(entry)
     const segmentId = stringValue(item.segmentId)
@@ -54,37 +56,60 @@ export async function getMediaManifest(assetId: string): Promise<B11MediaManifes
 }
 
 export async function issueMediaSignedUrl(assetId: string, renditionId: string, contentVersionId: number): Promise<B11SignedUrl> {
-  const request = () => apiClient.post(B11_GATEWAY_ROUTES.access(assetId), { renditionId, contentVersionId }, withB11Headers(`b11-media-url-${assetId}-${renditionId}-${contentVersionId}`))
-  let raw: unknown
-  try { raw = await request() } catch (error) {
-    if (!(error instanceof ApiError) || ![404, 405, 501].includes(error.status)) throw error
-    raw = await apiClient.post(B11_GATEWAY_ROUTES.legacySignedUrl(assetId), { renditionId, contentVersionId }, withB11Headers(`b11-media-url-${assetId}-${renditionId}-${contentVersionId}`))
-  }
+  const raw = await apiClient.post(B11_GATEWAY_ROUTES.signedUrl(assetId), { renditionId, contentVersionId }, withB11Headers(`b11-media-url-${assetId}-${renditionId}-${contentVersionId}`))
   const response = record(unwrap(raw))
   return { assetId: stringValue(response.assetId, assetId), renditionId: stringValue(response.renditionId, renditionId), url: stringValue(response.url), expiresAt: stringValue(response.expiresAt), checksumSha256: stringValue(response.checksumSha256) }
 }
 
+export interface B11MediaProgressInput {
+  sessionId?: string | null
+  assetId: string
+  positionMs: number
+  durationMs: number
+  contentVersion: string | number
+  entityVersion: number
+  clientEventId: string
+}
+
+export async function saveB11MediaProgress(input: B11MediaProgressInput): Promise<void> {
+  await apiClient.put('/learning/media-progress', input, withB11Headers(input.clientEventId))
+}
+
 export async function getNotificationPreference(): Promise<B11NotificationPreference> {
-  let raw: unknown
-  try { raw = await apiClient.get(B11_GATEWAY_ROUTES.notificationPreferences, withB11Headers()) } catch (error) {
-    if (!(error instanceof ApiError) || ![404, 405, 501].includes(error.status)) throw error
-    raw = await apiClient.get(B11_GATEWAY_ROUTES.legacyNotificationPreferences, withB11Headers())
+  const raw = await apiClient.get(B11_GATEWAY_ROUTES.notificationPreferences, withB11Headers())
+  const items = Array.isArray(raw) ? raw : []
+  const channels = new Set<B11NotificationPreference['enabledChannels'][number]>()
+  let learningReminders = true
+  let marketing = false
+  let version = 1
+  for (const value of items) {
+    const item = record(value)
+    const channel = stringValue(item.channel) as B11NotificationPreference['enabledChannels'][number]
+    if (item.enabled !== false && (channel === 'IN_APP' || channel === 'EMAIL' || channel === 'PUSH')) channels.add(channel)
+    const type = stringValue(item.notificationType).toUpperCase()
+    if (type.includes('REMINDER')) learningReminders = item.enabled !== false
+    if (type.includes('MARKETING')) marketing = item.enabled === true
+    version = Math.max(version, numberValue(item.version, 1))
   }
-  const source = record(unwrap(raw))
-  const channels: B11NotificationPreference['enabledChannels'] = Array.isArray(source.enabledChannels) ? source.enabledChannels.filter((item): item is B11NotificationPreference['enabledChannels'][number] => item === 'IN_APP' || item === 'EMAIL' || item === 'PUSH') : ['IN_APP']
-  return { enabledChannels: channels, learningReminders: source.learningReminders !== false, marketing: source.marketing === true, version: numberValue(source.version, 1) }
+  return { enabledChannels: channels.size ? [...channels] : ['IN_APP'], learningReminders, marketing, version }
 }
 
 export async function updateNotificationPreference(preference: B11NotificationPreference): Promise<B11NotificationPreference> {
-  const body = { ...preference, expectedVersion: preference.version }
-  const headers = withB11Headers(`b11-pref-${preference.version}-${preference.enabledChannels.join('-')}`)
-  let raw: unknown
-  try { raw = await apiClient.put(B11_GATEWAY_ROUTES.notificationPreferences, body, headers) } catch (error) {
-    if (!(error instanceof ApiError) || ![404, 405, 501].includes(error.status)) throw error
-    raw = await apiClient.put(B11_GATEWAY_ROUTES.legacyNotificationPreferences, body, headers)
-  }
-  const response = record(unwrap(raw))
-  return { enabledChannels: Array.isArray(response.enabledChannels) ? response.enabledChannels as B11NotificationPreference['enabledChannels'] : preference.enabledChannels, learningReminders: response.learningReminders !== false, marketing: response.marketing === true, version: numberValue(response.version, preference.version + 1) }
+  const enabled = new Set(preference.enabledChannels)
+  const updates = [
+    ['LEARNING_REMINDER', preference.learningReminders],
+    ['MARKETING', preference.marketing],
+    ['IN_APP', enabled.has('IN_APP')],
+    ['EMAIL', enabled.has('EMAIL')],
+    ['PUSH', enabled.has('PUSH')],
+  ] as const
+  const results = await Promise.all(updates.map(([type, value]) => apiClient.put(`/notifications/preferences/${type}/IN_APP`, {
+    enabled: value,
+    locale: 'zh-CN',
+    expectedVersion: preference.version,
+  }, withB11Headers(`b11-pref-${type}-${preference.version}`))))
+  const versions = results.map((value) => numberValue(record(unwrap(value)).version, preference.version + 1))
+  return { ...preference, version: Math.max(...versions, preference.version + 1) }
 }
 
 export async function pushB11OfflineChanges(changes: B11OfflineChange[], baseCursor: string): Promise<B11SyncResult> {

@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@englishflow/performance'
 import { getMobileB6AccessibilityChecklist, getMobileB6PerformanceBudget, getMobileB6ReleaseMatrix } from '../../api/b6'
 import { toAccessibility, toBudget, toMatrix, type B6Accessibility, type B6Budget, type B6Matrix } from '../../domain/b6'
+import { ensureMobilePageAccess } from '../../auth/navigation'
 
 const loading = ref(true)
 const errorMessage = ref('')
@@ -16,7 +17,7 @@ const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state
 
 async function load(): Promise<void> { loading.value = true; errorMessage.value = ''; try { const [matrixResponse, budgetResponse, accessibilityResponse] = await Promise.all([getMobileB6ReleaseMatrix(), getMobileB6PerformanceBudget(), getMobileB6AccessibilityChecklist()]); matrix.value = toMatrix(matrixResponse); budget.value = toBudget(budgetResponse); accessibility.value = toAccessibility(accessibilityResponse) } catch (error) { errorMessage.value = error instanceof Error ? error.message : '网络不可用，当前使用本地性能设置。' } finally { loading.value = false } }
 function chooseLevel(level: PerformanceLevel): void { engine.setLevel(level, 'manual') }
-onShow(() => { engine.restore(); void load() })
+onShow(async () => { if (await ensureMobilePageAccess('/pages/b6-platform/b6-platform')) { engine.restore(); void load() } })
 onUnload(() => { unsubscribe(); engine.dispose() })
 </script>
 

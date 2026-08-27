@@ -1,0 +1,498 @@
+{
+  "schemaVersion": "b25.fixture.v1",
+  "batch": "B25",
+  "phase": "phase-1",
+  "synthetic": true,
+  "seedRunId": "seed-b25-phase1-v1",
+  "seedVersion": "b25-phase1-v1",
+  "fixtureMode": "repository-compatibility-and-owner-replay",
+  "runtimeStatus": "pending",
+  "contentEpoch": 1,
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "sourceHashAlgorithm": "sha256(seedRunId)",
+  "rowDigestAlgorithm": "sha256(seedRunId|ownerService|entityType|entityKey)",
+  "policy": {
+    "noRealCredentials": true,
+    "noPii": true,
+    "noProductionData": true,
+    "noMediaBytes": true,
+    "paymentProviderCalls": "disabled",
+    "mysqlIsSourceOfTruth": true,
+    "redisIsRebuildableProjection": true,
+    "crossServiceWrites": false,
+    "crossServiceSqlJoins": false
+  },
+  "owners": [
+    {
+      "service": "workflow-service",
+      "schema": "workflow_service",
+      "migrationVersion": "V0023",
+      "migrationSource": "database/mysql/migrations/V0023__create_phase1_real_data_b25.sql",
+      "writeAuthority": "workflow-service-only",
+      "redisNamespace": "workflow",
+      "tables": ["b25_fixture_run", "b25_fixture_owner_binding", "b25_fixture_row", "b25_fixture_redis_projection"]
+    },
+    {
+      "service": "learner-service",
+      "schema": "learner_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/learner-service/src/main/resources/db/migration/V1__create_learner_service_schema.sql",
+      "writeAuthority": "learner-service-only",
+      "redisNamespace": "learner",
+      "tables": ["lrn_b25_profile", "lrn_b25_goal", "lrn_b25_preferences", "lrn_b25_daily_task"]
+    },
+    {
+      "service": "content-service",
+      "schema": "content_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/content-service/src/main/resources/db/migration/V1__create_content_service_schema.sql",
+      "writeAuthority": "content-service-only",
+      "redisNamespace": "content",
+      "tables": ["cnt_b25_course", "cnt_b25_unit", "cnt_b25_vocabulary", "cnt_b25_item", "cnt_b25_answer_rule"]
+    },
+    {
+      "service": "learning-service",
+      "schema": "learning_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/learning-service/src/main/resources/db/migration/V1__create_learning_service_schema.sql",
+      "writeAuthority": "learning-service-only",
+      "redisNamespace": "learning",
+      "tables": ["lrn_b25_plan", "lrn_b25_srs_state"]
+    },
+    {
+      "service": "assessment-service",
+      "schema": "assessment_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/assessment-service/src/main/resources/db/migration/V1__create_assessment_service_schema.sql",
+      "writeAuthority": "assessment-service-only",
+      "redisNamespace": "assessment",
+      "tables": ["asm_b25_session", "asm_b25_report"]
+    },
+    {
+      "service": "media-service",
+      "schema": "media_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/media-service/src/main/resources/db/migration/V1__create_media_service_schema.sql",
+      "writeAuthority": "media-service-only",
+      "redisNamespace": "media",
+      "tables": ["med_b25_media_reference"]
+    },
+    {
+      "service": "commerce-service",
+      "schema": "commerce_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/commerce-service/src/main/resources/db/migration/V1__create_commerce_own_schema.sql",
+      "writeAuthority": "commerce-service-only",
+      "redisNamespace": "commerce",
+      "tables": ["com_b25_product", "com_b25_entitlement"]
+    },
+    {
+      "service": "notification-service",
+      "schema": "notification_service",
+      "migrationVersion": "V1",
+      "migrationSource": "services/notification-service/src/main/resources/db/migration/V1__create_notification_service_schema.sql",
+      "writeAuthority": "notification-service-only",
+      "redisNamespace": "notification",
+      "tables": ["ntf_b25_preference", "ntf_b25_message"]
+    }
+  ],
+  "entities": [
+    {
+      "entityType": "COURSE",
+      "entityKey": "course:B25-ENGLISH-FOUNDATION",
+      "ownerService": "content-service",
+      "schema": "content_service",
+      "table": "cnt_b25_course",
+      "publicationState": "PUBLISHED",
+      "rightsStatus": "VALID",
+      "payload": {
+        "contentCode": "B25-ENGLISH-FOUNDATION",
+        "titleKey": "course.b25.englishFoundation.title",
+        "contentLocale": "en-US",
+        "targetLevel": "A2",
+        "contentVersion": 1,
+        "availability": "PUBLISHED",
+        "licenseCode": "LIC-B25-SYNTHETIC",
+        "unitCount": 1
+      }
+    },
+    {
+      "entityType": "UNIT",
+      "entityKey": "unit:B25-ENGLISH-FOUNDATION:01",
+      "ownerService": "content-service",
+      "schema": "content_service",
+      "table": "cnt_b25_unit",
+      "publicationState": "PUBLISHED",
+      "rightsStatus": "VALID",
+      "payload": {
+        "courseCode": "B25-ENGLISH-FOUNDATION",
+        "unitCode": "B25-UNIT-01",
+        "unitOrder": 1,
+        "titleKey": "course.b25.unit01.title",
+        "contentVersion": 1,
+        "availability": "PUBLISHED"
+      }
+    },
+    {
+      "entityType": "VOCABULARY",
+      "entityKey": "vocab:habit",
+      "ownerService": "content-service",
+      "schema": "content_service",
+      "table": "cnt_b25_vocabulary",
+      "publicationState": "PUBLISHED",
+      "rightsStatus": "VALID",
+      "payload": {
+        "unitCode": "B25-UNIT-01",
+        "wordNormalized": "habit",
+        "meaningKey": "vocab.habit.meaning",
+        "cefrLevel": "A2",
+        "contentVersion": 1,
+        "availability": "PUBLISHED",
+        "audioRef": "media:b25-habit-us"
+      }
+    },
+    {
+      "entityType": "VOCABULARY",
+      "entityKey": "vocab:review",
+      "ownerService": "content-service",
+      "schema": "content_service",
+      "table": "cnt_b25_vocabulary",
+      "publicationState": "PUBLISHED",
+      "rightsStatus": "VALID",
+      "payload": {
+        "unitCode": "B25-UNIT-01",
+        "wordNormalized": "review",
+        "meaningKey": "vocab.review.meaning",
+        "cefrLevel": "A2",
+        "contentVersion": 1,
+        "availability": "PUBLISHED",
+        "audioRef": "media:b25-review-us"
+      }
+    },
+    {
+      "entityType": "QUESTION",
+      "entityKey": "question:B25-UNIT-01-001",
+      "ownerService": "content-service",
+      "schema": "content_service",
+      "table": "cnt_b25_item",
+      "publicationState": "PUBLISHED",
+      "rightsStatus": "VALID",
+      "payload": {
+        "itemId": "question-b25-unit-01-001",
+        "contentCode": "B25-ENGLISH-FOUNDATION",
+        "itemType": "CHOICE",
+        "displayOrder": 1,
+        "promptKey": "question.b25.unit01.001.prompt",
+        "publicOptions": ["A", "B", "C"],
+        "answerRuleRef": "rule:b25.choice.exact.v1",
+        "mediaRef": "media:b25-habit-us"
+      }
+    },
+    {
+      "entityType": "ANSWER_RULE",
+      "entityKey": "rule:b25.choice.exact.v1",
+      "ownerService": "content-service",
+      "schema": "content_service",
+      "table": "cnt_b25_answer_rule",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "VALID",
+      "payload": {
+        "ruleRef": "rule:b25.choice.exact.v1",
+        "ruleVersion": "v1",
+        "algorithmCode": "EXACT_NORMALIZED_OPTION",
+        "ruleDefinition": {"operator": "EQUALS", "expectedOption": "B"},
+        "status": "ACTIVE"
+      }
+    },
+    {
+      "entityType": "MEDIA_REFERENCE",
+      "entityKey": "media:b25-habit-us",
+      "ownerService": "media-service",
+      "schema": "media_service",
+      "table": "med_b25_media_reference",
+      "publicationState": "READY",
+      "rightsStatus": "AUTHORIZED",
+      "payload": {
+        "contentItemRef": "vocab:habit",
+        "mediaRef": "media:b25-habit-us",
+        "mediaKind": "AUDIO",
+        "mimeType": "audio/mpeg",
+        "resourceRef": "fixture://b25/english-foundation/habit-us-v1.mp3",
+        "checksumSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "rightsRefHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "storageProvider": "LOCAL_FIXTURE"
+      }
+    },
+    {
+      "entityType": "MEDIA_REFERENCE",
+      "entityKey": "media:b25-review-us",
+      "ownerService": "media-service",
+      "schema": "media_service",
+      "table": "med_b25_media_reference",
+      "publicationState": "READY",
+      "rightsStatus": "AUTHORIZED",
+      "payload": {
+        "contentItemRef": "vocab:review",
+        "mediaRef": "media:b25-review-us",
+        "mediaKind": "AUDIO",
+        "mimeType": "audio/mpeg",
+        "resourceRef": "fixture://b25/english-foundation/review-us-v1.mp3",
+        "checksumSha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "rightsRefHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "storageProvider": "LOCAL_FIXTURE"
+      }
+    },
+    {
+      "entityType": "PRODUCT",
+      "entityKey": "product:B25-ENGLISH-FOUNDATION-DEV",
+      "ownerService": "commerce-service",
+      "schema": "commerce_service",
+      "table": "com_b25_product",
+      "publicationState": "PUBLISHED",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "skuCode": "B25-ENGLISH-FOUNDATION-DEV",
+        "titleKey": "product.b25.englishFoundation.title",
+        "entitlementCode": "COURSE_B25_ENGLISH_FOUNDATION",
+        "billingPeriod": "ONE_TIME",
+        "currency": "CNY",
+        "amountMinor": 0,
+        "paymentState": "DISABLED"
+      }
+    },
+    {
+      "entityType": "ENTITLEMENT",
+      "entityKey": "entitlement:fixture-principal-0001:B25-ENGLISH-FOUNDATION",
+      "ownerService": "commerce-service",
+      "schema": "commerce_service",
+      "table": "com_b25_entitlement",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "subjectRef": "fixture-principal-0001",
+        "skuCode": "B25-ENGLISH-FOUNDATION-DEV",
+        "entitlementCode": "COURSE_B25_ENGLISH_FOUNDATION",
+        "sourceType": "DEV_FIXTURE",
+        "sourceRef": "fixture-entitlement-b25-0001",
+        "state": "ACTIVE",
+        "paymentState": "NOT_REQUIRED",
+        "startsAt": "2026-01-01T00:00:00.000Z",
+        "expiresAt": "2099-12-31T23:59:59.000Z"
+      }
+    },
+    {
+      "entityType": "LEARNER_PROFILE",
+      "entityKey": "principal:fixture-principal-0001",
+      "ownerService": "learner-service",
+      "schema": "learner_service",
+      "table": "lrn_b25_profile",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "principalId": "fixture-principal-0001",
+        "status": "ACTIVE",
+        "birthYear": 1995,
+        "ageConfirmed": true,
+        "privacyConsent": true,
+        "termsConsent": true,
+        "uiLocale": "zh-CN",
+        "contentLocale": "en-US",
+        "timezone": "Asia/Shanghai"
+      }
+    },
+    {
+      "entityType": "LEARNER_GOAL",
+      "entityKey": "goal:fixture-principal-0001",
+      "ownerService": "learner-service",
+      "schema": "learner_service",
+      "table": "lrn_b25_goal",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "principalId": "fixture-principal-0001",
+        "goalCode": "DAILY_ENGLISH_FOUNDATION",
+        "targetLevel": "B1",
+        "dailyQuotaMinutes": 15,
+        "status": "ACTIVE"
+      }
+    },
+    {
+      "entityType": "LEARNER_PREFERENCE",
+      "entityKey": "preference:fixture-principal-0001",
+      "ownerService": "learner-service",
+      "schema": "learner_service",
+      "table": "lrn_b25_preferences",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "principalId": "fixture-principal-0001",
+        "uiLocale": "zh-CN",
+        "contentLocale": "en-US",
+        "timezone": "Asia/Shanghai",
+        "themeMode": "SYSTEM",
+        "highContrast": false,
+        "motionMode": "FULL"
+      }
+    },
+    {
+      "entityType": "DAILY_TASK",
+      "entityKey": "daily-task:fixture-principal-0001:B25-ENGLISH-FOUNDATION",
+      "ownerService": "learner-service",
+      "schema": "learner_service",
+      "table": "lrn_b25_daily_task",
+      "publicationState": "AVAILABLE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "principalId": "fixture-principal-0001",
+        "contentCode": "B25-ENGLISH-FOUNDATION",
+        "title": "fixture.learning.b25.unit01",
+        "taskType": "LESSON",
+        "minutes": 15,
+        "taskStatus": "AVAILABLE",
+        "taskOrder": 1
+      }
+    },
+    {
+      "entityType": "LEARNING_PLAN",
+      "entityKey": "plan:fixture-principal-0001",
+      "ownerService": "learning-service",
+      "schema": "learning_service",
+      "table": "lrn_b25_plan",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "planId": "00000000-0000-4000-8000-000000000025",
+        "principalId": "fixture-principal-0001",
+        "status": "ACTIVE",
+        "targetMinutes": 15,
+        "planVersion": 1
+      }
+    },
+    {
+      "entityType": "SRS_STATE",
+      "entityKey": "srs:fixture-principal-0001:question-b25-unit-01-001",
+      "ownerService": "learning-service",
+      "schema": "learning_service",
+      "table": "lrn_b25_srs_state",
+      "publicationState": "NEW",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "principalId": "fixture-principal-0001",
+        "itemId": "question-b25-unit-01-001",
+        "stage": "NEW",
+        "dueAt": "2026-01-01T00:00:00.000Z",
+        "intervalDays": 0,
+        "easeFactor": 2.5,
+        "reviewCount": 0
+      }
+    },
+    {
+      "entityType": "ASSESSMENT_SESSION",
+      "entityKey": "assessment-session:fixture-principal-0001",
+      "ownerService": "assessment-service",
+      "schema": "assessment_service",
+      "table": "asm_b25_session",
+      "publicationState": "COMPLETED",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "sessionId": "00000000-0000-4000-8000-000000000026",
+        "principalId": "fixture-principal-0001",
+        "contentCode": "B25-ENGLISH-FOUNDATION",
+        "status": "COMPLETED",
+        "score": 1,
+        "reportId": "00000000-0000-4000-8000-000000000027"
+      }
+    },
+    {
+      "entityType": "ASSESSMENT_REPORT",
+      "entityKey": "assessment-report:fixture-principal-0001",
+      "ownerService": "assessment-service",
+      "schema": "assessment_service",
+      "table": "asm_b25_report",
+      "publicationState": "READY",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "reportId": "00000000-0000-4000-8000-000000000027",
+        "sessionId": "00000000-0000-4000-8000-000000000026",
+        "principalId": "fixture-principal-0001",
+        "cefrLevel": "A2",
+        "score": 1,
+        "reportVersion": 1
+      }
+    },
+    {
+      "entityType": "NOTIFICATION_PREFERENCE",
+      "entityKey": "notification-preference:fixture-principal-0001",
+      "ownerService": "notification-service",
+      "schema": "notification_service",
+      "table": "ntf_b25_preference",
+      "publicationState": "ACTIVE",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "principalId": "fixture-principal-0001",
+        "inAppEnabled": true,
+        "learningReminderEnabled": true,
+        "marketingEnabled": false,
+        "uiLocale": "zh-CN"
+      }
+    },
+    {
+      "entityType": "NOTIFICATION_MESSAGE",
+      "entityKey": "notification-message:fixture-principal-0001:welcome",
+      "ownerService": "notification-service",
+      "schema": "notification_service",
+      "table": "ntf_b25_message",
+      "publicationState": "UNREAD",
+      "rightsStatus": "NOT_APPLICABLE",
+      "payload": {
+        "messageId": "00000000-0000-4000-8000-000000000028",
+        "principalId": "fixture-principal-0001",
+        "templateCode": "learning.fixture.welcome.v1",
+        "status": "UNREAD"
+      }
+    }
+  ],
+  "redisProjections": [
+    {
+      "ownerService": "content-service",
+      "namespace": "content",
+      "keyTemplate": "content:catalog:{contentEpoch}",
+      "sourceTable": "cnt_b25_course",
+      "sourceEntityKey": "course:B25-ENGLISH-FOUNDATION",
+      "ttlSeconds": 300,
+      "rebuildVersion": "b25-v1",
+      "rebuildStrategy": "MYSQL_OWNER_ROWS"
+    },
+    {
+      "ownerService": "commerce-service",
+      "namespace": "commerce",
+      "keyTemplate": "commerce:catalog:{contentEpoch}",
+      "sourceTable": "com_b25_product",
+      "sourceEntityKey": "product:B25-ENGLISH-FOUNDATION-DEV",
+      "ttlSeconds": 300,
+      "rebuildVersion": "b25-v1",
+      "rebuildStrategy": "MYSQL_OWNER_ROWS"
+    },
+    {
+      "ownerService": "notification-service",
+      "namespace": "notification",
+      "keyTemplate": "notification:preference:{principalId}",
+      "sourceTable": "ntf_b25_preference",
+      "sourceEntityKey": "notification-preference:fixture-principal-0001",
+      "ttlSeconds": 900,
+      "rebuildVersion": "b25-v1",
+      "rebuildStrategy": "MYSQL_OWNER_ROWS"
+    }
+  ],
+  "requiredEntityTypes": [
+    "COURSE",
+    "UNIT",
+    "VOCABULARY",
+    "QUESTION",
+    "ANSWER_RULE",
+    "MEDIA_REFERENCE",
+    "PRODUCT",
+    "ENTITLEMENT",
+    "NOTIFICATION_PREFERENCE"
+  ]
+}

@@ -11,7 +11,7 @@ test('B12 admin route and API require server permissions and idempotent commands
   const api = read('src/api/b12.ts')
   assert.match(router, /admin\.moderation\.read/)
   assert.match(api, /Idempotency-Key/)
-  assert.match(api, /commandCode/)
+  assert.match(api, /action/)
   assert.doesNotMatch(api, /userId|tenantId|ownerId|x-role|x-tenant|x-owner/i)
 })
 

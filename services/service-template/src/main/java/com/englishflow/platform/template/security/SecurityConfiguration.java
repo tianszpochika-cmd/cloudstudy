@@ -3,6 +3,7 @@ package com.englishflow.platform.template.security;
 import java.time.Clock;
 
 import com.englishflow.platform.template.config.ResourceServerProperties;
+import com.englishflow.platform.template.config.WorkloadIdentityProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,11 +21,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 /** Default-deny Resource Server boundary for a copied v2 service. */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(ResourceServerProperties.class)
+@EnableConfigurationProperties({ResourceServerProperties.class, WorkloadIdentityProperties.class})
 public class SecurityConfiguration {
 
     @Bean
@@ -40,6 +41,21 @@ public class SecurityConfiguration {
     @Bean
     ClientAuthorityHeaderFilter clientAuthorityHeaderFilter(SecurityErrorWriter writer) {
         return new ClientAuthorityHeaderFilter(writer);
+    }
+
+    @Bean
+    WorkloadIdentityVerifier workloadIdentityVerifier(
+            WorkloadIdentityProperties properties,
+            Clock clock) {
+        return new WorkloadIdentityVerifier(properties, clock);
+    }
+
+    @Bean
+    WorkloadIdentityFilter workloadIdentityFilter(
+            WorkloadIdentityProperties properties,
+            WorkloadIdentityVerifier verifier,
+            SecurityErrorWriter writer) {
+        return new WorkloadIdentityFilter(properties, verifier, writer);
     }
 
     @Bean
@@ -90,6 +106,7 @@ public class SecurityConfiguration {
             ObjectProvider<JwtDecoder> decoderProvider,
             VerifiedJwtAuthenticationConverter converter,
             ClientAuthorityHeaderFilter authorityHeaderFilter,
+            WorkloadIdentityFilter workloadIdentityFilter,
             SecurityErrorWriter errorWriter) throws Exception {
         AuthenticationEntryPoint entryPoint = (request, response, exception) ->
                 errorWriter.write(response, 401, "UNAUTHENTICATED", "authentication required");
@@ -109,6 +126,7 @@ public class SecurityConfiguration {
                         auth.anyRequest().denyAll();
                     }
                 })
+                .addFilterBefore(workloadIdentityFilter, AuthorizationFilter.class)
                 .addFilterBefore(authorityHeaderFilter, AuthorizationFilter.class);
 
         if (properties.isEnabled()) {

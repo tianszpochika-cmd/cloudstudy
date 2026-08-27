@@ -1,0 +1,689 @@
+{
+  "schemaVersion": 1,
+  "batch": "B19",
+  "phase": "phase-1",
+  "tasks": [
+    {
+      "id": "V2-B19-QA-005",
+      "name": "弱网、离线、性能、可访问性、国际化与主题专项门禁",
+      "status": "defined",
+      "runtimeRequired": true,
+      "acceptanceRefs": ["K.performance", "K.accessibility", "K.network", "K.i18n-theme"]
+    },
+    {
+      "id": "V2-B19-TEST-006",
+      "name": "缺陷分级、回归选择、证据索引与自动测试报告",
+      "status": "defined",
+      "runtimeRequired": true,
+      "acceptanceRefs": ["K.defects", "K.evidence", "L.go-no-go"]
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "B19-QA-005-NETWORK",
+      "task": "V2-B19-QA-005",
+      "priority": "P0",
+      "category": "weak-network-offline",
+      "objective": "验证 2G、3G、断网和恢复时不丢作答、不重复记分，且离线状态有明确回执。",
+      "staticChecks": [
+        {
+          "id": "B19-NET-STATIC-001",
+          "kind": "source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-NETWORK",
+          "sourcePaths": ["packages/performance/src/index.ts", "apps/learner-web/src/stores/b2.ts"],
+          "assertions": [
+            { "contains": "networkQuality" },
+            { "contains": "offlinePrefetch" },
+            { "contains": "cache-only" },
+            { "contains": "PENDING_SYNC" },
+            { "contains": "syncQueue" }
+          ]
+        },
+        {
+          "id": "B19-NET-STATIC-002",
+          "kind": "source-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-IDEMPOTENCY",
+          "sourcePaths": ["apps/learner-web/src/api/b18-learning.ts", "apps/mobile/src/api/b18-learning.ts"],
+          "assertions": [
+            { "contains": "Idempotency-Key" },
+            { "contains": "contentLocale" },
+            { "contains": "X-Content-Locale" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-NET-RUNTIME-001",
+          "kind": "network-throttle-replay",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-NETWORK",
+          "tools": ["Chrome DevTools Network throttling", "controlled network proxy"],
+          "targets": ["learner-web", "mobile-h5", "admin-web", "official-site"],
+          "scenarios": ["2G", "3G", "offline", "online-recovery"],
+          "expected": "页面保持可解释状态；恢复后请求可重试且不会重复记分、扣权益或写入伪造结果。",
+          "evidenceRequired": ["network-profile", "request-trace", "screen-recording", "result-log"],
+          "cannotBeSatisfiedBy": ["static-source-check", "build-output", "mock-only"]
+        },
+        {
+          "id": "B19-NET-RUNTIME-002",
+          "kind": "offline-idempotency-recovery",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-OFFLINE-RECOVERY",
+          "tools": ["Playwright", "approved test API", "Kafka/MySQL test environment"],
+          "targets": ["learner-web", "mobile-h5"],
+          "scenarios": ["queue-while-offline", "retry-after-reconnect", "duplicate-submit"],
+          "expected": "离线队列、服务端幂等响应、事件/数据对账和恢复 UI 均有可关联证据。",
+          "evidenceRequired": ["client-event-id", "server-response", "outbox-or-audit-trace", "reconciliation-result"],
+          "cannotBeSatisfiedBy": ["static-source-check", "unit-test-only"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-NETWORK", "EV-B19-STATIC-IDEMPOTENCY", "EV-B19-RUNTIME-NETWORK", "EV-B19-RUNTIME-OFFLINE-RECOVERY"]
+    },
+    {
+      "id": "B19-QA-005-PERFORMANCE",
+      "task": "V2-B19-QA-005",
+      "priority": "P0",
+      "category": "lcp-interaction",
+      "objective": "在目标网络和设备上取得 LCP 与交互响应分位数证据，不将构建成功当作性能通过。",
+      "budgets": {
+        "lcpP75Ms": 2500,
+        "interactionResponseP75Ms": 200,
+        "measurement": "p75 per route and target profile"
+      },
+      "staticChecks": [
+        {
+          "id": "B19-PERF-STATIC-001",
+          "kind": "performance-engine-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-PERFORMANCE",
+          "sourcePaths": ["packages/performance/src/index.ts"],
+          "assertions": [
+            { "contains": "PERFORMANCE_LEVELS" },
+            { "contains": "prefers-reduced-motion" },
+            { "contains": "fallbackMode" },
+            { "contains": "getRenderPolicy" },
+            { "contains": "motionDisabled" },
+            { "contains": "localStorage" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-PERF-RUNTIME-001",
+          "kind": "web-vitals",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-LCP-INP",
+          "tools": ["Lighthouse", "Chrome Performance panel", "Playwright trace"],
+          "targets": ["learner-web", "admin-web", "official-site", "mobile-h5"],
+          "scenarios": ["cold-load", "authenticated-deep-link", "content-locale-switch", "primary-action"],
+          "expected": "LCP p75 <= 2500 ms，交互响应 p75 <= 200 ms；每个目标路由、设备和网络档位单独记录。",
+          "evidenceRequired": ["trace", "web-vitals-json", "route-and-device-matrix", "console-log"],
+          "cannotBeSatisfiedBy": ["typecheck", "production-build", "static-budget-declaration"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-PERFORMANCE", "EV-B19-RUNTIME-LCP-INP"]
+    },
+    {
+      "id": "B19-QA-005-PERFORMANCE-LEVELS",
+      "task": "V2-B19-QA-005",
+      "priority": "P0",
+      "category": "four-level-quality",
+      "objective": "验证 Ultra、High、Medium、Performance 四级档位和低配静态降级可关闭复杂渲染。",
+      "staticChecks": [
+        {
+          "id": "B19-LEVEL-STATIC-001",
+          "kind": "performance-level-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-LEVELS",
+          "sourcePaths": ["packages/performance/src/index.ts", "apps/mobile/src/stores/b4.ts"],
+          "assertions": [
+            { "contains": "Ultra" },
+            { "contains": "High" },
+            { "contains": "Medium" },
+            { "contains": "Performance" },
+            { "contains": "2D_FALLBACK" },
+            { "contains": "enableThreeD" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-LEVEL-RUNTIME-001",
+          "kind": "device-performance-degradation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-LEVELS",
+          "tools": ["Chrome DevTools Performance", "iOS/Android device or simulator", "uni-app H5/App runner"],
+          "targets": ["learner-web", "mobile-h5", "ios", "android", "ipad", "wechat-mini-program"],
+          "scenarios": ["Ultra", "High", "Medium", "Performance", "low-memory", "reduced-motion", "offline"],
+          "expected": "四级设置可切换、可持久化；Performance 档关闭粒子/复杂画布并保留文本、静态图和基础音频。",
+          "evidenceRequired": ["device-profile", "render-policy-log", "screen-recording", "fallback-screenshot"],
+          "cannotBeSatisfiedBy": ["source-level-level-list", "desktop-only-run"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-LEVELS", "EV-B19-RUNTIME-LEVELS"]
+    },
+    {
+      "id": "B19-QA-005-ACCESSIBILITY",
+      "task": "V2-B19-QA-005",
+      "priority": "P0",
+      "category": "keyboard-screen-reader-contrast",
+      "objective": "验证键盘操作、焦点可见性、读屏语义和对比度，不以 DOM 存在或静态 token 代替真实辅助技术执行。",
+      "staticChecks": [
+        {
+          "id": "B19-A11Y-STATIC-001",
+          "kind": "accessibility-token-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-A11Y-TOKENS",
+          "sourcePaths": ["packages/design-tokens/src/index.ts"],
+          "assertions": [
+            { "contains": "high-contrast" },
+            { "contains": "focus" },
+            { "contains": "status" },
+            { "contains": "semanticTokens" }
+          ]
+        },
+        {
+          "id": "B19-A11Y-STATIC-002",
+          "kind": "accessible-state-markers",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-A11Y-STATES",
+          "sourcePaths": ["apps/learner-web/src/pages/LearningLoopPage.vue", "apps/mobile/src/pages/learn/learn.vue", "apps/admin-web/src/views/AdminSupportView.vue"],
+          "assertions": [
+            { "contains": "aria-labelledby" },
+            { "contains": "role=\"alert\"" },
+            { "contains": "<button" },
+            { "contains": "show-icon" },
+            { "contains": "offline" },
+            { "contains": "permission" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-A11Y-RUNTIME-001",
+          "kind": "keyboard-navigation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-KEYBOARD",
+          "tools": ["Playwright", "browser keyboard input"],
+          "targets": ["learner-web", "admin-web", "official-site", "mobile-h5"],
+          "scenarios": ["tab-order", "visible-focus", "escape-dialog", "no-focus-trap", "deep-link-recovery"],
+          "expected": "核心路径可完全使用键盘完成，焦点顺序和焦点样式可见，不出现不可退出的焦点陷阱。",
+          "evidenceRequired": ["keyboard-trace", "focus-screenshots", "console-log"],
+          "cannotBeSatisfiedBy": ["DOM-query", "static-focus-token"]
+        },
+        {
+          "id": "B19-A11Y-RUNTIME-002",
+          "kind": "screen-reader-and-contrast",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-SCREENREADER-CONTRAST",
+          "tools": ["NVDA", "VoiceOver", "TalkBack", "axe-core or Accessibility Insights", "contrast analyzer"],
+          "targets": ["windows-chrome", "macos-safari", "ios", "android"],
+          "scenarios": ["loading-empty-error-permission-recovery-offline-success-partial", "high-contrast", "normal-text", "large-text", "focus-indicator"],
+          "expected": "读屏可识别标题、状态、错误和操作；普通文本对比度 >= 4.5:1，大文本 >= 3:1，非文本控件/焦点 >= 3:1；状态不只依赖颜色。",
+          "evidenceRequired": ["screen-reader-transcript", "accessibility-tree", "contrast-report", "state-screenshots"],
+          "cannotBeSatisfiedBy": ["static-token-check", "automated-lint-only"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-A11Y-TOKENS", "EV-B19-STATIC-A11Y-STATES", "EV-B19-RUNTIME-KEYBOARD", "EV-B19-RUNTIME-SCREENREADER-CONTRAST"]
+    },
+    {
+      "id": "B19-QA-005-I18N-THEME",
+      "task": "V2-B19-QA-005",
+      "priority": "P0",
+      "category": "fallback-theme-locale",
+      "objective": "验证 UI locale 与 contentLocale 独立、缺失 key fallback、伪本地化、主题持久化和 SSR/uni-app 适配。",
+      "staticChecks": [
+        {
+          "id": "B19-I18N-STATIC-001",
+          "kind": "i18n-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-I18N",
+          "sourcePaths": ["packages/i18n/src/index.ts", "packages/i18n/src/adapters.ts"],
+          "assertions": [
+            { "contains": "contentLocale" },
+            { "contains": "fallback" },
+            { "contains": "pseudo" },
+            { "contains": "formatNumber" },
+            { "contains": "formatDate" },
+            { "contains": "formatPlural" },
+            { "contains": "createNuxtI18nAdapter" },
+            { "contains": "createUniAppI18nAdapter" }
+          ]
+        },
+        {
+          "id": "B19-I18N-STATIC-002",
+          "kind": "theme-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-THEME",
+          "sourcePaths": ["packages/design-tokens/src/index.ts", "packages/design-tokens/src/adapters.ts"],
+          "assertions": [
+            { "contains": "light" },
+            { "contains": "dark" },
+            { "contains": "system" },
+            { "contains": "high-contrast" },
+            { "contains": "noFlashScript" },
+            { "contains": "createUniAppThemeAdapter" },
+            { "contains": "createElementPlusThemeAdapter" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-I18N-RUNTIME-001",
+          "kind": "locale-theme-interaction",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-I18N-THEME",
+          "tools": ["Playwright", "Nuxt SSR browser", "iOS/Android device or simulator"],
+          "targets": ["learner-web", "admin-web", "official-site", "mobile-h5", "ios", "android"],
+          "scenarios": ["ui-locale-switch", "content-locale-switch", "missing-key-fallback", "pseudo-locale", "light", "dark", "system", "high-contrast", "reload-persistence"],
+          "expected": "UI 文案语言不会被 contentLocale 覆盖；缺失 key 可回退；四种主题可切换、恢复并保持可读性。",
+          "evidenceRequired": ["locale-screenshot-set", "theme-screenshot-set", "hydration-record", "storage-record"],
+          "cannotBeSatisfiedBy": ["unit-test-only", "source-export-list"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-I18N", "EV-B19-STATIC-THEME", "EV-B19-RUNTIME-I18N-THEME"]
+    },
+    {
+      "id": "B19-QA-005-STATE-FALLBACK",
+      "task": "V2-B19-QA-005",
+      "priority": "P0",
+      "category": "fallback-non-color-state",
+      "objective": "确保 loading/empty/error/permission/recovery/offline/success/partial 以文本、图标、结构或读屏语义表达，而不是只用颜色。",
+      "staticChecks": [
+        {
+          "id": "B19-STATE-STATIC-001",
+          "kind": "state-and-fallback-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-STATE-FALLBACK",
+          "sourcePaths": ["apps/official-site/utils/ui-state.mjs", "apps/official-site/utils/public-state.mjs", "apps/official-site/composables/usePublicProjection.ts", "apps/learner-web/src/pages/LearningLoopPage.vue"],
+          "assertions": [
+            { "contains": "loading" },
+            { "contains": "empty" },
+            { "contains": "recovery" },
+            { "contains": "offline" },
+            { "contains": "role" },
+            { "contains": "icon" },
+            { "contains": "empty-fallback" },
+            { "contains": "memory-cache" },
+            { "contains": "PUBLIC_PROJECTION_UNAVAILABLE" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-STATE-RUNTIME-001",
+          "kind": "state-visual-semantic-replay",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-STATE-FALLBACK",
+          "tools": ["Playwright", "axe-core", "browser screenshot and accessibility tree"],
+          "targets": ["learner-web", "mobile-h5", "admin-web", "official-site"],
+          "scenarios": ["all-eight-ui-states", "public-projection-unavailable", "stale-cache-recovery", "download-disabled"],
+          "expected": "每个状态同时有可见文本和非颜色信号；失败不伪造业务数据，恢复动作可重复且有结果。",
+          "evidenceRequired": ["state-screenshot-set", "accessibility-tree", "network-log", "recovery-result"],
+          "cannotBeSatisfiedBy": ["CSS-color-scan", "static-enum-check"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-STATE-FALLBACK", "EV-B19-RUNTIME-STATE-FALLBACK"]
+    },
+    {
+      "id": "B19-TEST-006-DEFECTS",
+      "task": "V2-B19-TEST-006",
+      "priority": "P0",
+      "category": "defect-severity",
+      "objective": "统一 P0/P1/P2 缺陷字段、可复现性和发布阻断规则。",
+      "staticChecks": [
+        {
+          "id": "B19-DEF-STATIC-001",
+          "kind": "policy-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-DEFECT-POLICY",
+          "sourcePaths": ["config/b19-quality-gates.json"],
+          "assertions": [
+            { "contains": "P0" },
+            { "contains": "P1" },
+            { "contains": "P2" },
+            { "contains": "openAllowed" },
+            { "contains": "reproducible" },
+            { "contains": "risk-accepted" }
+          ]
+        }
+      ],
+      "runtimeChecks": [],
+      "evidenceIds": ["EV-B19-STATIC-DEFECT-POLICY"]
+    },
+    {
+      "id": "B19-TEST-006-REGRESSION",
+      "task": "V2-B19-TEST-006",
+      "priority": "P0",
+      "category": "regression-selection",
+      "objective": "按变更领域确定最小回归集，同时始终保留 Phase 1 smoke 和质量静态门禁。",
+      "staticChecks": [
+        {
+          "id": "B19-REG-STATIC-001",
+          "kind": "regression-policy-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-REGRESSION",
+          "sourcePaths": ["config/b19-quality-gates.json"],
+          "assertions": [
+            { "contains": "phase1-smoke" },
+            { "contains": "b18-four-app-static" },
+            { "contains": "full-phase1-regression" },
+            { "contains": "minimumSuites" },
+            { "contains": "whenAnyChangedArea" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-REG-RUNTIME-001",
+          "kind": "selected-regression-run",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-REGRESSION",
+          "tools": ["CI runner", "approved test environment"],
+          "targets": ["changed-area-suite", "phase1-smoke"],
+          "scenarios": ["changed-area-selection", "minimum-suite-inclusion", "failure-reproduction"],
+          "expected": "选择理由、实际执行版本、失败重跑和最终结果可关联到同一报告。",
+          "evidenceRequired": ["selected-suite-manifest", "runner-log", "commit-and-environment", "rerun-link"],
+          "cannotBeSatisfiedBy": ["policy-file-only", "unexecuted-command-list"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-REGRESSION", "EV-B19-RUNTIME-REGRESSION"]
+    },
+    {
+      "id": "B19-TEST-006-EVIDENCE",
+      "task": "V2-B19-TEST-006",
+      "priority": "P0",
+      "category": "evidence-index",
+      "objective": "让每个质量门禁都有稳定的证据 ID、来源、环境、版本和 runtime 状态。",
+      "staticChecks": [
+        {
+          "id": "B19-EVIDENCE-STATIC-001",
+          "kind": "evidence-index-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-EVIDENCE-INDEX",
+          "sourcePaths": ["config/b19-quality-gates.json"],
+          "assertions": [
+            { "contains": "evidenceIndex" },
+            { "contains": "artifactPathPattern" },
+            { "contains": "collectionPolicy" },
+            { "contains": "runtimeRequired" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-EVIDENCE-RUNTIME-001",
+          "kind": "evidence-capture",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-EVIDENCE-CAPTURE",
+          "tools": ["CI artifact store", "approved evidence repository"],
+          "targets": ["all-required-runtime-evidence"],
+          "scenarios": ["hash-and-index", "environment-binding", "link-resolution"],
+          "expected": "证据链接可解析，且绑定 commit、运行器、环境、时间、设备/工具和结果。",
+          "evidenceRequired": ["index-json", "artifact-hashes", "resolved-links", "environment-manifest"],
+          "cannotBeSatisfiedBy": ["local-console-only", "unlinked-screenshot"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-EVIDENCE-INDEX", "EV-B19-RUNTIME-EVIDENCE-CAPTURE"]
+    },
+    {
+      "id": "B19-TEST-006-REPORT",
+      "task": "V2-B19-TEST-006",
+      "priority": "P0",
+      "category": "automatic-report-schema",
+      "objective": "定义可自动生成、可重放并能阻断发布的 B19 质量报告 schema。",
+      "staticChecks": [
+        {
+          "id": "B19-REPORT-STATIC-001",
+          "kind": "report-schema-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B19-STATIC-REPORT-SCHEMA",
+          "sourcePaths": ["config/b19-quality-gates.json"],
+          "assertions": [
+            { "contains": "jsonSchema" },
+            { "contains": "gates" },
+            { "contains": "defects" },
+            { "contains": "regressions" },
+            { "contains": "evidence" },
+            { "contains": "decision" },
+            { "contains": "additionalProperties" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B19-REPORT-RUNTIME-001",
+          "kind": "report-generation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B19-RUNTIME-REPORT",
+          "tools": ["CI report generator", "JSON Schema validator"],
+          "targets": ["B19 quality run"],
+          "scenarios": ["incomplete-runtime", "p0-or-p1-block", "p2-disposition", "reproducible-failure"],
+          "expected": "报告能明确区分 pass、fail、blocked 和 runtime pending；未取得真实运行证据时不得输出 go。",
+          "evidenceRequired": ["report-json", "schema-validation", "decision-log", "input-manifest"],
+          "cannotBeSatisfiedBy": ["handwritten-markdown", "static-test-pass-only"]
+        }
+      ],
+      "evidenceIds": ["EV-B19-STATIC-REPORT-SCHEMA", "EV-B19-RUNTIME-REPORT"]
+    }
+  ],
+  "defectPolicy": {
+    "severityLevels": [
+      { "code": "P0", "releaseBlocker": true, "openAllowed": 0, "requiredFields": ["steps", "expected", "actual", "environment", "evidenceIds", "owner", "reproducible"] },
+      { "code": "P1", "releaseBlocker": true, "openAllowed": 0, "requiredFields": ["steps", "expected", "actual", "environment", "evidenceIds", "owner", "reproducible"] },
+      { "code": "P2", "releaseBlocker": false, "openAllowed": null, "requiredFields": ["steps", "expected", "actual", "environment", "evidenceIds", "owner", "reproducible", "disposition"] }
+    ],
+    "openStatuses": ["open", "reopened"],
+    "closedStatuses": ["fixed", "verified", "accepted", "deferred"],
+    "p2Dispositions": ["fix-before-release", "risk-accepted", "deferred-with-plan"],
+    "reproducibility": { "required": true, "minimumEvidenceIds": 1, "requiredFor": ["P0", "P1", "P2"] },
+    "releaseDecision": { "p0OpenMustEqual": 0, "p1OpenMustEqual": 0, "p2RequiresDisposition": true }
+  },
+  "regressionSelection": {
+    "schemaVersion": 1,
+    "minimumSuites": ["phase1-smoke", "quality-static"],
+    "noChangedAreaFallback": "phase1-smoke",
+    "runtimeEvidenceRequired": true,
+    "suites": [
+      { "id": "phase1-smoke", "kind": "smoke", "status": "defined", "command": "approved Phase 1 journey runner", "covers": ["login", "adult-gate", "learning", "practice", "review", "report"] },
+      { "id": "quality-static", "kind": "static", "status": "defined", "command": "node --test tests/b19/b19-quality-evidence.test.mjs && node scripts/runtime/validate-b19-quality-gates.mjs", "covers": ["quality-config", "source-contract", "report-schema"] },
+      { "id": "b18-four-app-static", "kind": "targeted", "status": "defined", "command": "node --test tests/b18/*.test.mjs", "covers": ["four-app-boundary", "locale-theme", "recovery"] },
+      { "id": "i18n-theme-performance-contract", "kind": "targeted", "status": "defined", "command": "node --test tests/b7/i18n-theme.test.mjs tests/performance/adaptive-performance.test.mjs", "covers": ["fallback", "theme", "performance-levels"] },
+      { "id": "full-phase1-regression", "kind": "full", "status": "defined", "command": "approved B0-B19 Phase 1 regression runner", "covers": ["all-phase1"] }
+    ],
+    "rules": [
+      { "id": "regression-auth-gateway", "whenAnyChangedArea": ["auth", "gateway", "contracts"], "includeSuites": ["phase1-smoke", "b18-four-app-static", "full-phase1-regression"] },
+      { "id": "regression-learning-offline", "whenAnyChangedArea": ["learning", "assessment", "media", "offline", "performance"], "includeSuites": ["phase1-smoke", "i18n-theme-performance-contract", "full-phase1-regression"] },
+      { "id": "regression-frontend-quality", "whenAnyChangedArea": ["learner-web", "mobile", "admin-web", "official-site", "i18n", "theme", "accessibility"], "includeSuites": ["phase1-smoke", "b18-four-app-static", "i18n-theme-performance-contract", "full-phase1-regression"] },
+      { "id": "regression-default", "whenAnyChangedArea": ["any"], "includeSuites": ["phase1-smoke", "quality-static"] }
+    ]
+  },
+  "evidenceIndex": [
+    { "id": "EV-B19-STATIC-NETWORK", "gateId": "B19-QA-005-NETWORK", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-STATIC-IDEMPOTENCY", "gateId": "B19-QA-005-NETWORK", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-NETWORK", "gateId": "B19-QA-005-NETWORK", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "network-proxy", "artifactPathPattern": "evidence/b19/network/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-RUNTIME-OFFLINE-RECOVERY", "gateId": "B19-QA-005-NETWORK", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "approved-api-and-trace", "artifactPathPattern": "evidence/b19/offline-recovery/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-PERFORMANCE", "gateId": "B19-QA-005-PERFORMANCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-LCP-INP", "gateId": "B19-QA-005-PERFORMANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "lighthouse-and-playwright", "artifactPathPattern": "evidence/b19/performance/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-LEVELS", "gateId": "B19-QA-005-PERFORMANCE-LEVELS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-LEVELS", "gateId": "B19-QA-005-PERFORMANCE-LEVELS", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "device-performance-runner", "artifactPathPattern": "evidence/b19/performance-levels/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-A11Y-TOKENS", "gateId": "B19-QA-005-ACCESSIBILITY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-STATIC-A11Y-STATES", "gateId": "B19-QA-005-ACCESSIBILITY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-KEYBOARD", "gateId": "B19-QA-005-ACCESSIBILITY", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "playwright-keyboard", "artifactPathPattern": "evidence/b19/accessibility/keyboard/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-RUNTIME-SCREENREADER-CONTRAST", "gateId": "B19-QA-005-ACCESSIBILITY", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "screen-reader-and-contrast-runner", "artifactPathPattern": "evidence/b19/accessibility/screenreader-contrast/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-I18N", "gateId": "B19-QA-005-I18N-THEME", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-STATIC-THEME", "gateId": "B19-QA-005-I18N-THEME", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-I18N-THEME", "gateId": "B19-QA-005-I18N-THEME", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "browser-and-device-locale-theme-runner", "artifactPathPattern": "evidence/b19/i18n-theme/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-STATE-FALLBACK", "gateId": "B19-QA-005-STATE-FALLBACK", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-STATE-FALLBACK", "gateId": "B19-QA-005-STATE-FALLBACK", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "playwright-axe-state-runner", "artifactPathPattern": "evidence/b19/state-fallback/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-DEFECT-POLICY", "gateId": "B19-TEST-006-DEFECTS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-STATIC-REGRESSION", "gateId": "B19-TEST-006-REGRESSION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-REGRESSION", "gateId": "B19-TEST-006-REGRESSION", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "ci-regression-runner", "artifactPathPattern": "evidence/b19/regression/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-EVIDENCE-INDEX", "gateId": "B19-TEST-006-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-EVIDENCE-CAPTURE", "gateId": "B19-TEST-006-EVIDENCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "evidence-index-runner", "artifactPathPattern": "evidence/b19/index/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B19-STATIC-REPORT-SCHEMA", "gateId": "B19-TEST-006-REPORT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b19-quality-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B19-RUNTIME-REPORT", "gateId": "B19-TEST-006-REPORT", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "report-generator-and-json-schema-validator", "artifactPathPattern": "evidence/b19/report/**", "collectionPolicy": "runtime-runner-only" }
+  ],
+  "reportSchema": {
+    "id": "englishflow.b19.quality-report",
+    "version": "1.0.0",
+    "jsonSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://englishflow.invalid/schemas/b19-quality-report.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "run", "decision", "gates", "defects", "regressions", "evidence"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "reportId": { "type": "string", "minLength": 1 },
+        "batch": { "const": "B19" },
+        "run": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["startedAt", "environment", "commit", "runner"],
+          "properties": {
+            "startedAt": { "type": "string", "minLength": 1 },
+            "finishedAt": { "type": ["string", "null"] },
+            "environment": { "type": "string", "minLength": 1 },
+            "commit": { "type": "string", "minLength": 1 },
+            "runner": { "type": "string", "minLength": 1 }
+          }
+        },
+        "decision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "p0Open", "p1Open", "p2Unresolved", "runtimePending"],
+          "properties": {
+            "status": { "enum": ["not-ready", "blocked", "go", "no-go"] },
+            "p0Open": { "type": "integer", "minimum": 0 },
+            "p1Open": { "type": "integer", "minimum": 0 },
+            "p2Unresolved": { "type": "integer", "minimum": 0 },
+            "runtimePending": { "type": "integer", "minimum": 0 },
+            "reason": { "type": "string" }
+          }
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gateId", "status", "evidenceIds"],
+            "properties": {
+              "gateId": { "type": "string", "minLength": 1 },
+              "status": { "enum": ["not-run", "pending", "pass", "fail", "blocked"] },
+              "evidenceIds": { "type": "array", "items": { "type": "string" } },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "defects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "severity", "status", "title", "steps", "expected", "actual", "environment", "evidenceIds", "owner", "reproducible"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "severity": { "enum": ["P0", "P1", "P2"] },
+              "status": { "enum": ["open", "reopened", "fixed", "verified", "accepted", "deferred"] },
+              "title": { "type": "string", "minLength": 1 },
+              "steps": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+              "expected": { "type": "string", "minLength": 1 },
+              "actual": { "type": "string", "minLength": 1 },
+              "environment": { "type": "string", "minLength": 1 },
+              "evidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+              "owner": { "type": "string", "minLength": 1 },
+              "reproducible": { "type": "boolean" },
+              "disposition": { "enum": ["fix-before-release", "risk-accepted", "deferred-with-plan"] }
+            }
+          }
+        },
+        "regressions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["suiteId", "selected", "status", "reason", "evidenceIds"],
+            "properties": {
+              "suiteId": { "type": "string", "minLength": 1 },
+              "selected": { "type": "boolean" },
+              "status": { "enum": ["pending", "pass", "fail", "blocked", "not-selected"] },
+              "reason": { "type": "string", "minLength": 1 },
+              "evidenceIds": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "gateId", "class", "status", "runtimeRequired", "uri", "sha256", "capturedAt", "environment"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "gateId": { "type": "string", "minLength": 1 },
+              "class": { "enum": ["static", "runtime"] },
+              "status": { "enum": ["defined", "pending", "captured", "invalid"] },
+              "runtimeRequired": { "type": "boolean" },
+              "uri": { "type": "string", "minLength": 1 },
+              "sha256": { "type": ["string", "null"] },
+              "capturedAt": { "type": ["string", "null"] },
+              "environment": { "type": ["string", "null"] },
+              "tool": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

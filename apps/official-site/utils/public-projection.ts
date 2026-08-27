@@ -375,5 +375,14 @@ export function hasPublicProjectionData(projection: PublicProjection): boolean {
 
 export function filterPublicCourses(courses: readonly PublicCourseProjection[], filter = 'all'): readonly PublicCourseProjection[] {
   if (filter === 'all') return courses
+  // The UI exposes product stages while the public API exposes CEFR levels.
+  // Keep that translation in the projection boundary instead of asking every
+  // page to know the content taxonomy.
+  const levelsByStage: Record<string, readonly string[]> = {
+    '入门': ['A1', 'A2'],
+    '进阶': ['B1', 'B2', 'C1', 'C2'],
+  }
+  const levels = levelsByStage[filter]
+  if (levels) return courses.filter((course) => levels.includes(course.level.toUpperCase()))
   return courses.filter((course) => course.level.includes(filter))
 }

@@ -39,4 +39,13 @@ public record ContentReadRequest(
         return new ContentReadRequest(contentId, ContentAudience.LEARNER, ContentChannel.LEARNER,
                 Optional.ofNullable(pinnedVersionId), allowPreviouslyPublishedPin, null);
     }
+
+    public static ContentReadRequest learnerContent(
+            ContentId contentId,
+            ContentVersionId pinnedVersionId,
+            boolean allowPreviouslyPublishedPin,
+            ContentActor actor) {
+        return new ContentReadRequest(contentId, ContentAudience.LEARNER, ContentChannel.LEARNER,
+                Optional.ofNullable(pinnedVersionId), allowPreviouslyPublishedPin, actor);
+    }
 }

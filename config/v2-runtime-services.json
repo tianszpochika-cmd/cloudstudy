@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "host": "127.0.0.1",
+  "phase": "phase-1",
+  "services": [
+    {"id":"api-gateway","project":"services/api-gateway","mainClass":"com.englishflow.gateway.ApiGatewayApplication","portKey":"api-gateway","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"iam-service","project":"services/iam-service","mainClass":"com.englishflow.iam.IamServiceApplication","portKey":"iam-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"learner-service","project":"services/learner-service","mainClass":"com.englishflow.learner.LearnerServiceApplication","portKey":"learner-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"content-service","project":"services/content-service","mainClass":"com.englishflow.content.ContentServiceApplication","portKey":"content-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"learning-service","project":"services/learning-service","mainClass":"com.englishflow.learning.LearningServiceApplication","portKey":"learning-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"assessment-service","project":"services/assessment-service","mainClass":"com.englishflow.assessment.AssessmentServiceApplication","portKey":"assessment-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"media-service","project":"services/media-service","mainClass":"com.englishflow.media.MediaServiceApplication","portKey":"media-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"notification-service","project":"services/notification-service","mainClass":"com.englishflow.notification.NotificationServiceApplication","portKey":"notification-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"gamification-service","project":"services/gamification-service","mainClass":"com.englishflow.gamification.GamificationServiceApplication","portKey":"gamification-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"social-service","project":"services/social-service","mainClass":"com.englishflow.social.SocialServiceApplication","portKey":"social-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"commerce-service","project":"services/commerce-service","mainClass":"com.englishflow.commerce.CommerceServiceApplication","portKey":"commerce-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"admin-ops-service","project":"services/admin-ops-service","mainClass":"com.englishflow.adminops.AdminOpsServiceApplication","portKey":"admin-ops-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"analytics-service","project":"services/analytics-service","mainClass":"com.englishflow.analytics.AnalyticsServiceApplication","portKey":"analytics-service","healthPath":"/actuator/health/readiness","profile":"v2"},
+    {"id":"core-api","project":"services/core-api","mainClass":"com.englishflow.CoreApiApplication","portKey":"core-api","healthBasePath":"/api/v1","healthPath":"/actuator/health","profile":"legacy-compatibility"}
+  ],
+  "disabledPhaseServices": ["ai-orchestrator", "realtime-voice", "guardian-service", "institution-service", "curriculum-rights-service"]
+}

@@ -19,6 +19,7 @@ import {
 import {
   LearnerContentReadModelError,
   type ContentProjection,
+  type LearnerContentDetail,
   type LearnerContentPort,
   type LearnerHomeReadModel,
   type LearnerGoalOption,
@@ -35,9 +36,11 @@ const READ_MODEL_PATHS = {
   profile: '/learner/profile',
   target: '/learner/targets',
   preferences: '/learner/preferences',
+  onboardingOptions: '/learner/onboarding/options',
   firstDay: '/learner/first-day',
   home: '/learner/home',
   contentCatalog: '/content/learner/catalog',
+  taskEnsureCommand: '/onboarding/daily-tasks/ensure',
   placement: '/assessment/placement/start',
   placementAnswerCommand: '/assessment/placement/submit-step',
   placementSkipCommand: '/assessment/placement/skip',
@@ -93,8 +96,10 @@ function query(path: string, contentLocale: string, extra: Record<string, string
   return `${path}?${params.toString()}`
 }
 
-function parseGoals(value: unknown): LearnerGoalOption[] {
-  if (!Array.isArray(value)) return targetGoals.map((item) => ({ value: item.value, label: item.label, description: item.description }))
+function parseGoals(value: unknown, allowFallback = true): LearnerGoalOption[] {
+  if (!Array.isArray(value)) {
+    return allowFallback ? targetGoals.map((item) => ({ value: item.value, label: item.label, description: item.description })) : []
+  }
   return value.flatMap((item): LearnerGoalOption[] => {
     if (!isRecord(item) || !isTargetGoal(item.value)) return []
     const fallback = targetGoals.find((goal) => goal.value === item.value)
@@ -102,27 +107,27 @@ function parseGoals(value: unknown): LearnerGoalOption[] {
   })
 }
 
-function parseQuotas(value: unknown): DailyQuotaMinutes[] {
-  if (!Array.isArray(value)) return [...dailyQuotaOptions]
+function parseQuotas(value: unknown, allowFallback = true): DailyQuotaMinutes[] {
+  if (!Array.isArray(value)) return allowFallback ? [...dailyQuotaOptions] : []
   return value.filter((item): item is DailyQuotaMinutes => dailyQuotaOptions.includes(item as DailyQuotaMinutes))
 }
 
 function parseOnboarding(value: unknown): OnboardingProfile {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
   const profileSource = isRecord(source.profile) ? source.profile : source
-  const targetGoal = isTargetGoal(profileSource.targetGoal) ? profileSource.targetGoal : null
-  const quota = readNumber(profileSource.dailyQuotaMinutes)
+  const targetGoal = isTargetGoal(profileSource.targetGoal ?? profileSource.target_goal) ? (profileSource.targetGoal ?? profileSource.target_goal) as TargetGoal : null
+  const quota = readNumber(profileSource.dailyQuotaMinutes ?? profileSource.daily_quota_minutes)
   return {
     ...createDefaultOnboarding(),
-    ageConfirmed: readBoolean(profileSource.ageConfirmed) ?? false,
-    privacyConsent: readBoolean(profileSource.privacyConsent) ?? false,
-    termsConsent: readBoolean(profileSource.termsConsent) ?? false,
-    birthYear: readNumber(profileSource.birthYear),
+    ageConfirmed: readBoolean(profileSource.ageConfirmed ?? profileSource.age_confirmed) ?? false,
+    privacyConsent: readBoolean(profileSource.privacyConsent ?? profileSource.privacy_consent) ?? false,
+    termsConsent: readBoolean(profileSource.termsConsent ?? profileSource.terms_consent) ?? false,
+    birthYear: readNumber(profileSource.birthYear ?? profileSource.birth_year),
     targetGoal,
     subTags: Array.isArray(profileSource.subTags) ? profileSource.subTags.filter(isSubTag).slice(0, 3) : [],
     dailyQuotaMinutes: dailyQuotaOptions.includes(quota as DailyQuotaMinutes) ? quota as DailyQuotaMinutes : null,
-    completed: readBoolean(profileSource.completed) ?? false,
-    updatedAt: readString(profileSource.updatedAt),
+    completed: readBoolean(profileSource.completed) ?? String(profileSource.status ?? '').toUpperCase() === 'ACTIVE',
+    updatedAt: readString(profileSource.updatedAt ?? profileSource.updated_at),
   }
 }
 
@@ -162,8 +167,12 @@ function parseReport(value: unknown): AssessmentReport | null {
   if (!isRecord(source)) return null
   const reportSource = isRecord(source.report) ? source.report : isRecord(source.finalReport) ? source.finalReport : source
   const cefrLevel = readString(reportSource.cefrLevel)
-  const score = readNumber(reportSource.score)
-  if (!cefrLevel || score === null || !['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(cefrLevel)) return null
+  const rawScore = readNumber(reportSource.score)
+  if (!cefrLevel || rawScore === null || !['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(cefrLevel)) return null
+  // The placement service stores score as a 0..1 ratio, while the learner-web
+  // domain presents the same fact as a 0..100 score (the preview path already
+  // uses that shape). Normalize at the adapter boundary so all pages agree.
+  const score = rawScore >= 0 && rawScore <= 1 ? rawScore * 100 : rawScore
   const radar = isRecord(reportSource.radarScores) ? reportSource.radarScores : {}
   const level = cefrLevel === 'A1' ? 1 : cefrLevel === 'A2' ? 2 : cefrLevel === 'B1' ? 3 : cefrLevel === 'B2' ? 4 : cefrLevel === 'C1' ? 5 : 6
   return {
@@ -186,18 +195,20 @@ function parseReport(value: unknown): AssessmentReport | null {
 
 function parseTask(value: unknown): DailyTask | null {
   if (!isRecord(value)) return null
-  const id = readString(value.id) ?? readString(value.taskId)
+  const id = readString(value.id) ?? readString(value.taskId) ?? readString(value.task_id)
   const title = readString(value.title)
   if (!id || !title) return null
-  const kind = value.kind === 'REVIEW' || value.kind === 'MISTAKE' ? value.kind : 'NEW'
+  const rawKind = readString(value.kind) ?? readString(value.taskType) ?? readString(value.task_type)
+  const kind = rawKind === 'REVIEW' || rawKind === 'MISTAKE' ? rawKind : 'NEW'
   return {
     id,
+    contentCode: readString(value.contentCode) ?? readString(value.content_code),
     title,
     description: readString(value.description) ?? '',
     kind,
     minutes: Math.max(0, Math.round(readNumber(value.minutes) ?? 0)),
     count: Math.max(0, Math.round(readNumber(value.count) ?? 0)),
-    completed: value.completed === true,
+    completed: value.completed === true || String(value.status ?? value.task_status ?? '').toUpperCase() === 'COMPLETED',
   }
 }
 
@@ -253,14 +264,19 @@ function parseContent(value: unknown): ContentProjection[] {
   const items = Array.isArray(source.items) ? source.items : Array.isArray(source.content) ? source.content : Array.isArray(source.cards) ? source.cards : []
   return items.flatMap((item): ContentProjection[] => {
     if (!isRecord(item)) return []
-    const contentId = readString(item.contentId) ?? readString(item.id)
+    const contentId = readString(item.contentId) ?? readString(item.contentCode) ?? readString(item.id)
     const title = readString(item.title)
     if (!contentId || !title) return []
-    const status = item.status === 'WITHDRAWN' ? 'WITHDRAWN' : item.status === 'UNAVAILABLE' ? 'UNAVAILABLE' : 'PUBLISHED'
+    const rawStatus = readString(item.status) ?? readString(item.availability)
+    const status = rawStatus === 'WITHDRAWN' || rawStatus === 'UNPUBLISHED'
+      ? 'WITHDRAWN'
+      : rawStatus === 'UNAVAILABLE'
+        ? 'UNAVAILABLE'
+        : 'PUBLISHED'
     return [{
       contentId,
       contentVersionId: readString(item.contentVersionId) ?? readString(item.versionId),
-      kind: readString(item.kind) ?? 'LESSON',
+      kind: readString(item.kind) ?? readString(item.contentType) ?? 'LESSON',
       title,
       description: readString(item.description) ?? readString(item.summary) ?? '',
       contentLocale: readString(item.contentLocale) ?? 'en-US',
@@ -269,12 +285,51 @@ function parseContent(value: unknown): ContentProjection[] {
   })
 }
 
+function parseContentDetail(value: unknown): LearnerContentDetail {
+  const unwrapped = unwrap(value)
+  const source = isRecord(unwrapped) ? unwrapped : {}
+  const detail = isRecord(source.content) ? source.content : source
+  const contentId = readString(detail.contentId) ?? readString(detail.contentCode) ?? readString(detail.id)
+  const title = readString(detail.title)
+  if (!contentId || !title) {
+    throw new LearnerContentReadModelError({ code: 'INVALID', status: 200, retryable: false, message: '服务端课程内容格式无效。' })
+  }
+  const rawItems = Array.isArray(detail.items) ? detail.items : []
+  const items = rawItems.flatMap((item, index) => {
+    if (!isRecord(item)) return []
+    const options = Array.isArray(item.options) ? item.options.flatMap((option) => {
+      if (!isRecord(option)) return []
+      const key = readString(option.key)
+      const text = readString(option.text)
+      return key && text ? [{ key, text }] : []
+    }) : []
+    return [{
+      itemId: readString(item.itemId) ?? readString(item.itemCode) ?? `${contentId}:item:${index + 1}`,
+      itemType: readString(item.itemType) ?? 'LESSON',
+      text: readString(item.text) ?? readString(item.displayText) ?? readString(item.prompt) ?? readString(item.content) ?? '',
+      options,
+    }]
+  })
+  return {
+    contentId,
+    contentVersionId: readString(detail.contentVersionId) ?? readString(detail.versionId),
+    kind: readString(detail.kind) ?? readString(detail.contentType) ?? 'LESSON',
+    title,
+    description: readString(detail.description) ?? readString(detail.summary) ?? '',
+    contentLocale: readString(detail.contentLocale) ?? 'en-US',
+    items,
+  }
+}
+
 function toReadModelError(error: unknown): LearnerContentReadModelError {
   if (error instanceof LearnerContentReadModelError) return error
   const status = error instanceof ApiError ? error.status : 0
   const details = error instanceof ApiError && isRecord(error.details) ? error.details : {}
   const code = readString(details.code) ?? readString(details.errorCode)
-  if (status === 401 || status === 403 || code === 'FORBIDDEN' || code === 'ACCESS_DENIED') {
+  if (status === 401) {
+    return new LearnerContentReadModelError({ code: 'UNAVAILABLE', status, retryable: false, message: '会话已失效，请重新登录。' })
+  }
+  if (status === 403 || code === 'FORBIDDEN' || code === 'ACCESS_DENIED') {
     return new LearnerContentReadModelError({ code: 'FORBIDDEN', status, retryable: false, message: '服务端拒绝了当前学习资源。' })
   }
   if (status === 404 || status === 410 || ['CONTENT_UNAVAILABLE', 'CONTENT_WITHDRAWN', 'CONTENT_VERSION_UNAVAILABLE'].includes(code ?? '')) {
@@ -294,17 +349,28 @@ async function request<T>(path: string, options: ApiRequestOptions = {}): Promis
   }
 }
 
+async function requestOptional<T>(path: string, options: ApiRequestOptions = {}): Promise<T | null> {
+  try {
+    return await request<T>(path, options)
+  } catch (error) {
+    // A newly registered principal has no learner-owned row yet. That is an empty
+    // onboarding state, not an authorization failure or fake fallback.
+    if ((error instanceof ApiError || error instanceof LearnerContentReadModelError) && error.status === 404) return null
+    throw error
+  }
+}
+
 function emptyHome(): HomeSnapshot | null {
   return null
 }
 
-function parseOnboardingModel(value: unknown, contentLocale: string): LearnerOnboardingReadModel {
+function parseOnboardingModel(value: unknown, contentLocale: string, allowOptionFallback = true): LearnerOnboardingReadModel {
   const source = isRecord(unwrap(value)) ? unwrap(value) as RecordValue : {}
   const optionsSource = isRecord(source.options) ? source.options : {}
   return {
     profile: parseOnboarding(source),
-    goals: parseGoals(source.goals ?? optionsSource.goals),
-    quotas: parseQuotas(source.quotas ?? optionsSource.dailyQuotaMinutes),
+    goals: parseGoals(source.goals ?? optionsSource.goals, allowOptionFallback),
+    quotas: parseQuotas(source.quotas ?? optionsSource.dailyQuotaMinutes, allowOptionFallback),
     contentLocale: readString(source.contentLocale) ?? contentLocale,
     revision: readString(source.revision) ?? readString(source.profileVersion),
   }
@@ -342,31 +408,65 @@ function parseHomeModel(learnerValue: unknown, contentValue: unknown, contentLoc
 
 export const learnerContentPort: LearnerContentPort = {
   async readOnboarding(contentLocale) {
-    const [profile, target, preferences] = await Promise.all([
-      request<unknown>(query(READ_MODEL_PATHS.profile, contentLocale)),
-      request<unknown>(query(READ_MODEL_PATHS.target, contentLocale)),
-      request<unknown>(query(READ_MODEL_PATHS.preferences, contentLocale)),
+    const [profile, target, preferences, options] = await Promise.all([
+      requestOptional<unknown>(query(READ_MODEL_PATHS.profile, contentLocale)),
+      requestOptional<unknown>(query(READ_MODEL_PATHS.target, contentLocale)),
+      requestOptional<unknown>(query(READ_MODEL_PATHS.preferences, contentLocale)),
+      requestOptional<unknown>(query(READ_MODEL_PATHS.onboardingOptions, contentLocale)),
     ])
     const profileValue = isRecord(unwrap(profile)) ? unwrap(profile) as RecordValue : {}
     const targetValue = isRecord(unwrap(target)) ? unwrap(target) as RecordValue : {}
     const preferencesValue = isRecord(unwrap(preferences)) ? unwrap(preferences) as RecordValue : {}
+    const optionsValue = isRecord(unwrap(options)) ? unwrap(options) as RecordValue : {}
     return parseOnboardingModel({
       profile: {
         ...profileValue,
         ...preferencesValue,
-        targetGoal: readString(targetValue.goalCode) ?? readString(profileValue.targetGoal),
-        dailyQuotaMinutes: readNumber(targetValue.dailyQuotaMinutes) ?? readNumber(profileValue.dailyQuotaMinutes),
+        targetGoal: readString(targetValue.goalCode) ?? readString(targetValue.goal_code) ?? readString(profileValue.targetGoal) ?? readString(profileValue.target_goal),
+        dailyQuotaMinutes: readNumber(targetValue.dailyQuotaMinutes) ?? readNumber(targetValue.daily_quota_minutes) ?? readNumber(profileValue.dailyQuotaMinutes) ?? readNumber(profileValue.daily_quota_minutes),
       },
+      goals: optionsValue.goals,
+      quotas: optionsValue.quotas ?? optionsValue.dailyQuotaMinutes,
       contentLocale: readString(profileValue.contentLocale) ?? contentLocale,
-    }, contentLocale)
+    }, contentLocale, false)
   },
 
   async saveOnboarding(input: SaveOnboardingInput) {
+    if (!input.profile.ageConfirmed || !input.profile.privacyConsent || !input.profile.termsConsent || !input.profile.birthYear || !input.profile.targetGoal || !input.profile.dailyQuotaMinutes) {
+      throw new Error('成人 Gate、隐私/条款同意和学习目标必须全部完成后才能保存。')
+    }
     const targetLevel = input.profile.targetGoal === 'ZERO_BASIS' ? 'A1' : input.profile.targetGoal === 'CET_4_6' ? 'B1' : 'B2'
+    let featuredContent: ContentProjection | null = null
+    try {
+      featuredContent = parseContent(await request(query(READ_MODEL_PATHS.contentCatalog, 'en-US'))).find((item) => item.status === 'PUBLISHED') ?? null
+    } catch {
+      // Onboarding remains valid when content publication is temporarily unavailable;
+      // the task projection is created on the next explicit save/retry.
+    }
     await Promise.all([
+      request<unknown>('/iam/consents', {
+        method: 'PUT',
+        body: { consentType: 'PRIVACY', consentVersion: 'b30-consent-v1', decision: 'ACCEPTED' },
+        ...withIdempotency(`${input.clientEventId}-privacy`),
+      }),
+      request<unknown>('/iam/consents', {
+        method: 'PUT',
+        body: { consentType: 'TERMS', consentVersion: 'b30-consent-v1', decision: 'ACCEPTED' },
+        ...withIdempotency(`${input.clientEventId}-terms`),
+      }),
       request<unknown>(READ_MODEL_PATHS.profile, {
         method: 'PATCH',
-        body: { expectedStateVersion: 0, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai' },
+        body: {
+          expectedStateVersion: 0,
+          status: 'ACTIVE',
+          birthYear: input.profile.birthYear,
+          ageConfirmed: input.profile.ageConfirmed,
+          privacyConsent: input.profile.privacyConsent,
+          termsConsent: input.profile.termsConsent,
+          uiLocale: 'zh-CN',
+          contentLocale: 'en-US',
+          timezone: 'Asia/Shanghai',
+        },
         ...withIdempotency(`${input.clientEventId}-profile`),
       }),
       request<unknown>(READ_MODEL_PATHS.target, {
@@ -380,11 +480,32 @@ export const learnerContentPort: LearnerContentPort = {
         ...withIdempotency(`${input.clientEventId}-preferences`),
       }),
     ])
-    return parseOnboardingModel({ profile: input.profile, contentLocale: 'en-US' }, 'en-US')
+    if (featuredContent) {
+      await request<unknown>(READ_MODEL_PATHS.taskEnsureCommand, {
+        method: 'POST',
+        body: { contentCode: featuredContent.contentId, title: featuredContent.title, minutes: input.profile.dailyQuotaMinutes },
+        ...withIdempotency(`${input.clientEventId}-daily-task`),
+      })
+    }
+    // Read the owner rows back after every write. The UI must continue from the
+    // learner-service/MySQL projection, not from the request body echo.
+    return learnerContentPort.readOnboarding('en-US')
+  },
+
+  async readContent(contentId) {
+    return parseContentDetail(await request(`/content/learner/${encodeURIComponent(contentId)}`))
   },
 
   async readPlacement(input) {
     return parsePlacementModel(await request(query(READ_MODEL_PATHS.placement, input.contentLocale, { sessionId: input.sessionId })), input.contentLocale)
+  },
+
+  async startPlacement(input) {
+    return parsePlacementModel(await request(READ_MODEL_PATHS.placement, {
+      method: 'POST',
+      body: { contentLocale: input.contentLocale },
+      ...withIdempotency(input.clientEventId),
+    }), input.contentLocale)
   },
 
   async submitPlacementAnswer(input: PlacementAnswerInput): Promise<PlacementSubmitResult> {
@@ -394,10 +515,11 @@ export const learnerContentPort: LearnerContentPort = {
       ...withIdempotency(`placement-answer-${input.sessionId}-${input.questionId}-${input.selectedKey}`),
     })
     const source = isRecord(unwrap(response)) ? unwrap(response) as RecordValue : {}
+    const report = parseReport(source.report ?? source.finalReport ?? source)
     return {
-      isCompleted: source.isCompleted === true || Boolean(parseReport(source.report ?? source.finalReport)),
+      isCompleted: source.isCompleted === true || Boolean(report),
       nextQuestion: parseQuestion(source.nextQuestion ?? source.currentQuestion, input.sessionId),
-      report: parseReport(source.report ?? source.finalReport),
+      report,
     }
   },
 

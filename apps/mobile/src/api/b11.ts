@@ -1,6 +1,5 @@
 import { mobileApiClient, MobileApiError } from './client'
-import { createListeningSession as legacyCreateListeningSession, createRecording as legacyCreateRecording, getPhonetics as legacyGetPhonetics, getReadingArticle as legacyGetReadingArticle, listListeningMaterials as legacyListListeningMaterials, listReadingArticles as legacyListReadingArticles, listReadingQuestions as legacyListReadingQuestions, pushOfflineChanges as legacyPushOfflineChanges, saveReadingProgress as legacySaveReadingProgress, submitDictation as legacySubmitDictation, submitReadingAttempt as legacySubmitReadingAttempt, submitSelfRating as legacySubmitSelfRating, deleteRecording as legacyDeleteRecording } from './b3'
-import type { B3SyncResult, DictationResult, ListeningMaterial, Phoneme, ReadingArticle, ReadingAttemptResult, ReadingQuestion, SpeakingRecording } from '../domain/b3'
+import type { DictationResult, ListeningMaterial, Phoneme, ReadingArticle, ReadingAttemptResult, ReadingQuestion, SpeakingRecording } from '../domain/b3'
 import type { B11Conflict, B11MediaManifest, B11OfflineEvent, B11ReadingWorkspace, B11RecordingResult, B11ListeningWorkspace, B11SyncResponse } from '../domain/b11'
 import { contentVersionOf } from '../domain/b11'
 
@@ -9,11 +8,11 @@ type RecordValue = Record<string, unknown>
 export interface B11RequestContext { uiLocale: string; contentLocale: string }
 
 export const B11_GATEWAY_PATHS = {
-  media: { manifest: '/media/assets', access: '/media/assets', legacyPlayback: '/media/assets', progress: '/learning/media-progress' },
+  media: { manifest: '/media/assets', signedUrl: '/media/assets', progress: '/learning/media-progress' },
   listening: { materials: '/listening/materials', sessions: '/listening/sessions', dictation: '/listening/sessions' },
   reading: { articles: '/reading/articles', questions: '/reading/questions', progress: '/reading/progress', attempts: '/reading/attempts' },
   speaking: { phonetics: '/phonetics/catalog', recordings: '/speaking/recordings', shadowing: '/speaking/shadowing/completions' },
-  offline: { sync: '/sync/changes', legacySync: '/offline/sync' },
+  offline: { sync: '/sync/changes' },
 } as const
 
 function isRecord(value: unknown): value is RecordValue { return typeof value === 'object' && value !== null && !Array.isArray(value) }
@@ -25,7 +24,6 @@ function list<T>(value: unknown): T[] { const source = unwrap(value); if (Array.
 function query(path: string, values: Record<string, string | number | undefined>): string { const entries = Object.entries(values).filter(([, value]) => value !== undefined).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`); return entries.length ? `${path}?${entries.join('&')}` : path }
 function idempotencyKey(clientEventId: string): string { return `b11-${clientEventId}`.slice(0, 120) }
 function headers(context: B11RequestContext, clientEventId?: string): Record<string, string> { return { 'Accept-Language': context.uiLocale, ...(clientEventId ? { 'Idempotency-Key': idempotencyKey(clientEventId) } : {}) } }
-function isLegacyShape(error: unknown): boolean { return error instanceof MobileApiError && [404, 405, 501].includes(error.status) }
 function serverError(error: unknown): boolean { return error instanceof MobileApiError && (error.status === 0 || error.status >= 500) }
 
 function contentVersion(value: unknown, fallback: string | number): string | number { return contentVersionOf(value, fallback) }
@@ -41,22 +39,12 @@ function parseManifest(value: unknown, fallbackAssetId: string): B11MediaManifes
 }
 
 export async function loadB11ListeningMaterials(context: B11RequestContext): Promise<ListeningMaterial[]> {
-  try {
-    return list<ListeningMaterial>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.listening.materials, { limit: 20, contentLocale: context.contentLocale })))
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    return legacyListListeningMaterials()
-  }
+  return list<ListeningMaterial>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.listening.materials, { limit: 20, contentLocale: context.contentLocale })))
 }
 
 export async function startB11ListeningSession(materialId: number, context: B11RequestContext, clientEventId: string, version: string | number): Promise<string | null> {
-  try {
-    const source = unwrap(await mobileApiClient.request('/listening/sessions', { method: 'POST', data: { materialId, contentVersion: version, contentVersionId: version, mode: 'LISTEN', clientEventId }, header: headers(context, clientEventId) }))
-    return isRecord(source) ? text(source.sessionId ?? source.id) : null
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    return legacyCreateListeningSession(materialId, clientEventId)
-  }
+  const source = unwrap(await mobileApiClient.request('/listening/sessions', { method: 'POST', data: { materialId, contentVersion: version, contentVersionId: version, mode: 'LISTEN', clientEventId }, header: headers(context, clientEventId) }))
+  return isRecord(source) ? text(source.sessionId ?? source.id) : null
 }
 
 export async function fetchB11MediaManifest(assetId: string, context: B11RequestContext, version?: string | number): Promise<B11MediaManifest | null> {
@@ -66,14 +54,7 @@ export async function fetchB11MediaManifest(assetId: string, context: B11Request
 
 export async function authorizeB11Playback(assetId: string, variant: string, context: B11RequestContext, clientEventId: string, version: string | number): Promise<B11MediaManifest | null> {
   const request = { method: 'POST' as const, data: { renditionId: variant, contentVersionId: version }, header: headers(context, clientEventId) }
-  const legacyRequest = { method: 'POST' as const, data: { assetId, variant, contentVersion: version, clientEventId }, header: headers(context, clientEventId) }
-  let source: unknown
-  try {
-    source = await mobileApiClient.request(`${B11_GATEWAY_PATHS.media.access}/${encodeURIComponent(assetId)}/access`, request)
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    source = await mobileApiClient.request(`${B11_GATEWAY_PATHS.media.legacyPlayback}/${encodeURIComponent(assetId)}/playback`, legacyRequest)
-  }
+  const source = await mobileApiClient.request(`${B11_GATEWAY_PATHS.media.signedUrl}/${encodeURIComponent(assetId)}/signed-url`, request)
   return parseManifest(source, assetId)
 }
 
@@ -82,73 +63,46 @@ export async function saveB11MediaProgress(input: { sessionId?: string | null; a
 }
 
 export async function submitB11Dictation(sessionId: string, segmentId: string, answer: string, context: B11RequestContext, clientEventId: string, version: string | number): Promise<DictationResult> {
-  try {
-    return unwrap(await mobileApiClient.request(`/listening/sessions/${encodeURIComponent(sessionId)}/dictation`, { method: 'POST', data: { segmentId, mode: 'SENTENCE', answer, attemptNo: 1, clientEventId, contentVersion: version, contentVersionId: version }, header: headers(context, clientEventId) })) as DictationResult
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    return legacySubmitDictation(sessionId, segmentId, answer, clientEventId)
-  }
+  return unwrap(await mobileApiClient.request(`/listening/sessions/${encodeURIComponent(sessionId)}/dictation`, { method: 'POST', data: { segmentId, mode: 'SENTENCE', answer, attemptNo: 1, clientEventId, contentVersion: version, contentVersionId: version }, header: headers(context, clientEventId) })) as DictationResult
 }
 
 export async function loadB11ReadingWorkspace(context: B11RequestContext): Promise<B11ReadingWorkspace | null> {
-  let articles: ReadingArticle[]
-  try { articles = list<ReadingArticle>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.reading.articles, { limit: 20, contentLocale: context.contentLocale }))) } catch (error) { if (!isLegacyShape(error)) throw error; articles = await legacyListReadingArticles() }
+  const articles = list<ReadingArticle>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.reading.articles, { limit: 20, contentLocale: context.contentLocale })))
   const first = articles[0]
   if (!first) return null
-  let article: ReadingArticle
-  try { article = unwrap(await mobileApiClient.request(query(`${B11_GATEWAY_PATHS.reading.articles}/${first.articleId}`, { contentLocale: context.contentLocale, contentVersion: first.contentVersionId }))) as ReadingArticle } catch (error) { if (!isLegacyShape(error)) throw error; article = await legacyGetReadingArticle(first.articleId) }
-  let questions: ReadingQuestion[]
-  try { questions = list<ReadingQuestion>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.reading.questions, { limit: 20, articleId: article.articleId, contentLocale: context.contentLocale }))) } catch (error) { if (!isLegacyShape(error)) throw error; questions = await legacyListReadingQuestions(article.articleId) }
+  const article = unwrap(await mobileApiClient.request(query(`${B11_GATEWAY_PATHS.reading.articles}/${first.articleId}`, { contentLocale: context.contentLocale, contentVersion: first.contentVersionId }))) as ReadingArticle
+  const questions = list<ReadingQuestion>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.reading.questions, { limit: 20, articleId: article.articleId, contentLocale: context.contentLocale })))
   return { article, questions, contentVersion: contentVersion(article.contentVersionId, 'unknown') }
 }
 
 export async function saveB11ReadingProgress(article: ReadingArticle, blockId: string, progressPercent: number, entityVersion: number, context: B11RequestContext, clientEventId: string): Promise<void> {
-  try {
-    await mobileApiClient.request(B11_GATEWAY_PATHS.reading.progress, { method: 'PUT', data: { articleId: article.articleId, blockId, progressPercent, positionVersion: entityVersion, contentVersion: contentVersion(article.contentVersionId, 'unknown'), clientEventId }, header: headers(context, clientEventId) })
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    await legacySaveReadingProgress(article.articleId, blockId, progressPercent, entityVersion, clientEventId)
-  }
+  await mobileApiClient.request(B11_GATEWAY_PATHS.reading.progress, { method: 'PUT', data: { articleId: article.articleId, blockId, progressPercent, positionVersion: entityVersion, contentVersion: contentVersion(article.contentVersionId, 'unknown'), clientEventId }, header: headers(context, clientEventId) })
 }
 
 export async function submitB11ReadingQuestion(question: ReadingQuestion, answer: string, context: B11RequestContext, clientEventId: string): Promise<ReadingAttemptResult> {
-  try {
-    return unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.reading.attempts, { method: 'POST', data: { questionId: question.questionId, answer, contentVersion: contentVersion(question.contentVersionId, 'unknown'), contentVersionId: question.contentVersionId, clientEventId }, header: headers(context, clientEventId) })) as ReadingAttemptResult
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    return legacySubmitReadingAttempt(question.questionId, answer, clientEventId)
-  }
+  return unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.reading.attempts, { method: 'POST', data: { questionId: question.questionId, answer, contentVersion: contentVersion(question.contentVersionId, 'unknown'), contentVersionId: question.contentVersionId, clientEventId }, header: headers(context, clientEventId) })) as ReadingAttemptResult
 }
 
 export async function loadB11Phonetics(context: B11RequestContext): Promise<Phoneme[]> {
-  try { return list<Phoneme>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.speaking.phonetics, { setCode: 'EN_48_PHASE1', contentLocale: context.contentLocale }))) } catch (error) { if (!isLegacyShape(error)) throw error; return legacyGetPhonetics() }
+  return list<Phoneme>(await mobileApiClient.request(query(B11_GATEWAY_PATHS.speaking.phonetics, { setCode: 'EN_48_PHASE1', contentLocale: context.contentLocale })))
 }
 
 export async function registerB11Recording(input: { sourceSegmentId: string; durationMs: number; contentHash: string; storageMode: 'LOCAL_ENCRYPTED' | 'LOCAL_TEMP'; contentVersion: string | number; clientEventId: string }, context: B11RequestContext): Promise<B11RecordingResult> {
-  try {
-    const source = unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.speaking.recordings, { method: 'POST', data: { sourceSegmentId: input.sourceSegmentId, durationMs: input.durationMs, contentHash: input.contentHash, storageMode: input.storageMode, contentVersion: input.contentVersion, contentVersionId: input.contentVersion, clientEventId: input.clientEventId, aiScoringAvailable: false }, header: headers(context, input.clientEventId) }))
-    return { recording: source as SpeakingRecording, aiScoringAvailable: false, localCopyRetained: true }
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    return { recording: await legacyCreateRecording(input.sourceSegmentId, input.durationMs, input.contentHash, input.clientEventId), aiScoringAvailable: false, localCopyRetained: true }
-  }
+  const source = unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.speaking.recordings, { method: 'POST', data: { sourceSegmentId: input.sourceSegmentId, durationMs: input.durationMs, contentHash: input.contentHash, storageMode: input.storageMode, contentVersion: input.contentVersion, contentVersionId: input.contentVersion, clientEventId: input.clientEventId, aiScoringAvailable: false }, header: headers(context, input.clientEventId) }))
+  return { recording: source as SpeakingRecording, aiScoringAvailable: false, localCopyRetained: true }
 }
 
 export async function deleteB11Recording(recordingId: string, context: B11RequestContext, clientEventId: string): Promise<void> {
-  try { await mobileApiClient.request(`${B11_GATEWAY_PATHS.speaking.recordings}/${encodeURIComponent(recordingId)}`, { method: 'DELETE', header: headers(context, clientEventId) }) } catch (error) { if (!isLegacyShape(error)) throw error; await legacyDeleteRecording(recordingId, clientEventId) }
+  await mobileApiClient.request(`${B11_GATEWAY_PATHS.speaking.recordings}/${encodeURIComponent(recordingId)}`, { method: 'DELETE', header: headers(context, clientEventId) })
 }
 
 export async function submitB11SelfRating(recordingId: string, rating: string, context: B11RequestContext, clientEventId: string, version: string | number): Promise<void> {
-  try { await mobileApiClient.request(`${B11_GATEWAY_PATHS.speaking.recordings}/${encodeURIComponent(recordingId)}/self-rating`, { method: 'POST', data: { recordingId, rating, contentVersion: version, clientEventId, aiScoringAvailable: false }, header: headers(context, clientEventId) }) } catch (error) { if (!isLegacyShape(error)) throw error; await legacySubmitSelfRating(recordingId, rating, clientEventId) }
+  await mobileApiClient.request(`${B11_GATEWAY_PATHS.speaking.recordings}/${encodeURIComponent(recordingId)}/self-rating`, { method: 'POST', data: { recordingId, rating, contentVersion: version, clientEventId, aiScoringAvailable: false }, header: headers(context, clientEventId) })
 }
 
 export async function completeB11Shadowing(input: { recordingId: string; sourceSegmentId: string; contentVersion: string | number; clientEventId: string }, context: B11RequestContext): Promise<RecordValue> {
   const source = unwrap(await mobileApiClient.request(B11_GATEWAY_PATHS.speaking.shadowing, { method: 'POST', data: { ...input, clientEventId: input.clientEventId, aiScoringAvailable: false }, header: headers(context, input.clientEventId) }))
   return isRecord(source) ? source : {}
-}
-
-function legacyChanges(events: B11OfflineEvent[]): Array<{ changeId: string; entityType: 'READING_PROGRESS' | 'MEDIA_PROGRESS' | 'RECORDING' | 'SETTINGS'; entityId: string; entityVersion: number; operation: 'UPSERT' | 'DELETE'; payloadHash: string; occurredAt: string; clientEventId: string }> {
-  return events.filter((event) => ['READING_PROGRESS', 'MEDIA_PROGRESS', 'RECORDING'].includes(event.entityType)).map((event) => ({ changeId: event.clientEventId, entityType: event.entityType as 'READING_PROGRESS' | 'MEDIA_PROGRESS' | 'RECORDING', entityId: event.entityId, entityVersion: event.entityVersion, operation: event.operation, payloadHash: event.payloadHash, occurredAt: event.occurredAt, clientEventId: event.clientEventId }))
 }
 
 function parseSync(value: unknown, clientBatchId: string, fallbackIds: string[]): B11SyncResponse {
@@ -160,20 +114,7 @@ function parseSync(value: unknown, clientBatchId: string, fallbackIds: string[])
 }
 
 export async function syncB11Offline(events: B11OfflineEvent[], cursor: string, context: B11RequestContext, clientBatchId: string): Promise<B11SyncResponse> {
-  try {
-    return parseSync(await mobileApiClient.request(B11_GATEWAY_PATHS.offline.sync, { method: 'POST', data: { clientBatchId, baseCursor: cursor, changes: events, contentLocale: context.contentLocale }, header: headers(context, clientBatchId) }), clientBatchId, events.map((item) => item.clientEventId))
-  } catch (error) {
-    if (!isLegacyShape(error)) throw error
-    let response: unknown
-    try {
-      response = await mobileApiClient.request(B11_GATEWAY_PATHS.offline.legacySync, { method: 'POST', data: { clientBatchId, baseCursor: cursor, changes: events, contentLocale: context.contentLocale }, header: headers(context, clientBatchId) })
-    } catch (legacyError) {
-      if (!isLegacyShape(legacyError)) throw legacyError
-      const legacy = await legacyPushOfflineChanges(legacyChanges(events), cursor) as B3SyncResult
-      return { clientBatchId, acceptedEventIds: legacy.acceptedChangeIds, nextCursor: legacy.nextCursor, conflicts: legacy.conflicts.map((item) => ({ conflictId: String(item.conflictId), clientEventId: item.changeId, entityId: '', localVersion: 0, serverVersion: 0, resolution: 'REVIEW_REQUIRED', reason: item.resolution, occurredAt: new Date().toISOString() })) }
-    }
-    return parseSync(response, clientBatchId, events.map((item) => item.clientEventId))
-  }
+  return parseSync(await mobileApiClient.request(B11_GATEWAY_PATHS.offline.sync, { method: 'POST', data: { clientBatchId, baseCursor: cursor, changes: events, contentLocale: context.contentLocale }, header: headers(context, clientBatchId) }), clientBatchId, events.map((item) => item.clientEventId))
 }
 
 export function isB11OfflineError(error: unknown): boolean { return serverError(error) }

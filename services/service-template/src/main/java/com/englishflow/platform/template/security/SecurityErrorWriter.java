@@ -2,7 +2,7 @@ package com.englishflow.platform.template.security;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.englishflow.platform.template.observability.RequestContext;
 
 import jakarta.servlet.http.HttpServletResponse;

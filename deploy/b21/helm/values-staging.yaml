@@ -1,0 +1,15 @@
+environment: staging
+image:
+  repository: registry.example.invalid/englishflow/api-gateway
+  digest: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  pullPolicy: IfNotPresent
+secrets:
+  provider: external-secret-store
+  path: kv://phase1/staging/englishflow-runtime
+rollout:
+  strategy: rollingUpdate
+  maxUnavailable: 0
+  maxSurge: 1
+  rollback:
+    enabled: true
+    requiresImmutableRevision: true

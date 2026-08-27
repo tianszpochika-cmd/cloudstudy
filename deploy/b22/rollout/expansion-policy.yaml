@@ -1,0 +1,84 @@
+apiVersion: release.englishflow.dev/v1alpha1
+kind: CanaryExpansionPolicy
+metadata:
+  name: englishflow-b22-production-expansion
+  labels:
+    englishflow.dev/release-batch: b22
+spec:
+  phase: phase-1
+  status: not-established
+  defaultDecision: NO-GO
+  b21Gate:
+    required: true
+    currentDecision: BLOCKED
+    missingDecision: BLOCKED
+  featureFlag:
+    name: controlled-expansion-enabled
+    defaultValue: false
+    failClosed: true
+  promotion:
+    mode: manual-and-audited
+    automaticPromotion: false
+    requireIndependentApproval: true
+    minimumApprovers: 2
+    missingApprovalDecision: BLOCKED
+  stages:
+    - id: canary-1
+      trafficPercent: 1
+      duration: 15m
+      automaticPromotion: false
+      requiredChecks:
+        - startup-readiness-liveness
+        - production-smoke
+        - business-smoke
+        - error-budget
+        - alert-routing
+      onFailure: freeze-and-rollback
+    - id: canary-5
+      trafficPercent: 5
+      duration: 30m
+      automaticPromotion: false
+      requiredChecks:
+        - production-smoke
+        - critical-learning-journey
+        - four-platform-version-binding
+        - error-budget
+      onFailure: freeze-and-rollback
+    - id: canary-25
+      trafficPercent: 25
+      duration: 60m
+      automaticPromotion: false
+      requiredChecks:
+        - critical-learning-journey
+        - observability-slo
+        - data-integrity-sentinel
+        - privacy-and-authorization-sentinel
+      onFailure: freeze-and-rollback
+    - id: canary-50
+      trafficPercent: 50
+      duration: 120m
+      automaticPromotion: false
+      requiredChecks:
+        - error-budget
+        - incident-routing
+        - data-integrity-sentinel
+      onFailure: freeze-and-rollback
+    - id: full-100
+      trafficPercent: 100
+      duration: observation-window-required
+      automaticPromotion: false
+      requiredChecks:
+        - final-production-smoke
+        - rollback-point-present
+        - audit-record-present
+      onFailure: freeze-and-rollback
+  stopConditions:
+    - p0-or-p1-alert
+    - data-integrity-mismatch
+    - security-or-privacy-regression
+    - error-budget-exhausted
+    - missing-trace-or-audit-correlation
+    - missing-rollback-point
+    - missing-human-approval
+  stopAction: freeze-expansion-and-evaluate-rollback
+

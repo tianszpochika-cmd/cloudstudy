@@ -1,0 +1,648 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "batch": "B21",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "scope": "V2-B21-DEP-001+V2-B21-STG-002",
+  "tasks": [
+    {
+      "id": "V2-B21-DEP-001",
+      "name": "OCI/Kubernetes/Helm/Kustomize/GitOps staging and production release declarations",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "dependsOn": ["V2-B20-TEST-006"],
+      "acceptanceRefs": ["ARCH-DEP-001", "ARCH-REL-001", "ARCH-SEC-001"]
+    },
+    {
+      "id": "V2-B21-STG-002",
+      "name": "Production-like staging, migration, sanitized fixture and dependency isolation foundation",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "dependsOn": ["V2-B21-DEP-001"],
+      "acceptanceRefs": ["ARCH-DEP-001", "ARCH-REL-001", "ARCH-DR-001"]
+    }
+  ],
+  "execution": {
+    "mode": "static-fixture-only",
+    "runtimeStatus": "blocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "staticValidatorCannotPromoteRuntime": true,
+    "b20Prerequisite": {
+      "required": true,
+      "currentDecision": "BLOCKED",
+      "requiredDecision": "ACCEPTED",
+      "requiredTasks": [
+        "V2-B20-SEC-001",
+        "V2-B20-PRI-002",
+        "V2-B20-CNT-003",
+        "V2-B20-COM-004",
+        "V2-B20-DR-005",
+        "V2-B20-TEST-006"
+      ]
+    },
+    "requiredEnv": [
+      "B21_K8S_CONTEXT",
+      "B21_IMAGE_REGISTRY_EVIDENCE",
+      "B21_SECRET_PROVIDER_EVIDENCE",
+      "B21_STAGING_MIGRATION_EVIDENCE",
+      "B21_NETWORK_POLICY_EVIDENCE",
+      "B21_ROLLOUT_ROLLBACK_EVIDENCE"
+    ],
+    "blockedReasons": [
+      "B20 security/privacy/content/payment/disaster recovery evidence is not accepted",
+      "Kubernetes cluster and GitOps runner evidence is not present",
+      "OCI registry digest signature and SBOM evidence is not present",
+      "External secret injection and staging migration evidence is not present",
+      "Network policy, dependency fault isolation and rollback drills are not measured"
+    ]
+  },
+  "oci": {
+    "registryMode": "external-approved-registry",
+    "releaseReference": "rc-reference-required",
+    "images": [
+      {
+        "name": "api-gateway",
+        "image": "registry.example.invalid/englishflow/api-gateway@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "tagPolicy": "digest-only",
+        "signature": {
+          "required": true,
+          "tool": "cosign",
+          "identityPolicy": "approved-workload-identity"
+        },
+        "sbom": {
+          "required": true,
+          "format": "CycloneDX",
+          "ref": "oci://registry.example.invalid/englishflow/sbom/api-gateway@sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+        },
+        "provenance": "SLSA-provenance-required"
+      }
+    ],
+    "forbiddenReferences": [":latest", "latest@", "mutable-tag", "sha256:REPLACE"],
+    "promotion": {
+      "stagingToProduction": "same-digest-only",
+      "rebuildBetweenEnvironments": false,
+      "signatureRecheckRequired": true,
+      "sbomRecheckRequired": true
+    }
+  },
+  "deployment": {
+    "orchestrator": "kubernetes",
+    "packaging": ["kustomize", "helm", "gitops"],
+    "sourceRoots": {
+      "base": "deploy/b21/base",
+      "stagingOverlay": "deploy/b21/overlays/staging",
+      "productionOverlay": "deploy/b21/overlays/production",
+      "helm": "deploy/b21/helm",
+      "gitops": "deploy/b21/gitops",
+      "oci": "deploy/b21/oci"
+    },
+    "configLayering": {
+      "baseIsEnvironmentNeutral": true,
+      "stagingOverlayRequired": true,
+      "productionOverlayRequired": true,
+      "overlayMayChangeImageDigest": true,
+      "overlayMayChangeSecretReference": true,
+      "overlayMayChangeBusinessRules": false,
+      "productionRequiresManualPromotion": true
+    },
+    "secretInjection": {
+      "provider": "external-secret-store",
+      "repositorySecretMaterial": false,
+      "imageSecretMaterial": false,
+      "environmentReferenceOnly": true,
+      "stagingPath": "kv://phase1/staging/englishflow-runtime",
+      "productionPath": "kv://phase1/production/englishflow-runtime",
+      "failClosedWhenUnavailable": true,
+      "rotationRequired": true
+    },
+    "probes": {
+      "startup": { "required": true, "path": "/actuator/health/startup", "failureDecision": "hold-rollout" },
+      "readiness": { "required": true, "path": "/actuator/health/readiness", "failureDecision": "remove-from-service" },
+      "liveness": { "required": true, "path": "/actuator/health/liveness", "failureDecision": "restart-workload" },
+      "mustUseServicePort": true,
+      "probeCredentials": "none"
+    },
+    "rollout": {
+      "stagingStrategy": "rollingUpdate",
+      "productionStrategies": ["rollingUpdate", "blueGreen"],
+      "blueGreenPromotion": "manual-and-audited",
+      "rollback": {
+        "enabled": true,
+        "requiresImmutableRevision": true,
+        "requiresRestorePoint": true,
+        "requiresOwner": true,
+        "requiresDrillEvidence": true,
+        "defaultDecision": "deny"
+      },
+      "revisionHistoryRequired": true
+    },
+    "networkPolicy": {
+      "defaultDenyIngress": true,
+      "defaultDenyEgress": true,
+      "publicIngressOwner": "api-gateway",
+      "domainServicesPubliclyReachable": false,
+      "dnsEgressExplicit": true,
+      "internalEgressAllowlistRequired": true
+    },
+    "podSecurity": {
+      "runAsNonRoot": true,
+      "readOnlyRootFilesystem": true,
+      "allowPrivilegeEscalation": false,
+      "dropCapabilities": ["ALL"],
+      "seccompProfile": "RuntimeDefault",
+      "automountServiceAccountToken": false
+    },
+    "immutability": {
+      "imageDigestRequired": true,
+      "configRevisionRequired": true,
+      "noLatestTag": true,
+      "promotionReusesDigest": true,
+      "releaseArtifactHashRequired": true
+    }
+  },
+  "staging": {
+    "environment": "staging",
+    "productionLike": true,
+    "runtimeEvidenceStatus": "pending",
+    "parityDimensions": [
+      "same-immutable-image",
+      "same-kubernetes-policy",
+      "same-external-secret-provider-class",
+      "same-migration-runner",
+      "same-observability-contract",
+      "same-dependency-topology",
+      "same-rollback-procedure"
+    ],
+    "allowedDifferences": ["namespace", "scale", "synthetic-endpoints", "approval-identities"],
+    "forbiddenDifferences": ["business-rules", "authorization-policy", "schema-shape", "event-envelope", "secret-material"],
+    "dataLoading": {
+      "policy": "sanitized-fixtures-only",
+      "productionDataAllowed": false,
+      "rawMediaAllowed": false,
+      "paymentCredentialAllowed": false,
+      "fixtureManifest": "deploy/b21/staging/sanitized-fixtures.yaml"
+    },
+    "migration": {
+      "owner": "database-migration-runner",
+      "emptyDatabase": { "status": "pending", "runtimeRequired": true, "evidenceId": "EV-B21-RUNTIME-MIGRATION-EMPTY" },
+      "upgrade": { "status": "pending", "runtimeRequired": true, "evidenceId": "EV-B21-RUNTIME-MIGRATION-UPGRADE" },
+      "downgrade": { "status": "pending", "runtimeRequired": true, "evidenceId": "EV-B21-RUNTIME-MIGRATION-DOWNGRADE" },
+      "failureRecovery": { "status": "pending", "runtimeRequired": true, "evidenceId": "EV-B21-RUNTIME-MIGRATION-FAILURE" },
+      "forwardCompatible": true,
+      "destructiveDowngradeAllowed": false,
+      "backupBeforeMigration": true,
+      "rollbackMode": "restore-and-reconcile",
+      "migrationPlanPath": "deploy/b21/staging/migration-plan.yaml"
+    },
+    "dependencyFailureIsolation": {
+      "defaultDecision": "bounded-degradation-and-alert",
+      "runtimeRequired": true,
+      "matrixPath": "deploy/b21/staging/dependency-failure-matrix.yaml",
+      "dependencies": [
+        { "id": "mysql", "failure": "connection-loss", "expected": "writes-halt-without-fact-loss", "status": "pending" },
+        { "id": "redis", "failure": "unavailable", "expected": "rebuildable-cache-path-and-visible-degradation", "status": "pending" },
+        { "id": "kafka", "failure": "broker-unavailable", "expected": "outbox-retained-and-no-duplicate-fact", "status": "pending" },
+        { "id": "object-storage", "failure": "timeout", "expected": "media-operation-bounded-and-retryable", "status": "pending" }
+      ]
+    },
+    "rollback": {
+      "status": "pending",
+      "runtimeRequired": true,
+      "requiresDataReconciliation": true,
+      "requiresEventReconciliation": true,
+      "evidenceId": "EV-B21-RUNTIME-ROLLBACK"
+    }
+  },
+  "syntheticFixtures": {
+    "policy": "synthetic-references-only-no-production-data-no-raw-media-no-secrets",
+    "subjects": [
+      { "subjectRef": "subject-ref://synthetic/b21/learner-001", "tenantRef": "tenant-ref://synthetic/phase1" },
+      { "subjectRef": "subject-ref://synthetic/b21/operator-001", "tenantRef": "tenant-ref://synthetic/phase1" }
+    ],
+    "datasetRef": "dataset-ref://synthetic/b21/staging-fixture-v1",
+    "mediaRefs": ["media-ref://synthetic/b21/audio-001"],
+    "fixtureManifest": "deploy/b21/staging/sanitized-fixtures.yaml"
+  },
+  "staticChecks": [
+    {
+      "id": "B21-DEP-OCI-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-OCI",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/oci/image-lock.yaml", "deploy/b21/base/deployment.yaml"],
+      "assertions": ["digest-only image reference", "cosign signature policy", "CycloneDX SBOM policy", "latest tag rejection"]
+    },
+    {
+      "id": "B21-DEP-PACKAGING-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-PACKAGING",
+      "sourcePaths": ["deploy/b21/base/kustomization.yaml", "deploy/b21/helm/Chart.yaml", "deploy/b21/gitops/application-staging.yaml"],
+      "assertions": ["Kustomize base and overlays", "Helm chart metadata", "GitOps application source"]
+    },
+    {
+      "id": "B21-DEP-CONFIG-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-CONFIG-LAYERING",
+      "sourcePaths": ["deploy/b21/base/kustomization.yaml", "deploy/b21/overlays/staging/kustomization.yaml", "deploy/b21/overlays/production/kustomization.yaml"],
+      "assertions": ["environment-neutral base", "staging overlay", "production overlay", "manual production promotion"]
+    },
+    {
+      "id": "B21-DEP-SECRET-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-SECRETS",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/base/external-secret.yaml", "deploy/b21/overlays/staging/external-secret-patch.yaml", "deploy/b21/overlays/production/external-secret-patch.yaml"],
+      "assertions": ["external secret store", "staging secret path", "production secret path", "no repository secret material"]
+    },
+    {
+      "id": "B21-DEP-PROBE-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-PROBES",
+      "sourcePaths": ["deploy/b21/base/deployment.yaml"],
+      "assertions": ["startupProbe", "readinessProbe", "livenessProbe", "service port probe"]
+    },
+    {
+      "id": "B21-DEP-ROLLOUT-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-ROLLOUT",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/helm/values-staging.yaml", "deploy/b21/helm/values-production.yaml", "deploy/b21/gitops/application-production.yaml"],
+      "assertions": ["rolling update", "blue green promotion", "revision rollback", "manual production sync"]
+    },
+    {
+      "id": "B21-DEP-NETWORK-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-NETWORK",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/base/network-policy.yaml"],
+      "assertions": ["default deny ingress", "default deny egress", "DNS allowlist", "public ingress owner"]
+    },
+    {
+      "id": "B21-DEP-IMMUTABLE-STATIC",
+      "task": "V2-B21-DEP-001",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-IMMUTABILITY",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/oci/image-lock.yaml", "deploy/b21/base/deployment.yaml"],
+      "assertions": ["same digest promotion", "release artifact hash", "no latest", "immutable revision"]
+    },
+    {
+      "id": "B21-STG-PARITY-STATIC",
+      "task": "V2-B21-STG-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-STAGING-PARITY",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/overlays/staging/kustomization.yaml", "deploy/b21/overlays/production/kustomization.yaml"],
+      "assertions": ["production-like staging", "same immutable image", "forbidden business-rule drift", "scale-only difference"]
+    },
+    {
+      "id": "B21-STG-FIXTURE-STATIC",
+      "task": "V2-B21-STG-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-FIXTURE",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/staging/sanitized-fixtures.yaml"],
+      "assertions": ["synthetic subject reference", "sanitized fixture", "no production data", "no raw media"]
+    },
+    {
+      "id": "B21-STG-MIGRATION-STATIC",
+      "task": "V2-B21-STG-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-MIGRATION",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/staging/migration-plan.yaml"],
+      "assertions": ["empty database migration", "forward-compatible upgrade", "downgrade control", "failure recovery and reconcile"]
+    },
+    {
+      "id": "B21-STG-DEPENDENCY-STATIC",
+      "task": "V2-B21-STG-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-DEPENDENCY-ISOLATION",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/staging/dependency-failure-matrix.yaml", "deploy/b21/base/network-policy.yaml"],
+      "assertions": ["MySQL failure isolation", "Redis rebuildable degradation", "Kafka outbox retention", "object storage bounded retry"]
+    },
+    {
+      "id": "B21-STG-ROLLBACK-STATIC",
+      "task": "V2-B21-STG-002",
+      "status": "defined",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "EV-B21-STATIC-ROLLBACK",
+      "sourcePaths": ["config/b21-deployment-staging.json", "deploy/b21/helm/values-production.yaml", "deploy/b21/gitops/application-production.yaml"],
+      "assertions": ["restore point required", "data reconciliation required", "event reconciliation required", "rollback evidence pending"]
+    }
+  ],
+  "runtimeChecks": [
+    {
+      "id": "B21-DEP-OCI-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-OCI",
+      "tools": ["approved OCI registry", "cosign verifier", "SBOM verifier"],
+      "targets": ["all release candidate images"],
+      "scenarios": ["digest resolution", "signature identity", "SBOM attachment", "latest rejection"],
+      "expected": "registry evidence binds each release image, signature, SBOM and provenance to the same immutable digest",
+      "evidenceRequired": ["image-digest-list", "signature-verification-log", "SBOM-digest-list", "provenance-attestation"],
+      "cannotBeSatisfiedBy": ["manifest-only", "local-image-list", "tag-name-only"]
+    },
+    {
+      "id": "B21-DEP-PACKAGING-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-PACKAGING",
+      "tools": ["Kubernetes API", "Helm renderer", "GitOps controller"],
+      "targets": ["staging namespace", "production release plan"],
+      "scenarios": ["rendered-manifest admission", "GitOps sync", "namespace isolation"],
+      "expected": "rendered manifests are admitted by the target cluster and GitOps records the selected revision",
+      "evidenceRequired": ["rendered-manifests", "admission-report", "sync-record"],
+      "cannotBeSatisfiedBy": ["file-presence-only", "local-render-without-cluster", "HTTP-200"]
+    },
+    {
+      "id": "B21-DEP-CONFIG-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-CONFIG-LAYERING",
+      "tools": ["Kustomize build", "Helm diff", "GitOps diff"],
+      "targets": ["staging overlay", "production overlay"],
+      "scenarios": ["environment diff", "immutable image promotion", "business-rule drift detection"],
+      "expected": "staging and production differ only by approved environment values while the promoted image digest remains identical",
+      "evidenceRequired": ["overlay-diff", "digest-comparison", "policy-diff"],
+      "cannotBeSatisfiedBy": ["same-file-assumption", "unreviewed-diff", "config-only"]
+    },
+    {
+      "id": "B21-DEP-SECRET-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-SECRETS",
+      "tools": ["approved external secret provider", "Kubernetes admission audit"],
+      "targets": ["staging secret references", "production secret references"],
+      "scenarios": ["secret injection", "rotation", "provider outage"],
+      "expected": "workloads receive only environment-scoped external references and remain unavailable when the provider cannot satisfy a required secret",
+      "evidenceRequired": ["provider-reference-log", "rotation-record", "outage-decision-log"],
+      "cannotBeSatisfiedBy": ["repository-secret-file", "plaintext-env-dump", "pod-start-only"]
+    },
+    {
+      "id": "B21-DEP-PROBE-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-PROBES",
+      "tools": ["Kubernetes probe runner", "service health trace"],
+      "targets": ["startup", "readiness", "liveness"],
+      "scenarios": ["slow startup", "dependency-not-ready", "process-deadlock"],
+      "expected": "probe transitions gate traffic and restart behavior according to the declared failure decisions",
+      "evidenceRequired": ["probe-event-log", "traffic-membership-log", "restart-record"],
+      "cannotBeSatisfiedBy": ["static-yaml-only", "single-health-request", "process-list"]
+    },
+    {
+      "id": "B21-DEP-ROLLOUT-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-ROLLOUT",
+      "tools": ["GitOps controller", "Kubernetes rollout runner"],
+      "targets": ["staging rolling update", "production blue-green plan", "revision history"],
+      "scenarios": ["healthy promotion", "failed promotion", "manual rollback"],
+      "expected": "failed promotion stops traffic change and the approved immutable revision can be restored with an auditable operator decision",
+      "evidenceRequired": ["rollout-timeline", "promotion-decision", "rollback-transcript", "revision-digest"],
+      "cannotBeSatisfiedBy": ["deployment-object-only", "restart-as-rollback", "unowned-console-action"]
+    },
+    {
+      "id": "B21-DEP-NETWORK-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-NETWORK",
+      "tools": ["network-policy probe", "Kubernetes flow log"],
+      "targets": ["public ingress", "domain services", "DNS", "external dependencies"],
+      "scenarios": ["unauthorized ingress", "unauthorized egress", "allowed DNS", "allowlisted dependency"],
+      "expected": "only declared ingress and egress flows are observable and unauthorized flows are denied",
+      "evidenceRequired": ["flow-log", "deny-sample", "allow-sample", "policy-revision"],
+      "cannotBeSatisfiedBy": ["network-policy-file-only", "same-namespace-assumption", "curl-from-one-pod"]
+    },
+    {
+      "id": "B21-DEP-IMMUTABLE-RUNTIME",
+      "task": "V2-B21-DEP-001",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-IMMUTABILITY",
+      "tools": ["registry admission policy", "Git commit and artifact attestor"],
+      "targets": ["release candidate", "staging promotion", "production promotion record"],
+      "scenarios": ["mutable tag rejection", "digest mismatch", "same-digest promotion"],
+      "expected": "the cluster rejects mutable or unsigned artifacts and records the same signed digest across environments",
+      "evidenceRequired": ["admission-denial", "digest-chain", "artifact-hash-manifest"],
+      "cannotBeSatisfiedBy": ["tag-string-review", "unsigned-local-image", "manual-claim"]
+    },
+    {
+      "id": "B21-STG-PARITY-RUNTIME",
+      "task": "V2-B21-STG-002",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-STAGING-PARITY",
+      "tools": ["staging/production rendered diff", "cluster inventory exporter"],
+      "targets": ["runtime class", "network policy", "observability", "dependency topology"],
+      "scenarios": ["parity diff", "approved scale difference", "forbidden behavior difference"],
+      "expected": "the staging inventory matches production policy and topology apart from explicitly approved non-business differences",
+      "evidenceRequired": ["parity-report", "inventory-manifest", "exception-register"],
+      "cannotBeSatisfiedBy": ["same-namespace-name", "developer-environment", "HTTP-200"]
+    },
+    {
+      "id": "B21-STG-FIXTURE-RUNTIME",
+      "task": "V2-B21-STG-002",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-FIXTURE",
+      "tools": ["sanitized fixture loader", "PII/secret scanner", "media reference checker"],
+      "targets": ["staging database", "staging object references"],
+      "scenarios": ["fixture load", "forbidden field scan", "fixture cleanup"],
+      "expected": "only synthetic or approvedly sanitized references are loaded and the cleanup record is reproducible",
+      "evidenceRequired": ["fixture-load-log", "scan-report", "cleanup-record"],
+      "cannotBeSatisfiedBy": ["row-count-only", "sample-row-review", "production-dump"]
+    },
+    {
+      "id": "B21-STG-MIGRATION-RUNTIME",
+      "task": "V2-B21-STG-002",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-MIGRATION",
+      "tools": ["isolated migration runner", "schema diff tool", "backup/restore runner"],
+      "targets": ["empty schema", "upgrade path", "downgrade rehearsal", "failure recovery"],
+      "scenarios": ["fresh install", "forward upgrade", "controlled downgrade", "failed migration restore"],
+      "expected": "migration evidence records schema state, lock behavior, restore point, failure boundary and post-recovery reconciliation",
+      "evidenceRequired": ["migration-transcript", "schema-diff", "restore-point", "reconciliation-report"],
+      "cannotBeSatisfiedBy": ["migration-file-list", "application-startup", "unrestored-downgrade"]
+    },
+    {
+      "id": "B21-STG-DEPENDENCY-RUNTIME",
+      "task": "V2-B21-STG-002",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-DEPENDENCY-ISOLATION",
+      "tools": ["approved fault-injection runner", "trace and event correlation"],
+      "targets": ["MySQL", "Redis", "Kafka", "object storage"],
+      "scenarios": ["connection loss", "cache outage", "broker outage", "object timeout"],
+      "expected": "each dependency failure produces bounded degradation, retained facts, visible alerts and an auditable recovery path",
+      "evidenceRequired": ["fault-timeline", "service-degradation-log", "event-dedup-report", "recovery-record"],
+      "cannotBeSatisfiedBy": ["pod-restart", "health-endpoint", "same-process-test-double", "config-only"]
+    },
+    {
+      "id": "B21-STG-ROLLBACK-RUNTIME",
+      "task": "V2-B21-STG-002",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "EV-B21-RUNTIME-ROLLBACK",
+      "tools": ["release rollback runner", "data/event reconciliation runner"],
+      "targets": ["staging release candidate", "restored schema", "replayed events"],
+      "scenarios": ["failed rollout", "schema restore", "event replay", "manual takeover"],
+      "expected": "rollback restores the selected revision and reconciliation leaves domain facts and projections explicitly accounted for",
+      "evidenceRequired": ["rollback-log", "schema-reconciliation", "event-reconciliation", "owner-signoff"],
+      "cannotBeSatisfiedBy": ["deployment-restart", "old-image-name", "unreconciled-restore"]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "EV-B21-STATIC-OCI", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-PACKAGING", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-CONFIG-LAYERING", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-SECRETS", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-PROBES", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-ROLLOUT", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-NETWORK", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-IMMUTABILITY", "task": "V2-B21-DEP-001", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-STAGING-PARITY", "task": "V2-B21-STG-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-FIXTURE", "task": "V2-B21-STG-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-MIGRATION", "task": "V2-B21-STG-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-DEPENDENCY-ISOLATION", "task": "V2-B21-STG-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-STATIC-ROLLBACK", "task": "V2-B21-STG-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b21-deployment-staging.json", "collectionPolicy": "validator-output" },
+    { "id": "EV-B21-RUNTIME-OCI", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/oci/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-PACKAGING", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/packaging/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-CONFIG-LAYERING", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/config/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-SECRETS", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/secrets/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-PROBES", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/probes/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-ROLLOUT", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/rollout/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-NETWORK", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/network/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-IMMUTABILITY", "task": "V2-B21-DEP-001", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/deployment/immutability/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-STAGING-PARITY", "task": "V2-B21-STG-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/staging/parity/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-FIXTURE", "task": "V2-B21-STG-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/staging/fixtures/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-MIGRATION", "task": "V2-B21-STG-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/staging/migration/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-DEPENDENCY-ISOLATION", "task": "V2-B21-STG-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/staging/dependencies/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B21-RUNTIME-ROLLBACK", "task": "V2-B21-STG-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b21/staging/rollback/**", "collectionPolicy": "runtime-runner-only" }
+  ],
+  "releaseGate": {
+    "status": "BLOCKED",
+    "defaultDecision": "deny",
+    "goAllowed": false,
+    "requiredCurrentTasks": ["V2-B21-DEP-001", "V2-B21-STG-002"],
+    "requiredUpstreamTasks": [
+      "V2-B20-SEC-001",
+      "V2-B20-PRI-002",
+      "V2-B20-CNT-003",
+      "V2-B20-COM-004",
+      "V2-B20-DR-005",
+      "V2-B20-TEST-006"
+    ],
+    "blockingConditions": [
+      "b20-gate-not-accepted",
+      "runtime-evidence-pending",
+      "image-digest-or-signature-missing",
+      "secret-source-not-external",
+      "migration-or-rollback-unmeasured",
+      "production-like-parity-unproven",
+      "dependency-failure-evidence-missing",
+      "single-reviewer-or-unreviewed"
+    ],
+    "dualReview": {
+      "required": true,
+      "minimumReviewers": 2,
+      "independentReviewers": true,
+      "reviewRecordStatus": "not-present",
+      "samePersonCannotSatisfyBoth": true
+    },
+    "rollback": {
+      "required": true,
+      "status": "not-established",
+      "requiresImmutableRevision": true,
+      "requiresRestorePoint": true,
+      "requiresDataAndEventReconciliation": true,
+      "requiresOwner": true
+    }
+  },
+  "reportSchema": {
+    "id": "englishflow.b21.deployment-staging-report",
+    "version": "1.0.0",
+    "jsonSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://englishflow.invalid/schemas/b21-deployment-staging-report.json",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "batch", "releaseCandidate", "environment", "decision", "gates", "evidence", "review", "rollback"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "batch": { "const": "B21" },
+        "releaseCandidate": { "type": "string", "minLength": 1 },
+        "environment": { "enum": ["staging", "production"] },
+        "decision": { "enum": ["BLOCKED", "NO-GO", "GO"] },
+        "gates": { "type": "array" },
+        "evidence": { "type": "array" },
+        "review": { "type": "object" },
+        "rollback": { "type": "object" }
+      }
+    }
+  },
+  "forbiddenPatterns": [
+    "-----BEGIN PRIVATE KEY-----",
+    "Bearer eyJ",
+    "ghp_",
+    "sk-",
+    "@gmail.com",
+    "@qq.com",
+    "@163.com",
+    ":latest",
+    "production-dump",
+    "real-payment-credential"
+  ]
+}

@@ -25,8 +25,9 @@ public final class SocialJwtAuthenticationConverter implements Converter<Jwt, So
             tenant = SocialPrincipal.PLATFORM_TENANT;
         }
         String phase = firstString(jwt, "phase", "phase_code");
-        boolean consent = booleanClaim(jwt, "consent_granted") || "GRANTED".equals(jwt.getClaimAsString("consent"));
-        boolean active = "ACTIVE".equals(jwt.getClaimAsString("account_status"))
+        boolean consent = booleanClaim(jwt, "consent_granted")
+                || "GRANTED".equalsIgnoreCase(firstString(jwt, "consent_state", "consentState", "consent"));
+        boolean active = "ACTIVE".equalsIgnoreCase(firstString(jwt, "account_status", "accountStatus"))
                 || Boolean.TRUE.equals(jwt.getClaim("active"));
         boolean revoked = Boolean.TRUE.equals(jwt.getClaim("revoked"))
                 || "REVOKED".equals(jwt.getClaimAsString("revocation_status"));

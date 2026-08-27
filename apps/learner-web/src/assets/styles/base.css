@@ -89,7 +89,24 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .welcome-card__actions, .login-card__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .micro-copy { margin: 24px 0 0; color: var(--yx-color-text-tertiary); font-size: 13px; }
 .login-card .empty-state { margin: 28px 0 0; padding: 28px 18px; }
+.login-card--quiet { max-width: 640px; }
+.login-status { display: flex; align-items: center; gap: 14px; margin-top: 28px; padding: 16px; border: 1px solid var(--yx-color-border); border-radius: 16px; background: var(--yx-color-surface-page); }
+.login-status__mark { display: inline-grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border-radius: 12px; color: var(--yx-color-brand-primary); background: var(--yx-color-brand-primary-soft); font-weight: 800; }
+.login-status strong { color: var(--yx-color-text-primary); font-size: 14px; }
+.login-status p { margin: 4px 0 0; color: var(--yx-color-text-secondary); font-size: 13px; line-height: 1.6; }
+.login-status--error { border-color: color-mix(in srgb, var(--yx-color-danger) 30%, var(--yx-color-border)); background: color-mix(in srgb, var(--yx-color-danger) 6%, var(--yx-color-surface-card)); }
+.login-status--error .login-status__mark { color: var(--yx-color-danger); background: color-mix(in srgb, var(--yx-color-danger) 12%, var(--yx-color-surface-card)); }
+.public-page--handoff { background: radial-gradient(circle at top right, #eef0ff 0, transparent 42%), var(--yx-color-surface-page); }
+.login-card--handoff { display: grid; justify-items: center; text-align: center; }
+.handoff-mark { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 18px; color: #fff; background: linear-gradient(135deg, var(--yx-color-brand-primary), var(--yx-color-brand-secondary)); box-shadow: 0 8px 20px rgb(89 107 255 / 25%); font-size: 26px; animation: auth-pulse 1.8s ease-in-out infinite; }
+.login-card--handoff h1 { margin-bottom: 10px; }
+.login-card--handoff .lead { margin: 0; }
+@keyframes auth-pulse { 50% { transform: scale(.94); opacity: .78; } }
 .fatal-error { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: var(--yx-color-surface-page); }
+.app-startup { display: grid; min-height: 100vh; place-content: center; gap: 12px; padding: 24px; color: var(--yx-color-text-primary); background: var(--yx-color-surface-page); text-align: center; }
+.app-startup__mark { display: inline-grid; width: 48px; height: 48px; place-self: center; place-items: center; border-radius: 16px; color: #fff; background: linear-gradient(135deg, var(--yx-color-brand-primary), var(--yx-color-brand-secondary)); box-shadow: 0 8px 20px rgb(89 107 255 / 25%); font-size: 24px; }
+.app-startup h1, .app-startup p { margin: 0; }
+.app-startup p { color: var(--yx-color-text-secondary); line-height: 1.7; }
 .fatal-error__card { width: min(480px, 100%); padding: 40px 28px; border: 1px solid var(--yx-color-border); border-radius: var(--yx-radius-card); background: var(--yx-color-surface-card); text-align: center; box-shadow: var(--yx-shadow-card); }
 .fatal-error__icon { display: inline-grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; color: #fff; background: var(--yx-color-danger); font-weight: 700; }
 .fatal-error h1 { margin: 18px 0 8px; }
@@ -124,6 +141,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .welcome-card h1 { font-size: 34px; }
   .welcome-card__actions, .login-card__actions { display: grid; }
   .button { width: 100%; }
+  .login-status { align-items: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,12 @@
 spring:
   application:
     name: assessment-service
+  flyway:
+    enabled: ${ASSESSMENT_FLYWAY_ENABLED:${ASSESSMENT_PERSISTENCE_ENABLED:false}}
+    default-schema: ${ASSESSMENT_SCHEMA:assessment_service}
+    schemas: ${ASSESSMENT_SCHEMA:assessment_service}
+    create-schemas: ${ASSESSMENT_DB_CREATE_SCHEMA:false}
+    locations: classpath:db/migration
   lifecycle:
     timeout-per-shutdown-phase: ${ASSESSMENT_SHUTDOWN_TIMEOUT:20s}
 
@@ -47,6 +53,13 @@ service:
 
 assessment:
   phase: ${ASSESSMENT_PHASE:phase-1}
+  persistence:
+    enabled: ${ASSESSMENT_PERSISTENCE_ENABLED:false}
+    schema: ${ASSESSMENT_SCHEMA:assessment_service}
+    jdbc-url: ${ASSESSMENT_DB_URL:}
+    username: ${ASSESSMENT_DB_USERNAME:}
+    password: ${ASSESSMENT_DB_PASSWORD:}
+    driver-class-name: ${ASSESSMENT_DB_DRIVER:com.mysql.cj.jdbc.Driver}
   security:
     default-deny: ${ASSESSMENT_DEFAULT_DENY:true}
   scoring:

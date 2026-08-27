@@ -21,7 +21,9 @@ public final class CorrelationIds {
         }
         if (traceparent != null) {
             var match = TRACEPARENT.matcher(traceparent);
-            if (match.matches()) {
+            if (match.matches()
+                    && !allZero(match.group(1))
+                    && !allZero(match.group(2))) {
                 return match.group(1);
             }
         }
@@ -30,5 +32,9 @@ public final class CorrelationIds {
 
     private static boolean isSafe(String value, int maxLength) {
         return value != null && value.length() <= maxLength && SAFE_ID.matcher(value).matches();
+    }
+
+    private static boolean allZero(String value) {
+        return value.chars().allMatch(character -> character == '0');
     }
 }

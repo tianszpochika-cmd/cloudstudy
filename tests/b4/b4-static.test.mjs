@@ -17,24 +17,27 @@ test('B4 backlog is the expected 16-task slice', () => {
 test('B4 OpenAPI covers gamification, social, notification and offline entry points', () => {
   const openapi = readJson('packages/contracts/openapi/v1/openapi.json');
   const requiredPaths = [
-    '/api/v1/gamification/profile',
+    '/api/v1/gamification/me/summary',
     '/api/v1/gamification/streak',
     '/api/v1/games/catalog',
     '/api/v1/games/sessions',
     '/api/v1/avatar/profile',
     '/api/v1/social/rooms',
     '/api/v1/social/ws-ticket',
-    '/api/v1/user/notifications',
-    '/api/v1/user/notifications/{messageId}/read',
-    '/api/v1/user/notifications/read-all',
-    '/api/v1/user/notification-preferences',
+    '/api/v1/notifications/messages',
+    '/api/v1/notifications/messages/{messageId}/read',
+    '/api/v1/notifications/messages/read-all',
+    '/api/v1/notifications/preferences',
     '/api/v1/sync/offline-packages',
     '/api/v1/offline/sync/push',
     '/api/v1/offline/sync/pull',
   ];
   for (const route of requiredPaths) assert.ok(openapi.paths[route], `missing B4 route ${route}`);
-  assert.equal(openapi.paths['/api/v1/user/notifications'].get.operationId, 'listB4Notifications');
-  assert.equal(openapi.paths['/api/v1/user/notification-preferences'].patch.requestBody.content['application/json'].schema.$ref, '#/components/schemas/B4NotificationPreferencesRequest');
+  assert.equal(openapi.paths['/api/v1/notifications/messages'].get.operationId, 'listB12Notifications');
+  assert.equal(openapi.paths['/api/v1/notifications/preferences'].get.operationId, 'listB12NotificationPreferences');
+  for (const retired of ['/api/v1/gamification/profile', '/api/v1/gamification/seasons/current', '/api/v1/user/notification-preferences']) {
+    assert.equal(openapi.paths[retired], undefined, `retired B4 route still present: ${retired}`);
+  }
 });
 
 test('B4 event catalog and migration retain auditable facts', () => {

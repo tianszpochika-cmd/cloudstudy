@@ -13,7 +13,8 @@ public record AuthorizationTransaction(
         String nonce,
         String codeVerifier,
         String codeChallenge,
-        Instant createdAt) {
+        Instant createdAt,
+        Instant expiresAt) {
 
     public AuthorizationTransaction {
         Objects.requireNonNull(providerId, "providerId");
@@ -24,6 +25,10 @@ public record AuthorizationTransaction(
         require(codeVerifier, "codeVerifier");
         require(codeChallenge, "codeChallenge");
         Objects.requireNonNull(createdAt, "createdAt");
+        Objects.requireNonNull(expiresAt, "expiresAt");
+        if (!expiresAt.isAfter(createdAt)) {
+            throw new IllegalArgumentException("authorization transaction must expire after creation");
+        }
     }
 
     private static void require(String value, String name) {

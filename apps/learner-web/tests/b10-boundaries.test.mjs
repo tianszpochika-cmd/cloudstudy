@@ -31,7 +31,6 @@ test('B10 learner-web never models answer keys/rules in the client projection', 
 test('B10 pages use the shared B10 store and expose recovery/performance seams', async () => {
   const pages = await Promise.all([
     read('src/pages/VocabularyPage.vue'),
-    read('src/pages/B2PracticePage.vue'),
     read('src/pages/B2ReportPage.vue'),
     read('src/pages/B3ReadingPage.vue'),
     read('src/pages/B3GrammarPage.vue'),

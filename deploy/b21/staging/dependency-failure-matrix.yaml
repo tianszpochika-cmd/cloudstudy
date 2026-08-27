@@ -1,0 +1,28 @@
+apiVersion: englishflow.dev/v1alpha1
+kind: DependencyFailureMatrix
+metadata:
+  name: b21-staging-dependency-failure-matrix
+spec:
+  defaultDecision: bounded-degradation-and-alert
+  runtimeRequired: true
+  dependencies:
+    - id: mysql
+      failure: connection-loss
+      expected: writes-halt-without-fact-loss
+      status: pending
+    - id: redis
+      failure: unavailable
+      expected: rebuildable-cache-path-and-visible-degradation
+      status: pending
+    - id: kafka
+      failure: broker-unavailable
+      expected: outbox-retained-and-no-duplicate-fact
+      status: pending
+    - id: object-storage
+      failure: timeout
+      expected: media-operation-bounded-and-retryable
+      status: pending
+  forbiddenEvidenceSubstitutes:
+    - pod-restart
+    - health-endpoint
+    - same-process-test-double

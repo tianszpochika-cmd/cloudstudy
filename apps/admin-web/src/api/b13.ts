@@ -27,7 +27,7 @@ export function listB13SupportTickets(): Promise<unknown> { return adminClient.r
 export function listB13Metrics(): Promise<unknown> { return adminClient.request(B13_ADMIN_PATHS.metrics) }
 export function listB13Audit(): Promise<unknown> { return adminClient.request(B13_ADMIN_PATHS.audit) }
 export function prepareB13Command(body: Record<string, unknown>): Promise<unknown> {
-  return adminClient.request(B13_ADMIN_PATHS.prepareCommand, { method: 'POST', body })
+  return adminClient.request(B13_ADMIN_PATHS.prepareCommand, { method: 'POST', body, ...withKey('b13-admin-prepare') })
 }
 export function executeB13Command(body: Record<string, unknown>, confirmationToken?: string): Promise<unknown> {
   const headers: Record<string, string> = { 'Idempotency-Key': idempotencyKey('b13-admin-command') }

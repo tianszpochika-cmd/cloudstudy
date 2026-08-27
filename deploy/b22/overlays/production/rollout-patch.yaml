@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: api-gateway
+spec:
+  replicas: 3
+  # B21 is not accepted in the current static handoff; keep the rollout closed.
+  paused: true
+  template:
+    metadata:
+      annotations:
+        englishflow.dev/production-promotion: manual-and-audited
+        englishflow.dev/traffic-change: disabled-until-b21-pass
+        englishflow.dev/rollback: automatic-and-manual-contract-required
+

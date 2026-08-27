@@ -16,4 +16,9 @@ app.use(router)
 app.use(ElementPlus)
 app.provide('i18n', adminI18nAdapter)
 app.provide('theme', adminThemeAdapter)
-void router.isReady().then(() => app.mount('#app'))
+// Mount immediately so an unavailable Gateway still exposes a visible
+// startup state while the guarded initial navigation is restoring a session.
+app.mount('#app')
+void router.isReady().catch((error) => {
+  console.error('[语学星 Admin] 初始路由恢复失败。', error)
+})

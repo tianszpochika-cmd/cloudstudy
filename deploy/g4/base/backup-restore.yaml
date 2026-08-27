@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: englishflow-g4-backup-restore
+data:
+  restore-point-required: "true"
+  restore-point-status: not-established
+  integrity-check-required: "true"
+  created-before-traffic-change: "true"
+  mysql-pitr-required: "true"
+  redis-snapshot-required: "true"
+  kafka-offset-and-dlq-required: "true"
+  object-storage-version-required: "true"
+  row-and-event-reconciliation-required: "true"
+  rpo-minutes: "15"
+  rto-minutes: "60"

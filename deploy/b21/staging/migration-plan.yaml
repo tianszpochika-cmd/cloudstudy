@@ -1,0 +1,28 @@
+apiVersion: englishflow.dev/v1alpha1
+kind: StagingMigrationPlan
+metadata:
+  name: b21-staging-migration-plan
+spec:
+  databaseOwner: database-migration-runner
+  backupBeforeMigration: true
+  forwardCompatible: true
+  destructiveDowngradeAllowed: false
+  rollbackMode: restore-and-reconcile
+  stages:
+    - id: empty-database
+      status: pending
+      runtimeRequired: true
+    - id: forward-upgrade
+      status: pending
+      runtimeRequired: true
+    - id: controlled-downgrade
+      status: pending
+      runtimeRequired: true
+    - id: failed-migration-recovery
+      status: pending
+      runtimeRequired: true
+  requiredEvidence:
+    - migration-transcript
+    - schema-diff
+    - restore-point
+    - reconciliation-report

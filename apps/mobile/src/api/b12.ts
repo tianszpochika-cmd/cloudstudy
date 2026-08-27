@@ -3,6 +3,13 @@ import { mobileApiClient } from './client'
 export const B12_REPORT_REASONS = ['SPAM', 'HARASSMENT', 'SENSITIVE_CONTENT', 'IMPERSONATION', 'OTHER'] as const
 export type B12ReportReason = (typeof B12_REPORT_REASONS)[number]
 
+const B12_NOTIFICATION_TYPE_BY_PREFERENCE = {
+  roomInteractions: 'ROOM_INTERACTIONS',
+  focusReminders: 'FOCUS_REMINDERS',
+  system: 'SYSTEM',
+  doNotDisturb: 'DO_NOT_DISTURB',
+} as const
+
 let localSequence = 0
 function idempotencyKey(prefix: string): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') return `${prefix}-${crypto.randomUUID()}`
@@ -30,6 +37,7 @@ export async function createB12SocialReport(roomId: string, targetSeatIndex: num
 }
 export async function listB12NotificationPreferences(): Promise<unknown> { return mobileApiClient.request('/notifications/preferences') }
 export async function updateB12NotificationPreference(notificationType: string, enabled: boolean, expectedVersion?: number): Promise<unknown> {
-  return mobileApiClient.request(`/notifications/preferences/${encodeURIComponent(notificationType)}/IN_APP`, { method: 'PUT', data: { enabled, locale: 'zh-CN', ...(expectedVersion === undefined ? {} : { expectedVersion }) }, ...withKey(`b12-notification-preference-${notificationType}`) })
+  const wireNotificationType = B12_NOTIFICATION_TYPE_BY_PREFERENCE[notificationType as keyof typeof B12_NOTIFICATION_TYPE_BY_PREFERENCE] ?? notificationType
+  return mobileApiClient.request(`/notifications/preferences/${encodeURIComponent(wireNotificationType)}/IN_APP`, { method: 'PUT', data: { enabled, locale: 'zh-CN', ...(expectedVersion === undefined ? {} : { expectedVersion }) }, ...withKey(`b12-notification-preference-${wireNotificationType}`) })
 }
 export async function listB12Notifications(limit = 20): Promise<unknown> { return mobileApiClient.request(`/notifications/messages?limit=${limit}`) }

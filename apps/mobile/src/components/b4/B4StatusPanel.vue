@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { B4_PERFORMANCE_LEVELS, type B4PerformanceLevel, type B4Status } from '../../domain/b4'
+import { openUniPage } from '../../platform/uni-runtime'
 
 const props = withDefaults(defineProps<{
   status: B4Status
@@ -19,6 +20,8 @@ function selectPerformance(event: { detail: { value: number } }): void {
   const level = B4_PERFORMANCE_LEVELS[event.detail.value]
   if (level) emit('performance', level)
 }
+
+function openLogin(): void { openUniPage('/pages/login/login') }
 </script>
 
 <template>
@@ -30,6 +33,7 @@ function selectPerformance(event: { detail: { value: number } }): void {
     <view class="b4-mobile-status__actions">
       <text v-if="queueCount" class="b4-mobile-status__queue">待同步 {{ queueCount }}</text>
       <button v-if="status === 'offline' || status === 'error'" class="b4-mini-button" type="button" @click="emit('retry')">重试</button>
+      <button v-if="status === 'permission'" class="b4-mini-button" type="button" @click="openLogin">去登录</button>
       <button v-if="queueCount" class="b4-mini-button" type="button" @click="emit('sync')">同步</button>
       <picker :range="B4_PERFORMANCE_LEVELS" :value="B4_PERFORMANCE_LEVELS.indexOf(props.performanceLevel)" @change="selectPerformance">
         <view class="b4-quality-picker">{{ performanceLevel }}</view>

@@ -13,6 +13,7 @@ test('B12 mobile exposes server-owned rewards and social command seams', () => {
   assert.match(api, /social\/rooms.*reports/)
   assert.match(api, /notifications\/preferences/)
   assert.match(api, /Idempotency-Key/)
+  for (const notificationType of ['ROOM_INTERACTIONS', 'FOCUS_REMINDERS', 'SYSTEM', 'DO_NOT_DISTURB']) assert.match(api, new RegExp(notificationType))
 })
 
 test('B12 mobile remains playable in static/performance mode and shows reward disclosure', () => {
@@ -29,4 +30,12 @@ test('B12 mobile report interaction has no free-text or user-id input', () => {
   assert.match(component, /B12_REPORT_REASONS/)
   assert.match(component, /function report\(/)
   assert.doesNotMatch(component, /<textarea|<input|v-model=".*userId/i)
+})
+
+test('B12 mobile notification parser prefers canonical server preference types over legacy aliases', () => {
+  const component = read('src/components/b12/B12SocialExtensions.vue')
+  assert.match(component, /PREFERENCE_KEY_BY_NOTIFICATION_TYPE/)
+  assert.match(component, /CANONICAL_NOTIFICATION_TYPES/)
+  assert.match(component, /canonicalSeen/)
+  assert.match(component, /delete preferenceVersions\.value\[key\]/)
 })

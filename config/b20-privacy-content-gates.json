@@ -1,0 +1,557 @@
+{
+  "version": "1.0.0",
+  "batch": "B20",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "scope": "privacy-content-only",
+  "releaseDecision": {
+    "status": "blocked",
+    "goAllowed": false,
+    "reason": "Static contracts are defined, but real privacy requests, audit replay, content rights, approval and official projection evidence is not present in this repository run."
+  },
+  "tasks": [
+    {
+      "id": "V2-B20-PRI-002",
+      "title": "隐私告知、同意、主体请求、留存、脱敏与审计回放",
+      "hosts": ["iam-service", "learner-service", "admin-ops-service"],
+      "staticEvidenceIds": [
+        "EV-B20-PRI-STATIC-CONSENT",
+        "EV-B20-PRI-STATIC-REQUESTS",
+        "EV-B20-PRI-STATIC-REDACTION",
+        "EV-B20-PRI-STATIC-AUTHZ"
+      ],
+      "runtimeEvidenceIds": [
+        "EV-B20-PRI-RUNTIME-REQUESTS",
+        "EV-B20-PRI-RUNTIME-AUDIT"
+      ]
+    },
+    {
+      "id": "V2-B20-CNT-003",
+      "title": "Phase 1 内容来源、版权、双审、发布、下线、回滚与官网公示",
+      "hosts": ["content-service", "admin-ops-service", "official-site"],
+      "staticEvidenceIds": [
+        "EV-B20-CNT-STATIC-RIGHTS",
+        "EV-B20-CNT-STATIC-WORKFLOW",
+        "EV-B20-CNT-STATIC-PROJECTION"
+      ],
+      "runtimeEvidenceIds": [
+        "EV-B20-CNT-RUNTIME-REVIEW",
+        "EV-B20-CNT-RUNTIME-PROJECTION"
+      ]
+    }
+  ],
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B20_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "B20_RUNTIME_PRIVACY_EVIDENCE_REF",
+      "B20_RUNTIME_AUDIT_REPLAY_EVIDENCE_REF",
+      "B20_RUNTIME_CONTENT_EVIDENCE_REF",
+      "B20_RUNTIME_OFFICIAL_PROJECTION_EVIDENCE_REF"
+    ],
+    "requiredEvidence": [
+      "approved-isolated-privacy-request-run",
+      "approved-audit-replay-integrity-report",
+      "approved-content-rights-and-dual-review-run",
+      "approved-official-site-projection-replay"
+    ],
+    "runtimeStatusPolicy": "pending-until-external-evidence",
+    "staticValidatorCannotPromoteRuntime": true
+  },
+  "privacy": {
+    "notice": {
+      "required": true,
+      "versioned": true,
+      "requiredFields": ["noticeId", "policyVersion", "effectiveAt", "locale", "publishedAt"],
+      "contentAndUiLocaleAreSeparate": true,
+      "supersededNoticeRemainsReplayable": true
+    },
+    "consent": {
+      "grant": {
+        "explicit": true,
+        "requiresCurrentPolicyVersion": true,
+        "subjectDerivedServerSide": true,
+        "tenantDerivedServerSide": true
+      },
+      "revoke": {
+        "supported": true,
+        "createsImmutableFact": true,
+        "stopsOptionalProcessing": true,
+        "doesNotEraseAuditHistory": true
+      },
+      "requiredTypes": ["TERMS_OF_SERVICE", "PRIVACY_NOTICE"],
+      "unknownPolicyVersionDecision": "deny"
+    },
+    "subjectRequests": {
+      "export": {
+        "supported": true,
+        "scope": "self",
+        "authorization": "server-side-pep",
+        "format": "versioned-redacted-json",
+        "idempotencyRequired": true,
+        "tenantDerivedServerSide": true
+      },
+      "erasure": {
+        "supported": true,
+        "scope": "self",
+        "requiresExplicitConfirmation": true,
+        "retentionPolicyApplied": true,
+        "legalHoldBlocksDestructiveStep": true,
+        "auditFactPreserved": true
+      },
+      "status": {
+        "states": ["REQUESTED", "AUTHORIZED", "PROCESSING", "COMPLETED", "REJECTED", "BLOCKED_BY_HOLD"],
+        "replayable": true
+      }
+    },
+    "retention": {
+      "policyVersioned": true,
+      "deletionJobMustBeIdempotent": true,
+      "deletionScopeMustBeSubjectBound": true,
+      "legalHoldOverridesDeletion": true,
+      "rawMediaDefaultAction": "delete-or-expire-by-policy",
+      "auditAndLegalFacts": "retain-minimal-redacted-fact"
+    },
+    "redaction": {
+      "version": "redaction-v1",
+      "adminProjectionMustBeRedacted": true,
+      "auditMustUseSafeFieldsOnly": true,
+      "adminProjectionAllowedFields": ["resourceRef", "categoryCode", "priority", "state", "slaState", "redactionVersion"],
+      "maskedFields": ["contactEmail", "phoneNumber", "ipAddress", "subjectId", "tenantId"],
+      "forbiddenOutputFields": ["password", "accessToken", "refreshToken", "authorizationCode", "paymentCredential", "rawAudio", "audioBytes", "privateNotes"],
+      "strategies": ["drop", "hash", "partial", "email", "phone", "ip", "dateOnly"]
+    },
+    "auditReplay": {
+      "appendOnly": true,
+      "hashChained": true,
+      "integrityCheckRequired": true,
+      "replayable": true,
+      "rawIdentityStored": false,
+      "safeFieldsOnly": true,
+      "decisionMustInclude": ["decisionId", "operation", "traceId", "occurredAt", "result"],
+      "tamperDecision": "deny-and-alert"
+    },
+    "authorization": {
+      "defaultDecision": "deny",
+      "serverSidePepRequired": true,
+      "clientRoleHeadersIgnored": true,
+      "forbiddenClientAuthorityFields": ["subjectId", "tenantId", "ownerId", "role", "roles", "permissions", "consentState"],
+      "selfExportOnly": true,
+      "adminCrossSubjectAccess": "explicit-permission-and-redacted-projection"
+    }
+  },
+  "content": {
+    "rights": {
+      "requiredFields": ["sourceCode", "licenseCode", "status", "allowsLearning", "permittedChannels", "authorizationEvidenceRef"],
+      "missingRightsAction": "deny-publish-and-projection",
+      "expiredOrRevokedAction": "deny-publish-and-projection",
+      "rightsMustBeEvaluatedBy": "content-service",
+      "cacheCannotOverrideRights": true
+    },
+    "workflow": {
+      "states": ["DRAFT", "IN_REVIEW", "APPROVED", "PUBLISHED", "ARCHIVED"],
+      "requiredTransitions": [
+        { "from": "DRAFT", "to": "IN_REVIEW" },
+        { "from": "IN_REVIEW", "to": "APPROVED" },
+        { "from": "APPROVED", "to": "PUBLISHED" },
+        { "from": "PUBLISHED", "to": "ARCHIVED" }
+      ],
+      "rollback": {
+        "supported": true,
+        "requiresTargetVersion": true,
+        "requiresReason": true,
+        "invalidatesProjection": true,
+        "emitsReplayableFact": true
+      },
+      "dualReview": {
+        "required": true,
+        "stages": ["FIRST_REVIEW", "FINAL_REVIEW"],
+        "reviewersMustBeDistinct": true,
+        "publisherCannotApproveOwnReview": true,
+        "approvalRequiredBeforePublish": true,
+        "selfApprovalDecision": "deny"
+      },
+      "draftIsolation": {
+        "publicReadable": false,
+        "learnerReadable": false,
+        "officialSiteReadable": false
+      },
+      "unpublish": {
+        "supported": true,
+        "invalidatesCache": true,
+        "withdrawalPropagatesToOfficialSite": true
+      }
+    },
+    "publicProjection": {
+      "sourceOfTruth": "content-service",
+      "consumerApp": "apps/official-site",
+      "readOnly": true,
+      "noDirectFactWrite": true,
+      "routes": ["/courses", "/pricing", "/download", "/announcements", "/compliance"],
+      "allowedFields": ["contentId", "versionId", "title", "summary", "locale", "targetLevel", "goalCode", "contentHash", "publishedAt"],
+      "forbiddenFields": ["answer", "answerRules", "correctAnswer", "scoringRule", "reviewNotes", "copyrightEvidence", "privateNotes"],
+      "fallback": "explicit-stale-or-unavailable-state",
+      "unpublishedContentAction": "not-found-or-unavailable"
+    },
+    "adminBoundary": {
+      "commandsGoToContentService": true,
+      "adminCannotWriteFactTable": true,
+      "auditAssociationRequired": true,
+      "permissionDeniedIsExplicit": true
+    }
+  },
+  "syntheticFixtures": {
+    "subjects": [
+      {
+        "id": "fixture-subject-001",
+        "subjectRef": "subject-ref://synthetic/learner-001",
+        "tenantRef": "tenant-ref://synthetic/platform",
+        "noticeVersion": "privacy-notice-fixture-v1",
+        "consentStates": ["TERMS_OF_SERVICE:accepted", "PRIVACY_NOTICE:accepted", "PRIVACY_NOTICE:withdrawn"]
+      },
+      {
+        "id": "fixture-subject-002",
+        "subjectRef": "subject-ref://synthetic/learner-002",
+        "tenantRef": "tenant-ref://synthetic/platform",
+        "noticeVersion": "privacy-notice-fixture-v1",
+        "consentStates": ["TERMS_OF_SERVICE:accepted", "PRIVACY_NOTICE:accepted"]
+      }
+    ],
+    "content": [
+      {
+        "id": "fixture-content-001",
+        "contentRef": "content-ref://synthetic/unit-001",
+        "mediaRef": "media-ref://synthetic/audio-001",
+        "sourceCode": "fixture-source-catalog",
+        "licenseCode": "fixture-license-v1",
+        "authorizationEvidenceRef": "evidence-ref://synthetic/rights-001",
+        "workflow": "DRAFT -> IN_REVIEW -> APPROVED -> PUBLISHED -> ARCHIVED"
+      },
+      {
+        "id": "fixture-content-002",
+        "contentRef": "content-ref://synthetic/unit-002",
+        "mediaRef": "media-ref://synthetic/audio-002",
+        "sourceCode": "fixture-source-catalog",
+        "licenseCode": "fixture-license-v1",
+        "authorizationEvidenceRef": "evidence-ref://synthetic/rights-002",
+        "workflow": "PUBLISHED -> ARCHIVED -> rollback-to-approved-version"
+      }
+    ],
+    "fixturePolicy": "synthetic-references-only-no-real-subjects-no-raw-media-no-secrets"
+  },
+  "gates": [
+    {
+      "id": "B20-PRI-002-CONSENT",
+      "task": "V2-B20-PRI-002",
+      "objective": "验证隐私告知版本、明确同意、撤回事实和服务端主体边界。",
+      "staticChecks": [
+        {
+          "id": "B20-PRI-CONSENT-STATIC-001",
+          "kind": "consent-policy-code-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-PRI-STATIC-CONSENT",
+          "sourcePaths": [
+            "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
+            "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentRecord.java",
+            "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentType.java"
+          ],
+          "assertions": [
+            { "contains": "currentVersion" },
+            { "contains": "CONSENT_VERSION_MISMATCH" },
+            { "contains": "withdraw" },
+            { "contains": "never erases history" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-PRI-CONSENT-RUNTIME-001",
+          "kind": "notice-consent-grant-withdraw",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-PRI-RUNTIME-REQUESTS",
+          "tools": ["approved IAM integration runner", "isolated synthetic account matrix"],
+          "targets": ["notice-version", "consent-grant", "consent-withdraw"],
+          "scenarios": ["current-version-grant", "stale-version-deny", "withdraw-stops-optional-processing", "withdrawal-replay"],
+          "expected": "同意与撤回均由服务端主体和策略版本判定，撤回后可选处理被阻断且不可变事实可回放。",
+          "evidenceRequired": ["request-log", "decision-log", "consent-history", "trace-correlation"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "mock-only", "client-consent-flag"]
+        }
+      ]
+    },
+    {
+      "id": "B20-PRI-002-REQUESTS",
+      "task": "V2-B20-PRI-002",
+      "objective": "验证账号导出、注销、留存删除、法律保留和幂等边界。",
+      "staticChecks": [
+        {
+          "id": "B20-PRI-REQUESTS-STATIC-001",
+          "kind": "subject-request-policy-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-PRI-STATIC-REQUESTS",
+          "sourcePaths": [
+            "services/iam-service/README.md",
+            "packages/telemetry/src/security.mjs"
+          ],
+          "assertions": [
+            { "contains": "consent" },
+            { "contains": "authorizeExport" },
+            { "contains": "export" },
+            { "contains": "tenant" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-PRI-REQUESTS-RUNTIME-001",
+          "kind": "export-erasure-retention",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-PRI-RUNTIME-REQUESTS",
+          "tools": ["approved privacy request runner", "isolated database fixture"],
+          "targets": ["self-export", "account-erasure", "retention-delete", "legal-hold"],
+          "scenarios": ["self-export-allow", "cross-subject-deny", "idempotent-delete", "hold-blocks-destructive-step", "completion-replay"],
+          "expected": "导出和注销只作用于服务端判定的本人；删除可重试，法律保留阻断破坏性步骤，最小审计事实仍可回放。",
+          "evidenceRequired": ["redacted-export", "deletion-ledger", "hold-decision", "replay-report"],
+          "cannotBeSatisfiedBy": ["client-subject-field", "database-console-only", "unlinked-screenshot"]
+        }
+      ]
+    },
+    {
+      "id": "B20-PRI-002-REDACTION",
+      "task": "V2-B20-PRI-002",
+      "objective": "验证后台投影、审计字段脱敏和完整性回放。",
+      "staticChecks": [
+        {
+          "id": "B20-PRI-REDACTION-STATIC-001",
+          "kind": "redaction-and-audit-code-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-PRI-STATIC-REDACTION",
+          "sourcePaths": [
+            "services/admin-ops-service/src/main/java/com/englishflow/adminops/domain/ReferenceRedactor.java",
+            "services/admin-ops-service/src/main/java/com/englishflow/adminops/domain/AuditRecord.java",
+            "services/admin-ops-service/src/main/java/com/englishflow/adminops/adapter/memory/InMemoryAuditTrail.java",
+            "packages/telemetry/src/security.mjs"
+          ],
+          "assertions": [
+            { "contains": "sha256" },
+            { "contains": "integrityMatches" },
+            { "contains": "previousHash" },
+            { "contains": "maskExportFields" },
+            { "contains": "SENSITIVE_DATA_FORBIDDEN" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-PRI-REDACTION-RUNTIME-001",
+          "kind": "redaction-audit-integrity-replay",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-PRI-RUNTIME-AUDIT",
+          "tools": ["admin projection runner", "audit replay verifier"],
+          "targets": ["admin-ops-projection", "audit-chain", "tamper-detection"],
+          "scenarios": ["sensitive-field-masked", "raw-media-absent", "chain-replay", "tampered-record-deny-and-alert"],
+          "expected": "后台只展示允许字段，审计链可重放并在篡改时拒绝/告警；真实敏感值不出现在证据。",
+          "evidenceRequired": ["projection-payload", "chain-hash-report", "tamper-decision", "safe-field-schema"],
+          "cannotBeSatisfiedBy": ["log-grep-only", "static-source-only", "raw-production-export"]
+        }
+      ]
+    },
+    {
+      "id": "B20-PRI-002-AUTHZ",
+      "task": "V2-B20-PRI-002",
+      "objective": "验证默认拒绝、服务端 PEP 和后台越权拒绝。",
+      "staticChecks": [
+        {
+          "id": "B20-PRI-AUTHZ-STATIC-001",
+          "kind": "privacy-authorization-boundary",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-PRI-STATIC-AUTHZ",
+          "sourcePaths": [
+            "services/iam-service/src/main/java/com/englishflow/iam/domain/ConsentService.java",
+            "packages/telemetry/src/security.mjs",
+            "services/admin-ops-service/src/main/java/com/englishflow/adminops/domain/AuditEvent.java"
+          ],
+          "assertions": [
+            { "contains": "rejectClientAuthority" },
+            { "contains": "ACCESS_DENIED" },
+            { "contains": "tenant" },
+            { "contains": "safeContext" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-PRI-AUTHZ-RUNTIME-001",
+          "kind": "privacy-backoffice-authorization",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-PRI-RUNTIME-AUDIT",
+          "tools": ["Gateway and service PEP runner", "synthetic role matrix"],
+          "targets": ["self-bound-request", "cross-tenant-request", "admin-redacted-read"],
+          "scenarios": ["forged-role-header-deny", "client-tenant-deny", "cross-subject-export-deny", "minimum-admin-permission"],
+          "expected": "客户端角色、tenant、owner 和 consent 字段不能提升权限；服务端返回明确 401/403 并写入安全审计。",
+          "evidenceRequired": ["request-response-pair", "pep-decision", "audit-association"],
+          "cannotBeSatisfiedBy": ["ui-hidden-button", "client-role-header", "empty-list-on-deny"]
+        }
+      ]
+    },
+    {
+      "id": "B20-CNT-003-RIGHTS",
+      "task": "V2-B20-CNT-003",
+      "objective": "验证来源、版权和学习渠道权利是发布与投影的前置条件。",
+      "staticChecks": [
+        {
+          "id": "B20-CNT-RIGHTS-STATIC-001",
+          "kind": "content-rights-code-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-CNT-STATIC-RIGHTS",
+          "sourcePaths": [
+            "services/content-service/src/main/java/com/englishflow/content/domain/ContentRights.java",
+            "services/content-service/src/main/java/com/englishflow/content/application/ContentCommandService.java"
+          ],
+          "assertions": [
+            { "contains": "sourceCode" },
+            { "contains": "licenseCode" },
+            { "contains": "authorizationEvidenceRef" },
+            { "contains": "CONTENT_RIGHTS_EVIDENCE_REQUIRED" },
+            { "contains": "allows" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-CNT-RIGHTS-RUNTIME-001",
+          "kind": "content-rights-enforcement",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-CNT-RUNTIME-REVIEW",
+          "tools": ["content-service integration runner", "synthetic rights fixture"],
+          "targets": ["source-license-required", "channel-rights", "expiry-revocation"],
+          "scenarios": ["missing-license-deny", "missing-authorization-deny", "expired-right-deny", "permitted-channel-allow"],
+          "expected": "来源、license、授权证据或渠道权利缺失时不能发布，也不能由缓存或官网投影绕过。",
+          "evidenceRequired": ["command-response", "rights-decision", "projection-absence"],
+          "cannotBeSatisfiedBy": ["admin-form-required-field", "cache-hit", "mock-success"]
+        }
+      ]
+    },
+    {
+      "id": "B20-CNT-003-WORKFLOW",
+      "task": "V2-B20-CNT-003",
+      "objective": "验证草稿隔离、双人审批、发布、下线和版本回滚。",
+      "staticChecks": [
+        {
+          "id": "B20-CNT-WORKFLOW-STATIC-001",
+          "kind": "content-lifecycle-code-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-CNT-STATIC-WORKFLOW",
+          "sourcePaths": [
+            "services/content-service/src/main/java/com/englishflow/content/domain/ContentVersionStatus.java",
+            "services/content-service/src/main/java/com/englishflow/content/domain/ReviewStage.java",
+            "services/content-service/src/main/java/com/englishflow/content/domain/ReviewDecision.java",
+            "services/content-service/src/main/java/com/englishflow/content/application/ContentCommandService.java"
+          ],
+          "assertions": [
+            { "contains": "DRAFT" },
+            { "contains": "IN_REVIEW" },
+            { "contains": "FIRST_REVIEW" },
+            { "contains": "FINAL_REVIEW" },
+            { "contains": "rollback" },
+            { "contains": "projection" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-CNT-WORKFLOW-RUNTIME-001",
+          "kind": "draft-dual-review-publish-unpublish-rollback",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-CNT-RUNTIME-REVIEW",
+          "tools": ["admin content command runner", "synthetic reviewer matrix"],
+          "targets": ["draft-isolation", "dual-review", "publish", "unpublish", "rollback"],
+          "scenarios": ["draft-public-deny", "same-reviewer-deny", "two-reviewer-allow", "unpublish-invalidation", "rollback-recovery"],
+          "expected": "草稿不向公开端可读；不同审批人完成两阶段审批后才可发布；下线和回滚传播并可回放。",
+          "evidenceRequired": ["state-transition-log", "reviewer-distinctness", "outbox-events", "rollback-projection"],
+          "cannotBeSatisfiedBy": ["ui-state-only", "single-reviewer", "manual-database-edit"]
+        }
+      ]
+    },
+    {
+      "id": "B20-CNT-003-PROJECTION",
+      "task": "V2-B20-CNT-003",
+      "objective": "验证 official-site 只消费官方只读公示投影，并阻断答案规则与私有字段。",
+      "staticChecks": [
+        {
+          "id": "B20-CNT-PROJECTION-STATIC-001",
+          "kind": "public-projection-code-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "EV-B20-CNT-STATIC-PROJECTION",
+          "sourcePaths": [
+            "services/content-service/src/main/java/com/englishflow/content/domain/ContentProjectionPolicy.java",
+            "services/content-service/src/main/java/com/englishflow/content/domain/PublicContentProjection.java",
+            "services/content-service/src/main/java/com/englishflow/content/integration/PublishedContentReadProjection.java",
+            "apps/official-site/utils/site-content.mjs"
+          ],
+          "assertions": [
+            { "contains": "CONTENT_NOT_PUBLISHED" },
+            { "contains": "CONTENT_RIGHTS_NOT_READY" },
+            { "contains": "ANSWER_RULE_LEAK_BLOCKED" },
+            { "contains": "publicRoutes" },
+            { "contains": "compliance" }
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-CNT-PROJECTION-RUNTIME-001",
+          "kind": "official-site-public-projection-replay",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "EV-B20-CNT-RUNTIME-PROJECTION",
+          "tools": ["Gateway public projection runner", "official-site browser runner"],
+          "targets": ["courses", "pricing", "download", "announcements", "compliance"],
+          "scenarios": ["published-allow", "draft-unavailable", "unpublish-propagates", "rollback-restores-version", "answer-field-absent"],
+          "expected": "官网只展示 content-service 产生的公开字段白名单；内容下线/回滚可观察，官网不持有学习业务会话或写事实接口。",
+          "evidenceRequired": ["public-response", "cache-invalidation-trace", "seo-render", "forbidden-field-scan"],
+          "cannotBeSatisfiedBy": ["hardcoded-site-data", "admin-bff-direct-write", "screenshot-only"]
+        }
+      ]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "EV-B20-PRI-STATIC-CONSENT", "gateId": "B20-PRI-002-CONSENT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-PRI-STATIC-REQUESTS", "gateId": "B20-PRI-002-REQUESTS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-PRI-STATIC-REDACTION", "gateId": "B20-PRI-002-REDACTION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-PRI-STATIC-AUTHZ", "gateId": "B20-PRI-002-AUTHZ", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-PRI-RUNTIME-REQUESTS", "gateId": "B20-PRI-002-REQUESTS", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "approved-privacy-request-runner", "artifactPathPattern": "evidence/b20/privacy/requests/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-PRI-RUNTIME-AUDIT", "gateId": "B20-PRI-002-REDACTION", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "approved-audit-replay-verifier", "artifactPathPattern": "evidence/b20/privacy/audit/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-CNT-STATIC-RIGHTS", "gateId": "B20-CNT-003-RIGHTS", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-CNT-STATIC-WORKFLOW", "gateId": "B20-CNT-003-WORKFLOW", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-CNT-STATIC-PROJECTION", "gateId": "B20-CNT-003-PROJECTION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "stdout://b20-privacy-content-static", "collectionPolicy": "validator-output" },
+    { "id": "EV-B20-CNT-RUNTIME-REVIEW", "gateId": "B20-CNT-003-WORKFLOW", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "approved-content-review-runner", "artifactPathPattern": "evidence/b20/content/review/**", "collectionPolicy": "runtime-runner-only" },
+    { "id": "EV-B20-CNT-RUNTIME-PROJECTION", "gateId": "B20-CNT-003-PROJECTION", "class": "runtime", "status": "pending", "runtimeRequired": true, "tool": "approved-official-projection-runner", "artifactPathPattern": "evidence/b20/content/official-site/**", "collectionPolicy": "runtime-runner-only" }
+  ]
+}

@@ -1,0 +1,567 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "G2",
+  "batch": "G2",
+  "taskId": "V2-G2-IMPLEMENTATION-INTERACTION-001",
+  "phase": "phase-1",
+  "status": "PASS",
+  "defaultDecision": "NO-GO",
+  "productionAction": "disabled",
+  "runtimeEvidenceStatus": "pending",
+  "title": "实现与交互：契约、四端状态与可恢复学习闭环",
+  "designBasis": {
+    "architectureRefs": [
+      "ARCH-API-001",
+      "ARCH-DATA-001",
+      "ARCH-EVT-001",
+      "ARCH-GW-001",
+      "ARCH-IAM-001",
+      "ARCH-PLAT-001",
+      "ARCH-SVC-001"
+    ],
+    "requirementsRefs": [
+      "requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md",
+      "requirements/backlog/DoD-Gate与证据包规范.md"
+    ],
+    "upstreamBaselines": ["B18", "B19", "B20", "B21", "B22"],
+    "contractSource": "packages/contracts/",
+    "generatedClientSource": "packages/api-client/src/generated/index.ts"
+  },
+  "scope": {
+    "implementationClaim": "只确认仓库中的实现、契约和交互边界存在；不确认真实服务、浏览器、真机、数据库、事件总线或生产环境已经运行。",
+    "clientPlatforms": ["mobile", "learner-web", "admin-web", "official-site"],
+    "requiredUiStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"],
+    "requiredPerformanceLevels": ["Ultra", "High", "Medium", "Performance"],
+    "phase": "Phase 1 adult learning only; Phase 2 AI and Phase 3 K12 remain disabled"
+  },
+  "implementationContract": {
+    "apiBoundary": {
+      "external": "/api/v1",
+      "internal": "/internal/v1",
+      "gatewayRequired": true,
+      "generatedTypesRequired": true,
+      "writeIdempotencyHeader": "Idempotency-Key",
+      "offlineEventKey": "clientEventId"
+    },
+    "eventEnvelopeRequired": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey", "payload"],
+    "eventRules": {
+      "outboxRequired": true,
+      "atLeastOnceDelivery": true,
+      "consumerDeduplication": true,
+      "replayAndDlqRecovery": true,
+      "noKafkaRpc": true,
+      "noTwoPhaseCommit": true
+    },
+    "dataRules": {
+      "serviceOwnedSchema": true,
+      "serviceOwnedMigrations": true,
+      "serviceOwnedWriteAccess": true,
+      "crossServiceSqlJoinForbidden": true,
+      "crossServiceWriteForbidden": true,
+      "redisIsNotSourceOfTruth": true,
+      "serverDerivesTenantAndOwner": true
+    },
+    "permissionRules": {
+      "defaultDeny": true,
+      "gatewayAndServicePepRequired": true,
+      "clientAuthorityHeadersForbidden": true,
+      "permissionDeniedIsExplicit": true
+    }
+  },
+  "platformMatrix": [
+    {
+      "id": "mobile",
+      "projectPath": "apps/mobile",
+      "target": "uni-app Vue 3; H5/App/iPad and future mini-program conditions",
+      "gatewayBasePath": "/api/v1",
+      "staticStatus": "PASS",
+      "runtimeStatus": "pending",
+      "interactionSourcePaths": [
+        "apps/mobile/src/pages/learn/learn.vue",
+        "apps/mobile/src/stores/b18-learning.ts",
+        "apps/mobile/src/api/b18-learning.ts"
+      ],
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"]
+    },
+    {
+      "id": "learner-web",
+      "projectPath": "apps/learner-web",
+      "target": "PC Web, tablet browser and PWA learning workspace",
+      "gatewayBasePath": "/api/v1",
+      "staticStatus": "PASS",
+      "runtimeStatus": "pending",
+      "interactionSourcePaths": [
+        "apps/learner-web/src/router/index.ts",
+        "apps/learner-web/src/pages/LearningLoopPage.vue",
+        "apps/learner-web/src/stores/b18-learning.ts",
+        "apps/learner-web/src/api/b18-learning.ts"
+      ],
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"]
+    },
+    {
+      "id": "admin-web",
+      "projectPath": "apps/admin-web",
+      "target": "Vue 3 + Element Plus operations and support workspace",
+      "gatewayBasePath": "/api/v1",
+      "staticStatus": "PASS",
+      "runtimeStatus": "pending",
+      "interactionSourcePaths": [
+        "apps/admin-web/src/router/index.ts",
+        "apps/admin-web/src/views/AdminSupportView.vue"
+      ],
+      "requiredPermissions": ["admin.dashboard.read", "admin.content.read", "admin.commerce.read", "admin.audit.read", "admin.support.read", "admin.support.command"],
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery"]
+    },
+    {
+      "id": "official-site",
+      "projectPath": "apps/official-site",
+      "target": "public brand, course, pricing, download and compliance site",
+      "gatewayBasePath": "/api/v1",
+      "staticStatus": "PASS",
+      "runtimeStatus": "pending",
+      "interactionSourcePaths": [
+        "apps/official-site/nuxt.config.ts",
+        "apps/official-site/utils/ui-state.mjs",
+        "apps/official-site/utils/public-state.mjs"
+      ],
+      "publicOnly": true,
+      "requiredStates": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"]
+    }
+  ],
+  "interactionStateContract": {
+    "states": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"],
+    "nonColorSignals": ["visible text", "icon", "role", "aria-live", "action label"],
+    "permissionSemantics": ["401/unauthorized", "403/forbidden", "explicit permission state", "no permission-to-empty downgrade"],
+    "recoverySemantics": ["retry action", "resume checkpoint", "idempotent replay", "visible result", "no fabricated success"],
+    "emptySemantics": ["empty is not zero", "no local sample promoted", "server projection may be unavailable"],
+    "partialSemantics": ["degraded content is labeled", "available facts remain usable", "missing facts are not invented"]
+  },
+  "retryAndDegradation": {
+    "writeRequests": {
+      "idempotencyHeader": "Idempotency-Key",
+      "offlineClientEventId": "clientEventId",
+      "duplicateSideEffectsForbidden": true
+    },
+    "retry": {
+      "retryableErrorMustBeExplicit": true,
+      "recoveryActionMustBeVisible": true,
+      "replayMustBeBoundToRequestOrCheckpoint": true
+    },
+    "offline": {
+      "stateMustBeVisible": true,
+      "queueOrCheckpointMustBeBounded": true,
+      "reconnectRecoveryRequired": true
+    },
+    "degradation": {
+      "preservePrimaryLearningPath": true,
+      "performanceFallbackMode": "static",
+      "noAutomaticQualityUpgrade": true,
+      "noSyntheticDataOnFailure": true
+    }
+  },
+  "i18nThemeContract": {
+    "uiLocaleAndContentLocaleAreIndependent": true,
+    "defaultUiLocale": "zh-CN",
+    "defaultContentLocale": "en-US",
+    "fallbackRequired": true,
+    "pseudoLocale": "en-XA",
+    "formatters": ["formatNumber", "formatDate", "formatPlural"],
+    "themeModes": ["light", "dark", "system", "high-contrast"],
+    "themePersistenceRequired": true,
+    "ssrNoFlashRequired": true,
+    "uniAppAdapterRequired": true,
+    "elementPlusAdapterRequired": true
+  },
+  "performanceContract": {
+    "levels": [
+      { "id": "Ultra", "fallbackMode": "full", "complexRendering": true },
+      { "id": "High", "fallbackMode": "lightweight", "complexRendering": true },
+      { "id": "Medium", "fallbackMode": "2.5d", "complexRendering": "bounded" },
+      { "id": "Performance", "fallbackMode": "static", "complexRendering": false }
+    ],
+    "reducedMotionMustDisableComplexEffects": true,
+    "performanceModeMustKeepPrimaryContent": true,
+    "lowCapabilityFallback": "2D_FALLBACK"
+  },
+  "ownershipContract": {
+    "apiOwnerAndDataOwnerMustBeExplicit": true,
+    "services": [
+      { "service": "iam-service", "apiOwner": "iam-service", "dataOwner": "iam-service", "facts": ["principal", "session", "consent", "permission", "policy"] },
+      { "service": "learner-service", "apiOwner": "learner-service", "dataOwner": "learner-service", "facts": ["goal", "profile", "preference"] },
+      { "service": "content-service", "apiOwner": "content-service", "dataOwner": "content-service", "facts": ["content", "content_version", "answer_rule", "copyright"] },
+      { "service": "learning-service", "apiOwner": "learning-service", "dataOwner": "learning-service", "facts": ["plan", "srs", "progress", "mastery_projection"] },
+      { "service": "assessment-service", "apiOwner": "assessment-service", "dataOwner": "assessment-service", "facts": ["attempt", "checkpoint", "score", "report_snapshot"] },
+      { "service": "media-service", "apiOwner": "media-service", "dataOwner": "media-service", "facts": ["media_metadata", "rendition", "authorization_url"] },
+      { "service": "gamification-service", "apiOwner": "gamification-service", "dataOwner": "gamification-service", "facts": ["xp", "streak", "reward_ledger"] },
+      { "service": "social-service", "apiOwner": "social-service", "dataOwner": "social-service", "facts": ["study_room", "community", "report"] },
+      { "service": "commerce-service", "apiOwner": "commerce-service", "dataOwner": "commerce-service", "facts": ["sku", "order", "entitlement", "refund", "reconciliation"] },
+      { "service": "notification-service", "apiOwner": "notification-service", "dataOwner": "notification-service", "facts": ["template", "delivery", "preference", "retry"] },
+      { "service": "analytics-service", "apiOwner": "analytics-service", "dataOwner": "analytics-service", "facts": ["sanitized_event", "metric", "projection"] },
+      { "service": "admin-ops-service", "apiOwner": "admin-ops-service", "dataOwner": "admin-ops-service", "facts": ["admin_projection", "command_intent", "audit_correlation"] }
+    ]
+  },
+  "phasePolicy": {
+    "phase1AdultLearning": "enabled",
+    "generationAI": "disabled",
+    "realtimeAI": "disabled",
+    "phase3K12": "disabled",
+    "directModelProviderAccess": "forbidden",
+    "clientModelProviderAccess": "forbidden",
+    "defaultCapabilities": ["rule-based-learning", "contract-driven-api", "server-owned-scoring", "recoverable-sync"]
+  },
+  "evidencePolicy": {
+    "staticSourceMarkersAreImplementationClaimsOnly": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "syntheticFixturesAreNotRuntimeEvidence": true,
+    "developmentHttp200IsNotRuntimeEvidence": true,
+    "defaultValuesAreNotRuntimeEvidence": true,
+    "unboundScreenshotsAreNotRuntimeEvidence": true,
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "runtimeEvidenceMustBindSourceEnvironmentAndTrace": true,
+    "realRuntimeScreenshotsApiReplayAndProductionLikeRuns": "pending"
+  },
+  "staticChecks": [
+    {
+      "id": "G2-STATIC-ARCH-MAP",
+      "kind": "architecture-and-implementation-map",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-ARCH-MAP",
+      "staticClaimOnly": true,
+      "sourcePaths": ["docs/02-architecture/v2-platform-capability-matrix.md", "docs/02-architecture/v2-microservices-architecture.md", "packages/contracts/README.md"],
+      "assertions": [
+        { "contains": "ARCH-API-001" },
+        { "contains": "ARCH-DATA-001" },
+        { "contains": "ARCH-EVT-001" },
+        { "contains": "Gateway operation / service owner" },
+        { "contains": "OpenAPI + AsyncAPI + schema" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-CONTRACT-BOUNDARY",
+      "kind": "api-event-contract-and-idempotency",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-CONTRACT-BOUNDARY",
+      "staticClaimOnly": true,
+      "sourcePaths": ["packages/contracts/README.md", "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "packages/contracts/schemas/v1/registry.json", "packages/api-client/src/generated/index.ts"],
+      "assertions": [
+        { "contains": "/api/v1" },
+        { "contains": "Idempotency-Key" },
+        { "contains": "clientEventId" },
+        { "contains": "retryable" },
+        { "contains": "eventId" },
+        { "contains": "schemaVersion" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-DATA-OWNER",
+      "kind": "service-schema-migration-outbox-owner",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-DATA-OWNER",
+      "staticClaimOnly": true,
+      "sourcePaths": ["services/learner-service/README.md", "services/content-service/README.md", "services/learning-service/README.md", "services/assessment-service/README.md", "services/learner-service/src/main/resources/db/migration/V1__create_learner_service_schema.sql", "services/content-service/src/main/resources/db/migration/V1__create_content_service_schema.sql", "services/learning-service/src/main/resources/db/migration/V1__create_learning_service_schema.sql", "services/assessment-service/src/main/resources/db/migration/V1__create_assessment_service_schema.sql"],
+      "assertions": [
+        { "contains": "schema" },
+        { "contains": "Outbox" },
+        { "contains": "owner" },
+        { "contains": "tenant" },
+        { "contains": "idempotency" },
+        { "contains": "dedupe" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-FOUR-PLATFORM",
+      "kind": "four-platform-boundary-and-interaction-map",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-FOUR-PLATFORM",
+      "staticClaimOnly": true,
+      "sourcePaths": ["config/b18-frontend-test-matrix.json", "apps/learner-web/src/router/index.ts", "apps/mobile/src/pages/learn/learn.vue", "apps/admin-web/src/router/index.ts", "apps/official-site/nuxt.config.ts"],
+      "assertions": [
+        { "contains": "learner-web" },
+        { "contains": "mobile" },
+        { "contains": "admin-web" },
+        { "contains": "official-site" },
+        { "contains": "requiredStates" },
+        { "contains": "requiresAuth" },
+        { "contains": "permission" },
+        { "contains": "publicProjectionPath" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-UI-STATES",
+      "kind": "ui-state-and-accessibility-contract",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-UI-STATES",
+      "staticClaimOnly": true,
+      "sourcePaths": ["config/b18-frontend-test-matrix.json", "apps/official-site/utils/ui-state.mjs", "apps/official-site/utils/public-state.mjs", "apps/learner-web/src/pages/LearningLoopPage.vue", "apps/mobile/src/pages/learn/learn.vue", "apps/admin-web/src/views/AdminSupportView.vue"],
+      "assertions": [
+        { "contains": "loading" },
+        { "contains": "empty" },
+        { "contains": "error" },
+        { "contains": "permission" },
+        { "contains": "recovery" },
+        { "contains": "offline" },
+        { "contains": "partial" },
+        { "contains": "aria-labelledby" },
+        { "contains": "role" },
+        { "contains": "show-icon" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-RETRY-DEGRADE",
+      "kind": "retry-offline-recovery-and-degradation",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-RETRY-DEGRADE",
+      "staticClaimOnly": true,
+      "sourcePaths": ["packages/contracts/fragments/b2-assessment-mastery.openapi.json", "apps/learner-web/src/api/b18-learning.ts", "apps/mobile/src/api/b18-learning.ts", "apps/learner-web/src/stores/b18-learning.ts", "apps/mobile/src/stores/b18-learning.ts", "apps/learner-web/src/pages/LearningLoopPage.vue"],
+      "assertions": [
+        { "contains": "Idempotency-Key" },
+        { "contains": "clientEventId" },
+        { "contains": "retry" },
+        { "contains": "recovery" },
+        { "contains": "offline" },
+        { "contains": "PENDING" },
+        { "contains": "checkpoint" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-I18N",
+      "kind": "locale-content-locale-fallback-and-formatting",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-I18N",
+      "staticClaimOnly": true,
+      "sourcePaths": ["packages/i18n/src/index.ts", "packages/i18n/src/adapters.ts", "packages/i18n/README.md"],
+      "assertions": [
+        { "contains": "contentLocale" },
+        { "contains": "fallback" },
+        { "contains": "formatNumber" },
+        { "contains": "formatDate" },
+        { "contains": "formatPlural" },
+        { "contains": "createNuxtI18nAdapter" },
+        { "contains": "createUniAppI18nAdapter" },
+        { "contains": "en-XA" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-THEME",
+      "kind": "theme-persistence-and-platform-adapters",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-THEME",
+      "staticClaimOnly": true,
+      "sourcePaths": ["packages/design-tokens/src/index.ts", "packages/design-tokens/src/adapters.ts", "packages/design-tokens/README.md"],
+      "assertions": [
+        { "contains": "THEME_MODES" },
+        { "contains": "light" },
+        { "contains": "dark" },
+        { "contains": "system" },
+        { "contains": "high-contrast" },
+        { "contains": "noFlashScript" },
+        { "contains": "createUniAppThemeAdapter" },
+        { "contains": "createElementPlusThemeAdapter" },
+        { "contains": "storageKey" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-PERFORMANCE",
+      "kind": "adaptive-performance-levels-and-fallback",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-PERFORMANCE",
+      "staticClaimOnly": true,
+      "sourcePaths": ["packages/performance/src/index.ts", "apps/mobile/src/stores/b4.ts", "config/b19-quality-gates.json"],
+      "assertions": [
+        { "contains": "PERFORMANCE_LEVELS" },
+        { "contains": "Ultra" },
+        { "contains": "High" },
+        { "contains": "Medium" },
+        { "contains": "Performance" },
+        { "contains": "prefers-reduced-motion" },
+        { "contains": "getRenderPolicy" },
+        { "contains": "motionDisabled" },
+        { "contains": "2D_FALLBACK" }
+      ]
+    },
+    {
+      "id": "G2-STATIC-PHASE-BOUNDARY",
+      "kind": "phase-1-ai-and-k12-boundary",
+      "status": "PASS",
+      "evidenceClass": "static",
+      "runtimeRequired": false,
+      "evidenceId": "G2-E-STATIC-PHASE-BOUNDARY",
+      "staticClaimOnly": true,
+      "sourcePaths": ["config/b18-frontend-test-matrix.json", "docs/02-architecture/v2-microservices-architecture.md", "packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json"],
+      "assertions": [
+        { "contains": "phase-2-ai" },
+        { "contains": "forbiddenDefaultCapabilities" },
+        { "contains": "Phase 2" },
+        { "contains": "客户端不能直接访问模型供应商" },
+        { "contains": "aiScoringAvailable" }
+      ]
+    }
+  ],
+  "runtimeChecks": [
+    {
+      "id": "G2-RUNTIME-FOUR-PLATFORM-INTERACTION",
+      "kind": "four-platform-browser-device-interaction",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-FOUR-PLATFORM-INTERACTION",
+      "targets": ["learner-web", "mobile-h5", "admin-web", "official-site", "ios", "android", "ipad"],
+      "scenarios": ["authenticated-learning-loop", "admin-permission-denied", "public-projection", "deep-link-recovery", "responsive-layout"],
+      "evidenceRequired": ["browser-or-device-trace", "state-screenshot-set", "accessibility-tree", "console-and-network-log"],
+      "cannotBeSatisfiedBy": ["static-source-marker", "synthetic-fixture-only", "development-http-200", "default-route-value", "unbound-screenshot"]
+    },
+    {
+      "id": "G2-RUNTIME-UI-STATES",
+      "kind": "state-machine-replay",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-UI-STATES",
+      "targets": ["learner-web", "mobile-h5", "admin-web", "official-site"],
+      "scenarios": ["loading", "empty", "error", "permission", "recovery", "offline", "success", "partial"],
+      "evidenceRequired": ["state-transition-trace", "state-screenshot-set", "accessible-state-tree", "recovery-result"],
+      "cannotBeSatisfiedBy": ["static-enum-only", "static-source-marker", "synthetic-fixture-only", "color-only-screenshot", "development-http-200"]
+    },
+    {
+      "id": "G2-RUNTIME-RETRY-DEGRADE",
+      "kind": "retry-offline-and-degradation-replay",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-RETRY-DEGRADE",
+      "targets": ["learner-web", "mobile-h5"],
+      "scenarios": ["retryable-error", "offline-queue", "reconnect", "duplicate-submit", "checkpoint-resume", "performance-fallback"],
+      "evidenceRequired": ["request-response-trace", "idempotency-replay-result", "offline-recovery-log", "fallback-screenshot"],
+      "cannotBeSatisfiedBy": ["unit-test-only", "static-source-marker", "synthetic-fixture-only", "development-http-200", "default-value-only"]
+    },
+    {
+      "id": "G2-RUNTIME-API-CONTRACT",
+      "kind": "gateway-api-contract-replay",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-API-CONTRACT",
+      "targets": ["gateway", "learner-service", "content-service", "learning-service", "assessment-service"],
+      "scenarios": ["api-version-boundary", "generated-client-request", "idempotent-write", "401", "403", "retryable-error"],
+      "evidenceRequired": ["contract-replay-report", "request-and-response-payload-hash", "gateway-trace", "error-semantics-report"],
+      "cannotBeSatisfiedBy": ["openapi-file-only", "static-source-marker", "synthetic-fixture-only", "development-http-200", "mock-server-only"]
+    },
+    {
+      "id": "G2-RUNTIME-EVENT-DATA-OWNER",
+      "kind": "database-event-and-owner-replay",
+      "status": "blocked",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-EVENT-DATA-OWNER",
+      "targets": ["service-owned-mysql-schemas", "flyway-migrations", "outbox", "event-consumers"],
+      "scenarios": ["migration", "outbox-dispatch", "duplicate-event", "replay", "dlq-recovery", "cross-owner-write-deny"],
+      "evidenceRequired": ["database-migration-log", "owner-and-schema-binding", "outbox-or-event-trace", "dedupe-and-replay-result"],
+      "cannotBeSatisfiedBy": ["schema-file-only", "static-source-marker", "synthetic-fixture-only", "static-manifest-only", "development-http-200"]
+    },
+    {
+      "id": "G2-RUNTIME-I18N-THEME",
+      "kind": "locale-theme-and-accessibility-interaction",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-I18N-THEME",
+      "targets": ["learner-web", "admin-web", "official-site", "mobile-h5", "ios", "android"],
+      "scenarios": ["ui-locale-switch", "content-locale-switch", "missing-key-fallback", "pseudo-locale", "light", "dark", "system", "high-contrast", "reload-persistence"],
+      "evidenceRequired": ["locale-screenshot-set", "theme-screenshot-set", "hydration-record", "storage-record"],
+      "cannotBeSatisfiedBy": ["source-export-list", "unit-test-only", "static-token-check", "static-source-marker", "synthetic-fixture-only", "development-http-200", "default-theme-value"]
+    },
+    {
+      "id": "G2-RUNTIME-PERFORMANCE",
+      "kind": "four-level-device-performance",
+      "status": "pending",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-PERFORMANCE",
+      "targets": ["learner-web", "mobile-h5", "ios", "android", "ipad"],
+      "scenarios": ["Ultra", "High", "Medium", "Performance", "low-memory", "reduced-motion", "2D_FALLBACK"],
+      "evidenceRequired": ["device-profile", "render-policy-log", "performance-trace", "fallback-screenshot"],
+      "cannotBeSatisfiedBy": ["level-list-only", "desktop-only-run", "static-source-marker", "synthetic-fixture-only", "development-http-200"]
+    },
+    {
+      "id": "G2-RUNTIME-PHASE-AND-PRODUCTION-EVIDENCE",
+      "kind": "phase-boundary-and-production-like-evidence",
+      "status": "blocked",
+      "evidenceClass": "runtime",
+      "runtimeRequired": true,
+      "evidenceId": "G2-E-RUNTIME-PHASE-AND-PRODUCTION-EVIDENCE",
+      "targets": ["phase-1-runtime", "approved-evidence-store"],
+      "scenarios": ["phase-2-ai-disabled", "no-model-provider-direct-call", "production-like-request", "source-environment-trace-binding"],
+      "evidenceRequired": ["environment-bound-run", "trace-and-request-correlation", "phase-gate-decision", "immutable-evidence-digest"],
+      "cannotBeSatisfiedBy": ["phase-2-ai-fixture", "synthetic-fixture-only", "default-capability-value", "development-http-200", "static-manifest-only", "static-source-marker"]
+    }
+  ],
+  "runtimeGate": {
+    "status": "blocked",
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "G2_REQUIRE_RUNTIME",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeStatusWhenMissing": "blocked",
+    "runtimeStatusWhenEvidencePending": "blocked",
+    "requiredEnv": [
+      "G2_RUNTIME_FRONTEND_EVIDENCE_REF",
+      "G2_RUNTIME_STATE_EVIDENCE_REF",
+      "G2_RUNTIME_RETRY_EVIDENCE_REF",
+      "G2_RUNTIME_API_EVIDENCE_REF",
+      "G2_RUNTIME_EVENT_DATA_EVIDENCE_REF",
+      "G2_RUNTIME_I18N_THEME_EVIDENCE_REF",
+      "G2_RUNTIME_PERFORMANCE_EVIDENCE_REF",
+      "G2_RUNTIME_DECISION_EVIDENCE_REF"
+    ],
+    "requiredEvidence": ["four-platform traces", "state replay", "retry and recovery", "API contract replay", "event and data owner binding", "i18n and theme interaction", "four-level performance run", "external decision and immutable digest"],
+    "cannotBeSatisfiedBy": ["static-source-marker", "static-manifest-only", "synthetic-fixture-only", "development-http-200", "default-value-only", "phase-2-ai-fixture", "unbound-screenshot", "unbound-api-replay", "local-development-only"],
+    "runtimePromotionRequires": ["external-evidence-status-captured", "source-revision-binding", "environment-binding", "trace-request-correlation", "explicit-independent-decision"]
+  },
+  "evidenceIndex": [
+    { "id": "G2-E-STATIC-ARCH-MAP", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-CONTRACT-BOUNDARY", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-DATA-OWNER", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-FOUR-PLATFORM", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-UI-STATES", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-RETRY-DEGRADE", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-I18N", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-THEME", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-PERFORMANCE", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-STATIC-PHASE-BOUNDARY", "class": "static", "status": "PASS", "runtimeRequired": false, "collectionPolicy": "repository-static-validator" },
+    { "id": "G2-E-RUNTIME-FOUR-PLATFORM-INTERACTION", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-UI-STATES", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-RETRY-DEGRADE", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-API-CONTRACT", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-EVENT-DATA-OWNER", "class": "runtime", "status": "blocked", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-I18N-THEME", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-PERFORMANCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" },
+    { "id": "G2-E-RUNTIME-PHASE-AND-PRODUCTION-EVIDENCE", "class": "runtime", "status": "blocked", "runtimeRequired": true, "collectionPolicy": "runtime-runner-only" }
+  ],
+  "reportSchema": {
+    "id": "G2-IMPLEMENTATION-INTERACTION-REPORT",
+    "version": "1.0.0",
+    "closed": true,
+    "required": ["gate", "taskId", "sourceRevision", "environment", "staticChecks", "runtimeEvidence", "stateReplay", "contractReplay", "ownerBindings", "performance", "i18nTheme", "decision", "reportHash"],
+    "missingEvidenceDecision": "NO-GO",
+    "runtimeEvidenceStatusValues": ["pending", "blocked", "captured", "invalid"],
+    "productionLikeEvidenceRequires": ["sourceRevision", "environment", "traceId", "requestId", "evidenceDigest"]
+  }
+}

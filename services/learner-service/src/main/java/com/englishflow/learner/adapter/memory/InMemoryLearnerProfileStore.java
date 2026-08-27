@@ -2,6 +2,7 @@ package com.englishflow.learner.adapter.memory;
 
 import com.englishflow.learner.domain.IdempotencyKey;
 import com.englishflow.learner.domain.IdempotencyRecord;
+import com.englishflow.learner.domain.FirstDayProjection;
 import com.englishflow.learner.domain.LearnerCommitResult;
 import com.englishflow.learner.domain.LearnerDecisionCode;
 import com.englishflow.learner.domain.LearnerDomainException;
@@ -23,12 +24,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class InMemoryLearnerProfileStore implements LearnerProfileStore {
 
     private final ConcurrentHashMap<String, LearnerProfile> profiles = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, FirstDayProjection> firstDayProjections = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, IdempotencyRecord> idempotency = new ConcurrentHashMap<>();
     private final List<LearnerOutboxEvent> outboxEvents = new ArrayList<>();
 
     @Override
     public Optional<LearnerProfile> find(LearnerTenantScope scope) {
         return Optional.ofNullable(profiles.get(scope.storageKey()));
+    }
+
+    @Override
+    public Optional<FirstDayProjection> findFirstDay(LearnerTenantScope scope) {
+        return Optional.ofNullable(firstDayProjections.get(scope.storageKey()));
     }
 
     @Override
@@ -61,6 +68,8 @@ public final class InMemoryLearnerProfileStore implements LearnerProfileStore {
         }
 
         profiles.put(profileKey, mutation.updatedProfile());
+        firstDayProjections.put(profileKey,
+                FirstDayProjection.from(mutation.updatedProfile(), mutation.updatedProfile().updatedAt()));
         idempotency.put(idempotencyKey, mutation.idempotencyRecord());
         outboxEvents.add(mutation.outboxEvent());
         return new LearnerCommitResult(mutation.updatedProfile(), false);

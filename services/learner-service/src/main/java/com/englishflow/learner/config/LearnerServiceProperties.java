@@ -2,7 +2,9 @@ package com.englishflow.learner.config;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid;
 
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -16,6 +18,14 @@ public class LearnerServiceProperties {
     private String phase;
 
     private boolean legacyReadEnabled;
+
+    /**
+     * Keep the learner prefix closed for binding while allowing the separately managed
+     * persistence properties to live under the same service-owned namespace.
+     */
+    @Valid
+    @NestedConfigurationProperty
+    private LearnerPersistenceProperties persistence = new LearnerPersistenceProperties();
 
     public String getPhase() {
         return phase;
@@ -31,5 +41,13 @@ public class LearnerServiceProperties {
 
     public void setLegacyReadEnabled(boolean legacyReadEnabled) {
         this.legacyReadEnabled = legacyReadEnabled;
+    }
+
+    public LearnerPersistenceProperties getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(LearnerPersistenceProperties persistence) {
+        this.persistence = persistence;
     }
 }

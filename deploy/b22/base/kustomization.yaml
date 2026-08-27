@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: englishflow-b22-base
+resources:
+  - service-account.yaml
+  - rollout.yaml
+  - analysis-template.yaml
+  - services.yaml
+  - external-secret.yaml
+  - network-policy.yaml
+  - feature-flags.yaml
+  - release-prerequisite.yaml
+  - ../oci/image-lock.yaml
+  - ../release/version-binding.yaml
+  - ../rollout/expansion-policy.yaml
+  - ../rollout/rollback-policy.yaml
+commonLabels:
+  app.kubernetes.io/part-of: englishflow
+  app.kubernetes.io/managed-by: gitops
+  app.kubernetes.io/phase: phase-1
+  app.kubernetes.io/release-batch: b22
+

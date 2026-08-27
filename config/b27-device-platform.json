@@ -1,0 +1,476 @@
+{
+  "schemaVersion": 1,
+  "batch": "B27",
+  "phase": "phase-1",
+  "phaseLabel": "Phase 1",
+  "ownerTasks": ["V2-B27-DEV-001", "V2-B27-DEV-002"],
+  "scope": {
+    "objective": "真机、PWA 与微信小程序条件编译的代码和静态验收切片",
+    "businessProjectCount": 2,
+    "realDeviceExecution": true,
+    "phase2AiEnabled": false,
+    "phase3K12Enabled": false,
+    "gatewayBasePath": "/api/v1"
+  },
+  "execution": {
+    "mode": "static-contract-only",
+    "status": "runtimeBlocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "runtimeRequired": true,
+    "blockedReasons": [
+      "approved iOS, Android and iPad physical or remote-device evidence is not attached",
+      "authenticated Phase 1 OIDC, Gateway and database-backed journey evidence is not attached",
+      "PWA install, update and cache-invalidation evidence is not attached",
+      "微信开发者工具或批准设备的条件编译产物与返回/分享证据 is not attached"
+    ],
+    "requiredRuntimeEnvironment": [
+      "B27_DEVICE_EVIDENCE_DIR",
+      "B27_AUTHENTICATED_RUN_ID",
+      "B27_PWA_EVIDENCE_FILE",
+      "B27_WECHAT_EVIDENCE_FILE",
+      "B27_DB_RECONCILIATION_FILE"
+    ],
+    "staticEvidence": [
+      "single-mobile-business-project",
+      "mobile-manifest-target-boundary",
+      "pwa-manifest-and-service-worker-boundary",
+      "wechat-conditional-compile-boundary",
+      "orientation-and-safe-area-contract",
+      "background-network-audio-navigation-contract",
+      "login-boundary-and-no-fake-pass",
+      "no-secret-or-pii-fixture"
+    ],
+    "runtimeEvidence": null
+  },
+  "projectBoundary": {
+    "mobileBusinessProject": "apps/mobile",
+    "learnerWebProject": "apps/learner-web",
+    "mobileH5Owner": "apps/mobile",
+    "nativeAppOwner": "apps/mobile",
+    "ipadOwner": "apps/mobile",
+    "wechatConditionCompileOwner": "apps/mobile",
+    "pwaOwner": "apps/learner-web",
+    "sharedApiBoundary": "packages/api-client through api-gateway /api/v1",
+    "separateBusinessPageOrApiLayer": false,
+    "forbiddenBusinessProjects": [
+      "apps/miniapp-wechat",
+      "apps/mobile-h5",
+      "apps/mobile-ios",
+      "apps/mobile-android",
+      "apps/mobile-ipad"
+    ],
+    "allowedLegacyPlaceholders": [
+      {
+        "path": "apps/miniapp-wechat",
+        "allowedFiles": [
+          "README.md",
+          "src/components/.gitkeep",
+          "src/pages/.gitkeep",
+          "src/services/.gitkeep"
+        ],
+        "rule": "migration-note-only; no pages, state, API client or domain implementation"
+      }
+    ],
+    "forbiddenPatterns": [
+      "second-mobile-pages-directory",
+      "second-mobile-api-client",
+      "direct-service-origin-in-platform-adapter"
+    ]
+  },
+  "sourceContracts": [
+    {
+      "id": "mobile-manifest",
+      "path": "apps/mobile/src/manifest.json",
+      "jsonAssertions": [
+        { "path": "app-plus.screenOrientation", "contains": "portrait-primary" },
+        { "path": "app-plus.screenOrientation", "contains": "landscape-primary" },
+        { "path": "h5.router.mode", "equals": "hash" },
+        { "path": "mp-weixin", "exists": true },
+        { "path": "mp-weixin.appid", "equals": "" }
+      ]
+    },
+    {
+      "id": "mobile-viewport-and-safe-area",
+      "paths": ["apps/mobile/index.html", "apps/mobile/src/App.vue"],
+      "textAssertions": [
+        { "path": "apps/mobile/index.html", "contains": "viewport-fit=cover" },
+        { "path": "apps/mobile/src/App.vue", "contains": "onLaunch" },
+        { "path": "apps/mobile/src/App.vue", "contains": "bootstrapMobileAuth" },
+        { "path": "apps/mobile/src/App.vue", "contains": "env(safe-area-inset-top)" },
+        { "path": "apps/mobile/src/App.vue", "contains": "env(safe-area-inset-bottom)" },
+        { "path": "apps/mobile/src/App.vue", "contains": "未完成身份校验前不会渲染受保护学习内容" }
+      ]
+    },
+    {
+      "id": "mobile-auth-navigation",
+      "path": "apps/mobile/src/auth/navigation.ts",
+      "textAssertions": [
+        { "contains": "installMobileNavigationGuard" },
+        { "contains": "isMobileProtectedPath" },
+        { "contains": "safeMobileReturnTo" },
+        { "contains": "handleMobileApiError" },
+        { "contains": "status === 401" },
+        { "contains": "FORBIDDEN_PATH" }
+      ]
+    },
+    {
+      "id": "mobile-condition-builds",
+      "path": "apps/mobile/package.json",
+      "jsonAssertions": [
+        { "path": "scripts.build:h5", "exists": true },
+        { "path": "scripts.build:app", "exists": true },
+        { "path": "scripts.build:mp-weixin", "exists": true },
+        { "path": "scripts.dev:app", "exists": true }
+      ]
+    },
+    {
+      "id": "learner-pwa-manifest",
+      "path": "apps/learner-web/public/manifest.webmanifest",
+      "jsonAssertions": [
+        { "path": "start_url", "equals": "/home" },
+        { "path": "display", "equals": "standalone" },
+        { "path": "lang", "equals": "zh-CN" },
+        { "path": "theme_color", "exists": true },
+        { "path": "background_color", "exists": true }
+      ]
+    },
+    {
+      "id": "learner-pwa-shell",
+      "paths": ["apps/learner-web/index.html", "apps/learner-web/public/sw.js"],
+      "textAssertions": [
+        { "path": "apps/learner-web/index.html", "contains": "rel=\"manifest\"" },
+        { "path": "apps/learner-web/index.html", "contains": "navigator.serviceWorker.register('/sw.js')" },
+        { "path": "apps/learner-web/index.html", "contains": "location.protocol === 'https:'" },
+        { "path": "apps/learner-web/public/sw.js", "contains": "CACHE_NAME" },
+        { "path": "apps/learner-web/public/sw.js", "contains": "caches.delete" },
+        { "path": "apps/learner-web/public/sw.js", "contains": "event.request.method !== 'GET'" }
+      ]
+    }
+  ],
+  "buildTargets": [
+    {
+      "id": "mobile-h5",
+      "platform": "mobile-h5",
+      "sourceProject": "apps/mobile",
+      "compiler": "uni-app:h5",
+      "command": "pnpm --dir apps/mobile build:h5",
+      "conditionalCompile": false,
+      "deviceIds": ["h5-android", "h5-ios"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "mobile-native",
+      "platform": "ios-android-ipad",
+      "sourceProject": "apps/mobile",
+      "compiler": "uni-app:app-plus",
+      "command": "pnpm --dir apps/mobile build:app",
+      "conditionalCompile": false,
+      "deviceIds": ["ios", "android", "ipad"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "learner-pwa",
+      "platform": "pwa",
+      "sourceProject": "apps/learner-web",
+      "compiler": "vite",
+      "command": "pnpm --dir apps/learner-web build",
+      "conditionalCompile": false,
+      "deviceIds": ["windows-pwa"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "wechat-miniapp",
+      "platform": "wechat-miniapp",
+      "sourceProject": "apps/mobile",
+      "compiler": "uni-app:mp-weixin",
+      "command": "pnpm --dir apps/mobile build:mp-weixin",
+      "conditionalCompile": true,
+      "conditionSource": "apps/mobile/src/manifest.json#mp-weixin",
+      "separateProject": false,
+      "deviceIds": ["wechat-miniapp"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    }
+  ],
+  "viewports": [
+    { "id": "phone-portrait-390x844", "width": 390, "height": 844, "orientation": "portrait", "class": "phone" },
+    { "id": "phone-landscape-844x390", "width": 844, "height": 390, "orientation": "landscape", "class": "phone" },
+    { "id": "ipad-portrait-768x1024", "width": 768, "height": 1024, "orientation": "portrait", "class": "tablet" },
+    { "id": "ipad-landscape-1024x768", "width": 1024, "height": 768, "orientation": "landscape", "class": "tablet" },
+    { "id": "pwa-desktop-1440x900", "width": 1440, "height": 900, "orientation": "landscape", "class": "desktop" },
+    { "id": "pwa-tablet-1024x768", "width": 1024, "height": 768, "orientation": "landscape", "class": "tablet" }
+  ],
+  "deviceProfiles": [
+    {
+      "id": "h5-android",
+      "platform": "mobile-h5",
+      "os": "android",
+      "formFactor": "phone",
+      "sourceProject": "apps/mobile",
+      "buildTarget": "mobile-h5",
+      "viewports": ["phone-portrait-390x844", "phone-landscape-844x390"],
+      "orientations": ["portrait", "landscape"],
+      "safeArea": { "required": true, "checks": ["top", "right", "bottom", "left", "viewport-fit-cover"] },
+      "backgroundRecovery": { "required": true, "events": ["visibility-hidden", "visibility-visible", "network-reconnect"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "browser-history", "share": "web-share-or-copy-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "h5-ios",
+      "platform": "mobile-h5",
+      "os": "ios",
+      "formFactor": "phone",
+      "sourceProject": "apps/mobile",
+      "buildTarget": "mobile-h5",
+      "viewports": ["phone-portrait-390x844", "phone-landscape-844x390"],
+      "orientations": ["portrait", "landscape"],
+      "safeArea": { "required": true, "checks": ["top", "right", "bottom", "left", "viewport-fit-cover"] },
+      "backgroundRecovery": { "required": true, "events": ["visibility-hidden", "visibility-visible", "network-reconnect"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "browser-history", "share": "web-share-or-copy-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "android",
+      "platform": "android",
+      "os": "android",
+      "formFactor": "phone",
+      "sourceProject": "apps/mobile",
+      "buildTarget": "mobile-native",
+      "viewports": ["phone-portrait-390x844", "phone-landscape-844x390"],
+      "orientations": ["portrait", "landscape"],
+      "safeArea": { "required": true, "checks": ["top", "right", "bottom", "left", "system-bars"] },
+      "backgroundRecovery": { "required": true, "events": ["app-background", "app-foreground", "process-restart"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "android-system-back", "share": "native-share-or-copy-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "secureStorage": "android-keystore-or-platform-secure-storage",
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "ios",
+      "platform": "ios",
+      "os": "ios",
+      "formFactor": "phone",
+      "sourceProject": "apps/mobile",
+      "buildTarget": "mobile-native",
+      "viewports": ["phone-portrait-390x844", "phone-landscape-844x390"],
+      "orientations": ["portrait", "landscape"],
+      "safeArea": { "required": true, "checks": ["top", "right", "bottom", "left", "home-indicator"] },
+      "backgroundRecovery": { "required": true, "events": ["app-background", "app-foreground", "process-restart"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "ios-navigation-back", "share": "native-share-or-copy-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "secureStorage": "ios-keychain-or-platform-secure-storage",
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "ipad",
+      "platform": "ipad",
+      "os": "ipad-os",
+      "formFactor": "tablet",
+      "sourceProject": "apps/mobile",
+      "buildTarget": "mobile-native",
+      "viewports": ["ipad-portrait-768x1024", "ipad-landscape-1024x768"],
+      "orientations": ["portrait", "landscape"],
+      "safeArea": { "required": true, "checks": ["top", "right", "bottom", "left", "home-indicator"] },
+      "backgroundRecovery": { "required": true, "events": ["app-background", "app-foreground", "process-restart"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "ios-navigation-back", "share": "native-share-or-copy-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "secureStorage": "ios-keychain-or-platform-secure-storage",
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "windows-pwa",
+      "platform": "pwa",
+      "os": "windows",
+      "formFactor": "desktop-or-tablet",
+      "sourceProject": "apps/learner-web",
+      "buildTarget": "learner-pwa",
+      "viewports": ["pwa-desktop-1440x900", "pwa-tablet-1024x768"],
+      "orientations": ["landscape"],
+      "safeArea": { "required": false, "checks": ["viewport-padding-does-not-hide-actions"] },
+      "backgroundRecovery": { "required": true, "events": ["page-hidden", "service-worker-wake", "network-reconnect"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "browser-history", "share": "web-share-or-copy-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "installUpdateCache": { "required": true, "install": "manifest-install-prompt", "update": "new-cache-name-and-activation", "invalidate": "old-cache-deleted", "auth": "never-cache-auth-or-non-GET" },
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "wechat-miniapp",
+      "platform": "wechat-miniapp",
+      "os": "wechat-runtime",
+      "formFactor": "phone",
+      "sourceProject": "apps/mobile",
+      "buildTarget": "wechat-miniapp",
+      "viewports": ["phone-portrait-390x844", "phone-landscape-844x390"],
+      "orientations": ["portrait", "landscape"],
+      "safeArea": { "required": true, "checks": ["top", "right", "bottom", "left", "safe-area-inset"] },
+      "backgroundRecovery": { "required": true, "events": ["miniapp-hide", "miniapp-show", "session-recovery"] },
+      "networkSwitch": { "required": true, "states": ["online", "offline", "online-recovery"], "writeRule": "no-fake-success-and-no-duplicate-submit" },
+      "audioPermission": { "required": true, "states": ["not-requested", "granted", "denied", "blocked"], "denialFallback": "text-and-non-media-practice" },
+      "loginBoundary": { "required": true, "anonymous": "login", "authenticated": "server-backed-learning", "expired": "login" },
+      "backAndShare": { "back": "wechat-navigate-back", "share": "wechat-share-menu-or-safe-link", "unsavedWrite": "confirm-or-preserve-draft" },
+      "secureStorage": "uni-platform-secure-storage",
+      "installUpdateCache": { "required": true, "install": "wechat-preview-or-release", "update": "versioned-miniapp-release", "invalidate": "stale-package-rejected-or-refreshed", "auth": "never-store-plaintext-refresh-credential" },
+      "conditionalCompile": { "required": true, "sourceManifest": "apps/mobile/src/manifest.json#mp-weixin", "separateProject": false },
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "B27-DEV-001-ORIENTATION-SAFE-AREA",
+      "task": "V2-B27-DEV-001",
+      "kind": "orientation-safe-area",
+      "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "wechat-miniapp"],
+      "assertions": ["portrait-layout-is-usable", "landscape-layout-is-usable", "safe-area-does-not-hide-actions", "rotation-does-not-reset-session-or-draft", "scroll-and-focus-survive-rotation"],
+      "evidenceRequired": ["orientation-screenshot-pair", "safe-area-device-capture", "session-and-draft-trace"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-001-BACKGROUND-RECOVERY",
+      "task": "V2-B27-DEV-001",
+      "kind": "background-recovery",
+      "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "windows-pwa", "wechat-miniapp"],
+      "assertions": ["foreground-revalidates-session", "pending-write-is-reconciled-or-explicitly-failed", "background-does-not-duplicate-command", "recovery-state-is-visible"],
+      "evidenceRequired": ["lifecycle-log", "request-trace", "database-reconciliation"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-001-NETWORK-SWITCH",
+      "task": "V2-B27-DEV-001",
+      "kind": "network-switch",
+      "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "windows-pwa", "wechat-miniapp"],
+      "assertions": ["offline-state-is-explicit", "no-offline-write-claims-success", "reconnect-retries-safely", "duplicate-submit-is-idempotent", "server-result-is-visible"],
+      "evidenceRequired": ["network-profile", "client-event-id", "server-response", "database-reconciliation"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-001-AUDIO-PERMISSION",
+      "task": "V2-B27-DEV-001",
+      "kind": "audio-permission",
+      "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "windows-pwa", "wechat-miniapp"],
+      "permissionStates": ["not-requested", "granted", "denied", "blocked"],
+      "assertions": ["permission-is-requested-just-in-time", "denial-has-non-media-fallback", "recording-never-starts-without-grant", "raw-audio-is-not-fixture-data"],
+      "evidenceRequired": ["permission-prompt-capture", "denial-fallback-capture", "media-and-server-trace"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-001-AUTH-BOUNDARY",
+      "task": "V2-B27-DEV-001",
+      "kind": "login-boundary",
+      "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "windows-pwa", "wechat-miniapp"],
+      "assertions": ["anonymous-opens-login", "oidc-return-to-is-bounded", "authenticated-data-is-server-backed", "expired-or-revoked-session-returns-to-login", "no-token-in-url-or-logs"],
+      "evidenceRequired": ["oidc-trace", "screen-capture", "api-response", "database-reconciliation"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-001-BACK-SHARE",
+      "task": "V2-B27-DEV-001",
+      "kind": "back-and-share",
+      "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "windows-pwa", "wechat-miniapp"],
+      "assertions": ["back-is-mapped-to-safe-route", "unsaved-state-is-preserved-or-confirmed", "share-never-exposes-credential", "shared-link-is-public-or-authorized-by-server"],
+      "evidenceRequired": ["navigation-trace", "share-sheet-or-link-capture", "server-authorization-trace"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-002-PWA-INSTALL-UPDATE",
+      "task": "V2-B27-DEV-002",
+      "kind": "pwa-install-update-cache",
+      "targetIds": ["windows-pwa"],
+      "assertions": ["manifest-is-installable", "install-does-not-bypass-login", "new-cache-version-activates", "old-cache-is-invalidated", "non-GET-and-auth-data-are-not-cached", "offline-only-read-state-is-explicit"],
+      "evidenceRequired": ["manifest-report", "install-capture", "service-worker-version-log", "cache-inventory", "login-boundary-trace"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    },
+    {
+      "id": "B27-DEV-002-WECHAT-CONDITIONAL-COMPILE",
+      "task": "V2-B27-DEV-002",
+      "kind": "wechat-conditional-compile",
+      "targetIds": ["wechat-miniapp"],
+      "assertions": ["mp-weixin-build-comes-from-apps-mobile", "no-second-pages-or-api-layer", "login-boundary-is-preserved", "back-and-share-use-wechat-runtime", "stale-build-is-rejected-or-refreshed"],
+      "evidenceRequired": ["compiler-output-manifest", "wechat-preview-capture", "page-and-api-source-diff", "login-and-share-capture"],
+      "status": "runtimeBlocked",
+      "runtimeEvidence": null
+    }
+  ],
+  "evidenceContract": {
+    "requiredPerCase": [
+      "runId",
+      "caseId",
+      "targetId",
+      "sourceProject",
+      "compilerVersion",
+      "deviceProfile",
+      "startedAt",
+      "finishedAt",
+      "status",
+      "screenshotsOrDeviceCapture",
+      "traceOrNativeDeviceLog",
+      "networkTrace",
+      "authTrace",
+      "storageOrCacheReport",
+      "databaseReconciliation",
+      "consoleLog",
+      "pageErrors"
+    ],
+    "passRequirements": [
+      "status-is-passed",
+      "runtimeBlocked-is-false",
+      "evidence-files-are-addressable",
+      "consoleLog-has-no-error",
+      "pageErrors-is-empty",
+      "authenticated-journey-is-server-backed",
+      "database-reconciliation-is-matched"
+    ],
+    "blockedRequirements": [
+      "status-is-runtimeBlocked",
+      "runtimeBlocked-is-true",
+      "blockedReason-is-present",
+      "runtimeEvidence-is-null"
+    ],
+    "consolePolicy": { "failOnConsoleError": true, "failOnPageError": true, "failOnUnhandledRejection": true },
+    "forbiddenFixtureFields": [
+      "password",
+      "clientSecret",
+      "accessToken",
+      "refreshToken",
+      "authorization",
+      "phone",
+      "email",
+      "rawAudio",
+      "recordingBytes",
+      "deviceFingerprint"
+    ],
+    "forbiddenDefaultCapabilities": ["phase-2-ai", "phase-3-k12", "realtime-ai"],
+    "forbiddenEvidenceValues": ["eyJ", "BEGIN PRIVATE KEY", "sk-", "user@example.com", "+8613800000000"]
+  }
+}

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: englishflow-g4-compatibility-window
+data:
+  compatibility-window-required: "true"
+  window-mode: bounded-read-compatibility-window
+  legacy-system: core-api
+  new-entry-point: api-gateway
+  external-route-prefix: /api/v1
+  legacy-read-allowed: "true"
+  legacy-write-allowed: "false"
+  new-owner-write-only: "true"
+  expiry-audit-required: "true"
+  mismatch-action: STOP_EXPANSION_AND_ROLLBACK_OR_MANUAL_TAKEOVER
+  database-strategy: expand-contract-forward-compatible

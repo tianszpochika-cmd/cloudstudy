@@ -51,7 +51,7 @@ public final class CommerceController {
 
     @PostMapping("/orders") @ResponseStatus(HttpStatus.CREATED)
     public CommerceViews.OrderView createOrder(@Valid @RequestBody CreateOrderRequest request, @RequestHeader("Idempotency-Key") String key, Authentication authentication) { return service.createOrder(user(authentication), new CreateOrder(request.skuId()), key); }
-    @PostMapping("/orders/{orderId}/payments") @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/orders/{orderId}/payment-intents") @ResponseStatus(HttpStatus.ACCEPTED)
     public CommerceViews.PaymentStartView startPayment(@PathVariable String orderId, @Valid @RequestBody PaymentRequest request, @RequestHeader("Idempotency-Key") String key, Authentication authentication) { return service.startPayment(user(authentication), new StartPayment(orderId, request.provider()), key); }
     @PostMapping("/orders/{orderId}/payments/recover") public CommerceViews.PaymentStartView recoverPayment(@PathVariable String orderId, @RequestHeader("Idempotency-Key") String key, Authentication authentication) { return service.recoverPayment(user(authentication), orderId, key); }
     @PostMapping("/orders/{orderId}/cancel") public CommerceViews.OrderView cancelOrder(@PathVariable String orderId, @RequestHeader("Idempotency-Key") String key, Authentication authentication) { return service.cancelOrder(user(authentication), orderId, key); }

@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: englishflow-g4-release
+  annotations:
+    englishflow.io/manual-approval-required: "true"
+    englishflow.io/immutable-artifact-required: "true"
+    englishflow.io/rollback-evidence-required: "true"
+    englishflow.io/stage-1-traffic: 1
+    englishflow.io/stage-5-traffic: 5
+    englishflow.io/stage-25-traffic: 25
+    englishflow.io/stage-50-traffic: 50
+    englishflow.io/stage-100-traffic: 100
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: englishflow-g4
+  template:
+    metadata:
+      labels:
+        app: englishflow-g4
+    spec:
+      containers:
+        - name: api-gateway
+          image: registry.example.invalid/englishflow/api-gateway@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 18070
+  strategy:
+    canary:
+      stableService: englishflow-g4-stable
+      canaryService: englishflow-g4-canary
+      abortScaleDownDelaySeconds: 300
+      steps:
+        - setWeight: 1
+        - pause: {duration: 0}
+        - setWeight: 5
+        - pause: {duration: 0}
+        - setWeight: 25
+        - pause: {duration: 0}
+        - setWeight: 50
+        - pause: {duration: 0}
+        - setWeight: 100
+        - pause: {}

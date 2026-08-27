@@ -1,0 +1,197 @@
+{
+  "batch": "B30",
+  "runId": "b30-oidc-20260824133236",
+  "capturedAt": "2026-08-24T13:32:36.965Z",
+  "mode": "local-real",
+  "status": "PASS",
+  "evidenceClass": "runtime-external",
+  "provenance": {
+    "external": true,
+    "producer": "b30-runtime-probe",
+    "source": "executed-local-keycloak-public-endpoints",
+    "synthetic": false
+  },
+  "tokenMaterial": {
+    "tokenEndpointCalled": false,
+    "tokensCollected": false,
+    "jwtCreated": false,
+    "passwordsCollected": false
+  },
+  "provider": {
+    "provider": "keycloak",
+    "baseUrl": "http://127.0.0.1:18099",
+    "realm": "yuxuexing-local",
+    "issuer": "http://127.0.0.1:18099/realms/yuxuexing-local",
+    "discovery": "http://127.0.0.1:18099/realms/yuxuexing-local/.well-known/openid-configuration",
+    "jwks": {
+      "uri": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/certs",
+      "signingKeyCount": 1
+    },
+    "audience": "yuxuexing-api"
+  },
+  "clients": [
+    {
+      "clientId": "yuxuexing-learner-web",
+      "redirectUri": "http://127.0.0.1:18180/auth/callback",
+      "login": {
+        "exactRedirectAccepted": true,
+        "httpStatus": 200,
+        "registrationLink": true,
+        "loginPageFinalHost": "127.0.0.1:18099"
+      },
+      "pkce": {
+        "method": "S256",
+        "exactS256Accepted": true,
+        "plainRejected": true,
+        "missingChallengeRejected": true,
+        "plainHttpStatus": 302,
+        "missingChallengeHttpStatus": 302
+      },
+      "redirectAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "rejectedRedirectHttpStatus": 400
+      },
+      "logoutAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "exactHttpStatus": 302,
+        "rejectedRedirectHttpStatus": 400
+      }
+    },
+    {
+      "clientId": "yuxuexing-admin-web",
+      "redirectUri": "http://127.0.0.1:18181/auth/callback",
+      "login": {
+        "exactRedirectAccepted": true,
+        "httpStatus": 200,
+        "registrationLink": true,
+        "loginPageFinalHost": "127.0.0.1:18099"
+      },
+      "pkce": {
+        "method": "S256",
+        "exactS256Accepted": true,
+        "plainRejected": true,
+        "missingChallengeRejected": true,
+        "plainHttpStatus": 302,
+        "missingChallengeHttpStatus": 302
+      },
+      "redirectAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "rejectedRedirectHttpStatus": 400
+      },
+      "logoutAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "exactHttpStatus": 302,
+        "rejectedRedirectHttpStatus": 400
+      }
+    },
+    {
+      "clientId": "yuxuexing-mobile-h5",
+      "redirectUri": "http://127.0.0.1:18183/auth/callback",
+      "login": {
+        "exactRedirectAccepted": true,
+        "httpStatus": 200,
+        "registrationLink": true,
+        "loginPageFinalHost": "127.0.0.1:18099"
+      },
+      "pkce": {
+        "method": "S256",
+        "exactS256Accepted": true,
+        "plainRejected": true,
+        "missingChallengeRejected": true,
+        "plainHttpStatus": 302,
+        "missingChallengeHttpStatus": 302
+      },
+      "redirectAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "rejectedRedirectHttpStatus": 400
+      },
+      "logoutAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "exactHttpStatus": 302,
+        "rejectedRedirectHttpStatus": 400
+      }
+    },
+    {
+      "clientId": "yuxuexing-mobile-app",
+      "redirectUri": "englishflow://auth/callback",
+      "login": {
+        "exactRedirectAccepted": true,
+        "httpStatus": 200,
+        "registrationLink": true,
+        "loginPageFinalHost": "127.0.0.1:18099"
+      },
+      "pkce": {
+        "method": "S256",
+        "exactS256Accepted": true,
+        "plainRejected": true,
+        "missingChallengeRejected": true,
+        "plainHttpStatus": 302,
+        "missingChallengeHttpStatus": 302
+      },
+      "redirectAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "rejectedRedirectHttpStatus": 400
+      },
+      "logoutAllowlist": {
+        "exactMatch": true,
+        "wildcardRejected": true,
+        "exactHttpStatus": 302,
+        "rejectedRedirectHttpStatus": 400
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "discovery-issuer-endpoints",
+      "status": "PASS",
+      "detail": "issuer=http://127.0.0.1:18099/realms/yuxuexing-local"
+    },
+    {
+      "id": "jwks-rs256-public-signing-key",
+      "status": "PASS",
+      "detail": "1 RS256 signing key(s); private members absent"
+    },
+    {
+      "id": "registration-policy-runtime",
+      "status": "PASS",
+      "detail": "Keycloak login page exposes self-registration"
+    },
+    {
+      "id": "dynamic-registration-not-public",
+      "status": "PASS",
+      "detail": "unauthenticated client registration is blocked with HTTP 404"
+    },
+    {
+      "id": "client-exact-redirects",
+      "status": "PASS",
+      "detail": "all four exact callbacks reached the Keycloak login page"
+    },
+    {
+      "id": "client-pkce-s256",
+      "status": "PASS",
+      "detail": "all four clients accepted S256 authorization requests"
+    },
+    {
+      "id": "client-pkce-required",
+      "status": "PASS",
+      "detail": "all four clients rejected plain and missing PKCE requests"
+    },
+    {
+      "id": "client-redirect-allowlist",
+      "status": "PASS",
+      "detail": "all four clients rejected a non-allowlisted callback"
+    },
+    {
+      "id": "client-logout-allowlist",
+      "status": "PASS",
+      "detail": "all four clients rejected a non-allowlisted post-logout redirect"
+    }
+  ]
+}

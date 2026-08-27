@@ -10,6 +10,9 @@ public record JwksKeyDescriptor(String keyId, String keyType, String algorithm, 
         require(keyType, "keyType");
         require(algorithm, "algorithm");
         require(use, "use");
+        if (!"sig".equals(use) || "none".equalsIgnoreCase(algorithm)) {
+            throw new IllegalArgumentException("JWKS key must be a signing key with an explicit algorithm");
+        }
     }
 
     private static void require(String value, String name) {

@@ -10,8 +10,7 @@ const session = useSessionStore()
     <section class="login-card" aria-labelledby="forbidden-title">
       <h1 id="forbidden-title">{{ authT('forbidden.title') }}</h1>
       <p class="lead">{{ authT('forbidden.description') }}</p>
-      <p v-if="!session.permissions.length" class="muted">{{ authT('forbidden.empty') }}</p>
-      <p v-else class="muted">{{ session.permissions.length }} permissions received from the server.</p>
+      <p class="muted" role="alert">{{ session.forbiddenReason ?? authT('forbidden.description') }}</p>
       <div class="login-card__actions">
         <RouterLink class="button button--secondary" to="/home">{{ authT('callback.returning') }}</RouterLink>
         <RouterLink class="button button--ghost" to="/login">{{ authT('forbidden.login') }}</RouterLink>
@@ -19,4 +18,3 @@ const session = useSessionStore()
     </section>
   </main>
 </template>
-

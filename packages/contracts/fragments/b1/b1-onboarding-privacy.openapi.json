@@ -5,6 +5,17 @@
   ],
   "paths": {
     "/api/v1/assessment/placement/start": {
+      "get": {
+        "tags": ["b1-onboarding"],
+        "summary": "Read the learner's current placement session",
+        "operationId": "readPlacementSession",
+        "security": [{ "B1ContentBearerAuth": [] }],
+        "parameters": [{ "name": "sessionId", "in": "query", "required": false, "schema": { "type": "string", "minLength": 1, "maxLength": 128 } }],
+        "responses": {
+          "200": { "description": "Placement session state", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AssessmentReadResponse" } } } },
+          "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" }
+        }
+      },
       "post": {
         "tags": ["b1-onboarding"],
         "summary": "Start a deterministic placement session",
@@ -39,23 +50,6 @@
         }
       }
     },
-    "/api/v1/user/devices": {
-      "get": {
-        "tags": ["b1-privacy"], "summary": "List the current user's active devices", "operationId": "listUserDevices",
-        "security": [{ "B1ContentBearerAuth": [] }], "x-b1-acceptance": ["B1-DEVICE-KICKOUT", "B1-SCOPE-CROSS-TENANT-USER"],
-        "responses": { "200": { "description": "Self-scoped device list", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1DeviceListResponse" } } } }, "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" } }
-      }
-    },
-    "/api/v1/user/devices/kickout": {
-      "post": {
-        "tags": ["b1-privacy"], "summary": "Revoke one of the current user's device sessions", "operationId": "kickoutUserDevice",
-        "security": [{ "B1ContentBearerAuth": [] }], "x-b1-acceptance": ["B1-AUTH-DUAL-TOKEN-REVOKE", "B1-DEVICE-KICKOUT"],
-        "x-idempotency": { "required": true, "strategy": "device-kickout", "keyHeader": "Idempotency-Key", "replayBehavior": "same device and request returns the original revocation" },
-        "parameters": [{ "$ref": "#/components/parameters/B1IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1KickoutRequest" } } } },
-        "responses": { "200": { "description": "Device session revoked" }, "401": { "$ref": "#/components/responses/B1OnboardingUnauthorized" }, "403": { "$ref": "#/components/responses/B1OnboardingForbidden" }, "404": { "$ref": "#/components/responses/B1OnboardingNotFound" }, "409": { "$ref": "#/components/responses/B1OnboardingConflict" } }
-      }
-    },
     "/api/v1/privacy/export": {
       "post": {
         "tags": ["b1-privacy"], "summary": "Create a self-scoped, masked privacy export", "operationId": "createPrivacyExport",
@@ -77,6 +71,7 @@
     },
     "schemas": {
       "B1ErrorResponse": { "type": "object", "additionalProperties": false, "required": ["requestId", "traceId", "error"], "properties": { "requestId": { "type": "string", "minLength": 8, "maxLength": 128 }, "traceId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "error": { "type": "object", "additionalProperties": false, "required": ["errorCode", "message", "retryable"], "properties": { "errorCode": { "type": "string", "enum": ["AUTH_REQUIRED", "FORBIDDEN", "NOT_FOUND", "CONFLICT", "IDEMPOTENCY_CONFLICT"] }, "message": { "type": "string", "minLength": 1, "maxLength": 500 }, "retryable": { "type": "boolean" } } } } },
+      "B1AssessmentReadResponse": { "type": "object", "additionalProperties": true, "properties": { "status": { "type": "string" }, "sessionId": { "type": "string" }, "contentVersionId": { "type": "string" }, "currentQuestion": {}, "nextQuestion": {}, "report": {}, "isCompleted": { "type": "boolean" } } },
       "B1AssessmentStartResponse": { "type": "object", "additionalProperties": false, "required": ["sessionId", "assessmentVersionId", "questionId", "rulesVersion"], "properties": { "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "assessmentVersionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "questionId": { "type": "integer", "format": "int64", "minimum": 1 }, "rulesVersion": { "type": "string", "minLength": 1, "maxLength": 64 } } },
       "B1AssessmentStepRequest": { "type": "object", "additionalProperties": false, "required": ["sessionId", "assessmentVersionId", "questionId", "answer", "timeSpentSec"], "properties": { "sessionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "assessmentVersionId": { "type": "string", "minLength": 8, "maxLength": 128 }, "questionId": { "type": "integer", "format": "int64", "minimum": 1 }, "answer": { "type": "string", "minLength": 1, "maxLength": 128, "description": "只接受答案键，不保存答案原文" }, "timeSpentSec": { "type": "integer", "minimum": 0, "maximum": 3600 } } },
       "B1AssessmentStepResponse": { "type": "object", "additionalProperties": false, "required": ["attemptId", "questionId", "scoreBucket", "deduplicated"], "properties": { "attemptId": { "type": "integer", "format": "int64", "minimum": 1 }, "questionId": { "type": "integer", "format": "int64", "minimum": 1 }, "scoreBucket": { "type": "string", "enum": ["ZERO", "LOW", "MEDIUM", "HIGH", "FULL", "WITHHELD"] }, "deduplicated": { "type": "boolean" } } },

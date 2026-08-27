@@ -1,0 +1,760 @@
+{
+  "schemaVersion": 1,
+  "batch": "B20",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "runtimeDecision": "BLOCKED",
+  "sourceRefs": [
+    "V2-B20-COM-004",
+    "V2-B20-DR-005",
+    "V2-B20-TEST-006",
+    "ARCH-DR-001",
+    "ARCH-REL-001",
+    "ARCH-IAM-002"
+  ],
+  "tasks": [
+    {
+      "id": "V2-B20-COM-004",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "scope": [
+        "entitlements",
+        "activation-codes",
+        "payment-sandbox",
+        "callback-verification",
+        "amount-binding",
+        "replay-protection",
+        "refunds",
+        "reconciliation"
+      ]
+    },
+    {
+      "id": "V2-B20-DR-005",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "scope": [
+        "mysql-backup-pitr",
+        "redis-backup",
+        "kafka-replay",
+        "object-storage-recovery",
+        "rpo-rto",
+        "fault-injection",
+        "slo-alerting",
+        "runbook",
+        "manual-takeover",
+        "post-recovery-reconciliation"
+      ]
+    },
+    {
+      "id": "V2-B20-TEST-006",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "deny",
+      "scope": [
+        "evidence-index",
+        "release-blocking",
+        "dual-review",
+        "risk-acceptance",
+        "rollback-conclusion"
+      ]
+    }
+  ],
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B20_REQUIRE_RUNTIME",
+    "requiredEnv": [
+      "B20_RUNTIME_PAYMENT_SANDBOX",
+      "B20_RUNTIME_PAYMENT_QUALIFICATION",
+      "B20_RUNTIME_BACKUP_EVIDENCE_DIR",
+      "B20_RUNTIME_RESTORE_EVIDENCE_DIR",
+      "B20_RUNTIME_OBSERVABILITY_EVIDENCE",
+      "B20_RUNTIME_EVIDENCE_INDEX"
+    ],
+    "requiredEvidence": [
+      "B20-E-COM-PAYMENT-RUNTIME",
+      "B20-E-COM-REFUND-RUNTIME",
+      "B20-E-DR-BACKUP-RUNTIME",
+      "B20-E-DR-RESTORE-RUNTIME",
+      "B20-E-DR-OBSERVABILITY-RUNTIME",
+      "B20-E-TEST-RELEASE-RUNTIME"
+    ],
+    "runtimeStatusWhenMissing": "blocked",
+    "runtimeEvidenceMustBeCapturedExternally": true
+  },
+  "commerce": {
+    "featureGate": {
+      "paymentsEnabledByDefault": false,
+      "liveProviderEnabled": false,
+      "providerMode": "sandbox-only",
+      "sandboxProviders": ["sandbox-hmac"],
+      "liveProviders": [],
+      "liveProvidersMustRemainEmpty": true,
+      "qualificationRequired": "merchant-channel-qualification",
+      "missingQualificationDecision": "deny",
+      "environmentOverride": "COMMERCE_PAYMENT_ENABLED",
+      "overrideAllowedEnvironments": ["sandbox"],
+      "overrideRequires": "approved-sandbox-qualification",
+      "liveEnvironmentOverrideAllowed": false,
+      "noLiveTrafficInPhase": "phase-1"
+    },
+    "syntheticFixtures": {
+      "enabled": true,
+      "syntheticOnly": true,
+      "tenant": "platform",
+      "subject": "synthetic-b20-learner",
+      "orderId": "order-b20-001",
+      "skuId": "sku-b20-foundation",
+      "amountMinor": 9900,
+      "currency": "CNY",
+      "providerEventId": "sandbox-event-b20-001",
+      "refundId": "sandbox-refund-b20-001",
+      "activationBatch": "batch-b20-001",
+      "activationCodeRef": "code-ref-b20-001"
+    },
+    "controls": {
+      "entitlements": {
+        "factOwner": "commerce-service",
+        "subjectDerivedFrom": "verified-principal",
+        "tenantDerivedFrom": "verified-principal",
+        "activationSources": ["VERIFIED_PAYMENT", "ACTIVATION_CODE"],
+        "sourceReferenceIdempotency": true,
+        "noClientGrantAuthority": true,
+        "revocationMustBeAudited": true
+      },
+      "activationCodes": {
+        "storage": "sha256-digest-only",
+        "plaintextExposure": "issue-response-only",
+        "oneTimeRedemption": true,
+        "redemptionRequiresIdempotencyKey": true,
+        "redemptionBindsTenantAndSubject": true,
+        "reuseDecision": "reject-and-audit",
+        "rawCodePersistence": false
+      },
+      "paymentSandbox": {
+        "provider": "sandbox-hmac",
+        "liveProvider": false,
+        "liveTrafficAllowed": false,
+        "credentialSource": "runtime-secret-store-only",
+        "clientNeverReceivesProviderCredential": true,
+        "unqualifiedChannelDecision": "deny",
+        "failedPaymentDecision": "retryable-no-entitlement"
+      },
+      "callbackVerification": {
+        "verificationOrder": [
+          "provider-allowlist",
+          "canonical-payload-binding",
+          "signature-verification",
+          "provider-event-dedupe",
+          "order-amount-currency-binding",
+          "pending-attempt-state",
+          "fact-write-and-outbox"
+        ],
+        "signatureAlgorithm": "HMAC-SHA256",
+        "rejectUnverified": true,
+        "rejectForgedProvider": true,
+        "rawPayloadPersistence": false,
+        "sameEventSameDigestDecision": "idempotent-no-second-effect",
+        "sameEventDifferentDigestDecision": "reject-and-audit"
+      },
+      "amountBinding": {
+        "bindTo": "server-order-price-snapshot",
+        "requiredFields": ["orderId", "amountMinor", "currency", "providerEventId"],
+        "clientAmountAuthority": false,
+        "currencyAuthority": "server-order-price-snapshot",
+        "mismatchDecision": "reject-and-audit",
+        "negativeAmountDecision": "reject-and-audit"
+      },
+      "replayProtection": {
+        "providerEventIdentity": ["tenant", "provider", "providerEventId"],
+        "callbackReceiptUnique": true,
+        "idempotencyFingerprintRequired": true,
+        "mismatchedPayloadDecision": "reject-and-audit",
+        "samePayloadReplayDecision": "return-existing-result",
+        "noSecondEntitlementGrant": true,
+        "noSecondRefundEffect": true
+      },
+      "refunds": {
+        "amountCeiling": "paid-minus-refunded",
+        "idempotencyRequired": true,
+        "providerSignatureRequired": true,
+        "refundCallbackAmountBound": true,
+        "failedRefundDecision": "retryable-no-entitlement-grant",
+        "refundFactAudited": true,
+        "refundDoesNotRewriteOrderPriceSnapshot": true
+      },
+      "reconciliation": {
+        "factOwner": "commerce-service",
+        "inputs": ["order-fact", "payment-callback-receipt", "refund-fact", "entitlement-fact", "provider-settlement-sandbox"],
+        "immutableDomainFacts": true,
+        "states": ["MATCHED", "MISMATCHED", "REPAIR_REQUIRED"],
+        "repairMode": "command-or-manual-recovery-not-cross-service-write",
+        "replayIsIdempotent": true,
+        "requiresAuditTrail": true,
+        "requiresPostRecoveryRun": true
+      }
+    }
+  },
+  "disasterRecovery": {
+    "systems": [
+      {
+        "id": "mysql",
+        "backupMode": "full-plus-binlog",
+        "pitr": true,
+        "restoreTarget": "isolated-schema",
+        "owner": "service-owner",
+        "evidenceId": "B20-E-DR-MYSQL-BACKUP"
+      },
+      {
+        "id": "redis",
+        "backupMode": "rdb-plus-aof-when-enabled",
+        "pitr": false,
+        "restoreTarget": "isolated-keyspace",
+        "owner": "platform-owner",
+        "evidenceId": "B20-E-DR-REDIS-BACKUP"
+      },
+      {
+        "id": "kafka",
+        "backupMode": "retained-topic-plus-offset-checkpoint",
+        "pitr": false,
+        "restoreTarget": "isolated-consumer-group",
+        "owner": "platform-owner",
+        "evidenceId": "B20-E-DR-KAFKA-BACKUP"
+      },
+      {
+        "id": "object-storage",
+        "backupMode": "versioned-bucket-plus-cross-boundary-copy",
+        "pitr": true,
+        "restoreTarget": "isolated-bucket",
+        "owner": "media-platform-owner",
+        "evidenceId": "B20-E-DR-OBJECT-BACKUP"
+      }
+    ],
+    "targets": {
+      "status": "target-not-measured",
+      "measurementRequired": true,
+      "rpoMinutes": {
+        "mysql": 15,
+        "redis": 30,
+        "kafka": 15,
+        "object-storage": 60
+      },
+      "rtoMinutes": {
+        "mysql": 60,
+        "redis": 30,
+        "kafka": 45,
+        "object-storage": 120
+      },
+      "passRequires": ["measured-restoration-window", "captured-data-loss-window", "integrity-check", "owner-signoff"]
+    },
+    "recoveryDrills": [
+      {
+        "id": "B20-DR-DRILL-MYSQL-PITR",
+        "system": "mysql",
+        "failure": "point-in-time-corruption",
+        "expected": "restore-to-isolated-schema-and-reconcile-domain-facts",
+        "status": "pending",
+        "evidenceId": "B20-E-DR-MYSQL-RESTORE"
+      },
+      {
+        "id": "B20-DR-DRILL-REDIS-LOSS",
+        "system": "redis",
+        "failure": "cache-and-lock-loss",
+        "expected": "rebuild-cache-without-treating-redis-as-fact-source",
+        "status": "pending",
+        "evidenceId": "B20-E-DR-REDIS-RESTORE"
+      },
+      {
+        "id": "B20-DR-DRILL-KAFKA-REPLAY",
+        "system": "kafka",
+        "failure": "consumer-offset-loss-and-dlq-replay",
+        "expected": "replay-idempotently-and-reconcile-projections",
+        "status": "pending",
+        "evidenceId": "B20-E-DR-KAFKA-RESTORE"
+      },
+      {
+        "id": "B20-DR-DRILL-OBJECT-RESTORE",
+        "system": "object-storage",
+        "failure": "bucket-version-or-region-loss",
+        "expected": "restore-versioned-assets-and-verify-media-hash",
+        "status": "pending",
+        "evidenceId": "B20-E-DR-OBJECT-RESTORE"
+      }
+    ],
+    "faultInjection": {
+      "productionEnabled": false,
+      "requiresChangeWindow": true,
+      "scenarios": [
+        "mysql-read-only-or-connection-loss",
+        "redis-unavailable",
+        "kafka-producer-or-consumer-unavailable",
+        "object-storage-timeout",
+        "provider-callback-timeout",
+        "outbox-dlq-growth"
+      ],
+      "expectedSafety": ["bounded-retry", "visible-degradation", "no-duplicate-entitlement", "no-duplicate-refund", "manual-recovery-record"]
+    },
+    "observability": {
+      "sloRequired": true,
+      "sloDimensions": ["availability", "latency", "error-rate", "outbox-lag", "reconciliation-lag", "backup-freshness"],
+      "alertRequired": true,
+      "alertSignals": ["backup-stale", "restore-failure", "rpo-breach", "rto-breach", "dlq-growth", "reconciliation-mismatch", "payment-callback-rejection"],
+      "traceCorrelationFields": ["traceId", "requestId", "eventId", "aggregateId", "idempotencyKey"],
+      "auditRequired": true,
+      "silenceMustBeAudited": true
+    },
+    "runbook": {
+      "id": "B20-RUNBOOK-001",
+      "path": "docs/07-operations/incident-runbook.md",
+      "requiredSections": ["triage", "containment", "manual-takeover", "restore", "replay", "reconciliation", "rollback", "communication"],
+      "manualTakeover": {
+        "allowed": true,
+        "requiresTicket": true,
+        "requiresTwoPersonReview": true,
+        "writesDomainFactsDirectly": false,
+        "requiresAuditRecord": true
+      },
+      "rollback": {
+        "required": true,
+        "mustBeVersioned": true,
+        "mustBeTested": true,
+        "conclusionStatus": "not-established"
+      }
+    },
+    "postRecoveryReconciliation": {
+      "required": true,
+      "domains": ["commerce-order", "payment-callback", "refund", "entitlement", "outbox", "projection"],
+      "mustCompareFactsBeforeProjection": true,
+      "mismatchDecision": "hold-and-manual-recovery",
+      "successStatus": "MATCHED_AFTER_RECOVERY",
+      "evidenceRequired": true
+    }
+  },
+  "qualityGates": [
+    {
+      "id": "B20-COM-004-ENTITLEMENT",
+      "task": "V2-B20-COM-004",
+      "category": "commerce-entitlement-and-activation",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-COM-ENT-STATIC", "B20-E-COM-ENT-RUNTIME"],
+      "staticChecks": [
+        {
+          "id": "B20-COM-ENT-STATIC-001",
+          "kind": "owner-scoped-entitlement-and-digest-only-activation",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-COM-ENT-STATIC",
+          "sourcePaths": [
+            "services/commerce-service/src/main/java/com/englishflow/commerce/application/CommerceApplicationService.java",
+            "services/commerce-service/src/main/resources/db/migration/V1__create_commerce_own_schema.sql"
+          ],
+          "assertions": [
+            {"contains": "redeemActivationCode"},
+            {"contains": "activateEntitlement"},
+            {"contains": "codeHash"},
+            {"contains": "commerce_idempotency_record"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-COM-ENT-RUNTIME-001",
+          "kind": "sandbox-entitlement-activation-and-code-reuse",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-COM-ENT-RUNTIME",
+          "tools": ["sandbox API runner", "MySQL fact query", "audit export"],
+          "targets": ["commerce-service", "admin-ops-service", "IAM principal"],
+          "scenarios": ["activate once", "redeem same code twice", "cross-subject redemption", "cross-tenant redemption"],
+          "evidenceRequired": ["request-response", "fact-row-digest", "audit-record", "replay-result"],
+          "cannotBeSatisfiedBy": ["mock-only", "static-manifest", "HTTP-200-without-fact"],
+          "expected": "one owner-scoped entitlement and an audited reject for reuse or unauthorized redemption"
+        }
+      ]
+    },
+    {
+      "id": "B20-COM-004-PAYMENT",
+      "task": "V2-B20-COM-004",
+      "category": "payment-sandbox-and-callback-verification",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-COM-PAYMENT-STATIC", "B20-E-COM-PAYMENT-RUNTIME"],
+      "staticChecks": [
+        {
+          "id": "B20-COM-PAYMENT-STATIC-001",
+          "kind": "payment-gate-default-closed",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-COM-PAYMENT-STATIC",
+          "sourcePaths": [
+            "services/commerce-service/src/main/java/com/englishflow/commerce/domain/PaymentGate.java",
+            "services/commerce-service/src/main/resources/application.yaml",
+            "config/feature-flags.json"
+          ],
+          "assertions": [
+            {"contains": "PaymentGate disabled"},
+            {"contains": "COMMERCE_PAYMENT_ENABLED:false"},
+            {"contains": "commerce.payments"},
+            {"contains": "\"commerce.payments\": false"}
+          ]
+        },
+        {
+          "id": "B20-COM-PAYMENT-STATIC-002",
+          "kind": "callback-signature-amount-and-replay-binding",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-COM-PAYMENT-STATIC",
+          "sourcePaths": [
+            "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/memory/SandboxPaymentProvider.java",
+            "services/commerce-service/src/main/java/com/englishflow/commerce/application/CommerceApplicationService.java",
+            "services/commerce-service/src/main/java/com/englishflow/commerce/adapter/http/CommerceController.java"
+          ],
+          "assertions": [
+            {"contains": "verifyPaymentCallback"},
+            {"contains": "PAYMENT_SIGNATURE_INVALID"},
+            {"contains": "PAYMENT_AMOUNT_MISMATCH"},
+            {"contains": "findPaymentCallback"},
+            {"contains": "Idempotency-Key"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-COM-PAYMENT-RUNTIME-001",
+          "kind": "sandbox-payment-callback-and-qualification-gate",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-COM-PAYMENT-RUNTIME",
+          "tools": ["approved payment sandbox", "signature test runner", "Gateway API runner"],
+          "targets": ["commerce-service payment-intent", "provider callback endpoint", "admin-web commerce view"],
+          "scenarios": ["valid sandbox callback", "forged signature", "provider event replay", "same event different payload", "amount mismatch", "unqualified channel", "payment failure"],
+          "evidenceRequired": ["sandbox receipt", "verification decision", "order/payment/entitlement facts", "audit event", "no-live-provider-attestation"],
+          "cannotBeSatisfiedBy": ["local-signature-unit-test-only", "fake-provider", "live-provider-call", "client-visible-success-only"],
+          "expected": "only a verified, amount-bound sandbox callback can settle; live or unqualified payment remains denied"
+        }
+      ]
+    },
+    {
+      "id": "B20-COM-004-REFUND-RECONCILIATION",
+      "task": "V2-B20-COM-004",
+      "category": "refund-and-commerce-reconciliation",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-COM-REFUND-STATIC", "B20-E-COM-REFUND-RUNTIME"],
+      "staticChecks": [
+        {
+          "id": "B20-COM-REFUND-STATIC-001",
+          "kind": "refund-ceiling-and-reconciliation-owner",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-COM-REFUND-STATIC",
+          "sourcePaths": [
+            "services/commerce-service/src/main/java/com/englishflow/commerce/application/CommerceApplicationService.java",
+            "services/commerce-service/src/main/resources/db/migration/V1__create_commerce_own_schema.sql"
+          ],
+          "assertions": [
+            {"contains": "requestRefund"},
+            {"contains": "receiveRefundCallback"},
+            {"contains": "refund"},
+            {"contains": "commerce_reconciliation_record"},
+            {"contains": "refunded_amount_minor"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-COM-REFUND-RUNTIME-001",
+          "kind": "refund-failure-retry-and-post-recovery-reconciliation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-COM-REFUND-RUNTIME",
+          "tools": ["sandbox refund runner", "MySQL reconciliation query", "Kafka/outbox replay tool"],
+          "targets": ["commerce-service refunds", "entitlement fact", "reconciliation projection"],
+          "scenarios": ["partial or full refund", "refund callback replay", "refund provider timeout", "over-refund rejection", "post-recovery matched reconciliation"],
+          "evidenceRequired": ["refund receipt", "amount ledger", "entitlement state", "reconciliation report", "replay dedupe result"],
+          "cannotBeSatisfiedBy": ["process-restart-only", "mock-ledger", "unreconciled-success"],
+          "expected": "refunds are bounded, retryable and idempotent; recovery ends with explicit MATCHED_AFTER_RECOVERY or manual hold"
+        }
+      ]
+    },
+    {
+      "id": "B20-DR-005-BACKUP",
+      "task": "V2-B20-DR-005",
+      "category": "backup-and-point-in-time-recovery",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-DR-BACKUP-STATIC", "B20-E-DR-BACKUP-RUNTIME", "B20-E-DR-MYSQL-BACKUP", "B20-E-DR-REDIS-BACKUP", "B20-E-DR-KAFKA-BACKUP", "B20-E-DR-OBJECT-BACKUP"],
+      "staticChecks": [
+        {
+          "id": "B20-DR-BACKUP-STATIC-001",
+          "kind": "four-store-backup-pitr-policy",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-DR-BACKUP-STATIC",
+          "sourcePaths": ["docs/07-operations/observability.md", "config/local-services.json", "services/commerce-service/src/main/resources/application.yaml"],
+          "assertions": [
+            {"contains": "RPO/RTO"},
+            {"contains": "mysql"},
+            {"contains": "redis"},
+            {"contains": "kafka"},
+            {"contains": "OBJECT_STORAGE_BUCKET"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-DR-BACKUP-RUNTIME-001",
+          "kind": "backup-freshness-and-pitr-capture",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-DR-BACKUP-RUNTIME",
+          "supportingEvidenceIds": ["B20-E-DR-MYSQL-BACKUP", "B20-E-DR-REDIS-BACKUP", "B20-E-DR-KAFKA-BACKUP", "B20-E-DR-OBJECT-BACKUP"],
+          "tools": ["MySQL backup/PITR runner", "Redis persistence inspection", "Kafka retention/checkpoint inspection", "object-storage version inspection"],
+          "targets": ["MySQL service schemas", "Redis namespace", "Kafka topics and offsets", "versioned object bucket"],
+          "scenarios": ["fresh backup", "stale backup alert", "binlog/PITR boundary", "offset checkpoint", "object version integrity"],
+          "evidenceRequired": ["backup manifest", "content digest", "captured-at timestamp", "retention policy", "operator signoff"],
+          "cannotBeSatisfiedBy": ["config-only", "container-volume-listing", "process-health", "unhashed-export"],
+          "expected": "all four stores have addressable, integrity-checked backup evidence and measured freshness"
+        }
+      ]
+    },
+    {
+      "id": "B20-DR-005-RECOVERY",
+      "task": "V2-B20-DR-005",
+      "category": "restore-drill-and-fault-injection",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-DR-RESTORE-STATIC", "B20-E-DR-RESTORE-RUNTIME", "B20-E-DR-MYSQL-RESTORE", "B20-E-DR-REDIS-RESTORE", "B20-E-DR-KAFKA-RESTORE", "B20-E-DR-OBJECT-RESTORE"],
+      "staticChecks": [
+        {
+          "id": "B20-DR-RESTORE-STATIC-001",
+          "kind": "bounded-retry-dlq-and-manual-recovery-seam",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-DR-RESTORE-STATIC",
+          "sourcePaths": [
+            "services/service-template/src/main/java/com/englishflow/platform/template/b17/reliability/OutboxEntry.java",
+            "services/service-template/src/main/java/com/englishflow/platform/template/b17/reliability/InMemoryOutboxStore.java",
+            "docs/07-operations/incident-runbook.md"
+          ],
+          "assertions": [
+            {"contains": "MANUAL_RECOVERY"},
+            {"contains": "DLQ"},
+            {"contains": "replay"},
+            {"contains": "回滚"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-DR-RESTORE-RUNTIME-001",
+          "kind": "isolated-restore-fault-injection-and-reconciliation",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-DR-RESTORE-RUNTIME",
+          "supportingEvidenceIds": ["B20-E-DR-MYSQL-RESTORE", "B20-E-DR-REDIS-RESTORE", "B20-E-DR-KAFKA-RESTORE", "B20-E-DR-OBJECT-RESTORE"],
+          "tools": ["approved fault-injection runner", "restore orchestrator", "Kafka replay/DLQ tool", "commerce reconciliation runner"],
+          "targets": ["MySQL", "Redis", "Kafka", "object storage", "commerce-service"],
+          "scenarios": ["store outage", "PITR restore", "consumer replay", "cache rebuild", "media hash validation", "manual takeover"],
+          "evidenceRequired": ["fault timeline", "restore transcript", "RPO/RTO measurement", "replay report", "post-recovery reconciliation", "rollback point"],
+          "cannotBeSatisfiedBy": ["pod-restart", "health-endpoint", "synthetic-ticket-without-restore", "same-process-test-double"],
+          "expected": "restore and fault injection meet measured RPO/RTO, preserve facts, replay idempotently and leave an auditable recovery record"
+        }
+      ]
+    },
+    {
+      "id": "B20-DR-005-OBSERVABILITY",
+      "task": "V2-B20-DR-005",
+      "category": "slo-alerting-and-runbook",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-DR-OBSERVABILITY-STATIC", "B20-E-DR-OBSERVABILITY-RUNTIME"],
+      "staticChecks": [
+        {
+          "id": "B20-DR-OBS-STATIC-001",
+          "kind": "otel-health-graceful-shutdown-and-runbook-contract",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-DR-OBSERVABILITY-STATIC",
+          "sourcePaths": [
+            "services/commerce-service/src/main/resources/application.yaml",
+            "services/service-template/src/main/resources/application.yml",
+            "docs/07-operations/observability.md",
+            "docs/07-operations/incident-runbook.md"
+          ],
+          "assertions": [
+            {"contains": "graceful"},
+            {"contains": "health"},
+            {"contains": "opentelemetry"},
+            {"contains": "traceId"},
+            {"contains": "事故"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-DR-OBS-RUNTIME-001",
+          "kind": "slo-alert-and-runbook-execution",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-DR-OBSERVABILITY-RUNTIME",
+          "tools": ["OpenTelemetry collector", "metrics/alert runner", "incident drill runner", "audit-log query"],
+          "targets": ["gateway", "commerce-service", "workflow/job-runner", "data stores"],
+          "scenarios": ["SLO burn", "backup stale alert", "DLQ alert", "reconciliation mismatch alert", "alert escalation", "runbook acknowledgement"],
+          "evidenceRequired": ["trace-metric-log correlation", "alert payload", "escalation record", "runbook timestamps", "audit trail"],
+          "cannotBeSatisfiedBy": ["log-string-search", "dashboard-screenshot-only", "unfired-alert-definition", "manual-unlogged-action"],
+          "expected": "signals fire within policy, correlate across trace/request/event IDs, escalate to an owner and leave an auditable runbook trail"
+        }
+      ]
+    },
+    {
+      "id": "B20-TEST-006-RELEASE-EVIDENCE",
+      "task": "V2-B20-TEST-006",
+      "category": "evidence-index-and-release-blocking",
+      "decision": "BLOCKED",
+      "evidenceIds": ["B20-E-TEST-STATIC", "B20-E-TEST-RELEASE-RUNTIME"],
+      "upstreamTasks": ["V2-B20-SEC-001", "V2-B20-PRI-002", "V2-B20-CNT-003", "V2-B20-COM-004", "V2-B20-DR-005"],
+      "staticChecks": [
+        {
+          "id": "B20-TEST-STATIC-001",
+          "kind": "evidence-index-closed-schema",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-TEST-STATIC",
+          "assertions": [
+            {"policy": "every-check-has-evidence-index-entry"},
+            {"policy": "runtime-evidence-is-pending-or-blocked"},
+            {"policy": "artifact-path-and-sha256-are-required-for-captured-evidence"},
+            {"policy": "unknown-report-fields-are-rejected"}
+          ]
+        },
+        {
+          "id": "B20-TEST-STATIC-002",
+          "kind": "fail-closed-dual-review-risk-and-rollback-policy",
+          "status": "defined",
+          "evidenceClass": "static",
+          "runtimeRequired": false,
+          "evidenceId": "B20-E-TEST-STATIC",
+          "assertions": [
+            {"policy": "missing-gate-blocks-release"},
+            {"policy": "two-independent-reviewers-are-required"},
+            {"policy": "risk-acceptance-is-explicit-and-expiring"},
+            {"policy": "rollback-conclusion-is-required"}
+          ]
+        }
+      ],
+      "runtimeChecks": [
+        {
+          "id": "B20-TEST-RELEASE-RUNTIME-001",
+          "kind": "complete-upstream-evidence-and-two-person-release-review",
+          "status": "pending",
+          "evidenceClass": "runtime",
+          "runtimeRequired": true,
+          "evidenceId": "B20-E-TEST-RELEASE-RUNTIME",
+          "tools": ["CI evidence collector", "artifact hash verifier", "release workbench", "audit-log query"],
+          "targets": ["B20 security manifest", "B20 privacy/content manifest", "B20 commerce/DR manifest", "release decision record"],
+          "scenarios": ["missing evidence blocks", "invalid hash blocks", "single reviewer blocks", "expired risk acceptance blocks", "rollback conclusion recorded", "all gates complete"],
+          "evidenceRequired": ["complete evidence index", "artifact hashes", "two reviewer identities", "risk disposition", "rollback record", "final decision"],
+          "cannotBeSatisfiedBy": ["static-manifest-only", "single-approver", "unhashed-link", "verbal-approval", "client-success-message"],
+          "expected": "release remains blocked until every upstream B20 gate has valid evidence and independent review; a complete, reversible decision is auditable"
+        }
+      ]
+    }
+  ],
+  "evidenceIndex": [
+    {"id": "B20-E-COM-ENT-STATIC", "gateId": "B20-COM-004-ENTITLEMENT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/qualityGates/B20-COM-004-ENTITLEMENT/staticChecks/B20-COM-ENT-STATIC-001", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-COM-ENT-RUNTIME", "gateId": "B20-COM-004-ENTITLEMENT", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/commerce/entitlement/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-COM-PAYMENT-STATIC", "gateId": "B20-COM-004-PAYMENT", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/qualityGates/B20-COM-004-PAYMENT/staticChecks/*", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-COM-PAYMENT-RUNTIME", "gateId": "B20-COM-004-PAYMENT", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/commerce/payment-sandbox/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-COM-REFUND-STATIC", "gateId": "B20-COM-004-REFUND-RECONCILIATION", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/qualityGates/B20-COM-004-REFUND-RECONCILIATION/staticChecks/*", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-COM-REFUND-RUNTIME", "gateId": "B20-COM-004-REFUND-RECONCILIATION", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/commerce/refund-reconciliation/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-BACKUP-STATIC", "gateId": "B20-DR-005-BACKUP", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/disasterRecovery", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-DR-BACKUP-RUNTIME", "gateId": "B20-DR-005-BACKUP", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/backup/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-MYSQL-BACKUP", "gateId": "B20-DR-005-BACKUP", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/backup/mysql/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-REDIS-BACKUP", "gateId": "B20-DR-005-BACKUP", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/backup/redis/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-KAFKA-BACKUP", "gateId": "B20-DR-005-BACKUP", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/backup/kafka/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-OBJECT-BACKUP", "gateId": "B20-DR-005-BACKUP", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/backup/object-storage/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-RESTORE-STATIC", "gateId": "B20-DR-005-RECOVERY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/disasterRecovery/recoveryDrills", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-DR-RESTORE-RUNTIME", "gateId": "B20-DR-005-RECOVERY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/restore/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-MYSQL-RESTORE", "gateId": "B20-DR-005-RECOVERY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/restore/mysql/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-REDIS-RESTORE", "gateId": "B20-DR-005-RECOVERY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/restore/redis/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-KAFKA-RESTORE", "gateId": "B20-DR-005-RECOVERY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/restore/kafka/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-OBJECT-RESTORE", "gateId": "B20-DR-005-RECOVERY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/restore/object-storage/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-DR-OBSERVABILITY-STATIC", "gateId": "B20-DR-005-OBSERVABILITY", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/disasterRecovery/observability", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-DR-OBSERVABILITY-RUNTIME", "gateId": "B20-DR-005-OBSERVABILITY", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/dr/observability/**/*.json", "collectionPolicy": "runtime-runner-only"},
+    {"id": "B20-E-TEST-STATIC", "gateId": "B20-TEST-006-RELEASE-EVIDENCE", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b20-commerce-dr-evidence.json#/releaseGate", "collectionPolicy": "repository-static-only"},
+    {"id": "B20-E-TEST-RELEASE-RUNTIME", "gateId": "B20-TEST-006-RELEASE-EVIDENCE", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b20/release/**/*.json", "collectionPolicy": "runtime-runner-only"}
+  ],
+  "releaseGate": {
+    "status": "BLOCKED",
+    "defaultDecision": "deny",
+    "requiresAllAssignedTasks": true,
+    "requiredUpstreamTasks": ["V2-B20-SEC-001", "V2-B20-PRI-002", "V2-B20-CNT-003", "V2-B20-COM-004", "V2-B20-DR-005"],
+    "blockingConditions": [
+      "any-required-evidence-missing",
+      "runtime-evidence-pending-or-blocked",
+      "artifact-hash-missing-or-invalid",
+      "live-provider-or-unqualified-payment",
+      "restore-or-reconciliation-unmeasured",
+      "single-reviewer-or-conflicted-reviewer",
+      "open-p0-or-p1",
+      "rollback-conclusion-missing"
+    ],
+    "dualReview": {
+      "required": true,
+      "independentReviewers": true,
+      "minimumReviewers": 2,
+      "requiredRoles": ["commerce-owner", "reliability-owner"],
+      "samePersonCannotSatisfyBoth": true,
+      "reviewRecordStatus": "not-present"
+    },
+    "riskAcceptance": {
+      "allowed": true,
+      "defaultStatus": "not-present",
+      "requiredFields": ["riskId", "scope", "residualRisk", "mitigation", "owner", "expiresAt", "approverA", "approverB", "rollbackPlan"],
+      "requiresExpiration": true,
+      "cannotAcceptP0": true,
+      "cannotOpenLivePayment": true
+    },
+    "rollback": {
+      "required": true,
+      "defaultStatus": "not-established",
+      "requiresVersionedArtifact": true,
+      "requiresRestorePoint": true,
+      "requiresOwner": true,
+      "requiresDrillEvidence": true,
+      "conclusionStatus": "not-established"
+    }
+  },
+  "reportSchema": {
+    "id": "b20-release-evidence-report",
+    "version": "1.0.0",
+    "jsonSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "decision", "gates", "evidence", "review", "riskAcceptance", "rollback"],
+      "properties": {
+        "schemaVersion": {"type": "string", "const": "1.0.0"},
+        "reportId": {"type": "string", "minLength": 1},
+        "batch": {"type": "string", "const": "B20"},
+        "decision": {"enum": ["BLOCKED", "NO-GO", "GO"]},
+        "gates": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["gateId", "status", "evidenceIds"], "properties": {"gateId": {"type": "string"}, "status": {"enum": ["defined", "pending", "blocked", "pass", "fail"]}, "evidenceIds": {"type": "array", "items": {"type": "string"}}}}},
+        "evidence": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["evidenceId", "status", "uri", "sha256", "capturedAt", "environment"], "properties": {"evidenceId": {"type": "string"}, "status": {"enum": ["defined", "pending", "captured", "invalid"]}, "uri": {"type": "string"}, "sha256": {"type": ["string", "null"]}, "capturedAt": {"type": ["string", "null"]}, "environment": {"type": ["string", "null"]}}}},
+        "review": {"type": "object", "additionalProperties": false, "required": ["reviewerA", "reviewerB", "independent"], "properties": {"reviewerA": {"type": "string"}, "reviewerB": {"type": "string"}, "independent": {"type": "boolean"}}},
+        "riskAcceptance": {"type": "object", "additionalProperties": false, "required": ["status", "expiresAt"], "properties": {"status": {"enum": ["not-present", "accepted", "expired"]}, "expiresAt": {"type": ["string", "null"]}}},
+        "rollback": {"type": "object", "additionalProperties": false, "required": ["status", "artifactRef", "owner"], "properties": {"status": {"enum": ["not-established", "ready", "tested"]}, "artifactRef": {"type": ["string", "null"]}, "owner": {"type": ["string", "null"]}}}
+      }
+    }
+  }
+}

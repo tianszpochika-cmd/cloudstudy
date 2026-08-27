@@ -1,0 +1,37 @@
+apiVersion: englishflow.dev/v1alpha1
+kind: ReleasePrerequisite
+metadata:
+  name: b22-b21-release-gate
+  labels:
+    app.kubernetes.io/part-of: englishflow
+    app.kubernetes.io/release-batch: b22
+spec:
+  batch: B22
+  phase: phase-1
+  status: BLOCKED
+  defaultDecision: NO-GO
+  staticTemplateOnly: true
+  b21Gate:
+    required: true
+    requiredDecision: PASS
+    currentDecision: BLOCKED
+    acceptanceEvidenceStatus: pending
+    missingOrUnacceptedDecision: BLOCKED
+    staticEvidenceCannotPromote: true
+  requiredChecks:
+    - b21-runtime-gate-accepted
+    - signed-immutable-release
+    - four-platform-version-binding
+    - feature-flag-review
+    - restore-point-registered
+    - rollback-owner-assigned
+    - audit-sink-available
+  denyReasons:
+    - b21-gate-not-accepted
+    - runtime-evidence-pending-or-blocked
+    - missing-immutable-digest
+    - unsigned-or-untracked-artifact
+    - missing-restore-point
+    - missing-rollback-owner
+    - missing-audit-binding
+

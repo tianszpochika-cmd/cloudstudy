@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "batch": "B28",
+  "phase": "phase-1",
+  "runtimeProfile": "local-real",
+  "sourceOfTruth": {
+    "taskBaseline": "requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md",
+    "runtimeServices": "config/v2-runtime-services.json",
+    "localServices": "config/local-services.json",
+    "localPorts": "config/local-ports.json",
+    "ownerManifest": "config/b17-runtime-services.json",
+    "toolchain": "config/toolchain-baseline.json"
+  },
+  "scope": {
+    "learnerWeb": "in-scope",
+    "mobileH5": "in-scope",
+    "adminWeb": "in-scope-for-local-content-flow",
+    "officialSite": "in-scope-for-public-and-login-deep-link",
+    "ios": "deferred",
+    "android": "deferred",
+    "ipadNative": "deferred",
+    "wechatMiniProgram": "deferred",
+    "production": "out-of-scope"
+  },
+  "toolchain": {
+    "java": {
+      "requiredMajor": 25,
+      "source": "config/toolchain-baseline.json"
+    },
+    "maven": {
+      "minimumVersion": "3.9.9",
+      "source": "config/toolchain-baseline.json"
+    },
+    "node": {
+      "minimumVersion": "22.14.0",
+      "minimumMajor": 22
+    },
+    "pnpm": {
+      "requiredVersion": "10.19.0",
+      "source": "package.json"
+    },
+    "docker": {
+      "minimumServerVersion": "24.0.0",
+      "minimumComposeVersion": "2.20.0",
+      "composeFile": "infra/docker/docker-compose.dev.yml"
+    }
+  },
+  "runtimeServices": {
+    "manifest": "config/v2-runtime-services.json",
+    "requiredProcessCount": 14,
+    "legacyCompatibilityServices": ["core-api"],
+    "coreApiMayWriteV2DomainFacts": false,
+    "externalIngress": "api-gateway"
+  },
+  "dependencies": [
+    {
+      "id": "mysql",
+      "localServiceId": "mysql",
+      "composeService": "mysql",
+      "portKey": "mysql",
+      "hostPort": 13306,
+      "containerPort": 3306,
+      "hostPortEnv": "MYSQL_HOST_PORT",
+      "protocol": "mysql",
+      "image": "mysql:8.0",
+      "healthcheckMarker": "mysqladmin ping",
+      "required": true,
+      "factRole": "primary-database"
+    },
+    {
+      "id": "redis",
+      "localServiceId": "redis",
+      "composeService": "redis",
+      "portKey": "redis",
+      "hostPort": 16379,
+      "containerPort": 6379,
+      "hostPortEnv": "REDIS_HOST_PORT",
+      "protocol": "redis",
+      "image": "redis:7-alpine",
+      "healthcheckMarker": "redis-cli",
+      "required": true,
+      "factRole": "cache-lock-rebuildable-projection"
+    },
+    {
+      "id": "kafka",
+      "localServiceId": "kafka",
+      "composeService": "kafka",
+      "portKey": "kafka",
+      "hostPort": 19092,
+      "containerPort": 19092,
+      "hostPortEnv": "KAFKA_HOST_PORT",
+      "protocol": "kafka",
+      "image": "apache/kafka:3.9.2",
+      "healthcheckMarker": "kafka-topics.sh",
+      "required": true,
+      "factRole": "cross-service-event-bus"
+    },
+    {
+      "id": "minio",
+      "localServiceId": "minio",
+      "composeService": "minio",
+      "portKey": "minio-api",
+      "hostPort": 19000,
+      "containerPort": 9000,
+      "hostPortEnv": "MINIO_API_HOST_PORT",
+      "protocol": "http",
+      "image": "minio/minio:latest",
+      "healthcheckMarker": "minio/health/live",
+      "required": true,
+      "factRole": "local-object-storage",
+      "secondaryBinding": {
+        "portKey": "minio-console",
+        "hostPort": 19001,
+        "containerPort": 9001,
+        "protocol": "http",
+        "hostPortEnv": "MINIO_CONSOLE_HOST_PORT"
+      }
+    },
+    {
+      "id": "keycloak",
+      "localServiceId": "oidc-idp",
+      "composeService": "keycloak",
+      "portKey": "oidc-idp",
+      "hostPort": 18099,
+      "containerPort": 8080,
+      "hostPortEnv": "OIDC_IDP_HOST_PORT",
+      "protocol": "http",
+      "image": "quay.io/keycloak/keycloak:26.7.1",
+      "healthcheckMarker": "health/ready",
+      "required": true,
+      "factRole": "standard-oidc-test-provider"
+    }
+  ],
+  "compatibilityDependencies": [
+    {
+      "id": "rabbitmq",
+      "localServiceId": "rabbitmq",
+      "required": false,
+      "purpose": "v1-compatibility-only; never replaces Kafka"
+    }
+  ],
+  "portPolicy": {
+    "source": "config/local-ports.json",
+    "host": "127.0.0.1",
+    "bindOnlyToLoopback": true,
+    "autoIncrement": false,
+    "portDriftDecision": "FAIL_CLOSED"
+  },
+  "persistencePolicy": {
+    "database": "mysql",
+    "migrationRunner": "flyway-per-service",
+    "ownerManifest": "config/b17-runtime-services.json",
+    "requiredOwnerSchemaCount": 11,
+    "independentSchemaRequired": true,
+    "independentCredentialsRequired": true,
+    "crossServiceSqlAllowed": false,
+    "crossServiceWritesAllowed": false,
+    "sharedOrmEntitiesAllowed": false,
+    "requiredRuntimeEvidence": [
+      "flyway-empty-database-run",
+      "flyway-upgrade-run",
+      "flyway-failure-recovery-run",
+      "owner-schema-credential-reconciliation"
+    ]
+  },
+  "safetyPolicy": {
+    "mockAllowed": false,
+    "fallbackAllowed": false,
+    "inMemoryFactsAllowed": false,
+    "staticEvidencePromotesRuntime": false,
+    "defaultPersistenceMode": "fail-closed",
+    "requiredRealPersistenceMode": "jdbc",
+    "missingRuntimeEvidenceDecision": "FAIL_CLOSED",
+    "dockerUnavailableDecision": "FAIL_CLOSED",
+    "databaseUnavailableDecision": "FAIL_CLOSED",
+    "noAutomaticInfrastructureMutation": true,
+    "noDestructiveDatabaseReset": true
+  },
+  "runtimeGate": {
+    "evidenceFileEnv": "B28_RUNTIME_EVIDENCE_FILE",
+    "evidenceRoot": "evidence/b28",
+    "requiredMode": "local-real",
+    "requiredEvidence": [
+      "toolchain-probe",
+      "docker-compose-config",
+      "dependency-health",
+      "flyway-migration-run",
+      "owner-schema-reconciliation",
+      "restart-persistence"
+    ],
+    "requiredEvidenceFields": [
+      "batch",
+      "runId",
+      "sourceRevision",
+      "environment",
+      "capturedAt",
+      "mode",
+      "status",
+      "checks"
+    ],
+    "runtimeEvidenceClass": "runtime-external",
+    "syntheticEvidenceAllowed": false,
+    "staticOnlyLabelCannotPassRuntime": true,
+    "defaultDecision": "BLOCKED"
+  },
+  "commands": {
+    "static": [
+      "node scripts/runtime/b28-bootstrap.mjs --static-only",
+      "node --test tests/b28/*.test.mjs"
+    ],
+    "runtime": [
+      "node scripts/runtime/b28-bootstrap.mjs --require-runtime",
+      "node scripts/check-local-infra.mjs --require-healthy",
+      "docker compose -f infra/docker/docker-compose.dev.yml config --quiet"
+    ]
+  }
+}

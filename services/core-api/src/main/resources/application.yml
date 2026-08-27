@@ -1,6 +1,7 @@
 server:
   address: ${CORE_API_BIND_ADDRESS:127.0.0.1}
   port: ${CORE_API_PORT:18080}
+  shutdown: graceful
   servlet:
     context-path: /api/v1
 

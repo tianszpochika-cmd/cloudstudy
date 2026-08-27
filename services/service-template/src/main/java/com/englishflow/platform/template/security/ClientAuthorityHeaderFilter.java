@@ -1,6 +1,7 @@
 package com.englishflow.platform.template.security;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Set;
 
@@ -15,8 +16,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public final class ClientAuthorityHeaderFilter extends OncePerRequestFilter {
 
     private static final Set<String> REJECTED_HEADERS = Set.of(
-            "x-role", "x-b5-role", "x-tenant-id", "x-owner-id", "tenantid", "ownerid");
-    private static final Set<String> REJECTED_PARAMETERS = Set.of("tenantId", "ownerId");
+            "x-role",
+            "x-b5-role",
+            "x-permission",
+            "x-authority",
+            "x-tenant-id",
+            "x-owner-id",
+            "x-authenticated-user",
+            "x-authenticated-tenant",
+            "tenantid",
+            "ownerid");
+    private static final Set<String> REJECTED_PARAMETERS = Set.of(
+            "tenantid", "ownerid", "role", "permission", "authority", "tenant_id", "owner_id");
 
     private final SecurityErrorWriter errorWriter;
 
@@ -46,9 +57,14 @@ public final class ClientAuthorityHeaderFilter extends OncePerRequestFilter {
                 return true;
             }
         }
-        for (String parameter : REJECTED_PARAMETERS) {
-            if (request.getParameter(parameter) != null) {
-                return true;
+        Enumeration<String> parameters = request.getParameterNames();
+        if (parameters != null) {
+            while (parameters.hasMoreElements()) {
+                String parameter = parameters.nextElement();
+                if (REJECTED_PARAMETERS.contains(parameter.toLowerCase(Locale.ROOT))
+                        && request.getParameter(parameter) != null) {
+                    return true;
+                }
             }
         }
         return false;

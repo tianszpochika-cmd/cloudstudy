@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: englishflow-g4-release-rollback
+resources:
+  - release-gate.yaml
+  - rollout.yaml
+  - feature-flags.yaml
+  - backup-restore.yaml
+  - compatibility-window.yaml
+  - network-policy.yaml
+  - maintenance-approval.yaml
+commonLabels:
+  app.kubernetes.io/part-of: englishflow
+  app.kubernetes.io/managed-by: gitops
+  englishflow.io/gate: g4

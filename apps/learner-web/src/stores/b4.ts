@@ -96,11 +96,12 @@ function gameCode(value: unknown): B4GameCode | null {
 function parseProfile(value: unknown): B4Profile | null {
   const source = recordValue(unwrapB4(value), 'profile') ?? unwrapB4(value)
   if (!isRecord(source)) return null
-  const xp = numberValue(source.xp)
+  const xp = numberValue(source.xp) ?? numberValue(source.serverScore)
   const level = numberValue(source.level)
-  const coins = numberValue(source.coins)
+  const coins = numberValue(source.coins) ?? 0
   const userId = stringValue(source.userId) ?? (typeof source.userId === 'number' ? String(source.userId) : null)
-  if (xp === null || level === null || coins === null || !userId) return null
+    ?? stringValue(source.subjectRef)
+  if (xp === null || level === null || !userId) return null
   return {
     userId,
     xp,
@@ -108,7 +109,7 @@ function parseProfile(value: unknown): B4Profile | null {
     rank: stringValue(source.rank) ?? 'UNKNOWN',
     coins,
     nextLevelXp: numberValue(source.nextLevelXp),
-    streak: numberValue(source.streak) ?? 0,
+    streak: numberValue(source.streak) ?? numberValue(source.streakDays) ?? 0,
     dailyRewardCount: numberValue(source.dailyRewardCount) ?? 0,
     ruleVersion: stringValue(source.ruleVersion),
   }
@@ -379,33 +380,34 @@ export const useB4Store = defineStore('b4', () => {
   async function loadWorld(): Promise<void> {
     status.value = 'loading'
     lastError.value = null
-    try {
-      const [profileRaw, streakRaw, questsRaw, seasonRaw, avatarRaw, itemsRaw, loadoutsRaw, resourcesRaw, gamesRaw, roomsRaw, notificationRaw, preferenceRaw, packagesRaw] = await Promise.all([
-        getB4Profile(), getB4Streak(), listB4Quests(), getB4Season(), getB4AvatarProfile(), listB4AvatarItems(), listB4Loadouts(), getB4AvatarResources(), listB4Games(), listB4Rooms(), listB4Notifications(), getB4NotificationPreferences(), listB4OfflinePackages(),
-      ])
-      profile.value = parseProfile(profileRaw)
-      galaxy.value = parseGalaxy(profileRaw)
-      streak.value = parseStreak(streakRaw)
-      quests.value = recordList(questsRaw).map(parseQuest).filter((item): item is B4Quest => Boolean(item))
-      season.value = parseSeason(seasonRaw)
-      avatarProfile.value = parseAvatarProfile(avatarRaw)
-      avatarItems.value = recordList(itemsRaw).map(parseAvatarItem).filter((item): item is B4AvatarItem => Boolean(item))
-      loadouts.value = recordList(loadoutsRaw).map(parseLoadout).filter((item): item is B4Loadout => Boolean(item))
-      avatarResources.value = parseAvatarResources(resourcesRaw)
-      games.value = recordList(gamesRaw).map(parseGameCatalogItem).filter((item): item is B4GameCatalogItem => Boolean(item))
-      rooms.value = recordList(roomsRaw).map(parseRoom).filter((item): item is B4Room => Boolean(item))
-      notifications.value = recordList(notificationRaw).map(parseNotification).filter((item): item is B4Notification => Boolean(item))
-      notificationPreferences.value = parsePreferences(preferenceRaw)
-      offlinePackages.value = recordList(packagesRaw).map(parseOfflinePackage).filter((item): item is B4OfflinePackage => Boolean(item))
-      const data = unwrapB4(profileRaw)
-      const flags = isRecord(data) && isRecord(data.featureFlags) ? data.featureFlags : null
-      featureFlags.value = flags ? Object.fromEntries(Object.entries(flags).filter(([, value]) => typeof value === 'boolean').map(([key, value]) => [key, value as boolean])) : {}
-      online.value = true
-      status.value = 'ready'
-      refreshQueue()
-    } catch (error) {
-      captureError(error, 'B4 学习端数据暂时不可用，未使用本地样例填充。')
-    }
+    const results = await Promise.allSettled([
+      getB4Profile(), getB4Streak(), listB4Quests(), getB4Season(), getB4AvatarProfile(), listB4AvatarItems(), listB4Loadouts(), getB4AvatarResources(), listB4Games(), listB4Rooms(), listB4Notifications(), getB4NotificationPreferences(), listB4OfflinePackages(),
+    ])
+    const value = (index: number, fallback: unknown): unknown => results[index]?.status === 'fulfilled' ? results[index].value : fallback
+    const profileRaw = value(0, null)
+    profile.value = parseProfile(profileRaw)
+    galaxy.value = parseGalaxy(profileRaw)
+    streak.value = parseStreak(value(1, null))
+    quests.value = recordList(value(2, { items: [] })).map(parseQuest).filter((item): item is B4Quest => Boolean(item))
+    season.value = parseSeason(value(3, null))
+    avatarProfile.value = parseAvatarProfile(value(4, null))
+    avatarItems.value = recordList(value(5, { items: [] })).map(parseAvatarItem).filter((item): item is B4AvatarItem => Boolean(item))
+    loadouts.value = recordList(value(6, { items: [] })).map(parseLoadout).filter((item): item is B4Loadout => Boolean(item))
+    avatarResources.value = parseAvatarResources(value(7, null))
+    games.value = recordList(value(8, { items: [] })).map(parseGameCatalogItem).filter((item): item is B4GameCatalogItem => Boolean(item))
+    rooms.value = recordList(value(9, { items: [] })).map(parseRoom).filter((item): item is B4Room => Boolean(item))
+    notifications.value = recordList(value(10, { items: [] })).map(parseNotification).filter((item): item is B4Notification => Boolean(item))
+    notificationPreferences.value = parsePreferences(value(11, null))
+    offlinePackages.value = recordList(value(12, { items: [] })).map(parseOfflinePackage).filter((item): item is B4OfflinePackage => Boolean(item))
+    const data = unwrapB4(profileRaw)
+    const flags = isRecord(data) && isRecord(data.featureFlags) ? data.featureFlags : null
+    featureFlags.value = flags ? Object.fromEntries(Object.entries(flags).filter(([, item]) => typeof item === 'boolean').map(([key, item]) => [key, item as boolean])) : {}
+    online.value = true
+    status.value = 'ready'
+    lastError.value = results.some((result) => result.status === 'rejected')
+      ? '网络连接正常；成长、社群、游戏和离线包中尚未启用的 owner 保持空状态，未使用快照数据。'
+      : null
+    refreshQueue()
   }
 
   async function loadChests(): Promise<void> {
@@ -515,7 +517,7 @@ export const useB4Store = defineStore('b4', () => {
   async function joinRoom(roomId: string): Promise<void> { try { const result = await joinB4Room(roomId); const room = recordValue(unwrapB4(result), 'room'); const parsed = room ? parseRoom(room) : null; if (parsed) rooms.value = rooms.value.map((item) => item.roomId === parsed.roomId ? parsed : item); status.value = 'ready'; lastError.value = parsed ? '入室状态已由服务端返回确认。' : '服务端未返回入室快照。' } catch (error) { captureError(error, '加入自习室失败，未在本地伪造入室状态。') } }
   async function leaveRoom(roomId: string): Promise<void> { try { await leaveB4Room(roomId); rooms.value = rooms.value.map((item) => item.roomId === roomId ? { ...item, joined: false } : item); activeFocus.value = activeFocus.value?.roomId === roomId ? null : activeFocus.value; status.value = 'ready'; lastError.value = '离室状态已由服务端返回确认。' } catch (error) { captureError(error, '离开自习室失败，当前成员状态未自行修改。') } }
   async function startFocus(roomId: string, durationMinutes: 25 | 45 = 25): Promise<void> { try { activeFocus.value = parseFocus(await startB4Focus(roomId, durationMinutes)); status.value = activeFocus.value ? 'ready' : 'error'; lastError.value = activeFocus.value ? '番茄专注已由服务端建立。' : '服务端未返回专注会话。' } catch (error) { captureError(error, '番茄专注启动失败，未创建本地伪造 session。') } }
-  async function updateFocus(action: B4FocusAction): Promise<void> { if (!activeFocus.value) return; try { activeFocus.value = parseFocus(await updateB4Focus(activeFocus.value.sessionId, action)); status.value = 'ready'; lastError.value = '专注状态已由服务端返回确认。' } catch (error) { captureError(error, '专注状态更新失败；服务端未确认本次操作。') } }
+  async function updateFocus(action: B4FocusAction): Promise<void> { if (!activeFocus.value) return; try { activeFocus.value = parseFocus(await updateB4Focus(activeFocus.value.roomId, activeFocus.value.sessionId, action)); status.value = 'ready'; lastError.value = '专注状态已由服务端返回确认。' } catch (error) { captureError(error, '专注状态更新失败；服务端未确认本次操作。') } }
 
   async function sendInteraction(roomId: string, interactionCode: B4InteractionCode): Promise<void> {
     await guardedAction(`interaction.${roomId}.${interactionCode}`, async () => {

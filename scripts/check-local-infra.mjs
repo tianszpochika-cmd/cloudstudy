@@ -91,11 +91,36 @@ function parseComposePs(output) {
 }
 
 const composePath = path.resolve(rootDir, "infra/docker/docker-compose.dev.yml");
-const [servicesConfig, portsConfig, composeText] = await Promise.all([
+const dotEnvPath = path.resolve(rootDir, ".env");
+const [servicesConfig, portsConfig, composeText, dotEnvText] = await Promise.all([
   readFile(servicesPath, "utf8").then(JSON.parse),
   readFile(portsPath, "utf8").then(JSON.parse),
-  readFile(composePath, "utf8")
+  readFile(composePath, "utf8"),
+  readFile(dotEnvPath, "utf8").catch(() => "")
 ]);
+
+function parseDotEnv(text) {
+  return Object.fromEntries(
+    text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith("#") && line.includes("="))
+      .map((line) => {
+        const separator = line.indexOf("=");
+        const key = line.slice(0, separator).trim();
+        let value = line.slice(separator + 1).trim();
+        if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+        return [key, value];
+      })
+      .filter(([key]) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(key))
+  );
+}
+
+// Docker Compose gives the process environment precedence over .env. Validate
+// both sources so a local override cannot silently move a registered port.
+const configuredEnv = { ...parseDotEnv(dotEnvText), ...process.env };
 
 const expectedHost = servicesConfig.host;
 if (expectedHost !== "127.0.0.1") {
@@ -112,7 +137,7 @@ if (servicesConfig.policy?.autoIncrement !== false) {
 }
 
 const dependencyNames = Object.keys(servicesConfig.services ?? {});
-const requiredDependencies = ["mysql", "redis", "minio", "rabbitmq"];
+const requiredDependencies = servicesConfig.requiredDependencies ?? ["mysql", "redis", "minio", "rabbitmq"];
 for (const dependencyName of requiredDependencies) {
   if (!servicesConfig.services?.[dependencyName]) {
     fail(`missing dependency definition: ${dependencyName}`);
@@ -164,6 +189,10 @@ for (const dependencyName of dependencyNames) {
     const composePortToken = `"${expectedHost}:$\{${binding.hostPortEnv}:-${binding.hostPort}\}:${binding.containerPort}"`;
     if (!hasServiceMarker(composeText, composeName, composePortToken)) {
       fail(`${composeName} is missing fixed loopback mapping: ${composePortToken}`);
+    }
+    const configuredPort = configuredEnv[binding.hostPortEnv];
+    if (configuredPort !== undefined && configuredPort !== "" && String(configuredPort) !== String(binding.hostPort)) {
+      fail(`${binding.hostPortEnv}=${configuredPort} would drift from fixed ${binding.hostPort}; do not override registered ports`);
     }
   }
 }

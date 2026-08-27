@@ -1,0 +1,763 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "batch": "B27",
+  "phase": "phase-1",
+  "mode": "static-and-external-runtime",
+  "status": "BLOCKED",
+  "defaultDecision": "NO-GO",
+  "runtimeDecision": "BLOCKED",
+  "productionAction": "disabled",
+  "taskScope": [
+    "V2-B27-RC-005",
+    "V2-B27-HANDOFF-006"
+  ],
+  "designBasis": {
+    "businessSource": "docs/06-design/v2-980plus/README.md",
+    "architectureRefs": [
+      "ARCH-REL-001",
+      "ARCH-OBS-001",
+      "ARCH-DR-001",
+      "ARCH-DEP-001",
+      "ARCH-SEC-001"
+    ],
+    "sourceRefs": [
+      "docs/07-operations/b26-validation.md",
+      "config/b21-release-gate-evidence.json",
+      "config/b22-production-rollout.json",
+      "config/b22-observation-acceptance.json",
+      "config/b22-data-reconciliation.json",
+      "config/g4-release-rollback.json",
+      "requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md",
+      "requirements/backlog/G0-G4-治理门禁任务基线.md"
+    ],
+    "principles": [
+      "B27 consumes B23-B26 and B15-B22 runtime evidence; it does not invent acceptance.",
+      "Static validation describes a release and handoff contract but cannot approve traffic or production.",
+      "Every runtime artifact is externally captured and bound to runId, sourceRevision, environment and audit references.",
+      "A rollback is owner-local, idempotent, audited and reconciled across database and event facts; no two-phase commit or cross-service table write is allowed."
+    ]
+  },
+  "tasks": [
+    {
+      "id": "V2-B27-RC-005",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": [
+        "V2-B27-DEV-001",
+        "V2-B27-DEV-002",
+        "V2-B27-QUAL-003",
+        "V2-B27-STG-004"
+      ],
+      "scope": [
+        "immutable-release-candidate",
+        "four-platform-version-and-digest-binding",
+        "full-phase1-regression",
+        "restore-point-and-data-event-reconciliation",
+        "automatic-and-manual-rollback-drill",
+        "risk-acceptance-and-change-window",
+        "multi-role-go-no-go",
+        "production-traffic-remains-disabled-until-approved"
+      ]
+    },
+    {
+      "id": "V2-B27-HANDOFF-006",
+      "status": "defined",
+      "runtimeRequired": true,
+      "defaultDecision": "NO-GO",
+      "dependsOn": [
+        "V2-B27-RC-005"
+      ],
+      "scope": [
+        "evidence-index",
+        "phase1-test-report",
+        "p0-p2-defect-ledger",
+        "runtime-emergency-and-rollback-runbooks",
+        "maintenance-owner-and-escalation",
+        "independent-test-receiver",
+        "release-or-no-release-conclusion"
+      ]
+    }
+  ],
+  "upstreamGates": {
+    "status": "BLOCKED",
+    "currentDecision": "BLOCKED",
+    "requiredDecision": "GO",
+    "acceptanceEvidenceStatus": "pending",
+    "missingEvidenceDecision": "BLOCKED",
+    "staticEvidenceCannotPromote": true,
+    "syntheticFixtureCannotPromote": true,
+    "requiredRuntimeBatches": {
+      "realB23ToB26": ["B23", "B24", "B25", "B26"],
+      "platformB15ToB22": ["B15", "B16", "B17", "B18", "B19", "B20", "B21", "B22"]
+    },
+    "requiredEvidence": [
+      "B23-RUNTIME-ACCEPTANCE",
+      "B24-RUNTIME-ACCEPTANCE",
+      "B25-RUNTIME-ACCEPTANCE",
+      "B26-RUNTIME-ACCEPTANCE",
+      "B15-B22-RUNTIME-GATE-ACCEPTANCE"
+    ],
+    "openP0P1Decision": "NO-GO",
+    "releaseTrafficMustRemainClosed": true
+  },
+  "releaseCandidate": {
+    "status": "not-established",
+    "releaseId": "release-ref://pending/b27-phase1",
+    "sourceRevision": null,
+    "environment": null,
+    "artifactBindings": [],
+    "statusDecision": "NO-GO",
+    "requiresImmutableDigest": true,
+    "requiresSignature": true,
+    "requiresSBOM": true,
+    "requiresProvenance": true,
+    "requiresFourPlatformBinding": true,
+    "sameDigestAcrossPromotion": true,
+    "mutableTagAllowed": false
+  },
+  "immutableArtifactPolicy": {
+    "status": "not-established",
+    "requireDigest": true,
+    "requireSignature": true,
+    "requireSBOM": true,
+    "requireProvenance": true,
+    "mutableTagAllowed": false,
+    "artifacts": [],
+    "missingArtifactDecision": "NO-GO"
+  },
+  "evidenceIndex": [
+    {
+      "id": "B27-E-STATIC-BASIS",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "collectionPolicy": "repository-static-validator",
+      "artifactPathPattern": "config/b27-handoff.json",
+      "bindings": ["manifestDigest", "sourceRevision"]
+    },
+    {
+      "id": "B27-E-STATIC-UPSTREAM",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "collectionPolicy": "repository-static-validator",
+      "artifactPathPattern": "config/b27-handoff.json",
+      "bindings": ["manifestDigest", "sourceRevision"]
+    },
+    {
+      "id": "B27-E-STATIC-RC-POLICY",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "collectionPolicy": "repository-static-validator",
+      "artifactPathPattern": "config/b27-handoff.json",
+      "bindings": ["manifestDigest", "sourceRevision"]
+    },
+    {
+      "id": "B27-E-STATIC-ROLLBACK",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "collectionPolicy": "repository-static-validator",
+      "artifactPathPattern": "config/b27-handoff.json",
+      "bindings": ["manifestDigest", "sourceRevision"]
+    },
+    {
+      "id": "B27-E-STATIC-GOVERNANCE",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "collectionPolicy": "repository-static-validator",
+      "artifactPathPattern": "config/b27-handoff.json",
+      "bindings": ["manifestDigest", "sourceRevision"]
+    },
+    {
+      "id": "B27-E-STATIC-HANDOFF",
+      "class": "static",
+      "status": "defined",
+      "runtimeRequired": false,
+      "collectionPolicy": "repository-static-validator",
+      "artifactPathPattern": "config/b27-handoff.json",
+      "bindings": ["manifestDigest", "sourceRevision"]
+    },
+    {
+      "id": "B27-E-RUNTIME-B23-B26",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/b23-b26-acceptance.json",
+      "bindings": ["runId", "sourceRevision", "environment", "capturedAt", "traceId", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-B15-B22",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/b15-b22-gates.json",
+      "bindings": ["runId", "sourceRevision", "environment", "capturedAt", "traceId", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-RC-ARTIFACT",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/release-candidate.json",
+      "bindings": ["runId", "sourceRevision", "environment", "artifactDigest", "capturedAt", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-TEST-REPORT",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/phase1-test-report.json",
+      "bindings": ["runId", "sourceRevision", "environment", "capturedAt", "traceId", "defectLedgerRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-ROLLBACK",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/rollback-drill.json",
+      "bindings": ["runId", "sourceRevision", "environment", "restorePointRef", "capturedAt", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-RESTORE",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/restore-reconciliation.json",
+      "bindings": ["runId", "environment", "migrationVersion", "dbDigest", "eventOffsetDigest", "capturedAt"]
+    },
+    {
+      "id": "B27-E-RUNTIME-ROLE-DECISIONS",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/role-decisions.json",
+      "bindings": ["runId", "decisionId", "reviewerRef", "capturedAt", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-DEFECT-LEDGER",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/defect-ledger.json",
+      "bindings": ["runId", "sourceRevision", "capturedAt", "defectIds", "retestRefs"]
+    },
+    {
+      "id": "B27-E-RUNTIME-RUNBOOKS",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/runbook-acceptance.json",
+      "bindings": ["runId", "ownerRef", "capturedAt", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-MAINTENANCE",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/maintenance-acceptance.json",
+      "bindings": ["runId", "ownerRef", "escalationRef", "capturedAt", "auditRef"]
+    },
+    {
+      "id": "B27-E-RUNTIME-OBSERVATION",
+      "class": "runtime",
+      "status": "pending",
+      "runtimeRequired": true,
+      "collectionPolicy": "approved-external-runner-only",
+      "artifactPathPattern": "evidence/b27/{runId}/observation-window.json",
+      "bindings": ["runId", "environment", "sloRef", "alertRef", "capturedAt", "auditRef"]
+    }
+  ],
+  "knownIssues": [
+    {
+      "id": "B27-P0-001",
+      "severity": "P0",
+      "type": "acceptance-blocker",
+      "title": "B23-B26 认证、数据库、事件和浏览器真实运行证据尚未闭环",
+      "status": "open",
+      "blocksRelease": true,
+      "ownerRole": "architecture",
+      "disposition": "完成有效 OIDC/JWT、Gateway 到 MySQL 的 API 闭环，以及 Kafka Outbox/消费者和浏览器真实旅程对账后复核",
+      "evidenceRef": "B27-E-RUNTIME-B23-B26"
+    },
+    {
+      "id": "B27-P1-001",
+      "severity": "P1",
+      "type": "upstream-gate-gap",
+      "title": "B15-B22 运行发布、观测、数据对账和回滚 Gate 尚未被外部证据接受",
+      "status": "open",
+      "blocksRelease": true,
+      "ownerRole": "operations",
+      "disposition": "补齐 B15-B22 运行证据、不可变 RC、观察窗口和回滚演练，并绑定同一 releaseId",
+      "evidenceRef": "B27-E-RUNTIME-B15-B22"
+    },
+    {
+      "id": "B27-P1-002",
+      "severity": "P1",
+      "type": "handoff-gap",
+      "title": "Phase 1 尚未完成独立测试交接和多角色决策",
+      "status": "open",
+      "blocksRelease": true,
+      "ownerRole": "product",
+      "disposition": "生成闭合测试报告、缺陷复测记录和五角色独立决策，禁止单人审批替代",
+      "evidenceRef": "B27-E-RUNTIME-ROLE-DECISIONS"
+    },
+    {
+      "id": "B27-P2-001",
+      "severity": "P2",
+      "type": "test-gap",
+      "title": "iOS/Android/iPad/PWA/小程序条件编译的真机矩阵尚未采集",
+      "status": "open",
+      "blocksRelease": false,
+      "ownerRole": "operations",
+      "disposition": "在 B27-DEV-001/002 中使用批准设备或远程真机实验室采集并关联 runId",
+      "evidenceRef": "B27-E-RUNTIME-TEST-REPORT"
+    },
+    {
+      "id": "B27-P2-002",
+      "severity": "P2",
+      "type": "operational-gap",
+      "title": "运行、应急、回滚和维护 Runbook 尚未被 owner 实际签收",
+      "status": "open",
+      "blocksRelease": false,
+      "ownerRole": "operations",
+      "disposition": "完成 Runbook 演练、维护时段和升级路径确认后关闭",
+      "evidenceRef": "B27-E-RUNTIME-RUNBOOKS"
+    }
+  ],
+  "roleGovernance": {
+    "requiredRoles": ["product", "architecture", "security", "data", "operations"],
+    "allowedDecisions": ["PENDING", "GO", "NO-GO", "BLOCKED"],
+    "allRequiredRolesMustDecide": true,
+    "independentDecisionRequired": true,
+    "samePersonCannotSatisfyMultipleRequiredRoles": true,
+    "defaultDecision": "NO-GO",
+    "decisionStatus": "not-present",
+    "roleDecisions": [
+      { "role": "product", "decision": "PENDING", "status": "not-present", "reviewerRef": "reviewer-ref://pending/b27-product" },
+      { "role": "architecture", "decision": "PENDING", "status": "not-present", "reviewerRef": "reviewer-ref://pending/b27-architecture" },
+      { "role": "security", "decision": "PENDING", "status": "not-present", "reviewerRef": "reviewer-ref://pending/b27-security" },
+      { "role": "data", "decision": "PENDING", "status": "not-present", "reviewerRef": "reviewer-ref://pending/b27-data" },
+      { "role": "operations", "decision": "PENDING", "status": "not-present", "reviewerRef": "reviewer-ref://pending/b27-operations" }
+    ]
+  },
+  "runbooks": [
+    {
+      "id": "B27-RUNBOOK-RUNTIME",
+      "kind": "runtime-operations",
+      "status": "not-established",
+      "ownerRole": "operations",
+      "backupOwnerRole": "architecture",
+      "ownerRef": "owner-ref://pending/b27-runtime",
+      "evidenceRef": "B27-E-RUNTIME-RUNBOOKS",
+      "requiredSections": ["startup", "readiness", "health", "observability", "graceful-stop", "evidence-capture"]
+    },
+    {
+      "id": "B27-RUNBOOK-EMERGENCY",
+      "kind": "emergency-response",
+      "status": "not-established",
+      "ownerRole": "security",
+      "backupOwnerRole": "operations",
+      "ownerRef": "owner-ref://pending/b27-emergency",
+      "evidenceRef": "B27-E-RUNTIME-RUNBOOKS",
+      "requiredSections": ["severity", "stop-condition", "traffic-freeze", "escalation", "audit", "privacy-redaction"]
+    },
+    {
+      "id": "B27-RUNBOOK-ROLLBACK",
+      "kind": "rollback-recovery",
+      "status": "not-established",
+      "ownerRole": "operations",
+      "backupOwnerRole": "data",
+      "ownerRef": "owner-ref://pending/b27-rollback",
+      "evidenceRef": "B27-E-RUNTIME-ROLLBACK",
+      "requiredSections": ["automatic-trigger", "manual-approval", "last-approved-digest", "restore-point", "db-reconciliation", "event-reconciliation", "manual-takeover"]
+    },
+    {
+      "id": "B27-RUNBOOK-HANDOFF",
+      "kind": "test-handoff",
+      "status": "not-established",
+      "ownerRole": "product",
+      "backupOwnerRole": "operations",
+      "ownerRef": "owner-ref://pending/b27-handoff",
+      "evidenceRef": "B27-E-RUNTIME-TEST-REPORT",
+      "requiredSections": ["scope", "environment", "evidence-index", "defect-ledger", "known-risks", "receiver-acceptance"]
+    }
+  ],
+  "maintenanceOwner": {
+    "status": "not-established",
+    "primaryRole": "operations",
+    "backupRole": "architecture",
+    "ownerRef": "owner-ref://pending/b27-maintenance",
+    "acceptanceEvidenceRef": "B27-E-RUNTIME-MAINTENANCE",
+    "requiresIndependentAcceptance": true,
+    "escalationRoles": ["operations", "security", "data", "product"],
+    "maintenanceWindowRef": "change-window-ref://pending/b27-phase1",
+    "supportedEnvironment": "phase1-staging-and-approved-production-window"
+  },
+  "rollback": {
+    "status": "not-established",
+    "decisionWhenEvidenceMissing": "BLOCKED",
+    "owner": {
+      "status": "not-assigned",
+      "required": true,
+      "role": "operations",
+      "ownerRef": "owner-ref://pending/b27-rollback-owner"
+    },
+    "automatic": {
+      "enabled": true,
+      "status": "pending",
+      "triggerPolicy": "fail-closed",
+      "action": "freeze-expansion-and-route-to-last-approved-digest",
+      "requiresImmutableRevision": true,
+      "requiresAudit": true
+    },
+    "manual": {
+      "enabled": true,
+      "status": "pending",
+      "requiresNamedOwner": true,
+      "requiresIndependentApproval": true,
+      "minimumApprovers": 2,
+      "requiresChangeRecord": true
+    },
+    "restorePoint": {
+      "required": true,
+      "status": "not-established",
+      "reference": null,
+      "immutableReferenceRequired": true,
+      "createdBeforeTrafficChange": true,
+      "dataAndEventReconciliationRequired": true
+    },
+    "rollbackSequence": [
+      "stop-expansion-and-freeze-writes",
+      "retain-legacy-read-compatibility-window",
+      "route-to-last-approved-immutable-digest",
+      "restore-owner-schema-to-approved-point",
+      "reconcile-row-count-and-canonical-digest",
+      "reconcile-outbox-event-and-consumer-offset",
+      "run-owner-service-saga-compensation",
+      "verify-read-shadow-parity",
+      "record-audited-manual-takeover-if-needed"
+    ],
+    "compensation": {
+      "strategy": "saga-compensation-through-owner-service",
+      "twoPhaseCommitAllowed": false,
+      "directCrossServiceTableWriteAllowed": false,
+      "idempotencyRequired": true,
+      "auditRequired": true,
+      "manualRecoveryOwnerRequired": true
+    },
+    "audit": {
+      "required": true,
+      "status": "not-established",
+      "appendOnly": true,
+      "externalSinkRequired": true,
+      "sensitiveDataPolicy": "redact-or-do-not-record",
+      "correlationFields": ["runId", "releaseId", "sourceRevision", "artifactDigest", "traceId", "requestId", "decisionId", "rollbackReason", "operatorRef", "restorePointRef"]
+    }
+  },
+  "goNoGo": {
+    "status": "BLOCKED",
+    "defaultDecision": "NO-GO",
+    "allowedDecisions": ["NO-GO", "GO"],
+    "missingEvidenceDecision": "NO-GO",
+    "runtimeEvidencePendingDecision": "BLOCKED",
+    "openP0P1Decision": "NO-GO",
+    "roleDecisionMissing": "BLOCKED",
+    "productionTrafficAllowed": false,
+    "realPaymentEnabled": false,
+    "requiredRoleCount": 5,
+    "goRequires": [
+      "all-real-b23-b26-runtime-evidence-captured",
+      "all-b15-b22-runtime-gates-accepted",
+      "immutable-signed-rc-and-four-platform-binding",
+      "phase1-test-report-reproducible",
+      "p0-and-p1-defects-closed-or-explicitly-approved",
+      "p2-defects-have-owner-and-expiry",
+      "rollback-drill-and-restore-reconciliation-captured",
+      "all-five-role-decisions-go",
+      "independent-maintenance-owner-acceptance",
+      "active-change-window-and-audited-approvals"
+    ],
+    "blockingConditions": [
+      "any-required-runtime-evidence-missing",
+      "static-or-synthetic-evidence-used-as-runtime-proof",
+      "open-p0-or-p1",
+      "missing-rollback-owner-or-restore-point",
+      "artifact-digest-signature-sbom-or-provenance-missing",
+      "role-decision-missing-conflicted-or-not-independent",
+      "maintenance-owner-not-accepted",
+      "data-or-event-reconciliation-mismatch",
+      "production-traffic-or-live-payment-enabled-before-approval"
+    ]
+  },
+  "releaseChecks": {
+    "staticChecks": [
+      {
+        "id": "B27-HANDOFF-STATIC-001",
+        "kind": "task-and-phase-boundary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "evidenceId": "B27-E-STATIC-BASIS",
+        "sourcePaths": ["requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md"],
+        "assertions": [{ "contains": "V2-B27-RC-005" }, { "contains": "V2-B27-HANDOFF-006" }]
+      },
+      {
+        "id": "B27-HANDOFF-STATIC-002",
+        "kind": "b26-runtime-boundary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "evidenceId": "B27-E-STATIC-UPSTREAM",
+        "sourcePaths": ["docs/07-operations/b26-validation.md"],
+        "assertions": [{ "contains": "真实运行和正式测试验收待完成" }, { "contains": "当前仍缺少标准 OIDC/JWKS 和有效 JWT" }]
+      },
+      {
+        "id": "B27-HANDOFF-STATIC-003",
+        "kind": "b21-default-deny-boundary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "evidenceId": "B27-E-STATIC-GOVERNANCE",
+        "sourcePaths": ["config/b21-release-gate-evidence.json"],
+        "assertions": [{ "contains": "\"runtimeDecision\": \"BLOCKED\"" }, { "contains": "\"defaultDecision\": \"NO-GO\"" }]
+      },
+      {
+        "id": "B27-HANDOFF-STATIC-004",
+        "kind": "b22-production-action-boundary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "evidenceId": "B27-E-STATIC-RC-POLICY",
+        "sourcePaths": ["config/b22-production-rollout.json"],
+        "assertions": [{ "contains": "\"productionAction\": \"disabled\"" }, { "contains": "\"staticEvidenceCannotPromote\": true" }]
+      },
+      {
+        "id": "B27-HANDOFF-STATIC-005",
+        "kind": "g4-rollback-boundary",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "evidenceId": "B27-E-STATIC-ROLLBACK",
+        "sourcePaths": ["config/g4-release-rollback.json"],
+        "assertions": [{ "contains": "\"status\": \"BLOCKED\"" }, { "contains": "\"defaultDecision\": \"NO-GO\"" }, { "contains": "\"productionAction\": \"disabled\"" }]
+      },
+      {
+        "id": "B27-HANDOFF-STATIC-006",
+        "kind": "handoff-and-governance-policy",
+        "status": "defined",
+        "evidenceClass": "static",
+        "runtimeRequired": false,
+        "evidenceId": "B27-E-STATIC-HANDOFF",
+        "sourcePaths": ["requirements/backlog/G0-G4-治理门禁任务基线.md"],
+        "assertions": [{ "contains": "真实运行证据只能由批准的外部 runner 注入" }, { "contains": "G4 默认 `NO-GO`" }]
+      }
+    ],
+    "runtimeChecks": [
+      {
+        "id": "B27-HANDOFF-RUNTIME-001",
+        "kind": "real-b23-b26-acceptance",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-B23-B26",
+        "evidenceRequired": ["B23 registration and OIDC/JWKS", "B24 authenticated four-client boundary", "B25 API-DB-API owner reconciliation", "B26 Kafka/browser journey and defect evidence"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "development-http-200", "unauthenticated-page-check"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-002",
+        "kind": "platform-b15-b22-acceptance",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-B15-B22",
+        "evidenceRequired": ["B15-B20 runtime gates", "B21 signed release gate decision", "B22 staging/rollout/observation acceptance", "G0-G4 runtime evidence"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "single-role-signoff", "dashboard-screenshot-only"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-003",
+        "kind": "immutable-rc-binding",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-RC-ARTIFACT",
+        "evidenceRequired": ["source revision", "environment binding", "immutable image/app digests", "signature", "SBOM", "provenance", "four-platform release binding"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "tag-only-artifact", "local-build", "unsigned-artifact", "mutable-latest-reference"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-004",
+        "kind": "phase1-test-report",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-TEST-REPORT",
+        "evidenceRequired": ["reproducible test manifest", "browser and device traces", "API/DB/event reconciliation", "security/performance/accessibility results", "report hash"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "static-test-output-only", "mock-only", "single-browser-smoke", "unbound-summary"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-005",
+        "kind": "rollback-drill",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-ROLLBACK",
+        "evidenceRequired": ["automatic trigger", "named rollback owner", "independent approval", "last approved digest", "rollback result", "audited decision"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "pod-restart", "health-endpoint-only", "single-operator-claim", "missing-restore-point"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-006",
+        "kind": "restore-and-reconciliation",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-RESTORE",
+        "evidenceRequired": ["immutable restore point", "migration version", "owner schema digest", "Outbox/event offset reconciliation", "read-back verification"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "database-dump-exists", "row-count-only", "edited-summary", "cross-service-table-write"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-007",
+        "kind": "independent-role-decisions",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-ROLE-DECISIONS",
+        "evidenceRequired": ["product decision", "architecture decision", "security decision", "data decision", "operations decision", "independent reviewer and audit references"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "single-role-signoff", "same-person-multi-role", "chat-only-approval", "missing-audit-record"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-008",
+        "kind": "defect-ledger-closure",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-DEFECT-LEDGER",
+        "evidenceRequired": ["P0/P1 closure or approved block", "P2 owner and expiry", "retest evidence", "known-issue disposition"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "empty-defect-list", "unretested-fix", "severity-suppression", "unowned-p2"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-009",
+        "kind": "runbook-and-maintenance-acceptance",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-RUNBOOKS",
+        "evidenceRequired": ["runtime runbook drill", "emergency runbook drill", "rollback runbook drill", "test handoff runbook", "owner acknowledgement"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "document-exists-only", "unassigned-owner", "single-operator-claim", "unrehearsed-runbook"]
+      },
+      {
+        "id": "B27-HANDOFF-RUNTIME-010",
+        "kind": "maintenance-and-observation-window",
+        "status": "pending",
+        "evidenceClass": "runtime",
+        "runtimeRequired": true,
+        "evidenceId": "B27-E-RUNTIME-MAINTENANCE",
+        "evidenceRequired": ["maintenance owner acceptance", "escalation path", "active change window", "observation SLO and alert evidence", "audit correlation"],
+        "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "missing-owner", "expired-window", "dashboard-screenshot-only", "unbound-log-line"]
+      }
+    ]
+  },
+  "runtimeGate": {
+    "staticOnlyByDefault": true,
+    "requireRuntimeEnv": "B27_REQUIRE_RUNTIME",
+    "runtimeEvidenceMustBeCapturedExternally": true,
+    "staticValidatorCannotPromoteRuntime": true,
+    "runtimeStatusWhenMissing": "blocked",
+    "requiredEnv": [
+      "B27_RUNTIME_B23_B26_EVIDENCE_REF",
+      "B27_RUNTIME_B15_B22_EVIDENCE_REF",
+      "B27_RUNTIME_RC_MANIFEST_REF",
+      "B27_RUNTIME_TEST_REPORT_REF",
+      "B27_RUNTIME_ROLLBACK_EVIDENCE_REF",
+      "B27_RUNTIME_ROLE_DECISION_INDEX_REF",
+      "B27_RUNTIME_HANDOFF_REPORT_REF"
+    ],
+    "requiredEvidence": [
+      "B27-E-RUNTIME-B23-B26",
+      "B27-E-RUNTIME-B15-B22",
+      "B27-E-RUNTIME-RC-ARTIFACT",
+      "B27-E-RUNTIME-TEST-REPORT",
+      "B27-E-RUNTIME-ROLLBACK",
+      "B27-E-RUNTIME-RESTORE",
+      "B27-E-RUNTIME-ROLE-DECISIONS",
+      "B27-E-RUNTIME-DEFECT-LEDGER",
+      "B27-E-RUNTIME-RUNBOOKS",
+      "B27-E-RUNTIME-MAINTENANCE",
+      "B27-E-RUNTIME-OBSERVATION"
+    ],
+    "runtimeEvidenceStatusWhenMissing": "pending",
+    "cannotBeSatisfiedBy": [
+      "static-manifest-only",
+      "synthetic-fixture-only",
+      "development-http-200",
+      "local-build-only",
+      "unauthenticated-browser-check",
+      "single-role-signoff",
+      "real-secret-in-repository"
+    ]
+  },
+  "handoff": {
+    "status": "not-ready",
+    "receiverRole": "independent-test",
+    "receiverAcceptanceRequired": true,
+    "scope": ["B23", "B24", "B25", "B26", "B27", "B15", "B16", "B17", "B18", "B19", "B20", "B21", "B22"],
+    "requiredInputs": [
+      "B27-E-RUNTIME-B23-B26",
+      "B27-E-RUNTIME-B15-B22",
+      "B27-E-RUNTIME-RC-ARTIFACT",
+      "B27-E-RUNTIME-TEST-REPORT",
+      "B27-E-RUNTIME-ROLLBACK",
+      "B27-E-RUNTIME-ROLE-DECISIONS",
+      "B27-E-RUNTIME-DEFECT-LEDGER",
+      "B27-E-RUNTIME-RUNBOOKS",
+      "B27-E-RUNTIME-MAINTENANCE"
+    ],
+    "closedReportSchema": {
+      "id": "B27-PHASE1-TEST-HANDOFF-REPORT",
+      "version": "1.0.0",
+      "closed": true,
+      "additionalProperties": false,
+      "required": [
+        "runId",
+        "releaseId",
+        "sourceRevision",
+        "environment",
+        "testScope",
+        "evidenceRefs",
+        "defectLedger",
+        "runbooks",
+        "maintenanceOwner",
+        "roleDecisions",
+        "rollback",
+        "decision",
+        "reportHash"
+      ],
+      "decisionEnum": ["NO-GO", "BLOCKED", "GO"],
+      "missingEvidenceDecision": "NO-GO"
+    },
+    "decision": "BLOCKED",
+    "acceptanceEvidenceRef": null
+  },
+  "syntheticFixturePolicy": {
+    "policy": "synthetic-references-only-no-secrets-no-pii-no-production-data",
+    "productionDataAllowed": false,
+    "realCredentialsAllowed": false,
+    "rawPersonalDataAllowed": false,
+    "destructiveProductionActionAllowed": false,
+    "runtimeEvidenceMayBeRecordedInRepository": false,
+    "externalEvidenceMustBeRedacted": true
+  }
+}

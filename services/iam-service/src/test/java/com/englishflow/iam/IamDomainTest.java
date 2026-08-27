@@ -7,6 +7,7 @@ import com.englishflow.iam.domain.AuditDecision;
 import com.englishflow.iam.domain.AuditFactPort;
 import com.englishflow.iam.domain.ClientAuthorityClaims;
 import com.englishflow.iam.domain.ConsentCommand;
+import com.englishflow.iam.domain.ConsentRecord;
 import com.englishflow.iam.domain.ConsentService;
 import com.englishflow.iam.domain.ConsentType;
 import com.englishflow.iam.domain.ConsentVersion;
@@ -125,8 +126,10 @@ class IamDomainTest {
         ExternalIdentity identity = new ExternalIdentity(ISSUER, "subject-immutable");
         PrincipalMappingService mapper = new PrincipalMappingService(
                 new InMemoryPrincipalMappingStore(), CLOCK);
-        PrincipalMapping first = mapper.mapVerifiedIdentity(identity);
-        PrincipalMapping second = mapper.mapVerifiedIdentity(identity);
+        VerifiedOidcIdentity verifiedIdentity = new VerifiedOidcIdentity(
+                identity, "mapping-nonce", Optional.empty(), NOW);
+        PrincipalMapping first = mapper.mapVerifiedIdentity(verifiedIdentity);
+        PrincipalMapping second = mapper.mapVerifiedIdentity(verifiedIdentity);
         assertSame(first, second);
 
         InMemoryPrincipalMappingStore store = new InMemoryPrincipalMappingStore();
@@ -235,6 +238,56 @@ class IamDomainTest {
                 Map.of("refresh-token", "must-not-be-recorded")));
     }
 
+    @Test
+    void repeatedConsentGrantForSameVersionIsIdempotent() {
+        RecordingAudit audit = new RecordingAudit();
+        ConsentVersion version = new ConsentVersion("2026.08");
+        InMemoryConsentStore store = new InMemoryConsentStore();
+        ConsentService consents = new ConsentService(
+                store,
+                new StaticConsentPolicy(Map.of(
+                        ConsentType.TERMS_OF_SERVICE, version,
+                        ConsentType.PRIVACY_NOTICE, version)),
+                audit,
+                CLOCK);
+        ServerPrincipalContext context = ServerPrincipalContext.forPlatform(PrincipalId.random(), Set.of());
+        ConsentCommand command = new ConsentCommand(
+                ConsentType.TERMS_OF_SERVICE, version, true, ClientAuthorityClaims.none());
+
+        ConsentRecord first = consents.record(context, command);
+        ConsentRecord replay = consents.record(context, command);
+
+        assertEquals(first, replay);
+        assertEquals(1, audit.decisions.size());
+        assertEquals(1, store.history(context.principalId(), ConsentType.TERMS_OF_SERVICE).size());
+    }
+
+    @Test
+    void requiredConsentSnapshotNeedsBothCurrentConsentTypes() {
+        RecordingAudit audit = new RecordingAudit();
+        ConsentVersion version = new ConsentVersion("2026.08");
+        InMemoryConsentStore store = new InMemoryConsentStore();
+        ConsentService consents = new ConsentService(
+                store,
+                new StaticConsentPolicy(Map.of(
+                        ConsentType.TERMS_OF_SERVICE, version,
+                        ConsentType.PRIVACY_NOTICE, version)),
+                audit,
+                CLOCK);
+        PrincipalId principal = PrincipalId.random();
+        ServerPrincipalContext context = ServerPrincipalContext.forPlatform(principal, Set.of());
+
+        assertFalse(consents.hasAllRequiredConsent(principal));
+        consents.record(context, new ConsentCommand(
+                ConsentType.TERMS_OF_SERVICE, version, true, ClientAuthorityClaims.none()));
+        assertFalse(consents.hasAllRequiredConsent(principal));
+        consents.record(context, new ConsentCommand(
+                ConsentType.PRIVACY_NOTICE, version, true, ClientAuthorityClaims.none()));
+        assertTrue(consents.hasAllRequiredConsent(principal));
+        consents.withdraw(context, ConsentType.PRIVACY_NOTICE);
+        assertFalse(consents.hasAllRequiredConsent(principal));
+    }
+
     private static final class RecordingAudit implements AuditFactPort {
         private final List<AuditDecision> decisions = new ArrayList<>();
 
@@ -251,7 +304,8 @@ class IamDomainTest {
                 URI.create("https://idp.example.test/token"),
                 URI.create("https://idp.example.test/.well-known/jwks.json"),
                 "englishflow-test-client",
-                Set.of("openid", "profile"));
+                Set.of("openid", "profile"),
+                Set.of("S256"));
         private VerifiedOidcIdentity nextIdentity;
         private AuthorizationCodeExchange lastExchange;
 

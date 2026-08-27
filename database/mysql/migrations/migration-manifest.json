@@ -128,6 +128,18 @@
       "file": "V0021__create_commerce_admin_analytics_b13.sql",
       "description": "create B13 commerce admin-ops support and analytics facts",
       "requiredTables": ["com_b13_sku", "com_b13_price_snapshot", "com_b13_order", "com_b13_order_item", "com_b13_entitlement", "com_b13_activation_batch", "com_b13_activation_code", "com_b13_payment_callback", "com_b13_refund", "com_b13_reconciliation_batch", "com_b13_reconciliation_item", "com_b13_idempotency", "com_b13_outbox_event", "adm_b13_command", "adm_b13_approval", "adm_b13_ticket", "adm_b13_ticket_attachment_ref", "adm_b13_audit_link", "anl_b13_event_receipt", "anl_b13_metric_definition", "anl_b13_metric_projection", "anl_b13_recompute_job"]
+    },
+    {
+      "version": "0022",
+      "file": "V0022__create_iam_oidc_runtime_b23.sql",
+      "description": "create B23 durable OIDC authorization transactions and provider-backed IAM session fields",
+      "requiredTables": ["iam_oidc_authorization_transaction"]
+    },
+    {
+      "version": "0023",
+      "file": "V0023__create_phase1_real_data_b25.sql",
+      "description": "create B25 Phase 1 local real-data owner facts, fixture reconciliation and Redis rebuild boundaries",
+      "requiredTables": ["b25_fixture_run", "b25_fixture_owner_binding", "b25_fixture_row", "b25_fixture_redis_projection", "lrn_b25_profile", "lrn_b25_goal", "lrn_b25_preferences", "lrn_b25_daily_task", "cnt_b25_course", "cnt_b25_unit", "cnt_b25_vocabulary", "cnt_b25_item", "cnt_b25_answer_rule", "lrn_b25_plan", "lrn_b25_srs_state", "asm_b25_session", "asm_b25_report", "med_b25_media_reference", "com_b25_product", "com_b25_entitlement", "ntf_b25_preference", "ntf_b25_message"]
     }
   ]
 }

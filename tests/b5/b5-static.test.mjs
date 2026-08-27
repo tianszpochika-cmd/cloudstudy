@@ -20,27 +20,40 @@ test('B5 backlog is the expected 22-task code-development slice', () => {
   assert.equal(b5TaskIds.length, 22);
 });
 
-test('B5 OpenAPI covers learner commerce, callback, CMS and operations entry points', () => {
+test('B5 historical compatibility fragment is kept out of the active v2 contract', () => {
+  const b5Fragment = readJson('packages/contracts/fragments/b5-commerce-admin.openapi.json');
   const openapi = readJson('packages/contracts/openapi/v1/openapi.json');
+  assert.equal(b5Fragment['x-contract-status'], 'historical-compatibility');
+  assert.equal(b5Fragment['x-canonical-owner'], 'b13');
   for (const route of [
     '/api/v1/commerce/skus',
     '/api/v1/commerce/orders',
-    '/api/v1/commerce/orders/{orderId}/payment-attempts',
+    '/api/v1/commerce/orders/{orderId}/payment-intents',
     '/api/v1/commerce/wechat/callback',
     '/api/v1/commerce/alipay/notify',
     '/api/v1/commerce/apple/transactions/verify',
     '/api/v1/commerce/entitlements/me',
     '/api/v1/commerce/activation-codes/redeem',
     '/api/v1/support/tickets',
+  ]) assert.ok(openapi.paths[route], `missing B5 route ${route}`);
+  for (const retiredRoute of [
     '/api/v1/admin/content',
     '/api/v1/admin/reviews/{reviewTaskId}/decision',
     '/api/v1/admin/dashboard/metrics',
     '/api/v1/admin/reconciliation/batches',
     '/api/v1/admin/feature-flags/{flagKey}',
     '/api/v1/admin/audit-logs/export',
-  ]) assert.ok(openapi.paths[route], `missing B5 route ${route}`);
-  assert.equal(openapi.paths['/api/v1/commerce/orders'].post.operationId, 'createCommerceOrder');
-  assert.equal(openapi.paths['/api/v1/admin/feature-flags/{flagKey}'].put['x-idempotency'].strategy, 'admin-feature-flag-update');
+  ]) assert.equal(openapi.paths[retiredRoute], undefined, `legacy B5 route leaked into canonical contract: ${retiredRoute}`);
+  // B5's learner commerce fragment is retained for compatibility input, while
+  // B13 owns the active commerce/admin-ops routes in the canonical document.
+  assert.equal(b5Fragment.paths['/api/v1/commerce/orders'].post.operationId, 'createCommerceOrder');
+  assert.equal(openapi.paths['/api/v1/commerce/orders'].get.operationId, 'listB13CommerceOrders');
+  assert.equal(openapi.paths['/api/v1/commerce/orders'].post.operationId, 'createB13CommerceOrder');
+  assert.equal(openapi.paths['/api/v1/admin/ops/metrics'].get.operationId, 'listB13AdminMetrics');
+  for (const schema of ['B5ContentDraftRequest', 'B5ContentSaveRequest', 'B5ReviewDecisionRequest', 'B5ImportJobRequest', 'B5FlagUpdateRequest', 'B5OrderAdjustmentRequest']) {
+    assert.equal(openapi.components.schemas[schema], undefined, `historical B5 schema leaked into canonical contract: ${schema}`);
+  }
+  assert.equal(openapi.tags.some((tag) => tag.name === 'b5-admin-content' || tag.name === 'b5-admin-operations'), false);
 });
 
 test('B5 event catalog and migration retain payment, CMS, risk and reconciliation facts', () => {

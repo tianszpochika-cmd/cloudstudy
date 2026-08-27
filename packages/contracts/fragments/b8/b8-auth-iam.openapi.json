@@ -2,11 +2,39 @@
   "x-b8-idp-integration": {
     "mode": "standard-oidc-adapter",
     "protocol": "OIDC/OAuth2.1",
+    "role": "relying-party-and-product-iam-control-plane",
+    "authorizationResponseType": "code",
     "pkceMethod": "S256",
+    "registrationLogin": {
+      "mechanism": "idp-hosted",
+      "entryPoint": "/api/v1/auth/oidc/{provider}/authorization/start",
+      "intentParameter": "intent",
+      "intents": ["login", "register"],
+      "localCredentials": false
+    },
+    "state": {
+      "generatedBy": "iam-service",
+      "storedWith": "authorization-transaction",
+      "singleUse": true,
+      "clientSupplied": false
+    },
+    "nonce": {
+      "generatedBy": "iam-service",
+      "boundTo": "authorization-transaction-and-id-token",
+      "singleUse": true,
+      "clientSupplied": false
+    },
+    "tokenOwnership": {
+      "issuer": "approved-external-oidc-idp",
+      "iamMintsAccessTokens": false,
+      "iamMintsRefreshTokens": false,
+      "iamExposesTokenEndpoint": false,
+      "refresh": "provider-adapter-only"
+    },
     "productionProvider": "pending-G-IDP",
     "testDouble": "standard-oidc-provider-adapter",
     "selfHostedTokenServer": false,
-    "note": "G-IDP 未批准前只实现适配器、契约和测试替身；不在平台内实现 OIDC 协议或 Token Server。"
+    "note": "G-IDP 未批准前只实现适配器、契约和测试替身；不在平台内实现 OIDC 协议、Token Endpoint、Token 签发或 JWKS 服务。"
   },
   "x-b8-compatibility": {
     "strategy": "canonical-iam-routes-with-legacy-auth-compatibility",
@@ -39,12 +67,13 @@
       "get": {
         "tags": ["b8-auth"],
         "operationId": "startB8OidcAuthorization",
-    "summary": "Start authorization code + PKCE through the approved standard IdP adapter; state, nonce and verifier are server-generated",
+        "summary": "Start IdP-hosted registration or login with authorization code + PKCE; state, nonce and verifier are server-generated",
         "security": [],
         "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP" },
         "parameters": [
           { "$ref": "#/components/parameters/B8Provider" },
           { "$ref": "#/components/parameters/B8RedirectUri" },
+          { "$ref": "#/components/parameters/B8AuthIntent" },
           { "$ref": "#/components/parameters/B8ReturnTo" },
           { "$ref": "#/components/parameters/B8UiLocale" },
           { "$ref": "#/components/parameters/B8Theme" }
@@ -60,12 +89,48 @@
       }
     },
     "/api/v1/auth/oidc/{provider}/callback": {
+      "get": {
+        "tags": ["b8-auth"],
+        "operationId": "completeB8OidcBrowserCallback",
+        "summary": "Receive the standard OIDC browser redirect and consume its one-time authorization transaction",
+        "security": [],
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP", "callback": "browser-redirect" },
+        "x-callback-semantics": {
+          "success": "code plus state",
+          "providerError": "error plus state; no principal or session is created",
+          "pkce": "server retrieves the verifier from the state-bound transaction",
+          "nonce": "server verifies the ID-token nonce against the state-bound transaction",
+          "replay": "state is atomically consumed once; replay is a conflict and never creates a second session"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B8Provider" },
+          { "$ref": "#/components/parameters/B8CallbackCode" },
+          { "$ref": "#/components/parameters/B8State" },
+          { "$ref": "#/components/parameters/B8OidcCallbackError" },
+          { "$ref": "#/components/parameters/B8OidcCallbackErrorDescription" },
+          { "$ref": "#/components/parameters/B8OidcCallbackErrorUri" }
+        ],
+        "responses": {
+          "303": {
+            "description": "Successful callback; redirect only to the server-allowlisted return path and establish the provider-backed session",
+            "headers": {
+              "Location": { "$ref": "#/components/headers/B8CallbackLocation" },
+              "Set-Cookie": { "$ref": "#/components/headers/B8SessionCookie" }
+            }
+          },
+          "400": { "$ref": "#/components/responses/B8BadRequest" },
+          "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8PolicyDenied" },
+          "409": { "$ref": "#/components/responses/B8Conflict" },
+          "503": { "$ref": "#/components/responses/B8IdpUnavailable" }
+        }
+      },
       "post": {
         "tags": ["b8-auth"],
         "operationId": "exchangeB8OidcCallback",
-        "summary": "Exchange an OIDC authorization code after server-side state, nonce and PKCE verification",
+        "summary": "Compatibility JSON callback; exchange the code only after server-side state, nonce and PKCE verification",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP" },
+        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "idpGate": "G-IDP", "callback": "native-json-compatibility" },
         "x-idempotency": {
           "required": true,
           "strategy": "oidc-callback-exchange",
@@ -82,7 +147,7 @@
         },
         "responses": {
           "200": {
-            "description": "Principal mapped and session established; adult Gate/consent status is explicit",
+            "description": "Principal mapped and provider-backed session established; IAM never mints tokens, but the provider-issued access/refresh credentials may be relayed in this TLS-only JSON compatibility response so browser clients can call the Gateway",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8OidcCallbackResponse" } } }
           },
           "400": { "$ref": "#/components/responses/B8BadRequest" },
@@ -97,9 +162,16 @@
       "post": {
         "tags": ["b8-auth"],
         "operationId": "refreshB8IamSession",
-        "summary": "Rotate a refresh session through IAM",
+        "summary": "Rotate an external IdP refresh credential through the provider adapter; IAM does not mint tokens",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1" },
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "tokenIssuer": "approved-external-oidc-idp",
+          "iamTokenServer": false,
+          "refreshMechanism": "provider-adapter-only"
+        },
         "x-idempotency": {
           "required": false,
           "strategy": "refresh-token-rotation",
@@ -113,13 +185,15 @@
         },
         "responses": {
           "200": {
-            "description": "Rotated access and refresh credentials",
+            "description": "External IdP-issued credentials after provider-side rotation; IAM only records the session rotation and never self-mints a token",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionTokenResponse" } } }
           },
           "400": { "$ref": "#/components/responses/B8BadRequest" },
-          "401": { "$ref": "#/components/responses/B8SessionRevoked" },
+          "401": { "$ref": "#/components/responses/B8SessionRefreshUnauthorized" },
+          "403": { "$ref": "#/components/responses/B8PolicyDenied" },
           "409": { "$ref": "#/components/responses/B8Conflict" },
-          "429": { "$ref": "#/components/responses/B8RateLimited" }
+          "429": { "$ref": "#/components/responses/B8RateLimited" },
+          "503": { "$ref": "#/components/responses/B8IdpUnavailable" }
         }
       }
     },
@@ -143,6 +217,7 @@
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionRevocationResponse" } } }
           },
           "401": { "$ref": "#/components/responses/B8Unauthorized" },
+          "403": { "$ref": "#/components/responses/B8Forbidden" },
           "409": { "$ref": "#/components/responses/B8Conflict" }
         }
       }
@@ -416,6 +491,13 @@
         "description": "必须匹配服务端登记的 redirect URI，客户端不能把任意地址注入回调。",
         "schema": { "type": "string", "format": "uri", "maxLength": 512 }
       },
+      "B8AuthIntent": {
+        "name": "intent",
+        "in": "query",
+        "required": false,
+        "description": "仅用于选择 IdP 托管的登录或注册入口；不改变 OIDC 授权协议，也不接受本地凭据。",
+        "schema": { "type": "string", "enum": ["login", "register"], "default": "login" }
+      },
       "B8ReturnTo": {
         "name": "returnTo",
         "in": "query",
@@ -459,6 +541,37 @@
         "required": true,
         "schema": { "type": "string", "minLength": 16, "maxLength": 256 }
       },
+      "B8CallbackCode": {
+        "name": "code",
+        "in": "query",
+        "required": false,
+        "description": "一次性 authorization code；只在 provider 未返回 error 时出现，服务端不得持久化。",
+        "schema": { "type": "string", "minLength": 16, "maxLength": 2048 }
+      },
+      "B8OidcCallbackError": {
+        "name": "error",
+        "in": "query",
+        "required": false,
+        "description": "OIDC/OAuth provider 返回的标准错误码；服务端只映射为安全错误 envelope，不回显 provider 原文。",
+        "schema": {
+          "type": "string",
+          "enum": ["access_denied", "account_selection_required", "consent_required", "interaction_required", "invalid_request", "invalid_scope", "login_required", "server_error", "temporarily_unavailable", "unauthorized_client", "unsupported_response_type"]
+        }
+      },
+      "B8OidcCallbackErrorDescription": {
+        "name": "error_description",
+        "in": "query",
+        "required": false,
+        "description": "不可信的 provider 描述；仅供内部诊断，禁止原样返回、日志记录或作为授权事实。",
+        "schema": { "type": "string", "maxLength": 512 }
+      },
+      "B8OidcCallbackErrorUri": {
+        "name": "error_uri",
+        "in": "query",
+        "required": false,
+        "description": "provider 错误文档地址；不得作为本地 redirect 或跳转目标。",
+        "schema": { "type": "string", "format": "uri", "maxLength": 2048 }
+      },
       "B8IdempotencyKey": {
         "name": "Idempotency-Key",
         "in": "header",
@@ -485,6 +598,16 @@
         "schema": { "$ref": "#/components/schemas/B8DeviceId" }
       }
     },
+    "headers": {
+      "B8CallbackLocation": {
+        "description": "只允许跳转到服务端登记的 returnTo/redirect URI；不得包含 code、state、access token 或 refresh token。",
+        "schema": { "type": "string", "format": "uri", "maxLength": 2048 }
+      },
+      "B8SessionCookie": {
+        "description": "可选的 provider-backed、HttpOnly、Secure、SameSite 会话 cookie；不表示 IAM 是 OAuth/OIDC Token Server。",
+        "schema": { "type": "string", "maxLength": 4096 }
+      }
+    },
     "responses": {
       "B8BadRequest": {
         "description": "Malformed or invalid authentication request",
@@ -492,6 +615,10 @@
       },
       "B8Unauthorized": {
         "description": "Missing, invalid or expired authentication; error.code=unauthorized",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
+      },
+      "B8SessionRefreshUnauthorized": {
+        "description": "Refresh credential is missing, invalid, expired or already used; error.code is unauthorized or session_revoked and HTTP status is 401",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
       },
       "B8Forbidden": {
@@ -527,7 +654,7 @@
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
       },
       "B8IdpUnavailable": {
-        "description": "Standard IdP adapter unavailable; no fallback token server is used",
+        "description": "Standard external IdP adapter, discovery, token exchange, refresh or JWKS is unavailable; return HTTP 503 with error.code=idp_unavailable and retryable=true; no fallback token server is used",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } }
       }
     },
@@ -554,7 +681,12 @@
           "message": { "type": "string", "minLength": 1, "maxLength": 256, "description": "安全、可本地化的非敏感提示；不得回显 Token、IdP 原文或策略秘密。" },
           "retryable": { "type": "boolean" },
           "policyVersion": { "type": "string", "maxLength": 64 },
-          "details": { "type": "object", "additionalProperties": false }
+          "details": {
+            "type": "object",
+            "additionalProperties": true,
+            "maxProperties": 8,
+            "description": "仅允许安全、可本地化的诊断字段；不得包含 token、IdP 原文、claims、密钥或策略秘密。"
+          }
         }
       },
       "B8AuthorizationStartResponse": {
@@ -565,17 +697,29 @@
           "authorizationUrl": { "type": "string", "format": "uri", "maxLength": 2048 },
           "transactionId": { "type": "string", "pattern": "^oidc_tx_[A-Za-z0-9._:-]{15,127}$" },
           "provider": { "type": "string", "maxLength": 32 },
-          "expiresAt": { "type": "string", "format": "date-time" }
+          "expiresAt": { "type": "string", "format": "date-time" },
+          "intent": { "type": "string", "enum": ["login", "register"] }
         }
       },
       "B8OidcCallbackRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["code", "state", "redirectUri"],
+        "required": ["state", "redirectUri"],
         "properties": {
-          "code": { "type": "string", "minLength": 16, "maxLength": 2048, "description": "一次性授权码；服务端只向标准 IdP adapter 转发，不持久化。" },
+          "code": { "type": "string", "minLength": 16, "maxLength": 2048, "description": "成功回调中的一次性 authorization code；服务端只向外部标准 IdP adapter 转发，不持久化。与 error 互斥。" },
           "state": { "type": "string", "minLength": 16, "maxLength": 256 },
-          "redirectUri": { "type": "string", "format": "uri", "maxLength": 512 }
+          "redirectUri": { "type": "string", "format": "uri", "maxLength": 512 },
+          "error": { "type": "string", "enum": ["access_denied", "account_selection_required", "consent_required", "interaction_required", "invalid_request", "invalid_scope", "login_required", "server_error", "temporarily_unavailable", "unauthorized_client", "unsupported_response_type"] },
+          "errorDescription": { "type": "string", "maxLength": 512, "description": "不可信 provider 文本；服务端不得原样回显或持久化。" },
+          "errorUri": { "type": "string", "format": "uri", "maxLength": 2048, "description": "provider 文档地址；不是 redirect 目标。" }
+        },
+        "x-callback-validation": {
+          "successShape": ["code", "state", "redirectUri"],
+          "errorShape": ["error", "state", "redirectUri"],
+          "mutuallyExclusive": ["code", "error"],
+          "stateBoundTransaction": true,
+          "codeVerifierFromServerTransaction": true,
+          "nonceFromServerTransaction": true
         }
       },
       "B8OidcCallbackResponse": {
@@ -583,10 +727,30 @@
         "additionalProperties": false,
         "required": ["session", "principal", "adultGate", "consentState"],
         "properties": {
-          "session": { "$ref": "#/components/schemas/B8SessionTokenResponse" },
+          "session": { "$ref": "#/components/schemas/B8SessionEstablishedResponse" },
           "principal": { "$ref": "#/components/schemas/B8PrincipalResponse" },
           "adultGate": { "$ref": "#/components/schemas/B8AdultGateResponse" },
           "consentState": { "$ref": "#/components/schemas/B8ConsentState" }
+        }
+      },
+      "B8SessionEstablishedResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["sessionId", "deviceId", "provider", "status", "establishedAt"],
+        "description": "Product session fact created after the external IdP verifies the authorization code and ID token. Any credential fields are provider-issued relay values, never IAM-minted values; they are not persisted or logged by IAM.",
+        "x-sensitive-fields": ["accessToken", "refreshToken"],
+        "properties": {
+          "sessionId": { "$ref": "#/components/schemas/B8SessionId" },
+          "deviceId": { "$ref": "#/components/schemas/B8DeviceId" },
+          "provider": { "type": "string", "maxLength": 32 },
+          "status": { "type": "string", "const": "ACTIVE" },
+          "establishedAt": { "type": "string", "format": "date-time" },
+          "expiresAt": { "type": "string", "format": "date-time" },
+          "accessToken": { "type": "string", "minLength": 32, "maxLength": 8192, "description": "Provider-issued access token; TLS relay only; must never be stored or written to logging by IAM." },
+          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "Provider-issued refresh token; TLS relay only; IAM stores only a digest for rotation and must never store or log the plaintext token." },
+          "accessTokenExpiresAt": { "type": "string", "format": "date-time" },
+          "tokenType": { "type": "string", "const": "Bearer" },
+          "issuer": { "type": "string", "format": "uri", "maxLength": 512 }
         }
       },
       "B8SessionRefreshRequest": {
@@ -595,7 +759,7 @@
         "required": ["refreshToken"],
         "x-sensitive-fields": ["refreshToken"],
         "properties": {
-          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "敏感 Refresh Token 只经 TLS 传输；服务端只保存 hash，禁止日志、事件和普通持久化明文。" }
+          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "外部标准 OIDC IdP 签发的敏感 Refresh Token；只经 TLS 传输，IAM 只通过 provider adapter 轮换并保存 hash，禁止本地 Token Endpoint、日志、事件和普通持久化明文。" }
         }
       },
       "B8SessionTokenResponse": {
@@ -603,14 +767,21 @@
         "additionalProperties": false,
         "required": ["accessToken", "refreshToken", "expiresIn", "refreshExpiresIn", "sessionId"],
         "x-sensitive-fields": ["accessToken", "refreshToken"],
+        "x-token-ownership": {
+          "issuer": "approved-external-oidc-idp",
+          "mintedByIam": false,
+          "transport": "provider-adapter",
+          "noLocalTokenEndpoint": true
+        },
         "properties": {
-          "accessToken": { "type": "string", "minLength": 32, "maxLength": 8192, "description": "敏感 Access Token 仅经 TLS 返回并放入受控短期存储；禁止日志和事件。" },
-          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "敏感 Refresh Token 仅经 TLS 返回；服务端只保存 hash，禁止日志、事件和数据库明文。" },
+          "accessToken": { "type": "string", "minLength": 32, "maxLength": 8192, "description": "外部标准 OIDC IdP 签发的 Access Token；IAM 不签发、不改写，客户端只经 TLS 接收并放入受控短期存储，禁止日志和事件。" },
+          "refreshToken": { "type": "string", "minLength": 32, "maxLength": 4096, "description": "外部标准 OIDC IdP 签发的 Refresh Token；IAM 只经 provider adapter 轮换并保存 hash，禁止本地 Token Endpoint、日志、事件和数据库明文。" },
           "expiresIn": { "type": "integer", "minimum": 1, "maximum": 86400 },
           "refreshExpiresIn": { "type": "integer", "minimum": 1, "maximum": 2592000 },
           "deviceId": { "$ref": "#/components/schemas/B8DeviceId" },
           "sessionId": { "$ref": "#/components/schemas/B8SessionId" },
-          "tokenType": { "type": "string", "const": "Bearer" }
+          "tokenType": { "type": "string", "const": "Bearer" },
+          "issuer": { "type": "string", "format": "uri", "maxLength": 512 }
         }
       },
       "B8SessionRevocationResponse": {
@@ -735,18 +906,33 @@
         "type": "object",
         "additionalProperties": false,
         "required": ["issuer", "authorizationEndpoint", "jwksUri", "codeChallengeMethods"],
+        "x-oidc-discovery": {
+          "source": "external-provider-adapter",
+          "serverSideOnly": true,
+          "tokenEndpointOwnedBy": "external-oidc-idp"
+        },
         "properties": {
           "issuer": { "type": "string", "format": "uri", "maxLength": 512 },
           "authorizationEndpoint": { "type": "string", "format": "uri", "maxLength": 1024 },
+          "tokenEndpoint": { "type": "string", "format": "uri", "maxLength": 1024 },
           "jwksUri": { "type": "string", "format": "uri", "maxLength": 1024 },
+          "userinfoEndpoint": { "type": "string", "format": "uri", "maxLength": 1024 },
           "codeChallengeMethods": { "type": "array", "items": { "type": "string", "const": "S256" }, "minItems": 1 },
-          "scopes": { "type": "array", "items": { "type": "string", "maxLength": 64 } }
+          "codeChallengeMethodsSupported": { "type": "array", "items": { "type": "string", "const": "S256" }, "minItems": 1 },
+          "responseTypesSupported": { "type": "array", "items": { "type": "string", "const": "code" }, "minItems": 1 },
+          "grantTypesSupported": { "type": "array", "items": { "type": "string", "enum": ["authorization_code", "refresh_token"] }, "minItems": 1 },
+          "scopes": { "type": "array", "items": { "type": "string", "maxLength": 64 }, "contains": { "const": "openid" } },
+          "scopesSupported": { "type": "array", "items": { "type": "string", "maxLength": 64 }, "contains": { "const": "openid" } },
+          "subjectTypesSupported": { "type": "array", "items": { "type": "string", "const": "public" }, "minItems": 1 },
+          "idTokenSigningAlgValuesSupported": { "type": "array", "items": { "type": "string", "enum": ["RS256", "RS384", "RS512"] }, "minItems": 1 }
         }
       },
       "B8JwksResponse": {
         "type": "object",
         "additionalProperties": false,
         "required": ["keys"],
+        "x-jwks-source": "external-oidc-idp",
+        "x-jwks-boundary": "public-signing-keys-only; never expose private key material",
         "properties": {
           "keys": {
             "type": "array",

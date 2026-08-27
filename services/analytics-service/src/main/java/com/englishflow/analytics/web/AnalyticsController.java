@@ -177,10 +177,8 @@ public final class AnalyticsController {
                 "reasonCode", result.reasonCode() == null ? null : result.reasonCode().name());
     }
 
-    private static Map<String, Object> queryView(AnalyticsQueryResult result) {
-        return map("state", result.state().name(), "metricVersion", result.metricVersion(),
-                "rows", result.rows().stream().map(AnalyticsController::projectionView).toList(),
-                "asOf", result.asOf(), "errorCode", result.errorCode() == null ? null : result.errorCode().name());
+    private static List<Map<String, Object>> queryView(AnalyticsQueryResult result) {
+        return result.rows().stream().map(AnalyticsController::projectionView).toList();
     }
 
     private static Map<String, Object> recomputeView(RecomputeResult result) {
@@ -191,16 +189,19 @@ public final class AnalyticsController {
     }
 
     private static Map<String, Object> projectionView(MetricProjection projection) {
-        return map("metricId", projection.key().metricId(), "metricVersion", projection.key().metricVersion(),
-                "periodStart", projection.periodStart(), "dimensionKey", projection.key().dimensionKey(),
-                "state", projection.state().name(), "eventCount", projection.eventCount(),
-                "totalValue", projection.totalValue(), "lastOccurredAt", projection.lastOccurredAt(),
-                "sourceWatermark", projection.sourceWatermark(), "projectionVersion", projection.projectionVersion(),
-                "errorCode", projection.errorCode() == null ? null : projection.errorCode().name(),
-                "updatedAt", projection.updatedAt());
+        var periodStart = projection.periodStart().atStartOfDay().toInstant(ZoneOffset.UTC);
+        var periodEnd = projection.periodStart().plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC);
+        String state = switch (projection.state()) {
+            case READY -> "READY";
+            case EMPTY, ERROR -> "UNAVAILABLE";
+            case REBUILDING -> "RECOMPUTING";
+        };
+        return map("metricCode", projection.key().metricId(), "metricVersion", projection.key().metricVersion(),
+                "periodStart", periodStart, "periodEnd", periodEnd, "value", projection.totalValue(),
+                "state", state, "generatedAt", projection.updatedAt());
     }
 
-    private static Map<String, Object> envelope(Map<String, Object> data, HttpServletRequest request) {
+    private static Map<String, Object> envelope(Object data, HttpServletRequest request) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("requestId", requestId(request));
         result.put("data", data);

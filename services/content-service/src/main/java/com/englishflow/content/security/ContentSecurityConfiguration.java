@@ -63,6 +63,8 @@ public class ContentSecurityConfiguration {
                         .accessDeniedHandler(deniedHandler))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/actuator/**").permitAll();
+                    auth.requestMatchers("/api/v1/public/content/**").permitAll();
+                    auth.requestMatchers("/api/v1/public/site/projection").permitAll();
                     if (properties.isEnabled()) {
                         auth.anyRequest().authenticated();
                     } else {

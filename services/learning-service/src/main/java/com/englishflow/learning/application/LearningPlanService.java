@@ -173,6 +173,7 @@ public final class LearningPlanService {
                     ReviewQueueSnapshot snapshot = new ReviewQueueSnapshot(
                             ids.nextId("schedule_snapshot"), scope, command.localDate(),
                             target.timeZoneId(), Sm2Scheduler.ALGORITHM_VERSION, states);
+                    store.saveReviewQueue(snapshot);
                     store.appendOutbox(LearningEventFactory.queueCreated(
                             scope, snapshot.scheduleSnapshotId(), snapshot.localDate(), snapshot.rulesVersion(),
                             snapshot.items().size(), command.metadata(), clock.instant()));

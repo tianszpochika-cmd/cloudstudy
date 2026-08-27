@@ -1,18 +1,31 @@
 package com.englishflow.media.config;
 
+import com.englishflow.media.adapter.failclosed.FailClosedMediaEventOutbox;
+import com.englishflow.media.adapter.failclosed.FailClosedMediaRegistrationIdempotencyStore;
+import com.englishflow.media.adapter.jdbc.JdbcMediaRepository;
 import com.englishflow.media.adapter.memory.InMemoryMediaEventOutbox;
 import com.englishflow.media.adapter.memory.InMemoryMediaRepository;
+import com.englishflow.media.adapter.memory.InMemoryMediaRegistrationIdempotencyStore;
 import com.englishflow.media.adapter.memory.InMemorySignedUrlPort;
 import com.englishflow.media.application.MediaAssetCommandService;
 import com.englishflow.media.application.MediaReadService;
 import com.englishflow.media.port.MediaEventPort;
 import com.englishflow.media.port.MediaRepository;
+import com.englishflow.media.port.MediaRegistrationIdempotencyPort;
 import com.englishflow.media.port.SignedUrlPort;
 
 import java.time.Clock;
 
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 /** Local code-layer wiring; production replaces memory adapters with media-owned adapters. */
 @Configuration(proxyBeanMethods = false)
@@ -24,18 +37,98 @@ public class MediaServiceConfiguration {
     }
 
     @Bean
+    @Profile("!local-real")
     MediaRepository mediaRepository() {
         return new InMemoryMediaRepository();
     }
 
     @Bean
+    @Profile("local-real")
+    @ConditionalOnMissingBean(MediaRepository.class)
+    MediaRepository localRealMediaRepository(JdbcTemplate jdbcTemplate) {
+        return new JdbcMediaRepository(jdbcTemplate);
+    }
+
+    @Bean
+    @Profile("local-real")
+    @ConditionalOnMissingBean(DataSource.class)
+    DataSource localRealMediaDataSource(
+            @Value("${spring.datasource.url:}") String url,
+            @Value("${spring.datasource.username:}") String username,
+            @Value("${spring.datasource.password:}") String password,
+            @Value("${spring.datasource.driver-class-name:com.mysql.cj.jdbc.Driver}") String driverClassName) {
+        if (url.isBlank() || username.isBlank() || password.isBlank()) {
+            throw new IllegalStateException("local-real media JDBC requires spring.datasource.url/username/password");
+        }
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName(driverClassName);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
+
+    @Bean
+    @Profile("local-real")
+    Flyway localRealMediaFlyway(
+            DataSource dataSource,
+            MediaServiceProperties properties) {
+        Flyway flyway = Flyway.configure()
+                .dataSource(dataSource)
+                .schemas(properties.getSchema())
+                .defaultSchema(properties.getSchema())
+                .createSchemas(true)
+                .baselineOnMigrate(true)
+                .baselineVersion("0")
+                .locations("classpath:db/migration")
+                .load();
+        flyway.migrate();
+        return flyway;
+    }
+
+    @Bean
+    @Profile("local-real")
+    JdbcTemplate localRealMediaJdbcTemplate(DataSource dataSource, Flyway localRealMediaFlyway) {
+        return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    @Profile("!local-real")
     SignedUrlPort signedUrlPort(MediaServiceProperties properties) {
         return new InMemorySignedUrlPort(properties.getSignedUrlBaseUrl());
     }
 
     @Bean
+    @Profile("local-real")
+    SignedUrlPort localRealSignedUrlPort(MediaServiceProperties properties) {
+        // Local-real signs metadata-only grants against the configured local
+        // object-store base. The media owner remains the source of truth for
+        // rights and asset state; no object bytes enter this service.
+        return new InMemorySignedUrlPort(properties.getSignedUrlBaseUrl());
+    }
+
+    @Bean
+    @Profile("!local-real")
     MediaEventPort mediaEventPort() {
         return new InMemoryMediaEventOutbox();
+    }
+
+    @Bean
+    @Profile("local-real")
+    MediaEventPort localRealMediaEventPort() {
+        return new FailClosedMediaEventOutbox();
+    }
+
+    @Bean
+    @Profile("!local-real")
+    MediaRegistrationIdempotencyPort mediaRegistrationIdempotencyPort() {
+        return new InMemoryMediaRegistrationIdempotencyStore();
+    }
+
+    @Bean
+    @Profile("local-real")
+    MediaRegistrationIdempotencyPort localRealMediaRegistrationIdempotencyPort() {
+        return new FailClosedMediaRegistrationIdempotencyStore();
     }
 
     @Bean
@@ -43,8 +136,9 @@ public class MediaServiceConfiguration {
             MediaRepository repository,
             SignedUrlPort signedUrlPort,
             MediaEventPort eventPort,
+            MediaRegistrationIdempotencyPort idempotencyPort,
             Clock mediaClock) {
-        return new MediaAssetCommandService(repository, signedUrlPort, eventPort, mediaClock);
+        return new MediaAssetCommandService(repository, signedUrlPort, eventPort, idempotencyPort, mediaClock);
     }
 
     @Bean

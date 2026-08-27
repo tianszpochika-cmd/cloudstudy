@@ -1,6 +1,9 @@
 package com.englishflow.gateway.filter;
 
 import com.englishflow.gateway.config.GatewayProperties;
+import com.englishflow.gateway.support.CorrelationIds;
+import com.englishflow.gateway.support.GatewayError;
+import com.englishflow.gateway.support.GatewayErrorResponseWriter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -50,10 +53,22 @@ public final class B14RouteModeGuardGlobalFilter implements GlobalFilter, Ordere
             return chain.filter(exchange);
         }
 
-        exchange.getResponse().setStatusCode(HttpStatus.SERVICE_UNAVAILABLE);
+        String requestId = CorrelationIds.requestId(
+                exchange.getRequest().getHeaders().getFirst("X-Request-Id"), 128);
+        String traceId = CorrelationIds.traceId(
+                exchange.getRequest().getHeaders().getFirst("X-Trace-Id"),
+                exchange.getRequest().getHeaders().getFirst("traceparent"),
+                128);
         exchange.getResponse().getHeaders().set("Retry-After", "60");
         exchange.getResponse().getHeaders().set("X-B14-Route-Mode", mode.name());
-        return exchange.getResponse().setComplete();
+        return GatewayErrorResponseWriter.write(exchange, new GatewayError(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                "compatibility_write_blocked",
+                "Writes are unavailable while this route is in compatibility mode.",
+                requestId,
+                traceId,
+                true
+        ));
     }
 
     private static String phaseOneDomain(ServerWebExchange exchange) {

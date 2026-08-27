@@ -88,7 +88,7 @@
         }
       }
     },
-    "/api/v1/vocab/items/{vocabId}": {
+    "/api/v1/content/learner/vocabulary/{vocabularyId}": {
       "get": {
         "operationId": "getVocabDetail",
         "tags": ["vocabulary-content"],
@@ -465,10 +465,10 @@
         "schema": { "type": "integer", "format": "int64", "minimum": 1 }
       },
       "VocabId": {
-        "name": "vocabId",
+        "name": "vocabularyId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": { "type": "string", "minLength": 1, "maxLength": 96 }
       },
       "ChunkId": {
         "name": "chunkId",

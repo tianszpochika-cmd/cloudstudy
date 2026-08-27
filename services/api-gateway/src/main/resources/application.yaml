@@ -4,18 +4,24 @@ spring:
   main:
     web-application-type: reactive
     banner-mode: off
+  data:
+    redis:
+      url: ${REDIS_URL:redis://127.0.0.1:16379}
   lifecycle:
     timeout-per-shutdown-phase: 20s
   cloud:
     gateway:
       metrics:
         enabled: true
+      httpclient:
+        connect-timeout: ${GATEWAY_CONNECT_TIMEOUT_MS:1000}
+        response-timeout: ${GATEWAY_RESPONSE_TIMEOUT:5s}
 
 server:
   address: ${SERVER_ADDRESS:127.0.0.1}
-  # This value is intentionally required. The local port authority must inject
-  # GATEWAY_PORT after the port is registered; this service never auto-increments.
-  port: ${GATEWAY_PORT}
+  # The default is the registered fixed port; deployments may override it explicitly,
+  # but this service never auto-increments or chooses a random port.
+  port: ${API_GATEWAY_PORT:18070}
   shutdown: graceful
   forward-headers-strategy: framework
 
@@ -29,6 +35,16 @@ management:
       probes:
         enabled: true
       show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
   info:
     env:
       enabled: false
@@ -96,23 +112,30 @@ gateway:
       - ${CORS_ALLOWED_ORIGIN_OFFICIAL:http://127.0.0.1:18182}
       - ${CORS_ALLOWED_ORIGIN_MOBILE:http://127.0.0.1:18183}
     allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
-    allowed-headers: Authorization,Content-Type,Idempotency-Key,X-Request-Id,X-Trace-Id
+    # Keep this list in lock-step with the shared client envelope.  These are
+    # non-safelisted headers emitted by learner-web/mobile for tenant-safe
+    # device context, locale negotiation, snapshots and request tracing.
+    allowed-headers: Authorization,Content-Type,Idempotency-Key,X-Request-Id,X-Trace-Id,X-Device-Id,X-Client-Version,X-Timezone,X-UI-Locale,X-Content-Locale,X-Snapshot-Id,X-Performance-Level,traceparent
     exposed-headers: X-Request-Id,X-Trace-Id,Retry-After
     allow-credentials: true
     max-age: 30m
   rate-limit:
-    # Phase 0 is an explicit local placeholder. Distributed limiting belongs to
-    # the platform runtime and must not be mistaken for a production guarantee.
+    # The filter is real when enabled. Use Redis for a multi-instance runtime;
+    # memory is intentionally bounded to one Gateway process for local smoke.
     enabled: ${GATEWAY_RATE_LIMIT_ENABLED:false}
     requests-per-window: ${GATEWAY_RATE_LIMIT_REQUESTS:120}
     window: ${GATEWAY_RATE_LIMIT_WINDOW:1m}
     key-strategy: remote-address
+    backend: ${GATEWAY_RATE_LIMIT_BACKEND:memory}
+    max-keys: ${GATEWAY_RATE_LIMIT_MAX_KEYS:10000}
+    fail-open: ${GATEWAY_RATE_LIMIT_FAIL_OPEN:false}
   request-context:
     max-id-length: 128
   security:
-    # B8 enables real OIDC/JWKS validation only after the G-IDP gate. A bearer
-    # header alone is never treated as authenticated.
+    # Resource Server/JWKS validation is feature-gated until an approved IdP is
+    # configured. A bearer header alone is never treated as authenticated.
     jwt-prevalidation-enabled: ${GATEWAY_JWT_PREVALIDATION_ENABLED:false}
     resource-server-enabled: ${GATEWAY_RESOURCE_SERVER_ENABLED:false}
     audit-enabled: ${GATEWAY_SECURITY_AUDIT_ENABLED:true}
     issuer-uri: ${OIDC_ISSUER_URI:}
+    audience: ${OIDC_AUDIENCE:${OIDC_API_AUDIENCE:yuxuexing-api}}

@@ -13,6 +13,7 @@ import com.englishflow.learner.domain.AssessmentState;
 import com.englishflow.learner.domain.AuthorizationDecision;
 import com.englishflow.learner.domain.ClientAuthorityClaims;
 import com.englishflow.learner.domain.ConsentState;
+import com.englishflow.learner.domain.CefrLevel;
 import com.englishflow.learner.domain.DailyStudyMinutes;
 import com.englishflow.learner.domain.GoalType;
 import com.englishflow.learner.domain.IdempotencyKey;
@@ -165,6 +166,12 @@ class LearnerDomainTest {
 
         assertThrows(LearnerAuthorizationException.class,
                 () -> queries.getProfile(clientOverride));
+    }
+
+    @Test
+    void verifiedLocalOidcUuidCanBeUsedUntilIamPrincipalMappingIsAvailable() {
+        String externalSubject = "550e8400-e29b-41d4-a716-446655440000";
+        assertEquals(externalSubject, LearnerTenantScope.forPhaseOne(externalSubject).subjectId());
     }
 
     @Test

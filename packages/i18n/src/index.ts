@@ -152,9 +152,15 @@ export function normalizeLocale(locale: Locale): Locale {
   }
 }
 
-function localeBase(locale: Locale): Locale | undefined {
-  const separator = locale.indexOf('-')
-  return separator > 0 ? locale.slice(0, separator) : undefined
+function localeBases(locale: Locale): readonly Locale[] {
+  const segments = locale.split('-')
+  const bases: Locale[] = []
+  for (let length = segments.length - 1; length > 0; length -= 1) {
+    const candidate = segments.slice(0, length).join('-')
+    if (candidate.split('-').at(-1)?.length === 1) continue
+    bases.push(candidate)
+  }
+  return bases
 }
 
 function appendLocale(target: Locale[], locale: Locale | undefined): void {
@@ -171,7 +177,7 @@ export function resolveLocaleChain(
   const chain: Locale[] = []
   const requested = normalizeLocale(locale)
   appendLocale(chain, requested)
-  appendLocale(chain, localeBase(requested))
+  for (const base of localeBases(requested)) appendLocale(chain, base)
 
   if (fallbackLocale !== false) {
     const fallbacks = typeof fallbackLocale === 'string' ? [fallbackLocale] : fallbackLocale
@@ -270,15 +276,20 @@ export function pseudoLocalizeMessages(messages: MessageTree, options: PseudoLoc
   return result
 }
 
-function formatLocaleOptions<T extends Record<string, unknown>>(
+function resolveLocaleOptions<T extends object>(
   localeOrOptions: Locale | T | undefined,
-  options: T | undefined,
-  defaultOptions: T,
-): { locale: Locale; options: T } {
+  optionsOrLocale: T | Locale | undefined,
+): { locale: Locale; options: T | undefined } {
   if (typeof localeOrOptions === 'string') {
-    return { locale: normalizeLocale(localeOrOptions), options: { ...defaultOptions, ...(options ?? {}) } }
+    return {
+      locale: normalizeLocale(localeOrOptions),
+      options: typeof optionsOrLocale === 'string' ? undefined : optionsOrLocale,
+    }
   }
-  return { locale: DEFAULT_LOCALE, options: { ...defaultOptions, ...(localeOrOptions ?? {}) } }
+  return {
+    locale: typeof optionsOrLocale === 'string' ? normalizeLocale(optionsOrLocale) : DEFAULT_LOCALE,
+    options: localeOrOptions ?? (typeof optionsOrLocale === 'string' ? undefined : optionsOrLocale),
+  }
 }
 
 export function formatNumber(value: number, locale?: Locale, options?: Intl.NumberFormatOptions): string
@@ -288,9 +299,16 @@ export function formatNumber(
   localeOrOptions?: Locale | Intl.NumberFormatOptions,
   optionsOrLocale?: Intl.NumberFormatOptions | Locale,
 ): string {
-  const locale = typeof localeOrOptions === 'string' ? localeOrOptions : typeof optionsOrLocale === 'string' ? optionsOrLocale : DEFAULT_LOCALE
-  const options = typeof localeOrOptions === 'string' ? optionsOrLocale : localeOrOptions
-  return new Intl.NumberFormat(normalizeLocale(locale), options as Intl.NumberFormatOptions | undefined).format(value)
+  const resolved = resolveLocaleOptions<Intl.NumberFormatOptions>(localeOrOptions, optionsOrLocale)
+  try {
+    return new Intl.NumberFormat(resolved.locale, resolved.options).format(value)
+  } catch {
+    try {
+      return new Intl.NumberFormat(DEFAULT_LOCALE, resolved.options).format(value)
+    } catch {
+      return String(value)
+    }
+  }
 }
 
 export function formatDate(value: Date | number | string, locale?: Locale, options?: Intl.DateTimeFormatOptions): string
@@ -300,9 +318,18 @@ export function formatDate(
   localeOrOptions?: Locale | Intl.DateTimeFormatOptions,
   optionsOrLocale?: Intl.DateTimeFormatOptions | Locale,
 ): string {
-  const locale = typeof localeOrOptions === 'string' ? localeOrOptions : typeof optionsOrLocale === 'string' ? optionsOrLocale : DEFAULT_LOCALE
-  const options = typeof localeOrOptions === 'string' ? optionsOrLocale : localeOrOptions
-  return new Intl.DateTimeFormat(normalizeLocale(locale), options as Intl.DateTimeFormatOptions | undefined).format(new Date(value))
+  const resolved = resolveLocaleOptions<Intl.DateTimeFormatOptions>(localeOrOptions, optionsOrLocale)
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  try {
+    return new Intl.DateTimeFormat(resolved.locale, resolved.options).format(date)
+  } catch {
+    try {
+      return new Intl.DateTimeFormat(DEFAULT_LOCALE, resolved.options).format(date)
+    } catch {
+      return date.toISOString()
+    }
+  }
 }
 
 export function formatPlural(
@@ -310,7 +337,15 @@ export function formatPlural(
   locale: Locale = DEFAULT_LOCALE,
   options: Intl.PluralRulesOptions = {},
 ): PluralCategory {
-  return new Intl.PluralRules(normalizeLocale(locale), options).select(value) as PluralCategory
+  try {
+    return new Intl.PluralRules(normalizeLocale(locale), options).select(value) as PluralCategory
+  } catch {
+    try {
+      return new Intl.PluralRules(DEFAULT_LOCALE, options).select(value) as PluralCategory
+    } catch {
+      return 'other'
+    }
+  }
 }
 
 function formatPluralMessage(
@@ -383,12 +418,12 @@ export function createI18n(options: I18nOptions = {}): I18nInstance {
     const snapshot = stateSnapshot()
     for (const listener of listeners) listener(snapshot)
   }
-  const markMissing = (key: string): void => {
+  const markMissing = (key: string, locale = currentState.locale): void => {
     missingKeys.add(key)
     options.onMissingKey?.({
       key,
-      locale: currentState.locale,
-      fallbackChain: resolveLocaleChain(currentState.locale, fallbackLocale, defaultLocale),
+      locale: normalizeLocale(locale),
+      fallbackChain: resolveLocaleChain(locale, fallbackLocale, defaultLocale),
     })
   }
   const resolve = (key: string, translateOptions: TranslateOptions = {}, candidateKeys: readonly string[] = [key]): ResolvedMessage | undefined => {
@@ -399,7 +434,7 @@ export function createI18n(options: I18nOptions = {}): I18nInstance {
   const translate = (key: string, values: InterpolationValues = {}, translateOptions: TranslateOptions = {}): string => {
     const resolved = resolve(key, translateOptions)
     if (!resolved) {
-      markMissing(key)
+      markMissing(key, translateOptions.locale ?? currentState.locale)
       return key
     }
     const message = currentState.locale === pseudoLocale || normalizeLocale(translateOptions.locale ?? '') === pseudoLocale
@@ -435,7 +470,7 @@ export function createI18n(options: I18nOptions = {}): I18nInstance {
       const candidateKeys = [`${key}.${category}`, `${key}.other`, key]
       const resolved = resolve(key, translateOptions, candidateKeys)
       if (!resolved) {
-        markMissing(key)
+        markMissing(key, translateOptions.locale ?? currentState.locale)
         return key
       }
       const message = locale === pseudoLocale ? pseudoLocalize(resolved.value) : resolved.value

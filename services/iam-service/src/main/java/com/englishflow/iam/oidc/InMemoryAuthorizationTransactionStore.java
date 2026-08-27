@@ -24,8 +24,32 @@ public final class InMemoryAuthorizationTransactionStore implements Authorizatio
     }
 
     @Override
+    public Optional<AuthorizationTransaction> find(String state) {
+        if (state == null || state.isBlank()) {
+            return Optional.empty();
+        }
+        AuthorizationTransaction transaction = transactions.get(state);
+        if (transaction == null) {
+            return Optional.empty();
+        }
+        if (!Instant.now(clock).isBefore(transaction.expiresAt())) {
+            transactions.remove(state, transaction);
+            return Optional.empty();
+        }
+        return Optional.of(transaction);
+    }
+
+    @Override
     public void save(AuthorizationTransaction transaction) {
-        transactions.put(transaction.state(), transaction);
+        if (!Instant.now(clock).isBefore(transaction.expiresAt())) {
+            throw new IllegalArgumentException("authorization transaction is already expired");
+        }
+        if (transaction.expiresAt().isAfter(transaction.createdAt().plus(ttl))) {
+            throw new IllegalArgumentException("authorization transaction exceeds store TTL");
+        }
+        if (transactions.putIfAbsent(transaction.state(), transaction) != null) {
+            throw new IllegalStateException("authorization transaction state already exists");
+        }
     }
 
     @Override
@@ -37,10 +61,10 @@ public final class InMemoryAuthorizationTransactionStore implements Authorizatio
         if (transaction == null) {
             return Optional.empty();
         }
-        consumedStates.add(state);
-        if (transaction.createdAt().plus(ttl).isBefore(Instant.now(clock))) {
+        if (!Instant.now(clock).isBefore(transaction.expiresAt())) {
             return Optional.empty();
         }
+        consumedStates.add(state);
         return Optional.of(transaction);
     }
 

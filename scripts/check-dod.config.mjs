@@ -85,6 +85,7 @@ export const DOD_CONFIG = Object.freeze({
       'mobile-h5-dev': 18183,
       mysql: 13306,
       redis: 16379,
+      kafka: 19092,
       'rabbitmq-amqp': 15689,
       'rabbitmq-management': 15690,
       'minio-api': 19000,

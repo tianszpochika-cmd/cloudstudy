@@ -2,6 +2,7 @@ package com.englishflow.learner.port;
 
 import com.englishflow.learner.domain.IdempotencyKey;
 import com.englishflow.learner.domain.IdempotencyRecord;
+import com.englishflow.learner.domain.FirstDayProjection;
 import com.englishflow.learner.domain.LearnerCommitResult;
 import com.englishflow.learner.domain.LearnerMutation;
 import com.englishflow.learner.domain.LearnerProfile;
@@ -17,6 +18,13 @@ import java.util.Optional;
 public interface LearnerProfileStore {
 
     Optional<LearnerProfile> find(LearnerTenantScope scope);
+
+    /**
+     * Reads the learner-owned first-day projection when one has been materialized.
+     * Empty is reserved for an empty or legacy-shadow-only aggregate; an owned profile is
+     * expected to have a projection after its first durable commit.
+     */
+    Optional<FirstDayProjection> findFirstDay(LearnerTenantScope scope);
 
     Optional<IdempotencyRecord> findIdempotency(
             LearnerTenantScope scope,

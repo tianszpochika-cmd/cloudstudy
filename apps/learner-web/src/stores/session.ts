@@ -1,9 +1,11 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { createGatewayAuthAdapter, safeReturnTo, type AdultGateStatus, type AuthSessionSnapshot, type AuthStatus, type AuthTokenPair, type LoginCallbackInput, type ProviderNeutralAuthAdapter, type PrincipalSnapshot } from '../auth/gateway-auth'
-import { apiClient } from '../api/client'
+import { ApiError, apiClient } from '../api/client'
 import { getGatewayBaseUrl } from '../platform/gateway'
 import { learnerI18nAdapter, learnerThemeController } from '../platform/v2-foundation'
+
+export type AuthErrorCode = 'OIDC_CANCELLED' | 'OIDC_CALLBACK_INVALID' | 'AUTH_FAILED' | 'SESSION_EXPIRED' | 'LOGOUT_FAILED' | 'REVOKE_FAILED'
 
 const ACCESS_TOKEN_KEY = 'yx.session.access-token'
 const RETURN_TO_KEY = 'yx.auth.return-to'
@@ -36,11 +38,35 @@ export const useSessionStore = defineStore('session', () => {
   const status = ref<AuthStatus>('unknown')
   const adultGate = ref<AdultGateStatus>('UNKNOWN')
   const lastError = ref<string | null>(null)
+  const authErrorCode = ref<AuthErrorCode | null>(null)
+  const forbiddenReason = ref<string | null>(null)
   const restored = ref(false)
   const isAuthenticated = computed(() => Boolean(accessToken.value))
   let activeAdapter: ProviderNeutralAuthAdapter | null = null
   let restorePromise: Promise<void> | null = null
   let refreshPromise: Promise<boolean> | null = null
+
+  function currentInternalPath(): string {
+    if (typeof window === 'undefined') return '/home'
+    return safeReturnTo(`${window.location.pathname}${window.location.search}${window.location.hash}`)
+  }
+
+  function forbiddenMessage(error: ApiError): string {
+    const details = error.details
+    if (typeof details === 'object' && details !== null) {
+      for (const key of ['reason', 'reasonMessage', 'message', 'detail']) {
+        const value = (details as Record<string, unknown>)[key]
+        if (typeof value === 'string' && value.trim()) return value.trim().slice(0, 240)
+      }
+    }
+    return error.message || '服务端权限策略拒绝了当前资源。'
+  }
+
+  async function navigateToLogin(returnTo: string): Promise<void> {
+    const { router } = await import('../router')
+    if (router.currentRoute.value.name === 'login') return
+    await router.replace({ name: 'login', query: { redirect: safeReturnTo(returnTo) } })
+  }
 
   function adapter(): ProviderNeutralAuthAdapter {
     if (!activeAdapter) {
@@ -70,6 +96,8 @@ export const useSessionStore = defineStore('session', () => {
     userId.value = tokens.userId?.trim() || userId.value
     adultGate.value = tokens.adultGate ?? adultGate.value
     status.value = 'authenticated'
+    authErrorCode.value = null
+    forbiddenReason.value = null
     lastError.value = null
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem(ACCESS_TOKEN_KEY, access)
@@ -90,6 +118,13 @@ export const useSessionStore = defineStore('session', () => {
       sessionId.value = readStoredValue(SESSION_ID_KEY)
       try {
         const snapshot = await adapter().restoreSession()
+        if (!snapshot && accessToken.value) {
+          clear()
+          status.value = 'unauthenticated'
+          authErrorCode.value = 'SESSION_EXPIRED'
+          lastError.value = 'SESSION_EXPIRED'
+          return
+        }
         applySnapshot(snapshot)
         if (snapshot?.tokenPair) setTokenPair(snapshot.tokenPair)
         if (accessToken.value) {
@@ -110,7 +145,7 @@ export const useSessionStore = defineStore('session', () => {
     return restorePromise
   }
 
-  function prepareLogin(returnTo: unknown): string {
+  async function prepareLogin(returnTo: unknown): Promise<string> {
     const safe = safeReturnTo(returnTo)
     setReturnTo(safe)
     return adapter().startLogin({
@@ -123,6 +158,22 @@ export const useSessionStore = defineStore('session', () => {
   async function completeLogin(input: LoginCallbackInput): Promise<boolean> {
     if (input.returnTo) setReturnTo(input.returnTo)
     status.value = 'restoring'
+    authErrorCode.value = null
+    lastError.value = null
+    if (input.error) {
+      clear()
+      status.value = 'error'
+      authErrorCode.value = input.error === 'access_denied' ? 'OIDC_CANCELLED' : 'AUTH_FAILED'
+      lastError.value = input.errorDescription || input.error
+      return false
+    }
+    if (!input.code || !input.state) {
+      clear()
+      status.value = 'error'
+      authErrorCode.value = 'OIDC_CALLBACK_INVALID'
+      lastError.value = '认证回调缺少 code 或 state，未建立会话。'
+      return false
+    }
     try {
       const pair = await adapter().completeLogin(input)
       setTokenPair(pair)
@@ -131,6 +182,7 @@ export const useSessionStore = defineStore('session', () => {
     } catch (error) {
       clear()
       status.value = 'error'
+      authErrorCode.value = 'AUTH_FAILED'
       lastError.value = error instanceof Error ? error.message : 'LOGIN_FAILED'
       return false
     }
@@ -140,7 +192,10 @@ export const useSessionStore = defineStore('session', () => {
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
       if (!refreshToken.value) {
+        clear()
         status.value = 'unauthenticated'
+        authErrorCode.value = 'SESSION_EXPIRED'
+        lastError.value = 'SESSION_EXPIRED'
         return false
       }
       status.value = 'refreshing'
@@ -151,6 +206,7 @@ export const useSessionStore = defineStore('session', () => {
       } catch (error) {
         clear()
         status.value = 'unauthenticated'
+        authErrorCode.value = 'SESSION_EXPIRED'
         lastError.value = error instanceof Error ? error.message : 'SESSION_EXPIRED'
         return false
       } finally {
@@ -169,6 +225,7 @@ export const useSessionStore = defineStore('session', () => {
     } catch (error) {
       clear()
       lastError.value = error instanceof Error ? error.message : 'LOGOUT_FAILED'
+      authErrorCode.value = 'LOGOUT_FAILED'
       status.value = 'unauthenticated'
       return false
     }
@@ -184,6 +241,7 @@ export const useSessionStore = defineStore('session', () => {
     } catch (error) {
       clear()
       lastError.value = error instanceof Error ? error.message : 'REVOKE_FAILED'
+      authErrorCode.value = 'REVOKE_FAILED'
       status.value = 'unauthenticated'
       return false
     }
@@ -213,6 +271,31 @@ export const useSessionStore = defineStore('session', () => {
     return value
   }
 
+  function peekReturnTo(): string {
+    if (typeof window === 'undefined') return '/home'
+    return safeReturnTo(window.sessionStorage.getItem(RETURN_TO_KEY))
+  }
+
+  async function handleUnauthorized(): Promise<void> {
+    const current = currentInternalPath()
+    const returnTo = current === '/login' || current === '/auth/callback' || current === '/forbidden' ? '/home' : current
+    setReturnTo(returnTo)
+    clear()
+    status.value = 'unauthenticated'
+    authErrorCode.value = 'SESSION_EXPIRED'
+    lastError.value = 'SESSION_EXPIRED'
+    await navigateToLogin(returnTo)
+  }
+
+  async function handleForbidden(error: ApiError): Promise<void> {
+    forbiddenReason.value = forbiddenMessage(error)
+    const attemptedPath = currentInternalPath()
+    const { router } = await import('../router')
+    if (router.currentRoute.value.name !== 'forbidden') {
+      await router.replace({ name: 'forbidden', query: { from: safeReturnTo(attemptedPath) } })
+    }
+  }
+
   function setAuthAdapter(next: ProviderNeutralAuthAdapter): void {
     activeAdapter = next
   }
@@ -227,6 +310,9 @@ export const useSessionStore = defineStore('session', () => {
     permissions.value = []
     adultGate.value = 'UNKNOWN'
     status.value = 'unauthenticated'
+    lastError.value = null
+    authErrorCode.value = null
+    forbiddenReason.value = null
     if (typeof window !== 'undefined') {
       window.sessionStorage.removeItem(ACCESS_TOKEN_KEY)
       window.sessionStorage.removeItem(DEVICE_ID_KEY)
@@ -246,6 +332,8 @@ export const useSessionStore = defineStore('session', () => {
     status,
     adultGate,
     lastError,
+    authErrorCode,
+    forbiddenReason,
     restored,
     isAuthenticated,
     restore,
@@ -257,7 +345,10 @@ export const useSessionStore = defineStore('session', () => {
     revokeCurrentSession,
     confirmAdultGate,
     setReturnTo,
+    peekReturnTo,
     consumeReturnTo,
+    handleUnauthorized,
+    handleForbidden,
     setAuthAdapter,
     clear,
   }

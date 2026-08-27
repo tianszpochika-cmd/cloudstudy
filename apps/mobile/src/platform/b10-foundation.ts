@@ -6,7 +6,7 @@ mobileI18n.registerMessages('zh-CN', {
   b10: {
     status: {
       idle: '等待读取学习服务', loading: '正在读取服务端学习数据', ready: '学习服务已连接', empty: '当前没有可用内容', offline: '网络暂时不可用', forbidden: '当前会话没有访问权限', stale: '内容版本已失效', error: '服务暂时不可用',
-      retry: '重试', sync: '同步待处理记录', noSample: '未使用本地样例填充结果。', pending: '待同步不等于已结算。',
+      retry: '重试', login: '去登录', sync: '同步待处理记录', noSample: '未使用本地样例填充结果。', pending: '待同步不等于已结算。',
     },
     common: { performance: '画质', theme: '主题', uiLocale: '界面语言', contentLocale: '学习内容语言', light: '亮色', dark: '暗色', system: '跟随系统', contrast: '高对比', chinese: '简体中文', english: 'English', recovery: '保留本地草稿，可联网后恢复。', stale: '当前版本已下线或发生变化，请重新读取。' },
     vocab: { eyebrow: 'VOCABULARY · SRS', title: '先想起来，再看答案。', description: '词卡、信心度和复习排程由 learning-service 负责；正面不展示答案。', reveal: '显示答案', revealing: '正在读取答案…', noAnswer: '服务端未返回受保护释义。', due: '下次复习', rate: '记忆信心', empty: '今天没有到期词卡', queued: '本次复习已保存到待同步队列。', accepted: '复习已记录。' },
@@ -20,7 +20,7 @@ mobileI18n.registerMessages('zh-CN', {
 
 mobileI18n.registerMessages('en-US', {
   b10: {
-    status: { idle: 'Waiting for learning service', loading: 'Loading server learning data', ready: 'Learning service connected', empty: 'No content is available', offline: 'Network is unavailable', forbidden: 'This session is not allowed', stale: 'Content version is stale', error: 'Service is unavailable', retry: 'Retry', sync: 'Sync pending records', noSample: 'No local sample was used.', pending: 'Pending does not mean settled.' },
+    status: { idle: 'Waiting for learning service', loading: 'Loading server learning data', ready: 'Learning service connected', empty: 'No content is available', offline: 'Network is unavailable', forbidden: 'This session is not allowed', stale: 'Content version is stale', error: 'Service is unavailable', retry: 'Retry', login: 'Sign in', sync: 'Sync pending records', noSample: 'No local sample was used.', pending: 'Pending does not mean settled.' },
     common: { performance: 'Quality', theme: 'Theme', uiLocale: 'UI language', contentLocale: 'Content language', light: 'Light', dark: 'Dark', system: 'System', contrast: 'High contrast', chinese: '简体中文', english: 'English', recovery: 'Your local draft is kept for recovery.', stale: 'The current version changed or was unpublished.' },
     vocab: { eyebrow: 'VOCABULARY · SRS', title: 'Recall first, then reveal.', description: 'Cards, confidence and scheduling are owned by learning-service; answers stay protected.', reveal: 'Reveal answer', revealing: 'Loading protected answer…', noAnswer: 'No protected definition was returned.', due: 'Next review', rate: 'Confidence', empty: 'No cards are due today', queued: 'This review is queued for sync.', accepted: 'Review recorded.' },
     practice: { eyebrow: 'PRACTICE · RULE-BASED', title: 'Answer one and see the next step.', description: 'The server owns the versioned prompt and score; the client never sends a score or answer key.', loading: 'Creating practice session…', empty: 'The server returned no exercises', next: 'Next', submit: 'Submit answer', complete: 'Open mistakes and report', checkpoint: 'Save checkpoint', restored: 'The previous checkpoint was restored.' },

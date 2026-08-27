@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { B10PerformanceLevel, B10Status } from '../../domain/b10'
 import { b10T } from '../../platform/b10-foundation'
+import { openUniPage } from '../../platform/uni-runtime'
 
 const props = withDefaults(defineProps<{
   status: B10Status
@@ -14,6 +15,7 @@ const emit = defineEmits<{ retry: []; sync: []; performance: [level: B10Performa
 const levels: B10PerformanceLevel[] = ['Ultra', 'High', 'Medium', 'Performance']
 const statusLabel = (): string => b10T(`status.${props.status}`)
 const statusMessage = (): string => props.message ?? (props.status === 'offline' ? b10T('status.pending') : props.status === 'stale' || props.stale ? b10T('common.stale') : b10T('status.noSample'))
+function openLogin(): void { openUniPage('/pages/login/login') }
 </script>
 
 <template>
@@ -25,6 +27,7 @@ const statusMessage = (): string => props.message ?? (props.status === 'offline'
     <view class="b10-status__actions">
       <text v-if="queueCount" class="b10-status__queue">{{ queueCount }} · {{ b10T('status.pending') }}</text>
       <button v-if="status === 'offline' || status === 'error' || status === 'stale'" class="b10-mini-button" type="button" @click="emit('retry')">{{ b10T('status.retry') }}</button>
+      <button v-if="status === 'forbidden'" class="b10-mini-button" type="button" @click="openLogin">{{ b10T('status.login') }}</button>
       <button v-if="queueCount" class="b10-mini-button" type="button" @click="emit('sync')">{{ b10T('status.sync') }}</button>
       <picker :range="levels" :value="levels.indexOf(performanceLevel)" @change="emit('performance', levels[Number($event.detail.value)] ?? 'High')">
         <view class="b10-quality" :aria-label="`${b10T('common.performance')}: ${performanceLevel}`">{{ performanceLevel }}</view>

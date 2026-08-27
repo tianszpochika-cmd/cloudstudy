@@ -5,6 +5,7 @@ import com.englishflow.learning.domain.LearningOutboxEvent;
 import com.englishflow.learning.domain.LearningPlan;
 import com.englishflow.learning.domain.LearningProgress;
 import com.englishflow.learning.domain.ReviewEvent;
+import com.englishflow.learning.domain.ReviewQueueSnapshot;
 import com.englishflow.learning.domain.LearningTenantScope;
 import com.englishflow.learning.domain.MasteryProjection;
 import com.englishflow.learning.domain.PlanningKey;
@@ -47,6 +48,9 @@ public interface LearningFactStore {
     void saveMastery(MasteryProjection projection);
 
     void saveProgress(LearningProgress progress);
+
+    /** Persist the owner-scoped queue snapshot used to replay a generated review queue. */
+    void saveReviewQueue(ReviewQueueSnapshot snapshot);
 
     void appendOutbox(LearningOutboxEvent event);
 

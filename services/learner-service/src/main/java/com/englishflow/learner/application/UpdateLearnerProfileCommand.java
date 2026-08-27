@@ -13,16 +13,29 @@ public record UpdateLearnerProfileCommand(
         AssessmentState assessmentState,
         CefrLevel currentLevel,
         String resumeTarget,
-        IdempotencyKey idempotencyKey) {
+        IdempotencyKey idempotencyKey,
+        Long expectedVersion) {
 
     public UpdateLearnerProfileCommand {
         Objects.requireNonNull(onboardingState, "onboardingState is required");
         Objects.requireNonNull(assessmentState, "assessmentState is required");
         Objects.requireNonNull(idempotencyKey, "idempotencyKey is required");
+        if (expectedVersion != null && expectedVersion < 0) {
+            throw new IllegalArgumentException("expectedVersion cannot be negative");
+        }
+    }
+
+    public UpdateLearnerProfileCommand(
+            OnboardingState onboardingState,
+            AssessmentState assessmentState,
+            CefrLevel currentLevel,
+            String resumeTarget,
+            IdempotencyKey idempotencyKey) {
+        this(onboardingState, assessmentState, currentLevel, resumeTarget, idempotencyKey, null);
     }
 
     public String fingerprint() {
         return String.join("|", "profile", onboardingState.name(), assessmentState.name(),
-                String.valueOf(currentLevel), String.valueOf(resumeTarget));
+                String.valueOf(currentLevel), String.valueOf(resumeTarget), String.valueOf(expectedVersion));
     }
 }

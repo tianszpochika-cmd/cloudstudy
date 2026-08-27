@@ -92,10 +92,13 @@ public final class B4SocialController {
     @PutMapping("/sync/checkpoints/{entityId}")
     public Map<String, Object> checkpoint(@PathVariable String entityId, @RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, HttpServletRequest request) { return service.checkpoint(user(request), entityId, body, key); }
 
-    @PostMapping("/offline/sync/push")
+    // B3 owns the original legacy /offline/sync/* route in core-api. Keep the
+    // B4 compatibility alias explicit so the old modular monolith can boot
+    // while v2 clients use the generated contract through the Gateway.
+    @PostMapping("/offline/b4/sync/push")
     public Map<String, Object> push(@RequestBody Map<String, Object> body, @RequestHeader("Idempotency-Key") String key, @RequestHeader(value = "X-Device-Id", required = false) String deviceId, HttpServletRequest request) { return service.pushSync(user(request), body, deviceId, key); }
 
-    @GetMapping("/offline/sync/pull")
+    @GetMapping("/offline/b4/sync/pull")
     public Map<String, Object> pull(@RequestParam(required = false) String cursor, @RequestParam(defaultValue = "50") int limit, HttpServletRequest request) { return service.syncChanges(user(request), cursor, limit); }
 
     @PostMapping("/social/moderation/reports")

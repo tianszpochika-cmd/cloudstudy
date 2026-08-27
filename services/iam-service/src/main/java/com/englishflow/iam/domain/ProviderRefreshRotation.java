@@ -7,7 +7,15 @@ import java.util.Objects;
 public record ProviderRefreshRotation(
         ProviderSessionReference providerSessionReference,
         String nextRefreshToken,
-        Instant accessTokenExpiresAt) {
+        Instant accessTokenExpiresAt,
+        String nextAccessToken) {
+
+    public ProviderRefreshRotation(
+            ProviderSessionReference providerSessionReference,
+            String nextRefreshToken,
+            Instant accessTokenExpiresAt) {
+        this(providerSessionReference, nextRefreshToken, accessTokenExpiresAt, null);
+    }
 
     public ProviderRefreshRotation {
         Objects.requireNonNull(providerSessionReference, "providerSessionReference");
@@ -17,5 +25,9 @@ public record ProviderRefreshRotation(
             throw new IllegalArgumentException("provider refresh token is invalid");
         }
         Objects.requireNonNull(accessTokenExpiresAt, "accessTokenExpiresAt");
+        if (nextAccessToken != null && (nextAccessToken.isBlank() || nextAccessToken.length() > 16384
+                || nextAccessToken.chars().anyMatch(Character::isISOControl))) {
+            throw new IllegalArgumentException("provider access token is invalid");
+        }
     }
 }

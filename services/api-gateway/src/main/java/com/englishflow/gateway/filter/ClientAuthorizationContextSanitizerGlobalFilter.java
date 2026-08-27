@@ -19,7 +19,15 @@ public class ClientAuthorizationContextSanitizerGlobalFilter implements GlobalFi
             "X-Owner-Id",
             "X-Subject-Id",
             "X-Permissions",
-            "X-Policy-Version"
+            "X-Policy-Version",
+            "X-User-Id",
+            "X-Principal",
+            "X-Principal-Id",
+            "X-Forwarded-User",
+            "X-Forwarded-User-Id",
+            "X-Forwarded-Roles",
+            "X-Forwarded-Tenant-Id",
+            "X-Forwarded-Owner-Id"
     );
 
     @Override

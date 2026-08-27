@@ -3,8 +3,6 @@ package com.englishflow.adminops.support;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,6 +25,7 @@ import com.englishflow.adminops.domain.DomainCommand;
 import com.englishflow.adminops.domain.DomainCommandPort;
 import com.englishflow.adminops.domain.IdempotencyLedger;
 import com.englishflow.adminops.domain.ReferenceRedactor;
+import com.englishflow.adminops.adapter.memory.InMemorySupportTicketStore;
 
 /**
  * Customer-support facts owned by admin-ops. Attachments are references to media-service only;
@@ -44,7 +43,7 @@ public final class SupportTicketService {
     private final IdempotencyLedger idempotency;
     private final ConfirmationService confirmations;
     private final MediaObjectAuthorizationPort mediaObjects;
-    private final Map<String, Ticket> tickets = new HashMap<>();
+    private final SupportTicketStore ticketStore;
 
     public SupportTicketService(
             Clock clock,
@@ -54,6 +53,19 @@ public final class SupportTicketService {
             IdempotencyLedger idempotency,
             ConfirmationService confirmations,
             MediaObjectAuthorizationPort mediaObjects) {
+        this(clock, defaultSla, commandPort, auditTrail, idempotency, confirmations, mediaObjects,
+                new InMemorySupportTicketStore());
+    }
+
+    public SupportTicketService(
+            Clock clock,
+            Duration defaultSla,
+            DomainCommandPort commandPort,
+            AuditTrail auditTrail,
+            IdempotencyLedger idempotency,
+            ConfirmationService confirmations,
+            MediaObjectAuthorizationPort mediaObjects,
+            SupportTicketStore ticketStore) {
         this.clock = clock;
         this.defaultSla = defaultSla;
         this.pep = new AdminPep();
@@ -62,6 +74,7 @@ public final class SupportTicketService {
         this.idempotency = idempotency;
         this.confirmations = confirmations;
         this.mediaObjects = mediaObjects;
+        this.ticketStore = ticketStore;
     }
 
     public synchronized SupportTicketResult create(
@@ -83,7 +96,7 @@ public final class SupportTicketService {
                 draft,
                 now,
                 now.plus(defaultSla));
-        tickets.put(ticket.ticketId, ticket);
+        ticketStore.create(ticket.snapshot());
         String effectiveTrace = safeTrace(traceId);
         AuditRecord audit = auditTrail.append(new AuditEvent(
                 ticket.tenantId,
@@ -96,6 +109,7 @@ public final class SupportTicketService {
                 Map.of("category", ticket.category.name(), "idempotencyKeyHash", ReferenceRedactor.sha256(idempotencyKey)),
                 now));
         ticket.lastAuditId = audit.auditId();
+        ticketStore.update(ticket.snapshot());
         SupportTicketResult result = new SupportTicketResult(view(ticket, now), false, audit.auditId());
         idempotency.put(scope, idempotencyKey, fingerprint, result);
         return result;
@@ -107,16 +121,15 @@ public final class SupportTicketService {
         } else {
             pep.requireAuthenticated(principal);
         }
-        return tickets.values().stream()
-                .filter(ticket -> ticket.tenantId.equals(principal.tenantId()))
-                .filter(ticket -> includeAll || ticket.requesterSubjectId.equals(principal.subjectId()))
+        return ticketStore.list(principal.tenantId(), includeAll, principal.subjectId()).stream()
+                .map(Ticket::fromRecord)
                 .map(ticket -> view(ticket, clock.instant()))
                 .toList();
     }
 
     public synchronized SupportTicketView get(AdminPrincipal principal, String ticketId) {
         pep.requireAuthenticated(principal);
-        Ticket ticket = requireTicket(ticketId);
+        Ticket ticket = requireTicket(principal, ticketId);
         pep.requireTenant(principal, ticket.tenantId);
         boolean owner = ticket.requesterSubjectId.equals(principal.subjectId());
         if (!owner) {
@@ -128,7 +141,7 @@ public final class SupportTicketService {
     public synchronized ConfirmationChallenge prepareTransition(
             AdminPrincipal operator, String ticketId, SupportAction action) {
         pep.requirePermission(operator, AdminPermission.SUPPORT_TICKET_MANAGE);
-        Ticket ticket = requireTicket(ticketId);
+        Ticket ticket = requireTicket(operator, ticketId);
         pep.requireTenant(operator, ticket.tenantId);
         if (!action.requiresConfirmation()) {
             throw AdminOpsException.invalid("SUPPORT_CONFIRMATION_NOT_REQUIRED", "transition does not use confirmation flow");
@@ -145,7 +158,7 @@ public final class SupportTicketService {
             String traceId) {
         pep.requirePermission(operator, AdminPermission.SUPPORT_TICKET_MANAGE);
         requireIdempotencyKey(idempotencyKey);
-        Ticket ticket = requireTicket(ticketId);
+        Ticket ticket = requireTicket(operator, ticketId);
         pep.requireTenant(operator, ticket.tenantId);
         String scope = scope(operator, "transition:" + ticketId);
         String fingerprint = action.name() + "|" + ticketId;
@@ -186,6 +199,7 @@ public final class SupportTicketService {
                 Map.of("state", ticket.state.name(), "idempotencyKeyHash", ReferenceRedactor.sha256(idempotencyKey)),
                 now));
         ticket.lastAuditId = audit.auditId();
+        ticketStore.update(ticket.snapshot());
         SupportTicketResult result = new SupportTicketResult(view(ticket, now), false, audit.auditId());
         idempotency.put(scope, idempotencyKey, fingerprint, result);
         return result;
@@ -209,11 +223,11 @@ public final class SupportTicketService {
         return new SupportTicketResult(priorResult.ticket(), true, priorResult.auditId());
     }
 
-    private Ticket requireTicket(String ticketId) {
+    private Ticket requireTicket(AdminPrincipal principal, String ticketId) {
         if (ticketId == null || ticketId.isBlank()) {
             throw AdminOpsException.invalid("SUPPORT_TICKET_ID_REQUIRED", "ticket id is required");
         }
-        Ticket ticket = tickets.get(ticketId);
+        Ticket ticket = ticketStore.find(principal.tenantId(), ticketId).map(Ticket::fromRecord).orElse(null);
         if (ticket == null) {
             throw AdminOpsException.notFound("SUPPORT_TICKET_NOT_FOUND", "ticket is not visible");
         }
@@ -326,6 +340,23 @@ public final class SupportTicketService {
             this.attachments = List.copyOf(draft.attachments());
             this.createdAt = createdAt;
             this.slaDueAt = slaDueAt;
+        }
+
+        SupportTicketRecord snapshot() {
+            return new SupportTicketRecord(ticketId, tenantId, requesterSubjectId, category, resourceRef,
+                    descriptionFingerprint, priority, attachments, createdAt, slaDueAt, state,
+                    assigneeSubjectId, lastAuditId, version);
+        }
+
+        static Ticket fromRecord(SupportTicketRecord record) {
+            Ticket ticket = new Ticket(record.ticketId(), record.tenantId(), record.requesterSubjectId(),
+                    new SupportTicketDraft(record.category(), record.resourceRef(), record.descriptionFingerprint(),
+                            record.priority(), record.attachments()), record.createdAt(), record.slaDueAt());
+            ticket.state = record.state();
+            ticket.assigneeSubjectId = record.assigneeSubjectId();
+            ticket.lastAuditId = record.lastAuditId();
+            ticket.version = record.version();
+            return ticket;
         }
     }
 }

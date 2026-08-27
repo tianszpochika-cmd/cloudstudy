@@ -27,7 +27,7 @@ async function collectSourceFiles(directory, files = []) {
   return files
 }
 
-test('官网包含 v2 规定的六个公开页面', async () => {
+test('官网包含 v2 规定的六个核心公开页面和服务公告页', async () => {
   const expectedFiles = [
     'pages/index.vue',
     'pages/courses/index.vue',
@@ -41,7 +41,7 @@ test('官网包含 v2 规定的六个公开页面', async () => {
     await readSite(file)
   }
 
-  assert.deepEqual(publicRoutes, ['/', '/courses', '/pricing', '/download', '/about', '/compliance'])
+  assert.deepEqual(publicRoutes, ['/', '/courses', '/pricing', '/download', '/about', '/announcements', '/compliance'])
 })
 
 test('官网使用公共壳、响应式导航和可访问的移动菜单', async () => {

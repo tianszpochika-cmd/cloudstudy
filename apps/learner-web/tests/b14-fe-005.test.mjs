@@ -49,3 +49,16 @@ test('learner-web does not send client authority facts', async () => {
   ].map(read)).then((parts) => parts.join('\n'))
   assert.doesNotMatch(source, /Math\.random|X-Role|X-Tenant|X-Owner|tenantId|ownerId/i)
 })
+
+test('learner-web protects the settings root before redirecting to the profile section', async () => {
+  const router = await read('apps/learner-web/src/router/index.ts')
+  assert.match(router, /path: '\/settings',[\s\S]*?name: 'settings-root',[\s\S]*?requiresAuth: true/)
+  assert.match(router, /redirect: \{ name: 'settings', params: \{ section: 'profile' \} \}/)
+})
+
+test('learner-web schedules a login redirect after a successful logout', async () => {
+  const auth = await read('apps/learner-web/src/auth/gateway-auth.ts')
+  assert.match(auth, /function scheduleWebLogoutRedirect\(\)/)
+  assert.match(auth, /client\.post\('\/iam\/session\/logout'[\s\S]*?scheduleWebLogoutRedirect\(\)/)
+  assert.match(auth, /window\.location\.assign\('\/login'\)/)
+})

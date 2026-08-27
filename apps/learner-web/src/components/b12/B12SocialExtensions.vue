@@ -9,6 +9,24 @@ import { b12T } from '../../platform/b12-i18n'
 type B12ViewStatus = 'idle' | 'loading' | 'success' | 'empty' | 'permission' | 'offline' | 'recovery' | 'error'
 type PreferenceKey = 'roomInteractions' | 'focusReminders' | 'system' | 'doNotDisturb'
 
+const CANONICAL_NOTIFICATION_TYPE_BY_KEY: Record<PreferenceKey, string> = {
+  roomInteractions: 'ROOM_INTERACTIONS',
+  focusReminders: 'FOCUS_REMINDERS',
+  system: 'SYSTEM',
+  doNotDisturb: 'DO_NOT_DISTURB',
+}
+const PREFERENCE_KEY_BY_NOTIFICATION_TYPE: Record<string, PreferenceKey> = {
+  ROOM_INTERACTIONS: 'roomInteractions',
+  FOCUS_REMINDERS: 'focusReminders',
+  SYSTEM: 'system',
+  DO_NOT_DISTURB: 'doNotDisturb',
+  roomInteractions: 'roomInteractions',
+  focusReminders: 'focusReminders',
+  system: 'system',
+  doNotDisturb: 'doNotDisturb',
+}
+const CANONICAL_NOTIFICATION_TYPES = new Set(Object.values(CANONICAL_NOTIFICATION_TYPE_BY_KEY))
+
 const b4 = useB4Store()
 const selectedRoomId = ref('')
 const leaderboard = ref<B12Leaderboard | null>(null)
@@ -38,12 +56,18 @@ function parseLeaderboard(value: unknown): B12Leaderboard | null {
 
 function parsePreference(value: unknown): void {
   const source = Array.isArray(value) ? value : isRecord(value) && Array.isArray(value.data) ? value.data : []
+  const canonicalSeen = new Set<PreferenceKey>()
   for (const item of source) {
     if (!isRecord(item) || typeof item.notificationType !== 'string') continue
-    const key = item.notificationType as PreferenceKey
-    if (!(key in notificationPreferences.value)) continue
+    const key = PREFERENCE_KEY_BY_NOTIFICATION_TYPE[item.notificationType]
+    if (!key || (canonicalSeen.has(key) && !CANONICAL_NOTIFICATION_TYPES.has(item.notificationType))) continue
     notificationPreferences.value[key] = item.enabled !== false
-    if (typeof item.version === 'number') preferenceVersions.value[key] = item.version
+    if (CANONICAL_NOTIFICATION_TYPES.has(item.notificationType)) {
+      if (typeof item.version === 'number') preferenceVersions.value[key] = item.version
+      canonicalSeen.add(key)
+    } else {
+      delete preferenceVersions.value[key]
+    }
   }
 }
 

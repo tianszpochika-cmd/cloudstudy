@@ -1,0 +1,1042 @@
+{
+  "batch": "B29",
+  "runId": "b29-runtime-20260824125527",
+  "sourceRevision": "93db302",
+  "environment": {
+    "profile": "local-real",
+    "host": "127.0.0.1",
+    "collector": "scripts/runtime/b29-runtime-probe.mjs"
+  },
+  "capturedAt": "2026-08-24T12:55:35.772Z",
+  "mode": "local-real",
+  "status": "PASS",
+  "evidenceClass": "runtime-external",
+  "provenance": {
+    "external": true,
+    "producer": "b29-runtime-probe",
+    "source": "executed-local-runtime",
+    "synthetic": false
+  },
+  "correlation": {
+    "requestId": "req-b29-runtime-20260824125527",
+    "traceId": "b29runtime2026082412552700000000",
+    "propagation": "W3C",
+    "serviceIds": [
+      "api-gateway",
+      "iam-service",
+      "learner-service",
+      "content-service",
+      "learning-service",
+      "assessment-service",
+      "media-service",
+      "notification-service",
+      "gamification-service",
+      "social-service",
+      "commerce-service",
+      "admin-ops-service",
+      "analytics-service",
+      "core-api"
+    ]
+  },
+  "services": [
+    {
+      "id": "api-gateway",
+      "process": {
+        "pid": 1672,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\api-gateway\\target\\api-gateway-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18070 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/api-gateway/target/api-gateway-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.gateway.ApiGatewayApplication",
+        "port": 18070,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18070,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/api-gateway.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/api-gateway.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/api-gateway.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "api-gateway",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 1672,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/api-gateway.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "none",
+        "factSource": "none",
+        "domainFactsOwned": false,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false
+      }
+    },
+    {
+      "id": "iam-service",
+      "process": {
+        "pid": 28312,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\iam-service\\target\\iam-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18087 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/iam-service/target/iam-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.iam.IamServiceApplication",
+        "port": 18087,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18087,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/iam-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/iam-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/iam-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "iam-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 28312,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/iam-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "iam_service",
+        "schemaEvidenceRef": "schema/iam-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 7
+      }
+    },
+    {
+      "id": "learner-service",
+      "process": {
+        "pid": 27936,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\learner-service\\target\\learner-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18088 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/learner-service/target/learner-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.learner.LearnerServiceApplication",
+        "port": 18088,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18088,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/learner-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/learner-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/learner-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "learner-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 27936,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/learner-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "learner_service",
+        "schemaEvidenceRef": "schema/learner-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 12
+      }
+    },
+    {
+      "id": "content-service",
+      "process": {
+        "pid": 28444,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\content-service\\target\\content-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18089 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/content-service/target/content-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.content.ContentServiceApplication",
+        "port": 18089,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18089,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/content-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/content-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/content-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "content-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 28444,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/content-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "content_service",
+        "schemaEvidenceRef": "schema/content-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 12
+      }
+    },
+    {
+      "id": "learning-service",
+      "process": {
+        "pid": 21192,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\learning-service\\target\\learning-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18090 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/learning-service/target/learning-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.learning.LearningServiceApplication",
+        "port": 18090,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18090,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/learning-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/learning-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/learning-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "learning-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 21192,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/learning-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "learning_service",
+        "schemaEvidenceRef": "schema/learning-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 18
+      }
+    },
+    {
+      "id": "assessment-service",
+      "process": {
+        "pid": 30540,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\assessment-service\\target\\assessment-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18091 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/assessment-service/target/assessment-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.assessment.AssessmentServiceApplication",
+        "port": 18091,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18091,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/assessment-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/assessment-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/assessment-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "assessment-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 30540,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/assessment-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "assessment_service",
+        "schemaEvidenceRef": "schema/assessment-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 16
+      }
+    },
+    {
+      "id": "media-service",
+      "process": {
+        "pid": 24368,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\media-service\\target\\media-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18092 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/media-service/target/media-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.media.MediaServiceApplication",
+        "port": 18092,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18092,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/media-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/media-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/media-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "media-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 24368,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/media-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "fail-closed",
+        "factSource": "none",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "media_service",
+        "schemaEvidenceRef": "schema/media-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "domainFactsOwned": false,
+        "tableCount": 3
+      }
+    },
+    {
+      "id": "notification-service",
+      "process": {
+        "pid": 17788,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\notification-service\\target\\notification-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18093 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/notification-service/target/notification-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.notification.NotificationServiceApplication",
+        "port": 18093,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18093,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/notification-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/notification-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/notification-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "notification-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 17788,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/notification-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "notification_service",
+        "schemaEvidenceRef": "schema/notification-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 12
+      }
+    },
+    {
+      "id": "gamification-service",
+      "process": {
+        "pid": 21148,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\gamification-service\\target\\gamification-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18094 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/gamification-service/target/gamification-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.gamification.GamificationServiceApplication",
+        "port": 18094,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18094,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/gamification-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/gamification-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/gamification-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "gamification-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 21148,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/gamification-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "fail-closed",
+        "factSource": "none",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "gamification_service",
+        "schemaEvidenceRef": "schema/gamification-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "domainFactsOwned": false,
+        "tableCount": 3
+      }
+    },
+    {
+      "id": "social-service",
+      "process": {
+        "pid": 27884,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\social-service\\target\\social-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18095 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/social-service/target/social-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.social.SocialServiceApplication",
+        "port": 18095,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18095,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/social-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/social-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/social-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "social-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 27884,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/social-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "fail-closed",
+        "factSource": "none",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "social_service",
+        "schemaEvidenceRef": "schema/social-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "domainFactsOwned": false,
+        "tableCount": 9
+      }
+    },
+    {
+      "id": "commerce-service",
+      "process": {
+        "pid": 24276,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\commerce-service\\target\\commerce-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18096 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/commerce-service/target/commerce-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.commerce.CommerceServiceApplication",
+        "port": 18096,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18096,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/commerce-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/commerce-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/commerce-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "commerce-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 24276,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/commerce-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "fail-closed",
+        "factSource": "none",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "commerce_service",
+        "schemaEvidenceRef": "schema/commerce-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "domainFactsOwned": false,
+        "tableCount": 13
+      }
+    },
+    {
+      "id": "admin-ops-service",
+      "process": {
+        "pid": 9452,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\admin-ops-service\\target\\admin-ops-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18097 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/admin-ops-service/target/admin-ops-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.adminops.AdminOpsServiceApplication",
+        "port": 18097,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18097,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/admin-ops-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/admin-ops-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/admin-ops-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "admin-ops-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 9452,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/admin-ops-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "fail-closed",
+        "factSource": "none",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "admin_ops_service",
+        "schemaEvidenceRef": "schema/admin-ops-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "domainFactsOwned": false,
+        "tableCount": 3
+      }
+    },
+    {
+      "id": "analytics-service",
+      "process": {
+        "pid": 28892,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\analytics-service\\target\\analytics-service-0.1.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18098 --spring.profiles.active=v2,local-real --local.runtime.mode=local-real",
+        "artifact": "services/analytics-service/target/analytics-service-0.1.0-SNAPSHOT.jar",
+        "version": "0.1.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "mainClass": "com.englishflow.analytics.AnalyticsServiceApplication",
+        "port": 18098,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18098,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/analytics-service.json"
+      },
+      "readiness": {
+        "path": "/actuator/health/readiness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/analytics-service.json"
+      },
+      "liveness": {
+        "path": "/actuator/health/liveness",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/analytics-service.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "analytics-service",
+        "serviceVersion": "0.1.0-SNAPSHOT",
+        "processId": 28892,
+        "jvmVersion": "25.0.4.1",
+        "profile": "v2",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/analytics-service.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "fail-closed",
+        "factSource": "none",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "analytics_service",
+        "schemaEvidenceRef": "schema/analytics-service.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "domainFactsOwned": false,
+        "tableCount": 4
+      }
+    },
+    {
+      "id": "core-api",
+      "process": {
+        "pid": 29216,
+        "status": "RUNNING",
+        "command": "java -jar C:\\Users\\Administrator\\Desktop\\my\\cloudstudy\\services\\core-api\\target\\core-api-1.0.0-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18080 --spring.profiles.active=legacy-compatibility,local-real --local.runtime.mode=local-real",
+        "artifact": "services/core-api/target/core-api-1.0.0-SNAPSHOT.jar",
+        "version": "1.0.0-SNAPSHOT",
+        "jvmVersion": "25.0.4.1",
+        "profile": "legacy-compatibility",
+        "mainClass": "com.englishflow.CoreApiApplication",
+        "port": 18080,
+        "host": "127.0.0.1"
+      },
+      "portBinding": {
+        "host": "127.0.0.1",
+        "port": 18080,
+        "listening": true
+      },
+      "listening": true,
+      "health": {
+        "path": "/api/v1/actuator/health",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "health/core-api.json"
+      },
+      "readiness": {
+        "path": "/api/v1/actuator/health",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "readiness/core-api.json"
+      },
+      "liveness": {
+        "path": "/api/v1/actuator/health",
+        "status": "UP",
+        "httpStatus": 200,
+        "evidenceRef": "liveness/core-api.json"
+      },
+      "observability": {
+        "requestId": "req-b29-runtime-20260824125527",
+        "traceId": "b29runtime2026082412552700000000",
+        "serviceId": "core-api",
+        "serviceVersion": "1.0.0-SNAPSHOT",
+        "processId": 29216,
+        "jvmVersion": "25.0.4.1",
+        "profile": "legacy-compatibility",
+        "structuredLog": true,
+        "logEvidenceRef": "logs/core-api.jsonl",
+        "propagation": "W3C"
+      },
+      "persistence": {
+        "mode": "jdbc",
+        "factSource": "mysql",
+        "connectionStatus": "VERIFIED",
+        "mysqlReachable": true,
+        "ownerSchema": "yuxuexing",
+        "schemaEvidenceRef": "schema/core-api.json",
+        "restartReadBack": true,
+        "failClosedOnUnavailable": true,
+        "memoryFactsUsed": false,
+        "mockUsed": false,
+        "fallbackUsed": false,
+        "tableCount": 341,
+        "ownerType": "legacy-compatibility",
+        "v2DomainFactsWritten": false
+      }
+    }
+  ],
+  "gateway": {
+    "externalIngress": {
+      "serviceId": "api-gateway",
+      "host": "127.0.0.1",
+      "port": 18070,
+      "path": "/api/v1/learner/profile",
+      "reachable": true,
+      "throughGateway": true,
+      "httpStatus": 401,
+      "responseHeaders": {
+        "cache-control": "no-store",
+        "content-length": "181",
+        "content-type": "application/json",
+        "referrer-policy": "no-referrer",
+        "vary": "Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "www-authenticate": "Bearer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-request-id": "req-b29-runtime-20260824125527",
+        "x-trace-id": "b29runtime2026082412552700000000",
+        "x-xss-protection": "0"
+      },
+      "evidenceRef": "gateway/external-ingress.json"
+    },
+    "unauthenticatedProtectedRequest": {
+      "authenticated": false,
+      "httpStatus": 401,
+      "evidenceRef": "gateway/unauthenticated-401.json"
+    },
+    "directServiceAccess": {
+      "clientPath": false,
+      "denied": true,
+      "httpStatus": 401,
+      "evidenceRef": "gateway/direct-service-boundary.json"
+    }
+  },
+  "checks": [
+    {
+      "id": "process-startup",
+      "status": "PASS",
+      "summary": "all 14 processes have real listening PIDs",
+      "evidenceRef": "checks/process-startup.json"
+    },
+    {
+      "id": "fixed-port-binding",
+      "status": "PASS",
+      "summary": "all services bind the registered loopback ports",
+      "evidenceRef": "checks/fixed-port-binding.json"
+    },
+    {
+      "id": "readiness-health",
+      "status": "PASS",
+      "summary": "all readiness and liveness probes return UP/200",
+      "evidenceRef": "checks/readiness-health.json"
+    },
+    {
+      "id": "gateway-external-ingress",
+      "status": "PASS",
+      "summary": "protected request traverses Gateway with correlation headers",
+      "evidenceRef": "checks/gateway-external-ingress.json"
+    },
+    {
+      "id": "persistence-owner-schema",
+      "status": "PASS",
+      "summary": "owner schema accounts can read their independent schemas",
+      "evidenceRef": "checks/persistence-owner-schema.json"
+    },
+    {
+      "id": "observability-correlation",
+      "status": "PASS",
+      "summary": "requestId/traceId are captured from the external Gateway response",
+      "evidenceRef": "checks/observability-correlation.json"
+    },
+    {
+      "id": "restart-persistence",
+      "status": "PASS",
+      "summary": "owner schema rows remain readable after the current service restart cycle",
+      "evidenceRef": "checks/restart-persistence.json"
+    },
+    {
+      "id": "legacy-compatibility",
+      "status": "PASS",
+      "summary": "legacy core-api remains a separately traced compatibility process",
+      "evidenceRef": "checks/legacy-compatibility.json"
+    }
+  ]
+}

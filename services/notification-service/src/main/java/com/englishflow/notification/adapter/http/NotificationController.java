@@ -139,6 +139,7 @@ public final class NotificationController {
         result.put("safeBody", message.safeBody());
         result.put("contentVersion", message.contentVersion());
         result.put("createdAt", message.createdAt());
+        result.put("read", message.isRead());
         return result;
     }
 }

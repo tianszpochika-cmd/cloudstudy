@@ -30,9 +30,9 @@ export interface B10VocabularyBack {
 export interface B10VocabularyCard {
   id: string
   itemType: 'VOCAB' | 'CHUNK' | 'EXPRESSION'
-  itemId: number
-  snapshotId: number | null
-  snapshotItemId: number | null
+  itemId: number | string
+  snapshotId: number | string | null
+  snapshotItemId: number | string | null
   title: string
   phoneticUs: string | null
   phoneticUk: string | null
@@ -46,10 +46,10 @@ export interface B10VocabularyCard {
 }
 
 export interface B10ReviewEvent {
-  snapshotId: number
-  snapshotItemId: number
+  snapshotId: number | string
+  snapshotItemId: number | string
   itemType: B10VocabularyCard['itemType']
-  itemId: number
+  itemId: number | string
   contentVersionId: number
   rawQuality: B10ReviewQuality
   answerOutcome: 'CORRECT' | 'INCORRECT' | 'UNANSWERED' | 'REVEALED_WITHOUT_ANSWER'
@@ -96,6 +96,9 @@ export interface B10PracticeSession {
   checkpointSeq: number
   answerRevision: number
   contentVersionId: number | null
+  stateVersion: number
+  lastAttemptId: string | null
+  reportId: string | null
 }
 
 export interface B10Feedback {
@@ -106,6 +109,8 @@ export interface B10Feedback {
   ruleVersion: string | null
   nextAction: 'NEXT' | 'RETRY' | 'REVIEW' | null
   evidence: string | null
+  attemptId?: string | number | null
+  reportId?: string | null
 }
 
 export interface B10ReportWeakness {

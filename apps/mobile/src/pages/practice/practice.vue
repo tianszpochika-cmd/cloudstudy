@@ -3,14 +3,13 @@ import { computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import B10ThemeBar from '../../components/b10/B10ThemeBar.vue'
 import { b10ThemeMode, b10T } from '../../platform/b10-foundation'
-import { getUniRuntime } from '../../platform/uni-runtime'
-import { useSessionStore } from '../../stores/session'
+import { openUniPage } from '../../platform/uni-runtime'
+import { ensureMobilePageAccess } from '../../auth/navigation'
 
-const session = useSessionStore()
 const themeClass = computed(() => `b10-theme--${b10ThemeMode.value}`)
 const entries = [
   { title: '词汇 / SRS', description: '主动回忆、信心度、离线待同步复习。', path: '/pages/b2-vocabulary/b2-vocabulary' },
-  { title: '基础练习', description: '服务端题面、断点、幂等提交和规则反馈。', path: '/pages/b2-practice/b2-practice' },
+  { title: '基础练习', description: '服务端题面、断点、幂等提交和规则反馈。', path: '/pages/assessment/assessment' },
   { title: '错题与报告', description: 'D0/D1/D7 订正、错误原因和报告证据。', path: '/pages/b10-report/b10-report' },
   { title: '语法 / 长难句', description: '知识树、句法 X 光和结构化练习。', path: '/pages/b3-grammar/b3-grammar' },
   { title: '阅读', description: '版本锁定、进度保存、理解检查和表达挖掘。', path: '/pages/b3-reading/b3-reading' },
@@ -19,8 +18,8 @@ const entries = [
   { title: 'B11 音标 / 跟读', description: '麦克风权限、录音回放、自评与安全本地副本。', path: '/pages/b11-speaking/b11-speaking' },
   { title: '规则写作', description: '翻译、仿写、病句改错与规则反馈。', path: '/pages/b3-writing/b3-writing' },
 ]
-function open(path: string): void { getUniRuntime().navigateTo({ url: path }) }
-onShow(() => { session.restore(); if (!session.isAuthenticated) getUniRuntime().navigateTo({ url: '/pages/login/login' }) })
+function open(path: string): void { openUniPage(path) }
+onShow(async () => { await ensureMobilePageAccess('/pages/practice/practice') })
 </script>
 
 <template>

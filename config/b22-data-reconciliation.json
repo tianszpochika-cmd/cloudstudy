@@ -1,0 +1,629 @@
+{
+  "schemaVersion": 1,
+  "batch": "B22",
+  "phase": "phase-1",
+  "mode": "static-and-synthetic",
+  "status": "static-foundation",
+  "scope": "V2-B22-DATA-002",
+  "task": {
+    "id": "V2-B22-DATA-002",
+    "status": "defined",
+    "runtimeRequired": true,
+    "defaultDecision": "deny",
+    "dependsOn": [
+      "V2-B22-REL-001",
+      "V2-B21-GATE-005"
+    ],
+    "acceptanceRefs": [
+      "ARCH-DATA-001",
+      "ARCH-EVT-001",
+      "ARCH-REL-001",
+      "ARCH-DR-001"
+    ],
+    "objective": "Migrate service-owned facts under a bounded compatibility window, reconcile data and events, and retain a tested restore/compensation boundary."
+  },
+  "execution": {
+    "mode": "static-fixture-only",
+    "runtimeStatus": "blocked",
+    "runtimeBlocked": true,
+    "allowUnverifiedPass": false,
+    "staticValidatorCannotPromoteRuntime": true,
+    "destructiveSqlAllowed": false,
+    "realMySqlMigrationAllowed": false,
+    "realKafkaReplayAllowed": false,
+    "productionTrafficChangeAllowed": false,
+    "manualTakeoverRequiredOnMismatch": true,
+    "requiredEnv": [
+      "B22_DATA_RUNTIME_B21_GO_EVIDENCE",
+      "B22_DATA_RUNTIME_SOURCE_REVISION",
+      "B22_DATA_RUNTIME_ENVIRONMENT",
+      "B22_DATA_RUNTIME_MIGRATION_EVIDENCE",
+      "B22_DATA_RUNTIME_RECONCILIATION_EVIDENCE",
+      "B22_DATA_RUNTIME_COMPATIBILITY_EVIDENCE",
+      "B22_DATA_RUNTIME_ROLLBACK_EVIDENCE",
+      "B22_DATA_RUNTIME_REPORT_INDEX"
+    ],
+    "blockedReasons": [
+      "B21 Go/No-Go has not been accepted with real runtime evidence",
+      "MySQL migration, Kafka offset and outbox evidence are external runtime evidence",
+      "read-shadow parity and restore/compensation evidence have not been measured"
+    ],
+    "b21Prerequisite": {
+      "required": true,
+      "currentDecision": "BLOCKED",
+      "requiredDecision": "ACCEPTED",
+      "status": "blocked",
+      "acceptanceEvidenceStatus": "pending",
+      "runtimeEvidenceMustBeExternal": true,
+      "syntheticReference": "evidence-ref://synthetic/b21-data-prerequisite"
+    }
+  },
+  "sourceRefs": [
+    "docs/02-architecture/v2-platform-capability-matrix.md#ARCH-DATA-001",
+    "docs/02-architecture/v2-platform-capability-matrix.md#ARCH-EVT-001",
+    "docs/02-architecture/v2-platform-capability-matrix.md#ARCH-REL-001",
+    "docs/02-architecture/v2-platform-capability-matrix.md#ARCH-DR-001",
+    "docs/02-architecture/v2-microservices-architecture.md#6-api-data-event-contracts",
+    "docs/02-architecture/v2-microservices-architecture.md#8-repository-migration-strategy",
+    "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+    "config/b21-release-gate-evidence.json"
+  ],
+  "dataOwnerPolicy": {
+    "schemaOwnership": "one-schema-one-service-owner",
+    "writeAuthority": "owner-service-only",
+    "crossServiceWritesAllowed": false,
+    "crossServiceSqlJoinsAllowed": false,
+    "sharedOrmEntitiesAllowed": false,
+    "gatewayMayWriteDomainFacts": false,
+    "coreApiMayWriteMigratedFacts": false,
+    "projectionReadsMustBeVersioned": true,
+    "ownerMismatchDecision": "STOP_RELEASE_AND_MANUAL_TAKEOVER",
+    "ownerMap": [
+      { "service": "iam-service", "factOwner": "iam-service", "facts": ["principal", "tenant", "session", "consent", "policy-version"] },
+      { "service": "learner-service", "factOwner": "learner-service", "facts": ["learning-profile", "goal", "preference", "onboarding"] },
+      { "service": "content-service", "factOwner": "content-service", "facts": ["content", "content-version", "exercise-definition", "answer-rule-version", "copyright"] },
+      { "service": "learning-service", "factOwner": "learning-service", "facts": ["plan", "srs", "progress", "review-queue", "mastery-projection"] },
+      { "service": "assessment-service", "factOwner": "assessment-service", "facts": ["attempt", "checkpoint", "score", "report-snapshot"] },
+      { "service": "media-service", "factOwner": "media-service", "facts": ["media-metadata", "rendition", "processing-job", "authorization-url"] },
+      { "service": "gamification-service", "factOwner": "gamification-service", "facts": ["xp", "streak", "currency-ledger", "reward"] },
+      { "service": "social-service", "factOwner": "social-service", "facts": ["study-room", "low-ugc", "report", "visibility"] },
+      { "service": "commerce-service", "factOwner": "commerce-service", "facts": ["sku", "order", "entitlement", "refund", "reconciliation"] },
+      { "service": "notification-service", "factOwner": "notification-service", "facts": ["notification-template", "delivery", "contact-preference", "retry"] },
+      { "service": "analytics-service", "factOwner": "analytics-service", "facts": ["sanitized-event", "metric", "read-only-analytics-projection"] },
+      { "service": "admin-ops-service", "factOwner": "admin-ops-service", "facts": ["operation-command", "approval-workflow", "admin-projection"] },
+      { "service": "audit-service", "factOwner": "audit-service", "facts": ["immutable-audit-record", "decision-correlation"] },
+      { "service": "workflow-service", "factOwner": "workflow-service", "facts": ["saga-state", "retry-state", "dead-letter-recovery"] },
+      { "service": "core-api", "factOwner": "core-api-legacy-compatibility-only", "facts": ["legacy-read-projection", "rollback-route-state"] }
+    ]
+  },
+  "migrationPolicy": {
+    "runner": "Flyway-per-service",
+    "lockProvider": "mysql-get-advisory-lock",
+    "lockScope": "one-lock-per-service-schema",
+    "lockKeyMustIncludeService": true,
+    "lockWaitTimeoutSeconds": 30,
+    "releaseLockOnSuccess": true,
+    "releaseLockOnFailure": true,
+    "concurrentMigrationDecision": "STOP_AND_MANUAL_TAKEOVER",
+    "forwardCompatibleExpandContract": true,
+    "destructiveDowngradeAllowed": false,
+    "downgradeStrategy": "restore-point-plus-compensation",
+    "requiredScenarios": [
+      "empty-database",
+      "upgrade",
+      "downgrade",
+      "failure-recovery"
+    ],
+    "scenarioStatus": "pending",
+    "scenarioRuntimeRequired": true,
+    "failureDecision": "STOP_RELEASE_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "migrationVersionFormat": "service-owned-monotonic-version",
+    "schemaVersionMustBeBound": true
+  },
+  "serviceMigrations": [
+    {
+      "service": "iam-service",
+      "schema": "iam_service",
+      "factOwner": "iam-service",
+      "migrationSource": "services/iam-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-iam-synthetic-001",
+      "targetMigrationVersion": "V2_B22_IAM_001",
+      "writeAuthority": "iam-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:iam-service:iam_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/iam/empty", "upgrade": "evidence-ref://synthetic/b22/iam/upgrade", "downgrade": "evidence-ref://synthetic/b22/iam/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/iam/failure-recovery" }
+    },
+    {
+      "service": "learner-service",
+      "schema": "learner_service",
+      "factOwner": "learner-service",
+      "migrationSource": "services/learner-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-learner-synthetic-001",
+      "targetMigrationVersion": "V2_B22_LEARNER_001",
+      "writeAuthority": "learner-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:learner-service:learner_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/learner/empty", "upgrade": "evidence-ref://synthetic/b22/learner/upgrade", "downgrade": "evidence-ref://synthetic/b22/learner/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/learner/failure-recovery" }
+    },
+    {
+      "service": "content-service",
+      "schema": "content_service",
+      "factOwner": "content-service",
+      "migrationSource": "services/content-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-content-synthetic-001",
+      "targetMigrationVersion": "V2_B22_CONTENT_001",
+      "writeAuthority": "content-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:content-service:content_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/content/empty", "upgrade": "evidence-ref://synthetic/b22/content/upgrade", "downgrade": "evidence-ref://synthetic/b22/content/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/content/failure-recovery" }
+    },
+    {
+      "service": "learning-service",
+      "schema": "learning_service",
+      "factOwner": "learning-service",
+      "migrationSource": "services/learning-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-learning-synthetic-001",
+      "targetMigrationVersion": "V2_B22_LEARNING_001",
+      "writeAuthority": "learning-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:learning-service:learning_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/learning/empty", "upgrade": "evidence-ref://synthetic/b22/learning/upgrade", "downgrade": "evidence-ref://synthetic/b22/learning/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/learning/failure-recovery" }
+    },
+    {
+      "service": "assessment-service",
+      "schema": "assessment_service",
+      "factOwner": "assessment-service",
+      "migrationSource": "services/assessment-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-assessment-synthetic-001",
+      "targetMigrationVersion": "V2_B22_ASSESSMENT_001",
+      "writeAuthority": "assessment-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:assessment-service:assessment_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/assessment/empty", "upgrade": "evidence-ref://synthetic/b22/assessment/upgrade", "downgrade": "evidence-ref://synthetic/b22/assessment/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/assessment/failure-recovery" }
+    },
+    {
+      "service": "media-service",
+      "schema": "media_service",
+      "factOwner": "media-service",
+      "migrationSource": "services/media-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-media-synthetic-001",
+      "targetMigrationVersion": "V2_B22_MEDIA_001",
+      "writeAuthority": "media-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:media-service:media_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/media/empty", "upgrade": "evidence-ref://synthetic/b22/media/upgrade", "downgrade": "evidence-ref://synthetic/b22/media/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/media/failure-recovery" }
+    },
+    {
+      "service": "gamification-service",
+      "schema": "gamification_service",
+      "factOwner": "gamification-service",
+      "migrationSource": "services/gamification-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-gamification-synthetic-001",
+      "targetMigrationVersion": "V2_B22_GAMIFICATION_001",
+      "writeAuthority": "gamification-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:gamification-service:gamification_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/gamification/empty", "upgrade": "evidence-ref://synthetic/b22/gamification/upgrade", "downgrade": "evidence-ref://synthetic/b22/gamification/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/gamification/failure-recovery" }
+    },
+    {
+      "service": "social-service",
+      "schema": "social_service",
+      "factOwner": "social-service",
+      "migrationSource": "services/social-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-social-synthetic-001",
+      "targetMigrationVersion": "V2_B22_SOCIAL_001",
+      "writeAuthority": "social-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:social-service:social_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/social/empty", "upgrade": "evidence-ref://synthetic/b22/social/upgrade", "downgrade": "evidence-ref://synthetic/b22/social/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/social/failure-recovery" }
+    },
+    {
+      "service": "commerce-service",
+      "schema": "commerce_service",
+      "factOwner": "commerce-service",
+      "migrationSource": "services/commerce-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-commerce-synthetic-001",
+      "targetMigrationVersion": "V2_B22_COMMERCE_001",
+      "writeAuthority": "commerce-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:commerce-service:commerce_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/commerce/empty", "upgrade": "evidence-ref://synthetic/b22/commerce/upgrade", "downgrade": "evidence-ref://synthetic/b22/commerce/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/commerce/failure-recovery" }
+    },
+    {
+      "service": "notification-service",
+      "schema": "notification_service",
+      "factOwner": "notification-service",
+      "migrationSource": "services/notification-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-notification-synthetic-001",
+      "targetMigrationVersion": "V2_B22_NOTIFICATION_001",
+      "writeAuthority": "notification-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:notification-service:notification_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/notification/empty", "upgrade": "evidence-ref://synthetic/b22/notification/upgrade", "downgrade": "evidence-ref://synthetic/b22/notification/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/notification/failure-recovery" }
+    },
+    {
+      "service": "analytics-service",
+      "schema": "analytics_service",
+      "factOwner": "analytics-service",
+      "migrationSource": "services/analytics-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-analytics-synthetic-001",
+      "targetMigrationVersion": "V2_B22_ANALYTICS_001",
+      "writeAuthority": "analytics-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:analytics-service:analytics_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/analytics/empty", "upgrade": "evidence-ref://synthetic/b22/analytics/upgrade", "downgrade": "evidence-ref://synthetic/b22/analytics/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/analytics/failure-recovery" }
+    },
+    {
+      "service": "admin-ops-service",
+      "schema": "admin_ops_service",
+      "factOwner": "admin-ops-service",
+      "migrationSource": "services/admin-ops-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-admin-ops-synthetic-001",
+      "targetMigrationVersion": "V2_B22_ADMIN_OPS_001",
+      "writeAuthority": "admin-ops-service-only",
+      "migrationMode": "owner-service-flyway",
+      "migrationLock": { "key": "b22:migration:admin-ops-service:admin_ops_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/admin-ops/empty", "upgrade": "evidence-ref://synthetic/b22/admin-ops/upgrade", "downgrade": "evidence-ref://synthetic/b22/admin-ops/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/admin-ops/failure-recovery" }
+    },
+    {
+      "service": "audit-service",
+      "schema": "audit_service",
+      "factOwner": "audit-service",
+      "migrationSource": "services/audit-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-audit-synthetic-001",
+      "targetMigrationVersion": "V2_B22_AUDIT_001",
+      "writeAuthority": "audit-service-only",
+      "migrationMode": "platform-module-or-job-runner",
+      "migrationLock": { "key": "b22:migration:audit-service:audit_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/audit/empty", "upgrade": "evidence-ref://synthetic/b22/audit/upgrade", "downgrade": "evidence-ref://synthetic/b22/audit/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/audit/failure-recovery" }
+    },
+    {
+      "service": "workflow-service",
+      "schema": "workflow_service",
+      "factOwner": "workflow-service",
+      "migrationSource": "services/workflow-service/src/main/resources/db/migration",
+      "schemaVersion": "v2-workflow-synthetic-001",
+      "targetMigrationVersion": "V2_B22_WORKFLOW_001",
+      "writeAuthority": "workflow-service-only",
+      "migrationMode": "platform-module-or-job-runner",
+      "migrationLock": { "key": "b22:migration:workflow-service:workflow_service", "scope": "schema", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/workflow/empty", "upgrade": "evidence-ref://synthetic/b22/workflow/upgrade", "downgrade": "evidence-ref://synthetic/b22/workflow/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/workflow/failure-recovery" }
+    },
+    {
+      "service": "core-api",
+      "schema": "core_api_compatibility",
+      "factOwner": "core-api-legacy-compatibility-only",
+      "migrationSource": "services/core-api/src/main/resources/db/migration",
+      "schemaVersion": "v1-legacy-compatibility-read-only",
+      "targetMigrationVersion": "LEGACY_COMPAT_WINDOW_ONLY",
+      "writeAuthority": "read-only-during-compatibility-window",
+      "migrationMode": "legacy-compatibility-boundary",
+      "migrationLock": { "key": "b22:migration:core-api:core_api_compatibility", "scope": "compatibility-boundary", "provider": "mysql-get-advisory-lock", "releaseOnFailure": true },
+      "scenarioCoverage": ["empty-database", "upgrade", "downgrade", "failure-recovery"],
+      "scenarioEvidence": { "emptyDatabase": "evidence-ref://synthetic/b22/core-api/empty", "upgrade": "evidence-ref://synthetic/b22/core-api/upgrade", "downgrade": "evidence-ref://synthetic/b22/core-api/downgrade", "failureRecovery": "evidence-ref://synthetic/b22/core-api/failure-recovery" }
+    }
+  ],
+  "dataReconciliation": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "sourceSide": "legacy-or-current-owner-fact",
+    "targetSide": "new-owner-schema-or-versioned-projection",
+    "canonicalization": "stable-json-v1-sort-by-primary-key-and-field-name",
+    "tenantScopeMustBeServerDerived": true,
+    "checks": [
+      { "id": "row-count", "algorithm": "count-by-owner-schema-and-tenant-scope", "required": true },
+      { "id": "canonical-digest", "algorithm": "sha256-canonical-selected-columns", "required": true },
+      { "id": "schema-version", "algorithm": "compare-flyway-schema-history-and-manifest-version", "required": true },
+      { "id": "migration-version", "algorithm": "compare-target-migration-and-source-revision", "required": true },
+      { "id": "null-and-unique-invariants", "algorithm": "owner-defined-integrity-query-set", "required": true }
+    ],
+    "perServiceResultRequired": true,
+    "sourceRevisionRequired": true,
+    "environmentRequired": true,
+    "migrationVersionRequired": true,
+    "hashRequired": true,
+    "traceAndEvidenceRequired": true,
+    "mismatchDecision": "STOP_RELEASE_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "unknownResultDecision": "STOP_RELEASE_AND_MANUAL_TAKEOVER",
+    "repairMayWriteOnlyThroughOwner": true
+  },
+  "eventReconciliation": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "deliverySemantics": "at-least-once",
+    "outbox": {
+      "tableOwnedByProducer": true,
+      "sameLocalTransactionAsFact": true,
+      "oneNamespacePerService": true,
+      "crossServiceWriteAllowed": false,
+      "outboxRowIdentity": ["service", "outboxId", "eventId"],
+      "duplicateDecision": "NO_SECOND_EFFECT_AND_AUDIT"
+    },
+    "eventEnvelope": {
+      "requiredFields": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey", "payload"],
+      "partitionKey": "aggregateId",
+      "payloadPolicy": "no-raw-pii-no-token-no-payment-credential-no-raw-media",
+      "schemaCompatibility": "backward-compatible-or-new-version"
+    },
+    "offsets": {
+      "consumerGroupOwnedByConsumer": true,
+      "offsetEvidenceRequired": true,
+      "continuityCheckRequired": true,
+      "lagAndDlqCheckRequired": true,
+      "replayUsesSameDedupeKey": true
+    },
+    "checks": [
+      "outbox-fact-count-and-digest",
+      "event-id-set-and-schema-version",
+      "aggregate-partition-order",
+      "consumer-offset-continuity",
+      "dlq-and-replay-accounting",
+      "duplicate-consumption-no-second-effect"
+    ],
+    "mismatchDecision": "STOP_RELEASE_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "manualRecoveryMustBeAudited": true
+  },
+  "idempotency": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "migrationRunKey": "migration-run-id-plus-source-revision-plus-target-version",
+    "reconciliationRunKey": "reconciliation-run-id-plus-source-revision-plus-target-version",
+    "eventDedupeKey": "tenant-plus-event-id-plus-schema-version",
+    "sameFingerprintDecision": "RETURN_EXISTING_RESULT_NO_SECOND_EFFECT",
+    "differentFingerprintDecision": "STOP_AND_AUDIT",
+    "cases": [
+      "repeat-migration-run",
+      "repeat-row-digest-reconciliation",
+      "repeat-outbox-reconciliation",
+      "duplicate-event-redelivery",
+      "duplicate-compatibility-read-shadow",
+      "mismatched-retry-after-partial-failure"
+    ],
+    "mismatchDecision": "STOP_RELEASE_AND_MANUAL_TAKEOVER"
+  },
+  "routeCompatibilityWindow": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "owner": "api-gateway-and-domain-owner",
+    "legacySystem": "core-api",
+    "newEntryPoint": "api-gateway",
+    "externalRoutePrefix": "/api/v1",
+    "legacyDirectPortPublic": false,
+    "windowMode": "bounded-read-compatibility-window",
+    "windowDurationDays": 30,
+    "startAt": null,
+    "endAt": null,
+    "featureFlag": "B22_LEGACY_ROUTE_COMPATIBILITY_WINDOW",
+    "legacyWriteAllowed": false,
+    "newOwnerWriteOnly": true,
+    "expiryMustBeAudited": true,
+    "routePairs": [
+      { "legacyRoute": "core-api:legacy-read", "gatewayRoute": "/api/v1/learner/profile", "owner": "learner-service", "operationId": "getLearnerProfile" },
+      { "legacyRoute": "core-api:legacy-read", "gatewayRoute": "/api/v1/content/catalog", "owner": "content-service", "operationId": "listPublishedContent" },
+      { "legacyRoute": "core-api:legacy-read", "gatewayRoute": "/api/v1/learning/progress", "owner": "learning-service", "operationId": "getLearningProgress" }
+    ],
+    "cutoverMismatchDecision": "STOP_EXPANSION_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "routeRemovalRequires": ["parity-match", "data-reconciliation-match", "event-reconciliation-match", "rollback-owner", "audited-expiry"]
+  },
+  "readShadow": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "enabledForCompatibilityWindow": true,
+    "userVisible": false,
+    "writeSideEffectsAllowed": false,
+    "sampleReference": "sample-ref://synthetic/b22/read-shadow",
+    "compare": ["http-status", "contract-version", "canonical-business-fields", "owner-and-tenant-scope", "error-code"],
+    "traceFields": ["traceId", "requestId", "routeVersion", "sourceRevision", "migrationVersion"],
+    "mismatchDecision": "STOP_EXPANSION_AND_AUDIT",
+    "syntheticOnlyUntilRuntimeEvidence": true
+  },
+  "resultParity": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "sourceResult": "legacy-core-api-read",
+    "targetResult": "gateway-to-new-owner-read",
+    "canonicalization": "contract-versioned-business-result-without-volatile-fields",
+    "sameResultRequiredBeforeCutover": true,
+    "differentResultDecision": "STOP_RELEASE_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "comparisonEvidenceMustInclude": ["sourceRevision", "environment", "migrationVersion", "artifactHash", "traceId", "evidenceRef"]
+  },
+  "rollback": {
+    "status": "blocked",
+    "runtimeRequired": true,
+    "restorePoint": {
+      "type": "mysql-pitr-or-immutable-backup",
+      "status": "pending",
+      "sourceRevision": null,
+      "environment": null,
+      "migrationVersion": null,
+      "artifactHash": null,
+      "traceId": null,
+      "evidenceRef": null,
+      "restoreBeforeCutoverRequired": true,
+      "integrityCheckRequired": true
+    },
+    "rollbackSequence": [
+      "stop-expansion-and-freeze-writes",
+      "retain-legacy-read-compatibility-window",
+      "restore-owner-schema-to-approved-point",
+      "reconcile-row-count-and-canonical-digest",
+      "reconcile-outbox-event-and-consumer-offset",
+      "run-owner-service-saga-compensation",
+      "verify-read-shadow-parity",
+      "record-audited-manual-takeover-if-needed"
+    ],
+    "compensation": {
+      "strategy": "saga-compensation-through-owner-service",
+      "twoPhaseCommitAllowed": false,
+      "directCrossServiceTableWriteAllowed": false,
+      "idempotencyRequired": true,
+      "auditRequired": true,
+      "manualRecoveryOwnerRequired": true
+    },
+    "mismatchDecision": "ROLLBACK_OR_MANUAL_TAKEOVER",
+    "rollbackMustBeVersionBound": true,
+    "rollbackOwnerRequired": true
+  },
+  "evidenceBinding": {
+    "status": "synthetic-only",
+    "sourceRevision": "revision-ref://synthetic/b22-data/source",
+    "environment": "environment-ref://synthetic/b22-data/static",
+    "migrationVersion": "migration-ref://synthetic/b22-data/manifest-v1",
+    "artifactHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "traceId": "trace-ref://synthetic/b22-data/trace-001",
+    "evidenceRefs": [
+      "evidence-ref://synthetic/b22-data/static-contract",
+      "evidence-ref://synthetic/b22/data/reconciliation"
+    ],
+    "missingRuntimeDecision": "BLOCKED",
+    "allRuntimeFieldsMustBeReboundExternally": true
+  },
+  "syntheticFixtures": {
+    "policy": "synthetic-references-only-no-production-data-no-pii-no-credentials-no-raw-media",
+    "productionDataAllowed": false,
+    "realCredentialsAllowed": false,
+    "destructiveSqlAllowed": false,
+    "subjects": [
+      { "subjectRef": "subject-ref://synthetic/b22-data-001", "tenantRef": "tenant-ref://synthetic/platform", "aggregateRef": "aggregate-ref://synthetic/001" },
+      { "subjectRef": "subject-ref://synthetic/b22-data-002", "tenantRef": "tenant-ref://synthetic/platform", "aggregateRef": "aggregate-ref://synthetic/002" }
+    ]
+  },
+  "qualityGates": [
+    {
+      "id": "B22-DATA-GATE-002",
+      "task": "V2-B22-DATA-002",
+      "category": "production-data-migration-and-reconciliation",
+      "decision": "BLOCKED",
+      "evidenceIds": [
+        "B22-DATA-E-OWNER-STATIC",
+        "B22-DATA-E-MIGRATION-STATIC",
+        "B22-DATA-E-RECONCILIATION-STATIC",
+        "B22-DATA-E-EVENT-STATIC",
+        "B22-DATA-E-IDEMPOTENCY-STATIC",
+        "B22-DATA-E-COMPATIBILITY-STATIC",
+        "B22-DATA-E-ROLLBACK-STATIC",
+        "B22-DATA-E-BINDING-STATIC",
+        "B22-DATA-E-OWNER-RUNTIME",
+        "B22-DATA-E-MIGRATION-RUNTIME",
+        "B22-DATA-E-RECONCILIATION-RUNTIME",
+        "B22-DATA-E-EVENT-RUNTIME",
+        "B22-DATA-E-IDEMPOTENCY-RUNTIME",
+        "B22-DATA-E-COMPATIBILITY-RUNTIME",
+        "B22-DATA-E-ROLLBACK-RUNTIME",
+        "B22-DATA-E-BINDING-RUNTIME"
+      ],
+      "staticChecks": [
+        { "id": "B22-DATA-OWNER-STATIC", "evidenceId": "B22-DATA-E-OWNER-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "docs/10-decisions/0010-java25-microservices-gateway-iam.md"], "assertions": ["one owner per schema", "cross-service writes and joins are prohibited"] },
+        { "id": "B22-DATA-MIGRATION-STATIC", "evidenceId": "B22-DATA-E-MIGRATION-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "services/content-service/src/main/resources/db/migration/V1__create_content_service_schema.sql"], "assertions": ["Flyway and migration lock per service", "empty/upgrade/downgrade/failure recovery scenarios"] },
+        { "id": "B22-DATA-RECONCILIATION-STATIC", "evidenceId": "B22-DATA-E-RECONCILIATION-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md"], "assertions": ["row count, canonical digest, schema and migration version are bound"] },
+        { "id": "B22-DATA-E-EVENT-STATIC", "evidenceId": "B22-DATA-E-EVENT-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "packages/contracts/events/v1/catalog.json"], "assertions": ["outbox, event envelope, offset, DLQ and replay are reconciled"] },
+        { "id": "B22-DATA-IDEMPOTENCY-STATIC", "evidenceId": "B22-DATA-E-IDEMPOTENCY-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md"], "assertions": ["repeat migration and duplicate event have no second effect"] },
+        { "id": "B22-DATA-COMPATIBILITY-STATIC", "evidenceId": "B22-DATA-E-COMPATIBILITY-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "services/api-gateway/README.md"], "assertions": ["core-api compatibility window is bounded and Gateway is the public entry point"] },
+        { "id": "B22-DATA-READ-SHADOW-STATIC", "evidenceId": "B22-DATA-E-COMPATIBILITY-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md"], "assertions": ["read-shadow is non-user-visible and has a mismatch stop decision"] },
+        { "id": "B22-DATA-ROLLBACK-STATIC", "evidenceId": "B22-DATA-E-ROLLBACK-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "config/b21-release-gate-evidence.json"], "assertions": ["restore point, compensation, rollback owner and audit are required"] },
+        { "id": "B22-DATA-BINDING-STATIC", "evidenceId": "B22-DATA-E-BINDING-STATIC", "status": "defined", "evidenceClass": "static", "runtimeRequired": false, "sourcePaths": ["docs/02-architecture/v2-microservices-architecture.md", "config/b21-release-gate-evidence.json"], "assertions": ["source revision, environment, migration version, hash, trace and evidence are bound"] }
+      ],
+      "runtimeChecks": [
+        { "id": "B22-DATA-OWNER-RUNTIME", "evidenceId": "B22-DATA-E-OWNER-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/data/owner"], "assertions": ["database credentials prove owner-only write authority"] },
+        { "id": "B22-DATA-MIGRATION-RUNTIME", "evidenceId": "B22-DATA-E-MIGRATION-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/data/migration"], "assertions": ["empty, upgrade, downgrade and failure recovery ran on approved MySQL"] },
+        { "id": "B22-DATA-RECONCILIATION-RUNTIME", "evidenceId": "B22-DATA-E-RECONCILIATION-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/data/reconciliation"], "assertions": ["rows, digest, schema and migration versions match"] },
+        { "id": "B22-DATA-EVENT-RUNTIME", "evidenceId": "B22-DATA-E-EVENT-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/events/reconciliation"], "assertions": ["outbox, event set, offsets, DLQ and replay match"] },
+        { "id": "B22-DATA-IDEMPOTENCY-RUNTIME", "evidenceId": "B22-DATA-E-IDEMPOTENCY-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/data/idempotency"], "assertions": ["repeat migration and duplicate delivery have no second effect"] },
+        { "id": "B22-DATA-COMPATIBILITY-RUNTIME", "evidenceId": "B22-DATA-E-COMPATIBILITY-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/routes/compatibility"], "assertions": ["old route window, Gateway route and expiry audit are verified"] },
+        { "id": "B22-DATA-ROLLBACK-RUNTIME", "evidenceId": "B22-DATA-E-ROLLBACK-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/data/rollback"], "assertions": ["restore, compensation and post-rollback reconciliation succeeded"] },
+        { "id": "B22-DATA-BINDING-RUNTIME", "evidenceId": "B22-DATA-E-BINDING-RUNTIME", "status": "pending", "evidenceClass": "runtime", "runtimeRequired": true, "sourcePaths": ["evidence/b22/data/report"], "assertions": ["report is bound to revision, environment, migration, hash, trace and evidence"] }
+      ]
+    }
+  ],
+  "evidenceIndex": [
+    { "id": "B22-DATA-E-OWNER-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-MIGRATION-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-RECONCILIATION-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-EVENT-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-IDEMPOTENCY-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-COMPATIBILITY-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-ROLLBACK-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-BINDING-STATIC", "gateId": "B22-DATA-GATE-002", "class": "static", "status": "defined", "runtimeRequired": false, "artifactPathPattern": "config/b22-data-reconciliation.json", "collectionPolicy": "repository-static-validator", "binding": "synthetic-manifest-binding" },
+    { "id": "B22-DATA-E-OWNER-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/data/owner/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-MIGRATION-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/data/migration/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-RECONCILIATION-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/data/reconciliation/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-EVENT-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/events/reconciliation/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-IDEMPOTENCY-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/data/idempotency/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-COMPATIBILITY-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/routes/compatibility/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-ROLLBACK-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/data/rollback/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" },
+    { "id": "B22-DATA-E-BINDING-RUNTIME", "gateId": "B22-DATA-GATE-002", "class": "runtime", "status": "pending", "runtimeRequired": true, "artifactPathPattern": "evidence/b22/data/report/**", "collectionPolicy": "approved-runtime-runner-only", "binding": "external-runtime-binding-required" }
+  ],
+  "releaseGate": {
+    "status": "BLOCKED",
+    "defaultDecision": "NO-GO",
+    "allowedDecisions": ["NO-GO", "GO"],
+    "requiresB21Accepted": true,
+    "requiresAllServiceMigrationsReconciled": true,
+    "requiresEventAndOffsetReconciled": true,
+    "requiresReadShadowParity": true,
+    "requiresRestorePoint": true,
+    "requiresRollbackOwner": true,
+    "requiresCompatibilityWindow": true,
+    "missingEvidenceDecision": "NO-GO",
+    "mismatchDecision": "STOP_RELEASE_AND_ROLLBACK_OR_MANUAL_TAKEOVER",
+    "openP0P1Decision": "NO-GO",
+    "manualTakeoverMustBeAudited": true
+  },
+  "reportSchema": {
+    "id": "b22-data-reconciliation-report",
+    "version": "1",
+    "closed": true,
+    "jsonSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "reportId", "batch", "task", "decision", "sourceRevision", "environment", "migrationVersion", "artifactHash", "traceId", "evidenceRefs", "serviceResults", "mismatchAction"],
+      "properties": {
+        "schemaVersion": { "type": "integer", "const": 1 },
+        "reportId": { "type": "string", "minLength": 1 },
+        "batch": { "type": "string", "const": "B22" },
+        "task": { "type": "string", "const": "V2-B22-DATA-002" },
+        "decision": { "type": "string", "enum": ["BLOCKED", "NO-GO", "GO"] },
+        "sourceRevision": { "type": "string", "minLength": 1 },
+        "environment": { "type": "string", "minLength": 1 },
+        "migrationVersion": { "type": "string", "minLength": 1 },
+        "artifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "traceId": { "type": "string", "minLength": 1 },
+        "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "serviceResults": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["service", "factOwner", "schema", "migrationVersion", "rowCountDigest", "eventOffsetStatus", "resultStatus", "evidenceRef"],
+            "properties": {
+              "service": { "type": "string", "minLength": 1 },
+              "factOwner": { "type": "string", "minLength": 1 },
+              "schema": { "type": "string", "minLength": 1 },
+              "migrationVersion": { "type": "string", "minLength": 1 },
+              "rowCountDigest": { "type": "string", "minLength": 1 },
+              "eventOffsetStatus": { "type": "string", "enum": ["MATCHED", "MISMATCHED", "PENDING", "BLOCKED"] },
+              "resultStatus": { "type": "string", "enum": ["MATCHED", "MISMATCHED", "PENDING", "BLOCKED"] },
+              "evidenceRef": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "mismatchAction": { "type": "string", "enum": ["STOP_RELEASE_AND_ROLLBACK", "STOP_AND_MANUAL_TAKEOVER"] }
+      }
+    }
+  }
+}

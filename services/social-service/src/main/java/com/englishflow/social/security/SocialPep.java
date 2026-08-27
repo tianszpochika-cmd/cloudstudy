@@ -3,6 +3,8 @@ package com.englishflow.social.security;
 import com.englishflow.social.domain.SocialException;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 /**
  * Small service-side PEP. It validates verified identity facts first, then resource tenant,
  * owner and permission facts. Missing facts always deny instead of becoming an empty result.
@@ -36,6 +38,14 @@ public final class SocialPep {
         requireIdentity(principal);
         if (permission == null || permission.isBlank() || !principal.hasPermission(permission)) {
             throw SocialException.forbidden("SOCIAL_PERMISSION_DENIED", "social permission is required");
+        }
+    }
+
+    public void requireAnyPermission(SocialPrincipal principal, Set<String> permissions) {
+        requireIdentity(principal);
+        if (permissions == null || permissions.isEmpty()
+                || permissions.stream().noneMatch(principal::hasPermission)) {
+            throw SocialException.forbidden("SOCIAL_PERMISSION_DENIED", "one of the social admin permissions is required");
         }
     }
 

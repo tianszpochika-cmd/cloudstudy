@@ -3,6 +3,7 @@ export const siteNavigation = Object.freeze([
   { label: '课程体系', to: '/courses' },
   { label: '价格方案', to: '/pricing' },
   { label: '下载体验', to: '/download' },
+  { label: '服务公告', to: '/announcements' },
   { label: '关于我们', to: '/about' },
 ])
 
@@ -13,6 +14,7 @@ export const footerNavigation = Object.freeze([
       { label: '课程体系', to: '/courses' },
       { label: '价格方案', to: '/pricing' },
       { label: '下载体验', to: '/download' },
+      { label: '服务公告', to: '/announcements' },
       { label: '关于我们', to: '/about' },
     ],
   },
@@ -144,7 +146,7 @@ export const complianceNotices = Object.freeze([
   },
 ])
 
-export const publicRoutes = Object.freeze(['/', '/courses', '/pricing', '/download', '/about', '/compliance'])
+export const publicRoutes = Object.freeze(['/', '/courses', '/pricing', '/download', '/about', '/announcements', '/compliance'])
 
 export function filterCourses(courses, filter = 'all') {
   if (filter === 'all') return courses

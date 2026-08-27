@@ -1,6 +1,11 @@
 spring:
   application:
     name: notification-service
+  flyway:
+    enabled: ${NOTIFICATION_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    schemas: ${NOTIFICATION_SCHEMA:notification_service}
+    default-schema: ${NOTIFICATION_SCHEMA:notification_service}
   lifecycle:
     timeout-per-shutdown-phase: ${NOTIFICATION_SHUTDOWN_TIMEOUT:20s}
   security:
@@ -26,6 +31,16 @@ management:
       probes:
         enabled: true
       show-details: never
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
   tracing:
     propagation:
       type: W3C
@@ -33,6 +48,18 @@ management:
       probability: ${OTEL_TRACING_SAMPLING_PROBABILITY:0.1}
     export:
       enabled: ${OTEL_TRACING_ENABLED:false}
+  opentelemetry:
+    enabled: ${OTEL_ENABLED:true}
+    map-environment-variables: true
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:${OTEL_EXPORTER_OTLP_ENDPOINT:http://127.0.0.1:4318/v1/traces}}
+
+logging:
+  include-application-name: false
+  pattern:
+    correlation: "[%X{traceId:-},%X{spanId:-},%X{requestId:-}] "
 
 service:
   name: notification-service
@@ -49,6 +76,13 @@ notification:
   phase: ${NOTIFICATION_PHASE:phase-1}
   max-delivery-attempts: ${NOTIFICATION_MAX_DELIVERY_ATTEMPTS:5}
   retry-backoff: ${NOTIFICATION_RETRY_BACKOFF:PT30S}
+  persistence:
+    # memory is test-only; the deployable default is fail-closed.
+    mode: ${NOTIFICATION_PERSISTENCE_MODE:fail-closed}
+    jdbc-url: ${NOTIFICATION_JDBC_URL:}
+    username: ${NOTIFICATION_JDBC_USERNAME:${MYSQL_USER:}}
+    password: ${NOTIFICATION_JDBC_PASSWORD:${MYSQL_PASSWORD:}}
+    schema: ${NOTIFICATION_SCHEMA:notification_service}
   security:
     resource-server-enabled: ${NOTIFICATION_RESOURCE_SERVER_ENABLED:false}
     issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:}

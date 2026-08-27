@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { parseFlag, repositoryRoot } from './lib/migration-utils.mjs';
+import { runMysql as runMysqlClient } from './lib/mysql-client.mjs';
 
 const args = process.argv.slice(2);
 const apply = args.includes('--apply');
@@ -41,15 +42,13 @@ DELETE FROM media_assets WHERE asset_key LIKE 'fixture/core-foundation/%';
 `;
 
 function run(sql) {
-  const result = spawnSync(mysqlBin, mysqlArgs, {
+  return runMysqlClient({
+    mysqlBin,
+    mysqlArgs,
+    password: config.password,
     cwd: repositoryRoot,
-    input: `${sql.trim()}\n`,
-    encoding: 'utf8',
-    env: { ...process.env, MYSQL_PWD: config.password }
+    input: `${sql.trim()}\n`
   });
-  if (result.error) throw new Error(`无法启动 mysql 客户端 (${mysqlBin}): ${result.error.message}`);
-  if (result.status !== 0) throw new Error((result.stderr || result.stdout || `mysql exit ${result.status}`).trim());
-  return (result.stdout || '').trim();
 }
 
 try {

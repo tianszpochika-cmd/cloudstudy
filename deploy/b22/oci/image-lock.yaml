@@ -1,0 +1,95 @@
+apiVersion: supply-chain.englishflow.dev/v1alpha1
+kind: ImmutableImageLock
+metadata:
+  name: englishflow-b22-release
+  labels:
+    englishflow.dev/release-batch: b22
+spec:
+  phase: phase-1
+  status: not-established
+  releaseReference: release-ref://synthetic/b22/production-canary
+  images:
+    - name: api-gateway
+      image: registry.example.invalid/englishflow/api-gateway@sha256:1111111111111111111111111111111111111111111111111111111111111111
+      tagPolicy: digest-only
+      signature:
+        required: true
+        tool: cosign
+        identityPolicy: approved-workload-identity
+        verificationStatus: pending
+      sbom:
+        required: true
+        format: CycloneDX
+        ref: oci://registry.example.invalid/englishflow/sbom/api-gateway@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        verificationStatus: pending
+      provenance: SLSA-provenance-required
+    - name: mobile
+      image: registry.example.invalid/englishflow/mobile@sha256:3333333333333333333333333333333333333333333333333333333333333333
+      tagPolicy: digest-only
+      signature:
+        required: true
+        tool: cosign
+        identityPolicy: approved-workload-identity
+        verificationStatus: pending
+      sbom:
+        required: true
+        format: CycloneDX
+        ref: oci://registry.example.invalid/englishflow/sbom/mobile@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+        verificationStatus: pending
+      provenance: SLSA-provenance-required
+    - name: learner-web
+      image: registry.example.invalid/englishflow/learner-web@sha256:4444444444444444444444444444444444444444444444444444444444444444
+      tagPolicy: digest-only
+      signature:
+        required: true
+        tool: cosign
+        identityPolicy: approved-workload-identity
+        verificationStatus: pending
+      sbom:
+        required: true
+        format: CycloneDX
+        ref: oci://registry.example.invalid/englishflow/sbom/learner-web@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+        verificationStatus: pending
+      provenance: SLSA-provenance-required
+    - name: admin-web
+      image: registry.example.invalid/englishflow/admin-web@sha256:5555555555555555555555555555555555555555555555555555555555555555
+      tagPolicy: digest-only
+      signature:
+        required: true
+        tool: cosign
+        identityPolicy: approved-workload-identity
+        verificationStatus: pending
+      sbom:
+        required: true
+        format: CycloneDX
+        ref: oci://registry.example.invalid/englishflow/sbom/admin-web@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+        verificationStatus: pending
+      provenance: SLSA-provenance-required
+    - name: official-site
+      image: registry.example.invalid/englishflow/official-site@sha256:6666666666666666666666666666666666666666666666666666666666666666
+      tagPolicy: digest-only
+      signature:
+        required: true
+        tool: cosign
+        identityPolicy: approved-workload-identity
+        verificationStatus: pending
+      sbom:
+        required: true
+        format: CycloneDX
+        ref: oci://registry.example.invalid/englishflow/sbom/official-site@sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+        verificationStatus: pending
+      provenance: SLSA-provenance-required
+  policy:
+    requireDigest: true
+    requireSignature: true
+    requireSBOM: true
+    requireProvenance: true
+    mutableTagAllowed: false
+    rejectMutableTags: true
+    rejectUnpinnedReferences: true
+    promotionMode: same-digest-only
+    forbiddenReferenceForms:
+      - floating-tag
+      - unpinned-image
+      - digest-mismatch
+

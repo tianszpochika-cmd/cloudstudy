@@ -2,7 +2,6 @@ package com.englishflow.adminops.application;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +27,8 @@ import com.englishflow.adminops.domain.ProjectionQuery;
 import com.englishflow.adminops.domain.ProjectionRecord;
 import com.englishflow.adminops.domain.ProjectionView;
 import com.englishflow.adminops.domain.ReferenceRedactor;
+import com.englishflow.adminops.domain.ReviewStateRecord;
+import com.englishflow.adminops.domain.ReviewStateStore;
 
 /**
  * B13-ADM-003 application boundary. It reads admin projections and forwards commands, but it
@@ -44,12 +45,7 @@ public final class AdminOpsService {
     private final IdempotencyLedger idempotency;
     private final ConfirmationService confirmations;
     private final AdminPep pep = new AdminPep();
-    /**
-     * Admin-owned workflow state only. It is deliberately not a copy of content-service facts;
-     * the production adapter must persist this as an approval/workflow projection or event
-     * stream, while the local wiring keeps it in memory for the code-layer smoke.
-     */
-    private final Map<String, ReviewState> reviewStates = new HashMap<>();
+    private final ReviewStateStore reviewStates;
 
     public AdminOpsService(
             Clock clock,
@@ -58,12 +54,25 @@ public final class AdminOpsService {
             AuditTrail auditTrail,
             IdempotencyLedger idempotency,
             ConfirmationService confirmations) {
+        this(clock, projections, commandPort, auditTrail, idempotency, confirmations,
+                new com.englishflow.adminops.adapter.memory.InMemoryReviewStateStore());
+    }
+
+    public AdminOpsService(
+            Clock clock,
+            com.englishflow.adminops.domain.AdminProjectionPort projections,
+            DomainCommandPort commandPort,
+            AuditTrail auditTrail,
+            IdempotencyLedger idempotency,
+            ConfirmationService confirmations,
+            ReviewStateStore reviewStates) {
         this.clock = clock;
         this.projections = new AdminProjectionPortAdapter(projections);
         this.commandPort = commandPort;
         this.auditTrail = auditTrail;
         this.idempotency = idempotency;
         this.confirmations = confirmations;
+        this.reviewStates = reviewStates;
     }
 
     public List<ProjectionView> query(AdminPrincipal principal, ProjectionQuery query) {
@@ -179,30 +188,31 @@ public final class AdminOpsService {
         if (requiresIndependentOperator(action)) {
             pep.requireOperatorNotAuthor(principal, projection.authorSubjectId());
         }
-        ReviewState state = reviewStates.get(reviewKey(principal, request, projection));
+        ReviewStateRecord state = reviewStates.find(
+                principal.tenantId(), request.domain(), request.resourceRef(), projection.version()).orElse(null);
         switch (action) {
             case CONTENT_REVIEW_FIRST -> {
-                if (state != null && state.firstReviewerSubjectId != null) {
+                if (state != null && state.firstReviewerSubjectId() != null) {
                     throw AdminOpsException.conflict(
                             "ADMIN_APPROVAL_ALREADY_RECORDED", "first review has already been recorded");
                 }
             }
             case CONTENT_REVIEW_FINAL -> {
-                if (state == null || state.firstReviewerSubjectId == null) {
+                if (state == null || state.firstReviewerSubjectId() == null) {
                     throw AdminOpsException.conflict(
                             "ADMIN_APPROVAL_SEQUENCE_INVALID", "first review is required before final review");
                 }
-                if (principal.subjectId().equals(state.firstReviewerSubjectId)) {
+                if (principal.subjectId().equals(state.firstReviewerSubjectId())) {
                     throw AdminOpsException.forbidden(
                             "ADMIN_REVIEWER_SEPARATION_REQUIRED", "first and final reviewers must be different principals");
                 }
-                if (state.finalReviewerSubjectId != null) {
+                if (state.finalReviewerSubjectId() != null) {
                     throw AdminOpsException.conflict(
                             "ADMIN_APPROVAL_ALREADY_RECORDED", "final review has already been recorded");
                 }
             }
             case CONTENT_PUBLISH -> {
-                if (state == null || state.finalReviewerSubjectId == null) {
+                if (state == null || state.finalReviewerSubjectId() == null) {
                     throw AdminOpsException.conflict(
                             "ADMIN_APPROVAL_SEQUENCE_INVALID", "final review is required before publish");
                 }
@@ -216,24 +226,27 @@ public final class AdminOpsService {
     private void updateReviewState(
             AdminPrincipal principal, CommandRequest request, ProjectionRecord projection) {
         switch (request.action()) {
-            case CONTENT_REVIEW_FIRST -> reviewState(principal, request, projection).firstReviewerSubjectId = principal.subjectId();
-            case CONTENT_REVIEW_FINAL -> reviewState(principal, request, projection).finalReviewerSubjectId = principal.subjectId();
+            case CONTENT_REVIEW_FIRST -> {
+                ReviewStateRecord state = currentReviewState(principal, request, projection);
+                reviewStates.save(new ReviewStateRecord(state.tenantId(), state.domain(), state.resourceRef(),
+                        state.projectionVersion(), principal.subjectId(), state.finalReviewerSubjectId(), clock.instant()));
+            }
+            case CONTENT_REVIEW_FINAL -> {
+                ReviewStateRecord state = currentReviewState(principal, request, projection);
+                reviewStates.save(new ReviewStateRecord(state.tenantId(), state.domain(), state.resourceRef(),
+                        state.projectionVersion(), state.firstReviewerSubjectId(), principal.subjectId(), clock.instant()));
+            }
             default -> {
                 // No local approval transition for unrelated domain commands.
             }
         }
     }
 
-    private ReviewState reviewState(
+    private ReviewStateRecord currentReviewState(
             AdminPrincipal principal, CommandRequest request, ProjectionRecord projection) {
-        return reviewStates.computeIfAbsent(
-                reviewKey(principal, request, projection), ignored -> new ReviewState());
-    }
-
-    private static String reviewKey(
-            AdminPrincipal principal, CommandRequest request, ProjectionRecord projection) {
-        return principal.tenantId() + ":" + request.domain().name() + ":"
-                + request.resourceRef() + ":" + projection.version();
+        return reviewStates.find(principal.tenantId(), request.domain(), request.resourceRef(), projection.version())
+                .orElseGet(() -> new ReviewStateRecord(principal.tenantId(), request.domain(), request.resourceRef(),
+                        projection.version(), null, null, clock.instant()));
     }
 
     private static boolean requiresIndependentOperator(CommandAction action) {
@@ -273,11 +286,6 @@ public final class AdminOpsService {
         if (value == null || value.trim().length() < 8 || value.trim().length() > 160) {
             throw AdminOpsException.invalid("ADMIN_IDEMPOTENCY_KEY_REQUIRED", "Idempotency-Key is required");
         }
-    }
-
-    private static final class ReviewState {
-        private String firstReviewerSubjectId;
-        private String finalReviewerSubjectId;
     }
 
     /** Small wrapper keeps the domain port explicit while allowing a future HTTP projection adapter. */

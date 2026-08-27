@@ -5,6 +5,8 @@ import com.englishflow.analytics.domain.AnalyticsErrorCode;
 import com.englishflow.analytics.domain.AnalyticsEventAllowlist;
 import com.englishflow.analytics.domain.TenantScope;
 import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -73,11 +75,23 @@ public final class AnalyticsPrincipalResolver {
     private static void requirePermission(JwtAuthenticationToken jwt, String permission) {
         Set<String> authorities = jwt.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toUnmodifiableSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        addClaimValues(authorities, jwt.getToken().getClaims().get("permissions"));
         if (!authorities.contains(permission) && !authorities.contains("PERM_" + permission)
                 && !authorities.contains("SCOPE_" + permission) && !authorities.contains("ROLE_ANALYTICS_ADMIN")) {
             throw AnalyticsDomainException.rejected(AnalyticsErrorCode.FORBIDDEN,
                     "analytics permission is required");
+        }
+    }
+
+    private static void addClaimValues(Set<String> target, Object value) {
+        if (value instanceof Collection<?> values) {
+            values.stream().filter(item -> item != null && !item.toString().isBlank())
+                    .map(Object::toString).forEach(target::add);
+        } else if (value != null) {
+            for (String item : value.toString().split("[ ,]+")) {
+                if (!item.isBlank()) target.add(item);
+            }
         }
     }
 

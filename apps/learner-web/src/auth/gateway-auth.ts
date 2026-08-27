@@ -45,7 +45,7 @@ export interface LoginCallbackInput {
 }
 
 export interface ProviderNeutralAuthAdapter {
-  startLogin(options: LoginStartOptions): string
+  startLogin(options: LoginStartOptions): Promise<string>
   completeLogin(input: LoginCallbackInput): Promise<AuthTokenPair & { adultGate?: AdultGateStatus }>
   restoreSession(): Promise<AuthSessionSnapshot | null>
   refresh(input: { refreshToken: string }): Promise<AuthTokenPair>
@@ -114,7 +114,7 @@ function parseSnapshot(value: unknown): AuthSessionSnapshot | null {
   const permissions = stringList(source.permissions ?? principalSource.permissions)
   const roles = stringList(source.roles ?? principalSource.roles)
   const subject = stringValue(principalSource.subject ?? principalSource.sub ?? principalSource.userId ?? principalSource.principalId)
-  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate)
+  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? source)
   const principal = subject ? { subject, roles, permissions, adultGate } : null
   return {
     principal,
@@ -128,6 +128,30 @@ function parseSnapshot(value: unknown): AuthSessionSnapshot | null {
 function joinUrl(baseUrl: string, path: string): string {
   const base = baseUrl.replace(/\/$/, '')
   return path.startsWith('/') ? `${base}${path}` : `${base}/${path}`
+}
+
+function scheduleWebLogoutRedirect(): void {
+  if (typeof window === 'undefined') return
+  window.setTimeout(() => {
+    if (window.location.pathname !== '/login') window.location.assign('/login')
+  }, 0)
+}
+
+interface AuthorizationStartResponse {
+  authorizationUrl?: string
+}
+
+function validAuthorizationUrl(value: unknown): string {
+  const candidate = stringValue(value)
+  if (!candidate) throw new Error('认证服务没有返回授权地址。')
+  try {
+    const url = new URL(candidate)
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash) throw new Error('认证服务返回了不安全的授权地址。')
+    return url.toString()
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('不安全')) throw error
+    throw new Error('认证服务返回了无效的授权地址。')
+  }
 }
 
 export interface GatewayAuthAdapterOptions {
@@ -147,13 +171,15 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Pr
   })
 
   return {
-    startLogin(input) {
+    async startLogin(input) {
       const url = new URL(joinUrl(options.baseUrl, `/auth/oidc/${OIDC_PROVIDER}/authorization/start`))
       url.searchParams.set('redirectUri', options.redirectUri ?? `${window.location.origin}/auth/callback`)
       url.searchParams.set('returnTo', safeReturnTo(input.returnTo))
       url.searchParams.set('uiLocale', input.locale)
       url.searchParams.set('theme', input.theme)
-      return url.toString()
+      const response = await client.get<AuthorizationStartResponse>(`/auth/oidc/${OIDC_PROVIDER}/authorization/start${url.search}`, { skipAuthRetry: true })
+      const source = unwrap(response)
+      return validAuthorizationUrl(isRecord(source) ? source.authorizationUrl : undefined)
     },
     async completeLogin(input) {
       if (input.error) throw new Error(input.errorDescription || input.error)
@@ -188,6 +214,7 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Pr
     },
     async logout(input) {
       await client.post('/iam/session/logout', input, { skipAuthRetry: true })
+      scheduleWebLogoutRedirect()
     },
     async revoke(sessionId) {
       await client.post(`/iam/sessions/${encodeURIComponent(sessionId)}/revoke`, {}, { skipAuthRetry: true })

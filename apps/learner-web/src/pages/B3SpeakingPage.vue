@@ -6,10 +6,12 @@ import {
   createShadowingSession,
   deleteRecording,
   listMinimalPairs,
+  listListeningMaterials,
   submitRoleplayTurn,
   updateShadowingProgress,
 } from "../api/b3";
 import type {
+  ListeningMaterial,
   MinimalPair,
   Phoneme,
   RoleplaySession,
@@ -35,6 +37,11 @@ const minimalPairs = ref<MinimalPair[]>([]);
 const activeAudio = ref<HTMLAudioElement | null>(null);
 const shadowing = ref<ShadowingSession | null>(null);
 const roleplay = ref<RoleplaySession | null>(null);
+const permissionState = ref<
+  "unknown" | "prompt" | "granted" | "denied" | "unsupported"
+>("unknown");
+const demoAudioUrl = ref<string | null>(null);
+const demoAudioMessage = ref("正在检查示范音频资源…");
 const currentRoleplayTurn = computed(
   () => roleplay.value?.turns[roleplay.value.turnIndex] ?? null,
 );
@@ -50,6 +57,7 @@ onMounted(async () => {
   } catch {
     minimalPairs.value = [];
   }
+  await loadDemoAudio();
 });
 onUnmounted(() => {
   if (recording.value?.state === "recording") recording.value.stop();
@@ -61,8 +69,19 @@ function selectPhoneme(item: Phoneme): void {
   selectedPhoneme.value = item;
 }
 async function start(): Promise<void> {
+  if (
+    typeof navigator === "undefined" ||
+    !navigator.mediaDevices?.getUserMedia ||
+    typeof MediaRecorder === "undefined"
+  ) {
+    permissionState.value = "unsupported";
+    message.value = "当前浏览器不支持录音；仍可继续音标、口型和文本跟读。";
+    return;
+  }
+  permissionState.value = "prompt";
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    permissionState.value = "granted";
     chunks.value = [];
     startedAt.value = Date.now();
     recording.value = new MediaRecorder(stream);
@@ -79,7 +98,33 @@ async function start(): Promise<void> {
     isRecording.value = true;
     message.value = "正在录音，完成后点击停止。";
   } catch {
+    permissionState.value = "denied";
     message.value = "麦克风权限未开启，辨音和口型学习仍可继续。";
+  }
+}
+
+async function loadDemoAudio(): Promise<void> {
+  try {
+    const material = (await listListeningMaterials())[0] as
+      | ListeningMaterial
+      | undefined;
+    const media = material?.mediaRef;
+    if (
+      media?.rightsStatus === "AUTHORIZED" &&
+      media.availability !== "NOT_READY" &&
+      media.signedUrl
+    ) {
+      demoAudioUrl.value = media.signedUrl;
+      demoAudioMessage.value = "示范音频已获得短时授权。";
+      return;
+    }
+    demoAudioMessage.value =
+      media?.rightsStatus === "REVOKED"
+        ? "示范音频权益已撤销；已降级为文本脚本和 2D 口型。"
+        : "示范音频当前没有可播放授权地址；已降级为文本脚本和 2D 口型。";
+  } catch {
+    demoAudioMessage.value =
+      "示范音频资源暂时不可用；已降级为文本脚本和 2D 口型。";
   }
 }
 async function save(): Promise<void> {
@@ -100,7 +145,7 @@ async function save(): Promise<void> {
     message.value =
       "录音已用 AES-GCM-256 加密并保存在本地内存仓；服务端只登记哈希和生命周期元数据。";
     try {
-      shadowing.value = await createShadowingSession("seg-1");
+      if (!shadowing.value) shadowing.value = await createShadowingSession("seg-1");
       await updateShadowingProgress(
         shadowing.value.shadowingSessionId,
         recordingDurationMs.value,
@@ -112,6 +157,42 @@ async function save(): Promise<void> {
   } catch (error) {
     message.value =
       error instanceof Error ? error.message : "录音保存暂不可用。";
+  }
+}
+
+async function startShadowing(): Promise<void> {
+  if (!selectedPhoneme.value) return;
+  try {
+    shadowing.value = await createShadowingSession(
+      `phoneme-${selectedPhoneme.value.phonemeId}`,
+    );
+    message.value = "影子跟读会话已打开；完成后可保存位置和次数。";
+  } catch (error) {
+    message.value =
+      error instanceof Error ? error.message : "影子跟读会话暂时无法建立。";
+  }
+}
+
+async function saveShadowing(): Promise<void> {
+  if (!shadowing.value) {
+    message.value = "请先打开影子跟读会话。";
+    return;
+  }
+  try {
+    await updateShadowingProgress(
+      shadowing.value.shadowingSessionId,
+      recordingDurationMs.value,
+      shadowing.value.attemptCount + 1,
+    );
+    shadowing.value = {
+      ...shadowing.value,
+      positionMs: recordingDurationMs.value,
+      attemptCount: shadowing.value.attemptCount + 1,
+    };
+    message.value = "影子跟读进度已保存；Phase 1 不生成 AI 分数。";
+  } catch (error) {
+    message.value =
+      error instanceof Error ? error.message : "影子跟读进度暂未同步。";
   }
 }
 async function replay(): Promise<void> {
@@ -249,6 +330,28 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
             }}</small
           >
         </div>
+        <div class="demo-audio" role="status" aria-live="polite">
+          <p class="eyebrow">DEMO AUDIO</p>
+          <audio
+            v-if="demoAudioUrl"
+            class="demo-audio-player"
+            controls
+            :src="demoAudioUrl"
+            aria-label="示范音频"
+          ></audio>
+          <span v-else>{{ demoAudioMessage }}</span>
+        </div>
+        <div
+          class="permission-banner"
+          :class="`permission-banner--${permissionState}`"
+          role="status"
+        >
+          <strong>MIC: {{ permissionState.toUpperCase() }}</strong>
+          <span v-if="permissionState === 'denied' || permissionState === 'unsupported'">
+            麦克风不可用；仍可继续音标、口型和文本跟读。
+          </span>
+          <span v-else>点击开始录音后才会请求麦克风权限。</span>
+        </div>
         <p>{{ message }}</p>
         <div class="actions">
           <button v-if="!isRecording" type="button" @click="start">
@@ -261,6 +364,10 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
             @click="save"
           >
             加密并保存</button
+          ><button type="button" @click="void startShadowing">
+            开始影子跟读</button
+          ><button type="button" :disabled="!shadowing" @click="void saveShadowing">
+            保存跟读进度</button
           ><button v-if="recordingId" type="button" @click="replay">
             回放加密录音</button
           ><button v-if="recordingId" type="button" @click="remove">
@@ -275,6 +382,12 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
             ><button type="button" @click="rate('BASIC')">基本可以</button
             ><button type="button" @click="rate('FLUENT')">很流畅</button>
           </div>
+        </div>
+        <div v-else class="rating rating--disabled" role="group" aria-label="自评">
+          <span>完成真实录音并登记后可提交自评</span>
+          <button type="button" disabled>需要练习</button>
+          <button type="button" disabled>基本可以</button>
+          <button type="button" disabled>很流畅</button>
         </div>
       </article>
     </div>
@@ -365,10 +478,11 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 }
 .grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 20px;
 }
 .panel {
+  min-width: 0;
   padding: 24px;
   border-radius: 22px;
   background: #fff;
@@ -391,10 +505,11 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 }
 .phonemes {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 .phonemes button {
+  min-width: 0;
   display: grid;
   gap: 5px;
   padding: 14px;
@@ -413,6 +528,7 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   color: #4b3a83;
 }
 .phonemes small {
+  overflow-wrap: anywhere;
   color: #8a879a;
   font-size: 10px;
 }
@@ -452,6 +568,34 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
 .mouth small {
   color: #7c7597;
 }
+.demo-audio,
+.permission-banner {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e5e3f1;
+  border-radius: 14px;
+  background: #fbfaff;
+}
+.demo-audio p {
+  margin: 0;
+}
+.demo-audio span,
+.permission-banner span {
+  color: #625f73;
+  line-height: 1.5;
+}
+.demo-audio-player {
+  width: 100%;
+  max-width: 100%;
+}
+.permission-banner--denied,
+.permission-banner--unsupported {
+  border-color: #d86b89;
+}
+.permission-banner--granted {
+  border-color: #4e9f8a;
+}
 .actions,
 .rating {
   display: flex;
@@ -482,6 +626,15 @@ async function advanceRoleplay(choiceCode?: string): Promise<void> {
   background: #f1edff;
   color: #57418d;
   word-break: break-all;
+}
+.rating--disabled {
+  display: grid;
+  gap: 8px;
+  color: #8a879a;
+}
+.rating--disabled button {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 .roleplay-panel {
   display: grid;

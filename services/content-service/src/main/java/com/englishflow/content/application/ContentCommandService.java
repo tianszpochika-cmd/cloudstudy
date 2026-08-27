@@ -33,9 +33,9 @@ import java.util.Objects;
  * Content facts are changed only through commands owned by this service.
  *
  * <p>Admin/frontend BFFs may call an adapter around these commands, but they cannot write the
- * repository or projection directly. The production repository/outbox implementation must make
- * the fact write and {@link ContentOutboxPort#appendAfterFact(ContentOutboxEvent)} one local
- * transaction; this slice deliberately supplies only in-memory adapters for domain tests.</p>
+ * repository or projection directly. The JDBC composition root executes the fact, idempotency,
+ * projection, cache-invalidation and {@link ContentOutboxPort#appendAfterFact(ContentOutboxEvent)}
+ * writes in one content-owned local transaction; memory adapters remain test-only doubles.</p>
  */
 public final class ContentCommandService {
 

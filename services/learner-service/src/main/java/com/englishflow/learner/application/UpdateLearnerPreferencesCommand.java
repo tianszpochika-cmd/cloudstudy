@@ -14,7 +14,8 @@ public record UpdateLearnerPreferencesCommand(
         ThemeMode themeMode,
         String timezone,
         boolean reducedMotion,
-        IdempotencyKey idempotencyKey) {
+        IdempotencyKey idempotencyKey,
+        Long expectedVersion) {
 
     public UpdateLearnerPreferencesCommand {
         Objects.requireNonNull(uiLocale, "uiLocale is required");
@@ -22,6 +23,19 @@ public record UpdateLearnerPreferencesCommand(
         Objects.requireNonNull(themeMode, "themeMode is required");
         Objects.requireNonNull(timezone, "timezone is required");
         Objects.requireNonNull(idempotencyKey, "idempotencyKey is required");
+        if (expectedVersion != null && expectedVersion < 0) {
+            throw new IllegalArgumentException("expectedVersion cannot be negative");
+        }
+    }
+
+    public UpdateLearnerPreferencesCommand(
+            String uiLocale,
+            String contentLocale,
+            ThemeMode themeMode,
+            String timezone,
+            boolean reducedMotion,
+            IdempotencyKey idempotencyKey) {
+        this(uiLocale, contentLocale, themeMode, timezone, reducedMotion, idempotencyKey, null);
     }
 
     public LearnerPreferences toPreferences(Instant now) {
@@ -30,6 +44,6 @@ public record UpdateLearnerPreferencesCommand(
 
     public String fingerprint() {
         return String.join("|", "preferences", uiLocale, contentLocale, themeMode.name(), timezone,
-                Boolean.toString(reducedMotion));
+                Boolean.toString(reducedMotion), String.valueOf(expectedVersion));
     }
 }

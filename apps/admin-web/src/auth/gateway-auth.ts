@@ -22,7 +22,7 @@ export interface AdminAuthSnapshot {
 }
 
 export interface AdminAuthAdapter {
-  startLogin(options: { returnTo: string; locale: string; theme: string }): string
+  startLogin(options: { returnTo: string; locale: string; theme: string }): Promise<string>
   completeLogin(input: { code?: string; state?: string; error?: string; errorDescription?: string }): Promise<AdminTokenPair>
   restoreSession(): Promise<AdminAuthSnapshot | null>
   refresh(input: { refreshToken: string }): Promise<AdminTokenPair>
@@ -62,15 +62,30 @@ function parseSnapshot(value: unknown): AdminAuthSnapshot | null {
 }
 function joinUrl(baseUrl: string, path: string): string { const base = baseUrl.replace(/\/$/, ''); return path.startsWith('/') ? `${base}${path}` : `${base}/${path}` }
 
+function validAuthorizationUrl(value: unknown): string {
+  const candidate = text(value)
+  if (!candidate) throw new Error('认证服务没有返回授权地址。')
+  try {
+    const url = new URL(candidate)
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash) throw new Error('认证服务返回了不安全的授权地址。')
+    return url.toString()
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('不安全')) throw error
+    throw new Error('认证服务返回了无效的授权地址。')
+  }
+}
+
 export function createGatewayAdminAuthAdapter(options: { baseUrl: string; client: AdminApiClient; getAccessToken?: () => string | null }): AdminAuthAdapter {
   return {
-    startLogin(input) {
+    async startLogin(input) {
       const url = new URL(joinUrl(options.baseUrl, `/auth/oidc/${OIDC_PROVIDER}/authorization/start`))
       url.searchParams.set('redirectUri', `${window.location.origin}/auth/callback`)
       url.searchParams.set('returnTo', safeAdminReturnTo(input.returnTo))
       url.searchParams.set('uiLocale', input.locale)
       url.searchParams.set('theme', input.theme)
-      return url.toString()
+      const response = await options.client.request<{ authorizationUrl?: string }>(`/auth/oidc/${OIDC_PROVIDER}/authorization/start${url.search}`, { method: 'GET', skipAuthRetry: true })
+      const source = unwrap(response)
+      return validAuthorizationUrl(record(source) ? source.authorizationUrl : undefined)
     },
     async completeLogin(input) {
       if (input.error) throw new Error(input.errorDescription || input.error)

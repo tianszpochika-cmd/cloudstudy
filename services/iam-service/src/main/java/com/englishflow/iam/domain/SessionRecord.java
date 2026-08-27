@@ -11,6 +11,7 @@ public record SessionRecord(
         TenantScope scope,
         DeviceId deviceId,
         URI providerIssuer,
+        String providerClientId,
         ProviderSessionReference providerSessionReference,
         String refreshTokenDigest,
         long rotation,
@@ -29,9 +30,13 @@ public record SessionRecord(
         }
         Objects.requireNonNull(deviceId, "deviceId");
         Objects.requireNonNull(providerIssuer, "providerIssuer");
+        Objects.requireNonNull(providerClientId, "providerClientId");
+        if (providerClientId.isBlank() || providerClientId.length() > 128) {
+            throw new IllegalArgumentException("provider client id is invalid");
+        }
         Objects.requireNonNull(providerSessionReference, "providerSessionReference");
         Objects.requireNonNull(refreshTokenDigest, "refreshTokenDigest");
-        if (refreshTokenDigest.length() != 64) {
+        if (!refreshTokenDigest.matches("[0-9a-fA-F]{64}")) {
             throw new IllegalArgumentException("refresh token digest must be SHA-256 hex");
         }
         if (rotation < 0) {
@@ -49,12 +54,17 @@ public record SessionRecord(
         if (status != SessionStatus.ACTIVE) {
             throw new IamPolicyException(IamDecisionCode.SESSION_REVOKED, "iam.session.revoked");
         }
+        Objects.requireNonNull(at, "at");
+        if (!nextDigest.matches("[0-9a-fA-F]{64}")) {
+            throw new IllegalArgumentException("next refresh token digest must be SHA-256 hex");
+        }
         return new SessionRecord(
                 sessionId,
                 principalId,
                 scope,
                 deviceId,
                 providerIssuer,
+                providerClientId,
                 providerSessionReference,
                 nextDigest,
                 rotation + 1,
@@ -77,6 +87,7 @@ public record SessionRecord(
                 scope,
                 deviceId,
                 providerIssuer,
+                providerClientId,
                 providerSessionReference,
                 refreshTokenDigest,
                 rotation,
