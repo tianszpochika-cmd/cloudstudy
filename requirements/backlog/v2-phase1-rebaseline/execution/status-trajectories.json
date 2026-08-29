@@ -110,10 +110,10 @@
     },
     {
       "taskId": "P1R-M1-006",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS"],
-      "recordedAt": "2026-08-30T05:06:43+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-30T06:35:52+08:00",
       "actor": "root-coordinator",
-      "reason": "The first independent review of ee5efabb8c97a55851266721cdd44fdb12df2946 returned REWORK with six P1 fail-closed gaps in governance compatibility, fragment inventory/payload ownership and B26 exact bindings. The coordinator resumed IN_PROGRESS with bounded repair tracks; no ACCEPTED or runtime claim was made.",
+      "reason": "The rework closed the governance compatibility, fragment/payload ownership, B26 exact-binding and generated schemaVersion gaps at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a. Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max accepted the D2 contract result; Kafka, Outbox, ACL and consumer runtime remain NOT_RUNTIME_VERIFIED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-006/manifest.json"
     }
   ]

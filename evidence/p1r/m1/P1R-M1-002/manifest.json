@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
+  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -42,33 +42,38 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "9c7c92bfe5e262b2fcffd0c8e8f59eb64db30869e809a5218a55bfad43703d62"
+      "digest": "55283fe8d80aac9520513e349030e50180aacf26fdc1d98cbce4f1d3e7e820bb"
     },
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "887112b3ea0bf4933943fb6b4f54601e96b98d2012b3c88a8a4172134fb79965"
+      "digest": "a60687c0f51da854cb0622e89b3e0a8d7733010bd91beba9195fec2700369097"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "ca38bdcd2cf786cf33d535d0c43194be98c7c02a164a103437ffeec5136ee1a8"
+      "digest": "cae21babe71dba069e4bec57b57df3cc2876a3a50824d57c6421e486a6b8b16b"
     }
   ],
   "environment": {
     "kind": "repository-contract-governance",
     "branch": "dev",
-    "acceptedContractBaseline": "0a985f00c521e8f27a54f891fc1526178ba0320c",
-    "executionCheckpoint": "77801084bcc595756e6d5471f2095e1da9414b25"
+    "executionCheckpoint": "77801084bcc595756e6d5471f2095e1da9414b25",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED"
   },
   "provenance": {
     "originalSourceCommit": "25705c4caab46449cfaa577db08bd13c8ad13fba",
     "originalFinishedAt": "2026-08-29T22:09:32+08:00",
     "originalReviewer": "m1_002_final_review",
-    "currentSourceRevalidationTask": "P1R-M1-004"
+    "originalAcceptedContractBaseline": "0a985f00c521e8f27a54f891fc1526178ba0320c",
+    "previousCurrentSourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-004",
+    "currentSourceRevalidationTask": "P1R-M1-006"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
-  "finishedAt": "2026-08-30T00:42:00+08:00",
+  "finishedAt": "2026-08-30T06:31:47+08:00",
   "actors": [
     "m1_002_auth_contract",
     "m1_002_auth_audit",
@@ -96,7 +101,10 @@
     "node --test tests/g/g1-contract-data.test.mjs",
     "git diff --check",
     "independent Terra Ultra read-only acceptance review",
-    "independent Luna Max current-source revalidation review at e4618b324e5a93926da0750a8100fc9377ac97ec"
+    "independent Luna Max current-source revalidation review at e4618b324e5a93926da0750a8100fc9377ac97ec",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:ci:check",
+    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
   ],
   "results": [
     {
@@ -122,12 +130,12 @@
     {
       "check": "merge-generate-validate-types-compatibility",
       "status": "PASS",
-      "details": "21 OpenAPI and 14 event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the M1-002 Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
+      "details": "21 OpenAPI and 14 event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; immutable contract and governance baselines report zero breaking changes."
     },
     {
       "check": "tests-and-independent-review",
       "status": "PASS",
-      "details": "P1R 72/72, B8 29/29 and G1 6/6 pass at the current source; the auth audit covers 15/15 paths; independent reviewer m1_003_final_review revalidated the original M1-002 acceptance at e4618b324e5a93926da0750a8100fc9377ac97ec."
+      "details": "P1R 186/186, B8 29/29 and G1 6/6 pass at the current source; the auth audit covers 15/15 paths; independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max revalidated the original M1-002 semantics at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a."
     },
     {
       "check": "design-consistency",
@@ -138,7 +146,7 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidation at e4618b3 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
+      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidation at 3e4ba85 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
     }
   ],
   "knownGaps": [
@@ -147,6 +155,6 @@
     "The Gateway D2 policy is accepted by P1R-M1-004; real CORS, CSRF, Origin/Referer, public-path, Redis rate-limit, durable audit and direct-connect runtime enforcement remain owned by P1R-M2-001.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-002-relevant G1 slice passes 6/6 and the independent reviewer confirmed the two failures predate this source commit."
   ],
-  "reviewer": "m1_003_final_review",
+  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

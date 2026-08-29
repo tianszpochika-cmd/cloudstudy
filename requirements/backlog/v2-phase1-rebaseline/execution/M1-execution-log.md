@@ -9,16 +9,20 @@
 - `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`；共享产物在 `21cdd3a` 完成 current-source revalidation。
 - `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`；共享产物在 `21cdd3a` 完成 current-source revalidation。
 - `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。
-- `P1R-M1-006`：`IN_PROGRESS`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`；目标是把 154 个历史事件候选统一为可生成、可校验、可兼容比较的 Kafka + AsyncAPI D2 目录，未生成终态 Evidence。
+- `P1R-M1-006`：`ACCEPTED`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`，最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。只接受 Kafka + AsyncAPI 的 D2 静态目录与失败关闭机制，不把 B26、Kafka、Outbox、ACL 或 consumer runtime 写成 PASS。
+- M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
-## M1-006 执行轨道
+## M1-006 执行与结果摘要
 
 1. 事件治理源：冻结 canonical/historical/deprecated 分类、producer/data owner、consumer group、topic、aggregate partition key、payload schema 与兼容策略；RabbitMQ/Redis Streams 只能保留历史标记。
 2. 生成与失败关闭：从同一目录生成 AsyncAPI channel、send/receive operation 与 Kafka binding，并让 merge/generate/validate/compatibility 对治理字段缺失、漂移、重复 owner 和非法 transport 失败关闭。
 3. 对抗测试与独立终验：覆盖未知事件、伪造 producer/consumer、无订阅 operation、topic/partition 漂移、UI telemetry 混入领域总线、敏感 payload 和静态结果冒充 runtime 等负例。
 
-统筹 Agent 独占共享生成物、命令入口、状态、Evidence、提交与远程推送。M1-006 只形成 D2 目录与生成契约；Outbox/dedupe/retry/DLQ/replay/Saga 的完整可靠性语义由 M1-007 冻结，真实 Kafka topic/ACL/运行投递由 M2-005 验收。
+统筹 Agent 独占共享生成物、命令入口、状态、Evidence、提交与远程推送。
+
+- 终验结果：`3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a` 的 dual-baseline compatibility、fragment/payload 完整性、B26 exact binding、generated `schemaVersion` 和 CI guard 由独立 reviewer 接受；P1R `186/186`、B26 `26/26`、merge/generate/validate 与 Git compatibility 均通过。
+- D2 边界：输出仍为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 为 `static-only`、`runtimeStatus=pending`、`defaultDecision=NO-GO`。Outbox/dedupe/retry/DLQ/replay/Saga 的完整可靠性语义仍由 `P1R-M1-007` 冻结，真实 Kafka broker/topic/ACL 创建、Outbox→broker→consumer 投递、重复/乱序/宕机/回放验证仍由 `P1R-M2-005` 验收；`P1R-M0-006` 继续 `BLOCKED`。
 
 ## M1-003 执行轨道
 

@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "21cdd3a94d0c721c96f5257d26efbb0c1b9354fb",
+  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "731a3546ebb438a6efbe370602a6dec5b4c26d70b9b54a71808a733567ed914d"
+      "digest": "c1769e2b7310b301e596c5edfe9ad2d2f824bf6fefa04555e6d13a8029f7be4f"
     },
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -57,7 +57,7 @@
     {
       "path": "docs/02-architecture/v2-microservices-architecture.md",
       "algorithm": "sha256",
-      "digest": "08ec94e017107dcec81d0e39577428cad9480a29b4f3b0f185d6ca473c6852e1"
+      "digest": "1b114da95da5e07b9bec7185ea3df1121d7fc721c0a86f4e4f2ed37bca5ccaba"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
@@ -72,33 +72,38 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "9c7c92bfe5e262b2fcffd0c8e8f59eb64db30869e809a5218a55bfad43703d62"
+      "digest": "55283fe8d80aac9520513e349030e50180aacf26fdc1d98cbce4f1d3e7e820bb"
     },
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "887112b3ea0bf4933943fb6b4f54601e96b98d2012b3c88a8a4172134fb79965"
+      "digest": "a60687c0f51da854cb0622e89b3e0a8d7733010bd91beba9195fec2700369097"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "ca38bdcd2cf786cf33d535d0c43194be98c7c02a164a103437ffeec5136ee1a8"
+      "digest": "cae21babe71dba069e4bec57b57df3cc2876a3a50824d57c6421e486a6b8b16b"
     }
   ],
   "environment": {
     "kind": "repository-contract-governance",
     "branch": "dev",
-    "acceptedContractBaseline": "d7bf9ab2472cca36d110720acc135f2115a96fe5",
-    "executionCheckpoint": "bcd04d116a2e3024971ce06f6029e4ad12bfc088"
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "executionCheckpoint": "bcd04d116a2e3024971ce06f6029e4ad12bfc088",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED"
   },
   "provenance": {
     "originalSourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
     "originalFinishedAt": "2026-08-29T23:25:30+08:00",
     "originalReviewer": "m1_003_final_review",
-    "currentSourceRevalidationTask": "P1R-M1-005"
+    "originalAcceptedContractBaseline": "d7bf9ab2472cca36d110720acc135f2115a96fe5",
+    "previousCurrentSourceCommit": "21cdd3a94d0c721c96f5257d26efbb0c1b9354fb",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-005",
+    "currentSourceRevalidationTask": "P1R-M1-006"
   },
   "startedAt": "2026-08-29T22:19:13+08:00",
-  "finishedAt": "2026-08-30T02:12:45+08:00",
+  "finishedAt": "2026-08-30T06:31:47+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -129,7 +134,10 @@
     "independent Luna Max current-source revalidation review at e4618b324e5a93926da0750a8100fc9377ac97ec",
     "node --test tests/p1r/p1r-iam-policy-contract.test.mjs tests/p1r/p1r-gateway-contract.test.mjs",
     "pnpm contracts:compatibility:git -- --ref bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d --kind all",
-    "independent Luna Max current-source revalidation review at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb"
+    "independent Luna Max current-source revalidation review at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:ci:check",
+    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
   ],
   "results": [
     {
@@ -155,12 +163,12 @@
     {
       "check": "merge-generate-validate-types-compatibility",
       "status": "PASS",
-      "details": "Twenty-one OpenAPI and fourteen event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the immutable Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
+      "details": "Twenty-one OpenAPI and fourteen event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; immutable contract and governance baselines report zero breaking changes."
     },
     {
       "check": "tests-and-independent-review",
       "status": "PASS",
-      "details": "The policy audit covers 8/8 operations and 30 policy schemas; IAM/Gateway 28/28, P1R 106/106, B8 29/29 and G1 6/6 pass. Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max revalidated the accepted M1-003 semantics at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb."
+      "details": "The policy audit covers 8/8 operations and 30 policy schemas; IAM/Gateway 28/28, P1R 186/186, B8 29/29 and G1 6/6 pass. Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max revalidated the accepted M1-003 semantics at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a."
     },
     {
       "check": "design-consistency",
@@ -171,7 +179,7 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "The original task source is isolated in d214254, 0fc0309, b61610a, 7bf9803 and 82b27f4 after checkpoint bcd04d1; current-source revalidation at 21cdd3a preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
+      "details": "The original task source is isolated in d214254, 0fc0309, b61610a, 7bf9803 and 82b27f4 after checkpoint bcd04d1; current-source revalidation at 3e4ba85 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
     }
   ],
   "knownGaps": [

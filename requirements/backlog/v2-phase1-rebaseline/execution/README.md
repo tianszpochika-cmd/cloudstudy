@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`12 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 94 PLANNED`（共 108 项）。
+- 当前台账计数：`13 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 94 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -14,7 +14,8 @@
 - `P1R-M1-003` 已由独立 Luna Max 评审接受；原最终实现源为 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，共享产物在 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb` 完成 current-source revalidation，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-003/manifest.json`；只证明 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2 契约，不冒充 M2 运行实现。
 - `P1R-M1-004` 已由独立 Luna Max 终验接受；Gateway D2 原实现源为 `e4618b324e5a93926da0750a8100fc9377ac97ec`，共享产物在 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb` 完成 current-source revalidation，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-004/manifest.json`。真实 WebFlux CORS/CSRF、public-path、Redis 限流、持久审计、网络直连隔离和跨进程证据仍属于 `P1R-M2-001`。
 - `P1R-M1-005` 已由独立 Luna Max 终验接受；最终实现源为 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-005/manifest.json`。本任务只冻结 D2 数据所有权与迁移政策，不把 B25 合成清单、旧 `core-api.*` Redis owner、migration 目录或静态扫描冒充真实独立 schema/凭据/运行证据。
-- `P1R-M1-006` 已从 `dev@463c4b238caceb1592bff6c61327c00ab9bac922` 启动：统一 canonical Kafka 事件、producer/consumer、topic/partition、AsyncAPI channel/operation/binding、基础 envelope 与兼容治理；当前状态仅为 `IN_PROGRESS`，不代表 Kafka、Outbox、ACL、consumer 或 replay 运行验证。
+- `P1R-M1-006` 已由独立 reviewer `agent:m1_005_independent_review:gpt-5.6-luna:max` 接受最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`：154 条事件的 canonical/historical 分类、7 条 canonical workflow reliability 事件、AsyncAPI 投影、双基线 compatibility、B26 静态绑定与生成 `schemaVersion` 均为 D2 契约结果。输出保持 `NOT_RUNTIME_VERIFIED`；B26 仍为 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，M1-007 与 M2-005 继续负责可靠性契约和真实 Kafka 运行验证。
+- 因本任务更新了共享契约、CI 与文档制品，`P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 canonical manifest 已统一绑定 `3e4ba856...` 做 current-source revalidation；各任务的原始实现源、完成时间、reviewer 与兼容基线仍保存在 manifest `provenance`，没有被改写成 M1-006 的实现成果。
 
 ## M0 记录索引
 
@@ -40,4 +41,4 @@
 | `P1R-M1-003` | `P1R-M1-003.md` | `ACCEPTED` |
 | `P1R-M1-004` | `P1R-M1-004.md` | `ACCEPTED` |
 | `P1R-M1-005` | `P1R-M1-005.md` | `ACCEPTED` |
-| `P1R-M1-006` | `P1R-M1-006.md` | `IN_PROGRESS` |
+| `P1R-M1-006` | `P1R-M1-006.md` | `ACCEPTED` |

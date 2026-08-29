@@ -2,25 +2,32 @@
   "taskId": "P1R-M0-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
   "artifactDigests": [
-    {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "43af5da5c329a7583b222ef6255dd2d8c549b8bb9eee7a98c6f3b75abcc8920a"},
-    {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "39273b78eab033ae2a7f7f88cea171ebd77ea1095353ed643788d43815571edc"},
+    {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"},
+    {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"},
     {"path": "scripts/dev/run-node-tests.mjs", "algorithm": "sha256", "digest": "3081559491f968e9ad6a775060338bd9e2ae30cbd638e1bc9fe35a3a22b5acbe"}
   ],
-  "environment": {"localVerification": "windows-x64", "ciMatrix": ["windows-latest", "ubuntu-latest"]},
+  "environment": {"localVerification": "windows-x64", "ciMatrix": ["windows-latest", "ubuntu-latest"], "branch": "dev", "currentSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"},
+  "provenance": {
+    "originalSourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+    "originalFinishedAt": "2026-08-29T10:13:18.541Z",
+    "originalReviewer": "root-coordinator",
+    "currentSourceRevalidationTask": "P1R-M1-006"
+  },
   "startedAt": "2026-08-29T09:20:00.000Z",
-  "finishedAt": "2026-08-29T10:13:18.541Z",
+  "finishedAt": "2026-08-30T06:31:47+08:00",
   "actors": ["implementation_audit"],
   "sourceIds": ["P1R-M0-005", "ARCH-DEP-001", "ARCH-SEC-001"],
-  "commands": ["pnpm p1r:ci:check", "pnpm typecheck", "pnpm build", "pnpm --dir apps/mobile build:h5", "pnpm --dir apps/mobile test:b10 && test:b11 && test:b12"],
+  "commands": ["pnpm p1r:ci:check", "pnpm typecheck", "pnpm build", "pnpm --dir apps/mobile build:h5", "pnpm --dir apps/mobile test:b10 && test:b11 && test:b12", "pnpm test:p1r", "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"],
   "results": [
-    {"check": "ci-policy", "status": "PASS", "details": "dev/master PR and push, least privilege, Windows/Linux, governance, contracts, frontend, Java and supply-chain jobs"},
+    {"check": "ci-policy", "status": "PASS", "details": "dev/master PR and push, least privilege, Windows/Linux, governance, contracts, frontend, Java and supply-chain jobs; the M1-006 dual immutable event baselines are now enforced at current source."},
     {"check": "cross-platform-test-discovery", "status": "PASS", "details": "Root and mobile test scripts no longer depend on shell glob expansion"},
-    {"check": "frontend-regression", "status": "PASS", "details": "3 Web builds, mobile H5 build and B10/B11/B12 9/9, 7/7, 4/4"}
+    {"check": "frontend-regression", "status": "PASS", "details": "Original 3 Web builds, mobile H5 build and B10/B11/B12 9/9, 7/7, 4/4 remain the task acceptance evidence; current-source P1R 186/186 and typecheck 7/7 pass."},
+    {"check": "current-source-independent-review", "status": "PASS", "details": "Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max revalidated the M0-005 CI semantics and changed CI artifacts at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a."}
   ],
   "rollbackEvidence": [{"status": "PASS", "details": "CI and runner changes are repository-only and revertible"}],
   "knownGaps": ["The supply-chain job is intentionally red while P1R-M0-006 remains BLOCKED.", "Mobile App and mp-weixin builds require their later platform gates."],
-  "reviewer": "root-coordinator",
+  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }
