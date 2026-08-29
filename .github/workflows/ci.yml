@@ -77,7 +77,7 @@ jobs:
       - run: pnpm contracts:merge:check
       - run: pnpm contracts:generate:check
       - run: pnpm contracts:validate
-      - run: pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --kind all --json
+      - run: pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json
       - run: pnpm db:validate
       - run: pnpm redis:validate
       - run: pnpm config:check

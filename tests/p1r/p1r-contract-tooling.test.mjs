@@ -12,6 +12,7 @@ import {
   inspectRequiredCiContractGate,
   REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND,
   REQUIRED_CI_CONTRACT_BASELINE_REF,
+  REQUIRED_EVENT_GOVERNANCE_BASELINE_REF,
   runGitBaselineCompatibility,
 } from '../../scripts/contracts/compatibility-git-baseline.mjs';
 import { validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
@@ -19,9 +20,12 @@ import { validateEventCatalog } from '../../scripts/contracts/validate-contracts
 const root = path.resolve(import.meta.dirname, '..', '..');
 const openApiPath = path.join(root, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const eventCatalogPath = path.join(root, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
+const b26RuntimePath = path.join(root, 'config', 'b26-event-runtime.json');
 const openApi = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
 const eventCatalog = JSON.parse(fs.readFileSync(eventCatalogPath, 'utf8'));
+const b26Runtime = JSON.parse(fs.readFileSync(b26RuntimePath, 'utf8'));
 const ciWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
+const EXPECTED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
 
 test('no-write merge detects an in-memory canonical artifact drift', () => {
   const expectedOpenApi = structuredClone(openApi);
@@ -163,7 +167,7 @@ test('events compatibility treats independently parsed equivalent type arrays as
   assert.deepEqual(compareContracts('events', eventCatalog, independentlyParsedCatalog), []);
 });
 
-test('events compatibility freezes established governance but allows its first additive introduction', () => {
+test('events compatibility freezes established governance and requires a second immutable baseline for its first introduction', () => {
   const current = structuredClone(eventCatalog);
   const topicDrift = structuredClone(eventCatalog);
   const governed = topicDrift.events.find((event) => event.status === 'CANONICAL_D2');
@@ -242,7 +246,14 @@ test('events compatibility freezes established governance but allows its first a
     delete event.status;
     delete event['x-p1r-governance'];
   }
-  assert.deepEqual(compareContracts('events', withoutGovernance, eventCatalog), []);
+  assert.ok(compareContracts('events', withoutGovernance, eventCatalog)
+    .some((change) => change.reason === 'first governance introduction requires an explicit immutable governance baseline'));
+  assert.deepEqual(compareContracts(
+    'events',
+    withoutGovernance,
+    eventCatalog,
+    { governanceBaseline: eventCatalog },
+  ), []);
 });
 
 test('events compatibility rejects changed established payload constraints', () => {
@@ -314,16 +325,25 @@ test('git baseline compatibility requires an explicit historical ref', () => {
 });
 
 test('CI compatibility baseline is immutable within the accepted M1-006 review window', () => {
+  assert.equal(REQUIRED_EVENT_GOVERNANCE_BASELINE_REF, EXPECTED_EVENT_GOVERNANCE_BASELINE_REF);
+  assert.equal(
+    REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND,
+    `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`,
+  );
   assert.equal(hasRequiredCiContractBaseline(ciWorkflow), true);
   assert.equal(inspectRequiredCiContractGate(ciWorkflow).valid, true);
   const movedBaseline = ciWorkflow.replace(REQUIRED_CI_CONTRACT_BASELINE_REF, 'f'.repeat(40));
   assert.equal(hasRequiredCiContractBaseline(movedBaseline), false);
+  const movedGovernanceBaseline = ciWorkflow.replace(REQUIRED_EVENT_GOVERNANCE_BASELINE_REF, 'e'.repeat(40));
+  assert.equal(hasRequiredCiContractBaseline(movedGovernanceBaseline), false);
 
   const jobMarker = '  contracts-and-data:\n';
   for (const override of [
     `    env:\n      P1R_CONTRACT_BASELINE_REF: ${'f'.repeat(40)}\n`,
     `    env:\n      "P1R_CONTRACT_BASELINE_REF": ${'f'.repeat(40)}\n`,
     `    steps:\n      - run: echo "P1R_CONTRACT_BASELINE_REF=${'f'.repeat(40)}" >> $GITHUB_ENV\n`,
+    `    env:\n      P1R_EVENT_GOVERNANCE_BASELINE_REF: ${'e'.repeat(40)}\n`,
+    `    steps:\n      - run: echo "P1R_EVENT_GOVERNANCE_BASELINE_REF=${'e'.repeat(40)}" >> $GITHUB_ENV\n`,
   ]) {
     const jobOverride = ciWorkflow.replace(jobMarker, `${jobMarker}${override}`);
     assert.equal(inspectRequiredCiContractGate(jobOverride).valid, false);
@@ -364,6 +384,95 @@ test('CI compatibility baseline is immutable within the accepted M1-006 review w
     '          fetch-depth: 0\n          "fetch-depth": 1',
   );
   assert.equal(inspectRequiredCiContractGate(shallowCheckout).valid, false);
+});
+
+test('Git compatibility adds the fixed governance freeze when the historical baseline lacks it', () => {
+  const accepted = runGitBaselineCompatibility({
+    ref: REQUIRED_CI_CONTRACT_BASELINE_REF,
+    governanceRef: REQUIRED_EVENT_GOVERNANCE_BASELINE_REF,
+    kind: 'events',
+  });
+  assert.equal(accepted.compatible, true);
+  assert.deepEqual(accepted.governanceBaseline, {
+    ref: EXPECTED_EVENT_GOVERNANCE_BASELINE_REF,
+    commit: EXPECTED_EVENT_GOVERNANCE_BASELINE_REF,
+    sources: {
+      catalog: `git:${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF}:packages/contracts/events/v1/catalog.json`,
+      b26StaticPolicy: `git:${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF}:config/b26-event-runtime.json`,
+    },
+    scope: 'static-governance-only',
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+  });
+
+  const withoutCurrentGovernance = structuredClone(eventCatalog);
+  delete withoutCurrentGovernance['x-p1r-event-governance'];
+  for (const event of withoutCurrentGovernance.events) {
+    delete event.status;
+    delete event['x-p1r-governance'];
+  }
+  const readWithoutGovernance = (filePath) => {
+    if (path.resolve(filePath) === eventCatalogPath) return JSON.stringify(withoutCurrentGovernance);
+    if (path.resolve(filePath) === b26RuntimePath) return JSON.stringify(b26Runtime);
+    return fs.readFileSync(filePath, 'utf8');
+  };
+  const deletedGovernance = runGitBaselineCompatibility({
+    ref: REQUIRED_CI_CONTRACT_BASELINE_REF,
+    kind: 'events',
+    readFile: readWithoutGovernance,
+  });
+  assert.equal(deletedGovernance.compatible, false);
+  assert.equal(deletedGovernance.governanceBaseline.ref, EXPECTED_EVENT_GOVERNANCE_BASELINE_REF);
+  assert.ok(deletedGovernance.results[0].breakingChanges
+    .some((change) => change.location === 'x-p1r-event-governance'));
+  assert.ok(deletedGovernance.results[0].breakingChanges
+    .some((change) => change.location === `${eventCatalog.events[0].eventName}.status`));
+
+  const synchronizedCatalogDrift = structuredClone(eventCatalog);
+  const canonicalEvents = synchronizedCatalogDrift.events.filter((event) => event.status === 'CANONICAL_D2');
+  assert.equal(canonicalEvents.length, 7);
+  for (const canonical of canonicalEvents) {
+    canonical['x-p1r-governance'].producer.service = 'audit-service';
+    canonical['x-p1r-governance'].producer.dataOwner = 'audit-service';
+  }
+  const synchronizedB26Drift = structuredClone(b26Runtime);
+  const workflowTopic = synchronizedB26Drift.topics.find((topic) => topic.name === 'platform.workflow.v1');
+  workflowTopic.ownerService = 'audit-service';
+  workflowTopic.producerPrincipal = 'svc.audit-service';
+  workflowTopic.acl.find((entry) => entry.operation === 'WRITE').principal = 'svc.audit-service';
+  workflowTopic.consumerGroups.reverse();
+  workflowTopic.retentionMs += 1;
+  synchronizedB26Drift.eventRouting[0].partitionKey = 'eventId';
+  const readSynchronizedDrift = (filePath) => {
+    if (path.resolve(filePath) === eventCatalogPath) return JSON.stringify(synchronizedCatalogDrift);
+    if (path.resolve(filePath) === b26RuntimePath) return JSON.stringify(synchronizedB26Drift);
+    return fs.readFileSync(filePath, 'utf8');
+  };
+  const synchronizedDrift = runGitBaselineCompatibility({
+    ref: REQUIRED_CI_CONTRACT_BASELINE_REF,
+    kind: 'events',
+    readFile: readSynchronizedDrift,
+  });
+  assert.equal(synchronizedDrift.compatible, false);
+  const locations = synchronizedDrift.results[0].breakingChanges.map((change) => change.location);
+  for (const canonical of canonicalEvents) {
+    assert.ok(locations.includes(`${canonical.eventName}.x-p1r-governance.producer.service`));
+    assert.ok(locations.includes(`${canonical.eventName}.x-p1r-governance.producer.dataOwner`));
+  }
+  assert.ok(locations.includes('b26.topics.platform.workflow.v1.ownerService'));
+  assert.ok(locations.includes('b26.topics.platform.workflow.v1.consumerGroups'));
+  assert.ok(locations.includes('b26.topics.platform.workflow.v1.acl'));
+  assert.ok(locations.includes('b26.topics'));
+  assert.ok(locations.includes('b26.topics.platform.workflow.v1'));
+  assert.ok(locations.includes('b26.eventRouting'));
+
+  assert.throws(
+    () => runGitBaselineCompatibility({
+      ref: REQUIRED_CI_CONTRACT_BASELINE_REF,
+      governanceRef: REQUIRED_CI_CONTRACT_BASELINE_REF,
+      kind: 'events',
+    }),
+    /must remain immutable/,
+  );
 });
 
 test('git baseline compatibility reads immutable baseline blobs and rejects a true self-comparison', () => {

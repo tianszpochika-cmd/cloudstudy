@@ -169,6 +169,150 @@ function duplicateEventNames(events) {
   return [...duplicates].sort();
 }
 
+export function hasEventGovernance(catalog) {
+  if (!isRecord(catalog)) return false;
+  return catalog['x-p1r-event-governance'] !== undefined
+    || (Array.isArray(catalog.events)
+      && catalog.events.some((event) => isRecord(event)
+        && (event.status !== undefined || event['x-p1r-governance'] !== undefined)));
+}
+
+function compareImmutableEventGovernance(governanceBaseline, current, changes) {
+  if (!hasEventGovernance(governanceBaseline)) {
+    changes.push(describeChange(
+      'events',
+      'x-p1r-event-governance',
+      'immutable governance baseline is missing platform or event governance',
+    ));
+    return;
+  }
+
+  if (stableGovernanceValue(governanceBaseline['x-p1r-event-governance'])
+    !== stableGovernanceValue(current['x-p1r-event-governance'])) {
+    changes.push(describeChange(
+      'events',
+      'x-p1r-event-governance',
+      'immutable governance baseline platform policy changed',
+    ));
+  }
+
+  const baselineEvents = new Map((governanceBaseline.events ?? []).map((event) => [event.eventName, event]));
+  const currentEvents = new Map((current.events ?? []).map((event) => [event.eventName, event]));
+  for (const [eventName, baselineEvent] of baselineEvents) {
+    const currentEvent = currentEvents.get(eventName);
+    if (!currentEvent) {
+      changes.push(describeChange('events', eventName, 'immutable governance baseline event was removed'));
+      continue;
+    }
+    if (stableGovernanceValue(baselineEvent.status) !== stableGovernanceValue(currentEvent.status)) {
+      changes.push(describeChange('events', `${eventName}.status`, 'immutable governance baseline status changed'));
+    }
+
+    const baselineGovernance = baselineEvent['x-p1r-governance'];
+    const currentGovernance = currentEvent['x-p1r-governance'];
+    if (stableGovernanceValue(baselineGovernance) === stableGovernanceValue(currentGovernance)) continue;
+
+    const baselineProducer = isRecord(baselineGovernance?.producer) ? baselineGovernance.producer : {};
+    const currentProducer = isRecord(currentGovernance?.producer) ? currentGovernance.producer : {};
+    for (const field of ['service', 'dataOwner']) {
+      if (baselineProducer[field] !== currentProducer[field]) {
+        changes.push(describeChange(
+          'events',
+          `${eventName}.x-p1r-governance.producer.${field}`,
+          `immutable governance baseline producer ${field} changed`,
+        ));
+      }
+    }
+    const baselineTransport = isRecord(baselineGovernance?.transport) ? baselineGovernance.transport : {};
+    const currentTransport = isRecord(currentGovernance?.transport) ? currentGovernance.transport : {};
+    for (const field of ['topic', 'partitionKey']) {
+      if (baselineTransport[field] !== currentTransport[field]) {
+        changes.push(describeChange(
+          'events',
+          `${eventName}.x-p1r-governance.transport.${field}`,
+          `immutable governance baseline transport ${field} changed`,
+        ));
+      }
+    }
+    if (stableGovernanceValue(baselineGovernance?.consumers) !== stableGovernanceValue(currentGovernance?.consumers)) {
+      changes.push(describeChange(
+        'events',
+        `${eventName}.x-p1r-governance.consumers`,
+        'immutable governance baseline consumer groups changed',
+      ));
+    }
+    changes.push(describeChange(
+      'events',
+      `${eventName}.x-p1r-governance`,
+      'immutable governance baseline producer, owner, consumer, transport, schema or correlation governance changed',
+    ));
+  }
+
+  if (stableGovernanceValue(governanceBaseline.asyncapi) !== stableGovernanceValue(current.asyncapi)) {
+    changes.push(describeChange('events', 'asyncapi', 'immutable governance baseline canonical AsyncAPI projection changed'));
+  }
+}
+
+export function compareB26WorkflowGovernance(governanceBaseline, current) {
+  const changes = [];
+  if (stableGovernanceValue(governanceBaseline?.topics) !== stableGovernanceValue(current?.topics)) {
+    changes.push(describeChange(
+      'events',
+      'b26.topics',
+      'immutable B26 topic, owner, producer principal, consumer group or ACL policy changed',
+    ));
+  }
+  const topicLocation = 'b26.topics.platform.workflow.v1';
+  const baselineTopics = Array.isArray(governanceBaseline?.topics)
+    ? governanceBaseline.topics.filter((topic) => topic?.name === 'platform.workflow.v1')
+    : [];
+  const currentTopics = Array.isArray(current?.topics)
+    ? current.topics.filter((topic) => topic?.name === 'platform.workflow.v1')
+    : [];
+  if (baselineTopics.length !== 1 || !isRecord(baselineTopics[0])) {
+    changes.push(describeChange('events', topicLocation, 'immutable governance baseline is missing the workflow topic'));
+    return changes;
+  }
+  if (currentTopics.length !== 1 || !isRecord(currentTopics[0])) {
+    changes.push(describeChange('events', topicLocation, 'immutable B26 workflow topic was removed, duplicated or is not an object'));
+  } else {
+    const baselineTopic = baselineTopics[0];
+    const currentTopic = currentTopics[0];
+    for (const field of ['ownerService', 'producerPrincipal', 'partitionKey', 'consumerGroups', 'acl']) {
+      if (stableGovernanceValue(baselineTopic[field]) !== stableGovernanceValue(currentTopic[field])) {
+        changes.push(describeChange(
+          'events',
+          `${topicLocation}.${field}`,
+          `immutable B26 workflow topic ${field} changed`,
+        ));
+      }
+    }
+    if (stableGovernanceValue(baselineTopic) !== stableGovernanceValue(currentTopic)) {
+      changes.push(describeChange(
+        'events',
+        topicLocation,
+        'immutable B26 workflow topic static policy changed',
+      ));
+    }
+  }
+
+  const baselineRouting = Array.isArray(governanceBaseline?.eventRouting)
+    ? governanceBaseline.eventRouting
+    : undefined;
+  const currentRouting = Array.isArray(current?.eventRouting) ? current.eventRouting : undefined;
+  if (!Array.isArray(baselineRouting)) {
+    changes.push(describeChange('events', 'b26.eventRouting', 'immutable governance baseline is missing B26 event routing'));
+  } else if (!Array.isArray(currentRouting)
+    || stableGovernanceValue(baselineRouting) !== stableGovernanceValue(currentRouting)) {
+    changes.push(describeChange(
+      'events',
+      'b26.eventRouting',
+      'immutable B26 event routing topic, partition key or consumer groups changed',
+    ));
+  }
+  return changes;
+}
+
 function compareOpenApi(previous, current) {
   const changes = [];
   const previousSecuritySchemes = previous.components?.securitySchemes ?? {};
@@ -233,10 +377,21 @@ function compareOpenApi(previous, current) {
   return changes;
 }
 
-function compareEvents(previous, current) {
+function compareEvents(previous, current, { governanceBaseline } = {}) {
   const changes = [];
   for (const error of validateEventPayloadSchemas(current.payloadSchemas)) {
     changes.push(describeChange('events', 'payloadSchemas', error));
+  }
+  const previousHasGovernance = hasEventGovernance(previous);
+  const currentHasGovernance = hasEventGovernance(current);
+  if (!previousHasGovernance && governanceBaseline !== undefined) {
+    compareImmutableEventGovernance(governanceBaseline, current, changes);
+  } else if (!previousHasGovernance && currentHasGovernance) {
+    changes.push(describeChange(
+      'events',
+      'x-p1r-event-governance',
+      'first governance introduction requires an explicit immutable governance baseline',
+    ));
   }
   for (const field of [
     'catalogVersion',
@@ -335,9 +490,9 @@ function compareSchemaRegistry(previous, current) {
   return changes;
 }
 
-export function compareContracts(kind, previous, current) {
+export function compareContracts(kind, previous, current, { governanceBaseline } = {}) {
   if (kind === 'openapi') return compareOpenApi(previous, current);
-  if (kind === 'events') return compareEvents(previous, current);
+  if (kind === 'events') return compareEvents(previous, current, { governanceBaseline });
   if (kind === 'schema') return compareSchemaRegistry(previous, current);
   throw new Error(`Unsupported contract kind: ${kind}`);
 }

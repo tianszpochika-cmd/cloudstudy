@@ -5,11 +5,13 @@ import {
   inspectRequiredCiContractGate,
   REQUIRED_CI_CONTRACT_COMMANDS,
   REQUIRED_CI_CONTRACT_BASELINE_REF,
+  REQUIRED_EVENT_GOVERNANCE_BASELINE_REF,
 } from '../contracts/compatibility-git-baseline.mjs';
 
 const root = process.cwd();
 const errors = [];
 const assertions = [];
+const EXPECTED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
 
 function assert(name, condition, failureDetail) {
   const passed = Boolean(condition);
@@ -39,6 +41,12 @@ assert(
   'CI freezes the accepted contract baseline',
   hasRequiredCiContractBaseline(workflow),
   `contract baseline must remain ${REQUIRED_CI_CONTRACT_BASELINE_REF} until a separately accepted task advances it`,
+);
+assert(
+  'CI freezes the immutable event governance baseline',
+  REQUIRED_EVENT_GOVERNANCE_BASELINE_REF === EXPECTED_EVENT_GOVERNANCE_BASELINE_REF
+    && hasRequiredCiContractBaseline(workflow),
+  `event governance baseline must remain literal ${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF} until separately accepted governance supersedes it`,
 );
 assert('CI has contracts-and-data job', contractGate.hasContractsAndDataJob, 'contracts-and-data job is required');
 assert('CI fetches contract baseline history', contractGate.hasFullHistoryCheckout, 'contracts-and-data checkout must fetch full history for its Git baseline');
