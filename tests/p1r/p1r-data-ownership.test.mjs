@@ -199,3 +199,28 @@ test('migration SQL scan ignores policy keywords inside comments and string lite
   });
   assert.deepEqual(errors, []);
 });
+
+test('migration SQL scan treats MySQL executable comments as executable policy input', () => {
+  const errors = validateMigrationSqlText({
+    service: 'learning-service',
+    filename: 'V99__unsafe_version_comments.sql',
+    sql: `
+      /*!50000 USE learner_service */;
+      /*!50000 GRANT SELECT ON learner_service.* TO 'learning' */;
+      /*!50000 INSERT INTO assessment_service.attempt_projection (attempt_id) VALUES ('synthetic-attempt') */;
+    `,
+  });
+  assert(errors.some((error) => /USE is forbidden/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /GRANT\/REVOKE is forbidden/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /cross-service schema reference is forbidden: learner_service/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+});
+
+test('migration SQL scan rejects ANSI_QUOTES cross-service schema identifiers', () => {
+  const errors = validateMigrationSqlText({
+    service: 'learning-service',
+    filename: 'V99__unsafe_ansi_quotes.sql',
+    sql: 'INSERT INTO "assessment_service".attempt_projection (attempt_id) VALUES (\'synthetic-attempt\');',
+  });
+  assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+});

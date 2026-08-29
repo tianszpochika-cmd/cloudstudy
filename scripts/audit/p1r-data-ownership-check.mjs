@@ -118,7 +118,7 @@ function normalizeSqlForPolicyScan(sql) {
   const source = String(sql ?? '');
   let normalized = '';
   let mode = 'NORMAL';
-  let quote = '';
+  let inExecutableComment = false;
 
   const blank = (character) => (character === '\n' || character === '\r' ? character : ' ');
   for (let index = 0; index < source.length; index += 1) {
@@ -139,22 +139,28 @@ function normalizeSqlForPolicyScan(sql) {
       }
       continue;
     }
-    if (mode === 'STRING') {
+    if (mode === 'SINGLE_QUOTED_STRING') {
       normalized += blank(character);
       if (character === '\\' && next !== undefined) {
         normalized += blank(next);
         index += 1;
         continue;
       }
-      if (character === quote && next === quote) {
+      if (character === "'" && next === "'") {
         normalized += ' ';
         index += 1;
         continue;
       }
-      if (character === quote) mode = 'NORMAL';
+      if (character === "'") mode = 'NORMAL';
       continue;
     }
 
+    if (inExecutableComment && character === '*' && next === '/') {
+      normalized += '  ';
+      index += 1;
+      inExecutableComment = false;
+      continue;
+    }
     if (character === '-' && next === '-') {
       normalized += '  ';
       index += 1;
@@ -166,16 +172,60 @@ function normalizeSqlForPolicyScan(sql) {
       mode = 'LINE_COMMENT';
       continue;
     }
+    if (character === '/' && next === '*' && source[index + 2] === '!') {
+      let cursor = index + 3;
+      while (/[0-9]/u.test(source[cursor] ?? '')) cursor += 1;
+      normalized += ' '.repeat(cursor - index);
+      index = cursor - 1;
+      inExecutableComment = true;
+      continue;
+    }
     if (character === '/' && next === '*') {
       normalized += '  ';
       index += 1;
       mode = 'BLOCK_COMMENT';
       continue;
     }
-    if (character === "'" || character === '"') {
+    if (character === "'") {
       normalized += ' ';
-      mode = 'STRING';
-      quote = character;
+      mode = 'SINGLE_QUOTED_STRING';
+      continue;
+    }
+    if (character === '"') {
+      let cursor = index + 1;
+      let value = '';
+      let closed = false;
+      while (cursor < source.length) {
+        const quotedCharacter = source[cursor];
+        const quotedNext = source[cursor + 1];
+        if (quotedCharacter === '\\' && quotedNext !== undefined) {
+          value += quotedNext;
+          cursor += 2;
+          continue;
+        }
+        if (quotedCharacter === '"' && quotedNext === '"') {
+          value += '"';
+          cursor += 2;
+          continue;
+        }
+        if (quotedCharacter === '"') {
+          cursor += 1;
+          closed = true;
+          break;
+        }
+        value += quotedCharacter;
+        cursor += 1;
+      }
+      const previousWord = normalized.match(/([a-z]+)\s*$/iu)?.[1]?.toUpperCase();
+      const nextNonWhitespace = source.slice(cursor).match(/^\s*(.)/su)?.[1];
+      const isPolicyRelevantIdentifier = closed
+        && /^[a-z_][a-z0-9_]*$/iu.test(value)
+        && (nextNonWhitespace === '.' || previousWord === 'USE');
+      const rawToken = source.slice(index, cursor);
+      normalized += isPolicyRelevantIdentifier
+        ? value
+        : [...rawToken].map(blank).join('');
+      index = cursor - 1;
       continue;
     }
     normalized += character;
