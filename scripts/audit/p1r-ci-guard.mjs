@@ -1,5 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  hasRequiredCiContractBaseline,
+  inspectRequiredCiContractGate,
+  REQUIRED_CI_CONTRACT_COMMANDS,
+  REQUIRED_CI_CONTRACT_BASELINE_REF,
+} from '../contracts/compatibility-git-baseline.mjs';
 
 const root = process.cwd();
 const errors = [];
@@ -15,6 +21,8 @@ const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const mobilePackageJson = JSON.parse(fs.readFileSync(path.join(root, 'apps', 'mobile', 'package.json'), 'utf8'));
 
+const contractGate = inspectRequiredCiContractGate(workflow);
+
 assert('CI handles pull requests', /^\s*pull_request:\s*$/m.test(workflow), 'missing pull_request trigger');
 assert('CI handles dev branch', /branches:\s*\[[^\]]*\bdev\b[^\]]*\]/m.test(workflow), 'push.dev is not configured');
 assert('CI handles master branch', /branches:\s*\[[^\]]*\bmaster\b[^\]]*\]/m.test(workflow), 'push.master is not configured');
@@ -27,6 +35,31 @@ assert('CI runs Java tests', /mvn[^\r\n]*\stest\b/.test(workflow), 'Maven test g
 assert('CI runs supply-chain gate', /p1r:supply-chain:check/.test(workflow), 'supply-chain gate is required');
 assert('CI runs P1R evidence gate', /p1r:evidence:check/.test(workflow), 'P1R evidence gate is required');
 assert('CI validates P1R fixtures', /p1r:fixtures:validate/.test(workflow) && /p1r:fixtures:audit/.test(workflow), 'P1R fixture validation and repository audit are required');
+assert(
+  'CI freezes the accepted contract baseline',
+  hasRequiredCiContractBaseline(workflow),
+  `contract baseline must remain ${REQUIRED_CI_CONTRACT_BASELINE_REF} until a separately accepted task advances it`,
+);
+assert('CI has contracts-and-data job', contractGate.hasContractsAndDataJob, 'contracts-and-data job is required');
+assert('CI fetches contract baseline history', contractGate.hasFullHistoryCheckout, 'contracts-and-data checkout must fetch full history for its Git baseline');
+assert('CI contract job shape is frozen', contractGate.hasExactJobShape, 'contracts-and-data direct keys must remain the exact accepted name, runner, timeout, dependency, and steps shape');
+for (const command of REQUIRED_CI_CONTRACT_COMMANDS) {
+  assert(
+    `CI runs exact contract gate: ${command}`,
+    contractGate.commands[command],
+    `contracts-and-data must run exactly once without comments, continuations, conditions, or continue-on-error: ${command}`,
+  );
+}
+assert('CI has no parameterless compatibility command', !/^\s*- run:\s*pnpm contracts:compatibility\s*$/m.test(workflow), 'parameterless compatibility always fails closed');
+
+for (const [name, command] of Object.entries({
+  'contracts:merge:check': 'node scripts/contracts/merge-b1-fragments.mjs',
+  'contracts:generate:check': 'node scripts/contracts/generate-contracts.mjs --check',
+  'contracts:validate': 'node scripts/contracts/validate-contracts.mjs',
+  'contracts:compatibility:git': 'node scripts/contracts/compatibility-git-baseline.mjs',
+})) {
+  assert(`package script ${name}`, packageJson.scripts?.[name] === command, `script must remain exactly: ${command}`);
+}
 
 for (const [name, command] of Object.entries(packageJson.scripts ?? {})) {
   if (!name.startsWith('test:')) continue;

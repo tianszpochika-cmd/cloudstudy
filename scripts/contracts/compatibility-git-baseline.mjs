@@ -14,6 +14,102 @@ const contractPaths = {
   schema: 'packages/contracts/schemas/v1/registry.json',
 };
 
+export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
+export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
+  `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --kind all --json`;
+export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
+  'pnpm contracts:merge:check',
+  'pnpm contracts:generate:check',
+  'pnpm contracts:validate',
+  REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND,
+]);
+
+function workflowLines(workflowText) {
+  return String(workflowText).replace(/\r\n/g, '\n').split('\n');
+}
+
+function workflowJob(workflowText, name) {
+  const lines = workflowLines(workflowText);
+  const jobsStart = lines.findIndex((line) => line === 'jobs:');
+  if (jobsStart < 0) return [];
+  const start = lines.findIndex((line, index) => index > jobsStart && line === `  ${name}:`);
+  if (start < 0) return [];
+  const endOffset = lines.slice(start + 1).findIndex((line) => /^  [a-z0-9-]+:\s*$/.test(line));
+  const end = endOffset < 0 ? lines.length : start + 1 + endOffset;
+  return lines.slice(start, end);
+}
+
+function workflowSteps(jobLines) {
+  const steps = [];
+  for (let index = 0; index < jobLines.length; index += 1) {
+    const match = jobLines[index].match(/^(\s*)-\s+(run|uses):\s*(.*?)\s*$/);
+    if (!match) continue;
+    const indent = match[1].length;
+    let end = index + 1;
+    while (end < jobLines.length) {
+      const line = jobLines[end];
+      if (line.trim().length > 0) {
+        const nextIndent = line.match(/^\s*/)[0].length;
+        if (nextIndent <= indent) break;
+      }
+      end += 1;
+    }
+    steps.push({ kind: match[2], value: match[3], lines: jobLines.slice(index, end) });
+    index = end - 1;
+  }
+  return steps;
+}
+
+export function hasRequiredCiContractBaseline(workflowText) {
+  const source = String(workflowText);
+  return !source.includes('P1R_CONTRACT_BASELINE_REF')
+    && source.split(REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND).length === 2;
+}
+
+export function inspectRequiredCiContractGate(workflowText) {
+  const jobLines = workflowJob(workflowText, 'contracts-and-data');
+  const steps = workflowSteps(jobLines);
+  const expectedJobDirectLines = [
+    '    name: Contracts and data boundaries',
+    '    runs-on: ubuntu-latest',
+    '    timeout-minutes: 20',
+    '    needs: governance',
+    '    steps:',
+  ];
+  const jobDirectLines = jobLines.filter((line) => /^ {4}\S/.test(line) && !/^ {4}#/.test(line));
+  const hasExactJobShape = JSON.stringify(jobDirectLines) === JSON.stringify(expectedJobDirectLines);
+  const checkoutSteps = steps.filter((step) => step.kind === 'uses' && step.value === 'actions/checkout@v4');
+  const expectedCheckoutLines = [
+    '      - uses: actions/checkout@v4',
+    '        with:',
+    '          fetch-depth: 0',
+  ];
+  const hasFullHistoryCheckout = checkoutSteps.length === 1
+    && JSON.stringify(checkoutSteps[0].lines.filter((line) => line.trim().length > 0 && !/^\s*#/.test(line)))
+      === JSON.stringify(expectedCheckoutLines);
+
+  const commands = Object.fromEntries(REQUIRED_CI_CONTRACT_COMMANDS.map((command) => {
+    const matches = steps.filter((step) => step.kind === 'run' && step.value === command);
+    const exactUnconditional = matches.length === 1
+      && matches[0].lines.filter((line) => line.trim().length > 0 && !/^\s*#/.test(line)).length === 1;
+    return [command, exactUnconditional];
+  }));
+
+  return {
+    hasRequiredBaseline: hasRequiredCiContractBaseline(workflowText),
+    hasContractsAndDataJob: jobLines.length > 0,
+    hasFullHistoryCheckout,
+    hasExactJobShape,
+    hasUnsafeJobControl: !hasExactJobShape,
+    commands,
+    valid: jobLines.length > 0
+      && hasRequiredCiContractBaseline(workflowText)
+      && hasFullHistoryCheckout
+      && hasExactJobShape
+      && Object.values(commands).every(Boolean),
+  };
+}
+
 function parseArgs(argv) {
   const args = { kind: 'all', json: false };
   for (let index = 0; index < argv.length; index += 1) {

@@ -7,13 +7,21 @@ import test from 'node:test';
 import { findCanonicalMergeDrift, mergeEvents, selectEventFragmentFiles } from '../../scripts/contracts/merge-b1-fragments.mjs';
 import { buildGeneratedOutputs, findGeneratedOutputDrift } from '../../scripts/contracts/generate-contracts.mjs';
 import { compareContracts, runCompatibilityDiff } from '../../scripts/contracts/compatibility-diff.mjs';
-import { runGitBaselineCompatibility } from '../../scripts/contracts/compatibility-git-baseline.mjs';
+import {
+  hasRequiredCiContractBaseline,
+  inspectRequiredCiContractGate,
+  REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND,
+  REQUIRED_CI_CONTRACT_BASELINE_REF,
+  runGitBaselineCompatibility,
+} from '../../scripts/contracts/compatibility-git-baseline.mjs';
+import { validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
 
 const root = path.resolve(import.meta.dirname, '..', '..');
 const openApiPath = path.join(root, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const eventCatalogPath = path.join(root, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
 const openApi = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
 const eventCatalog = JSON.parse(fs.readFileSync(eventCatalogPath, 'utf8'));
+const ciWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
 
 test('no-write merge detects an in-memory canonical artifact drift', () => {
   const expectedOpenApi = structuredClone(openApi);
@@ -25,6 +33,21 @@ test('no-write merge detects an in-memory canonical artifact drift', () => {
     actualEventCatalog: eventCatalog,
   });
   assert.deepEqual(drift, ['packages/contracts/openapi/v1/openapi.json']);
+});
+
+test('no-write merge detects historical fragment semantic drift behind an unchanged catalog', () => {
+  const fragmentPath = path.join(root, 'packages', 'contracts', 'events', 'v1', 'fragments', 'b10-learning-assessment.events.json');
+  const fragment = JSON.parse(fs.readFileSync(fragmentPath, 'utf8'));
+  fragment.events.find((event) => event.eventName === 'assessment.attempt.submitted.v1').description = 'manual fragment drift';
+  const expectedEventCatalog = structuredClone(eventCatalog);
+  mergeEvents(expectedEventCatalog, fragment, 'packages/contracts/events/v1/fragments/b10-learning-assessment.events.json');
+  const drift = findCanonicalMergeDrift({
+    expectedOpenApi: openApi,
+    actualOpenApi: openApi,
+    expectedEventCatalog,
+    actualEventCatalog: eventCatalog,
+  });
+  assert.deepEqual(drift, ['packages/contracts/events/v1/catalog.json']);
 });
 
 test('B26 semantic fragments can evolve without taking ownership of status or governance', () => {
@@ -223,13 +246,57 @@ test('events compatibility freezes established governance but allows its first a
 });
 
 test('events compatibility rejects changed established payload constraints', () => {
-  const changed = structuredClone(eventCatalog);
-  const event = changed.events.find((candidate) => candidate.status === 'CANONICAL_D2');
-  const schema = changed.payloadSchemas[event.payloadSchema.$ref.split('/').at(-1)];
-  const field = Object.keys(schema.properties).find((name) => schema.properties[name].pattern);
-  schema.properties[field].pattern = '^.*$';
-  assert.ok(compareContracts('events', eventCatalog, changed)
-    .some((change) => change.location.endsWith(`.properties.${field}.pattern`)));
+  const cases = [
+    (schema) => {
+      const field = Object.keys(schema.properties).find((name) => schema.properties[name].pattern);
+      schema.properties[field].pattern = '^.*$';
+    },
+    (schema) => { schema.required = schema.required.filter((field) => field !== 'attempt'); },
+    (schema) => { schema.description = 'KafkaBrokerOnline'; },
+    (schema) => { schema.title = 'Kafka broker reachable'; },
+    (schema) => { schema.examples = ['Kafka broker reachable']; },
+    (schema) => { schema.connectionConfirmed = true; },
+    (schema) => { schema.executionSucceeded = true; },
+    (schema) => { schema.properties.brokerUp = { type: 'boolean' }; },
+    (schema) => { schema.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] }; },
+  ];
+  for (const mutate of cases) {
+    const changed = structuredClone(eventCatalog);
+    const event = changed.events.find((candidate) => candidate.eventName === 'workflow.outbox.published.v1');
+    const schema = changed.payloadSchemas[event.payloadSchema.$ref.split('/').at(-1)];
+    mutate(schema);
+    assert.ok(compareContracts('events', eventCatalog, changed).length > 0);
+  }
+
+  const infrastructureFact = structuredClone(eventCatalog);
+  infrastructureFact.payloadSchemas.LearningSrsBatchCreated.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] };
+  assert.ok(compareContracts('events', eventCatalog, infrastructureFact)
+    .some((change) => change.location === 'payloadSchemas'));
+
+  const additiveHistoricalField = structuredClone(eventCatalog);
+  additiveHistoricalField.payloadSchemas.LearningSrsBatchCreated.properties.migrationNote = { type: 'string', maxLength: 64 };
+  assert.doesNotThrow(() => validateEventCatalog(additiveHistoricalField));
+  assert.deepEqual(compareContracts('events', eventCatalog, additiveHistoricalField), []);
+
+  const invalidOptionalFields = [
+    { type: 'not-a-json-schema-type', maxLength: 64 },
+    { type: 'string', maxLength: -1 },
+    { type: 'array', minItems: 1.5, items: { type: 'string' } },
+    { type: 'string', minLength: 8, maxLength: 4 },
+  ];
+  for (const invalidSchema of invalidOptionalFields) {
+    const invalidHistoricalField = structuredClone(eventCatalog);
+    invalidHistoricalField.payloadSchemas.LearningSrsBatchCreated.properties.invalidOptional = invalidSchema;
+    assert.throws(() => validateEventCatalog(invalidHistoricalField), /JSON Schema primitive types|non-negative integer|cannot exceed/);
+    assert.ok(compareContracts('events', eventCatalog, invalidHistoricalField).length > 0);
+  }
+
+  for (const sensitiveName of ['accessTokenValue', 'refresh_token_value', 'emailAddress', 'phoneNumber', 'rawAuthorizationHeader']) {
+    const sensitiveHistoricalField = structuredClone(eventCatalog);
+    sensitiveHistoricalField.payloadSchemas.LearningSrsBatchCreated.properties[sensitiveName] = { type: 'string', maxLength: 64 };
+    assert.throws(() => validateEventCatalog(sensitiveHistoricalField), /forbidden sensitive payload field|forbidden payload field/);
+    assert.ok(compareContracts('events', eventCatalog, sensitiveHistoricalField).length > 0);
+  }
 });
 
 test('events compatibility detects duplicate event names before map normalization', () => {
@@ -244,6 +311,59 @@ test('git baseline compatibility requires an explicit historical ref', () => {
     () => runGitBaselineCompatibility(),
     /Compatibility --ref is required/,
   );
+});
+
+test('CI compatibility baseline is immutable within the accepted M1-006 review window', () => {
+  assert.equal(hasRequiredCiContractBaseline(ciWorkflow), true);
+  assert.equal(inspectRequiredCiContractGate(ciWorkflow).valid, true);
+  const movedBaseline = ciWorkflow.replace(REQUIRED_CI_CONTRACT_BASELINE_REF, 'f'.repeat(40));
+  assert.equal(hasRequiredCiContractBaseline(movedBaseline), false);
+
+  const jobMarker = '  contracts-and-data:\n';
+  for (const override of [
+    `    env:\n      P1R_CONTRACT_BASELINE_REF: ${'f'.repeat(40)}\n`,
+    `    env:\n      "P1R_CONTRACT_BASELINE_REF": ${'f'.repeat(40)}\n`,
+    `    steps:\n      - run: echo "P1R_CONTRACT_BASELINE_REF=${'f'.repeat(40)}" >> $GITHUB_ENV\n`,
+  ]) {
+    const jobOverride = ciWorkflow.replace(jobMarker, `${jobMarker}${override}`);
+    assert.equal(inspectRequiredCiContractGate(jobOverride).valid, false);
+  }
+
+  const compatibilityCommand = REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND;
+  for (const bypass of [
+    `${compatibilityCommand} || true`,
+    `${compatibilityCommand}\n        || true`,
+    `# - run: ${compatibilityCommand}`,
+  ]) {
+    const mutated = ciWorkflow.replace(`- run: ${compatibilityCommand}`, `- run: ${bypass}`);
+    assert.equal(inspectRequiredCiContractGate(mutated).valid, false);
+  }
+
+  const conditional = ciWorkflow.replace(
+    `- run: ${compatibilityCommand}`,
+    `- run: ${compatibilityCommand}\n        if: false`,
+  );
+  assert.equal(inspectRequiredCiContractGate(conditional).valid, false);
+
+  for (const jobControl of [
+    '"if": false',
+    "'if': false",
+    'if : false',
+    '"continue-on-error": true',
+    'continue-on-error : true',
+    String.raw`"\x69f": false`,
+    String.raw`"\x63ontinue-on-error": true`,
+    'steps: []',
+  ]) {
+    const controlledJob = ciWorkflow.replace(jobMarker, `${jobMarker}    ${jobControl}\n`);
+    assert.equal(inspectRequiredCiContractGate(controlledJob).valid, false);
+  }
+
+  const shallowCheckout = ciWorkflow.replace(
+    '          fetch-depth: 0',
+    '          fetch-depth: 0\n          "fetch-depth": 1',
+  );
+  assert.equal(inspectRequiredCiContractGate(shallowCheckout).valid, false);
 });
 
 test('git baseline compatibility reads immutable baseline blobs and rejects a true self-comparison', () => {

@@ -89,6 +89,11 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['envelope runtime proof', (input) => { input.catalog.envelope.runtimeProof = 'Kafka connected'; }, /event envelope must exactly match|runtime success claim/],
     ['compatibility runtime evidence', (input) => { input.catalog.compatibilityPolicy.runtimeEvidence = 'Kafka running'; }, /event compatibilityPolicy must exactly match|runtime success claim/],
     ['nested payload runtime proof', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.runtimeProof = true; }, /unknown runtime proof or attestation field/],
+    ['payload schema runtime description', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.description = 'KafkaBrokerOnline'; }, /not an allowed M1-006 payload schema keyword|runtime success claim/],
+    ['payload schema unknown connection claim', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.connectionConfirmed = true; }, /not an allowed M1-006 payload schema keyword/],
+    ['payload schema broker-up property', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.brokerUp = { type: 'boolean' }; }, /frozen B26 canonical payload digest/],
+    ['canonical payload optional-field drift', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.migrationNote = { type: 'string', maxLength: 64 }; }, /frozen B26 canonical payload digest/],
+    ['canonical payload constraint drift', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.outboxId.maxLength = 64; }, /frozen B26 canonical payload digest/],
     ['runtime-success catalog description', (input) => { input.catalog.description = 'Kafka runtime verified and accepted'; }, /event catalog description must exactly match|runtime success claim/],
     ['camel-case runtime-success prose', (input) => { historical(input).compatibility.consumerRule = 'KafkaRuntimeVerified'; }, /runtime success claim/],
     ['weakened eventId envelope pattern', (input) => { input.catalog.envelope.properties.eventId.pattern = '^.*$'; }, /event envelope must exactly match/],
@@ -131,6 +136,22 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['partition drift', (input) => { canonical(input)['x-p1r-governance'].transport.partitionKey = 'eventId'; }, /partitionKey must be aggregateId/],
     ['binding drift', (input) => { canonical(input)['x-p1r-governance'].transport.bindingVersion = '0.4.0'; }, /bindingVersion must be 0.5.0/],
     ['payload governance drift', (input) => { canonical(input)['x-p1r-governance'].schema.payloadRef = '#/payloadSchemas/Unknown'; }, /governed payloadRef must match/],
+    ['synchronized canonical payload ref swap', (input) => {
+      const failed = input.catalog.events.find((event) => event.eventName === 'workflow.event.delivery_failed.v1');
+      const dead = input.catalog.events.find((event) => event.eventName === 'workflow.event.dead_lettered.v1');
+      const failedRef = failed.payloadSchema.$ref;
+      failed.payloadSchema.$ref = dead.payloadSchema.$ref;
+      dead.payloadSchema.$ref = failedRef;
+      failed['x-p1r-governance'].schema.payloadRef = failed.payloadSchema.$ref;
+      dead['x-p1r-governance'].schema.payloadRef = dead.payloadSchema.$ref;
+      const fragment = input.fragments.find((candidate) => candidate.path.endsWith('b26-reliability.events.json'));
+      const fragmentFailed = fragment.data.events.find((event) => event.eventName === failed.eventName);
+      const fragmentDead = fragment.data.events.find((event) => event.eventName === dead.eventName);
+      const fragmentFailedRef = fragmentFailed.payloadSchema.$ref;
+      fragmentFailed.payloadSchema.$ref = fragmentDead.payloadSchema.$ref;
+      fragmentDead.payloadSchema.$ref = fragmentFailedRef;
+      projectCanonicalAsyncApi(input.catalog);
+    }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
     ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact seven/],
@@ -174,9 +195,9 @@ test('event governance fails closed on owner, routing, status, shape, projection
 
 test('contract validator rejects sensitive event payload fields and malformed receive bindings', () => {
   const sensitive = structuredClone(baseline.catalog);
-  const payload = sensitive.payloadSchemas.B26WorkflowOutboxPublished;
+  const payload = sensitive.payloadSchemas.LearningSrsBatchCreated;
   payload.properties.password = { type: 'string' };
-  assert.throws(() => validateEventCatalog(sensitive), /forbidden payload field/);
+  assert.throws(() => validateEventCatalog(sensitive), /forbidden sensitive payload field|forbidden payload field/);
 
   const missingReceive = structuredClone(baseline.catalog);
   const receiveId = Object.keys(missingReceive.asyncapi.operations)
@@ -194,6 +215,11 @@ test('contract validator freezes the envelope, platform, compatibility, deny tab
     [(catalog) => { catalog.compatibilityPolicy.versioning = 'in-place'; }, /compatibilityPolicy must exactly match/],
     [(catalog) => { catalog['x-v2-event-platform'].runtimeAttestation = 'RUNTIME VERIFIED'; }, /x-v2-event-platform must exactly match|runtime success claim/],
     [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.runtimeProof = true; }, /unknown runtime proof or attestation field/],
+    [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.description = 'Kafka broker reachable'; }, /not an allowed M1-006 payload schema keyword|runtime success claim/],
+    [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.connectionConfirmed = true; }, /not an allowed M1-006 payload schema keyword/],
+    [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] }; }, /frozen B26 canonical payload digest/],
+    [(catalog) => { catalog.payloadSchemas.LearningSrsBatchCreated.properties.brokerUp = { type: 'boolean' }; }, /forbidden runtime proof field/],
+    [(catalog) => { catalog.payloadSchemas.LearningSrsBatchCreated.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] }; }, /cannot encode Kafka or broker runtime facts/],
     [(catalog) => { catalog.description = 'Kafka runtime verified and accepted'; }, /event catalog description must exactly match|runtime success claim/],
     [(catalog) => { historical({ catalog }).compatibility.consumerRule = 'runtime_verified'; }, /runtime success claim/],
   ];

@@ -1,6 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  validateCanonicalEventPayloadMappings,
+  validateEventPayloadSchemas,
+} from '../contracts/event-catalog-policy.mjs'
 
 const scriptPath = fileURLToPath(import.meta.url)
 const repoRoot = path.resolve(path.dirname(scriptPath), '..', '..')
@@ -116,8 +120,17 @@ const expectedRuntimeExclusions = [
 const expectedForbiddenAuthorityFacts = ['role', 'permission', 'tenantId', 'ownerId', 'phase', 'contentRights', 'ageVerified']
 const expectedForbiddenHeaders = ['Authorization-from-client-payload', 'Cookie-from-event-payload', 'X-Role', 'X-B5-Role', 'X-Tenant-Id', 'X-Owner-Id']
 const expectedForbiddenPayloadPatterns = ['password', 'secret', 'token', 'authorization', 'cookie', 'rawAudio', 'recordingBytes', 'paymentCredential', 'jws', 'answerKey', 'rawAnswer']
+const expectedB26PayloadRequired = {
+  B26WorkflowOutboxPublished: ['outboxId', 'producerService', 'eventType', 'aggregateId', 'dedupeKey', 'aggregateVersion', 'publishedAt', 'attempt'],
+  B26WorkflowDeliveryFailed: ['failedEventId', 'consumerGroup', 'failureCode', 'retryable', 'attempt', 'failedAt'],
+  B26WorkflowDeadLettered: ['failedEventId', 'consumerGroup', 'failureCode', 'attempt', 'failedAt', 'recoveryState'],
+  B26WorkflowReplayRequested: ['replayRunId', 'sourceTopic', 'sourceEventId', 'requestedByRef', 'approvalRef', 'reasonCode', 'mode'],
+  B26WorkflowOrderingDeferred: ['aggregateId', 'receivedVersion', 'expectedVersion', 'bufferedAt', 'expiresAt', 'action'],
+  B26WorkflowCompensationRequested: ['sagaId', 'step', 'aggregateId', 'compensationCode', 'reasonCode', 'state'],
+  B26WorkflowManualRecoveryRequested: ['recoveryId', 'sagaId', 'aggregateId', 'failedStep', 'reasonCode', 'approvalState', 'runbookRef'],
+}
 const runtimeClaimSubject = /(?:\bruntime\b|\bkafka\b|\bbroker\b|\btopic\b|\boutbox\b|\bdelivery\b|\bconsumer\b|\bsaga\b|\breplay\b)/i
-const forbiddenRuntimeResults = /(?:\bcaptured\b|\bverified\b|\baccepted\b|\bpassed\b|\bready\b|\bconnected\b|\brunning\b|\bhealthy\b|\bsuccessful\b|\bcompleted?\b|\bavailable\b|\bcertified\b|\bdeployed\b|\boperational\b)/i
+const forbiddenRuntimeResults = /(?:\bcaptured\b|\bverified\b|\baccepted\b|\bpassed\b|\bready\b|\bconnected\b|\bconfirmed\b|\brunning\b|\bhealthy\b|\bsuccessful\b|\bsucceeded\b|\bcompleted?\b|\bavailable\b|\bonline\b|\breachable\b|\bcertified\b|\bdeployed\b|\boperational\b)/i
 const forbiddenRuntimeClaimKeySegments = new Set(['runtime', 'attestation', 'certified', 'deployed', 'operational', 'promotion', 'promoted'])
 const forbiddenSecretValue = /(?:Bearer\s+[A-Za-z0-9._~+/=-]{16,}|-----BEGIN [A-Z ]+ PRIVATE KEY-----|(?:^|\D)(?:\+?86[- ]?)?1[3-9]\d{9}(?:$|\D)|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i
 
@@ -387,6 +400,10 @@ function validateFragment(manifest, fragment, catalog, errors) {
   requireCondition(fragment?.version === '1.0.0', 'B26 event fragment version must be 1.0.0', errors)
   requireArray(fragment?.events, 'B26 event fragment events', errors, 7)
   requireCondition(isRecord(fragment?.payloadSchemas) && Object.keys(fragment.payloadSchemas).length === fragment.events.length, 'B26 payload schema count must match event count', errors)
+  requireCondition(JSON.stringify(Object.keys(fragment?.payloadSchemas ?? {}).sort()) === JSON.stringify(Object.keys(expectedB26PayloadRequired).sort()), 'B26 payload schema registry must match the exact seven frozen seed schemas', errors)
+  for (const [schemaName, requiredFields] of Object.entries(expectedB26PayloadRequired)) {
+    requireExactArray(fragment?.payloadSchemas?.[schemaName]?.required, requiredFields, `${schemaName}.required`, errors)
+  }
   const names = []
   const routing = new Map((manifest.eventRouting ?? []).map((item) => [item.eventName, item]))
   const catalogEvents = new Map((catalog?.events ?? []).map((event) => [event.eventName, event]))
@@ -456,6 +473,8 @@ export function validateB26EventRuntime(manifest, fragment, {
     scanForUnsafeValues(manifest, 'manifest', errors)
     scanForUnsafeValues(fragment, 'fragment', errors)
     scanFragmentRuntimeClaimKeys(fragment, 'fragment', errors)
+    errors.push(...validateEventPayloadSchemas(fragment.payloadSchemas, 'B26 fragment payloadSchemas'))
+    errors.push(...validateCanonicalEventPayloadMappings(catalog.events, 'B26 canonical catalog events'))
     validateIdentity(manifest, errors)
     validateExecutionAndSafety(manifest, errors)
     validateRuntimeGate(manifest, errors)

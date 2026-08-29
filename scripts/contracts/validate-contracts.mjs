@@ -14,6 +14,7 @@ import {
 import { validateEventGovernance } from '../audit/p1r-event-governance-check.mjs';
 import {
   FORBIDDEN_EVENT_PAYLOAD_FIELD_PATTERNS,
+  isForbiddenEventPayloadField,
   validateFrozenEventCatalogPolicy,
 } from './event-catalog-policy.mjs';
 
@@ -317,7 +318,7 @@ export function validateEventCatalog(catalog) {
     walk(payload, (value, location) => {
       if (!isRecord(value)) return;
       for (const propertyName of Object.keys(value.properties ?? {})) {
-        assert(!forbiddenFieldPatterns.some((pattern) => pattern.test(propertyName)), `${event.eventName} contains forbidden payload field ${location}.${propertyName}`);
+        assert(!isForbiddenEventPayloadField(propertyName), `${event.eventName} contains forbidden payload field ${location}.${propertyName}`);
       }
     });
     assert(isRecord(event.compatibility) && typeof event.compatibility.strategy === 'string', `${event.eventName} compatibility strategy is required`);

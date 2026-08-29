@@ -3,6 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { isHttpMethod, isRecord, readJson, resolveJsonPointer } from './schema-utils.mjs';
+import { validateEventPayloadSchemas } from './event-catalog-policy.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
@@ -57,16 +58,15 @@ function compareSchema(previous, current, location, changes, kind) {
 
   const previousTypes = normalizedTypes(previous.type);
   const currentTypes = normalizedTypes(current.type);
-  if (previousTypes && currentTypes && !sameTypes(previousTypes, currentTypes)) {
-    changes.push(describeChange(kind, location, `type changed from ${previousTypes.join(',')} to ${currentTypes.join(',')}`));
+  if ((previousTypes || currentTypes) && (!previousTypes || !currentTypes || !sameTypes(previousTypes, currentTypes))) {
+    changes.push(describeChange(kind, location, `type changed from ${previousTypes?.join(',') ?? '<unspecified>'} to ${currentTypes?.join(',') ?? '<unspecified>'}`));
   }
 
   const previousEnum = Array.isArray(previous.enum) ? previous.enum : null;
   const currentEnum = Array.isArray(current.enum) ? current.enum : null;
-  if (previousEnum && currentEnum) {
-    for (const value of previousEnum) {
-      if (!currentEnum.includes(value)) changes.push(describeChange(kind, `${location}.enum`, `existing enum value removed: ${String(value)}`));
-    }
+  if ((previousEnum || currentEnum)
+    && stableGovernanceValue(previousEnum) !== stableGovernanceValue(currentEnum)) {
+    changes.push(describeChange(kind, `${location}.enum`, 'existing enum contract changed'));
   }
 
   const previousRequired = new Set(Array.isArray(previous.required) ? previous.required : []);
@@ -74,18 +74,52 @@ function compareSchema(previous, current, location, changes, kind) {
   for (const field of currentRequired) {
     if (!previousRequired.has(field)) changes.push(describeChange(kind, `${location}.required`, `new required field: ${field}`));
   }
-
-  if (current.additionalProperties === false && previous.additionalProperties !== false) {
-    changes.push(describeChange(kind, `${location}.additionalProperties`, 'additional properties became forbidden'));
+  for (const field of previousRequired) {
+    if (!currentRequired.has(field)) changes.push(describeChange(kind, `${location}.required`, `existing required field removed: ${field}`));
   }
 
-  for (const keyword of ['pattern', 'format', 'const', 'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'minLength', 'maxLength', 'minItems', 'maxItems', 'minProperties', 'maxProperties']) {
-    if (previous[keyword] !== undefined && current[keyword] !== previous[keyword]) {
-      changes.push(describeChange(kind, `${location}.${keyword}`, `existing ${keyword} constraint changed`));
+  if (isRecord(previous.additionalProperties) && isRecord(current.additionalProperties)) {
+    compareSchema(previous.additionalProperties, current.additionalProperties, `${location}.additionalProperties`, changes, kind);
+  } else if (stableGovernanceValue(previous.additionalProperties) !== stableGovernanceValue(current.additionalProperties)) {
+    changes.push(describeChange(kind, `${location}.additionalProperties`, 'additionalProperties policy changed'));
+  }
+
+  const exactKeywords = [
+    '$id', '$schema', '$ref', 'title', 'description', 'default', 'examples',
+    'deprecated', 'readOnly', 'writeOnly', 'nullable', 'pattern', 'format',
+    'const', 'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum',
+    'minLength', 'maxLength', 'minItems', 'maxItems', 'minProperties',
+    'maxProperties', 'uniqueItems',
+  ];
+  for (const keyword of exactKeywords) {
+    if (stableGovernanceValue(previous[keyword]) !== stableGovernanceValue(current[keyword])) {
+      changes.push(describeChange(kind, `${location}.${keyword}`, `${keyword} contract changed`));
     }
   }
-  if (previous.uniqueItems !== undefined && current.uniqueItems !== previous.uniqueItems) {
-    changes.push(describeChange(kind, `${location}.uniqueItems`, 'existing uniqueItems constraint changed'));
+
+  if (previous.items !== undefined || current.items !== undefined) {
+    if (isRecord(previous.items) && isRecord(current.items)) {
+      compareSchema(previous.items, current.items, `${location}.items`, changes, kind);
+    } else if (stableGovernanceValue(previous.items) !== stableGovernanceValue(current.items)) {
+      changes.push(describeChange(kind, `${location}.items`, 'items contract changed'));
+    }
+  }
+  for (const keyword of ['oneOf', 'anyOf', 'allOf', 'not']) {
+    if (stableGovernanceValue(previous[keyword]) !== stableGovernanceValue(current[keyword])) {
+      changes.push(describeChange(kind, `${location}.${keyword}`, `${keyword} contract changed`));
+    }
+  }
+
+  const knownKeywords = new Set([
+    'type', 'enum', 'required', 'additionalProperties', 'properties', 'items',
+    'oneOf', 'anyOf', 'allOf', 'not', ...exactKeywords,
+  ]);
+  const unknownKeywords = new Set([...Object.keys(previous), ...Object.keys(current)]
+    .filter((keyword) => !knownKeywords.has(keyword)));
+  for (const keyword of unknownKeywords) {
+    if (stableGovernanceValue(previous[keyword]) !== stableGovernanceValue(current[keyword])) {
+      changes.push(describeChange(kind, `${location}.${keyword}`, 'unknown schema keyword or extension changed'));
+    }
   }
 
   const previousProperties = isRecord(previous.properties) ? previous.properties : {};
@@ -189,6 +223,9 @@ function compareOpenApi(previous, current) {
 
 function compareEvents(previous, current) {
   const changes = [];
+  for (const error of validateEventPayloadSchemas(current.payloadSchemas)) {
+    changes.push(describeChange('events', 'payloadSchemas', error));
+  }
   for (const field of [
     'catalogVersion',
     'schema',

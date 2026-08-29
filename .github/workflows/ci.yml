@@ -58,6 +58,8 @@ jobs:
     needs: governance
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: pnpm/action-setup@v4
         with:
           version: 10.19.0
@@ -72,8 +74,10 @@ jobs:
       - run: pnpm test:p1r
       - run: pnpm p1r:fixtures:validate
       - run: pnpm p1r:fixtures:audit
+      - run: pnpm contracts:merge:check
+      - run: pnpm contracts:generate:check
       - run: pnpm contracts:validate
-      - run: pnpm contracts:compatibility
+      - run: pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --kind all --json
       - run: pnpm db:validate
       - run: pnpm redis:validate
       - run: pnpm config:check

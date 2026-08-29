@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
+import { projectCanonicalAsyncApi } from '../../scripts/contracts/event-governance-projection.mjs'
 import { readB26Inputs, validateB26EventRuntime } from '../../scripts/runtime/validate-b26-event-runtime.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
@@ -152,13 +153,67 @@ test('B26 standalone validation binds fragment semantics exactly to the canonica
       const schemaName = candidate.events[0].payloadSchema.$ref.split('/').at(-1)
       candidate.payloadSchemas[schemaName].runtimeProof = true
     },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.description = 'KafkaBrokerOnline' },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.connectionConfirmed = true },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.executionSucceeded = true },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.properties.brokerUp = { type: 'boolean', const: true } },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] } },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.properties.migrationNote = { type: 'string', maxLength: 64 } },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.properties.outboxId.maxLength = 64 },
+    (candidate) => { candidate.payloadSchemas.B26WorkflowOutboxPublished.required = candidate.payloadSchemas.B26WorkflowOutboxPublished.required.filter((field) => field !== 'attempt') },
   ]
   for (const mutate of cases) {
     const candidate = clone(fragment)
     mutate(candidate)
     const result = validateB26EventRuntime(manifest, candidate)
     assert.equal(result.result, 'FAIL')
-    assert.ok(result.errors.some((error) => /must exactly match the canonical catalog|version\/schema is invalid|unknown runtime proof or attestation field/.test(error)))
+    assert.ok(result.errors.some((error) => /must exactly match the canonical catalog|version\/schema is invalid|unknown runtime proof or attestation field|not an allowed M1-006 payload schema keyword|must exactly match the frozen static policy|frozen B26 canonical payload digest/.test(error)))
+  }
+})
+
+test('B26 standalone rejects a synchronized canonical event-to-payload ref swap', () => {
+  const candidateFragment = clone(fragment)
+  const candidateCatalog = clone(catalog)
+  const failed = candidateCatalog.events.find((event) => event.eventName === 'workflow.event.delivery_failed.v1')
+  const dead = candidateCatalog.events.find((event) => event.eventName === 'workflow.event.dead_lettered.v1')
+  const failedRef = failed.payloadSchema.$ref
+  failed.payloadSchema.$ref = dead.payloadSchema.$ref
+  dead.payloadSchema.$ref = failedRef
+  failed['x-p1r-governance'].schema.payloadRef = failed.payloadSchema.$ref
+  dead['x-p1r-governance'].schema.payloadRef = dead.payloadSchema.$ref
+
+  const fragmentFailed = candidateFragment.events.find((event) => event.eventName === failed.eventName)
+  const fragmentDead = candidateFragment.events.find((event) => event.eventName === dead.eventName)
+  const fragmentFailedRef = fragmentFailed.payloadSchema.$ref
+  fragmentFailed.payloadSchema.$ref = fragmentDead.payloadSchema.$ref
+  fragmentDead.payloadSchema.$ref = fragmentFailedRef
+  projectCanonicalAsyncApi(candidateCatalog)
+
+  const result = validateB26EventRuntime(manifest, candidateFragment, { catalog: candidateCatalog })
+  assert.equal(result.result, 'FAIL')
+  assert.ok(result.errors.some((error) => error.includes('frozen M1-006 event-to-payload mapping')))
+})
+
+test('B26 frozen payload digests reject synchronized catalog and fragment runtime-shape forgery', () => {
+  const cases = [
+    (schema) => { schema.description = 'KafkaBrokerOnline' },
+    (schema) => { schema.connectionConfirmed = true },
+    (schema) => { schema.executionSucceeded = true },
+    (schema) => { schema.properties.brokerCondition = { type: 'boolean', const: true } },
+    (schema) => { schema.properties.channelAlive = { type: 'boolean', const: true } },
+    (schema) => { schema.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] } },
+    (schema) => { schema.properties.migrationNote = { type: 'string', maxLength: 64 } },
+    (schema) => { schema.properties.outboxId.maxLength = 64 },
+    (schema) => { schema.required = schema.required.filter((field) => field !== 'outboxId') },
+  ]
+  for (const mutate of cases) {
+    const candidateFragment = clone(fragment)
+    const candidateCatalog = clone(catalog)
+    mutate(candidateFragment.payloadSchemas.B26WorkflowOutboxPublished)
+    mutate(candidateCatalog.payloadSchemas.B26WorkflowOutboxPublished)
+    const result = validateB26EventRuntime(manifest, candidateFragment, { catalog: candidateCatalog })
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => error.includes('frozen B26 canonical payload digest') || error.includes('not an allowed M1-006 payload schema keyword') || error.includes('must exactly match the frozen static policy')))
   }
 })
 
