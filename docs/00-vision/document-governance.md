@@ -6,7 +6,7 @@
 >
 > 适用范围：Phase 1 全部产品、设计、前端、后端、数据库、内容、测试、运营与 Agent 交付
 
-本文件是文档治理地图，不替代任务状态报表。B7–B22 的代码/静态基础以 [`v2-B7plus-代码重塑与交互测试任务基线.md`](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 为准；B23–B27 的真实运行前置以 [`v2-B23plus-Phase1-真实运行与实机测试任务基线.md`](../../requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md) 为准；当前本机验收进度以 [`v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md) 及 [`b36-validation.md`](../07-operations/b36-validation.md) 的 `LOCAL-TEST-NO-PASS` 结论为准。[`Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 只保留 B0–B6 历史状态。本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
+本文件是文档治理地图，不替代任务状态报表。[`v2-phase1-rebaseline/`](../../requirements/backlog/v2-phase1-rebaseline/README.md) 是当前唯一的新开发计划和状态入口。B7–B36、旧 G0–G4 与 `b36-validation.md` 的 `LOCAL-TEST-NO-PASS` 只保留代码、迁移、历史运行和风险候选证据；必须在当前提交按 `P1R-*` Evidence 重新验证。[`Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 只保留 B0–B6 历史状态。本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
 
 v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2-980plus/README.md)，Phase 1 的系统运行入口为 [`phase1-business-operation/README.md`](../06-design/v2-980plus/phase1-business-operation/README.md)，后端技术入口为 [`docs/02-architecture/v2-microservices-architecture.md`](../02-architecture/v2-microservices-architecture.md)；旧 B0–B6 与 `core-api` 记录只保留历史/迁移语义。
 
@@ -23,7 +23,7 @@ v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2
 | 5 | `docs/09-roadmap/roadmap.md` | 分期、Platform 0、优先级与全阶段发布 Gate | 不得因单个 Agent 方便而提前跨期 |
 | 6 | `docs/06-design/detailed-specs/01~09`、旧 `phase-*`、B0–B6 | 历史实现、术语和迁移参考 | 不作为新任务需求事实源；发生冲突时以 v2 和目标架构为准 |
 | 7 | `packages/contracts/`、`database/mysql/migrations/`、代码与测试 | 可执行实现与验证证据 | 必须反向链接到需求/设计/任务 |
-| 8 | `requirements/backlog/` | 任务拆分、执行 SOP、证据和状态交接 | B7、B23、B28 三份 v2 台账按批次递进；当前本机状态以 B28/B36 为准；旧台账只作历史；v2 任务必须新增 `Source/Arch/Service/Data Owner` |
+| 8 | `requirements/backlog/v2-phase1-rebaseline/` | 当前 Phase 1 任务拆分、依赖、状态、Evidence 和验收 | 只使用 `P1R-*`；旧 B/DEV/G 台账作 historical-candidate；任务必须绑定 Source/ARCH/运行层 ID/Service/Data Owner |
 
 有效 ADR 位于 `docs/10-decisions/`。ADR 记录架构、范围、数据所有权和不可逆约束；普通实现细节留在设计文档或代码中，不能用 ADR 代替 API、DDL 或测试。
 
@@ -103,7 +103,8 @@ Phase 1 的成人、安全和阶段约束仍然必须遵守，但新任务的执
 - 范围冻结：`requirements/backlog/Phase-1范围冻结与跨文档基线.md`
 - Agent SOP：`requirements/backlog/Agent开发SOP与状态流转模板.md`
 - Gate/证据：`requirements/backlog/DoD-Gate与证据包规范.md`
-- v2 研发任务/状态基线：`requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md`
+- 当前 Phase 1 研发任务/状态基线：`requirements/backlog/v2-phase1-rebaseline/README.md`
+- B7–B36 历史实现/运行候选：`requirements/backlog/v2-B7plus-*`、`v2-B23plus-*`、`v2-B28plus-*`
 - B0–B6 历史任务基线：`requirements/backlog/开发实施总纲与功能链条任务分解.md`
 - B0–B6 历史状态事实：`requirements/backlog/Agent开发状态总报表.md`
 - 端口唯一事实：`config/local-ports.json`

@@ -59,10 +59,10 @@ ARCH-PLAT-001
 
 ## 4. 新任务编号规则
 
-下一轮任务不得直接沿用旧 `DEV-*` 作为唯一依据。建议使用：
+Phase 1 当前任务不得直接沿用旧 B/`DEV-*`/G 编号，统一使用 [Phase 1 开发计划重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md) 的编号：
 
 ```text
-V2-<PHASE>-<DOMAIN>-<NNN>
+P1R-M<里程碑>-<NNN>
 ```
 
 任务必须同时填写：

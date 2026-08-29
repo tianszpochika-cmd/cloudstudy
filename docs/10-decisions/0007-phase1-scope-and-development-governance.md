@@ -4,7 +4,7 @@
 
 accepted
 
-> v2 架构与任务重基线注记（2026-08-22）：本 ADR 的 Phase 1 范围、canonical 状态和算法约束继续有效；其关于服务/数据库 owner 的旧域级表述由 ADR-0010 与 `v2-microservices-architecture.md` 细化。`VOC`/`ASM` 在这里表示业务语义域，不表示 v2 目标服务可以双写同一事实。B0–B6 的状态仍由历史状态报表记录；B7+ 的负责人、状态、证据和阻塞改由 `v2-B7plus-代码重塑与交互测试任务基线.md` 的任务行维护。
+> v2 架构与任务重基线注记（2026-08-29）：本 ADR 的 Phase 1 范围、canonical 状态和算法约束继续有效；其关于服务/数据库 owner 的旧域级表述由 ADR-0010 与 `v2-microservices-architecture.md` 细化。`VOC`/`ASM` 在这里表示业务语义域，不表示 v2 目标服务可以双写同一事实。B0–B36、`DEV-*` 与 G0–G4 状态只作历史/候选证据；Phase 1 当前任务、状态、证据和阻塞统一由 [`v2-phase1-rebaseline`](../../requirements/backlog/v2-phase1-rebaseline/README.md) 的 `P1R-*` 台账维护。
 
 ## 日期
 
@@ -47,11 +47,13 @@ Phase 1 只面向 18 岁以上成人与大学生，交付规则化学习闭环�
 
 `未开始 → 已认领 → 进行中 → 待验收 → 已完成`
 
+`P1R-*` 台账为便于自动校验，使用一一对应的机器别名：`PLANNED → READY → IN_PROGRESS → REVIEW → ACCEPTED`；这不是第二套业务状态。
+
 异常状态为：
 
-`进行中/待验收 → 阻塞`、`待验收/已完成 → 返工 → 进行中`。
+`进行中/待验收 → 阻塞`、`待验收/已完成 → 返工 → 进行中`；机器别名分别为 `BLOCKED` 和 `REWORK`。
 
-Agent 必须携带任务 ID、文件边界、契约/迁移/测试证据、回滚方式和未覆盖事项；没有证据只能停留在“待验收”。状态事实源按任务基线分流：历史 B0–B6 由 `requirements/backlog/Agent开发状态总报表.md` 记录，B7+ 由 `requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md` 的对应任务行记录；均由主编排器基于证据统一更新。
+Agent 必须携带任务 ID、文件边界、契约/迁移/测试证据、回滚方式和未覆盖事项；没有证据只能停留在“待验收”。新开发的状态事实源是 `requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md`；旧 B/`DEV-*`/G 台账只保留历史状态，由主编排器在复用时按当前提交重新验证，不自动迁移完成结论。
 
 ### 4. 以 DoD Gate 作为发布条件
 
@@ -88,4 +90,5 @@ Agent 必须携带任务 ID、文件边界、契约/迁移/测试证据、回滚
 - `requirements/backlog/Phase-1范围冻结与跨文档基线.md`
 - `requirements/backlog/Agent开发SOP与状态流转模板.md`
 - `requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md`
+- `requirements/backlog/v2-phase1-rebaseline/README.md`
 - `requirements/backlog/DoD-Gate与证据包规范.md`

@@ -11,7 +11,7 @@
 
 ## 2. 核心技术栈与架构选型约束 (Tech Stack Boundaries)
 
-本文件与 [v2-980plus 设计包](docs/06-design/v2-980plus/README.md)、[Phase 1 业务运行设计包](docs/06-design/v2-980plus/phase1-business-operation/README.md)、[v2 微服务目标架构](docs/02-architecture/v2-microservices-architecture.md)、[平台能力矩阵](docs/02-architecture/v2-platform-capability-matrix.md) 和 ADR-0009/0010/0012/0013/0014 一起构成当前需求/设计/架构基线。[B7+ 代码任务台账](requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 只保留现有实现与迁移状态，不直接充当下一轮开发计划。`v2-980plus/` 是新一轮开发唯一的全量业务设计与需求落地基线；其 `phase1-business-operation/` 子包补齐角色、端到端旅程、逐页功能、学习规则、后台流程、联调、恢复与 E2E 追溯，不改变 980 范围计数。v1 详细设计、B0–B6 和 `core-api` 只保留历史/迁移语义，不能覆盖 v2。新任务必须建立 `FEAT/PRD-ATOM/V2-980 + ARCH + ACT/JNY/PAGE/RULE/INT/E2E` 映射，并如实保留尚未关闭的契约、事件、实现和证据 GAP。
+本文件与 [v2-980plus 设计包](docs/06-design/v2-980plus/README.md)、[Phase 1 业务运行设计包](docs/06-design/v2-980plus/phase1-business-operation/README.md)、[Phase 1 开发计划重基线](requirements/backlog/v2-phase1-rebaseline/README.md)、[v2 微服务目标架构](docs/02-architecture/v2-microservices-architecture.md)、[平台能力矩阵](docs/02-architecture/v2-platform-capability-matrix.md) 和 ADR-0009/0010/0012/0013/0014 一起构成当前需求/设计/架构/执行基线。[B7+ 代码任务台账](requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 只保留现有实现与迁移状态，不直接充当下一轮开发计划。`v2-980plus/` 是新一轮开发唯一的全量业务设计与需求落地基线；其 `phase1-business-operation/` 子包补齐角色、端到端旅程、逐页功能、学习规则、后台流程、联调、恢复与 E2E 追溯，不改变 980 范围计数。Phase 1 新开发只从 `P1R-*` 任务台账认领，旧 B/DEV/G 状态不得自动迁移。v1 详细设计、B0–B6 和 `core-api` 只保留历史/迁移语义，不能覆盖 v2。新任务必须建立 `FEAT/PRD-ATOM/V2-980 + ARCH + ACT/JNY/PAGE/RULE/INT/E2E` 映射，并如实保留尚未关闭的契约、事件、实现和证据 GAP。
 
 所有 Agent 在编写、重构或引入第三方依赖时，必须严格遵守以下技术栈边界，**严禁私自引入冲突框架**：
 

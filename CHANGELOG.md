@@ -4,6 +4,8 @@
 
 > 历史条目说明：本文件按时间保留当时的实现与验证快照。ADR-0013 之前记录的外部认证、OIDC、旧授权入口及其运行结果均为 Historical / Superseded，不得作为当前需求、实现命令或验收证据；当前认证基线以 ADR-0013 的平台自有 IAM、账号密码和短时 RS256 JWT 为准。历史事实不删除，仅用于审计与迁移追溯。
 
+- [P1-DEVELOPMENT-REBASELINE-20260829] 基于 `b01505a` 的 D1 业务运行设计，新增当前唯一的 Phase 1 开发计划 `requirements/backlog/v2-phase1-rebaseline/`：按 D1→D5 建立 M0–M8 九个里程碑和 108 个 `P1R-*` 编号任务，补齐依赖图、现有资产复用/修正/重写/新增策略、每阶段进入/退出 Gate、Evidence manifest，以及 540 个 Phase 1 范围单元、13 ACT、15 JNY、56 PAGE、8 RULE、18 INT、16 E2E 和全部已知 GAP 的覆盖矩阵。旧 B0–B36、DEV 与 G 台账降为 historical-candidate，不继承完成状态；路线图、ADR-0007、平台编号规则、SOP、验收/DoD 规范和旧计划页统一指向 `P1R-*`，并以自动校验防止旧入口重新生效。全部新任务初始为 `PLANNED`，生产支付保持关闭，Phase 2/3 不进入实现范围。
+
 - [P1-BUSINESS-OPERATION-DESIGN-20260829] 新增 Phase 1 业务运行设计包，把 v2 范围设计补成可解释的系统运行蓝图：15 条注册到学习、后台、客服和隐私端到端旅程，56 个四端页面/页面族，确定性定级/今日任务/SM-2/错题 D+1/D+7/报告规则，内容双审与发布回滚流程，18 条跨服务联调链，以及统一八态、权限、故障恢复和 16 个 E2E Evidence 场景。新增 ADR-0014，冻结 `admin-ops-service.support` 为客服工单 owner、`learner-service.privacy` 为隐私导出请求/状态/receipt owner、`iam-service` 为账号删除请求与主体最终状态 owner；同步文档治理、架构映射、Agent 规则、生成器和防漂移校验。该包当前成熟度是业务运行设计 D1；列出的 Contract/Event/Implementation/Evidence GAP 仍须进入新计划，不能据此宣称代码或运行验收完成。
 
 - [V2-BASELINE-UNIFICATION-20260829] 按九项已签收决策统一需求、v2 设计、架构、ADR、契约、任务台账与应用说明：自有 IAM/Phase 1 RS256、Kafka+Outbox、游戏 P0/P1/长期 Gate、980=930+50 与 184/486/310、每日 5/15/30/45、音频六档与保音高、版本化改进型 SM-2、支付生产默认关闭、合法内容来源和四前端项目。旧设计、旧运行报告和 PRD 原子清单保留为明确的 Historical/Superseded/Frozen 证据，不再覆盖当前开发；增加 Sentence Train 服务端启用门禁、B9/B25 goal 与 learning plan 的 60→45 前向迁移、服务/测试数据与领域校验冻结为 5/15/30/45、24 个仓库迁移的 create/alter 校验、音频能力降级和防漂移测试。验证：v2 980 登记/全量覆盖、B15/B28 静态、契约 367 operations/481 schemas/154 events、兼容性 0 breaking、G0–G4 静态测试 41/41、B4+B9 14/14、B11/B16/B25 17/17、gamification-service JUnit 3/3、DoD 严格预检均通过；运行交接仍保持 `LOCAL-TEST-NO-PASS`，发布仍为 `NO-GO`。

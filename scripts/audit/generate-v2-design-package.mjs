@@ -550,7 +550,7 @@ function generateReadme(units, atoms, matrix, warnings) {
 > 设计状态：v2 全量范围已冻结；其中缺少独立名称/验收的单元须完成细化签收后才能进入实现排期。
 > 计数声明（冻结）：\`V2-980-0001\` 至 \`V2-980-0980\` 是连续的范围登记编号，不代表 980 份已经可实施或已经完成的详细设计。
 
-> 架构基线：[v2 微服务技术架构](../../02-architecture/v2-microservices-architecture.md)；[平台能力矩阵](../../02-architecture/v2-platform-capability-matrix.md)；[架构映射与任务重基线](11-架构映射与任务重基线.md)；[B7+ 代码任务基线](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)。本目录的契约、数据、权限、事件和验收设计均服从这些文档。
+> 架构/执行基线：[v2 微服务技术架构](../../02-architecture/v2-microservices-architecture.md)；[平台能力矩阵](../../02-architecture/v2-platform-capability-matrix.md)；[架构映射与任务重基线](11-架构映射与任务重基线.md)；[Phase 1 开发计划重基线](../../../requirements/backlog/v2-phase1-rebaseline/README.md)。B7+ 只作历史实现状态。本目录的契约、数据、权限、事件和验收设计均服从这些文档。
 
 ## 1. 这是一套独立的新版本
 
@@ -603,7 +603,8 @@ ${mdTable(phaseOrder.map((phase) => ({ phase, target: phaseTotals[phase], actual
 12. [11-架构映射与任务重基线](11-架构映射与任务重基线.md)：V2-980 业务单元与 ARCH 平台能力的依赖、任务卡和验收字段。
 13. [12-架构与设计一致性审核](12-架构与设计一致性审核.md)：v2 需求、服务边界、权限、数据、事件和运行模型的审核结论。
 14. [Phase 1 业务运行设计包](phase1-business-operation/README.md)：角色和业务总图、端到端旅程、逐页功能、学习规则、后台流程、业务联调、恢复与 E2E 追溯；它补齐“系统怎样运行”，不改变 980 计数，也不代表实现完成。
-15. [B7+ 代码重塑与交互测试状态台账](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)：保留现有代码、测试和迁移状态；不直接充当下一轮开发计划。
+15. [Phase 1 开发计划重基线](../../../requirements/backlog/v2-phase1-rebaseline/README.md)：9 个里程碑、108 个 \`P1R-*\` 任务、依赖图、D2–D5 Evidence Gate 和运行层覆盖矩阵；当前唯一新开发入口。
+16. [B7+ 代码重塑与交互测试状态台账](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)：保留现有代码、测试和迁移状态；只作 historical-candidate。
 
 ### 3.1 Phase 1 业务运行层
 
@@ -655,7 +656,7 @@ function generateBaseline(units, matrix, atoms) {
 
 - 本目录：下一轮开发唯一的全量业务设计、交互、阶段、数据/契约映射和验收落地基线；
 - [PRD](../../../requirements/product-requirements.md)、[功能矩阵](../../../requirements/feature-matrix.md) 和 [PRD 原子候选清单](../traceability/03-PRD原子需求候选清单.md)：产品证据、编号、法规边界和追溯索引；
-- [v2 微服务技术架构](../../02-architecture/v2-microservices-architecture.md)、[架构映射与任务重基线](11-架构映射与任务重基线.md) 与 [B7+ 代码任务基线](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)：服务边界、Gateway/IAM、数据/事件、任务依赖和验收字段；
+- [v2 微服务技术架构](../../02-architecture/v2-microservices-architecture.md)、[架构映射与任务重基线](11-架构映射与任务重基线.md) 与 [Phase 1 开发计划重基线](../../../requirements/backlog/v2-phase1-rebaseline/README.md)：服务边界、Gateway/IAM、数据/事件、任务依赖和验收字段；B7+ 只作 historical-candidate；
 - 既有 \`detailed-specs/\`、\`phase-*\`、B0–B6：历史实现、术语和迁移参考；若与 v2 冲突，不得覆盖 v2。
 
 本版禁止：为补齐数量私造 FEAT-*、把页面状态计为业务功能、把 Phase 2/3 能力提前放入 Phase 1、绕过四项目边界、在客户端复制领域事实，或用旧版文档推翻本版设计。
@@ -1118,7 +1119,7 @@ PRD / feature-matrix
   → E2E-P1 + acceptance criteria + unit/integration/runtime evidence
 ~~~
 
-登记册中的来源主键必须能回到 requirements/product-requirements.md 或 requirements/feature-matrix.md。设计文档锚点必须回到本目录；Phase 1 的业务旅程、页面、学习/后台规则、联调和恢复还必须回到 [业务运行设计包](phase1-business-operation/README.md)。契约和数据列必须指向唯一事实源；测试任务以后同时以 V2 ID 和相应运行层 ID 作为关联标签。追溯链完整只证明登记行可定位，不证明该行已完成实现。
+登记册中的来源主键必须能回到 requirements/product-requirements.md 或 requirements/feature-matrix.md。设计文档锚点必须回到本目录；Phase 1 的业务旅程、页面、学习/后台规则、联调和恢复还必须回到 [业务运行设计包](phase1-business-operation/README.md)，执行任务必须回到 [Phase 1 开发计划重基线](../../../requirements/backlog/v2-phase1-rebaseline/README.md) 的 \`P1R-*\`。契约和数据列必须指向唯一事实源；新任务同时以 V2 ID 和相应运行层 ID 作为关联标签。追溯链完整只证明登记行可定位，不证明该行已完成实现。
 
 ## 4. 每个设计单元的验收门
 

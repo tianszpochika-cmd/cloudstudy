@@ -6,6 +6,7 @@
 
 - `../docs/06-design/v2-980plus/README.md`：第二版全量业务设计、四端边界、状态、契约和阶段 Gate；新任务以此为准，`V2-EXT-*` 需细化签收后实施。
 - `../docs/06-design/v2-980plus/phase1-business-operation/README.md`：Phase 1 角色与业务总图、端到端旅程、逐页功能、学习机制、后台流程、业务联调、异常恢复和 E2E Evidence；运行层 ID 不改变 980 计数，文档存在不等于实现完成。
+- `backlog/v2-phase1-rebaseline/README.md`：当前唯一的 Phase 1 新开发执行计划；9 个里程碑、108 个 `P1R-*` 任务、依赖图、D2–D5 验收与全运行层覆盖矩阵。
 - product-requirements.md：完整 PRD，提供产品阶段、边界和功能的来源证据。
 - mvp-scope.md：Phase 1 可执行范围与优先级。
 - user-stories.md：按 Phase 1/2/3 划分的用户故事。
@@ -22,7 +23,8 @@
 | 分类 | 文件 | 使用规则 |
 |---|---|---|
 | 当前权威 | `product-requirements.md`、`feature-matrix.md`、`mvp-scope.md`、`user-stories.md`、`acceptance-criteria.md` | 需求、范围、用户故事和验收的当前依据；与 v2 设计包冲突时，以 v2 设计包及其追溯口径为准并同步修订。 |
-| 当前执行 | `backlog/README.md`、`backlog/v2-B7plus-代码重塑与交互测试任务基线.md`、`backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md`、`backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`、`backlog/G0-G4-治理门禁任务基线.md`、`backlog/DoD-Gate与证据包规范.md` | 当前任务拆分、运行验收和治理门禁入口；任务仍须绑定 v2 设计单元与 `ARCH-*` 能力，不能只凭文档或静态结果宣称完成。 |
+| 当前执行 | `backlog/v2-phase1-rebaseline/README.md`、`backlog/DoD-Gate与证据包规范.md` | `P1R-*` 是当前唯一新开发任务编号；按 D1→D5、依赖、owner 和 Evidence 推进，不能继承旧任务完成状态。 |
+| 历史实现状态 | `backlog/v2-B7plus-代码重塑与交互测试任务基线.md`、`backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md`、`backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`、`backlog/G0-G4-治理门禁任务基线.md` | 只用于代码/迁移/运行候选证据和现状回放；必须在当前提交按 P1R Evidence 重新验证。 |
 | 历史/迁移参考 | `语学星_PRD_v3.3_记忆与掌握闭环增强版.md`、`backlog/开发实施总纲与功能链条任务分解.md`、`backlog/Agent开发状态总报表.md`、`backlog/Phase-1范围冻结与跨文档基线.md`、`backlog/Agent开发SOP与状态流转模板.md` 中的 B0–B6 部分、`iterations/iteration-00-foundation.md` | 仅用于历史证据、迁移输入和状态回放，不得把其中旧技术、旧数量、旧档位或旧任务动作复制为当前开发命令；当前入口见上两类。 |
 
 当前 v2 登记册固定为 `V2-980-0001..0980`：930 个业务单元 + 50 个跨域扩展登记位。成熟度固定为 184 个显式设计单元、486 个原子证据映射、310 个待细化登记位；这是范围与追溯口径，不等于 980 份可实施详细设计或 980 项已完成实现。
@@ -49,5 +51,5 @@ AI 仅在 Phase 2 通过 Python FastAPI 独立服务启用。历史技术方案�
 
 ## 任务重基线提示
 
-旧 `requirements/backlog/` 中的 B0–B6/`DEV-*` 台账是 v1 历史执行基线。它们保留用于审计和现状回放；下一轮任务必须基于 v2 设计单元 + `ARCH-*` 能力，并绑定 Phase 1 业务运行设计的 `ACT/JNY/PAGE/RULE/INT/E2E` 重新拆分，不能把旧任务状态直接等同于 Gateway、RBAC 或微服务迁移完成。`CONTRACT-GAP/EVENT-GAP/IMPLEMENTATION-GAP/EVIDENCE-GAP` 未关闭时必须进入任务和风险清单。现有 B7+ 的代码状态事实仍见 [`backlog/v2-B7plus-代码重塑与交互测试任务基线.md`](./backlog/v2-B7plus-代码重塑与交互测试任务基线.md)，但它不直接充当下一台电脑的新开发计划。
+Phase 1 重基线已经落入 [`backlog/v2-phase1-rebaseline/`](./backlog/v2-phase1-rebaseline/README.md)。新工作必须从 `P1R-*` 台账认领，并按依赖和 D2–D5 Gate 提交 Evidence。旧 B0–B36、`DEV-*` 和 G 台账保留用于审计、现状回放和复用候选；不能把其中状态直接等同于 Gateway、RBAC、微服务、业务旅程或发布完成。`CONTRACT-GAP/EVENT-GAP/IMPLEMENTATION-GAP/EVIDENCE-GAP` 由新计划中的对应任务关闭。
 

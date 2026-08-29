@@ -4,11 +4,11 @@
 > 建立日期：2026-08-20  
 > 任务总数：140  
 > 当前基线状态：未开始 72；已认领 0；进行中 0；待验收 53；已完成 15；阻塞 0；返工 0
-> 本表是旧 `DEV-*` 任务的历史状态事实源；任务定义以《开发实施总纲与功能链条任务分解》为准。v2 新任务尚未在本表建立，不能把这里的“已完成”解释为 Java 25、Gateway、IAM/RBAC 或微服务迁移已验收。
+> 本表是旧 `DEV-*` 任务的历史状态事实源；任务定义以《开发实施总纲与功能链条任务分解》为准。当前 v2 Phase 1 新任务已在 [`v2-phase1-rebaseline`](./v2-phase1-rebaseline/README.md) 重建，不能把这里的“已完成”解释为 Java 25、Gateway、IAM/RBAC、微服务迁移或 `P1R-*` 已验收。
 
 ## v2 重基线提示
 
-下一轮任务状态表必须重新建立，并为每项任务增加 `Source Ref`、`Arch Ref`、`Service Owner`、`Data Owner`、`Contract Ref`、`Security Ref` 和运行/回滚证据。旧 B0–B6 状态保留用于审计，不直接继承到 v2 WBS。
+当前 `P1R-*` 状态表已重新建立，并通过 Trace、owner/scope、依赖、策略与 Evidence 字段承接 `Source Ref`、`Arch Ref`、Service/Data Owner、Contract/Security Ref 和运行/回滚要求。旧 B0–B6 状态保留用于审计，不直接继承到当前 WBS。
 
 > 当前 B0–B14 的跨批次执行状态不回写本历史表。2026-08-22 的代码级测试结果、四端启动烟测、B5/B9 修复、外部 TODO 和后端/基础设施环境阻塞，统一以 [`docs/07-operations/test-phase-handoff-2026-08-22.md`](../../docs/07-operations/test-phase-handoff-2026-08-22.md) 为准；本表继续只表达旧 `DEV-*` 历史。
 

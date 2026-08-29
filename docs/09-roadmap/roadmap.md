@@ -1,10 +1,10 @@
 # 产品路线图
 
-> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的任务顺序以本路线图为执行索引；业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
+> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的阶段顺序以本路线图为索引；Phase 1 的任务、依赖、状态和 Evidence 唯一以 [Phase 1 开发计划重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md) 为准，业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
 
 > 三阶段产品边界以 PRD v3.3 和 v2-980plus 为准。后端技术演进以 [v2 微服务目标架构](../02-architecture/v2-microservices-architecture.md) 和 ADR-0010 为准；平台能力建设不等于提前开放 AI/K12 业务。
 
-> 旧 B0–B6/`DEV-*` 台账仅作 v1 历史追溯。下一轮任务必须按 [ADR-0009](../10-decisions/0009-v2-design-baseline-and-task-rebaseline.md)、[平台能力矩阵](../02-architecture/v2-platform-capability-matrix.md) 和 v2 设计单元重新生成；旧状态不能直接代表 Gateway、RBAC 或微服务迁移完成。
+> 旧 B0–B36、`DEV-*` 与 G0–G4 台账仅作历史、迁移和现有实现候选证据。新开发只认领 `P1R-*`；旧状态不能直接代表 Gateway、RBAC、微服务迁移或真实运行完成。
 
 ## Platform 0：v2 平台与架构基座
 
@@ -26,36 +26,21 @@
 - 至少一个学习读链路和一个关键写链路完成“Gateway → 服务侧 PEP → 领域事实 → Outbox → Trace/Audit”回放，且内容/题目、attempt/判分、掌握度/复习分别由唯一 owner 管理。
 - 新服务模板能在本地固定端口和 CI 中启动；跨服务直写、共享 ORM entity、客户端角色头扫描为 0。
 
-## B7+ 代码层重塑批次
+## Phase 1 重基线执行批次（P1R）
 
-[v2 B7+ 代码重塑与交互测试任务基线](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 是代码重塑和 B15–B22 静态运行/发布基础的任务入口；[B23+ Phase 1 登录、真实数据与测试任务基线](../../requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md) 是认证、真实数据和原真机/发布门禁入口；[B28+ 本机真实全栈与 MCP 浏览器验收基线](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md) 是当前本机 Web/H5 收口入口。当前 Phase 1 共规划 180 项 B7+ 编号任务：原 B7–B27 为 135 项，新增 B28–B36 本机专项 45 项：
+[Phase 1 开发计划重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md) 将开发划分为 9 个里程碑、108 个编号任务；初始状态全部为 `PLANNED`，不继承旧台账完成结论：
 
-- B7–B8：服务模板、契约、共享国际化/主题 Token、Gateway、自有 JWT/IAM、服务侧 PEP 与成人 Gate；
-- B9–B13：learner/content、learning/assessment、media/离线、游戏/社群、商业化/Admin/官网公开数据；
-- B14：Phase 1 Strangler 收敛、兼容路由与代码级全链路回归；
-- B15：Java 25/Maven/Docker、本地基础设施、独立进程、迁移和观测运行态；
-- B16：真实 Gateway、自有 JWT、IAM/RBAC/ABAC、服务侧 PEP 和权限回归；
-- B17：领域服务、数据库、Outbox/Kafka、关键读写链路和 Saga 运行态；
-- B18：四端真实 API 联调、国际化/主题、官网公开边界和核心交互闭环；
-- B19：契约、集成、E2E、浏览器、真机、弱网、性能和无障碍测试；
-- B20：安全、隐私、版权、支付 sandbox、备份恢复和灾备 Gate；
-- B21：staging、不可变 RC、SLO/告警、回滚和 Go/No-Go；
-- B22：生产小流量上线、迁移对账、观察期和 Phase 1 收口。
-- B23：自有 IAM 账号密码注册/登录、JWT/JWKS、会话事实、Gateway 和服务侧 RBAC/ABAC/PEP。
-- B24：Mobile H5/Web 全局登录门禁、JWT 会话恢复/刷新、成人 Gate、onboarding、401/403、国际化/主题和交互边界。
-- B25：本地 MySQL 数据 owner、Phase 1 合成 fixture、内容/课程、学习/练习/测评/SRS/报告真实读写。
-- B26：Kafka/Outbox/消费者可靠性、跨服务学习闭环、浏览器/H5 真实数据测试、缺陷修复和回归。
-- B27：iOS/Android/iPad/PWA/微信小程序真机、专项质量、production-like staging、不可变 RC、回滚、Go/No-Go 和测试交接。
-- B28–B29：本机 Java 25/Docker/基础设施、迁移、14 个后端进程、持久化和观测真实运行。
-- B30–B32：自有 JWT 注册登录、IAM/RBAC、MySQL API 读写、完整学习链和 Kafka/Redis 联动。
-- B33：learner-web、Mobile H5、admin-web、official-site 与真实 Gateway/API 联调和交互修复。
-- B34–B35：Codex Browser MCP 真浏览器功能测试、异常恢复、数据一致性和缺陷回归。
-- B36：本机连续冷启动、双端完整旅程、数据/事件对账和 `LOCAL-TEST-PASS/NO-PASS` 交接。
-- G0–G4：横切 DoD 治理门禁代码化，覆盖范围、契约数据、实现交互、测试安全观测和发布回滚；它们不替代 B15–B27 的真实运行态 Gate。
+- M0：基线冻结、资产复用审计、仓库与 CI 治理；
+- M1：D2 契约、数据、事件与策略包冻结；
+- M2：Gateway、IAM、服务模板、安全与可靠性底座；
+- M3：内容供应链、媒体链与后台生产审核；
+- M4：官网、注册登录、成人 Gate、Onboarding、测评和首日计划；
+- M5：学习、练习、判分、SRS、错题 D+1/D+7、掌握度与报告闭环；
+- M6：通知、同步、客服、隐私、审计与运营恢复；
+- M7：游戏、受控社群、免费/VIP/激活码；生产支付保持关闭；
+- M8：四端 E2E、真机/弱网/无障碍/性能、安全、staging、回滚和发布验收。
 
-截至 2026-08-25，B18–B27 已完成相应代码与静态 Gate 基础，B28–B29 已通过本机基础设施、14 个后端进程、固定端口、Gateway 受保护边界、owner schema、观测和 fail-closed 运行门禁；B30–B33 的自动化/API/DB/Kafka/Redis/四端构建运行切片也已通过。Browser MCP 已验证真实页面、未登录门禁、公开投影、Mobile H5 390x844 登录入口和异常恢复；当前认证后注册、登录、学习旅程尚未提交，故 B34–B36 当前仍为收口中，交接保持 `LOCAL-TEST-NO-PASS`。原 B27 的 iOS/Android/iPad、微信、远程真机、staging、RC 和生产交接运行 Gate 暂缓，发布结论继续保持 `NO-GO`。
-
-此处 B7–B27 的“代码/静态完成”不代表真实运行完成。当前本机专项在 B28–B33 完成后进入 B34 MCP 浏览器正式测试，B34–B36 通过后只能宣告本机 Web/H5 真实数据功能测试完成。Phase 1 生产上线仍须恢复并通过原 B27 以及 B15–B22 的发布、回滚和观察期 Gate。F2/F3 保留在未来路线图中，不计入当前 Phase 1。
+旧 B7–B36 与 G0–G4 只用于判断现有代码应 `REUSE-VERIFY`、`REPAIR`、`REWRITE` 或淘汰，并为新任务提供候选证据。旧交接结论仍为 `LOCAL-TEST-NO-PASS`，只有对应 `P1R-*` 的当前提交 Evidence 通过阶段 Gate 后，任务和里程碑才能升级状态。
 
 ## Phase 1：市场开拓版（在 Platform 0 之上）
 

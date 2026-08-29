@@ -266,4 +266,4 @@ V2-980 / FEAT / PRD-ATOM
   → 单测/契约/集成/E2E/运行与回滚证据
 ```
 
-对应的 `ARCH-*` 清单见 [v2 平台能力矩阵](./v2-platform-capability-matrix.md)，Phase 1 运行语义见 [Phase 1 业务运行设计包](../06-design/v2-980plus/phase1-business-operation/README.md)。旧的 B0–B6 任务台账保留用于历史追溯，但不再作为 v2 新任务的拆分依据。
+对应的 `ARCH-*` 清单见 [v2 平台能力矩阵](./v2-platform-capability-matrix.md)，Phase 1 运行语义见 [Phase 1 业务运行设计包](../06-design/v2-980plus/phase1-business-operation/README.md)，执行顺序与验收见 [Phase 1 开发计划重基线](../../requirements/backlog/v2-phase1-rebaseline/README.md)。旧 B/DEV/G 台账保留用于历史追溯和资产候选，不再作为 v2 新任务的拆分或完成依据。

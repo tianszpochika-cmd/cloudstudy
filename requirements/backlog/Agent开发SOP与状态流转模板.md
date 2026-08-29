@@ -1,10 +1,10 @@
 # Agent 开发 SOP 与状态流转模板
 
-> **文档分类：混合模板**。本文件中涉及 v2 B7+ 的状态流转规则可作为当前执行模板；涉及旧 B0–B6/`DEV-*` 的内容仅是 Historical / Superseded 记录。旧批次、旧技术栈和旧功能数量不得作为当前开发命令，当前入口见 [`backlog/README.md`](./README.md) 与 v2 任务基线。
+> **文档分类：混合模板**。通用状态流转和 Evidence 规则可继续复用；旧 B0–B36、`DEV-*` 与 G0–G4 内容均是 Historical / Superseded 记录。旧批次、旧技术栈和旧功能数量不得作为当前开发命令，当前入口见 [`v2-phase1-rebaseline`](./v2-phase1-rebaseline/README.md)。
 
-> 适用范围：旧 `开发实施总纲与功能链条任务分解.md` 的 140 个历史任务，以及 [v2 B7+ 代码重塑与交互测试任务基线](./v2-B7plus-代码重塑与交互测试任务基线.md) 中的新任务
+> 适用范围：`P1R-*` 新任务复用本文件的通用执行规则；旧 `DEV-*`、B 与 G 任务仅作历史回放
 >
-> 状态事实源：B7+ 使用 `v2-B7plus-代码重塑与交互测试任务基线.md` 对应任务行；旧 B0–B6 使用 `requirements/backlog/Agent开发状态总报表.md`
+> 状态事实源：`P1R-*` 使用 [`02-编号任务台账.md`](./v2-phase1-rebaseline/02-编号任务台账.md)；全部旧台账状态不得自动迁移
 
 ## 1. Agent 开工前检查
 
@@ -12,8 +12,8 @@ Agent 必须先阅读：
 
 1. 根目录 `AGENTS.md`。
 2. 任务的 `Feature Ref` 对应的 `requirements/` 与 `docs/`。
-3. 任务依赖是否已在对应状态事实源标记为“已完成”；B7+ 还必须确认 `Source Ref`、`ARCH-*`、Service/Data Owner 和 Client Host 已填写。
-4. B7+ 先阅读 `docs/06-design/v2-980plus/`、v2 微服务架构和 B7+ 基线；`Phase-1范围冻结与跨文档基线.md` 仅用于旧任务迁移核对。
+3. 任务依赖是否已在 `P1R-*` 状态事实源标记为 `ACCEPTED（已完成）`；并确认 Source/Trace Ref、`ARCH-*`、Service/Data Owner、Client Host、Contract/Security Ref 和 Evidence 已填写。
+4. `P1R-*` 先阅读 `docs/06-design/v2-980plus/`、Phase 1 业务运行设计、v2 微服务架构和当前重基线；旧任务文件仅用于迁移核对。
 5. 当前仓库的 `git status`，识别其他 Agent 已有改动，不得覆盖或回滚。
 
 如果依赖未完成，只能准备设计、夹具或兼容适配，并将任务保持为“阻塞”；不得把未实现的功能标记为完成。
@@ -42,7 +42,7 @@ Agent 必须先阅读：
                        进行中
 ```
 
-“已完成”不是 Agent 自报状态；若完成后需要变更，必须保留原验收记录并新开“返工”记录。B7+ 的状态变化追加到其任务行的 owner、证据和阻塞字段；旧 B0–B6 继续追加到历史状态报表，不能删除历史行。B7+ 代码层完成也不能替代运行态、真机或发布 Gate 验收。
+“已完成”不是 Agent 自报状态；若完成后需要变更，必须保留原验收记录并新开“返工”记录。`P1R-*` 的状态变化追加到当前任务行和 Evidence manifest；旧 B/`DEV-*`/G 台账只保留历史，不得删除历史行或迁移其完成结论。代码层完成也不能替代运行态、真机或发布 Gate 验收。
 
 ## 3. 文件边界与协作规则
 
@@ -51,7 +51,7 @@ Agent 必须先阅读：
 - API/事件任务：先改 `packages/contracts/`，再改服务 DTO/Controller 和客户端生成类型。
 - 数据任务：只新增对应 `database/mysql/migrations/` 版本文件，不直接改存量 schema 作为上线方案。
 - 页面任务：只改所属 `apps/` 或 UI 任务明确的设计令牌/组件目录；不得擅自修改后端契约来迁就页面。
-- 文档/ADR/治理任务：只改任务允许的 `docs/` 与 `requirements/backlog/` 文件；本人已认领的 B7+ 任务行可按本模板更新，其他任务行、历史总报表、共享 README 与根脚本需先由统筹分配。
+- 文档/ADR/治理任务：只改任务允许的 `docs/` 与 `requirements/backlog/` 文件；本人已认领的 `P1R-*` 任务行可按本模板更新，其他任务行、历史总报表、共享 README 与根脚本需先由统筹分配。
 - 不覆盖其他 Agent 的未提交修改；发现文件重叠先阻塞并报告，禁止 `git reset --hard`、`git checkout --` 或大范围格式化。
 - 每个任务交付时列出新增、修改和未触碰的路径；未列入白名单的改动视为越界，需要返工或拆分。
 
@@ -152,7 +152,7 @@ Agent=agent-name
 ## 7. Agent 自检清单
 
 ```text
-[ ] 已阅读 AGENTS.md、任务依赖及对应基线（B7+ 为 v2-980plus/ARCH-* 与 B7+ 任务基线；B0–B6 才使用 P1-BASELINE-20260820）
+[ ] 已阅读 AGENTS.md、任务依赖、v2-980plus/ARCH-*、Phase 1 业务运行设计与 `P1R-*` 当前任务基线；旧基线仅作迁移核对
 [ ] 未跨越未完成依赖，未越过文件白名单
 [ ] API/事件先契约，数据先 migration
 [ ] 有单元/集成/契约/E2E 中与任务匹配的测试
