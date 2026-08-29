@@ -4,9 +4,9 @@
 
 M0 canonical Evidence 的实现源提交：`0f8b60ae4e83d0f31d891eed8d9383c007485130`。交接提交在其后，只增加任务状态、manifest、Gate 摘要与交接记录。
 
-M1-001 canonical API 基座的实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`；验收状态与摘要以 `evidence/p1r/m1/P1R-M1-001/manifest.json` 为准。
+M1-001 canonical API 基座的原实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`；共享测试在 M1-003 接续后由 Luna Max 于 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7` 完成 current-source revalidation，验收状态与摘要以 `evidence/p1r/m1/P1R-M1-001/manifest.json` 为准。
 
-M1-002 自有 IAM 认证生命周期契约已接受：最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，canonical manifest 为 `evidence/p1r/m1/P1R-M1-002/manifest.json`，独立评审为 `m1_002_final_review`（Terra Ultra）。
+M1-002 自有 IAM 认证生命周期契约已接受：原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，共享 B8/canonical/generated 产物由 Luna Max 于 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7` 完成 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-002/manifest.json`。
 
 M1-003 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2 契约已接受：最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，canonical manifest 为 `evidence/p1r/m1/P1R-M1-003/manifest.json`，独立评审为 `m1_003_final_review`（Luna Max）。
 

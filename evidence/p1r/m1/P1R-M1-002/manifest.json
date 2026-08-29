@@ -2,27 +2,27 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "25705c4caab46449cfaa577db08bd13c8ad13fba",
+  "sourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
       "algorithm": "sha256",
-      "digest": "119683c54572cbf069b16f025e31bfcc6570308955c5b92c076d6be169fead3a"
+      "digest": "26fb400dae4621ca4af006da80258e4907e0870c168c14586af250875bcfc714"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "922f2efdd233fd317a10e6a9f00f936ea5b66306960d6a91fb76c6925620028f"
+      "digest": "0d922d5d38e9c2871b1b833c2f927ffcc16c0bd1f78b995992e60010f9900521"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "a2e9a25224fb92ef5850174135ed130e67c8a69d2dd626426edeb97d09a8ccd9"
+      "digest": "3b0223321373c3228e2d1ed32e84e2c650d73488a3a51ca8119c44c0db83267d"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "c21d4cfba529251ccffc2b940e2fda1d6ace44984af564b0f40005f8d42358de"
+      "digest": "c9f5b0d0d1d053ed9faae5c3ffb8de7d3161e3dac9685338d3cf3a73a950f6fe"
     },
     {
       "path": "scripts/audit/p1r-auth-contract-check.mjs",
@@ -42,17 +42,17 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "4e7773438d7895080adb770e7db35e98282c2a9da5f6905d5def7398e7f3b0d8"
+      "digest": "700c679b66f72815aa714e86ac635f4fab15bf27fffd03f9be3b74f2c17fc8b6"
     },
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "29c1d7feb1fca4eb714cc11c6c6f00699e1ccd76053c9ec164ddf3358ee6de57"
+      "digest": "887112b3ea0bf4933943fb6b4f54601e96b98d2012b3c88a8a4172134fb79965"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "a9b7e9104ea22962d3e3961fc53e0ba576e7298eb6458aa1b938b07967f4b1ef"
+      "digest": "ca38bdcd2cf786cf33d535d0c43194be98c7c02a164a103437ffeec5136ee1a8"
     }
   ],
   "environment": {
@@ -61,8 +61,14 @@
     "acceptedContractBaseline": "0a985f00c521e8f27a54f891fc1526178ba0320c",
     "executionCheckpoint": "77801084bcc595756e6d5471f2095e1da9414b25"
   },
+  "provenance": {
+    "originalSourceCommit": "25705c4caab46449cfaa577db08bd13c8ad13fba",
+    "originalFinishedAt": "2026-08-29T22:09:32+08:00",
+    "originalReviewer": "m1_002_final_review",
+    "currentSourceRevalidationTask": "P1R-M1-003"
+  },
   "startedAt": "2026-08-29T20:33:21+08:00",
-  "finishedAt": "2026-08-29T22:09:32+08:00",
+  "finishedAt": "2026-08-29T23:38:00+08:00",
   "actors": [
     "m1_002_auth_contract",
     "m1_002_auth_audit",
@@ -82,14 +88,15 @@
     "node scripts/contracts/merge-b1-fragments.mjs",
     "pnpm contracts:generate -- --check",
     "pnpm contracts:validate",
-    "pnpm contracts:compatibility:git -- --ref 77801084bcc595756e6d5471f2095e1da9414b25 --kind openapi",
+    "pnpm contracts:compatibility:git -- --ref 77801084bcc595756e6d5471f2095e1da9414b25 --kind all",
     "pnpm --dir packages/contracts typecheck",
     "pnpm --dir packages/api-client typecheck",
     "pnpm test:p1r",
     "pnpm test:b8",
     "node --test tests/g/g1-contract-data.test.mjs",
     "git diff --check",
-    "independent Terra Ultra read-only acceptance review"
+    "independent Terra Ultra read-only acceptance review",
+    "independent Luna Max current-source revalidation review at 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7"
   ],
   "results": [
     {
@@ -115,12 +122,12 @@
     {
       "check": "merge-generate-validate-types-compatibility",
       "status": "PASS",
-      "details": "20 OpenAPI and 14 event fragments merge without drift; five generated files are current; 367 operations, 497 schemas and 154 events validate; both TypeScript packages typecheck; Git baseline reports zero breaking OpenAPI changes."
+      "details": "20 OpenAPI and 14 event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the M1-002 Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
     },
     {
       "check": "tests-and-independent-review",
       "status": "PASS",
-      "details": "P1R 44/44, B8 29/29 and G1 6/6 pass; the final auth test requires the real audit to PASS; independent reviewer m1_002_final_review accepted source commit 25705c4caab46449cfaa577db08bd13c8ad13fba."
+      "details": "P1R 57/57, B8 29/29 and G1 6/6 pass at the current source; the auth audit covers 15/15 paths; independent reviewer m1_003_final_review revalidated the original M1-002 acceptance at 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7."
     },
     {
       "check": "design-consistency",
@@ -131,7 +138,7 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "The task source is isolated in 98380db7d17d9b10880a89358cae2f73d8ed638c plus the strict-test follow-up 25705c4caab46449cfaa577db08bd13c8ad13fba; reverting them in reverse order restores checkpoint 77801084, and canonical/generated artifacts remain reproducible from fragments."
+      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidation at 82b27f4 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
     }
   ],
   "knownGaps": [
@@ -140,6 +147,6 @@
     "Full CORS, CSRF, Origin/Referer, rate-limit and direct-connect policy remains owned by P1R-M1-004.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-002-relevant G1 slice passes 6/6 and the independent reviewer confirmed the two failures predate this source commit."
   ],
-  "reviewer": "m1_002_final_review",
+  "reviewer": "m1_003_final_review",
   "decision": "ACCEPTED"
 }
