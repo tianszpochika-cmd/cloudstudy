@@ -6,6 +6,8 @@ M0 canonical Evidence 的实现源提交：`0f8b60ae4e83d0f31d891eed8d9383c00748
 
 M1-001 canonical API 基座的实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`；验收状态与摘要以 `evidence/p1r/m1/P1R-M1-001/manifest.json` 为准。
 
+M1-002 已在 `dev@0a985f00c521e8f27a54f891fc1526178ba0320c` 后启动。当前任务记录为 `execution/P1R-M1-002.md`；接手时必须先看台账状态和该记录，不从聊天内容推断进度。
+
 ## 1. 获取检查点
 
 ```powershell
@@ -56,13 +58,13 @@ pnpm --dir apps/mobile test:b12
 - M0 的 7 项治理/仓库/工具/夹具任务已接受；`P1R-M0-006` 保持 `BLOCKED`。
 - 严格供应链命令 `pnpm p1r:supply-chain:check` 预期非零：当前应只有 `GHSA-fx2h-pf6j-xcff` 这 1 个 high、0 critical。若 high 数增多或出现 critical，先停止后续依赖升级并检查 lockfile diff。
 - 不得为让 CI 变绿而加入漏洞豁免或强制把 mobile Vite 覆盖到 6.x。
-- M1 可从只依赖已接受 `P1R-M0-008` 的契约任务开始；M0 安全 Gate、生产支付、Phase 2/3 和发布动作仍关闭。
+- M1-002 正在冻结自有 IAM 认证生命周期契约；M0 安全 Gate、生产支付、Phase 2/3 和发布动作仍关闭。
 - `P1R-M1-001` 已接受：公共成功/错误 envelope、追踪/版本 headers、写幂等、统一 cursor 分页、只读 merge/generate 与真实 Git baseline compatibility 已有当前提交 Evidence。
 
 ## 5. 推荐接手顺序
 
 1. 确认上述恢复验证与本仓库 Evidence 一致。
-2. 从 `P1R-M1-002` 开始依次处理认证、权限、Gateway、数据 owner 和事件可靠性契约；共享 OpenAPI/AsyncAPI/Flyway 由单一 owner 合并。
+2. 若 `P1R-M1-002` 尚未接受，先按其执行记录恢复；接受后再依次处理权限、Gateway、数据 owner 和事件可靠性契约。共享 OpenAPI/AsyncAPI/Flyway 由单一 owner 合并。
 3. 每次修改公共 API 后运行 `pnpm contracts:compatibility:git -- --ref 96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4 --kind all`；若任务另有更新后的 accepted contract baseline，以其 manifest 为准。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

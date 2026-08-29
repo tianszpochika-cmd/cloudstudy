@@ -4,6 +4,8 @@
 
 > 历史条目说明：本文件按时间保留当时的实现与验证快照。ADR-0013 之前记录的外部认证、OIDC、旧授权入口及其运行结果均为 Historical / Superseded，不得作为当前需求、实现命令或验收证据；当前认证基线以 ADR-0013 的平台自有 IAM、账号密码和短时 RS256 JWT 为准。历史事实不删除，仅用于审计与迁移追溯。
 
+- [P1R-M1-002-START-20260829] 启动 Phase 1 自有 IAM 认证生命周期契约任务：以 `dev@0a985f00` 为不可变起点，按认证 OpenAPI、失败关闭测试、认证设计一致性三条互斥文件轨道执行；目标是拆分 Web/H5 HttpOnly Cookie 与原生 Keychain/Keystore 响应，冻结注册、登录、刷新、退出、会话撤销、密码重置和 RS256/JWKS 语义。本条仅记录 `IN_PROGRESS` 检查点，不代表契约或 M1 已验收。
+
 - [P1R-M1-001-API-FOUNDATION-20260829] 接受 Phase 1 公共 API 契约基座：367 个操作的 317 个外部 JSON 成功响应与 385 个已声明标准错误响应统一使用 canonical envelope、requestId/traceId/API version headers；165 个外部写操作中 164 个强制 `Idempotency-Key`，保留 1 个具名 signed-access 安全例外；58 个 `list*` 与 2 个既有 Cursor 操作统一为 `Cursor + PageSize + ApiCursorPageEnvelope + ApiCursorPageMeta + x-pagination`，旧 limit/page 和 data 内游标状态由失败关闭审计拒绝。merge/generate 改为可验证的无写入漂移检查，兼容性必须使用不同输入或不可变 Git 基线并拒绝真实自比较。验证：P1R 34/34、G1 6/6、B7 28/28、B8 29/29，契约 367 operations/486 schemas/154 events，三类真实基线均 0 breaking；独立 Luna Max 评审接受实现源 `96e1b541`。完整历史 G 套件仍保留两项既有 G0/G3 旧标记失败，不伪装为全绿。
 
 - [P1R-M0-EXECUTION-20260829] 执行新 Phase 1 计划的 M0 重基线：新增当前资产与历史候选机器清单，清理 21 个临时编译根/1,397 个受跟踪 `.class`，冻结 miniapp 历史边界，建立 6 类 13 条脱敏合成夹具及安全 seed/cleanup；统一 Java 25/Spring Boot 4.1.1/Node/pnpm/固定端口工具链、14 服务 Maven Reactor、Windows/Linux 跨平台测试命令与 `dev/master` 真实 CI；新增许可证、CycloneDX SBOM、漏洞审计、P1R 完整范围依赖、状态轨迹、不可变 Evidence、终态独立评审和跨平台 Git blob 摘要失败关闭校验及 13 个门禁测试。Java 25 Reactor 15/15、工具链、端口、类型检查、计划、夹具与仓库卫生检查通过。Node high 从 10 降至 1、critical 为 0；因 uni-app 当前编译器仍锁定 Vite 5 系列，`GHSA-fx2h-pf6j-xcff` 无安全兼容升级路径，`P1R-M0-006` 与 M0 安全 Gate 保持 `BLOCKED`，未添加豁免或伪造 PASS。

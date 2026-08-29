@@ -5,16 +5,16 @@
 ## 当前任务
 
 - `P1R-M1-001`：`ACCEPTED`；实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`。
-- 下一项：`P1R-M1-002` 保持 `PLANNED`，仅在本检查点推送后按依赖转入执行。
+- `P1R-M1-002`：`IN_PROGRESS`；起始检查点 `dev@0a985f00c521e8f27a54f891fc1526178ba0320c`，只冻结自有 IAM 认证生命周期与 Web/原生凭据传输契约，不提前实现运行时。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
 ## 并行轨道
 
-1. API 契约源：统一 envelope、错误、分页、幂等、追踪与版本/弃用语义。
-2. 失败关闭校验：为上述规则新增独立审计器和自动化负例测试。
-3. GAP 与交接治理：建立具名 GAP、owner、关闭证据和另一台电脑恢复说明。
+1. IAM 契约源：只修改认证 OpenAPI 源，拆分 Web Cookie 与原生安全存储请求/响应，并固定 RS256/JWKS、轮换、重放、撤销和错误语义。
+2. 失败关闭校验：只修改 P1R 认证审计/测试，拒绝混合凭据、弱化 Cookie、可变算法或不完整错误契约。
+3. 设计一致性：只修改认证相关设计/ADR 说明，移除 OIDC/client/redirect 与“禁止自研 Token Server”等过期冲突表述。
 
-统筹 Agent 已统一合并与生成，Luna Max 独立复核后给出 `ACCEPTED`。本任务没有继承旧 B/DEV/G 状态；实现源与状态/Evidence 分离提交。
+统筹 Agent 独占 canonical 合并、生成物、台账、状态轨迹、Evidence、最终提交和远程推送。三个执行轨道只能使用 Terra Ultra 或 Luna Max，不能自行改变任务状态或宣称验收通过。
 
 ## M1-001 结果摘要
 
