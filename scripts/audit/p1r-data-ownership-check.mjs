@@ -217,10 +217,9 @@ function normalizeSqlForPolicyScan(sql) {
         cursor += 1;
       }
       const previousWord = normalized.match(/([a-z]+)\s*$/iu)?.[1]?.toUpperCase();
-      const nextNonWhitespace = source.slice(cursor).match(/^\s*(.)/su)?.[1];
       const isPolicyRelevantIdentifier = closed
         && /^[a-z_][a-z0-9_]*$/iu.test(value)
-        && (nextNonWhitespace === '.' || previousWord === 'USE');
+        && (/(?:_service)$/iu.test(value) || /^core_api$/iu.test(value) || previousWord === 'USE');
       const rawToken = source.slice(index, cursor);
       normalized += isPolicyRelevantIdentifier
         ? value

@@ -217,10 +217,16 @@ test('migration SQL scan treats MySQL executable comments as executable policy i
 });
 
 test('migration SQL scan rejects ANSI_QUOTES cross-service schema identifiers', () => {
-  const errors = validateMigrationSqlText({
-    service: 'learning-service',
-    filename: 'V99__unsafe_ansi_quotes.sql',
-    sql: 'INSERT INTO "assessment_service".attempt_projection (attempt_id) VALUES (\'synthetic-attempt\');',
-  });
-  assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  for (const sql of [
+    'INSERT INTO "assessment_service".attempt_projection (attempt_id) VALUES (\'synthetic-attempt\');',
+    'INSERT INTO "assessment_service"/* comment */.attempt_projection (attempt_id) VALUES (\'synthetic-attempt\');',
+    'INSERT INTO "assessment_service" /* comment */ . attempt_projection (attempt_id) VALUES (\'synthetic-attempt\');',
+  ]) {
+    const errors = validateMigrationSqlText({
+      service: 'learning-service',
+      filename: 'V99__unsafe_ansi_quotes.sql',
+      sql,
+    });
+    assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  }
 });
