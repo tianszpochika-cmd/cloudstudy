@@ -4,6 +4,8 @@
 
 > 历史条目说明：本文件按时间保留当时的实现与验证快照。ADR-0013 之前记录的外部认证、OIDC、旧授权入口及其运行结果均为 Historical / Superseded，不得作为当前需求、实现命令或验收证据；当前认证基线以 ADR-0013 的平台自有 IAM、账号密码和短时 RS256 JWT 为准。历史事实不删除，仅用于审计与迁移追溯。
 
+- [P1R-M1-002-IAM-CONTRACT-20260829] 接受 Phase 1 自有 IAM 认证生命周期契约：注册/登录/刷新在同一端点下使用 `WEB_COOKIE` 与 `NATIVE_SECURE_STORAGE` 具名请求/响应 variant，生成客户端以 `data.authTransport` 静态区分；Web JSON 不含 Refresh Token，原生响应强制返回且只允许 Keychain/Keystore。固定短时 RS256、RSA JWKS 公钥字段、`kid`/缓存/轮换/重叠/unknown-kid fail closed，以及 rotation、reuse/replay、token family/session revoke、logout、密码重置、清 Cookie、canonical 错误码和关联审计语义。新增结构化认证审计与 10 个失败关闭测试，合同为 367 operations/497 schemas/154 events，Git 基线 0 breaking；P1R 44/44、B8 29/29、G1 6/6，独立 Terra Ultra 评审接受最终来源 `25705c4c`。完整 G 仍有两个任务前已存在的 G0/G3 stale marker 失败，IAM 运行实现、完整 CORS/CSRF 和 M0-006 供应链阻塞未被本任务冒充完成。
+
 - [P1R-M1-002-START-20260829] 启动 Phase 1 自有 IAM 认证生命周期契约任务：以 `dev@0a985f00` 为不可变起点，按认证 OpenAPI、失败关闭测试、认证设计一致性三条互斥文件轨道执行；目标是拆分 Web/H5 HttpOnly Cookie 与原生 Keychain/Keystore 响应，冻结注册、登录、刷新、退出、会话撤销、密码重置和 RS256/JWKS 语义。本条仅记录 `IN_PROGRESS` 检查点，不代表契约或 M1 已验收。
 
 - [P1R-M1-001-API-FOUNDATION-20260829] 接受 Phase 1 公共 API 契约基座：367 个操作的 317 个外部 JSON 成功响应与 385 个已声明标准错误响应统一使用 canonical envelope、requestId/traceId/API version headers；165 个外部写操作中 164 个强制 `Idempotency-Key`，保留 1 个具名 signed-access 安全例外；58 个 `list*` 与 2 个既有 Cursor 操作统一为 `Cursor + PageSize + ApiCursorPageEnvelope + ApiCursorPageMeta + x-pagination`，旧 limit/page 和 data 内游标状态由失败关闭审计拒绝。merge/generate 改为可验证的无写入漂移检查，兼容性必须使用不同输入或不可变 Git 基线并拒绝真实自比较。验证：P1R 34/34、G1 6/6、B7 28/28、B8 29/29，契约 367 operations/486 schemas/154 events，三类真实基线均 0 breaking；独立 Luna Max 评审接受实现源 `96e1b541`。完整历史 G 套件仍保留两项既有 G0/G3 旧标记失败，不伪装为全绿。

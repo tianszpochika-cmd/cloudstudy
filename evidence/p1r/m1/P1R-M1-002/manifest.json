@@ -1,0 +1,145 @@
+{
+  "taskId": "P1R-M1-002",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "25705c4caab46449cfaa577db08bd13c8ad13fba",
+  "artifactDigests": [
+    {
+      "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
+      "algorithm": "sha256",
+      "digest": "119683c54572cbf069b16f025e31bfcc6570308955c5b92c076d6be169fead3a"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "922f2efdd233fd317a10e6a9f00f936ea5b66306960d6a91fb76c6925620028f"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "algorithm": "sha256",
+      "digest": "a2e9a25224fb92ef5850174135ed130e67c8a69d2dd626426edeb97d09a8ccd9"
+    },
+    {
+      "path": "packages/api-client/src/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "c21d4cfba529251ccffc2b940e2fda1d6ace44984af564b0f40005f8d42358de"
+    },
+    {
+      "path": "scripts/audit/p1r-auth-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "97f4accbc7c4abb89d948de5c9200627971840ca047e7231381499e762b299e2"
+    },
+    {
+      "path": "tests/p1r/p1r-auth-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "4b98459122f7b54c10bfe9c26713f1693dbe4e326c78394b8631e113bf153d9d"
+    },
+    {
+      "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
+      "algorithm": "sha256",
+      "digest": "1b9717992284691aab468ed03874b44ec4cd5e590e0e6f8235d51e43fd933ea5"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "algorithm": "sha256",
+      "digest": "4e7773438d7895080adb770e7db35e98282c2a9da5f6905d5def7398e7f3b0d8"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "29c1d7feb1fca4eb714cc11c6c6f00699e1ccd76053c9ec164ddf3358ee6de57"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "a9b7e9104ea22962d3e3961fc53e0ba576e7298eb6458aa1b938b07967f4b1ef"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "acceptedContractBaseline": "0a985f00c521e8f27a54f891fc1526178ba0320c",
+    "executionCheckpoint": "77801084bcc595756e6d5471f2095e1da9414b25"
+  },
+  "startedAt": "2026-08-29T20:33:21+08:00",
+  "finishedAt": "2026-08-29T22:09:32+08:00",
+  "actors": [
+    "m1_002_auth_contract",
+    "m1_002_auth_audit",
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-002",
+    "V2-980-0359",
+    "V2-980-0404",
+    "JNY-P1-01",
+    "INT-P1-001",
+    "ADR-0012",
+    "ADR-0013"
+  ],
+  "commands": [
+    "pnpm p1r:auth-contract:check",
+    "node scripts/contracts/merge-b1-fragments.mjs",
+    "pnpm contracts:generate -- --check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 77801084bcc595756e6d5471f2095e1da9414b25 --kind openapi",
+    "pnpm --dir packages/contracts typecheck",
+    "pnpm --dir packages/api-client typecheck",
+    "pnpm test:p1r",
+    "pnpm test:b8",
+    "node --test tests/g/g1-contract-data.test.mjs",
+    "git diff --check",
+    "independent Terra Ultra read-only acceptance review"
+  ],
+  "results": [
+    {
+      "check": "web-native-auth-transport",
+      "status": "PASS",
+      "details": "WEB_COOKIE and NATIVE_SECURE_STORAGE use distinct generated request and response unions; Web JSON cannot contain refreshToken, while native JSON requires it and limits persistence to Keychain or Keystore."
+    },
+    {
+      "check": "rs256-jwks",
+      "status": "PASS",
+      "details": "Access Tokens remain short-lived RS256 JWTs; JWKS exposes RSA public members only, requires kid, bounds cache lifetime, publishes a new kid before use, retains overlap and fails closed for unknown kid."
+    },
+    {
+      "check": "rotation-replay-revocation-reset",
+      "status": "PASS",
+      "details": "Every-use rotation, idempotent replay, reuse detection, token-family and session revocation, logout, explicit session revoke, password reset and Web cookie clearing semantics are frozen."
+    },
+    {
+      "check": "correlation-errors-audit",
+      "status": "PASS",
+      "details": "Authentication lifecycle responses retain requestId, traceId and API version headers; reuse uses canonical AUTH_REFRESH_REUSE_DETECTED and lifecycle audit metadata remains bounded and redacted."
+    },
+    {
+      "check": "merge-generate-validate-types-compatibility",
+      "status": "PASS",
+      "details": "20 OpenAPI and 14 event fragments merge without drift; five generated files are current; 367 operations, 497 schemas and 154 events validate; both TypeScript packages typecheck; Git baseline reports zero breaking OpenAPI changes."
+    },
+    {
+      "check": "tests-and-independent-review",
+      "status": "PASS",
+      "details": "P1R 44/44, B8 29/29 and G1 6/6 pass; the final auth test requires the real audit to PASS; independent reviewer m1_002_final_review accepted source commit 25705c4caab46449cfaa577db08bd13c8ad13fba."
+    },
+    {
+      "check": "design-consistency",
+      "status": "PASS",
+      "details": "ADR-0013 and the contract guide describe the same transport matrix and termination semantics; the generated v2 design package contains no conflicting client, redirect URI or password-login prohibition."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The task source is isolated in 98380db7d17d9b10880a89358cae2f73d8ed638c plus the strict-test follow-up 25705c4caab46449cfaa577db08bd13c8ad13fba; reverting them in reverse order restores checkpoint 77801084, and canonical/generated artifacts remain reproducible from fragments."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still blocks release claims.",
+    "IAM runtime transport cross-check, native no-cookie behavior, durable rotation/replay storage and actual cookie expiry clearing remain owned by P1R-M2-002.",
+    "Full CORS, CSRF, Origin/Referer, rate-limit and direct-connect policy remains owned by P1R-M1-004.",
+    "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-002-relevant G1 slice passes 6/6 and the independent reviewer confirmed the two failures predate this source commit."
+  ],
+  "reviewer": "m1_002_final_review",
+  "decision": "ACCEPTED"
+}

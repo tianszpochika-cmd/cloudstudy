@@ -78,10 +78,10 @@
     },
     {
       "taskId": "P1R-M1-002",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-29T20:33:21+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T22:09:32+08:00",
       "actor": "root-coordinator",
-      "reason": "P1R-M1-001 is accepted and pushed; the IAM authentication contract scope, acceptance checks, baseline commit and non-overlapping file ownership are frozen.",
+      "reason": "The Web/native IAM lifecycle contract, generated unions, failure-closed audit and design alignment passed; independent Terra Ultra reviewer m1_002_final_review accepted source commit 25705c4caab46449cfaa577db08bd13c8ad13fba.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-002/manifest.json"
     }
   ]

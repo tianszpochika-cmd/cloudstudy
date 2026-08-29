@@ -5,16 +5,16 @@
 ## 当前任务
 
 - `P1R-M1-001`：`ACCEPTED`；实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`。
-- `P1R-M1-002`：`IN_PROGRESS`；起始检查点 `dev@0a985f00c521e8f27a54f891fc1526178ba0320c`，只冻结自有 IAM 认证生命周期与 Web/原生凭据传输契约，不提前实现运行时。
+- `P1R-M1-002`：`ACCEPTED`；最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，独立评审 `m1_002_final_review`（Terra Ultra）。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
-## 并行轨道
+## M1-002 执行轨道
 
 1. IAM 契约源：只修改认证 OpenAPI 源，拆分 Web Cookie 与原生安全存储请求/响应，并固定 RS256/JWKS、轮换、重放、撤销和错误语义。
 2. 失败关闭校验：只修改 P1R 认证审计/测试，拒绝混合凭据、弱化 Cookie、可变算法或不完整错误契约。
-3. 设计一致性：只修改认证相关设计/ADR 说明，移除 OIDC/client/redirect 与“禁止自研 Token Server”等过期冲突表述。
+3. 设计一致性：只修改 ADR-0013 与契约说明，明确 transport profile、discriminator 和会话终止边界；只读确认生成设计文档已无 OAuth client/redirect 与“禁止密码直登”冲突。
 
-统筹 Agent 独占 canonical 合并、生成物、台账、状态轨迹、Evidence、最终提交和远程推送。三个执行轨道只能使用 Terra Ultra 或 Luna Max，不能自行改变任务状态或宣称验收通过。
+统筹 Agent 独占 canonical 合并、生成物、台账、状态轨迹、Evidence、最终提交和远程推送。三个执行 Agent 分别为 `m1_002_auth_contract`（Terra Ultra）、`m1_002_auth_audit`（Luna Max）和只读终验 `m1_002_final_review`（Terra Ultra）；因根级线程名额和公共合约依赖采用顺序调度，没有使用模型未知的历史 Agent。
 
 ## M1-001 结果摘要
 
@@ -22,3 +22,10 @@
 - 幂等：165 个外部写，164 个 required，1 个具名 signed-access 例外。
 - 分页：58 个 `list*` + 2 个已有 Cursor 操作统一为 cursor；P1R 34/34。
 - 兼容：以 `4d7f73a867ff3e1db8582eab7593c173625bc8a3` 为不可变基线，OpenAPI/events/schema 均 0 breaking。
+
+## M1-002 结果摘要
+
+- 认证传输：`WEB_COOKIE` 与 `NATIVE_SECURE_STORAGE` 使用具名请求/响应 schema 和 `data.authTransport` discriminator；生成客户端不再暴露可选 Refresh Token 的混合响应。
+- 会话安全：固定短时 RS256、RSA JWKS、`kid`/缓存/轮换/重叠与 unknown-kid fail closed；固定 rotation、reuse/replay、family/session revoke、logout、reset 和清 Cookie 语义。
+- 契约工具：新增 `p1r:auth-contract:check` 与 10 个失败关闭测试；canonical 计数为 367 operations / 497 schemas，Git baseline 0 breaking。
+- 验证：P1R 44/44、B8 29/29、G1 6/6；完整 G 的 G0/G3 两项旧 source marker 失败经独立评审确认不由本任务引入。
