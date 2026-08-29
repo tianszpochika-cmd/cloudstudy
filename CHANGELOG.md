@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-006-START-20260830] 启动 Phase 1 Kafka 事件目录与 AsyncAPI 治理 D2 任务：以已推送的 `dev@463c4b2` 为不可变来源基线，统一 canonical/historical/deprecated 事件分类、producer/data owner、consumer group、topic、aggregate partition key、payload schema、AsyncAPI send/receive operation/channel/Kafka binding 和兼容策略，并建立失败关闭校验与对抗测试。该条只记录 `IN_PROGRESS`；真实 topic/ACL、Outbox 投递、consumer dedupe、DLQ/replay/Saga 与跨进程运行证据仍归 M1-007/M2-005，不得由静态目录冒充。
+
 - [P1R-M1-005-DATA-OWNERSHIP-20260830] 接受 Phase 1 数据所有权与迁移政策 D2：冻结 15 服务/14 data owner、Gateway 无业务 schema/write/Flyway、独立 schema/凭据/Flyway/Redis namespace/tenant/lifecycle/迁移责任候选矩阵，并将 B25、历史 `core-api.*` Redis owner 与已有 migration 明确限定为非运行证明。新增递归 migration/source 隔离审计、MySQL 双 sql_mode 注释/引号/转义/backtick/dynamic SQL 防绕过、Gateway Maven/Gradle persistence dependency 拒绝，以及 policy/B25/Redis 每条记录字段/类型结构冻结。验证：专项 34/34、P1R 106/106、Redis/B25 static、IAM/Gateway、B7 28/28、B8 29/29、G1 6/6、契约生成/兼容/类型与计划门禁均 PASS；独立 Luna Max 终验接受最终源 `21cdd3a`，当前源码 P1/P2 blocker 为 0。该结论仅为 `static/D2 PASS` 且 `runtimeStatus=NOT_RUNTIME_VERIFIED`；真实 owner grants、TenantScope、Redis ACL/rebuild、迁移恢复、回滚与 retention 仍归 M2-004。
 
 - [P1R-M1-005-START-20260830] 启动 Phase 1 数据所有权与迁移政策 D2 任务：以 `dev@bb0ae3b` 为不可变来源基线，冻结 Gateway 无业务 schema 边界、IAM/audit/workflow 与 11 个领域 owner 的独立 schema/凭据/Flyway/Redis namespace、服务端 tenant guard、retention/删除和迁移/回滚责任，并以静态失败关闭检查禁止跨服务写/join/shared ORM。B25 合成清单、历史 `core-api.*` Redis owner 和已有 migration 目录只作为候选输入；真实空库/存量库、owner grants、Redis 重建、tenant 负例和回滚证据仍归 M2-004。

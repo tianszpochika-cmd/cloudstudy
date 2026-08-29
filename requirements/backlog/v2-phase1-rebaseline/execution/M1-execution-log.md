@@ -9,7 +9,16 @@
 - `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`；共享产物在 `21cdd3a` 完成 current-source revalidation。
 - `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`；共享产物在 `21cdd3a` 完成 current-source revalidation。
 - `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。
+- `P1R-M1-006`：`IN_PROGRESS`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`；目标是把 154 个历史事件候选统一为可生成、可校验、可兼容比较的 Kafka + AsyncAPI D2 目录，未生成终态 Evidence。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
+
+## M1-006 执行轨道
+
+1. 事件治理源：冻结 canonical/historical/deprecated 分类、producer/data owner、consumer group、topic、aggregate partition key、payload schema 与兼容策略；RabbitMQ/Redis Streams 只能保留历史标记。
+2. 生成与失败关闭：从同一目录生成 AsyncAPI channel、send/receive operation 与 Kafka binding，并让 merge/generate/validate/compatibility 对治理字段缺失、漂移、重复 owner 和非法 transport 失败关闭。
+3. 对抗测试与独立终验：覆盖未知事件、伪造 producer/consumer、无订阅 operation、topic/partition 漂移、UI telemetry 混入领域总线、敏感 payload 和静态结果冒充 runtime 等负例。
+
+统筹 Agent 独占共享生成物、命令入口、状态、Evidence、提交与远程推送。M1-006 只形成 D2 目录与生成契约；Outbox/dedupe/retry/DLQ/replay/Saga 的完整可靠性语义由 M1-007 冻结，真实 Kafka topic/ACL/运行投递由 M2-005 验收。
 
 ## M1-003 执行轨道
 

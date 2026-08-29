@@ -14,6 +14,8 @@ M1-004 Gateway 边界与浏览器安全 D2 契约已接受：原实现源 `e4618
 
 M1-005 数据所有权与迁移政策 D2 已接受：最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，canonical manifest 为 `evidence/p1r/m1/P1R-M1-005/manifest.json`，独立终验为 `agent:m1_005_independent_review:gpt-5.6-luna:max`。现有 `config/b25-data.json`、历史 `core-api.*` Redis owner 和 migration 目录均只作为候选输入；真实 schema/grants、TenantScope、Redis rebuild 与 rollback 仍由 M2-004 验收。
 
+M1-006 已从接受检查点 `463c4b238caceb1592bff6c61327c00ab9bac922` 进入 `IN_PROGRESS`：正在统一 Kafka 事件目录、producer/consumer、topic/partition、AsyncAPI operations/channels/bindings 和兼容治理。此状态只代表 D2 工作已开始，不是 Kafka、Outbox、ACL 或 consumer runtime PASS。
+
 ## 1. 获取检查点
 
 ```powershell
@@ -74,6 +76,7 @@ pnpm --dir apps/mobile test:b12
 - `P1R-M1-003` 已接受：服务端权威 principal/tenant/owner、成人 Gate/consent、RBAC+ABAC、策略双人审批/撤销/缓存失效，以及本地 PEP/远程 PDP 边界具备当前提交 D2 Evidence；运行期 IAM/PEP、真实数据库和 Gateway 均未提前声明完成。
 - `P1R-M1-004` 已接受：52 条有序 route rule 唯一覆盖 326/326 public operations，51/51 internal operations 外部拒绝；Origin/Cookie/CSRF、native transport、RS256/JWKS、限流、错误、关联 ID、审计和直连阻断 D2 合同已通过专项与兼容检查。
 - `P1R-M1-005` 已接受：15 服务/14 owner、Gateway 无业务 schema/write、独立 schema/Flyway/Redis namespace/tenant/lifecycle/迁移责任候选矩阵通过静态失败关闭检查；专项 34/34、P1R 106/106。CLI 明确为 `static/D2 PASS` 且 `runtimeStatus=NOT_RUNTIME_VERIFIED`。
+- `P1R-M1-006` 当前为 `IN_PROGRESS`：以 M1-005 接受提交为边界，先统一 154 个事件候选的 D2 归属与生成契约；尚无 canonical manifest，不得对外宣称事件治理已接受。
 - M2-001 运行缺口仍开放：真实 WebFlux CORS/CSRF/Origin、public-path parity、Redis 限流及故障语义、持久审计、网络直连隔离、真实浏览器/JWKS/跨进程/网络 Evidence。
 - M2-004 运行缺口仍开放：真实 owner schema/grants、空库/存量库迁移、TenantScope/跨租户拒绝、Redis ACL/rebuild/restart、回滚/补偿和 retention/delete/legal-hold Evidence。
 - `P1R-M1-001` 已接受：公共成功/错误 envelope、追踪/版本 headers、写幂等、统一 cursor 分页、只读 merge/generate 与真实 Git baseline compatibility 已有当前提交 Evidence。
@@ -82,7 +85,7 @@ pnpm --dir apps/mobile test:b12
 ## 5. 推荐接手顺序
 
 1. 确认上述恢复验证与本仓库 Evidence 一致。
-2. 当前关键路径进入 `P1R-M1-006`：统一 canonical Kafka 事件目录、producer/consumer、topic/partition、AsyncAPI channel/operation/binding 和兼容治理；只产出 D2 契约，不冒充 Kafka runtime。
+2. 续接当前 `P1R-M1-006` 执行记录：统一 canonical Kafka 事件目录、producer/consumer、topic/partition、AsyncAPI channel/operation/binding 和兼容治理；只产出 D2 契约，不冒充 Kafka runtime。
 3. 每次修改公共 API、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 必须从 M1-005 的最终接受检查点开始，不得回退到旧 B/DEV/G 快照。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

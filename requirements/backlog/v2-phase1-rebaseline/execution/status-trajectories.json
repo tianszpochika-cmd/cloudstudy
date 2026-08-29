@@ -107,6 +107,14 @@
       "actor": "root-coordinator",
       "reason": "The 15-service/14-owner D2 matrix, recursive migration and Gateway/source boundaries, strict candidate-document shapes, Redis/B25 disposition, tenant/lifecycle governance and failure-closed adversarial checks passed at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb; independent Luna Max review accepted with zero current-source P1/P2 blockers without promoting M2-004 runtime gaps.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-005/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-006",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-30T02:21:35+08:00",
+      "actor": "root-coordinator",
+      "reason": "Dependencies P1R-M1-001 and P1R-M1-005 are accepted. Work starts from dev@463c4b238caceb1592bff6c61327c00ab9bac922 to replace the historical event inventory with a generated, compatibility-checked Kafka and AsyncAPI D2 governance contract without promoting runtime Kafka evidence.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-006/manifest.json"
     }
   ]
 }
