@@ -1180,12 +1180,12 @@ export type B8ErrorEnvelope = { requestId: string; error: B8Error; };
 /**
  * Generated from the contract source.
  */
-export type B8Error = { code: "invalid_request" | "unauthorized" | "forbidden" | "adult_gate_required" | "consent_required" | "session_revoked" | "policy_denied" | "account_locked" | "password_reset_invalid" | "rate_limited" | "conflict"; message: string; retryable: boolean; policyVersion?: string; };
+export type B8Error = { code: "invalid_request" | "unauthorized" | "forbidden" | "adult_gate_required" | "consent_required" | "session_revoked" | "policy_denied" | "account_locked" | "password_reset_invalid" | "refresh_token_reused" | "rate_limited" | "conflict"; message: string; retryable: boolean; policyVersion?: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8SessionRevocationResponse = { sessionId: string; status: "REVOKED" | "ALREADY_REVOKED"; };
+export type B8SessionRevocationResponse = { sessionId: string; status: "REVOKED" | "ALREADY_REVOKED"; revocationScope?: "CURRENT_SESSION_AND_TOKEN_FAMILY" | "TARGET_SESSION_AND_TOKEN_FAMILY" | "ALL_PRINCIPAL_SESSIONS_AND_TOKEN_FAMILIES"; reasonCode?: "LOGOUT" | "EXPLICIT_REVOKE" | "PASSWORD_RESET" | "REFRESH_REUSE"; revokedAt?: string; };
 
 /**
  * Generated from the contract source.
@@ -2365,17 +2365,17 @@ export type B25EnsureDailyTaskRequest = { contentCode: string; title: string; mi
 /**
  * Generated from the contract source.
  */
-export type B8RegisterRequest = { identifier: string; password: string; device: B8DeviceInput; };
+export type B8RegisterRequest = B8WebRegisterRequest | B8NativeRegisterRequest;
 
 /**
  * Generated from the contract source.
  */
-export type B8LoginRequest = { identifier: string; password: string; device: B8DeviceInput; };
+export type B8LoginRequest = B8WebLoginRequest | B8NativeLoginRequest;
 
 /**
  * Generated from the contract source.
  */
-export type B8RefreshRequest = { refreshToken?: string; deviceId?: string; };
+export type B8RefreshRequest = B8WebRefreshRequest | B8NativeRefreshRequest;
 
 /**
  * Generated from the contract source.
@@ -2395,7 +2395,7 @@ export type B8PasswordResetConfirmRequest = { identifier: string; resetToken: st
 /**
  * Generated from the contract source.
  */
-export type B8AuthTokenResponse = { accessToken: string; refreshToken?: string; tokenType: "Bearer"; expiresIn: number; refreshExpiresIn: number; sessionId: string; deviceId: string; };
+export type B8AuthTokenResponse = { accessToken: string; refreshToken?: string; authTransport?: "WEB_COOKIE" | "NATIVE_SECURE_STORAGE"; tokenType: "Bearer"; expiresIn: number; refreshExpiresIn: number; sessionId: string; deviceId: string; };
 
 /**
  * Generated from the contract source.
@@ -2431,6 +2431,61 @@ export type ApiCursorPageEnvelope = { data: unknown; meta: ApiCursorPageMeta; };
  * Generated from the contract source.
  */
 export type ApiErrorEnvelope = { error: ApiError; meta: ApiResponseMeta; };
+
+/**
+ * WEB_COOKIE request device boundary for browser Web and mobile H5. The server derives authorization facts independently of this device declaration.
+ */
+export type B8WebDeviceInput = B8DeviceInput & { deviceType: "WEB" | "H5"; };
+
+/**
+ * NATIVE_SECURE_STORAGE request device boundary for iOS, Android and native iPad runtimes. The server derives authorization facts independently of this device declaration.
+ */
+export type B8NativeDeviceInput = B8DeviceInput & { deviceType: "IOS" | "ANDROID" | "IPAD"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8WebRegisterRequest = { identifier: string; password: string; device: B8WebDeviceInput; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8NativeRegisterRequest = { identifier: string; password: string; device: B8NativeDeviceInput; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8WebLoginRequest = { identifier: string; password: string; device: B8WebDeviceInput; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8NativeLoginRequest = { identifier: string; password: string; device: B8NativeDeviceInput; };
+
+/**
+ * WEB_COOKIE refresh input. The opaque Refresh Token is sent only by the HttpOnly; Secure; SameSite cookie; JSON must not contain refreshToken.
+ */
+export type B8WebRefreshRequest = Record<string, never>;
+
+/**
+ * Generated from the contract source.
+ */
+export type B8NativeRefreshRequest = { refreshToken: string; deviceId?: string; };
+
+/**
+ * WEB_COOKIE authentication result. Refresh Token is intentionally absent from JSON and is returned only by the HttpOnly; Secure; SameSite Set-Cookie header.
+ */
+export type B8WebAuthTokenResponse = { authTransport: "WEB_COOKIE"; accessToken: string; tokenType: "Bearer"; expiresIn: number; refreshExpiresIn: number; sessionId: string; deviceId: string; };
+
+/**
+ * NATIVE_SECURE_STORAGE authentication result. The explicit Refresh Token is required and may only be written to Keychain or Keystore; all ordinary storage and plaintext fallbacks are prohibited.
+ */
+export type B8NativeAuthTokenResponse = { authTransport: "NATIVE_SECURE_STORAGE"; accessToken: string; refreshToken: string; tokenType: "Bearer"; expiresIn: number; refreshExpiresIn: number; sessionId: string; deviceId: string; };
+
+/**
+ * Canonical ApiSuccessEnvelope with an explicitly transport-discriminated authentication data payload.
+ */
+export type B8AuthTokenEnvelope = ApiSuccessEnvelope & { data: B8WebAuthTokenResponse | B8NativeAuthTokenResponse; };
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
@@ -2471,7 +2526,7 @@ export interface ApiOperationRegistry {
   startPlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/start"; request: never; response: ApiSuccessEnvelope & { data: B1AssessmentStartResponse; }; idempotent: true };
   submitPlacementStep: { method: "POST"; path: "/api/v1/assessment/placement/submit-step"; request: B1AssessmentStepRequest; response: ApiSuccessEnvelope & { data: B1AssessmentStepResponse; }; idempotent: true };
   createPrivacyExport: { method: "POST"; path: "/api/v1/privacy/export"; request: B1PrivacyExportRequest; response: ApiSuccessEnvelope & { data: B1PrivacyExportResponse; }; idempotent: true };
-  registerB8Account: { method: "POST"; path: "/api/v1/auth/register"; request: B8RegisterRequest; response: ApiSuccessEnvelope & { data: B8AuthTokenResponse; }; idempotent: true };
+  registerB8Account: { method: "POST"; path: "/api/v1/auth/register"; request: B8RegisterRequest; response: B8AuthTokenEnvelope; idempotent: true };
   logoutB8JwtSession: { method: "POST"; path: "/api/v1/auth/logout"; request: B8LogoutRequest; response: ApiSuccessEnvelope & { data: B8SessionRevocationResponse; }; idempotent: true };
   revokeB8JwtSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; request: never; response: ApiSuccessEnvelope & { data: B8SessionRevocationResponse; }; idempotent: true };
   getB1OnboardingOptions: { method: "GET"; path: "/api/v1/onboarding/options"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: false };
@@ -2813,8 +2868,8 @@ export interface ApiOperationRegistry {
   updateB11MediaProgress: { method: "PUT"; path: "/api/v1/learning/media-progress"; request: B11MediaProgressRequest; response: ApiSuccessEnvelope & { data: B11MediaProgressReceipt; }; idempotent: true };
   updateB11ShadowingCompletion: { method: "POST"; path: "/api/v1/speaking/shadowing/completions"; request: B11ShadowingCompletionRequest; response: ApiSuccessEnvelope & { data: B11ShadowingCompletionReceipt; }; idempotent: true };
   b25EnsureDailyTaskPublic: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: ApiSuccessEnvelope & { data: unknown; }; idempotent: true };
-  loginB8Account: { method: "POST"; path: "/api/v1/auth/login"; request: B8LoginRequest; response: ApiSuccessEnvelope & { data: B8AuthTokenResponse; }; idempotent: true };
-  refreshB8JwtSession: { method: "POST"; path: "/api/v1/auth/token/refresh"; request: B8RefreshRequest; response: ApiSuccessEnvelope & { data: B8AuthTokenResponse; }; idempotent: true };
+  loginB8Account: { method: "POST"; path: "/api/v1/auth/login"; request: B8LoginRequest; response: B8AuthTokenEnvelope; idempotent: true };
+  refreshB8JwtSession: { method: "POST"; path: "/api/v1/auth/token/refresh"; request: B8RefreshRequest; response: B8AuthTokenEnvelope; idempotent: true };
   getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; request: never; response: ApiSuccessEnvelope & { data: B8JwksResponse; }; idempotent: false };
   requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; request: B8PasswordResetRequest; response: ApiSuccessEnvelope & { data: { accepted: true; }; }; idempotent: true };
   confirmB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/confirm"; request: B8PasswordResetConfirmRequest; response: unknown; idempotent: true };

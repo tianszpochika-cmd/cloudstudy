@@ -19,7 +19,7 @@ test('G1 static contract/data Gate passes with canonical/generated parity and re
   assert.equal(result.defaultDecision, 'BLOCKED')
   assert.equal(result.runtimeGate, 'static-only')
   assert.equal(result.operationCount, 367)
-  assert.equal(result.schemaCount, 486)
+  assert.equal(result.schemaCount, 497)
   assert.equal(result.eventCount, 154)
   assert.equal(result.payloadSchemaCount, 110)
   assert.equal(result.dataOwnerCount, 15)

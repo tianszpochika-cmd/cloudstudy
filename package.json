@@ -29,6 +29,7 @@
     "p1r:evidence:check": "node scripts/audit/p1r-evidence-gate.mjs --json",
     "p1r:fixtures:validate": "node scripts/fixtures/p1r-fixtures.mjs validate",
     "p1r:fixtures:audit": "node scripts/fixtures/p1r-fixtures.mjs audit",
+    "p1r:auth-contract:check": "node scripts/audit/p1r-auth-contract-check.mjs",
     "test:p1r": "node scripts/dev/run-node-tests.mjs tests/p1r",
     "services:build": "node scripts/runtime/build-v2-services.mjs",
     "services:run": "node scripts/runtime/run-v2-services.mjs",

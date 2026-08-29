@@ -2,7 +2,15 @@
 
 API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。修改这里通常需要同步服务、客户端和测试。
 
-认证契约的唯一正式方案是 `b8-auth/b8-auth-iam.openapi.json` 中的自有 JWT 认证中心：`iam-service` 校验账号密码、在 Phase 1 签发 RS256 Access Token、发布 RSA JWKS，并轮换/撤销不透明 Refresh Token。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。正式契约不包含 OIDC/OAuth、Keycloak、第三方身份提供方、授权码或外部浏览器认证往返路由；Web Refresh Token 通过 HttpOnly Cookie，移动端通过 Keychain/Keystore，官网不保存业务 Token。
+认证契约的唯一正式方案是 `fragments/b8/b8-auth-iam.openapi.json` 中的自有 JWT 认证中心：`iam-service` 校验账号密码、在 Phase 1 签发 RS256 Access Token、发布 RSA JWKS，并轮换/撤销不透明 Refresh Token。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。正式契约不包含 OIDC/OAuth、Keycloak、第三方身份提供方、授权码或外部浏览器认证往返路由；官网不保存业务 Token。
+
+### P1R-M1-002 认证传输 profile
+
+- `X-Auth-Transport` 只选择凭据传输，不是授权事实；省略时兼容默认 `WEB_COOKIE`，`NATIVE_SECURE_STORAGE` 必须显式选择，并由 IAM 按设备类型/可信客户端上下文交叉校验、失配 fail closed。
+- Web/H5 使用 `WEB_COOKIE`：Access Token 只在内存；Refresh Token 只由 `yuxuexing_refresh` 的 `HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` Cookie 发送和轮换，JSON `data` 永不返回 `refreshToken`。
+- iOS、Android 与原生 iPad 使用 `NATIVE_SECURE_STORAGE`：JSON `data.refreshToken` 为必填，且只能保存到 Keychain/Keystore；禁止 localStorage、sessionStorage、uni-app 普通 storage 或明文 fallback。原生 refresh body 显式携带该值，且不接收 `Set-Cookie`。
+- 注册、登录和刷新共享公开 endpoint，但响应 `data.authTransport` discriminator 和具名 Web/Native schema 使生成客户端能静态区分 variant；不得重新引入可选 `refreshToken` 的混合成功响应。
+- logout、密码重置与适用的会话撤销撤销相应 token family/session：Web 返回同名同 Path 的清 Cookie（`Max-Age=0`/过去 `Expires`），原生端不发 Cookie、只清理 Keychain/Keystore。CORS、CSRF、Origin/Referer 与跨站凭据策略属于 P1R-M1-004。
 
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。
 

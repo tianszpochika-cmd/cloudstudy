@@ -1971,9 +1971,48 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "Return the original account/session result for the same request hash."
         },
+        "x-auth-transport": {
+          "selector": {
+            "parameter": "#/components/parameters/B8AuthTransport",
+            "default": "WEB_COOKIE",
+            "nativeMustBeExplicit": true
+          },
+          "variants": {
+            "WEB_COOKIE": {
+              "requestSchema": "#/components/schemas/B8WebRegisterRequest",
+              "responseDataSchema": "#/components/schemas/B8WebAuthTokenResponse",
+              "refreshCredential": "Set-Cookie only; never JSON",
+              "responseHeader": "#/components/headers/B8RefreshCookie"
+            },
+            "NATIVE_SECURE_STORAGE": {
+              "requestSchema": "#/components/schemas/B8NativeRegisterRequest",
+              "responseDataSchema": "#/components/schemas/B8NativeAuthTokenResponse",
+              "refreshCredential": "required JSON data.refreshToken; Keychain-or-Keystore only",
+              "responseHeader": "absent"
+            }
+          }
+        },
+        "x-audit": {
+          "required": true,
+          "event": "auth.account.registered.v1",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id",
+            "response.body.meta.requestId",
+            "response.body.meta.traceId"
+          ],
+          "redacted": [
+            "password",
+            "accessToken",
+            "refreshToken"
+          ]
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B8IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthTransport"
           }
         ],
         "requestBody": {
@@ -1988,7 +2027,7 @@
         },
         "responses": {
           "201": {
-            "description": "Account created and JWT session issued",
+            "description": "Account created and a transport-specific JWT session issued",
             "headers": {
               "Set-Cookie": {
                 "$ref": "#/components/headers/B8RefreshCookie"
@@ -2001,27 +2040,15 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8AuthNoStore"
               }
             },
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
-                    },
-                    {
-                      "type": "object",
-                      "required": [
-                        "data"
-                      ],
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/B8AuthTokenResponse"
-                        }
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/B8AuthTokenEnvelope"
                 }
               }
             }
@@ -2044,7 +2071,7 @@
           "b8-auth"
         ],
         "operationId": "logoutB8JwtSession",
-        "summary": "Revoke the current device session and clear the Web cookie",
+        "summary": "Revoke the current device session and clear its selected refresh credential transport",
         "security": [
           {
             "bearerAuth": []
@@ -2062,9 +2089,52 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "Repeated logout is safe and returns the same terminal result."
         },
+        "x-auth-transport": {
+          "selector": {
+            "parameter": "#/components/parameters/B8AuthTransport",
+            "default": "WEB_COOKIE",
+            "nativeMustBeExplicit": true
+          },
+          "variants": {
+            "WEB_COOKIE": {
+              "responseHeader": "#/components/headers/B8RefreshCookieClear",
+              "clientAction": "browser clears the HttpOnly cookie"
+            },
+            "NATIVE_SECURE_STORAGE": {
+              "responseHeader": "absent",
+              "clientAction": "native client removes the refresh credential from Keychain or Keystore"
+            }
+          }
+        },
+        "x-session-revocation": {
+          "defaultScope": "current-session-and-token-family",
+          "allDevicesScope": "all-principal-sessions-and-token-families",
+          "terminalStatuses": [
+            "REVOKED",
+            "ALREADY_REVOKED"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.session.revoked.v1",
+          "reasonCode": "LOGOUT",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id",
+            "response.body.meta.requestId",
+            "response.body.meta.traceId"
+          ],
+          "redacted": [
+            "accessToken",
+            "refreshToken"
+          ]
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B8IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthTransport"
           }
         ],
         "requestBody": {
@@ -2103,6 +2173,9 @@
               }
             },
             "headers": {
+              "Set-Cookie": {
+                "$ref": "#/components/headers/B8RefreshCookieClear"
+              },
               "X-Request-Id": {
                 "$ref": "#/components/headers/XRequestId"
               },
@@ -2111,6 +2184,9 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8AuthNoStore"
               }
             }
           },
@@ -2144,12 +2220,56 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "Repeated revocation is safe."
         },
+        "x-auth-transport": {
+          "selector": {
+            "parameter": "#/components/parameters/B8AuthTransport",
+            "default": "WEB_COOKIE",
+            "nativeMustBeExplicit": true
+          },
+          "variants": {
+            "WEB_COOKIE": {
+              "responseHeader": "#/components/headers/B8RefreshCookieClear",
+              "clearWhen": "the revoked session is the current browser session"
+            },
+            "NATIVE_SECURE_STORAGE": {
+              "responseHeader": "absent",
+              "clearWhen": "the revoked session is the current native session; delete only from Keychain or Keystore"
+            }
+          }
+        },
+        "x-session-revocation": {
+          "target": "server-owned session selected by sessionId and authenticated subject",
+          "tokenFamily": "revoke the target session token family",
+          "forbiddenClientAuthority": [
+            "tenantId",
+            "ownerId",
+            "principalId"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.session.revoked.v1",
+          "reasonCode": "EXPLICIT_REVOKE",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id",
+            "response.body.meta.requestId",
+            "response.body.meta.traceId"
+          ],
+          "redacted": [
+            "accessToken",
+            "refreshToken"
+          ]
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B8SessionId"
           },
           {
             "$ref": "#/components/parameters/B8IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthTransport"
           }
         ],
         "responses": {
@@ -2178,6 +2298,9 @@
               }
             },
             "headers": {
+              "Set-Cookie": {
+                "$ref": "#/components/headers/B8RefreshCookieClear"
+              },
               "X-Request-Id": {
                 "$ref": "#/components/headers/XRequestId"
               },
@@ -2186,6 +2309,9 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8AuthNoStore"
               }
             }
           },
@@ -24280,9 +24406,48 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "The same request key returns the same login session result without creating a second session; a different request key is independently rate-limited and audited."
         },
+        "x-auth-transport": {
+          "selector": {
+            "parameter": "#/components/parameters/B8AuthTransport",
+            "default": "WEB_COOKIE",
+            "nativeMustBeExplicit": true
+          },
+          "variants": {
+            "WEB_COOKIE": {
+              "requestSchema": "#/components/schemas/B8WebLoginRequest",
+              "responseDataSchema": "#/components/schemas/B8WebAuthTokenResponse",
+              "refreshCredential": "Set-Cookie only; never JSON",
+              "responseHeader": "#/components/headers/B8RefreshCookie"
+            },
+            "NATIVE_SECURE_STORAGE": {
+              "requestSchema": "#/components/schemas/B8NativeLoginRequest",
+              "responseDataSchema": "#/components/schemas/B8NativeAuthTokenResponse",
+              "refreshCredential": "required JSON data.refreshToken; Keychain-or-Keystore only",
+              "responseHeader": "absent"
+            }
+          }
+        },
+        "x-audit": {
+          "required": true,
+          "event": "auth.login.succeeded.v1",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id",
+            "response.body.meta.requestId",
+            "response.body.meta.traceId"
+          ],
+          "redacted": [
+            "password",
+            "accessToken",
+            "refreshToken"
+          ]
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B8IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthTransport"
           }
         ],
         "requestBody": {
@@ -24297,7 +24462,7 @@
         },
         "responses": {
           "200": {
-            "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only",
+            "description": "Transport-specific JWT Access Token session issued",
             "headers": {
               "Set-Cookie": {
                 "$ref": "#/components/headers/B8RefreshCookie"
@@ -24310,27 +24475,15 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8AuthNoStore"
               }
             },
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
-                    },
-                    {
-                      "type": "object",
-                      "required": [
-                        "data"
-                      ],
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/B8AuthTokenResponse"
-                        }
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/B8AuthTokenEnvelope"
                 }
               }
             }
@@ -24367,9 +24520,57 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "The same request key can safely retry the same rotation result; a previous Refresh Token presented with a different request key is a replay, so revoke its entire token family and return 401."
         },
+        "x-auth-transport": {
+          "selector": {
+            "parameter": "#/components/parameters/B8AuthTransport",
+            "default": "WEB_COOKIE",
+            "nativeMustBeExplicit": true
+          },
+          "variants": {
+            "WEB_COOKIE": {
+              "requestSchema": "#/components/schemas/B8WebRefreshRequest",
+              "responseDataSchema": "#/components/schemas/B8WebAuthTokenResponse",
+              "refreshCredentialInput": "HttpOnly-Secure-SameSite cookie only; request JSON must not contain refreshToken",
+              "refreshCredentialOutput": "Set-Cookie only; response JSON data must not contain refreshToken",
+              "responseHeader": "#/components/headers/B8RefreshCookie"
+            },
+            "NATIVE_SECURE_STORAGE": {
+              "requestSchema": "#/components/schemas/B8NativeRefreshRequest",
+              "responseDataSchema": "#/components/schemas/B8NativeAuthTokenResponse",
+              "refreshCredentialInput": "required JSON refreshToken",
+              "refreshCredentialOutput": "required JSON data.refreshToken; Keychain-or-Keystore only",
+              "responseHeader": "absent"
+            }
+          },
+          "replay": {
+            "status": 401,
+            "response": "#/components/responses/ApiUnauthorized",
+            "errorCode": "AUTH_REFRESH_REUSE_DETECTED",
+            "effect": "revoke-token-family-and-associated-session",
+            "auditEvent": "auth.session.replay_detected.v1"
+          }
+        },
+        "x-audit": {
+          "required": true,
+          "event": "auth.session.rotated.v1",
+          "failureEvent": "auth.session.replay_detected.v1",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id",
+            "response.body.meta.requestId",
+            "response.body.meta.traceId"
+          ],
+          "redacted": [
+            "accessToken",
+            "refreshToken"
+          ]
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B8IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthTransport"
           }
         ],
         "requestBody": {
@@ -24384,7 +24585,7 @@
         },
         "responses": {
           "200": {
-            "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only",
+            "description": "Refresh rotation completed through the selected transport",
             "headers": {
               "Set-Cookie": {
                 "$ref": "#/components/headers/B8RefreshCookie"
@@ -24397,27 +24598,15 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8AuthNoStore"
               }
             },
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
-                    },
-                    {
-                      "type": "object",
-                      "required": [
-                        "data"
-                      ],
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/B8AuthTokenResponse"
-                        }
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/B8AuthTokenEnvelope"
                 }
               }
             }
@@ -24442,6 +24631,24 @@
           "phase": "P1",
           "authentication": "self-owned-jwt",
           "publicKeysOnly": true
+        },
+        "x-jwks": {
+          "keyType": "RSA",
+          "algorithm": "RS256",
+          "kid": "required",
+          "cacheControlHeader": "#/components/headers/B8JwksCacheControl",
+          "maxCacheSeconds": 300,
+          "rotation": "publish-new-kid-before-use; retain-previous-public-key-for-at-least-max-access-token-lifetime-plus-clock-skew",
+          "unknownKid": "fail-closed",
+          "forbidden": [
+            "ES256",
+            "private-key-material"
+          ]
+        },
+        "x-audit-correlation": {
+          "requestIdHeader": "X-Request-Id",
+          "traceIdHeader": "X-Trace-Id",
+          "keyMaterial": "never logged or returned beyond public JWK fields"
         },
         "responses": {
           "200": {
@@ -24477,6 +24684,9 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8JwksCacheControl"
               }
             }
           }
@@ -24502,6 +24712,21 @@
           "strategy": "password-reset-request",
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "The same request key returns the same non-enumerating accepted result without issuing a second challenge."
+        },
+        "x-audit": {
+          "required": true,
+          "action": "password-reset-requested",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id",
+            "response.body.meta.requestId",
+            "response.body.meta.traceId"
+          ],
+          "accountEnumeration": "prohibited",
+          "redacted": [
+            "identifier",
+            "resetToken"
+          ]
         },
         "parameters": [
           {
@@ -24563,6 +24788,9 @@
               },
               "X-API-Version": {
                 "$ref": "#/components/headers/XApiVersion"
+              },
+              "Cache-Control": {
+                "$ref": "#/components/headers/B8AuthNoStore"
               }
             }
           },
@@ -24592,9 +24820,44 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "A reset challenge can be consumed once; repeats return 401."
         },
+        "x-auth-transport": {
+          "selector": {
+            "parameter": "#/components/parameters/B8AuthTransport",
+            "default": "WEB_COOKIE",
+            "nativeMustBeExplicit": true
+          },
+          "onSuccess": {
+            "WEB_COOKIE": "clear the Refresh Token cookie",
+            "NATIVE_SECURE_STORAGE": "client clears its Keychain or Keystore Refresh Token after all prior sessions and token families are revoked"
+          }
+        },
+        "x-password-reset": {
+          "successEffect": "revoke-all-prior-sessions-and-token-families",
+          "invalidOrConsumedChallenge": {
+            "status": 401,
+            "response": "#/components/responses/ApiUnauthorized"
+          }
+        },
+        "x-audit": {
+          "required": true,
+          "action": "password-reset-confirmed",
+          "correlation": [
+            "response.headers.X-Request-Id",
+            "response.headers.X-Trace-Id"
+          ],
+          "redacted": [
+            "identifier",
+            "resetToken",
+            "newPassword",
+            "refreshToken"
+          ]
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B8IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B8AuthTransport"
           }
         ],
         "requestBody": {
@@ -26129,6 +26392,20 @@
           "minLength": 1,
           "maxLength": 160
         }
+      },
+      "B8AuthTransport": {
+        "name": "X-Auth-Transport",
+        "in": "header",
+        "required": false,
+        "description": "Authentication credential transport selector. Omission is backward-compatible WEB_COOKIE. NATIVE_SECURE_STORAGE must be explicit and is cross-checked by iam-service; it is never authorization evidence.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "WEB_COOKIE",
+            "NATIVE_SECURE_STORAGE"
+          ],
+          "default": "WEB_COOKIE"
+        }
       }
     },
     "headers": {
@@ -26160,7 +26437,17 @@
         }
       },
       "B8RefreshCookie": {
-        "description": "HttpOnly; Secure; SameSite=Lax Refresh Token cookie; omitted from public site responses",
+        "description": "WEB_COOKIE variant only: Set-Cookie must set yuxuexing_refresh=<opaque>; Path=/api/v1/auth; Max-Age=<positive seconds>; HttpOnly; Secure; SameSite=Lax. It is never emitted by the native variant and is not readable by Web/H5 JavaScript.",
+        "x-cookie": {
+          "name": "yuxuexing_refresh",
+          "path": "/api/v1/auth",
+          "maxAge": "positive-seconds",
+          "httpOnly": true,
+          "secure": true,
+          "sameSite": "Lax",
+          "transport": "WEB_COOKIE",
+          "native": "forbidden"
+        },
         "schema": {
           "type": "string"
         }
@@ -26199,6 +26486,38 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 2048
+        }
+      },
+      "B8RefreshCookieClear": {
+        "description": "WEB_COOKIE variant only: Set-Cookie must clear yuxuexing_refresh with yuxuexing_refresh=; Path=/api/v1/auth; Max-Age=0; Expires=<past HTTP-date>; HttpOnly; Secure; SameSite=Lax. It is never emitted by the native variant.",
+        "x-cookie": {
+          "name": "yuxuexing_refresh",
+          "path": "/api/v1/auth",
+          "value": "empty",
+          "maxAge": 0,
+          "expires": "past-http-date",
+          "httpOnly": true,
+          "secure": true,
+          "sameSite": "Lax",
+          "transport": "WEB_COOKIE",
+          "native": "forbidden"
+        },
+        "schema": {
+          "type": "string"
+        }
+      },
+      "B8AuthNoStore": {
+        "description": "Authentication material responses are never stored by shared or browser caches.",
+        "schema": {
+          "type": "string",
+          "const": "no-store"
+        }
+      },
+      "B8JwksCacheControl": {
+        "description": "Public JWKS caching is bounded so new and retired kid values converge safely.",
+        "schema": {
+          "type": "string",
+          "pattern": "(^|,\\s*)max-age=(?:[1-9][0-9]?|[12][0-9]{2}|300)(?:,|$)"
         }
       }
     },
@@ -27379,6 +27698,20 @@
       },
       "B8BadRequest": {
         "description": "Invalid request",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -27389,6 +27722,27 @@
       },
       "B8Unauthorized": {
         "description": "HTTP 401: account credentials or JWT issuer, signature, algorithm, audience, time window, token type, scope or session is invalid",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "WWW-Authenticate": {
+            "description": "Authentication challenge without token or validation details.",
+            "schema": {
+              "type": "string",
+              "maxLength": 512
+            }
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -27399,6 +27753,20 @@
       },
       "B8Forbidden": {
         "description": "HTTP 403: authenticated principal lacks the server-derived permission",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -27449,6 +27817,20 @@
       },
       "B8Conflict": {
         "description": "State conflict",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -27470,10 +27852,20 @@
       "B8RateLimited": {
         "description": "Rate limited",
         "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
           "Retry-After": {
-            "schema": {
-              "type": "integer"
-            }
+            "$ref": "#/components/headers/RetryAfter"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
           }
         },
         "content": {
@@ -27756,31 +28148,45 @@
         "description": "Invalid command"
       },
       "B8AuthTokensCreated": {
-        "description": "Account created and JWT session issued",
+        "description": "Legacy reusable registration response. The formal request operations use the same B8AuthTokenEnvelope transport discriminator.",
+        "x-auth-transport": {
+          "WEB_COOKIE": "Set-Cookie must be emitted and JSON data has no refreshToken",
+          "NATIVE_SECURE_STORAGE": "Set-Cookie must be absent and JSON data.refreshToken is required"
+        },
         "headers": {
           "Set-Cookie": {
             "$ref": "#/components/headers/B8RefreshCookie"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
           }
         },
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/B8AuthTokenResponse"
+              "$ref": "#/components/schemas/B8AuthTokenEnvelope"
             }
           }
         }
       },
       "B8AuthTokens": {
-        "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only",
+        "description": "Legacy reusable login/refresh response. The formal request operations use the same B8AuthTokenEnvelope transport discriminator.",
+        "x-auth-transport": {
+          "WEB_COOKIE": "Set-Cookie must be emitted and JSON data has no refreshToken",
+          "NATIVE_SECURE_STORAGE": "Set-Cookie must be absent and JSON data.refreshToken is required"
+        },
         "headers": {
           "Set-Cookie": {
             "$ref": "#/components/headers/B8RefreshCookie"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
           }
         },
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/B8AuthTokenResponse"
+              "$ref": "#/components/schemas/B8AuthTokenEnvelope"
             }
           }
         }
@@ -27806,10 +28212,48 @@
         }
       },
       "B8NoContent": {
-        "description": "Password reset applied"
+        "description": "Password reset applied; prior sessions and Refresh Token families are revoked.",
+        "x-auth-transport": {
+          "WEB_COOKIE": "Set-Cookie clears the matching browser Refresh Token",
+          "NATIVE_SECURE_STORAGE": "Set-Cookie is absent and the client clears the Keychain or Keystore credential"
+        },
+        "headers": {
+          "Set-Cookie": {
+            "$ref": "#/components/headers/B8RefreshCookieClear"
+          },
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
+          }
+        }
       },
       "B8AccountLocked": {
         "description": "Account temporarily locked after failed attempts",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          },
+          "Cache-Control": {
+            "$ref": "#/components/headers/B8AuthNoStore"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -35348,6 +35792,7 @@
               "policy_denied",
               "account_locked",
               "password_reset_invalid",
+              "refresh_token_reused",
               "rate_limited",
               "conflict"
             ]
@@ -35382,6 +35827,27 @@
               "REVOKED",
               "ALREADY_REVOKED"
             ]
+          },
+          "revocationScope": {
+            "type": "string",
+            "enum": [
+              "CURRENT_SESSION_AND_TOKEN_FAMILY",
+              "TARGET_SESSION_AND_TOKEN_FAMILY",
+              "ALL_PRINCIPAL_SESSIONS_AND_TOKEN_FAMILIES"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "LOGOUT",
+              "EXPLICIT_REVOKE",
+              "PASSWORD_RESET",
+              "REFRESH_REUSE"
+            ]
+          },
+          "revokedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -35653,12 +36119,35 @@
         "required": [
           "keys"
         ],
-        "x-jwks-boundary": "Public signing keys only; private key material is never exposed.",
+        "x-jwks-boundary": "Public RSA signing keys only; private key material is never exposed. RS256 is the only Phase 1 algorithm.",
+        "x-jwks-rotation": {
+          "kidRequired": true,
+          "publishNewKidBeforeUse": true,
+          "previousKeyOverlap": "at-least-max-access-token-lifetime-plus-clock-skew",
+          "cacheMaxSeconds": 300,
+          "unknownKid": "fail-closed",
+          "forbiddenAlgorithms": [
+            "none",
+            "HS256",
+            "ES256"
+          ],
+          "forbiddenPrivateMembers": [
+            "d",
+            "k",
+            "p",
+            "q",
+            "dp",
+            "dq",
+            "qi",
+            "oth"
+          ]
+        },
         "properties": {
           "keys": {
             "type": "array",
             "items": {
               "type": "object",
+              "additionalProperties": false,
               "required": [
                 "kty",
                 "kid",
@@ -35673,7 +36162,9 @@
                   "const": "RSA"
                 },
                 "kid": {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Stable key identifier used to select the RSA/RS256 public key during the documented overlap window."
                 },
                 "use": {
                   "type": "string",
@@ -42897,6 +43388,22 @@
           "device": {
             "$ref": "#/components/schemas/B8DeviceInput"
           }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/B8WebRegisterRequest"
+          },
+          {
+            "$ref": "#/components/schemas/B8NativeRegisterRequest"
+          }
+        ],
+        "x-transport-discriminator": {
+          "header": "X-Auth-Transport",
+          "default": "WEB_COOKIE",
+          "mapping": {
+            "WEB_COOKIE": "#/components/schemas/B8WebRegisterRequest",
+            "NATIVE_SECURE_STORAGE": "#/components/schemas/B8NativeRegisterRequest"
+          }
         }
       },
       "B8LoginRequest": {
@@ -42927,6 +43434,22 @@
           "device": {
             "$ref": "#/components/schemas/B8DeviceInput"
           }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/B8WebLoginRequest"
+          },
+          {
+            "$ref": "#/components/schemas/B8NativeLoginRequest"
+          }
+        ],
+        "x-transport-discriminator": {
+          "header": "X-Auth-Transport",
+          "default": "WEB_COOKIE",
+          "mapping": {
+            "WEB_COOKIE": "#/components/schemas/B8WebLoginRequest",
+            "NATIVE_SECURE_STORAGE": "#/components/schemas/B8NativeLoginRequest"
+          }
         }
       },
       "B8RefreshRequest": {
@@ -42946,6 +43469,22 @@
           "deviceId": {
             "type": "string",
             "format": "uuid"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/B8WebRefreshRequest"
+          },
+          {
+            "$ref": "#/components/schemas/B8NativeRefreshRequest"
+          }
+        ],
+        "x-transport-discriminator": {
+          "header": "X-Auth-Transport",
+          "default": "WEB_COOKIE",
+          "mapping": {
+            "WEB_COOKIE": "#/components/schemas/B8WebRefreshRequest",
+            "NATIVE_SECURE_STORAGE": "#/components/schemas/B8NativeRefreshRequest"
           }
         }
       },
@@ -43008,6 +43547,8 @@
         }
       },
       "B8AuthTokenResponse": {
+        "deprecated": true,
+        "x-compatibility-role": "Legacy broad token response retained so existing generated-client imports remain source-compatible. New authentication operations use B8AuthTokenEnvelope with an explicit transport discriminator.",
         "type": "object",
         "required": [
           "accessToken",
@@ -43031,6 +43572,15 @@
             "type": "string",
             "writeOnly": true,
             "description": "TLS only; native-only rotated opaque credential; Web receives an HttpOnly cookie; 禁止日志。"
+          },
+          "authTransport": {
+            "type": "string",
+            "enum": [
+              "WEB_COOKIE",
+              "NATIVE_SECURE_STORAGE"
+            ],
+            "readOnly": true,
+            "description": "Optional legacy discriminator. New clients use the required discriminator on B8WebAuthTokenResponse or B8NativeAuthTokenResponse."
           },
           "tokenType": {
             "type": "string",
@@ -43268,6 +43818,342 @@
             "$ref": "#/components/schemas/ApiResponseMeta"
           }
         }
+      },
+      "B8WebDeviceInput": {
+        "description": "WEB_COOKIE request device boundary for browser Web and mobile H5. The server derives authorization facts independently of this device declaration.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8DeviceInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "deviceType"
+            ],
+            "properties": {
+              "deviceType": {
+                "type": "string",
+                "enum": [
+                  "WEB",
+                  "H5"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "B8NativeDeviceInput": {
+        "description": "NATIVE_SECURE_STORAGE request device boundary for iOS, Android and native iPad runtimes. The server derives authorization facts independently of this device declaration.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8DeviceInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "deviceType"
+            ],
+            "properties": {
+              "deviceType": {
+                "type": "string",
+                "enum": [
+                  "IOS",
+                  "ANDROID",
+                  "IPAD"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "B8WebRegisterRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "password",
+          "device"
+        ],
+        "x-client-authority-fields": [],
+        "x-sensitive-fields": [
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          },
+          "device": {
+            "$ref": "#/components/schemas/B8WebDeviceInput"
+          }
+        }
+      },
+      "B8NativeRegisterRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "password",
+          "device"
+        ],
+        "x-client-authority-fields": [],
+        "x-sensitive-fields": [
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          },
+          "device": {
+            "$ref": "#/components/schemas/B8NativeDeviceInput"
+          }
+        }
+      },
+      "B8WebLoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "password",
+          "device"
+        ],
+        "x-client-authority-fields": [],
+        "x-sensitive-fields": [
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          },
+          "device": {
+            "$ref": "#/components/schemas/B8WebDeviceInput"
+          }
+        }
+      },
+      "B8NativeLoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "password",
+          "device"
+        ],
+        "x-client-authority-fields": [],
+        "x-sensitive-fields": [
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          },
+          "device": {
+            "$ref": "#/components/schemas/B8NativeDeviceInput"
+          }
+        }
+      },
+      "B8WebRefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "maxProperties": 0,
+        "description": "WEB_COOKIE refresh input. The opaque Refresh Token is sent only by the HttpOnly; Secure; SameSite cookie; JSON must not contain refreshToken."
+      },
+      "B8NativeRefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "refreshToken"
+        ],
+        "x-sensitive-fields": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 512,
+            "writeOnly": true,
+            "description": "TLS only; explicit native refresh credential. Store only in Keychain or Keystore; localStorage, sessionStorage, uni-app ordinary storage and plaintext fallbacks are prohibited."
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "B8WebAuthTokenResponse": {
+        "description": "WEB_COOKIE authentication result. Refresh Token is intentionally absent from JSON and is returned only by the HttpOnly; Secure; SameSite Set-Cookie header.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authTransport",
+          "accessToken",
+          "tokenType",
+          "expiresIn",
+          "refreshExpiresIn",
+          "sessionId",
+          "deviceId"
+        ],
+        "x-sensitive-fields": [
+          "accessToken"
+        ],
+        "properties": {
+          "authTransport": {
+            "type": "string",
+            "const": "WEB_COOKIE",
+            "readOnly": true
+          },
+          "accessToken": {
+            "type": "string",
+            "readOnly": true,
+            "description": "TLS only; IAM-signed RS256 JWT. Keep in memory only; never log or store in Web storage."
+          },
+          "tokenType": {
+            "type": "string",
+            "const": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "B8NativeAuthTokenResponse": {
+        "description": "NATIVE_SECURE_STORAGE authentication result. The explicit Refresh Token is required and may only be written to Keychain or Keystore; all ordinary storage and plaintext fallbacks are prohibited.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authTransport",
+          "accessToken",
+          "refreshToken",
+          "tokenType",
+          "expiresIn",
+          "refreshExpiresIn",
+          "sessionId",
+          "deviceId"
+        ],
+        "x-sensitive-fields": [
+          "accessToken",
+          "refreshToken"
+        ],
+        "properties": {
+          "authTransport": {
+            "type": "string",
+            "const": "NATIVE_SECURE_STORAGE",
+            "readOnly": true
+          },
+          "accessToken": {
+            "type": "string",
+            "readOnly": true,
+            "description": "TLS only; IAM-signed RS256 JWT. Keep in memory only; never log or store in ordinary storage."
+          },
+          "refreshToken": {
+            "type": "string",
+            "readOnly": true,
+            "description": "TLS only; rotated opaque credential. Persist only in Keychain or Keystore; localStorage, sessionStorage, uni-app ordinary storage and plaintext fallbacks are prohibited."
+          },
+          "tokenType": {
+            "type": "string",
+            "const": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 900
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "B8AuthTokenEnvelope": {
+        "description": "Canonical ApiSuccessEnvelope with an explicitly transport-discriminated authentication data payload.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/B8WebAuthTokenResponse"
+                  },
+                  {
+                    "$ref": "#/components/schemas/B8NativeAuthTokenResponse"
+                  }
+                ],
+                "discriminator": {
+                  "propertyName": "authTransport",
+                  "mapping": {
+                    "WEB_COOKIE": "#/components/schemas/B8WebAuthTokenResponse",
+                    "NATIVE_SECURE_STORAGE": "#/components/schemas/B8NativeAuthTokenResponse"
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     },
     "requestBodies": {},
@@ -43309,7 +44195,15 @@
         "tenant_id",
         "session_id"
       ],
-      "jwksUri": "/api/v1/auth/jwks"
+      "jwksUri": "/api/v1/auth/jwks",
+      "maxLifetimeSeconds": 900,
+      "keyRotation": {
+        "algorithm": "RS256-only",
+        "kid": "required-and-stable-for-the-signing-key-lifetime",
+        "publishNewKidBeforeUse": true,
+        "previousPublicKeyRetention": "at-least-max-access-token-lifetime-plus-clock-skew",
+        "unknownKid": "fail-closed"
+      }
     },
     "refreshToken": {
       "format": "opaque",
@@ -43318,6 +44212,30 @@
       "storage": {
         "web": "HttpOnly-Secure-SameSite-cookie",
         "mobile": "Keychain-or-Keystore-only"
+      },
+      "transportSelector": {
+        "header": "X-Auth-Transport",
+        "default": "WEB_COOKIE",
+        "nativeValue": "NATIVE_SECURE_STORAGE",
+        "nativeMustBeExplicit": true,
+        "serverCrossCheck": "The server must fail closed when the selected transport conflicts with the device class or trusted client context."
+      },
+      "webH5": {
+        "request": "Refresh credential is sent only by the HttpOnly-Secure-SameSite cookie.",
+        "response": "Refresh credential is returned only by Set-Cookie and is absent from JSON data.",
+        "ordinaryStorage": "prohibited"
+      },
+      "native": {
+        "request": "Refresh credential is an explicit JSON body field on the NATIVE_SECURE_STORAGE variant.",
+        "response": "Refresh credential is a required JSON data field on the NATIVE_SECURE_STORAGE variant.",
+        "storage": "Keychain-or-Keystore-only; localStorage, sessionStorage, uni-app ordinary storage and any plaintext fallback are prohibited."
+      },
+      "replay": {
+        "sameIdempotencyKey": "return-the-original-rotation-result",
+        "differentIdempotencyKeyOrReuse": "revoke-token-family-and-associated-session",
+        "httpStatus": 401,
+        "errorCode": "AUTH_REFRESH_REUSE_DETECTED",
+        "auditEvent": "auth.session.replay_detected.v1"
       }
     },
     "serverValidation": [
