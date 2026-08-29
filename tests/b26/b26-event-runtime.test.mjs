@@ -93,27 +93,72 @@ test('B26 rejects forged runtime status, Kafka RPC widening, wildcard ACL and cl
   const result = validateB26EventRuntime(candidate, fragment)
   assert.equal(result.result, 'FAIL')
   assert.ok(result.errors.some((error) => error.includes('runtimeStatus must remain pending')))
-  assert.ok(result.errors.some((error) => error.includes('kafka-rpc is missing')))
+  assert.ok(result.errors.some((error) => error.includes('outbox.forbiddenCoordination must exactly match')))
   assert.ok(result.errors.some((error) => error.includes('ACL policy must be explicit')))
   assert.ok(result.errors.some((error) => error.includes('Saga must not use Kafka RPC')))
-  assert.ok(result.errors.some((error) => error.includes('client authority fact tenantId must be forbidden')))
+  assert.ok(result.errors.some((error) => error.includes('safety.forbiddenClientAuthorityFacts must exactly match')))
 })
 
 test('B26 rejects unknown runtime claims at the root and inside otherwise valid structures', () => {
   const cases = [
     (candidate) => { candidate.runtimeAttestation = 'PASS' },
     (candidate) => { candidate.broker.certified = true },
+    (candidate) => { candidate.broker.connectionConfirmed = true },
+    (candidate) => { candidate.broker.healthy = true },
     (candidate) => { candidate.consumerReliability.replay.verification = { state: 'PASS' } },
     (candidate) => { candidate.consumerReliability.replay.result = 'PASS' },
+    (candidate) => { candidate.consumerReliability.replay.lastRunSucceeded = true },
     (candidate) => { candidate.topics[0].operationalStatus = 'PASS' },
+    (candidate) => { candidate.topics[0].availability = 'available' },
     (candidate) => { candidate.outbox.live = true },
+    (candidate) => { candidate.outbox.deliverySuccessful = true },
+    (candidate) => { candidate.saga.executionComplete = true },
   ]
   for (const mutate of cases) {
     const candidate = clone(manifest)
     mutate(candidate)
     const result = validateB26EventRuntime(candidate, fragment)
     assert.equal(result.result, 'FAIL')
-    assert.ok(result.errors.some((error) => error.includes('unknown runtime proof') || error.includes('B26 manifest keys must be exactly')))
+    assert.ok(result.errors.some((error) => error.includes('keys must be exactly')))
+  }
+})
+
+test('B26 rejects runtime-success prose in otherwise allowed static fields', () => {
+  const cases = [
+    (candidate) => { candidate.sourceRefs.push('Kafka runtime verified and connected') },
+    (candidate) => { candidate.scope.push('Kafka runtime passed') },
+    (candidate) => { candidate.runtimeGate.requiredEvidence.push('Kafka runtime passed') },
+    (candidate) => { candidate.runtimeGate.cannotBeSatisfiedBy.push('runtime accepted') },
+    (candidate) => { candidate.topics[0].purpose = 'Kafka broker connected and healthy' },
+    (candidate) => { candidate.topics[0].purpose = 'KafkaRuntimeVerified' },
+  ]
+  for (const mutate of cases) {
+    const candidate = clone(manifest)
+    mutate(candidate)
+    const result = validateB26EventRuntime(candidate, fragment)
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => error.includes('runtime success claim') || error.includes('must exactly match')))
+  }
+})
+
+test('B26 standalone validation binds fragment semantics exactly to the canonical catalog', () => {
+  const cases = [
+    (candidate) => { candidate.events.find((event) => event.schema === 'workflow.saga.v1').version = 2 },
+    (candidate) => { candidate.events.find((event) => event.schema === 'workflow.event.v1').schema = 'workflow.saga.v1' },
+    (candidate) => { candidate.events[0].payloadSchema = structuredClone(candidate.events[1].payloadSchema) },
+    (candidate) => { candidate.events[0].aggregateIdField = 'changedId' },
+    (candidate) => { candidate.events[0].compatibility.breakingChange = 'publish something else' },
+    (candidate) => {
+      const schemaName = candidate.events[0].payloadSchema.$ref.split('/').at(-1)
+      candidate.payloadSchemas[schemaName].runtimeProof = true
+    },
+  ]
+  for (const mutate of cases) {
+    const candidate = clone(fragment)
+    mutate(candidate)
+    const result = validateB26EventRuntime(manifest, candidate)
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => /must exactly match the canonical catalog|version\/schema is invalid|unknown runtime proof or attestation field/.test(error)))
   }
 })
 

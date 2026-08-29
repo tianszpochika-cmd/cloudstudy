@@ -85,6 +85,17 @@ test('generated TypeScript separates canonical publishers from historical catalo
 test('event governance fails closed on owner, routing, status, shape, projection, and fragment mutations', async (t) => {
   const cases = [
     ['unknown catalog runtime claim', (input) => { input.catalog.attestation = 'PASS'; }, /event catalog keys must be exactly/],
+    ['platform runtime attestation', (input) => { input.catalog['x-v2-event-platform'].runtimeAttestation = 'RUNTIME VERIFIED'; }, /x-v2-event-platform must exactly match|runtime success claim/],
+    ['envelope runtime proof', (input) => { input.catalog.envelope.runtimeProof = 'Kafka connected'; }, /event envelope must exactly match|runtime success claim/],
+    ['compatibility runtime evidence', (input) => { input.catalog.compatibilityPolicy.runtimeEvidence = 'Kafka running'; }, /event compatibilityPolicy must exactly match|runtime success claim/],
+    ['nested payload runtime proof', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.runtimeProof = true; }, /unknown runtime proof or attestation field/],
+    ['runtime-success catalog description', (input) => { input.catalog.description = 'Kafka runtime verified and accepted'; }, /event catalog description must exactly match|runtime success claim/],
+    ['camel-case runtime-success prose', (input) => { historical(input).compatibility.consumerRule = 'KafkaRuntimeVerified'; }, /runtime success claim/],
+    ['weakened eventId envelope pattern', (input) => { input.catalog.envelope.properties.eventId.pattern = '^.*$'; }, /event envelope must exactly match/],
+    ['wrong envelope schema field type', (input) => { input.catalog.envelope.properties.schema.type = 'number'; }, /event envelope must exactly match/],
+    ['empty sensitive payload deny table', (input) => { input.catalog.forbiddenPayloadFieldPatterns = []; }, /forbiddenPayloadFieldPatterns must exactly match/],
+    ['compatibility consumer drift', (input) => { input.catalog.compatibilityPolicy.consumer = 'accept every version'; }, /compatibilityPolicy must exactly match/],
+    ['compatibility versioning drift', (input) => { input.catalog.compatibilityPolicy.versioning = 'in-place'; }, /compatibilityPolicy must exactly match/],
     ['platform runtime promotion', (input) => { input.catalog['x-p1r-event-governance'].runtimeStatus = 'RUNTIME_VERIFIED'; }, /runtimeStatus must remain NOT_RUNTIME_VERIFIED/],
     ['Redis event-source promotion', (input) => { input.catalog['x-p1r-event-governance'].transportPolicy.redisStreams = 'ALLOWED'; }, /Redis Streams must be prohibited/],
     ['unknown canonical governance field', (input) => { canonical(input)['x-p1r-governance'].runtimeProof = true; }, /x-p1r-governance keys must be exactly/],
@@ -172,4 +183,23 @@ test('contract validator rejects sensitive event payload fields and malformed re
     .find((operationId) => missingReceive.asyncapi.operations[operationId].action === 'receive');
   delete missingReceive.asyncapi.operations[receiveId].bindings.kafka.groupId;
   assert.throws(() => validateAsyncApiProjection(missingReceive), /keys must be exactly|consumer group mismatch/);
+});
+
+test('contract validator freezes the envelope, platform, compatibility, deny table, and static-only claims', () => {
+  const cases = [
+    [(catalog) => { catalog.envelope.properties.eventId.pattern = '^.*$'; }, /event envelope must exactly match/],
+    [(catalog) => { catalog.envelope.properties.schema.type = 'number'; }, /event envelope must exactly match/],
+    [(catalog) => { catalog.forbiddenPayloadFieldPatterns = []; }, /forbiddenPayloadFieldPatterns must exactly match/],
+    [(catalog) => { catalog.compatibilityPolicy.consumer = 'accept everything'; }, /compatibilityPolicy must exactly match/],
+    [(catalog) => { catalog.compatibilityPolicy.versioning = 'in-place'; }, /compatibilityPolicy must exactly match/],
+    [(catalog) => { catalog['x-v2-event-platform'].runtimeAttestation = 'RUNTIME VERIFIED'; }, /x-v2-event-platform must exactly match|runtime success claim/],
+    [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.runtimeProof = true; }, /unknown runtime proof or attestation field/],
+    [(catalog) => { catalog.description = 'Kafka runtime verified and accepted'; }, /event catalog description must exactly match|runtime success claim/],
+    [(catalog) => { historical({ catalog }).compatibility.consumerRule = 'runtime_verified'; }, /runtime success claim/],
+  ];
+  for (const [mutate, expected] of cases) {
+    const candidate = structuredClone(baseline.catalog);
+    mutate(candidate);
+    assert.throws(() => validateEventCatalog(candidate), expected);
+  }
 });

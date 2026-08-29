@@ -12,6 +12,10 @@ import {
   resolveJsonPointer,
 } from './schema-utils.mjs';
 import { validateEventGovernance } from '../audit/p1r-event-governance-check.mjs';
+import {
+  FORBIDDEN_EVENT_PAYLOAD_FIELD_PATTERNS,
+  validateFrozenEventCatalogPolicy,
+} from './event-catalog-policy.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
@@ -19,17 +23,7 @@ const openApiPath = path.join(repoRoot, 'packages', 'contracts', 'openapi', 'v1'
 const eventCatalogPath = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
 const schemaRegistryPath = path.join(repoRoot, 'packages', 'contracts', 'schemas', 'v1', 'registry.json');
 
-const forbiddenFieldPatterns = [
-  /^(access|refresh)?token$/i,
-  /^authorization$/i,
-  /^password$/i,
-  /^(apiKey|secret|privateKey|clientSecret)$/i,
-  /^(phone|mobile|email|realName|identityToken|thirdPartySubject)$/i,
-  /^(rawAnswer|answerText|answerContent|userInput|prompt)$/i,
-  /^(audio|video|rawRecording|recordingBytes|screenPixels|imageBytes)$/i,
-  /^(paymentCallbackRaw|jws|signedPayload|webhookBody)$/i,
-  /^(deviceFingerprint|ipAddress|cookie)$/i,
-];
+const forbiddenFieldPatterns = FORBIDDEN_EVENT_PAYLOAD_FIELD_PATTERNS;
 
 function fail(message) {
   throw new Error(`[contracts] ${message}`);
@@ -289,6 +283,8 @@ function validateOpenApi(document) {
 }
 
 export function validateEventCatalog(catalog) {
+  const frozenPolicyErrors = validateFrozenEventCatalogPolicy(catalog);
+  assert(frozenPolicyErrors.length === 0, frozenPolicyErrors.join('\n'));
   assert(catalog.catalogVersion === '1.0.0', 'event catalogVersion must be 1.0.0');
   assert(catalog.schema === 'platform.event.catalog.v1', 'event catalog schema must be platform.event.catalog.v1');
   assert(isRecord(catalog.envelope) && catalog.envelope.schema === 'platform.event.v1', 'event envelope schema must be platform.event.v1');

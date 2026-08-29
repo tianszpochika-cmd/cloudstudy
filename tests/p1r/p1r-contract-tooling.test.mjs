@@ -186,6 +186,20 @@ test('events compatibility freezes established governance but allows its first a
   assert.ok(compareContracts('events', current, asyncApiRuntimeDrift)
     .some((change) => change.location === 'asyncapi'));
 
+  const catalogPolicyDrifts = [
+    ['description', (catalog) => { catalog.description = 'Kafka runtime verified and accepted'; }],
+    ['x-v2-event-platform', (catalog) => { catalog['x-v2-event-platform'].runtimeAttestation = 'RUNTIME VERIFIED'; }],
+    ['envelope', (catalog) => { catalog.envelope.properties.eventId.pattern = '^.*$'; }],
+    ['compatibilityPolicy', (catalog) => { catalog.compatibilityPolicy.consumer = 'ignore compatibility'; }],
+    ['forbiddenPayloadFieldPatterns', (catalog) => { catalog.forbiddenPayloadFieldPatterns = []; }],
+  ];
+  for (const [location, mutate] of catalogPolicyDrifts) {
+    const drift = structuredClone(eventCatalog);
+    mutate(drift);
+    assert.ok(compareContracts('events', current, drift)
+      .some((change) => change.location === location));
+  }
+
   const aggregateDrift = structuredClone(eventCatalog);
   aggregateDrift.events[0].aggregateIdField = 'changedId';
   assert.ok(compareContracts('events', current, aggregateDrift)
@@ -206,6 +220,16 @@ test('events compatibility freezes established governance but allows its first a
     delete event['x-p1r-governance'];
   }
   assert.deepEqual(compareContracts('events', withoutGovernance, eventCatalog), []);
+});
+
+test('events compatibility rejects changed established payload constraints', () => {
+  const changed = structuredClone(eventCatalog);
+  const event = changed.events.find((candidate) => candidate.status === 'CANONICAL_D2');
+  const schema = changed.payloadSchemas[event.payloadSchema.$ref.split('/').at(-1)];
+  const field = Object.keys(schema.properties).find((name) => schema.properties[name].pattern);
+  schema.properties[field].pattern = '^.*$';
+  assert.ok(compareContracts('events', eventCatalog, changed)
+    .some((change) => change.location.endsWith(`.properties.${field}.pattern`)));
 });
 
 test('events compatibility detects duplicate event names before map normalization', () => {

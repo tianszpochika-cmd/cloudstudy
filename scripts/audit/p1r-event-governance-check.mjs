@@ -3,6 +3,10 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { projectCanonicalAsyncApi } from '../contracts/event-governance-projection.mjs';
+import {
+  EXPECTED_EVENT_CATALOG_KEYS,
+  validateFrozenEventCatalogPolicy,
+} from '../contracts/event-catalog-policy.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRoot = path.resolve(scriptDir, '..', '..');
@@ -11,11 +15,6 @@ const CANONICAL_STATUS = 'CANONICAL_D2';
 const HISTORICAL_STATUS = 'HISTORICAL_CANDIDATE';
 const DEPRECATED_STATUS = 'DEPRECATED';
 const EXPECTED_STATUSES = [CANONICAL_STATUS, HISTORICAL_STATUS, DEPRECATED_STATUS];
-const EXPECTED_CATALOG_KEYS = [
-  'catalogVersion', 'schema', 'description', 'x-v2-event-platform',
-  'x-p1r-event-governance', 'envelope', 'compatibilityPolicy',
-  'forbiddenPayloadFieldPatterns', 'payloadSchemas', 'events', 'asyncapi',
-];
 const EVENT_FRAGMENT_PATH_PATTERN = /^packages\/contracts\/events\/v1\/fragments\/[a-z0-9-]+\.events\.json$/;
 const BASE_EVENT_KEYS = [
   'eventName', 'status', 'domain', 'version', 'schema', 'aggregateType',
@@ -129,7 +128,8 @@ function listEventFragments(root) {
 }
 
 function checkPlatformGovernance(catalog, errors) {
-  exactKeys(errors, catalog, EXPECTED_CATALOG_KEYS, 'event catalog');
+  exactKeys(errors, catalog, EXPECTED_EVENT_CATALOG_KEYS, 'event catalog');
+  errors.push(...validateFrozenEventCatalogPolicy(catalog));
   const governance = catalog['x-p1r-event-governance'];
   exactKeys(errors, governance, [
     'schemaVersion', 'maturity', 'runtimeStatus', 'transportPolicy', 'allowedStatuses',

@@ -49,7 +49,11 @@ function sameTypes(previous, current) {
 }
 
 function compareSchema(previous, current, location, changes, kind) {
-  if (!isRecord(previous) || !isRecord(current)) return;
+  if (!isRecord(previous)) return;
+  if (!isRecord(current)) {
+    changes.push(describeChange(kind, location, 'existing schema definition was removed or is no longer an object'));
+    return;
+  }
 
   const previousTypes = normalizedTypes(previous.type);
   const currentTypes = normalizedTypes(current.type);
@@ -73,6 +77,15 @@ function compareSchema(previous, current, location, changes, kind) {
 
   if (current.additionalProperties === false && previous.additionalProperties !== false) {
     changes.push(describeChange(kind, `${location}.additionalProperties`, 'additional properties became forbidden'));
+  }
+
+  for (const keyword of ['pattern', 'format', 'const', 'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'minLength', 'maxLength', 'minItems', 'maxItems', 'minProperties', 'maxProperties']) {
+    if (previous[keyword] !== undefined && current[keyword] !== previous[keyword]) {
+      changes.push(describeChange(kind, `${location}.${keyword}`, `existing ${keyword} constraint changed`));
+    }
+  }
+  if (previous.uniqueItems !== undefined && current.uniqueItems !== previous.uniqueItems) {
+    changes.push(describeChange(kind, `${location}.uniqueItems`, 'existing uniqueItems constraint changed'));
   }
 
   const previousProperties = isRecord(previous.properties) ? previous.properties : {};
@@ -176,6 +189,20 @@ function compareOpenApi(previous, current) {
 
 function compareEvents(previous, current) {
   const changes = [];
+  for (const field of [
+    'catalogVersion',
+    'schema',
+    'description',
+    'x-v2-event-platform',
+    'envelope',
+    'compatibilityPolicy',
+    'forbiddenPayloadFieldPatterns',
+  ]) {
+    if (previous[field] !== undefined
+      && stableGovernanceValue(previous[field]) !== stableGovernanceValue(current[field])) {
+      changes.push(describeChange('events', field, `established event catalog ${field} changed`));
+    }
+  }
   for (const eventName of duplicateEventNames(previous.events)) {
     changes.push(describeChange('events', `${eventName}.eventName`, 'baseline contains a duplicate event name'));
   }
