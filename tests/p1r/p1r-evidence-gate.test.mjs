@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 import {
@@ -49,6 +50,12 @@ function acceptedManifest(root, overrides = {}) {
   };
 }
 
+function git(root, args, encoding = 'utf8') {
+  const result = spawnSync('git', args, { cwd: root, encoding, windowsHide: true });
+  assert.equal(result.status, 0, String(result.stderr || result.stdout));
+  return result.stdout;
+}
+
 const milestoneCounts = { M0: 8, M1: 18, M2: 10, M3: 10, M4: 10, M5: 14, M6: 11, M7: 11, M8: 16 };
 
 function writeSyntheticLedger(root, overrides = {}) {
@@ -81,6 +88,34 @@ test('accepted manifest validates artifact digest and independent reviewer', () 
     const manifestPath = path.join(root, 'evidence', 'p1r', 'm0', task.id, 'manifest.json');
     const errors = validateManifest({ root, task, manifest: acceptedManifest(root), manifestPath, checkGit: false });
     assert.deepEqual(errors, []);
+  });
+});
+
+test('git-backed digest is portable across checkout line endings and detects committed drift', () => {
+  withTempRepo((root) => {
+    git(root, ['init']);
+    git(root, ['config', 'user.email', 'p1r-test@example.invalid']);
+    git(root, ['config', 'user.name', 'P1R Test']);
+    git(root, ['config', 'core.autocrlf', 'false']);
+    git(root, ['add', 'artifact.txt']);
+    git(root, ['commit', '-m', 'fixture']);
+    const sourceCommit = git(root, ['rev-parse', 'HEAD']).trim();
+    const sourceBytes = git(root, ['show', `${sourceCommit}:artifact.txt`], null);
+    const digest = crypto.createHash('sha256').update(sourceBytes).digest('hex');
+    git(root, ['config', 'core.autocrlf', 'true']);
+    fs.writeFileSync(path.join(root, 'artifact.txt'), 'stable artifact\r\n');
+
+    const task = { id: 'P1R-M0-001', status: 'ACCEPTED' };
+    const manifestPath = path.join(root, 'evidence', 'p1r', 'm0', task.id, 'manifest.json');
+    const manifest = acceptedManifest(root, {
+      sourceCommit,
+      artifactDigests: [{ path: 'artifact.txt', algorithm: 'sha256', digest }],
+    });
+    assert.deepEqual(validateManifest({ root, task, manifest, manifestPath, checkGit: true }), []);
+
+    fs.writeFileSync(path.join(root, 'artifact.txt'), 'changed content\n');
+    const errors = validateManifest({ root, task, manifest, manifestPath, checkGit: true });
+    assert(errors.some((error) => error.includes('unstaged changes')));
   });
 });
 

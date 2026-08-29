@@ -20,7 +20,7 @@
 | Java 25 环境下 `pnpm p1r:toolchain:check` | PASS |
 | `pnpm ports:check` | PASS，42 个端口无自动递增 |
 | `pnpm plan:p1r:check` | PASS，108 项及范围/GAP 覆盖完整 |
-| `pnpm test:p1r` | PASS，7/7 |
+| `pnpm test:p1r` | PASS，8/8（含 CRLF/LF 可移植摘要） |
 | `pnpm p1r:fixtures:validate` / `audit` | PASS，6 类 13 条 |
 | `pnpm typecheck` | PASS，7/7 |
 | `pnpm build` | PASS，admin/learner/official 3/3；mobile 由独立脚本构建 |

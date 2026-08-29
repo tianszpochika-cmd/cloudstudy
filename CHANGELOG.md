@@ -4,7 +4,7 @@
 
 > 历史条目说明：本文件按时间保留当时的实现与验证快照。ADR-0013 之前记录的外部认证、OIDC、旧授权入口及其运行结果均为 Historical / Superseded，不得作为当前需求、实现命令或验收证据；当前认证基线以 ADR-0013 的平台自有 IAM、账号密码和短时 RS256 JWT 为准。历史事实不删除，仅用于审计与迁移追溯。
 
-- [P1R-M0-EXECUTION-20260829] 执行新 Phase 1 计划的 M0 重基线：新增当前资产与历史候选机器清单，清理 21 个临时编译根/1,397 个受跟踪 `.class`，冻结 miniapp 历史边界，建立 6 类 13 条脱敏合成夹具及安全 seed/cleanup；统一 Java 25/Spring Boot 4.1.1/Node/pnpm/固定端口工具链、14 服务 Maven Reactor、Windows/Linux 跨平台测试命令与 `dev/master` 真实 CI；新增许可证、CycloneDX SBOM、漏洞审计、P1R 状态/Evidence/依赖/摘要失败关闭校验及 7 个门禁测试。Java 25 Reactor 15/15、工具链、端口、类型检查、计划、夹具与仓库卫生检查通过。Node high 从 10 降至 1、critical 为 0；因 uni-app 当前编译器仍锁定 Vite 5 系列，`GHSA-fx2h-pf6j-xcff` 无安全兼容升级路径，`P1R-M0-006` 与 M0 安全 Gate 保持 `BLOCKED`，未添加豁免或伪造 PASS。
+- [P1R-M0-EXECUTION-20260829] 执行新 Phase 1 计划的 M0 重基线：新增当前资产与历史候选机器清单，清理 21 个临时编译根/1,397 个受跟踪 `.class`，冻结 miniapp 历史边界，建立 6 类 13 条脱敏合成夹具及安全 seed/cleanup；统一 Java 25/Spring Boot 4.1.1/Node/pnpm/固定端口工具链、14 服务 Maven Reactor、Windows/Linux 跨平台测试命令与 `dev/master` 真实 CI；新增许可证、CycloneDX SBOM、漏洞审计、P1R 状态/Evidence/依赖/跨平台 Git blob 摘要失败关闭校验及 8 个门禁测试。Java 25 Reactor 15/15、工具链、端口、类型检查、计划、夹具与仓库卫生检查通过。Node high 从 10 降至 1、critical 为 0；因 uni-app 当前编译器仍锁定 Vite 5 系列，`GHSA-fx2h-pf6j-xcff` 无安全兼容升级路径，`P1R-M0-006` 与 M0 安全 Gate 保持 `BLOCKED`，未添加豁免或伪造 PASS。
 
 - [P1-DEVELOPMENT-REBASELINE-20260829] 基于 `b01505a` 的 D1 业务运行设计，新增当前唯一的 Phase 1 开发计划 `requirements/backlog/v2-phase1-rebaseline/`：按 D1→D5 建立 M0–M8 九个里程碑和 108 个 `P1R-*` 编号任务，补齐依赖图、现有资产复用/修正/重写/新增策略、每阶段进入/退出 Gate、Evidence manifest，以及 540 个 Phase 1 范围单元、13 ACT、15 JNY、56 PAGE、8 RULE、18 INT、16 E2E 和全部已知 GAP 的覆盖矩阵。旧 B0–B36、DEV 与 G 台账降为 historical-candidate，不继承完成状态；路线图、ADR-0007、平台编号规则、SOP、验收/DoD 规范和旧计划页统一指向 `P1R-*`，并以自动校验防止旧入口重新生效。全部新任务初始为 `PLANNED`，生产支付保持关闭，Phase 2/3 不进入实现范围。
 

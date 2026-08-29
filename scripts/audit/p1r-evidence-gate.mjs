@@ -74,8 +74,19 @@ function resolveInside(root, relativePath, label, errors) {
   return resolved;
 }
 
-function sha256(filePath) {
-  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
+function sha256Bytes(bytes) {
+  return crypto.createHash('sha256').update(bytes).digest('hex');
+}
+
+function readGitBlob(root, revision, relativePath) {
+  const repositoryPath = relativePath.replaceAll('\\', '/');
+  const result = spawnSync('git', ['show', `${revision}:${repositoryPath}`], {
+    cwd: root,
+    encoding: null,
+    windowsHide: true,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  return result.status === 0 ? result.stdout : null;
 }
 
 function validTimestamp(value) {
@@ -125,7 +136,22 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
     if (!fullPath) continue;
     add(errors, fs.existsSync(fullPath) && fs.statSync(fullPath).isFile(), `${label}.path does not name a file: ${artifact.path}`);
     if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile() && SHA256.test(artifact.digest ?? '')) {
-      add(errors, sha256(fullPath) === artifact.digest.toLowerCase(), `${label}.digest does not match ${artifact.path}`);
+      if (checkGit && SHA40.test(manifest.sourceCommit ?? '')) {
+        const sourceBlob = readGitBlob(root, manifest.sourceCommit, artifact.path);
+        const headBlob = readGitBlob(root, 'HEAD', artifact.path);
+        add(errors, sourceBlob !== null, `${label}.path is absent from sourceCommit: ${artifact.path}`);
+        add(errors, headBlob !== null, `${label}.path is absent from HEAD: ${artifact.path}`);
+        if (sourceBlob !== null) {
+          add(errors, sha256Bytes(sourceBlob) === artifact.digest.toLowerCase(), `${label}.digest does not match sourceCommit blob ${artifact.path}`);
+        }
+        if (headBlob !== null) {
+          add(errors, sha256Bytes(headBlob) === artifact.digest.toLowerCase(), `${label}.digest is stale at HEAD for ${artifact.path}`);
+        }
+        add(errors, commandSucceeded(root, 'git', ['diff', '--quiet', '--', artifact.path]), `${label}.path has unstaged changes: ${artifact.path}`);
+        add(errors, commandSucceeded(root, 'git', ['diff', '--cached', '--quiet', '--', artifact.path]), `${label}.path has staged changes: ${artifact.path}`);
+      } else {
+        add(errors, sha256Bytes(fs.readFileSync(fullPath)) === artifact.digest.toLowerCase(), `${label}.digest does not match ${artifact.path}`);
+      }
     }
   }
 
