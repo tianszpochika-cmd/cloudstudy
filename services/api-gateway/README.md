@@ -2,7 +2,7 @@
 
 `api-gateway` is the v2 Platform 0 external entry point. It targets Java 25 LTS, Spring Boot 4.1.1 and the Spring Cloud 2025.1.3 Oakwood release train.
 
-## Implemented boundary
+## Current candidate runtime boundary
 
 - Public API paths are versioned under `/api/v1`. Unsupported `/api/*` versions and `/internal/*` paths are rejected at the edge.
 - Only explicit compatibility routes reach the old `core-api`: `/api/v1/health` and `/api/v1/legacy/**`. Both routes are GET/HEAD-only; the legacy path is rewritten to the old `/api/v1/**` shape and marked with a compatibility header. Anonymous legacy reads are denied by default and can only be enabled in the explicit `local` profile.
@@ -21,6 +21,12 @@
 B7 supplied the JWT pre-validation seam. The current boundary is the self-owned IAM signer plus explicit JWKS verification. An access-token header alone is never an authentication success path. Gateway validation still cannot replace service-side PEP checks, and production completion still requires runtime evidence for key management, rotation, revocation, persistence and cross-service authorization.
 
 For local read-only compatibility smoke tests, start with `SPRING_PROFILES_ACTIVE=local`. Do not use that profile as a production deployment profile.
+
+## P1R rebaseline status
+
+P1R-M1-004 freezes the target Gateway D2 policy in `packages/contracts/fragments/p1r-gateway-boundary.openapi.json` and checks it against every active public operation. That contract is authoritative for route ownership, origin/credential profiles, Web Cookie CSRF source checks, native transport, JWT precheck, route-class rate limiting, canonical failures, correlation, redacted audit and direct-connect deny semantics.
+
+The current Java code remains a migration candidate, not accepted M2 runtime evidence. In particular, its security chain currently disables CSRF, its global credentialed CORS configuration is not yet the per-profile browser policy, verifier-disabled public-path handling is not yet proven to match the full public contract, rate limiting is disabled by default, the bounded in-memory audit sink is not durable, and rejecting `/internal` at Gateway does not prove direct domain ports are network-blocked. P1R-M2-001 must close these gaps and supply Redis/JWKS, browser, cross-process and network-isolation evidence before the runtime boundary can be called complete.
 
 ## Local validation
 

@@ -44,4 +44,11 @@ learner-web、admin-web、mobile 使用同一认证中心和 audience，但分�
 
 Refresh Token 每次使用均轮换并保存摘要/历史；同一幂等键可返回原轮换结果，其他 key 的旧值复用或重放必须返回 401、审计关联，并撤销对应 token family 及关联 session。登出撤销当前 session/token family（`allDevices=true` 时撤销该 principal 的全部 session/token family）；显式会话撤销至少撤销目标 session 的 family；密码重置成功撤销所有既有 session/token family。对当前 Web 会话，登出、密码重置和适用的会话撤销必须以同名、同 Path 的 `Set-Cookie` 清除 `yuxuexing_refresh`（`Max-Age=0` 且过去的 `Expires`）；原生端不发 Cookie，客户端只从 Keychain/Keystore 删除相应凭据。
 
-完整 CORS、CSRF、Origin/Referer 与跨站凭据策略由 P1R-M1-004 定义。本 ADR 仅冻结 Refresh Token 的传输和会话终止语义，不能据此放宽 Gateway 的跨域或请求来源校验。
+### 浏览器来源与 CSRF 边界（P1R-M1-004）
+
+- learner-web、admin-web 和 mobile H5 只能从各自精确 allow-list origin 发起 credentialed 请求；不允许 `*` 与凭据组合。official-site 只能执行合同明确列出的公开读取，不接收业务 Cookie、Access Token 或 Refresh Token。
+- 任何携带认证 Cookie 的 POST/PUT/PATCH/DELETE 请求必须先精确校验 `Origin`；只有请求没有 `Origin` 时才可从完整 `Referer` 解析并精确比对 origin。`Origin` 与 `Referer` 冲突、来源缺失或不受信时均 fail closed 为 canonical 403，不能继续刷新、登出、撤销或重置会话。
+- 原生端不得携带 Cookie 或接收 `Set-Cookie`；`NATIVE_SECURE_STORAGE` 选择必须与可信客户端/设备上下文相符。CSRF 对该无 Cookie transport 不适用，但这不代表可以信任客户端声明或跳过 JWT、设备和授权校验。
+- 该来源校验与 `HttpOnly; Secure; SameSite=Lax; Path=/api/v1/auth` 共同构成当前合同。未来若改变 SameSite、Cookie Path、受信 origin，或引入同步 token/double-submit，必须同步更新 Gateway 单一事实源、ADR、契约和浏览器运行测试。
+
+本 ADR 与 `x-p1r-gateway-boundary` 只冻结 D2 语义，不能据此放宽 Gateway 的跨域/来源校验，也不能宣称现有 Java 运行态已经满足这些要求；实现和真实浏览器 Evidence 归 P1R-M2-001。

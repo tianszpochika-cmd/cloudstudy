@@ -41,6 +41,16 @@ IAM 授权语义以 ADR-0010、B8 OpenAPI 和版本化策略包为事实源。`p
 - Access Token 只通过 `Authorization: Bearer` 发送；不进入 URL、日志、事件、埋点、错误 envelope 或业务数据库。Refresh Token 是认证中心管理的轮换/撤销会话凭证，Web 仅用 HttpOnly/Secure/SameSite Cookie，移动端仅用 Keychain/Keystore。
 - 登录、刷新、登出、设备撤销和密码重置接口均由 IAM 提供；`iss/sub/aud/exp/iat/nbf/jti/token_type/scope` 为最低声明，业务角色/权限/租户由服务端事实生成。
 
+### 1.3 Gateway 路由、来源和直接访问边界
+
+- Gateway D2 政策的单一事实源是 `packages/contracts/fragments/p1r-gateway-boundary.openapi.json`。每个 active `/api/v1` operation 必须经有序规则唯一映射到 owner；规则未覆盖、同优先级冲突、未知 owner、`/internal/v1` 外部暴露或把新领域写入送往 `core-api` 时均拒绝。
+- learner-web、admin-web、mobile H5、official-site 与原生端使用不同 origin/transport profile。credentialed CORS 只接受精确 origin 且禁止 wildcard；official-site 不建立业务会话；原生端不使用 Cookie，并把 `NATIVE_SECURE_STORAGE` 与可信客户端/设备上下文交叉校验。
+- 携带认证 Cookie 的非安全方法先精确校验 `Origin`，仅在没有 `Origin` 时允许精确 `Referer` origin 回退；缺失、不受信或冲突返回 canonical 403。SameSite 只是纵深防御，不能代替来源校验。
+- JWT 预检、具名 route-class 限流、canonical 401/403/429/5xx、`Retry-After`、requestId/traceId、幂等键和脱敏边界审计均必须由合同驱动。受保护/高风险路径的限流后端异常默认 503 fail closed。
+- Gateway 对 `/internal/v1` 返回拒绝只证明应用入口语义；生产仍必须用 Ingress/NetworkPolicy/安全组和独立服务凭据阻断客户端直连领域服务，并提供跨进程运行 Evidence。
+
+P1R-M1-004 只完成上述 D2 合同与自动审计；现有 WebFlux 配置、真实 Redis/JWKS、浏览器行为和网络隔离由 P1R-M2-001 修复和验收。
+
 ## 2. 导出字段策略
 
 `authorizeExport` 先检查角色、动作、租户/本人边界，再由 `maskExportFields` 输出。未知字段默认丢弃，禁止把“未配置”当作“原样导出”。

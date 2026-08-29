@@ -19,7 +19,9 @@ const openApiB25FragmentDir = path.join(repoRoot, 'packages', 'contracts', 'frag
 const openApiSharedFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments');
 const eventFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'fragments');
 const canonicalB8AuthFragment = 'packages/contracts/fragments/b8/b8-auth-iam.openapi.json';
-const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility'];
+const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility', 'x-b8-iam-policy-governance'];
+const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';
+const requiredCanonicalGatewayMetadata = ['x-p1r-gateway-boundary'];
 
 const canonicalAsyncApiInfo = {
   title: '语学星 v2 平台集成事件',
@@ -276,7 +278,7 @@ function mergeNamedMap(target, source, label, { allowOverride = false } = {}) {
   }
 }
 
-function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites) {
+function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canonicalGatewayMetadataWrites) {
   for (const tag of fragment.tags ?? []) {
     const existing = (base.tags ?? []).find((candidate) => candidate.name === tag.name);
     if (existing && stableJson(existing) !== stableJson(tag)) {
@@ -309,6 +311,14 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites) {
     if (!isB8CanonicalOverride) throw new Error(`${filePath} cannot define canonical OpenAPI metadata ${metadataKey}`);
     base[metadataKey] = fragment[metadataKey];
     canonicalB8MetadataWrites.add(metadataKey);
+  }
+
+  for (const metadataKey of requiredCanonicalGatewayMetadata) {
+    if (fragment[metadataKey] === undefined) continue;
+    const isGatewayCanonicalSource = normalizeRepoPath(filePath) === canonicalGatewayFragment;
+    if (!isGatewayCanonicalSource) throw new Error(`${filePath} cannot define canonical OpenAPI metadata ${metadataKey}`);
+    base[metadataKey] = fragment[metadataKey];
+    canonicalGatewayMetadataWrites.add(metadataKey);
   }
 }
 
@@ -350,11 +360,13 @@ export function findCanonicalMergeDrift({
 export function merge({ write = false } = {}) {
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
-  // Never retain stale canonical authentication metadata from the previous
-  // generated document. Both values must be supplied in this merge by the
-  // one exact canonical B8 fragment, so a future deletion fails --check.
+  // Never retain stale canonical security metadata from a previous generated
+  // document. Every value must be supplied again by its one exact source
+  // fragment, so a future deletion fails both write and --check modes.
   for (const metadataKey of requiredCanonicalB8Metadata) delete openApi[metadataKey];
+  for (const metadataKey of requiredCanonicalGatewayMetadata) delete openApi[metadataKey];
   const canonicalB8MetadataWrites = new Set();
+  const canonicalGatewayMetadataWrites = new Set();
   const retiredAuthEvents = new Set([
     'auth.oidc.authorization.started.v1',
     'auth.oidc.callback.completed.v1',
@@ -375,10 +387,14 @@ export function merge({ write = false } = {}) {
     .filter((filePath) => readJson(filePath)['x-contract-status'] !== 'historical-compatibility');
   const eventFiles = listJsonFiles(eventFragmentDir).filter((filePath) => /^(b1|b2|b3|b4|b5|b6|b8|b9|b10|b11|b12|b13|b26)-/.test(path.basename(filePath)));
 
-  for (const filePath of openApiFiles) mergeOpenApi(openApi, readJson(filePath), path.relative(repoRoot, filePath), canonicalB8MetadataWrites);
+  for (const filePath of openApiFiles) mergeOpenApi(openApi, readJson(filePath), path.relative(repoRoot, filePath), canonicalB8MetadataWrites, canonicalGatewayMetadataWrites);
   const missingCanonicalB8Metadata = requiredCanonicalB8Metadata.filter((metadataKey) => !canonicalB8MetadataWrites.has(metadataKey));
   if (missingCanonicalB8Metadata.length > 0) {
     throw new Error(`${canonicalB8AuthFragment} must define ${missingCanonicalB8Metadata.join(', ')} during every canonical merge`);
+  }
+  const missingCanonicalGatewayMetadata = requiredCanonicalGatewayMetadata.filter((metadataKey) => !canonicalGatewayMetadataWrites.has(metadataKey));
+  if (missingCanonicalGatewayMetadata.length > 0) {
+    throw new Error(`${canonicalGatewayFragment} must define ${missingCanonicalGatewayMetadata.join(', ')} during every canonical merge`);
   }
   for (const filePath of eventFiles) mergeEvents(catalog, readJson(filePath), path.relative(repoRoot, filePath));
   projectCanonicalAsyncApi(catalog);

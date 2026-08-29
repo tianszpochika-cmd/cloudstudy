@@ -21,6 +21,15 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 - admin policy 是不可变版本控制面：draft、submit、独立第二人 approve、activate、revoke 均需要稳定命令、幂等、requestId/traceId/auditId、职责分离和 cache invalidation；历史版本可审计，不能删除后失去回放能力。
 - 本 profile 只冻结 D2 契约。IAM/成人/同意/策略真实持久化属于 P1R-M2-002，领域服务 PEP/PDP 运行实现属于 P1R-M2-003，权限后台页面属于 P1R-M6-009。
 
+### P1R-M1-004 Gateway 边界 profile
+
+- `fragments/p1r-gateway-boundary.openapi.json` 的 `x-p1r-gateway-boundary` 是 Gateway D2 单一事实源。每个 active `/api/v1` operation 必须命中唯一最高优先级 route rule 并映射到唯一 service owner；未覆盖、等优先级歧义、未知 owner、外部 `/internal/v1` 和新 `core-api` 写入均 fail closed。
+- learner-web、admin-web、mobile H5、official-site 和原生端分别使用具名 origin/transport profile。credentialed CORS 只允许精确 origin，禁止 wildcard；官网只做具名公开读取且不建立业务会话；原生端不得发送或接收 Cookie。
+- Web Cookie 非安全方法必须精确验证 `Origin`；只有没有 `Origin` 时才允许精确 `Referer` origin 回退。缺失、不受信或冲突使用 canonical 403。原生 `NATIVE_SECURE_STORAGE` 不适用 Cookie CSRF，但必须与可信客户端/设备上下文交叉校验。
+- JWT 预检固定 RS256/JWKS/issuer/audience/time/token type/scope，不能仅凭 `Authorization` 头存在或客户端 authority 头建立身份，也不能替代服务 PEP。具名 route class 绑定限流，429 必带 `Retry-After`，受保护/高风险策略的限流后端异常返回 canonical 503。
+- requestId/traceId、写入幂等键、统一错误、脱敏边界审计和 direct-connect deny 都由同一 profile 约束；应用层拒绝 `/internal/v1` 不替代网络层隔离。
+- 本 profile 只冻结 D2 合同。Java Gateway、真实 CORS/CSRF、Redis/JWKS、Ingress/NetworkPolicy、浏览器与跨进程 Evidence 属于 P1R-M2-001。
+
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。
 
 ```powershell
