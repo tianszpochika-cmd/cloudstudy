@@ -107,6 +107,11 @@ const EXPECTED_OWNER_GOVERNANCE = Object.freeze({
 });
 
 const PROMOTED_STATES = new Set(['PASS', 'PASSED', 'ACCEPTED', 'VERIFIED', 'RUNTIME_VERIFIED', 'COMPLETE', 'CLOSED']);
+const EXPECTED_DOCUMENT_SHAPE_DIGESTS = Object.freeze({
+  policy: 'aafae41ef4f16fc4e06bff1c18609fc87cd3c51206641e622fb6044cbd692bd4',
+  b25: '6943655658c008d188861fa148ea8f9001f2121a39fcd65e94390b5d78307829',
+  redis: '0af970b01f606a1a49b242144a11a725f37229c3ea32bf5930dd94a3d7e5ea07',
+});
 const APPROVED_RUNTIME_GOVERNANCE_KEYS = new Set([
   'businessSchemaStatus',
   'collectionStatus',
@@ -346,6 +351,29 @@ function foreignSchemaReferences(text, expectedSchema) {
 
 function normalizedTextSha256(text) {
   return crypto.createHash('sha256').update(String(text ?? '').replace(/\r\n/gu, '\n')).digest('hex');
+}
+
+function documentShapeDigest(value) {
+  const rows = new Set();
+  const visit = (current, location) => {
+    const kind = Array.isArray(current) ? 'array' : current === null ? 'null' : typeof current;
+    rows.add(`${location}:${kind}`);
+    if (Array.isArray(current)) {
+      current.forEach((item) => visit(item, `${location}[]`));
+    } else if (isRecord(current)) {
+      Object.keys(current).sort().forEach((key) => visit(current[key], `${location}.${key}`));
+    }
+  };
+  visit(value, '$');
+  return crypto.createHash('sha256').update([...rows].sort().join('\n')).digest('hex');
+}
+
+function checkDocumentShape(value, errors, label, expectedDigest) {
+  add(
+    errors,
+    documentShapeDigest(value) === expectedDigest,
+    `${label} document shape drifted; unknown, missing or type-changed fields require an explicit D2 schema review`,
+  );
 }
 
 export function validateMigrationSqlText({ service, filename = '<memory>', sql } = {}) {
@@ -611,6 +639,7 @@ function checkGatewayOwner(owner, errors, indexes) {
   const credential = owner.databaseCredential;
   add(errors, isRecord(credential) && credential.required === false, 'Gateway database credential must not be required');
   add(errors, !credential?.logicalId, 'Gateway must not declare a database credential identifier');
+  add(errors, credential?.reason === 'Gateway must not own or write domain business facts', 'Gateway database credential reason must preserve the no-domain-facts boundary');
   const flyway = owner.flyway;
   add(errors, isRecord(flyway) && flyway.required === false && flyway.location === null && flyway.status === 'NOT_APPLICABLE', 'Gateway Flyway/business schema must be NOT_APPLICABLE');
 
@@ -913,6 +942,13 @@ export function validateMigrationDirectory({ service, directory, declaredFileCou
 export function validateGatewaySourceText({ relativePath = '<memory>', content } = {}) {
   const errors = [];
   if (typeof content !== 'string') return [`api-gateway/${relativePath}: source content must be a string`];
+  const filename = path.basename(relativePath).toLowerCase();
+  if (['pom.xml', 'build.gradle', 'build.gradle.kts'].includes(filename)) {
+    const lowerContent = content.toLowerCase();
+    for (const marker of FORBIDDEN_GATEWAY_PERSISTENCE_MARKERS) {
+      if (lowerContent.includes(marker)) errors.push(`api-gateway/${relativePath}: forbidden business persistence dependency: ${marker}`);
+    }
+  }
   if (path.extname(relativePath).toLowerCase() === '.sql') {
     errors.push(`api-gateway/${relativePath}: SQL files are forbidden because Gateway has no business persistence or migration authority`);
   }
@@ -958,13 +994,6 @@ function checkServiceSourceIsolation(root, policy, errors) {
   }
 
   const gatewayRoot = path.join(root, 'services', 'api-gateway');
-  const gatewayPom = path.join(gatewayRoot, 'pom.xml');
-  if (fs.existsSync(gatewayPom)) {
-    const pom = fs.readFileSync(gatewayPom, 'utf8').toLowerCase();
-    for (const marker of FORBIDDEN_GATEWAY_PERSISTENCE_MARKERS) {
-      add(errors, !pom.includes(marker), `api-gateway must not depend on business persistence capability: ${marker}`);
-    }
-  }
   const gatewayScanFiles = [
     ...sourceFiles(path.join(gatewayRoot, 'src', 'main')),
     ...['pom.xml', 'build.gradle', 'build.gradle.kts']
@@ -985,6 +1014,11 @@ export function validateDataOwnershipData({ policy, dataOwnership, b25, b25Data,
   const b25Source = b25 ?? b25Data;
   const redisSource = redisRegistry ?? redisKeyspace;
   const errors = [];
+  // Freeze field paths and value types independently from semantic value checks.
+  // This makes candidate documents fail closed on arbitrary runtime-proof aliases.
+  checkDocumentShape(source, errors, '$.policy', EXPECTED_DOCUMENT_SHAPE_DIGESTS.policy);
+  checkDocumentShape(b25Source, errors, '$.b25', EXPECTED_DOCUMENT_SHAPE_DIGESTS.b25);
+  checkDocumentShape(redisSource, errors, '$.redis', EXPECTED_DOCUMENT_SHAPE_DIGESTS.redis);
   checkHeader(source, errors);
   if (!isRecord(source)) return { result: 'FAIL', errors, summary: {} };
   checkGlobalPolicies(source, errors);

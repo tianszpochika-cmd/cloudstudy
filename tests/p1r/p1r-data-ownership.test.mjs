@@ -65,8 +65,9 @@ test('Gateway cannot acquire a business schema or database write authority', () 
     const gateway = changed.policy.serviceOwners.find((owner) => owner.service === 'api-gateway');
     gateway.businessSchema = 'gateway_service';
     gateway.databaseCredential.required = true;
+    gateway.databaseCredential.reason = 'Gateway may persist domain business facts';
     gateway.writeAuthority = 'gateway-service-only';
-  }, /Gateway must not own a business schema|Gateway database credential must not be required|Gateway must have NO_DOMAIN_WRITE_AUTHORITY/);
+  }, /Gateway must not own a business schema|Gateway database credential must not be required|Gateway database credential reason|Gateway must have NO_DOMAIN_WRITE_AUTHORITY/);
 });
 
 test('Gateway Redis uses are an exact boundary-state allowlist', () => {
@@ -83,6 +84,9 @@ test('Gateway source scan rejects persistence APIs, write SQL, configuration and
     ['src/main/resources/application.yaml', 'spring.datasource.url: jdbc:mysql://127.0.0.1/domain'],
     ['src/main/java/UnsafeGateway.java', 'databaseClient.sql("INSERT INTO learner_profile VALUES (1)")'],
     ['src/main/resources/custom/V1__gateway_write.sql', 'SELECT 1;'],
+    ['pom.xml', '<artifactId>spring-boot-starter-data-jpa</artifactId>'],
+    ['build.gradle', "implementation 'org.springframework.boot:spring-boot-starter-jdbc'"],
+    ['build.gradle.kts', "runtimeOnly('com.mysql:mysql-connector-j')"],
   ];
   for (const [relativePath, content] of samples) {
     const errors = validateGatewaySourceText({ relativePath, content });
@@ -220,9 +224,15 @@ test('unknown runtime-proof fields and aliased promoted states fail closed', () 
     (changed) => { changed.redisRegistry.entries[0].verification = { state: 'PASS' }; },
     (changed) => { changed.policy.verificationState = 'PASS'; },
     (changed) => { changed.b25.proof = true; },
+    (changed) => { changed.policy.attestation = 'PASS'; },
+    (changed) => { changed.policy.currentStatus = 'PASS'; },
+    (changed) => { changed.policy.live = true; },
+    (changed) => { changed.b25.deployed = 'PASS'; },
+    (changed) => { changed.redisRegistry.operationalStatus = 'PASS'; },
+    (changed) => { changed.redisRegistry.certified = true; },
   ];
   for (const mutate of mutations) {
-    assertMutationFails(mutate, /unknown runtime-proof field|attempts to promote/);
+    assertMutationFails(mutate, /document shape drifted|unknown runtime-proof field|attempts to promote/);
   }
 });
 
