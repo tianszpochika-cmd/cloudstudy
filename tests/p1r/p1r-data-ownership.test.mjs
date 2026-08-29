@@ -6,6 +6,7 @@ import test from 'node:test';
 import {
   validateDataOwnership,
   validateDataOwnershipData,
+  validateGatewaySourceText,
   validateMigrationSqlText,
 } from '../../scripts/audit/p1r-data-ownership-check.mjs';
 
@@ -63,6 +64,27 @@ test('Gateway cannot acquire a business schema or database write authority', () 
     gateway.databaseCredential.required = true;
     gateway.writeAuthority = 'gateway-service-only';
   }, /Gateway must not own a business schema|Gateway database credential must not be required|Gateway must have NO_DOMAIN_WRITE_AUTHORITY/);
+});
+
+test('Gateway Redis uses are an exact boundary-state allowlist', () => {
+  assertMutationFails((changed) => {
+    const gateway = changed.policy.serviceOwners.find((owner) => owner.service === 'api-gateway');
+    gateway.redis.allowedUses = ['domain-write', 'cache-business-fact'];
+  }, /api-gateway\.redis\.allowedUses/);
+});
+
+test('Gateway source scan rejects persistence APIs, write SQL, configuration and custom SQL files', () => {
+  const samples = [
+    ['src/main/java/UnsafeGateway.java', 'import org.springframework.jdbc.core.JdbcTemplate;'],
+    ['src/main/java/UnsafeGateway.java', 'DriverManager.getConnection("jdbc:mysql://127.0.0.1/domain");'],
+    ['src/main/resources/application.yaml', 'spring.datasource.url: jdbc:mysql://127.0.0.1/domain'],
+    ['src/main/java/UnsafeGateway.java', 'databaseClient.sql("INSERT INTO learner_profile VALUES (1)")'],
+    ['src/main/resources/custom/V1__gateway_write.sql', 'SELECT 1;'],
+  ];
+  for (const [relativePath, content] of samples) {
+    const errors = validateGatewaySourceText({ relativePath, content });
+    assert(errors.length > 0, `${relativePath} should fail closed`);
+  }
 });
 
 test('schema, database credential and Redis namespace identities are unique and owner-bound', () => {
@@ -161,13 +183,37 @@ test('migration and Redis candidate metadata cannot be relabeled as current runt
   }, /historical candidate input|candidateOnly must be true|historical owner promotion/);
 });
 
+test('nested B25 and Redis candidate metadata cannot promote static inputs to runtime PASS', () => {
+  assertMutationFails((changed) => {
+    changed.b25.runtime = { status: 'PASS' };
+    changed.b25.task.status = 'ACCEPTED';
+    changed.b25.migration.runtimeStatus = 'RUNTIME_VERIFIED';
+    changed.b25.fixture.runtimeStatus = 'PASS';
+    changed.redisRegistry.globalRules.status = 'RUNTIME_VERIFIED';
+    changed.redisRegistry.entries[0].status = 'PASS';
+  }, /\.b25\.|\.redis\.|attempts to promote/);
+});
+
 test('owner lifecycle and forward-repair responsibilities remain complete', () => {
   assertMutationFails((changed) => {
     const owner = changed.policy.serviceOwners.find((item) => item.service === 'assessment-service');
     owner.lifecycle.legalHold = 'skip';
     owner.migrationResponsibility.forwardRepair = 'workflow-service';
     owner.migrationResponsibility.destructiveDownMigration = 'ALLOWED';
-  }, /legalHold must be checked by the owner|forwardRepair must be assessment-service|destructive down migration must be PROHIBITED/);
+  }, /legalHold must be owner-checks-before-delete|forwardRepair must be assessment-service|destructive down migration must be PROHIBITED/);
+});
+
+test('owner lifecycle rejects keyword-containing negations and non-canonical recovery text', () => {
+  assertMutationFails((changed) => {
+    const owner = changed.policy.serviceOwners.find((item) => item.service === 'assessment-service');
+    owner.lifecycle.dataClass = 'NOT_ASSESSMENT_DATA';
+    owner.lifecycle.policyClass = 'NO_RETENTION_POLICY';
+    owner.lifecycle.policyOwner = 'workflow-service';
+    owner.lifecycle.deleteOrAnonymize = 'owner must not execute deletion';
+    owner.lifecycle.legalHold = 'owner does not check legal hold';
+    owner.lifecycle.receipt = 'not audit receipt';
+    owner.migrationResponsibility.rollback = 'destructive rollback is allowed';
+  }, /must match the frozen owner classification|must match the frozen retention policy class|must match the frozen policy owner|must match the frozen owner action|must be owner-checks-before-delete|must match the frozen workflow\/audit destination|must match the frozen owner recovery action/);
 });
 
 test('migration SQL scan rejects owner switching, grant changes and foreign service schemas', () => {
@@ -213,6 +259,63 @@ test('migration SQL scan treats MySQL executable comments as executable policy i
   assert(errors.some((error) => /USE is forbidden/.test(error)), errors.join('\n'));
   assert(errors.some((error) => /GRANT\/REVOKE is forbidden/.test(error)), errors.join('\n'));
   assert(errors.some((error) => /cross-service schema reference is forbidden: learner_service/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+});
+
+test('migration SQL scan rejects USE immediately followed by quoted identifiers', () => {
+  for (const sql of ['USE`learner_service`;', 'USE"learner_service";']) {
+    const errors = validateMigrationSqlText({
+      service: 'learning-service',
+      filename: 'V99__unsafe_compact_use.sql',
+      sql,
+    });
+    assert(errors.some((error) => /USE is forbidden/.test(error)), errors.join('\n'));
+  }
+});
+
+test('migration SQL scan rejects dynamic SQL that could hide owner switching or cross-service writes', () => {
+  for (const sql of [
+    "SET @statement = 'INSERT INTO assessment_service.attempts(id) VALUES (1)'; PREPARE stmt FROM @statement; EXECUTE stmt;",
+    "PREPARE stmt FROM 'USE learner_service'; EXECUTE stmt;",
+    "SET @statement = 'GRANT SELECT ON learner_service.* TO ''reader'''; PREPARE stmt FROM @statement; EXECUTE stmt;",
+    "EXECUTE IMMEDIATE 'DROP SCHEMA learner_service';",
+  ]) {
+    const errors = validateMigrationSqlText({
+      service: 'learning-service',
+      filename: 'V99__unsafe_dynamic_sql.sql',
+      sql,
+    });
+    assert(errors.some((error) => /dynamic SQL PREPARE\/EXECUTE is forbidden/.test(error)), errors.join('\n'));
+  }
+  const knownFilenameMutation = validateMigrationSqlText({
+    service: 'iam-service',
+    filename: 'V4__preserve_iam_consent_history.sql',
+    sql: "PREPARE stmt FROM 'USE learner_service'; EXECUTE stmt;",
+  });
+  assert(knownFilenameMutation.some((error) => /reviewed digest/.test(error)), knownFilenameMutation.join('\n'));
+});
+
+test('migration SQL scan follows MySQL dash-comment whitespace rules', () => {
+  for (const sql of [
+    'SELECT 1--1; INSERT INTO assessment_service.attempts(id) VALUES (1);',
+    'SELECT 1--x; INSERT INTO assessment_service.attempts(id) VALUES (1);',
+    'SELECT 1--+1; INSERT INTO assessment_service.attempts(id) VALUES (1);',
+  ]) {
+    const errors = validateMigrationSqlText({
+      service: 'learning-service',
+      filename: 'V99__unsafe_false_dash_comment.sql',
+      sql,
+    });
+    assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  }
+});
+
+test('migration SQL scan fails closed across NO_BACKSLASH_ESCAPES string semantics', () => {
+  const errors = validateMigrationSqlText({
+    service: 'learning-service',
+    filename: 'V99__unsafe_sql_mode_escape.sql',
+    sql: "SELECT 'safe\\'; INSERT INTO assessment_service.attempts(id) VALUES (1); -- ';",
+  });
   assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
 });
 

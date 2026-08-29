@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -76,17 +77,53 @@ export const EXPECTED_M2_RUNTIME_REQUIREMENTS = Object.freeze([
   'M2-004-RETENTION-DELETE-HOLD',
 ]);
 
+const EXPECTED_OWNER_GOVERNANCE = Object.freeze({
+  'iam-service': ['IDENTITY_AND_SECURITY', 'IDENTITY_RETENTION_AND_DELETION', 'iam-service', 'owner-executes-with-workflow-receipt', 'workflow-and-audit', 'expand-contract-or-compensate'],
+  'audit-service': ['IMMUTABLE_AUDIT_AND_COMPLIANCE', 'AUDIT_RETENTION_AND_LEGAL_HOLD', 'audit-service', 'policy-controlled-owner-executes', 'workflow-and-audit', 'expand-contract-or-compensate'],
+  'workflow-service': ['SAGA_RECOVERY_AND_RECEIPT', 'WORKFLOW_RECOVERY_RETENTION', 'workflow-service', 'owner-executes-with-domain-receipts', 'audit-service', 'compensate-by-command-or-event-never-cross-write'],
+  'learner-service': ['LEARNER_PROFILE_AND_PRIVACY_REQUEST', 'LEARNER_PRIVACY_RETENTION', 'learner-service.privacy', 'owner-executes-with-workflow-receipt', 'workflow-and-audit', 'expand-contract-or-compensate'],
+  'content-service': ['CONTENT_RIGHTS_AND_PUBLICATION', 'CONTENT_RIGHTS_RETENTION', 'content-service', 'owner-executes-versioned-unpublish-or-delete', 'workflow-and-audit', 'restore-verified-content-version-or-compensate'],
+  'learning-service': ['PLAN_SRS_PROGRESS_AND_MASTERY', 'LEARNING_RECORD_RETENTION', 'learning-service', 'owner-executes-rebuildable-projection-removal', 'workflow-and-audit', 'replay-or-compensate-from-owner-facts'],
+  'assessment-service': ['ATTEMPT_CHECKPOINT_SCORING_AND_REPORT', 'ASSESSMENT_RECORD_RETENTION', 'assessment-service', 'owner-executes-with-auditable-report-policy', 'workflow-and-audit', 'owner-compensation-and-versioned-snapshot-replay'],
+  'media-service': ['MEDIA_METADATA_RENDITION_AND_AUTHORIZATION', 'MEDIA_RETENTION_AND_RIGHTS', 'media-service', 'owner-executes-with-object-store-receipt', 'workflow-and-audit', 'versioned-rendition-restore-or-compensate'],
+  'gamification-service': ['REWARD_LEDGER_AND_GAME_STATE', 'GAMIFICATION_LEDGER_RETENTION', 'gamification-service', 'owner-executes-with-immutable-ledger-policy', 'workflow-and-audit', 'compensating-ledger-entry-never-cross-write'],
+  'social-service': ['STUDY_ROOM_SOCIAL_AND_MODERATION', 'SOCIAL_AND_MODERATION_RETENTION', 'social-service', 'owner-executes-with-moderation-policy', 'workflow-and-audit', 'owner-compensation-and-projection-rebuild'],
+  'commerce-service': ['ORDER_ENTITLEMENT_REFUND_AND_RECONCILIATION', 'COMMERCE_AND_FINANCIAL_RETENTION', 'commerce-service', 'owner-executes-subject-to-financial-and-legal-policy', 'workflow-and-audit', 'compensating-financial-state-transition'],
+  'notification-service': ['NOTIFICATION_PREFERENCE_AND_DELIVERY', 'NOTIFICATION_RETENTION', 'notification-service', 'owner-executes-with-delivery-audit-policy', 'workflow-and-audit', 'owner-compensation-and-redelivery-policy'],
+  'analytics-service': ['DEIDENTIFIED_ANALYTICS_AND_READ_MODEL', 'ANALYTICS_CONSENT_AND_DELETION', 'analytics-service', 'owner-executes-after-consent-and-deletion-signal', 'workflow-and-audit', 'rebuild-derived-read-model-or-compensate'],
+  'admin-ops-service': ['SUPPORT_TICKET_ASSIGNMENT_SLA_AND_OPERATION', 'SUPPORT_AND_OPERATION_RETENTION', 'admin-ops-service.support', 'support-owner-executes-with-workflow-receipt', 'workflow-and-audit', 'owner-compensation-without-copying-domain-facts'],
+});
+
 const PROMOTED_STATES = new Set(['PASS', 'PASSED', 'ACCEPTED', 'VERIFIED', 'RUNTIME_VERIFIED', 'COMPLETE', 'CLOSED']);
 const SOURCE_SCAN_EXTENSIONS = new Set(['.java', '.kt', '.sql', '.xml', '.yml', '.yaml', '.properties']);
 const FORBIDDEN_GATEWAY_PERSISTENCE_MARKERS = [
   'spring-boot-starter-data-jpa',
+  'spring-boot-starter-data-r2dbc',
   'spring-boot-starter-jdbc',
+  'spring-data-jdbc',
+  'spring-data-r2dbc',
   'spring-jdbc',
   'flyway-core',
   'liquibase-core',
+  'hibernate-core',
+  'mybatis',
+  'jooq',
   'mysql-connector',
+  'mariadb-java-client',
+  'postgresql',
+  'sqlite-jdbc',
   'r2dbc-mysql',
 ];
+const EXPECTED_DYNAMIC_SQL_MIGRATION_DIGESTS = Object.freeze({
+  'iam-service/V4__preserve_iam_consent_history.sql': 'ffba958ccfe4aa3de3f7d58eb7548853056c95c86d8b65146a3d456915a00373',
+  'iam-service/V5__create_self_owned_jwt_auth_schema.sql': '2c3b4f4b4c3bc72caeb3f10d03be106a0eb0d125ee398c0c5c71073554d000a4',
+});
+const FORBIDDEN_GATEWAY_SOURCE_PATTERNS = Object.freeze([
+  [/\b(?:JdbcTemplate|NamedParameterJdbcTemplate|DataSource|DriverManager|EntityManager|JpaRepository|CrudRepository|ReactiveCrudRepository|R2dbcRepository|R2dbcEntityTemplate|DatabaseClient|SqlSession|DSLContext|SessionFactory)\b/u, 'database access API'],
+  [/(?:java\.sql|javax\.sql|jakarta\.persistence|org\.springframework\.jdbc|org\.springframework\.data\.(?:jpa|jdbc|r2dbc)|org\.flywaydb|org\.hibernate|org\.mybatis|org\.jooq|liquibase)/u, 'database persistence import'],
+  [/(?:spring\.datasource|spring\.r2dbc|jdbc:|r2dbc:|flyway|liquibase)/iu, 'database or migration configuration'],
+  [/\b(?:INSERT\s+INTO|UPDATE\s+[a-z0-9_`"]+\s+SET|DELETE\s+FROM|MERGE\s+INTO|CREATE\s+TABLE|ALTER\s+TABLE|DROP\s+TABLE)\b/iu, 'SQL write or DDL statement'],
+]);
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -141,11 +178,6 @@ function normalizeSqlForPolicyScan(sql) {
     }
     if (mode === 'SINGLE_QUOTED_STRING') {
       normalized += blank(character);
-      if (character === '\\' && next !== undefined) {
-        normalized += blank(next);
-        index += 1;
-        continue;
-      }
       if (character === "'" && next === "'") {
         normalized += ' ';
         index += 1;
@@ -161,7 +193,9 @@ function normalizeSqlForPolicyScan(sql) {
       inExecutableComment = false;
       continue;
     }
-    if (character === '-' && next === '-') {
+    const dashCommentFollower = source[index + 2];
+    if (character === '-' && next === '-'
+      && (dashCommentFollower === undefined || /[ \u0000-\u001f\u007f]/u.test(dashCommentFollower))) {
       normalized += '  ';
       index += 1;
       mode = 'LINE_COMMENT';
@@ -198,11 +232,6 @@ function normalizeSqlForPolicyScan(sql) {
       while (cursor < source.length) {
         const quotedCharacter = source[cursor];
         const quotedNext = source[cursor + 1];
-        if (quotedCharacter === '\\' && quotedNext !== undefined) {
-          value += quotedNext;
-          cursor += 2;
-          continue;
-        }
         if (quotedCharacter === '"' && quotedNext === '"') {
           value += '"';
           cursor += 2;
@@ -222,7 +251,7 @@ function normalizeSqlForPolicyScan(sql) {
         && (/(?:_service)$/iu.test(value) || /^core_api$/iu.test(value) || previousWord === 'USE');
       const rawToken = source.slice(index, cursor);
       normalized += isPolicyRelevantIdentifier
-        ? value
+        ? `\`${value}\``
         : [...rawToken].map(blank).join('');
       index = cursor - 1;
       continue;
@@ -234,12 +263,16 @@ function normalizeSqlForPolicyScan(sql) {
 
 function foreignSchemaReferences(text, expectedSchema) {
   const references = new Set();
-  const pattern = /`?([a-z][a-z0-9_]*(?:_service)|core_api)`?\s*\./giu;
+  const pattern = /(?:`([a-z][a-z0-9_]*(?:_service)|core_api)`|"([a-z][a-z0-9_]*(?:_service)|core_api)"|([a-z][a-z0-9_]*(?:_service)|core_api))\s*\./giu;
   for (const match of String(text ?? '').matchAll(pattern)) {
-    const schema = match[1].toLowerCase();
+    const schema = (match[1] ?? match[2] ?? match[3]).toLowerCase();
     if (schema !== expectedSchema.toLowerCase()) references.add(schema);
   }
   return [...references].sort();
+}
+
+function normalizedTextSha256(text) {
+  return crypto.createHash('sha256').update(String(text ?? '').replace(/\r\n/gu, '\n')).digest('hex');
 }
 
 export function validateMigrationSqlText({ service, filename = '<memory>', sql } = {}) {
@@ -249,7 +282,7 @@ export function validateMigrationSqlText({ service, filename = '<memory>', sql }
   if (errors.length > 0) return errors;
   const normalized = normalizeSqlForPolicyScan(sql);
   const forbidden = [
-    [/\bUSE\s+`?[a-z0-9_]+`?/iu, 'USE is forbidden; Flyway must receive the owner schema through its service-scoped connection'],
+    [/\bUSE(?:\s+|(?=[`"]))`?[a-z0-9_]+`?/iu, 'USE is forbidden; Flyway must receive the owner schema through its service-scoped connection'],
     [/\b(?:GRANT|REVOKE)\b/iu, 'GRANT/REVOKE is forbidden in service migrations; owner grants are provisioned and verified by P1R-M2-004'],
     [/\b(?:CREATE|DROP)\s+(?:DATABASE|SCHEMA)\b/iu, 'CREATE/DROP DATABASE or SCHEMA is forbidden in service migrations'],
   ];
@@ -259,6 +292,14 @@ export function validateMigrationSqlText({ service, filename = '<memory>', sql }
   const expectedSchema = serviceSchemaName(service);
   for (const foreignSchema of foreignSchemaReferences(normalized, expectedSchema)) {
     errors.push(`${service}/${filename}: cross-service schema reference is forbidden: ${foreignSchema}`);
+  }
+  const dynamicSql = /\b(?:PREPARE|EXECUTE)\b/iu;
+  if (dynamicSql.test(normalized)) {
+    const migrationId = `${service}/${filename}`;
+    const expectedDigest = EXPECTED_DYNAMIC_SQL_MIGRATION_DIGESTS[migrationId];
+    if (normalizedTextSha256(sql) !== expectedDigest) {
+      errors.push(`${migrationId}: dynamic SQL PREPARE/EXECUTE is forbidden unless the historical migration matches its reviewed digest`);
+    }
   }
   return errors;
 }
@@ -388,14 +429,18 @@ function checkGlobalPolicies(policy, errors) {
 function checkOwnerLifecycle(owner, errors) {
   const service = owner.service;
   const lifecycle = owner.lifecycle;
+  const expected = EXPECTED_OWNER_GOVERNANCE[service];
   add(errors, isRecord(lifecycle), `${service}.lifecycle is required`);
   if (isRecord(lifecycle)) {
     for (const key of ['dataClass', 'policyClass', 'policyOwner', 'laterExactPolicyRef', 'deleteOrAnonymize', 'legalHold', 'receipt']) assertString(errors, lifecycle[key], `${service}.lifecycle.${key}`);
     add(errors, lifecycle.exactDurationFrozen === false, `${service}.lifecycle.exactDurationFrozen must remain false`);
     add(errors, lifecycle.laterExactPolicyRef === 'P1R-M1-017', `${service}.lifecycle must defer exact duration to P1R-M1-017`);
-    add(errors, /owner/i.test(lifecycle.deleteOrAnonymize ?? ''), `${service}.lifecycle.deleteOrAnonymize must be owner-executed`);
-    add(errors, /owner.*check/i.test(lifecycle.legalHold ?? ''), `${service}.lifecycle.legalHold must be checked by the owner`);
-    add(errors, /workflow|audit/i.test(lifecycle.receipt ?? ''), `${service}.lifecycle.receipt must name workflow or audit`);
+    add(errors, lifecycle.dataClass === expected?.[0], `${service}.lifecycle.dataClass must match the frozen owner classification`);
+    add(errors, lifecycle.policyClass === expected?.[1], `${service}.lifecycle.policyClass must match the frozen retention policy class`);
+    add(errors, lifecycle.policyOwner === expected?.[2], `${service}.lifecycle.policyOwner must match the frozen policy owner`);
+    add(errors, lifecycle.deleteOrAnonymize === expected?.[3], `${service}.lifecycle.deleteOrAnonymize must match the frozen owner action`);
+    add(errors, lifecycle.legalHold === 'owner-checks-before-delete', `${service}.lifecycle.legalHold must be owner-checks-before-delete`);
+    add(errors, lifecycle.receipt === expected?.[4], `${service}.lifecycle.receipt must match the frozen workflow/audit destination`);
   }
 }
 
@@ -405,7 +450,7 @@ function checkOwnerMigration(owner, errors) {
   add(errors, isRecord(migration), `${service}.migrationResponsibility is required`);
   if (!isRecord(migration)) return;
   add(errors, migration.forwardRepair === service, `${service}.migrationResponsibility.forwardRepair must be ${service}`);
-  assertString(errors, migration.rollback, `${service}.migrationResponsibility.rollback`);
+  add(errors, migration.rollback === EXPECTED_OWNER_GOVERNANCE[service]?.[5], `${service}.migrationResponsibility.rollback must match the frozen owner recovery action`);
   add(errors, migration.destructiveDownMigration === 'PROHIBITED', `${service} destructive down migration must be PROHIBITED`);
   add(errors, migration.runtimeVerificationTask === 'P1R-M2-004', `${service} runtime migration verification must remain assigned to P1R-M2-004`);
 }
@@ -495,6 +540,7 @@ function checkGatewayOwner(owner, errors, indexes) {
   if (isRecord(redis)) {
     add(errors, redis.namespace === 'gateway', 'Gateway Redis namespace must be gateway');
     add(errors, redis.logicalCredentialId === 'redis-runtime-gateway', 'Gateway Redis credential must be redis-runtime-gateway');
+    assertExpectedSet(errors, redis.allowedUses, ['rate-limit', 'JWT-precheck-support', 'edge-coordination'], 'api-gateway.redis.allowedUses');
     add(errors, redis.businessSourceOfTruth === false, 'Gateway Redis must not be a business source of truth');
     add(errors, redis.runtimeStatus === 'P1R-M2-004_REQUIRED', 'Gateway Redis runtime status must remain P1R-M2-004_REQUIRED');
     add(errors, !indexes.redisNamespaces.has(redis.namespace), `Redis namespace is duplicated: ${redis.namespace}`);
@@ -765,6 +811,18 @@ function sourceFiles(directory) {
   return files;
 }
 
+export function validateGatewaySourceText({ relativePath = '<memory>', content } = {}) {
+  const errors = [];
+  if (typeof content !== 'string') return [`api-gateway/${relativePath}: source content must be a string`];
+  if (path.extname(relativePath).toLowerCase() === '.sql') {
+    errors.push(`api-gateway/${relativePath}: SQL files are forbidden because Gateway has no business persistence or migration authority`);
+  }
+  for (const [pattern, label] of FORBIDDEN_GATEWAY_SOURCE_PATTERNS) {
+    if (pattern.test(content)) errors.push(`api-gateway/${relativePath}: forbidden ${label}`);
+  }
+  return errors;
+}
+
 function checkServiceSourceIsolation(root, policy, errors) {
   for (const owner of policy.serviceOwners ?? []) {
     if (owner?.dataOwner !== true || !EXPECTED_EXISTING_MIGRATION_SERVICES.includes(owner.service)) continue;
@@ -786,6 +844,18 @@ function checkServiceSourceIsolation(root, policy, errors) {
       add(errors, !pom.includes(marker), `api-gateway must not depend on business persistence capability: ${marker}`);
     }
   }
+  const gatewayScanFiles = [
+    ...sourceFiles(path.join(gatewayRoot, 'src', 'main')),
+    ...['pom.xml', 'build.gradle', 'build.gradle.kts']
+      .map((name) => path.join(gatewayRoot, name))
+      .filter((file) => fs.existsSync(file)),
+  ];
+  for (const file of new Set(gatewayScanFiles)) {
+    errors.push(...validateGatewaySourceText({
+      relativePath: path.relative(gatewayRoot, file),
+      content: fs.readFileSync(file, 'utf8'),
+    }));
+  }
   add(errors, !fs.existsSync(path.join(gatewayRoot, 'src', 'main', 'resources', 'db', 'migration')), 'api-gateway must not contain a business Flyway migration directory');
 }
 
@@ -802,7 +872,9 @@ export function validateDataOwnershipData({ policy, dataOwnership, b25, b25Data,
   checkB25OwnerMap(source, b25Source, errors);
   checkRedisKeyspace(source, redisSource, ownerByService, errors);
   checkM2Gaps(source, errors);
-  checkNoRuntimePromotion(source, errors);
+  checkNoRuntimePromotion(source, errors, '$.policy');
+  checkNoRuntimePromotion(b25Source, errors, '$.b25');
+  checkNoRuntimePromotion(redisSource, errors, '$.redis');
   return {
     result: errors.length === 0 ? 'PASS' : 'FAIL',
     errors,
