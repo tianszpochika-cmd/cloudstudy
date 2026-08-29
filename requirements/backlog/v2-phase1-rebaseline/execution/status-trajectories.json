@@ -70,10 +70,10 @@
     },
     {
       "taskId": "P1R-M1-001",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-29T11:15:00+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T20:28:20+08:00",
       "actor": "root-coordinator",
-      "reason": "M0-008 is ACCEPTED; three bounded implementation tracks started for the shared API contract foundation, failure-closed checks and GAP ownership record.",
+      "reason": "The canonical API foundation, no-write tooling and failure-closed checks passed; independent Luna Max review accepted source commit 96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-001/manifest.json"
     }
   ]

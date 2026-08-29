@@ -1,0 +1,122 @@
+{
+  "taskId": "P1R-M1-001",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4",
+  "artifactDigests": [
+    {
+      "path": "scripts/audit/p1r-api-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "def72fb4c8acf34dcb5c431c1119419193a0d994e19af8e93e429c3ce2902f25"
+    },
+    {
+      "path": "scripts/contracts/compatibility-git-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "cc651df50bdc5ebf256b5d9521c2896d0c8ee2956ac2ff068cc3d2ec01d3039a"
+    },
+    {
+      "path": "tests/p1r/p1r-api-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "83d06adf1e9ad201c83160ee6ab979b303837558d6dc51eaab3bd6e9a9af9977"
+    },
+    {
+      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
+      "algorithm": "sha256",
+      "digest": "17840118ce9a7316361950f2062b57f1723fa35f094967914ae2179cab27bee8"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "compatibilityBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3"
+  },
+  "startedAt": "2026-08-29T11:15:00+08:00",
+  "finishedAt": "2026-08-29T20:28:20+08:00",
+  "actors": [
+    "m1_api_contract",
+    "m0_frontend_acceptance",
+    "m1_001_pagination_fix",
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-001",
+    "ARCH-API-001",
+    "INT-P1-001",
+    "INT-P1-002",
+    "INT-P1-003",
+    "INT-P1-004",
+    "INT-P1-005",
+    "INT-P1-006",
+    "INT-P1-007",
+    "INT-P1-008",
+    "INT-P1-009",
+    "INT-P1-010",
+    "INT-P1-011",
+    "INT-P1-012",
+    "INT-P1-013",
+    "INT-P1-014",
+    "INT-P1-015",
+    "INT-P1-016",
+    "INT-P1-017",
+    "INT-P1-018"
+  ],
+  "commands": [
+    "node scripts/audit/p1r-api-contract-check.mjs",
+    "node scripts/contracts/merge-b1-fragments.mjs",
+    "node scripts/contracts/generate-contracts.mjs --check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 4d7f73a867ff3e1db8582eab7593c173625bc8a3 --kind all",
+    "pnpm --dir packages/contracts typecheck",
+    "pnpm --dir packages/api-client typecheck",
+    "pnpm test:p1r",
+    "node --test tests/g/g1-contract-data.test.mjs",
+    "pnpm test:b7",
+    "pnpm test:b8",
+    "independent Luna Max read-only acceptance review"
+  ],
+  "results": [
+    {
+      "check": "canonical-success-and-errors",
+      "status": "PASS",
+      "details": "317 external JSON 2xx responses use canonical envelopes and correlation/version headers; 385 declared standard errors use exact canonical Api* responses"
+    },
+    {
+      "check": "write-idempotency",
+      "status": "PASS",
+      "details": "165 external writes: 164 require Idempotency-Key and one named signed-access exception is bounded and fail-closed"
+    },
+    {
+      "check": "cursor-pagination",
+      "status": "PASS",
+      "details": "58 list* operations plus two existing Cursor operations use Cursor, PageSize, ApiCursorPageEnvelope, ApiCursorPageMeta and x-pagination; data carries no cursor/page state"
+    },
+    {
+      "check": "merge-generate-validate-types",
+      "status": "PASS",
+      "details": "20 OpenAPI fragments and 14 event fragments merge without drift; five generated files are current; 367 operations, 486 schemas and 154 events validate; contracts and api-client typecheck"
+    },
+    {
+      "check": "compatibility",
+      "status": "PASS",
+      "details": "Immutable Git baseline comparison reports zero breaking changes for OpenAPI, events and JSON Schema and rejects a true self-comparison"
+    },
+    {
+      "check": "tests-and-independent-review",
+      "status": "PASS",
+      "details": "P1R 34/34, G1 6/6, B7 28/28 and B8 29/29; independent reviewer m1_001_final_review accepted the implementation source"
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Source commit is isolated from canonical status evidence; reverting 96e1b541 restores the pre-M1 API contract checkpoint, and generated artifacts are reproducible from the accepted fragments."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still blocks release claims.",
+    "Domain authentication, authorization, Gateway, data-owner and event contracts remain owned by P1R-M1-002 through P1R-M1-018.",
+    "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-001-relevant G1 slice passes 6/6."
+  ],
+  "reviewer": "m1_001_final_review",
+  "decision": "ACCEPTED"
+}
