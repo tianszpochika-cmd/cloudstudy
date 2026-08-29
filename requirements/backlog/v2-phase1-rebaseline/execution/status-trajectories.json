@@ -86,10 +86,10 @@
     },
     {
       "taskId": "P1R-M1-003",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-29T22:19:13+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T23:25:30+08:00",
       "actor": "root-coordinator",
-      "reason": "M1-002 is accepted and the IAM authorization, adult Gate, consent, tenant, admin policy and PEP/PDP D2 contract tracks have been assigned from immutable baseline d7bf9ab2472cca36d110720acc135f2115a96fe5.",
+      "reason": "The IAM authorization, adult Gate, consent, RBAC/ABAC, policy governance and strict PEP/PDP D2 contract passed compatibility and failure-closed checks; independent Luna Max reviewer m1_003_final_review accepted final source 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-003/manifest.json"
     }
   ]

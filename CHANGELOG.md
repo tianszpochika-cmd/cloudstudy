@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-003-IAM-POLICY-20260829] 接受 Phase 1 IAM 权限与策略 D2 契约：principal/tenant/role/permission 和 resource owner/content rights 均具备服务端权威来源，成人 Gate 与 required consent 按版本、证据、撤回和重验证 fail closed；RBAC+ABAC、默认拒绝、本地 PEP/远程 PDP、可信服务身份，以及 policy draft/submit/独立 approve/activate/revoke、审计、幂等和缓存失效均可机器校验。新增 8 个策略控制操作、1 个严格 PDP 操作、结构化审计和 13 个失败关闭测试；canonical 为 377 operations/536 schemas/154 events，OpenAPI Git baseline 0 breaking，P1R 57/57、B8 29/29、G1 6/6，独立 Luna Max 评审接受最终源 `82b27f4`。Phase 1 角色词汇已移除 `tenant-admin/privacy-operator` 旧别名。完整 G 仍为既有 39/41，IAM/PEP/PDP/Gateway 运行实现与 M0-006 阻塞未被冒充完成。
+
 - [P1R-M1-003-START-20260829] 启动 Phase 1 IAM 权限、成人 Gate、consent、tenant、RBAC/ABAC、admin policy 与 PEP/PDP 契约任务：以 `dev@d7bf9ab` 为不可变来源基线，按 B8 OpenAPI、失败关闭审计和安全设计一致性三条互斥文件轨道执行；目标是冻结服务端派生 authority、默认拒绝、成人/同意限制、版本化策略包、双人审批/撤销/缓存失效以及本地 PEP 与远程 PDP 边界。本条仅记录 `IN_PROGRESS` 检查点，不代表运行实现、M1 或发布 Gate 已验收。
 
 ## Unreleased

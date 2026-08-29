@@ -1,0 +1,176 @@
+{
+  "taskId": "P1R-M1-003",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
+  "artifactDigests": [
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "e8126440c8ecafa6023c7cf4c27efb6abb4252a5acf08c60f28194146a027a9f"
+    },
+    {
+      "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
+      "algorithm": "sha256",
+      "digest": "26fb400dae4621ca4af006da80258e4907e0870c168c14586af250875bcfc714"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "0d922d5d38e9c2871b1b833c2f927ffcc16c0bd1f78b995992e60010f9900521"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "algorithm": "sha256",
+      "digest": "3b0223321373c3228e2d1ed32e84e2c650d73488a3a51ca8119c44c0db83267d"
+    },
+    {
+      "path": "packages/api-client/src/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "c9f5b0d0d1d053ed9faae5c3ffb8de7d3161e3dac9685338d3cf3a73a950f6fe"
+    },
+    {
+      "path": "scripts/audit/p1r-iam-policy-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "87e1634ec4b917dd0068be3d113e02682269516f1da8a6429b4505a175d8b935"
+    },
+    {
+      "path": "tests/p1r/p1r-iam-policy-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "2c780e381bbd5b14cb2fa33c15ccabad14519c3a56d6ca51d7d4a23d06b9a9b6"
+    },
+    {
+      "path": "tests/p1r/p1r-api-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"
+    },
+    {
+      "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+      "algorithm": "sha256",
+      "digest": "8cb26a9e632f7786dea4825e9d9d7b149f58f1c6b9956504bad88fcdbeeb5bf8"
+    },
+    {
+      "path": "docs/02-architecture/security-and-data-boundaries.md",
+      "algorithm": "sha256",
+      "digest": "bdf2d9df7a0deb70688fe1201413b4bb8f8e195fd5ca2bf022a6bcfcb83d1f2a"
+    },
+    {
+      "path": "docs/02-architecture/v2-microservices-architecture.md",
+      "algorithm": "sha256",
+      "digest": "d0943156f9b7936443e04d58728402315b7d7eb64e31e813a9694dc666d85de5"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
+      "algorithm": "sha256",
+      "digest": "ca749de88182cc00dfffc1eaa5d4a17d5a7c3a0ec62c4eb960f83a514ea95727"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
+      "algorithm": "sha256",
+      "digest": "3369304b6ec3ff1c97483f863a8414672ac7eb3bcfff6a166a088ea53e1bce62"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "algorithm": "sha256",
+      "digest": "700c679b66f72815aa714e86ac635f4fab15bf27fffd03f9be3b74f2c17fc8b6"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "887112b3ea0bf4933943fb6b4f54601e96b98d2012b3c88a8a4172134fb79965"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "ca38bdcd2cf786cf33d535d0c43194be98c7c02a164a103437ffeec5136ee1a8"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "acceptedContractBaseline": "d7bf9ab2472cca36d110720acc135f2115a96fe5",
+    "executionCheckpoint": "bcd04d116a2e3024971ce06f6029e4ad12bfc088"
+  },
+  "startedAt": "2026-08-29T22:19:13+08:00",
+  "finishedAt": "2026-08-29T23:25:30+08:00",
+  "actors": [
+    "m1_003_policy_contract",
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-003",
+    "JNY-P1-02",
+    "JNY-P1-13",
+    "INT-P1-002",
+    "ADR-0010",
+    "ADR-0012",
+    "ADR-0013"
+  ],
+  "commands": [
+    "pnpm p1r:auth-contract:check",
+    "pnpm p1r:iam-policy-contract:check",
+    "node scripts/contracts/merge-b1-fragments.mjs",
+    "pnpm contracts:generate -- --check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref d7bf9ab2472cca36d110720acc135f2115a96fe5 --kind all",
+    "pnpm --dir packages/contracts typecheck",
+    "pnpm --dir packages/api-client typecheck",
+    "pnpm test:p1r",
+    "pnpm test:b8",
+    "node --test tests/g/g1-contract-data.test.mjs",
+    "git diff --check",
+    "independent Luna Max read-only acceptance review"
+  ],
+  "results": [
+    {
+      "check": "server-derived-principal-rbac-abac",
+      "status": "PASS",
+      "details": "Principal, tenant, role and permission provenance are server-derived; resource owner and content-right facts come from the owning service; client role, tenant, owner or approval fields cannot grant authority; RBAC bindings feed ABAC rules and missing facts deny by default."
+    },
+    {
+      "check": "adult-gate-and-consent",
+      "status": "PASS",
+      "details": "Adult eligibility and required consent retain policy/document versions, evidence digests, withdrawal, restriction and revalidation semantics; birth input or a client checkbox cannot directly pass a protected route."
+    },
+    {
+      "check": "local-pep-and-remote-pdp",
+      "status": "PASS",
+      "details": "The normal hot path uses a service-local PEP with verified JWT, local resource facts and a versioned policy bundle; only high-risk, dynamic or safe-cache-miss cases call the structured PDP with trusted service identity, and uncertainty fails closed."
+    },
+    {
+      "check": "policy-governance-and-separation-of-duty",
+      "status": "PASS",
+      "details": "Eight policy control operations cover immutable draft, submit, independent approval, activation and revocation; audit links, idempotency, second-person decisions and cache invalidation receipts are mandatory."
+    },
+    {
+      "check": "merge-generate-validate-types-compatibility",
+      "status": "PASS",
+      "details": "Twenty OpenAPI and fourteen event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the immutable Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
+    },
+    {
+      "check": "tests-and-independent-review",
+      "status": "PASS",
+      "details": "The policy audit covers 8/8 operations and 30 policy schemas; 13/13 failure-closed mutations, P1R 57/57, B8 29/29 and G1 6/6 pass; independent reviewer m1_003_final_review accepted final source 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7 using gpt-5.6-luna Max."
+    },
+    {
+      "check": "design-consistency",
+      "status": "PASS",
+      "details": "ADR, security boundaries, architecture, business-operation design and contract guide share the same Phase 1 role vocabulary, authority provenance, policy lifecycle and PEP/PDP boundary; legacy tenant-admin and privacy-operator names are explicitly not Phase 1 aliases."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The task source is isolated in d214254, 0fc0309, b61610a, 7bf9803 and 82b27f4 after checkpoint bcd04d1; reverting these source commits in reverse order restores the accepted d7bf9ab contract baseline, and canonical/generated artifacts remain reproducible from fragments."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still blocks M0-complete and release claims.",
+    "IAM persistence, adult/consent facts, policy storage and session runtime remain owned by P1R-M2-002; eleven service Resource Server PEPs and PDP failure tests remain owned by P1R-M2-003.",
+    "Gateway routing, CORS/CSRF/Origin/Referer, rate limiting, JWT precheck and direct-connect blocking remain owned by P1R-M1-004 and P1R-M2-001.",
+    "The deprecated authorization decision route keeps its historical response shape for compatibility; runtime integrations must use the strict structured PDP context rather than omit server-authoritative facts.",
+    "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the M1-003-relevant G1 slice passes 6/6 and these failures predate the task source."
+  ],
+  "reviewer": "m1_003_final_review",
+  "decision": "ACCEPTED"
+}
