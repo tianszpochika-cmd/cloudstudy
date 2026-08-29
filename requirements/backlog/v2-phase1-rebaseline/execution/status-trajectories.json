@@ -115,6 +115,14 @@
       "actor": "root-coordinator",
       "reason": "The rework closed the governance compatibility, fragment/payload ownership, B26 exact-binding and generated schemaVersion gaps at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a. Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max accepted the D2 contract result; Kafka, Outbox, ACL and consumer runtime remain NOT_RUNTIME_VERIFIED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-006/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-007",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-30T06:57:16+08:00",
+      "actor": "root-coordinator",
+      "reason": "Dependencies P1R-M1-005 and P1R-M1-006 are accepted and pushed at dev@93c764f31daa22c4c58228241a15c5dbd03930ec. M1-007 starts the D2 reliability contract for Outbox, consumer dedupe, bounded retry, DLQ, replay, Saga compensation, two-person recovery and receipts without promoting B26 or M2 Kafka runtime evidence.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-007/manifest.json"
     }
   ]
 }

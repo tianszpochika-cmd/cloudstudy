@@ -18,6 +18,8 @@ M1-006 Kafka 事件目录与 AsyncAPI 治理 D2 已接受：最终实现源 `3e4
 
 由于 M1-006 更新了共享契约、CI 和文档制品，`P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 canonical manifest 已统一绑定 `3e4ba856...` 完成 current-source revalidation；各 manifest 的 `provenance` 继续保留原始实现源、完成时间、reviewer 和兼容基线。
 
+M1-007 已从已推送检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec` 进入 `IN_PROGRESS`：当前工作只冻结 Outbox、consumer dedupe、bounded retry、DLQ/replay、Saga/补偿、双人恢复与 receipt 的 D2 契约。B26 继续是 `static-only` / `pending` / `NO-GO` 历史候选；真实 Kafka 与 workflow runtime 仍归 M2-005/006。
+
 ## 1. 获取检查点
 
 ```powershell

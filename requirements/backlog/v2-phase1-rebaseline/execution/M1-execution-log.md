@@ -10,6 +10,7 @@
 - `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`；共享产物在 `21cdd3a` 完成 current-source revalidation。
 - `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。
 - `P1R-M1-006`：`ACCEPTED`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`，最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。只接受 Kafka + AsyncAPI 的 D2 静态目录与失败关闭机制，不把 B26、Kafka、Outbox、ACL 或 consumer runtime 写成 PASS。
+- `P1R-M1-007`：`IN_PROGRESS`；不可变来源检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec`。目标是冻结 `eventId/rootEventId/aggregateId/schemaVersion` 关联、Outbox/消费状态机、重试预算、DLQ/replay、Saga/补偿、双人恢复和 receipt schema；不把 B26 或 M2 runtime 写成 PASS。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
@@ -23,6 +24,14 @@
 
 - 终验结果：`3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a` 的 dual-baseline compatibility、fragment/payload 完整性、B26 exact binding、generated `schemaVersion` 和 CI guard 由独立 reviewer 接受；P1R `186/186`、B26 `26/26`、merge/generate/validate 与 Git compatibility 均通过。
 - D2 边界：输出仍为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 为 `static-only`、`runtimeStatus=pending`、`defaultDecision=NO-GO`。Outbox/dedupe/retry/DLQ/replay/Saga 的完整可靠性语义仍由 `P1R-M1-007` 冻结，真实 Kafka broker/topic/ACL 创建、Outbox→broker→consumer 投递、重复/乱序/宕机/回放验证仍由 `P1R-M2-005` 验收；`P1R-M0-006` 继续 `BLOCKED`。
+
+## M1-007 执行轨道
+
+1. Outbox 与消费可靠性：冻结事务边界、状态迁移、lease/ack、幂等去重、原子 effect/receipt、重试预算、DLQ 原始关联和有序处理。
+2. Replay、Saga 与人工恢复：冻结 immutable source、同 consumer path、审批分离、补偿 owner、禁止跨库写、恢复任务和关闭回执。
+3. Schema 与失败关闭：建立 canonical D2 policy、JSON Schema/生成物、B26 历史候选交叉检查和对抗变异测试；所有输出保持 `NOT_RUNTIME_VERIFIED`。
+
+统筹 Agent 独占共享生成物、状态、Evidence、提交与远程推送。真实 Kafka broker/topic/ACL、Outbox publisher、consumer 去重和故障重放归 `P1R-M2-005`，workflow Saga/人工恢复运行实现归 `P1R-M2-006`。
 
 ## M1-003 执行轨道
 
