@@ -7,6 +7,7 @@
 - `P1R-M1-001`：`ACCEPTED`；原实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`；共享产物在 `82b27f4` 由 Luna Max 完成 current-source revalidation。
 - `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享产物在 `82b27f4` 由 Luna Max 完成 current-source revalidation。
 - `P1R-M1-003`：`ACCEPTED`；最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`，独立评审 `m1_003_final_review`（Luna Max）。
+- `P1R-M1-004`：`IN_PROGRESS`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，正在冻结 Gateway route、浏览器凭据安全、限流、JWT 预检、边界审计和直连阻断 D2 契约。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
 ## M1-003 执行轨道

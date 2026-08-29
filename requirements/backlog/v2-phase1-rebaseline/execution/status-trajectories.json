@@ -91,6 +91,14 @@
       "actor": "root-coordinator",
       "reason": "The IAM authorization, adult Gate, consent, RBAC/ABAC, policy governance and strict PEP/PDP D2 contract passed compatibility and failure-closed checks; independent Luna Max reviewer m1_003_final_review accepted final source 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-003/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-004",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-29T23:52:04+08:00",
+      "actor": "root-coordinator",
+      "reason": "M1-001 through M1-003 are accepted and the Gateway route, browser credential, rate-limit, JWT precheck, audit and direct-connect D2 contract work started from immutable baseline e5110f29d73724fd518fd6d4a6a7cbcdb08ece28.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-004/manifest.json"
     }
   ]
 }
