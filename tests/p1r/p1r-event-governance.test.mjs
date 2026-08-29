@@ -69,6 +69,14 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 7, operationCount: 21 });
 });
 
+test('generated TypeScript separates canonical publishers from historical catalog candidates', () => {
+  const generated = fs.readFileSync(path.join(root, 'packages', 'contracts', 'generated', 'events.ts'), 'utf8');
+  assert.match(generated, /export type EventCatalogCandidate =/);
+  assert.match(generated, /@deprecated Use CanonicalPlatformEvent for new v2 event publication/);
+  assert.match(generated, /export type CanonicalEventName = keyof typeof canonicalEventGovernance/);
+  assert.match(generated, /export type CanonicalPlatformEvent = WorkflowOutboxPublishedEvent/);
+});
+
 test('event governance fails closed on owner, routing, status, shape, projection, and fragment mutations', async (t) => {
   const cases = [
     ['unknown catalog runtime claim', (input) => { input.catalog.attestation = 'PASS'; }, /event catalog keys must be exactly/],

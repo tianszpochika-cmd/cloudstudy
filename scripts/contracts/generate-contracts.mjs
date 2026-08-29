@@ -121,7 +121,8 @@ function generateEventTypes(catalog) {
   const canonicalUnion = canonicalEventEntries.length > 0
     ? canonicalEventEntries.map(({ typeName }) => `${typeName}Event`).join(' | ')
     : 'never';
-  return `${header}${envelope}\n${payloadAliases.join('\n\n')}\n\n${eventTypes.join('\n\n')}\n\nexport type PlatformEvent = ${eventTypeNames.map((typeName) => `${typeName}Event`).join(' | ')};\n\nexport const canonicalEventGovernance = ${JSON.stringify(governanceRegistry, null, 2)} as const;\n\nexport type CanonicalEventName = keyof typeof canonicalEventGovernance;\nexport type CanonicalPlatformEvent = ${canonicalUnion};\n`;
+  const candidateUnion = eventTypeNames.map((typeName) => `${typeName}Event`).join(' | ');
+  return `${header}${envelope}\n${payloadAliases.join('\n\n')}\n\n${eventTypes.join('\n\n')}\n\n/** All catalog entries, including HISTORICAL_CANDIDATE records. New v2 publishers must use CanonicalPlatformEvent. */\nexport type EventCatalogCandidate = ${candidateUnion};\n\n/** @deprecated Use CanonicalPlatformEvent for new v2 event publication. */\nexport type PlatformEvent = EventCatalogCandidate;\n\nexport const canonicalEventGovernance = ${JSON.stringify(governanceRegistry, null, 2)} as const;\n\nexport type CanonicalEventName = keyof typeof canonicalEventGovernance;\nexport type CanonicalPlatformEvent = ${canonicalUnion};\n`;
 }
 
 function generateApiClientTypes(document) {
