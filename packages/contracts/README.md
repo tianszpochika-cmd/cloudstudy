@@ -12,6 +12,15 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 - 注册、登录和刷新共享公开 endpoint，但响应 `data.authTransport` discriminator 和具名 Web/Native schema 使生成客户端能静态区分 variant；不得重新引入可选 `refreshToken` 的混合成功响应。
 - logout、密码重置与适用的会话撤销撤销相应 token family/session：Web 返回同名同 Path 的清 Cookie（`Max-Age=0`/过去 `Expires`），原生端不发 Cookie、只清理 Keychain/Keystore。CORS、CSRF、Origin/Referer 与跨站凭据策略属于 P1R-M1-004。
 
+### P1R-M1-003 授权与政策 profile
+
+- B8 principal 只投影 IAM 的服务端事实；subject、Phase 1 tenant、角色/权限绑定、成人/同意、设备和 policy version 必须带可验证来源。客户端 role/permission/tenant/owner header 或 body 字段不具有 authority。
+- 成人 Gate 由 IAM 按当前政策与服务端时间判定，客户端生日/确认只是申请输入；required consent 绑定 purpose、文档 version/digest、授予/撤回与重验证。缺失、过期、撤回或来源不可信均拒绝受保护动作。
+- RBAC 只给出候选权限集合；ABAC 决策还必须绑定可信 principal、调用服务身份、本地 resource/owner/tenant/content rights、phase、device trust、consent 和 policy version。关键事实缺失、策略过期、撤销不确定、PDP 不可用时一律 DENY。
+- 正常热路径是领域服务本地 PEP + 已验证 JWT + 本地资源事实 + 版本化策略包/短时安全缓存。只有高风险、动态策略或安全缓存未命中才调用内部 IAM PDP；外部客户端不得直连内部 decision endpoint。
+- admin policy 是不可变版本控制面：draft、submit、独立第二人 approve、activate、revoke 均需要稳定命令、幂等、requestId/traceId/auditId、职责分离和 cache invalidation；历史版本可审计，不能删除后失去回放能力。
+- 本 profile 只冻结 D2 契约。IAM/成人/同意/策略真实持久化属于 P1R-M2-002，领域服务 PEP/PDP 运行实现属于 P1R-M2-003，权限后台页面属于 P1R-M6-009。
+
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。
 
 ```powershell

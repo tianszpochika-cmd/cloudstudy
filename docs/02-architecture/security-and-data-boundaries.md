@@ -5,26 +5,36 @@
 
 ## 1. 默认拒绝与最小角色
 
-安全策略的单一事实源是 `packages/telemetry/policies/access-control.json`。策略包含角色、资源、动作、作用域和导出字段；任何未注册项都不通过。
+IAM 授权语义以 ADR-0010、B8 OpenAPI 和版本化策略包为事实源。`packages/telemetry/policies/access-control.json` 是迁移期 B0 静态防护与埋点/导出测试输入，不能冒充运行期 IAM policy，也不能覆盖 Phase 1 业务角色。任何未注册或来源不可信的授权事实都不通过。
 
 | 角色 | 作用域 | 允许的最小资源边界 |
 | --- | --- | --- |
-| `learner` | 本人 + 本人所在租户 | 本人画像、学习记录、学习会话、测评尝试、本人数据导出 |
-| `tenant-admin` | 所属租户 | 租户内用户/画像/学习记录/内容/媒体/权益/审计查询，以及租户导出 |
-| `content-editor` | 所属租户 | 内容与媒体的编辑、提交审核和内容导出；不能读取用户或支付资源 |
-| `finance` | 所属租户 | 订单、支付、权益只读与财务导出 |
-| `auditor` | 所属租户 | 审计日志只读与审计导出 |
-| `finance-auditor` | 所属租户 | 财务只读 + 审计只读与合并导出 |
-| `platform-admin` | 受控平台范围 | 平台配置、策略发布和故障处理；必须有高风险审计，不能默认读取业务明文 |
+| `visitor` | 匿名公开边界 | 官网公开投影、课程/价格/下载/合规；不产生已登录 authority |
+| `learner` | 本人 + 服务端派生的 Phase 1 tenant | 本人画像、学习、会话、测评、权益、设备与隐私请求 |
+| `content-editor` | 服务端 tenant 内的内容草稿 | 内容与媒体编辑及提交审核；不能自审、发布或读取用户/支付资源 |
+| `reviewer-l1` / `reviewer-l2` | 分离的受审内容版本 | 分别执行一审/二审；作者、一审和二审的职责分离由服务端事实校验 |
+| `release-operator` | 已通过双审与版权 Gate 的版本 | 发布、下线、回滚；不能编辑或审核自己的内容版本 |
+| `finance` | 最小商业范围 | 订单、支付、权益、退款与对账；不能继承客服或平台管理员的业务明文权限 |
+| `support` | 已分派工单的最小脱敏范围 | 回复、升级和受控恢复命令；不能直接改密码、分数、奖励或权益账本 |
+| `privacy` | 指定隐私请求范围 | 导出/删除审查、法律保留例外与回执；不能浏览无关个人数据 |
+| `auditor` | 只读审计范围 | 审计检索和脱敏导出；不能修改业务事实或删除审计记录 |
+| `platform-admin` | 受控平台配置范围 | 角色/策略草稿与应急配置；仍受 tenant/owner/phase/consent、双人审批和审计约束 |
+| `system` / `payment-channel` | 可信服务身份或验签渠道范围 | 仅执行具名系统任务或签名回调；不能借内部身份跨服务写表或直接发放权益 |
 
 实现层要求（目标由 `iam-service` 统一承载，领域服务必须重复执行 PEP）：
 
-1. actor 必须有稳定 `id`、`roles` 和 `tenantId`；缺失租户直接拒绝。
-2. 租户角色只能访问 `resource.tenantId === actor.tenantId` 的资源；没有全局角色。
-3. `learner` 还必须在 `ownerId/subjectId/userId/actorId` 中命中本人 ID；同租户的其他学习者也拒绝。
-4. 不允许通过客户端提交的角色、租户或资源归属字段扩大权限；服务端应从已验证会话和持久化资源加载这些字段。
+1. principal 必须有稳定 subject、会话、服务端 tenant、角色/权限绑定、policy version 和事实来源；任何必需上下文缺失直接拒绝。
+2. 资源 tenant/owner/content rights 由领域 owner 从持久化事实加载，再与 principal 比较；请求体中的同名字段不具有 authority。
+3. `learner` 必须命中本人 owner；同一 Phase 1 tenant 的其他学习者仍拒绝。`platform-admin` 也没有绕过 owner、版权、阶段、同意或隐私目的的全局通行权。
+4. 内部 PDP 调用必须有可信服务身份、受众和调用服务声明；外部客户端不能直接调用，也不能通过角色头、tenant/owner 或 permission 字段扩大权限。
 
-### 1.1 自有 JWT Bearer 认证边界
+### 1.1 成人 Gate、同意与策略版本
+
+- 成人 Gate 由 IAM 按服务端时间与当前政策版本判断，记录最低年龄、判定状态、证据摘要和重验证时间；出生年份或确认框只是输入。Phase 1 未证明 18+、政策过期或需重验证时进入受限状态并 fail closed。
+- 同意按 purpose、required/optional、文档 version/digest 和授予/撤回事实管理。required consent 缺失、撤回或需重确认时拒绝对应动作；optional consent 只控制其目的范围，不得被复用为通用授权。
+- policy 变更遵循不可变 `DRAFT → SUBMITTED → APPROVED → ACTIVE → REVOKED`，提交者与批准者必须分离；激活/撤销产生审计与缓存失效事实。旧策略历史可回放但不能重新变成静默生效版本。
+
+### 1.2 自有 JWT Bearer 认证边界
 
 - `iam-service` 校验平台账号密码并在 Phase 1 直接签发短时 RS256 JWT Access Token，公开只读 RSA JWKS；认证中心不依赖外部身份提供方。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。
 - Gateway 和每个领域服务都必须独立校验 issuer、audience、签名算法、公钥、时间窗口、token type 和必要 scope/permission；JWKS 不可用、密钥轮换不确定或撤销状态不确定时 fail closed。
@@ -73,7 +83,8 @@ CI 直接调用 `node scripts/security/run-b0-harness.mjs` 即可；不需要编
 
 ## 5. 与后续服务接入的边界
 
-- Gateway 负责 JWT 预校验、路由级策略和边界限流；`iam-service` 负责角色/权限/策略控制面和版本化决策；每个领域服务的过滤器/拦截器必须把已验证 subject、租户、资源、owner、phase 和动作映射为 PEP/PDP 输入。
+- Gateway 负责 JWT 预校验、路由级策略和边界限流；`iam-service` 负责 principal、成人/同意、角色/权限/策略控制面和版本化 PDP；每个领域服务必须把已验证 subject、服务端 tenant、所需 permission/action、本地 resource/owner/rights、phase、device trust、consent 和 policy version 映射为结构化决策输入。
+- 正常热路径在领域服务本地 PEP 执行。高风险、动态策略或安全缓存未命中才远程调用 PDP；policy 过期/撤销不确定、cache invalidation 未收敛、PDP 超时/不可用、内部服务身份或关键事实缺失时一律 DENY。
 - 当前 `services/core-api` 的过滤器只能作为迁移适配，不是最终权限实现；在 v2 迁移完成前不得把其现有的客户端角色约定视为 RBAC 完成。
 - 不应在各服务复制一套角色枚举；共享的是 contracts/决策接口，策略事实归 IAM，资源所有权事实归领域服务。
 - API 响应沿用 `{requestId,data,meta,serverTime}` 和 `{requestId,error}`，错误详情进入 `createApiErrorEnvelope` 前必须经过敏感字段检查。
@@ -86,3 +97,4 @@ CI 直接调用 `node scripts/security/run-b0-harness.mjs` 即可；不需要编
 - learner、tenant-admin、content-editor、finance、auditor、privacy-operator 等角色在本人/租户/资源 owner/动作矩阵上有 allow/deny 测试。
 - `X-B5-Role`、`X-Role`、客户端 tenant/owner 字段不能提升权限；缺少上下文默认 deny。
 - 权限变更、策略版本、决策 ID、403、导出和高风险后台操作可通过 requestId/traceId/auditId 回放。
+- 成人/required consent 的缺失、撤回、过期和重验证均有拒绝测试；策略 draft/submit/独立 approve/activate/revoke、职责分离与缓存失效均有契约和运行证据。

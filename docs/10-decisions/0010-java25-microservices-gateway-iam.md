@@ -32,6 +32,24 @@
 - 权限变更、策略发布、决策关联和后台高风险操作进入审计链；密钥由 KMS/Vault 管理并支持轮换。
 - Phase 1 使用服务端派生的 `platform` tenant；Phase 3 多租户以共享 schema + 强制 `tenant_id`、复合唯一/索引和验证后 `TenantScope` 查询守卫起步。MySQL 不被误称为自带行级安全；独立数据库/密钥隔离需要另立 ADR。跨租户拒绝测试是 IAM/数据任务的强制证据。
 
+#### 3.1 授权事实来源
+
+- IAM 根据已验证账号、会话、设备和服务端角色绑定形成 principal；Phase 1 的 tenant 固定由服务端派生。客户端请求中的角色、权限、tenant、owner、阶段、内容权利、同意或设备可信值只能作为待校验业务输入，永远不能成为授权事实。
+- 角色只提供权限集合。最终决策必须同时绑定已验证 subject、服务端 tenant、所需 permission/action、领域服务读取的 resource/owner/content rights，以及 phase、device trust、consent 和 policy version；任何必需事实缺失、来源不可信或相互矛盾都返回 DENY。
+- 正常业务资源的 owner、tenant、状态和权利事实由对应领域服务拥有；IAM 不复制领域主表，调用方也不能让 IAM 根据客户端提交的 owner/tenant 猜测授权结果。
+
+#### 3.2 Phase 1 成人 Gate 与同意
+
+- 成人 Gate 和 required consent 都是受保护学习/后台业务的前置授权事实，由 IAM 持久化并按当前政策版本计算。客户端提交的出生年份、确认框或文档版本只是申请输入，不能直接生成 `adultEligible=true` 或 `consentSatisfied=true`。
+- 成人结论必须包含服务端判定时间、适用政策版本、最低年龄和不暴露原始生日的证据摘要；状态至少区分受限、符合、需重验证。Phase 1 对受限或无法确认 18+ 的主体 fail closed，不开放 K12/监护人替代路径。
+- 同意记录必须绑定 purpose、required/optional、文档版本与摘要、授予/撤回时间及撤回后影响。required consent 缺失、过期、撤回或政策要求重确认时，服务 PEP 拒绝对应受保护动作；optional consent 撤回只关闭其目的范围内的数据处理或功能，不能被扩张为账号级授权。
+
+#### 3.3 策略生命周期与 PEP/PDP
+
+- IAM 策略控制面使用不可变版本：`DRAFT → SUBMITTED → APPROVED → ACTIVE → REVOKED`。创建者/提交者不能批准自己的高风险变更；激活必须引用独立审批人、变更理由、影响摘要、requestId/traceId/auditId，并发布可验证的 cache invalidation 事实。撤销不得删除历史版本。
+- 领域服务本地 PEP 是正常热路径：使用已验证 JWT、可信服务身份、本地资源事实和已校验的版本化策略包/短时安全缓存完成决策。只有高风险动作、动态策略或安全缓存未命中才调用 IAM PDP；内部 PDP 请求必须证明调用服务身份和目标受众，不能由外部客户端直连或伪造。
+- 策略包过期/未知、撤销状态不确定、缓存失效未收敛、内部服务身份无效、PDP 超时/不可用或关键上下文缺失时必须 DENY。响应可返回稳定 decision/reason/obligation/cache 元数据，但不能把 403 伪装为空列表，也不能因缓存或降级把拒绝升级为允许。
+
 ### 4. 微服务与数据
 
 - 目标服务包括 `api-gateway`、`iam-service`、`audit-service`、`workflow-service`、`learner-service`、`content-service`、`learning-service`、`assessment-service`、`media-service`、`gamification-service`、`social-service`、`commerce-service`、`notification-service`、`analytics-service` 和 `admin-ops-service`；AI/RTC/K12 服务按阶段启用。`audit-service`/`workflow-service` 初期可由平台模块或 `job-runner` 承载，但不能跨服务直接写领域表。
