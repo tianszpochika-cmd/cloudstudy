@@ -1461,3 +1461,345 @@ export interface AuthLoginSucceededEvent extends PlatformEventEnvelope<AuthLogin
 }
 
 export type PlatformEvent = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent;
+
+export const canonicalEventGovernance = {
+  "workflow.outbox.published.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_outbox_published_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-reliability.v1",
+        "subscriptionOperationId": "subscribe_workflow_outbox_published_v1_cg_workflow_reliability_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-workflow.v1",
+        "subscriptionOperationId": "subscribe_workflow_outbox_published_v1_cg_audit_from_workflow_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.outboxId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_outbox_published_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.event.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowOutboxPublished",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "workflow.event.delivery_failed.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_event_delivery_failed_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-reliability.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_delivery_failed_v1_cg_workflow_reliability_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-workflow.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_delivery_failed_v1_cg_audit_from_workflow_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.failedEventId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_event_delivery_failed_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.event.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowDeliveryFailed",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "workflow.event.dead_lettered.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_event_dead_lettered_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-manual-recovery.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_dead_lettered_v1_cg_workflow_manual_recovery_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-workflow.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_dead_lettered_v1_cg_audit_from_workflow_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.failedEventId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_event_dead_lettered_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.event.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowDeadLettered",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "workflow.event.replay_requested.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_event_replay_requested_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-reliability.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_replay_requested_v1_cg_workflow_reliability_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-manual-recovery.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_replay_requested_v1_cg_workflow_manual_recovery_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.replayRunId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_event_replay_requested_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.event.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowReplayRequested",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "workflow.event.ordering_deferred.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_event_ordering_deferred_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-reliability.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_ordering_deferred_v1_cg_workflow_reliability_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-manual-recovery.v1",
+        "subscriptionOperationId": "subscribe_workflow_event_ordering_deferred_v1_cg_workflow_manual_recovery_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.aggregateId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_event_ordering_deferred_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.event.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowOrderingDeferred",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "workflow.saga.compensation_requested.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_saga_compensation_requested_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-reliability.v1",
+        "subscriptionOperationId": "subscribe_workflow_saga_compensation_requested_v1_cg_workflow_reliability_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-workflow.v1",
+        "subscriptionOperationId": "subscribe_workflow_saga_compensation_requested_v1_cg_audit_from_workflow_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.sagaId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_saga_compensation_requested_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.saga.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowCompensationRequested",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "workflow.saga.manual_recovery_requested.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "workflow-service",
+      "dataOwner": "workflow-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_workflow_saga_manual_recovery_requested_v1"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-manual-recovery.v1",
+        "subscriptionOperationId": "subscribe_workflow_saga_manual_recovery_requested_v1_cg_workflow_manual_recovery_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-workflow.v1",
+        "subscriptionOperationId": "subscribe_workflow_saga_manual_recovery_requested_v1_cg_audit_from_workflow_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.workflow.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.recoveryId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "workflow_saga_manual_recovery_requested_v1"
+    },
+    "schema": {
+      "schemaVersion": "workflow.saga.v1",
+      "payloadRef": "#/payloadSchemas/B26WorkflowManualRecoveryRequested",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  }
+} as const;
+
+export type CanonicalEventName = keyof typeof canonicalEventGovernance;
+export type CanonicalPlatformEvent = WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;

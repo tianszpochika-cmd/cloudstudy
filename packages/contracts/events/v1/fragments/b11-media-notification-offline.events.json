@@ -288,21 +288,5 @@
         "aiScoringAvailable": { "type": "boolean", "const": false }
       }
     }
-  },
-  "asyncapi": {
-    "channels": {
-      "b11MediaStarted": { "address": "media.started.v1", "messages": { "mediaStarted": { "$ref": "#/payloadSchemas/B11MediaStarted" } } },
-      "b11MediaSegmentCompleted": { "address": "media.segment_completed.v1", "messages": { "mediaSegmentCompleted": { "$ref": "#/payloadSchemas/B11MediaSegmentCompleted" } } },
-      "b11MediaDownloaded": { "address": "media.downloaded.v1", "messages": { "mediaDownloaded": { "$ref": "#/payloadSchemas/B11MediaDownloaded" } } },
-      "b11MediaRevoked": { "address": "media.revoked.v1", "messages": { "mediaRevoked": { "$ref": "#/payloadSchemas/B11MediaRevoked" } } },
-      "b11NotificationDelivered": { "address": "notification.delivered.v1", "messages": { "notificationDelivered": { "$ref": "#/payloadSchemas/B11NotificationDelivered" } } },
-      "b11SyncEnqueued": { "address": "sync.enqueued.v1", "messages": { "syncEnqueued": { "$ref": "#/payloadSchemas/B11SyncEnqueued" } } },
-      "b11SyncConflictDetected": { "address": "sync.conflict_detected.v1", "messages": { "syncConflictDetected": { "$ref": "#/payloadSchemas/B11SyncConflictDetected" } } },
-      "b11SyncRecovered": { "address": "sync.recovered.v1", "messages": { "syncRecovered": { "$ref": "#/payloadSchemas/B11SyncRecovered" } } },
-      "b11RecordingSaved": { "address": "recording.saved.v1", "messages": { "recordingSaved": { "$ref": "#/payloadSchemas/B11RecordingSaved" } } },
-      "b11SpeakingPermissionRequested": { "address": "speaking.permission_requested.v1", "messages": { "speakingPermissionRequested": { "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested" } } },
-      "b11ShadowingCompleted": { "address": "shadowing.completed.v1", "messages": { "shadowingCompleted": { "$ref": "#/payloadSchemas/B11ShadowingCompleted" } } }
-    },
-    "operations": {}
   }
 }

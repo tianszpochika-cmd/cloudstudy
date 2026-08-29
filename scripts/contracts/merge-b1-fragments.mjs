@@ -1,11 +1,17 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateEventGovernanceData } from '../audit/p1r-event-governance-check.mjs';
+import { projectCanonicalAsyncApi } from './event-governance-projection.mjs';
+
+export { projectCanonicalAsyncApi } from './event-governance-projection.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
 const openApiPath = path.join(repoRoot, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const eventCatalogPath = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
+const dataOwnershipPath = path.join(repoRoot, 'config', 'p1r-data-ownership.v1.json');
+const b26RuntimePath = path.join(repoRoot, 'config', 'b26-event-runtime.json');
 const openApiFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments', 'b1');
 const openApiB2FragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments', 'b2');
 const openApiB3FragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments', 'b3');
@@ -22,12 +28,6 @@ const canonicalB8AuthFragment = 'packages/contracts/fragments/b8/b8-auth-iam.ope
 const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility', 'x-b8-iam-policy-governance'];
 const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';
 const requiredCanonicalGatewayMetadata = ['x-p1r-gateway-boundary'];
-
-const canonicalAsyncApiInfo = {
-  title: '语学星 v2 平台集成事件',
-  version: '1.0.0',
-  description: '语学星 v2 跨服务集成事实的 canonical AsyncAPI 3.0 投影。每个活动事件对应唯一的发送操作与频道；事件通过 Kafka 兼容总线和事务性 Outbox 按至少一次语义发布。',
-};
 
 // v2 canonicalization boundary. These routes were exposed by the historical B1/B2/B4/B6
 // slices or by the pre-B11 commerce/media naming. They must not leak back into the generated
@@ -151,116 +151,6 @@ function normalizeRepoPath(filePath) {
   return filePath.replace(/\\/g, '/');
 }
 
-function encodeJsonPointerToken(value) {
-  return String(value).replace(/~/g, '~0').replace(/\//g, '~1');
-}
-
-function uniqueName(base, used) {
-  if (!used.has(base)) return base;
-  for (let suffix = 2; ; suffix += 1) {
-    const candidate = `${base}_${suffix}`;
-    if (!used.has(candidate)) return candidate;
-  }
-}
-
-function normalizedAsyncApiName(eventName) {
-  return eventName.replace(/[^A-Za-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-}
-
-function projectedChannelAddress(event) {
-  const topic = event['x-kafka']?.topic;
-  if (topic !== undefined) {
-    if (typeof topic !== 'string' || topic.length === 0) {
-      throw new Error(`Cannot project AsyncAPI for ${event.eventName}: x-kafka.topic must be a non-empty string when declared`);
-    }
-    return topic;
-  }
-  return event.eventName;
-}
-
-function eventNamesHintedByChannel(channel) {
-  const eventNames = new Set();
-  for (const message of Object.values(channel?.messages ?? {})) {
-    if (!message || typeof message !== 'object') continue;
-    for (const candidate of [message['x-event-name'], message.name]) {
-      if (typeof candidate === 'string') eventNames.add(candidate);
-    }
-  }
-  // Legacy fragments projected event names as addresses and did not yet carry
-  // Message Objects. Retain those keys during the one-time normalization.
-  if (typeof channel?.address === 'string') eventNames.add(channel.address);
-  return eventNames;
-}
-
-/**
- * Build the catalog's embedded canonical AsyncAPI projection from active events.
- * Fragment channels are used only as stable key/message-key hints; their
- * routes, operations and IAM-specific document metadata cannot become a
- * partial second source of truth.
- */
-function projectCanonicalAsyncApi(catalog) {
-  const existingChannels = catalog.asyncapi?.channels ?? {};
-  const existingKeysByEventName = new Map();
-  for (const [channelKey, channel] of Object.entries(existingChannels)) {
-    if (!channel || typeof channel !== 'object') continue;
-    for (const eventName of eventNamesHintedByChannel(channel)) {
-      const keys = existingKeysByEventName.get(eventName) ?? [];
-      keys.push(channelKey);
-      existingKeysByEventName.set(eventName, keys);
-    }
-  }
-  for (const keys of existingKeysByEventName.values()) keys.sort();
-
-  const channels = {};
-  const operations = {};
-  const usedChannelKeys = new Set();
-  const usedOperationKeys = new Set();
-
-  for (const event of catalog.events ?? []) {
-    const eventName = event.eventName;
-    const payloadReference = event.payloadSchema?.$ref;
-    if (typeof eventName !== 'string' || typeof payloadReference !== 'string') {
-      throw new Error(`Cannot project AsyncAPI for invalid event entry: ${eventName ?? '(missing eventName)'}`);
-    }
-
-    const reusableChannelKey = (existingKeysByEventName.get(eventName) ?? []).find((key) => !usedChannelKeys.has(key));
-    const channelKey = reusableChannelKey ?? uniqueName(`event_${normalizedAsyncApiName(eventName)}`, usedChannelKeys);
-    const existingChannel = reusableChannelKey ? existingChannels[reusableChannelKey] : undefined;
-    const matchingMessage = Object.entries(existingChannel?.messages ?? {})
-      .sort(([left], [right]) => left.localeCompare(right))
-      .find(([, message]) => message?.payload?.$ref === payloadReference || message?.$ref === payloadReference);
-    const messageKey = matchingMessage?.[0] ?? 'event';
-    const messagePointer = `#/asyncapi/channels/${encodeJsonPointerToken(channelKey)}/messages/${encodeJsonPointerToken(messageKey)}`;
-
-    channels[channelKey] = {
-      address: projectedChannelAddress(event),
-      messages: {
-        [messageKey]: {
-          name: eventName,
-          'x-event-name': eventName,
-          payload: { $ref: payloadReference },
-        },
-      },
-    };
-    usedChannelKeys.add(channelKey);
-
-    const operationKey = uniqueName(`publish_${normalizedAsyncApiName(eventName)}`, usedOperationKeys);
-    operations[operationKey] = {
-      action: 'send',
-      channel: { $ref: `#/asyncapi/channels/${encodeJsonPointerToken(channelKey)}` },
-      messages: [{ $ref: messagePointer }],
-    };
-    usedOperationKeys.add(operationKey);
-  }
-
-  catalog.asyncapi = {
-    asyncapi: '3.0.0',
-    info: { ...canonicalAsyncApiInfo, version: catalog.catalogVersion },
-    channels,
-    operations,
-  };
-}
-
 function listJsonFiles(directory) {
   if (!fs.existsSync(directory)) return [];
   return fs.readdirSync(directory, { withFileTypes: true })
@@ -323,22 +213,38 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canon
 }
 
 function mergeEvents(base, fragment, filePath) {
+  if (fragment.asyncapi !== undefined) {
+    throw new Error(`${filePath} must not define asyncapi; canonical channels and operations are generated from catalog event governance`);
+  }
   const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)-/i.test(filePath);
   for (const event of fragment.events ?? []) {
+    if (event.status !== undefined || event['x-p1r-governance'] !== undefined) {
+      throw new Error(`${filePath} must not define catalog-owned status or x-p1r-governance for ${event.eventName ?? '(missing eventName)'}`);
+    }
     const existing = base.events.find((candidate) => candidate.eventName === event.eventName);
-    if (existing && stableJson(existing) !== stableJson(event)) {
+    if (!existing) {
+      throw new Error(`${filePath} introduces ${event.eventName ?? '(missing eventName)'} without a catalog-owned governance record`);
+    }
+    const catalogOwned = {
+      status: existing.status,
+      governance: existing['x-p1r-governance'],
+    };
+    const existingFragmentFields = { ...existing };
+    delete existingFragmentFields.status;
+    delete existingFragmentFields['x-p1r-governance'];
+    if (stableJson(existingFragmentFields) !== stableJson(event)) {
       if (!isOverrideFragment) throw new Error(`${filePath} conflicts with event ${event.eventName}`);
-      base.events = base.events.map((candidate) => candidate.eventName === event.eventName ? event : candidate);
+      base.events = base.events.map((candidate) => candidate.eventName === event.eventName
+        ? {
+            ...event,
+            status: catalogOwned.status,
+            ...(catalogOwned.governance === undefined ? {} : { 'x-p1r-governance': catalogOwned.governance }),
+          }
+        : candidate);
       continue;
     }
-    if (!existing) base.events.push(event);
   }
   mergeNamedMap(base.payloadSchemas, fragment.payloadSchemas, 'event payload schema', { allowOverride: isOverrideFragment });
-
-  if (fragment.asyncapi?.channels) {
-    base.asyncapi ??= {};
-    mergeNamedMap(base.asyncapi.channels ??= {}, fragment.asyncapi.channels, 'AsyncAPI channel', { allowOverride: isOverrideFragment });
-  }
 }
 
 export function findCanonicalMergeDrift({
@@ -397,7 +303,27 @@ export function merge({ write = false } = {}) {
     throw new Error(`${canonicalGatewayFragment} must define ${missingCanonicalGatewayMetadata.join(', ')} during every canonical merge`);
   }
   for (const filePath of eventFiles) mergeEvents(catalog, readJson(filePath), path.relative(repoRoot, filePath));
+  const eventGovernanceInputs = {
+    catalog,
+    ownerPolicy: readJson(dataOwnershipPath),
+    b26Runtime: readJson(b26RuntimePath),
+    fragments: eventFiles.map((filePath) => ({
+      path: normalizeRepoPath(path.relative(repoRoot, filePath)),
+      data: readJson(filePath),
+    })),
+  };
+  const eventGovernanceResult = validateEventGovernanceData({
+    ...eventGovernanceInputs,
+    checkProjection: false,
+  });
+  if (eventGovernanceResult.result !== 'PASS') {
+    throw new Error(`Event governance validation failed before AsyncAPI projection:\n${eventGovernanceResult.errors.join('\n')}`);
+  }
   projectCanonicalAsyncApi(catalog);
+  const projectionResult = validateEventGovernanceData(eventGovernanceInputs);
+  if (projectionResult.result !== 'PASS') {
+    throw new Error(`Event governance validation failed after AsyncAPI projection:\n${projectionResult.errors.join('\n')}`);
+  }
 
   for (const route of retiredRoutes) delete openApi.paths[route];
   openApi.tags = (openApi.tags ?? []).filter((tag) => !retiredB5AdminTags.has(tag.name));

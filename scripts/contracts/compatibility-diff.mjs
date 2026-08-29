@@ -90,6 +90,26 @@ function resolveMaybe(document, value) {
   return isRecord(value) && typeof value.$ref === 'string' ? resolveJsonPointer(document, value.$ref) : value;
 }
 
+function stableGovernanceValue(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableGovernanceValue).sort().join(',')}]`;
+  }
+  if (isRecord(value)) {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableGovernanceValue(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function duplicateEventNames(events) {
+  const seen = new Set();
+  const duplicates = new Set();
+  for (const event of events ?? []) {
+    if (seen.has(event?.eventName)) duplicates.add(event?.eventName);
+    seen.add(event?.eventName);
+  }
+  return [...duplicates].sort();
+}
+
 function compareOpenApi(previous, current) {
   const changes = [];
   const previousSecuritySchemes = previous.components?.securitySchemes ?? {};
@@ -156,6 +176,12 @@ function compareOpenApi(previous, current) {
 
 function compareEvents(previous, current) {
   const changes = [];
+  for (const eventName of duplicateEventNames(previous.events)) {
+    changes.push(describeChange('events', `${eventName}.eventName`, 'baseline contains a duplicate event name'));
+  }
+  for (const eventName of duplicateEventNames(current.events)) {
+    changes.push(describeChange('events', `${eventName}.eventName`, 'current catalog contains a duplicate event name'));
+  }
   const previousEvents = new Map((previous.events ?? []).map((event) => [event.eventName, event]));
   const currentEvents = new Map((current.events ?? []).map((event) => [event.eventName, event]));
   for (const [eventName, previousEvent] of previousEvents) {
@@ -167,14 +193,59 @@ function compareEvents(previous, current) {
     if (Number(previousEvent.version) !== Number(currentEvent.version)) {
       changes.push(describeChange('events', eventName, 'event version changed without a new event name'));
     }
+    for (const field of ['domain', 'schema', 'aggregateType', 'aggregateIdField']) {
+      if (previousEvent[field] !== undefined && currentEvent[field] !== previousEvent[field]) {
+        changes.push(describeChange('events', `${eventName}.${field}`, `existing event ${field} changed`));
+      }
+    }
+    if (previousEvent.payloadSchema?.$ref !== undefined && currentEvent.payloadSchema?.$ref !== previousEvent.payloadSchema.$ref) {
+      changes.push(describeChange('events', `${eventName}.payloadSchema.$ref`, 'existing payload schema identity changed'));
+    }
+    if (previousEvent.compatibility?.strategy !== undefined
+      && currentEvent.compatibility?.strategy !== previousEvent.compatibility.strategy) {
+      changes.push(describeChange('events', `${eventName}.compatibility.strategy`, 'existing compatibility strategy changed'));
+    }
+    if (previousEvent.compatibility?.window !== undefined
+      && stableGovernanceValue(previousEvent.compatibility.window) !== stableGovernanceValue(currentEvent.compatibility?.window)) {
+      changes.push(describeChange('events', `${eventName}.compatibility.window`, 'existing compatibility window changed'));
+    }
     const previousEnvelopeRequired = new Set(previousEvent['x-envelope-required'] ?? []);
     const currentEnvelopeRequired = new Set(currentEvent['x-envelope-required'] ?? []);
     for (const field of previousEnvelopeRequired) {
       if (!currentEnvelopeRequired.has(field)) changes.push(describeChange('events', `${eventName}.x-envelope-required`, `existing required envelope field removed: ${field}`));
     }
+    for (const field of currentEnvelopeRequired) {
+      if (!previousEnvelopeRequired.has(field)) changes.push(describeChange('events', `${eventName}.x-envelope-required`, `new required envelope field: ${field}`));
+    }
     const previousPayload = resolveMaybe(previous, previousEvent.payloadSchema);
     const currentPayload = resolveMaybe(current, currentEvent.payloadSchema);
     compareSchema(previousPayload, currentPayload, `${eventName}.payload`, changes, 'events');
+
+    if (previousEvent.status !== undefined && currentEvent.status !== previousEvent.status) {
+      changes.push(describeChange('events', `${eventName}.status`, `event governance status changed from ${String(previousEvent.status)} to ${String(currentEvent.status)}`));
+    }
+    const previousGovernance = previousEvent['x-p1r-governance'];
+    const currentGovernance = currentEvent['x-p1r-governance'];
+    if (previousGovernance !== undefined && currentGovernance === undefined) {
+      changes.push(describeChange('events', `${eventName}.x-p1r-governance`, 'existing event governance was removed'));
+    } else if (previousGovernance !== undefined && currentGovernance !== undefined
+      && stableGovernanceValue(previousGovernance) !== stableGovernanceValue(currentGovernance)) {
+      changes.push(describeChange('events', `${eventName}.x-p1r-governance`, 'producer, owner, consumer, transport, schema or correlation governance changed'));
+    }
+  }
+
+  const previousPlatformGovernance = previous['x-p1r-event-governance'];
+  const currentPlatformGovernance = current['x-p1r-event-governance'];
+  if (previousPlatformGovernance !== undefined && currentPlatformGovernance === undefined) {
+    changes.push(describeChange('events', 'x-p1r-event-governance', 'platform event governance was removed'));
+  } else if (previousPlatformGovernance !== undefined && currentPlatformGovernance !== undefined) {
+    for (const field of [
+      'schemaVersion', 'maturity', 'runtimeStatus', 'transportPolicy', 'allowedStatuses',
+    ]) {
+      if (stableGovernanceValue(previousPlatformGovernance[field]) !== stableGovernanceValue(currentPlatformGovernance[field])) {
+        changes.push(describeChange('events', `x-p1r-event-governance.${field}`, 'platform event governance changed'));
+      }
+    }
   }
   return changes;
 }

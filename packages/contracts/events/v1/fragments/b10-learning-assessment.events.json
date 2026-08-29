@@ -238,17 +238,5 @@
         "replayedAt": { "type": "string", "format": "date-time" }
       }
     }
-  },
-  "asyncapi": {
-    "channels": {
-      "b10AssessmentAttemptSubmitted": { "address": "assessment.attempt.submitted.v1", "messages": { "attemptSubmitted": { "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted" } } },
-      "b10AssessmentAttemptAssessed": { "address": "assessment.attempt.assessed.v1", "messages": { "attemptAssessed": { "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed" } } },
-      "b10LearningMasteryProjected": { "address": "learning.mastery.projected.v1", "messages": { "masteryProjected": { "$ref": "#/payloadSchemas/B10LearningMasteryProjected" } } },
-      "b10LearningReviewScheduled": { "address": "learning.review.scheduled.v1", "messages": { "reviewScheduled": { "$ref": "#/payloadSchemas/B10LearningReviewScheduled" } } },
-      "b10SagaStarted": { "address": "workflow.assessment_learning.saga_started.v1", "messages": { "sagaStarted": { "$ref": "#/payloadSchemas/B10SagaStarted" } } },
-      "b10SagaCompensated": { "address": "workflow.assessment_learning.saga_compensated.v1", "messages": { "sagaCompensated": { "$ref": "#/payloadSchemas/B10SagaCompensated" } } },
-      "b10EventReplayed": { "address": "workflow.event.replayed.v1", "messages": { "eventReplayed": { "$ref": "#/payloadSchemas/B10EventReplayed" } } }
-    },
-    "operations": {}
   }
 }

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { readB26Inputs, validateB26EventRuntime } from '../../scripts/runtime/validate-b26-event-runtime.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
-const { manifest, fragment } = readB26Inputs()
+const { manifest, fragment, catalog } = readB26Inputs()
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
@@ -32,10 +32,13 @@ test('B26 event envelope and Kafka routing carry server-owned correlation and de
   assert.equal(manifest.eventEnvelope.partitionKey, 'aggregateId')
   for (const event of fragment.events) {
     assert.deepEqual(event['x-envelope-required'], required)
-    assert.equal(event['x-kafka'].partitionKey, 'aggregateId')
-    assert.equal(event['x-kafka'].delivery, 'at-least-once')
-    assert.equal(event['x-kafka'].replaySafe, true)
-    assert.equal(manifest.eventRouting.find((route) => route.eventName === event.eventName).topic, event['x-kafka'].topic)
+    assert.equal(event['x-kafka'], undefined)
+    const canonical = catalog.events.find((candidate) => candidate.eventName === event.eventName)
+    assert.equal(canonical.status, 'CANONICAL_D2')
+    assert.equal(canonical['x-p1r-governance'].runtimeStatus, 'NOT_RUNTIME_VERIFIED')
+    assert.equal(canonical['x-p1r-governance'].transport.partitionKey, 'aggregateId')
+    assert.equal(canonical['x-p1r-governance'].transport.delivery, 'at-least-once')
+    assert.equal(manifest.eventRouting.find((route) => route.eventName === event.eventName).topic, canonical['x-p1r-governance'].transport.topic)
   }
 })
 

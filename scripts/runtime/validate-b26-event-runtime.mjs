@@ -6,6 +6,7 @@ const scriptPath = fileURLToPath(import.meta.url)
 const repoRoot = path.resolve(path.dirname(scriptPath), '..', '..')
 const manifestRelativePath = 'config/b26-event-runtime.json'
 const fragmentRelativePath = 'packages/contracts/events/v1/fragments/b26-reliability.events.json'
+const catalogRelativePath = 'packages/contracts/events/v1/catalog.json'
 const localPortsRelativePath = 'config/local-ports.json'
 const telemetrySchemaRelativePath = 'packages/telemetry/schemas/telemetry-event.schema.json'
 const telemetryPolicyRelativePath = 'packages/telemetry/policies/telemetry-events.json'
@@ -210,12 +211,13 @@ function resolvePointer(document, reference) {
   return reference.slice(2).split('/').reduce((current, segment) => current?.[segment.replaceAll('~1', '/').replaceAll('~0', '~')], document)
 }
 
-function validateFragment(manifest, fragment, errors) {
+function validateFragment(manifest, fragment, catalog, errors) {
   requireCondition(fragment?.version === '1.0.0', 'B26 event fragment version must be 1.0.0', errors)
   requireArray(fragment?.events, 'B26 event fragment events', errors, 7)
   requireCondition(isRecord(fragment?.payloadSchemas) && Object.keys(fragment.payloadSchemas).length === fragment.events.length, 'B26 payload schema count must match event count', errors)
   const names = []
   const routing = new Map((manifest.eventRouting ?? []).map((item) => [item.eventName, item]))
+  const catalogEvents = new Map((catalog?.events ?? []).map((event) => [event.eventName, event]))
   for (const event of fragment.events ?? []) {
     names.push(event?.eventName)
     requireCondition(/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\.v[0-9]+$/.test(event?.eventName ?? ''), `${event?.eventName} event name is invalid`, errors)
@@ -225,21 +227,23 @@ function validateFragment(manifest, fragment, errors) {
     const payload = resolvePointer(fragment, event?.payloadSchema?.$ref)
     requireCondition(isRecord(payload) && payload.type === 'object' && payload.additionalProperties === false, `${event?.eventName} payload schema must be a closed object`, errors)
     requireCondition(Array.isArray(payload?.required) && payload.required.length >= 5, `${event?.eventName} payload must have required fields`, errors)
-    requireCondition(event?.['x-kafka']?.topic === routing.get(event?.eventName)?.topic, `${event?.eventName} Kafka topic routing mismatch`, errors)
-    requireCondition(event?.['x-kafka']?.partitionKey === 'aggregateId' && event?.['x-kafka']?.delivery === 'at-least-once' && event?.['x-kafka']?.replaySafe === true, `${event?.eventName} Kafka reliability metadata is incomplete`, errors)
+    requireCondition(event?.['x-kafka'] === undefined, `${event?.eventName} fragment must not duplicate canonical Kafka governance`, errors)
+    const canonicalEvent = catalogEvents.get(event?.eventName)
+    const governance = canonicalEvent?.['x-p1r-governance']
+    requireCondition(canonicalEvent?.status === 'CANONICAL_D2', `${event?.eventName} must be a CANONICAL_D2 catalog event`, errors)
+    requireCondition(governance?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', `${event?.eventName} runtime status must remain NOT_RUNTIME_VERIFIED`, errors)
+    requireCondition(governance?.transport?.topic === routing.get(event?.eventName)?.topic, `${event?.eventName} Kafka topic routing mismatch`, errors)
+    requireCondition(governance?.transport?.partitionKey === 'aggregateId' && governance?.transport?.delivery === 'at-least-once' && governance?.transport?.bindingVersion === '0.5.0', `${event?.eventName} Kafka governance is incomplete`, errors)
+    const governedGroups = (governance?.consumers ?? []).map((consumer) => consumer.consumerGroup).sort()
+    const routedGroups = [...(routing.get(event?.eventName)?.consumerGroups ?? [])].sort()
+    requireCondition(JSON.stringify(governedGroups) === JSON.stringify(routedGroups), `${event?.eventName} consumer governance differs from B26 static routing`, errors)
     requireCondition(isRecord(event?.compatibility) && event.compatibility.strategy === 'additive', `${event?.eventName} compatibility policy must be additive`, errors)
   }
   unique(names, 'B26 event names', errors)
   unique(Object.keys(fragment.payloadSchemas ?? {}), 'B26 payload schema names', errors)
   requireCondition(names.length === (manifest.eventRouting ?? []).length, 'B26 event routing must cover every fragment event', errors)
   requireCondition(JSON.stringify(manifest.eventRouting.map((item) => item.eventName).sort()) === JSON.stringify(names.sort()), 'B26 event routing set differs from event fragment', errors)
-  const channels = fragment.asyncapi?.channels ?? {}
-  requireCondition(Object.keys(channels).length >= 2, 'B26 AsyncAPI projection must expose workflow and DLQ channels', errors)
-  for (const channel of Object.values(channels)) {
-    requireCondition(/^platform\.[a-z0-9.]+\.v[0-9]+$/.test(channel?.address ?? ''), `invalid B26 AsyncAPI channel address ${channel?.address}`, errors)
-    requireArray(Object.keys(channel?.messages ?? {}), 'B26 AsyncAPI channel messages', errors, 1)
-    for (const message of Object.values(channel?.messages ?? {})) requireCondition(isRecord(resolvePointer(fragment, message?.$ref)), `unresolved B26 AsyncAPI payload reference ${message?.$ref}`, errors)
-  }
+  requireCondition(fragment.asyncapi === undefined, 'B26 fragment must not define a second AsyncAPI source', errors)
 }
 
 function validateTelemetryBridge(manifest, telemetrySchema, telemetryPolicy, errors) {
@@ -254,6 +258,7 @@ function validateTelemetryBridge(manifest, telemetrySchema, telemetryPolicy, err
 
 export function validateB26EventRuntime(manifest, fragment, {
   localPorts = readJson(localPortsRelativePath),
+  catalog = readJson(catalogRelativePath),
   telemetrySchema = readJson(telemetrySchemaRelativePath),
   telemetryPolicy = readJson(telemetryPolicyRelativePath),
   runtimeRequested = false,
@@ -261,6 +266,7 @@ export function validateB26EventRuntime(manifest, fragment, {
   const errors = []
   if (!isRecord(manifest)) errors.push('B26 manifest must be a JSON object')
   if (!isRecord(fragment)) errors.push('B26 event fragment must be a JSON object')
+  if (!isRecord(catalog)) errors.push('canonical event catalog must be a JSON object')
   if (errors.length === 0) {
     scanForUnsafeValues(manifest, 'manifest', errors)
     scanForUnsafeValues(fragment, 'fragment', errors)
@@ -270,7 +276,7 @@ export function validateB26EventRuntime(manifest, fragment, {
     validateBroker(manifest, localPorts, errors)
     validateTopics(manifest, errors)
     validateOutboxAndRecovery(manifest, errors)
-    validateFragment(manifest, fragment, errors)
+    validateFragment(manifest, fragment, catalog, errors)
     validateTelemetryBridge(manifest, telemetrySchema, telemetryPolicy, errors)
   }
   if (runtimeRequested) {
@@ -297,6 +303,7 @@ export function readB26Inputs() {
   return {
     manifest: readJson(manifestRelativePath),
     fragment: readJson(fragmentRelativePath),
+    catalog: readJson(catalogRelativePath),
   }
 }
 

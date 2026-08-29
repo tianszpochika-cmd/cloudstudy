@@ -277,18 +277,5 @@
         "invalidatedAt": { "type": "string", "format": "date-time" }
       }
     }
-  },
-  "asyncapi": {
-    "channels": {
-      "b9LearnerProfileUpdated": { "address": "learner.profile.updated.v1", "messages": { "learnerProfileUpdated": { "$ref": "#/payloadSchemas/B9LearnerProfileUpdated" } } },
-      "b9LearnerTargetUpdated": { "address": "learner.target.updated.v1", "messages": { "learnerTargetUpdated": { "$ref": "#/payloadSchemas/B9LearnerTargetUpdated" } } },
-      "b9LearnerFirstDayProjected": { "address": "learner.first_day.projected.v1", "messages": { "learnerFirstDayProjected": { "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected" } } },
-      "b9ContentVersionSubmitted": { "address": "content.version.submitted.v1", "messages": { "contentVersionSubmitted": { "$ref": "#/payloadSchemas/B9ContentVersionSubmitted" } } },
-      "b9ContentVersionReviewed": { "address": "content.version.reviewed.v1", "messages": { "contentVersionReviewed": { "$ref": "#/payloadSchemas/B9ContentVersionReviewed" } } },
-      "b9ContentVersionPublished": { "address": "content.version.published.v1", "messages": { "contentVersionPublished": { "$ref": "#/payloadSchemas/B9ContentVersionPublished" } } },
-      "b9ContentVersionUnpublished": { "address": "content.version.unpublished.v1", "messages": { "contentVersionUnpublished": { "$ref": "#/payloadSchemas/B9ContentVersionUnpublished" } } },
-      "b9ContentVersionRolledBack": { "address": "content.version.rolled_back.v1", "messages": { "contentVersionRolledBack": { "$ref": "#/payloadSchemas/B9ContentVersionRolledBack" } } },
-      "b9PublicProjectionInvalidated": { "address": "content.public_projection.invalidated.v1", "messages": { "publicProjectionInvalidated": { "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated" } } }
-    }
   }
 }

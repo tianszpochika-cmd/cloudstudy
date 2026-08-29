@@ -94,6 +94,53 @@ test('events compatibility treats independently parsed equivalent type arrays as
   assert.deepEqual(compareContracts('events', eventCatalog, independentlyParsedCatalog), []);
 });
 
+test('events compatibility freezes established governance but allows its first additive introduction', () => {
+  const current = structuredClone(eventCatalog);
+  const topicDrift = structuredClone(eventCatalog);
+  const governed = topicDrift.events.find((event) => event.status === 'CANONICAL_D2');
+  governed['x-p1r-governance'].transport.topic = 'platform.changed.v1';
+  assert.ok(compareContracts('events', current, topicDrift)
+    .some((change) => change.location === `${governed.eventName}.x-p1r-governance`));
+
+  const statusDrift = structuredClone(eventCatalog);
+  statusDrift.events[0].status = 'DEPRECATED';
+  assert.ok(compareContracts('events', current, statusDrift)
+    .some((change) => change.location === `${statusDrift.events[0].eventName}.status`));
+
+  const policyDrift = structuredClone(eventCatalog);
+  policyDrift['x-p1r-event-governance'].transportPolicy.redisStreams = 'ALLOWED';
+  assert.ok(compareContracts('events', current, policyDrift)
+    .some((change) => change.location === 'x-p1r-event-governance.transportPolicy'));
+
+  const aggregateDrift = structuredClone(eventCatalog);
+  aggregateDrift.events[0].aggregateIdField = 'changedId';
+  assert.ok(compareContracts('events', current, aggregateDrift)
+    .some((change) => change.location === `${aggregateDrift.events[0].eventName}.aggregateIdField`));
+
+  const envelopeDrift = structuredClone(eventCatalog);
+  envelopeDrift.events[0]['x-envelope-required'] = [
+    ...(envelopeDrift.events[0]['x-envelope-required'] ?? []),
+    'dedupeKey',
+  ];
+  assert.ok(compareContracts('events', current, envelopeDrift)
+    .some((change) => change.reason === 'new required envelope field: dedupeKey'));
+
+  const withoutGovernance = structuredClone(eventCatalog);
+  delete withoutGovernance['x-p1r-event-governance'];
+  for (const event of withoutGovernance.events) {
+    delete event.status;
+    delete event['x-p1r-governance'];
+  }
+  assert.deepEqual(compareContracts('events', withoutGovernance, eventCatalog), []);
+});
+
+test('events compatibility detects duplicate event names before map normalization', () => {
+  const duplicate = structuredClone(eventCatalog);
+  duplicate.events.push(structuredClone(duplicate.events[0]));
+  const changes = compareContracts('events', eventCatalog, duplicate);
+  assert.ok(changes.some((change) => change.reason === 'current catalog contains a duplicate event name'));
+});
+
 test('git baseline compatibility requires an explicit historical ref', () => {
   assert.throws(
     () => runGitBaselineCompatibility(),

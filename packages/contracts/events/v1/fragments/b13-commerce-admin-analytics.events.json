@@ -19,18 +19,5 @@
     "B13SupportTicketCreated": { "$id": "platform.events.support.ticket.created.v1.payload", "type": "object", "additionalProperties": false, "required": ["ticketId", "categoryCode", "priority", "slaDueAt", "redactionVersion"], "properties": { "ticketId": { "type": "string", "maxLength": 128 }, "categoryCode": { "type": "string", "maxLength": 64 }, "priority": { "type": "string", "maxLength": 32 }, "slaDueAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 } } },
     "B13AnalyticsMetricProjected": { "$id": "platform.events.analytics.metric.projected.v1.payload", "type": "object", "additionalProperties": false, "required": ["projectionRef", "metricCode", "metricVersion", "windowStart", "windowEnd", "value", "state"], "properties": { "projectionRef": { "type": "string", "maxLength": 128 }, "metricCode": { "type": "string", "maxLength": 96 }, "metricVersion": { "type": "string", "maxLength": 32 }, "windowStart": { "type": "string", "format": "date-time" }, "windowEnd": { "type": "string", "format": "date-time" }, "value": { "type": "number" }, "state": { "type": "string", "enum": ["READY", "STALE", "UNAVAILABLE"] } } },
     "B13AnalyticsRecomputeRequested": { "$id": "platform.events.analytics.recompute.requested.v1.payload", "type": "object", "additionalProperties": false, "required": ["jobId", "metricCode", "metricVersion", "windowStart", "windowEnd", "reasonCode"], "properties": { "jobId": { "type": "string", "maxLength": 128 }, "metricCode": { "type": "string", "maxLength": 96 }, "metricVersion": { "type": "string", "maxLength": 32 }, "windowStart": { "type": "string", "format": "date-time" }, "windowEnd": { "type": "string", "format": "date-time" }, "reasonCode": { "type": "string", "maxLength": 96 } } }
-  },
-  "asyncapi": {
-    "channels": {
-      "b13CommerceOrderCreated": { "address": "commerce.order.created.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13CommerceOrderCreated" } } },
-      "b13CommercePaymentCallback": { "address": "commerce.payment.callback_received.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13CommercePaymentCallback" } } },
-      "b13CommerceEntitlementActivated": { "address": "commerce.entitlement.activated.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13CommerceEntitlementActivated" } } },
-      "b13CommerceRefundCompleted": { "address": "commerce.refund.completed.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13CommerceRefundCompleted" } } },
-      "b13CommerceOrderReconciled": { "address": "commerce.order.reconciled.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13CommerceOrderReconciled" } } },
-      "b13SupportTicketCreated": { "address": "support.ticket.created.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13SupportTicketCreated" } } },
-      "b13AnalyticsMetricProjected": { "address": "analytics.metric.projected.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13AnalyticsMetricProjected" } } },
-      "b13AnalyticsRecomputeRequested": { "address": "analytics.recompute.requested.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B13AnalyticsRecomputeRequested" } } }
-    },
-    "operations": {}
   }
 }

@@ -30,12 +30,20 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 - requestId/traceId、写入幂等键、统一错误、脱敏边界审计和 direct-connect deny 都由同一 profile 约束；应用层拒绝 `/internal/v1` 不替代网络层隔离。
 - 本 profile 只冻结 D2 合同。Java Gateway、真实 CORS/CSRF、Redis/JWKS、Ingress/NetworkPolicy、浏览器与跨进程 Evidence 属于 P1R-M2-001。
 
+### P1R-M1-006 事件治理 profile
+
+- `events/v1/catalog.json` 是事件状态、producer/data owner、consumer group、topic、partition、schema 与兼容策略的唯一治理源；14 个 fragments 只能贡献事件和 payload 语义，不得手工声明 `status`、`x-p1r-governance`、`x-kafka` 或 AsyncAPI。
+- 154 个目录条目全部显式分类。当前只有 7 个已具备可信 B26 静态绑定的 workflow reliability 事件进入 `CANONICAL_D2`；其余 147 个保持 `HISTORICAL_CANDIDATE`，在对应领域契约任务签收前不会进入 canonical AsyncAPI，也不能由生成器补默认 owner/consumer。
+- canonical AsyncAPI 3.0 从 catalog 确定性投影为 7 个 channel、7 个 `send` 和 14 个 `receive` operation；Kafka topic、binding `0.5.0`、producer、data owner 与每个 consumer group 必须精确匹配。任何第二事实源、重复 ID、漂移或缺失 receive 都失败关闭。
+- `pnpm p1r:event-governance:check` 验证治理源、B26 静态 seed、fragment 边界和 AsyncAPI exact projection。它只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；真实 broker/topic/ACL/投递属于 M2-005，完整 Outbox/dedupe/retry/DLQ/replay/Saga 合同属于 M1-007。
+
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。
 
 ```powershell
 pnpm contracts:validate
-node scripts/contracts/merge-b1-fragments.mjs
-node scripts/contracts/generate-contracts.mjs --check
+pnpm p1r:event-governance:check
+pnpm contracts:merge:check
+pnpm contracts:generate:check
 
 # Explicit write commands; do not use these merely to validate drift.
 pnpm contracts:merge

@@ -11,6 +11,7 @@ import {
   readJson,
   resolveJsonPointer,
 } from './schema-utils.mjs';
+import { validateEventGovernance } from '../audit/p1r-event-governance-check.mjs';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, '..', '..');
@@ -36,6 +37,13 @@ function fail(message) {
 
 function assert(condition, message) {
   if (!condition) fail(message);
+}
+
+function assertExactKeys(value, keys, label) {
+  assert(isRecord(value), `${label} must be an object`);
+  const actual = Object.keys(value).sort();
+  const expected = [...keys].sort();
+  assert(JSON.stringify(actual) === JSON.stringify(expected), `${label} keys must be exactly ${expected.join(', ')}`);
 }
 
 function walk(value, visitor, location = '$') {
@@ -68,37 +76,33 @@ function validateEventPlatformMetadata(catalog) {
   assert(platform.coreApiV1Compatibility === 'RabbitMQ-only core-api v1 historical migration compatibility', 'RabbitMQ must be limited to core-api v1 historical migration compatibility');
 }
 
-function expectedAsyncApiChannelAddress(event) {
-  const topic = event['x-kafka']?.topic;
-  if (topic !== undefined) {
-    assert(typeof topic === 'string' && topic.length > 0, `${event.eventName} x-kafka.topic must be a non-empty string when declared`);
-    return topic;
-  }
-  return event.eventName;
-}
-
 /**
  * The catalog embeds a canonical AsyncAPI 3.0 document rather than being a
  * standalone AsyncAPI file. Its local references intentionally resolve from
  * the catalog root (for example #/asyncapi/channels and #/payloadSchemas).
  */
-function validateAsyncApiProjection(catalog) {
+export function validateAsyncApiProjection(catalog) {
   const asyncapi = catalog.asyncapi;
   assert(isRecord(asyncapi), 'embedded canonical AsyncAPI projection is required');
+  assertExactKeys(asyncapi, ['asyncapi', 'info', 'x-runtime-status', 'channels', 'operations'], 'embedded AsyncAPI projection');
   assert(asyncapi.asyncapi === '3.0.0', 'embedded AsyncAPI projection must use the standard asyncapi: 3.0.0 root field');
   assert(!Object.hasOwn(asyncapi, 'version'), 'embedded AsyncAPI projection must not use the legacy version root field');
   assert(isRecord(asyncapi.info), 'AsyncAPI projection info is required');
+  assertExactKeys(asyncapi.info, ['title', 'version', 'description'], 'AsyncAPI projection info');
   assert(asyncapi.info.title === '语学星 v2 平台集成事件', 'AsyncAPI projection must use the platform-level title');
   assert(asyncapi.info.version === catalog.catalogVersion, 'AsyncAPI info.version must match catalogVersion');
   assert(typeof asyncapi.info.description === 'string' && asyncapi.info.description.length > 0, 'AsyncAPI platform description is required');
   assert(isRecord(asyncapi.channels), 'AsyncAPI projection channels are required');
   assert(isRecord(asyncapi.operations), 'AsyncAPI projection operations are required');
+  assert(asyncapi['x-runtime-status'] === 'NOT_RUNTIME_VERIFIED', 'AsyncAPI projection must remain NOT_RUNTIME_VERIFIED');
 
-  const eventsByName = new Map(catalog.events.map((event) => [event.eventName, event]));
+  const canonicalEvents = catalog.events.filter((event) => event.status === 'CANONICAL_D2');
+  const eventsByName = new Map(canonicalEvents.map((event) => [event.eventName, event]));
   const channelEntries = Object.entries(asyncapi.channels);
   const operationEntries = Object.entries(asyncapi.operations);
-  assert(channelEntries.length === catalog.events.length, 'AsyncAPI must project exactly one channel per active event');
-  assert(operationEntries.length === catalog.events.length, 'AsyncAPI must project exactly one send operation per active event');
+  const expectedOperationCount = canonicalEvents.reduce((total, event) => total + 1 + event['x-p1r-governance'].consumers.length, 0);
+  assert(channelEntries.length === canonicalEvents.length, 'AsyncAPI must project exactly one channel per CANONICAL_D2 event');
+  assert(operationEntries.length === expectedOperationCount, 'AsyncAPI must project one send and every governed receive operation');
 
   const channelKeys = new Set();
   const channelByEventName = new Map();
@@ -107,51 +111,91 @@ function validateAsyncApiProjection(catalog) {
     assert(!channelKeys.has(channelKey), `duplicate AsyncAPI channel key ${channelKey}`);
     channelKeys.add(channelKey);
     assert(isRecord(channel), `AsyncAPI channel ${channelKey} must be an object`);
+    assertExactKeys(channel, ['address', 'bindings', 'messages'], `AsyncAPI channel ${channelKey}`);
     assert(typeof channel.address === 'string' && channel.address.length > 0, `AsyncAPI channel ${channelKey} needs a concrete address`);
     const messageEntries = Object.entries(channel.messages ?? {});
     assert(messageEntries.length === 1, `AsyncAPI channel ${channelKey} must expose exactly one event message`);
     const [messageKey, message] = messageEntries[0];
     assert(isRecord(message) && !Object.hasOwn(message, '$ref'), `AsyncAPI channel ${channelKey} message ${messageKey} must be a Message Object, not a schema reference`);
+    assertExactKeys(message, ['name', 'x-event-name', 'payload', 'bindings'], `AsyncAPI channel ${channelKey} message ${messageKey}`);
     const eventName = message['x-event-name'] ?? message.name;
     assert(typeof eventName === 'string' && eventsByName.has(eventName), `AsyncAPI channel ${channelKey} message ${messageKey} has an orphan event identifier`);
     assert(message.name === eventName && message['x-event-name'] === eventName, `AsyncAPI channel ${channelKey} message ${messageKey} must explicitly identify ${eventName}`);
     assert(!channelByEventName.has(eventName), `AsyncAPI event ${eventName} has duplicate channels`);
 
     const event = eventsByName.get(eventName);
-    assert(channel.address === expectedAsyncApiChannelAddress(event), `AsyncAPI channel ${channelKey} address must match ${eventName} Kafka topic/default address`);
+    const governance = event['x-p1r-governance'];
+    assert(channelKey === governance.transport.channelId, `AsyncAPI channel ${channelKey} must use the governed channelId for ${eventName}`);
+    assert(channel.address === governance.transport.topic, `AsyncAPI channel ${channelKey} address must match ${eventName} Kafka topic`);
+    assertExactKeys(channel.bindings, ['kafka'], `AsyncAPI channel ${channelKey} bindings`);
     const kafkaBinding = channel.bindings?.kafka;
-    if (kafkaBinding !== undefined) {
-      assert(isRecord(kafkaBinding), `AsyncAPI channel ${channelKey} Kafka binding must be an object`);
-      if (Object.hasOwn(kafkaBinding, 'topic')) assert(kafkaBinding.topic === channel.address, `AsyncAPI channel ${channelKey} Kafka binding topic must equal its address`);
-    }
+    assertExactKeys(kafkaBinding, ['topic', 'bindingVersion'], `AsyncAPI channel ${channelKey} Kafka binding`);
+    assert(kafkaBinding.topic === channel.address, `AsyncAPI channel ${channelKey} Kafka binding topic must equal its address`);
+    assert(kafkaBinding.bindingVersion === governance.transport.bindingVersion, `AsyncAPI channel ${channelKey} Kafka bindingVersion must match governance`);
+    assertExactKeys(message.payload, ['$ref'], `AsyncAPI channel ${channelKey} message payload`);
     assert(isRecord(message.payload) && typeof message.payload.$ref === 'string', `AsyncAPI channel ${channelKey} message ${messageKey} payload must be a local schema reference`);
     assert(message.payload.$ref === event.payloadSchema.$ref, `AsyncAPI channel ${channelKey} payload must match ${event.eventName}`);
+    assertExactKeys(message.bindings, ['kafka'], `AsyncAPI channel ${channelKey} message bindings`);
+    assertExactKeys(message.bindings?.kafka, ['key', 'bindingVersion'], `AsyncAPI channel ${channelKey} message Kafka binding`);
+    assert(message.bindings.kafka.bindingVersion === governance.transport.bindingVersion, `AsyncAPI channel ${channelKey} message bindingVersion must match governance`);
+    assertExactKeys(message.bindings.kafka.key, ['type', 'description'], `AsyncAPI channel ${channelKey} Kafka key`);
+    assert(message.bindings.kafka.key?.type === 'string', `AsyncAPI channel ${channelKey} Kafka key must be a string schema`);
     assertRefsResolve(catalog, message, `AsyncAPI channel ${channelKey} message ${messageKey}`);
 
     channelByEventName.set(eventName, channelKey);
     const channelReference = `#/asyncapi/channels/${encodeJsonPointerToken(channelKey)}`;
     channelDetailsByReference.set(channelReference, {
       channelKey,
+      event,
+      governance,
       messageReference: `#/asyncapi/channels/${encodeJsonPointerToken(channelKey)}/messages/${encodeJsonPointerToken(messageKey)}`,
     });
   }
-  assert(channelByEventName.size === catalog.events.length, 'every active event must have one AsyncAPI channel');
+  assert(channelByEventName.size === canonicalEvents.length, 'every CANONICAL_D2 event must have one AsyncAPI channel');
 
-  const operationsByChannel = new Map();
+  const sendOperationsByChannel = new Map();
+  const receiveOperationsByChannel = new Map();
   for (const [operationKey, operation] of operationEntries) {
     assert(isRecord(operation), `AsyncAPI operation ${operationKey} must be an object`);
-    assert(operation.action === 'send', `AsyncAPI operation ${operationKey} must send an event message`);
+    assert(operation.action === 'send' || operation.action === 'receive', `AsyncAPI operation ${operationKey} action must be send or receive`);
     const channelReference = operation.channel?.$ref;
+    assertExactKeys(operation.channel, ['$ref'], `AsyncAPI operation ${operationKey} channel reference`);
     assert(typeof channelReference === 'string', `AsyncAPI operation ${operationKey} must reference a channel`);
     const detail = channelDetailsByReference.get(channelReference);
     assert(detail, `AsyncAPI operation ${operationKey} references an orphan channel`);
     assert(Array.isArray(operation.messages) && operation.messages.length === 1, `AsyncAPI operation ${operationKey} must reference exactly one event message`);
+    assertExactKeys(operation.messages[0], ['$ref'], `AsyncAPI operation ${operationKey} message reference`);
     assert(operation.messages[0]?.$ref === detail.messageReference, `AsyncAPI operation ${operationKey} message must match channel ${detail.channelKey}`);
+    const kafkaBinding = operation.bindings?.kafka;
+    assertExactKeys(operation.bindings, ['kafka'], `AsyncAPI operation ${operationKey} bindings`);
+    if (operation.action === 'send') {
+      assertExactKeys(operation, ['action', 'channel', 'messages', 'bindings', 'x-producer-service', 'x-data-owner'], `AsyncAPI send operation ${operationKey}`);
+      assert(operationKey === detail.governance.producer.publishOperationId, `AsyncAPI send operation ${operationKey} must match producer governance`);
+      assert(operation['x-producer-service'] === detail.governance.producer.service, `AsyncAPI send operation ${operationKey} producer service mismatch`);
+      assert(operation['x-data-owner'] === detail.governance.producer.dataOwner, `AsyncAPI send operation ${operationKey} data owner mismatch`);
+      assertExactKeys(kafkaBinding, ['bindingVersion'], `AsyncAPI send operation ${operationKey} Kafka binding`);
+      assert(kafkaBinding.bindingVersion === detail.governance.transport.bindingVersion, `AsyncAPI send operation ${operationKey} bindingVersion mismatch`);
+      sendOperationsByChannel.set(detail.channelKey, (sendOperationsByChannel.get(detail.channelKey) ?? 0) + 1);
+    } else {
+      assertExactKeys(operation, ['action', 'channel', 'messages', 'bindings', 'x-consumer-service'], `AsyncAPI receive operation ${operationKey}`);
+      const consumer = detail.governance.consumers.find((candidate) => candidate.subscriptionOperationId === operationKey);
+      assert(consumer, `AsyncAPI receive operation ${operationKey} has no governed consumer`);
+      assert(operation['x-consumer-service'] === consumer.service, `AsyncAPI receive operation ${operationKey} consumer service mismatch`);
+      assertExactKeys(kafkaBinding, ['groupId', 'bindingVersion'], `AsyncAPI receive operation ${operationKey} Kafka binding`);
+      assert(kafkaBinding.bindingVersion === detail.governance.transport.bindingVersion, `AsyncAPI receive operation ${operationKey} bindingVersion mismatch`);
+      assert(kafkaBinding.groupId?.type === 'string' && JSON.stringify(kafkaBinding.groupId.enum) === JSON.stringify([consumer.consumerGroup]), `AsyncAPI receive operation ${operationKey} consumer group mismatch`);
+      assertExactKeys(kafkaBinding.groupId, ['type', 'enum'], `AsyncAPI receive operation ${operationKey} groupId`);
+      const received = receiveOperationsByChannel.get(detail.channelKey) ?? new Set();
+      assert(!received.has(consumer.consumerGroup), `AsyncAPI channel ${detail.channelKey} duplicates consumer group ${consumer.consumerGroup}`);
+      received.add(consumer.consumerGroup);
+      receiveOperationsByChannel.set(detail.channelKey, received);
+    }
     assertRefsResolve(catalog, operation, `AsyncAPI operation ${operationKey}`);
-    operationsByChannel.set(detail.channelKey, (operationsByChannel.get(detail.channelKey) ?? 0) + 1);
   }
-  for (const channelKey of channelKeys) {
-    assert(operationsByChannel.get(channelKey) === 1, `AsyncAPI channel ${channelKey} must have exactly one send operation`);
+  for (const [eventName, channelKey] of channelByEventName) {
+    const event = eventsByName.get(eventName);
+    assert(sendOperationsByChannel.get(channelKey) === 1, `AsyncAPI channel ${channelKey} must have exactly one send operation`);
+    assert(receiveOperationsByChannel.get(channelKey)?.size === event['x-p1r-governance'].consumers.length, `AsyncAPI channel ${channelKey} must project every governed consumer`);
   }
 
   assertRefsResolve(catalog, asyncapi, 'embedded AsyncAPI projection');
@@ -244,7 +288,7 @@ function validateOpenApi(document) {
   return { operationCount, schemaCount: Object.keys(document.components.schemas).length };
 }
 
-function validateEventCatalog(catalog) {
+export function validateEventCatalog(catalog) {
   assert(catalog.catalogVersion === '1.0.0', 'event catalogVersion must be 1.0.0');
   assert(catalog.schema === 'platform.event.catalog.v1', 'event catalog schema must be platform.event.catalog.v1');
   assert(isRecord(catalog.envelope) && catalog.envelope.schema === 'platform.event.v1', 'event envelope schema must be platform.event.v1');
@@ -309,10 +353,21 @@ export function validateContracts({ quiet = false } = {}) {
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
   const schemaRegistry = readJson(schemaRegistryPath);
+  const eventGovernanceResult = validateEventGovernance({ root: repoRoot });
+  assert(
+    eventGovernanceResult.result === 'PASS',
+    `event governance failed:\n${eventGovernanceResult.errors.join('\n')}`,
+  );
   const openApiResult = validateOpenApi(openApi);
   const eventResult = validateEventCatalog(catalog);
   const schemaResult = validateSchemaRegistry(schemaRegistry);
-  const result = { openApi: openApiResult, events: eventResult, schemas: schemaResult, sourceFiles: [openApiPath, eventCatalogPath, schemaRegistryPath] };
+  const result = {
+    openApi: openApiResult,
+    events: { ...eventResult, governance: eventGovernanceResult.summary },
+    schemas: schemaResult,
+    runtimeStatus: eventGovernanceResult.summary.runtimeStatus,
+    sourceFiles: [openApiPath, eventCatalogPath, schemaRegistryPath],
+  };
   if (!quiet) {
     console.log(`Contract validation passed: ${openApiResult.operationCount} operations, ${openApiResult.schemaCount} OpenAPI schemas, ${eventResult.eventCount} events, ${eventResult.payloadSchemaCount} event payload schemas, ${eventResult.asyncApiChannelCount} AsyncAPI channels, ${eventResult.asyncApiOperationCount} AsyncAPI operations, ${schemaResult.schemaCount} JSON Schemas.`);
   }

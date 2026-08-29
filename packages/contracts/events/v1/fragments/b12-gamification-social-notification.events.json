@@ -27,22 +27,5 @@
     "B12NotificationRequested": { "$id": "platform.events.notification.requested.v1.payload", "type": "object", "additionalProperties": false, "required": ["notificationId", "subjectRef", "templateId", "templateVersion", "channel", "locale"], "properties": { "notificationId": { "type": "string", "maxLength": 128 }, "subjectRef": { "type": "string", "maxLength": 128 }, "templateId": { "type": "string", "maxLength": 96 }, "templateVersion": { "type": "string", "maxLength": 32 }, "channel": { "type": "string", "enum": ["IN_APP", "PUSH", "EMAIL"] }, "locale": { "type": "string", "maxLength": 20 } } },
     "B12NotificationRetryScheduled": { "$id": "platform.events.notification.retry_scheduled.v1.payload", "type": "object", "additionalProperties": false, "required": ["taskId", "notificationId", "attemptCount", "nextAttemptAt", "failureCode"], "properties": { "taskId": { "type": "string", "maxLength": 128 }, "notificationId": { "type": "string", "maxLength": 128 }, "attemptCount": { "type": "integer", "minimum": 1 }, "nextAttemptAt": { "type": "string", "format": "date-time" }, "failureCode": { "type": "string", "maxLength": 96 } } },
     "B12NotificationRecoveryCompleted": { "$id": "platform.events.notification.recovery.completed.v1.payload", "type": "object", "additionalProperties": false, "required": ["taskId", "state", "auditRef", "domainFactsUntouched"], "properties": { "taskId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["SUCCEEDED", "REJECTED", "MANUAL_REVIEW"] }, "auditRef": { "type": "string", "maxLength": 128 }, "domainFactsUntouched": { "type": "boolean", "const": true } } }
-  },
-  "asyncapi": {
-    "channels": {
-      "b12GrowthSessionStarted": { "address": "gamification.session_started.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12GrowthSessionStarted" } } },
-      "b12GrowthLedgerPosted": { "address": "gamification.xp.ledger_posted.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12GrowthLedgerPosted" } } },
-      "b12RewardGranted": { "address": "gamification.reward.granted.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12RewardGranted" } } },
-      "b12AvatarEquipped": { "address": "gamification.avatar.equipped.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12AvatarEquipped" } } },
-      "b12StudyRoomJoined": { "address": "study_room.joined.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12StudyRoomJoined" } } },
-      "b12FocusStarted": { "address": "study_room.focus_started.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12FocusStarted" } } },
-      "b12StudyRoomLeft": { "address": "study_room.left.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12StudyRoomLeft" } } },
-      "b12LeaderboardRefreshed": { "address": "leaderboard.refreshed.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12LeaderboardRefreshed" } } },
-      "b12SocialReportCreated": { "address": "social.report.created.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12SocialReportCreated" } } },
-      "b12NotificationRequested": { "address": "notification.requested.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12NotificationRequested" } } },
-      "b12NotificationRetryScheduled": { "address": "notification.retry_scheduled.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12NotificationRetryScheduled" } } },
-      "b12NotificationRecoveryCompleted": { "address": "notification.recovery.completed.v1", "messages": { "event": { "$ref": "#/payloadSchemas/B12NotificationRecoveryCompleted" } } }
-    },
-    "operations": {}
   }
 }

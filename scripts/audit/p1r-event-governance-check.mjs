@@ -1,0 +1,386 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import { fileURLToPath } from 'node:url';
+import { projectCanonicalAsyncApi } from '../contracts/event-governance-projection.mjs';
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const defaultRoot = path.resolve(scriptDir, '..', '..');
+
+const CANONICAL_STATUS = 'CANONICAL_D2';
+const HISTORICAL_STATUS = 'HISTORICAL_CANDIDATE';
+const DEPRECATED_STATUS = 'DEPRECATED';
+const EXPECTED_STATUSES = [CANONICAL_STATUS, HISTORICAL_STATUS, DEPRECATED_STATUS];
+const EXPECTED_CATALOG_KEYS = [
+  'catalogVersion', 'schema', 'description', 'x-v2-event-platform',
+  'x-p1r-event-governance', 'envelope', 'compatibilityPolicy',
+  'forbiddenPayloadFieldPatterns', 'payloadSchemas', 'events', 'asyncapi',
+];
+const EXPECTED_EVENT_FRAGMENT_NAMES = [
+  'b1-assessment-privacy.events.json',
+  'b10-learning-assessment.events.json',
+  'b11-media-notification-offline.events.json',
+  'b12-gamification-social-notification.events.json',
+  'b13-commerce-admin-analytics.events.json',
+  'b2-assessment-mastery.events.json',
+  'b2-vocabulary-srs.events.json',
+  'b26-reliability.events.json',
+  'b3-multimodal.events.json',
+  'b4-gamification-social.events.json',
+  'b5-commerce-admin.events.json',
+  'b6-platform-quality.events.json',
+  'b8-auth-iam.events.json',
+  'b9-learner-content.events.json',
+].sort();
+const BASE_EVENT_KEYS = [
+  'eventName', 'status', 'domain', 'version', 'schema', 'aggregateType',
+  'aggregateIdField', 'payloadSchema', 'compatibility',
+];
+const EXPECTED_CANONICAL_EVENTS = [
+  'workflow.outbox.published.v1',
+  'workflow.event.delivery_failed.v1',
+  'workflow.event.dead_lettered.v1',
+  'workflow.event.replay_requested.v1',
+  'workflow.event.ordering_deferred.v1',
+  'workflow.saga.compensation_requested.v1',
+  'workflow.saga.manual_recovery_requested.v1',
+].sort();
+const EXPECTED_PLANNED_GAP_ORDER = [
+  'EVENT-GAP-IAM-001',
+  'EVENT-GAP-BIND-IAM-001',
+  'EVENT-GAP-BIND-IAM-002',
+  'EVENT-GAP-ONB-001',
+  'EVENT-GAP-ONB-002',
+  'EVENT-GAP-PLACEMENT-PLAN',
+  'EVENT-GAP-CONTENT-DUPLICATE',
+  'EVENT-GAP-BIND-CONT-001',
+  'EVENT-GAP-BIND-ASM-001',
+  'EVENT-GAP-BIND-LRN-001',
+  'EVENT-GAP-BIND-GAM-001',
+  'EVENT-GAP-BIND-SOC-001',
+  'EVENT-GAP-BIND-NOTIF-001',
+  'EVENT-GAP-BIND-PRIV-001',
+  'EVENT-GAP-USR-DEL-001',
+  'EVENT-GAP-BIND',
+];
+const EXPECTED_PLANNED_GAPS = [...EXPECTED_PLANNED_GAP_ORDER].sort();
+const EXPECTED_PLANNED_CLOSURES = {
+  'EVENT-GAP-IAM-001': { family: 'EVENT-GAP-IAM', d2ClosureTasks: ['P1R-M1-003', 'P1R-M1-006'] },
+  'EVENT-GAP-BIND-IAM-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006'] },
+  'EVENT-GAP-BIND-IAM-002': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006'] },
+  'EVENT-GAP-ONB-001': { family: 'EVENT-GAP-ONB', d2ClosureTasks: ['P1R-M1-011', 'P1R-M1-006'] },
+  'EVENT-GAP-ONB-002': { family: 'EVENT-GAP-ONB', d2ClosureTasks: ['P1R-M1-012', 'P1R-M1-006'] },
+  'EVENT-GAP-PLACEMENT-PLAN': { family: 'EVENT-GAP-PLACEMENT', d2ClosureTasks: ['P1R-M1-012', 'P1R-M1-006'] },
+  'EVENT-GAP-CONTENT-DUPLICATE': { family: 'EVENT-GAP-CONTENT', d2ClosureTasks: ['P1R-M1-008', 'P1R-M1-006'] },
+  'EVENT-GAP-BIND-CONT-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-008'] },
+  'EVENT-GAP-BIND-ASM-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-010', 'P1R-M1-013'] },
+  'EVENT-GAP-BIND-LRN-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-013'] },
+  'EVENT-GAP-BIND-GAM-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-014'] },
+  'EVENT-GAP-BIND-SOC-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-014'] },
+  'EVENT-GAP-BIND-NOTIF-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-016'] },
+  'EVENT-GAP-BIND-PRIV-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-017'] },
+  'EVENT-GAP-USR-DEL-001': { family: 'EVENT-GAP-USR-DEL', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-017'] },
+  'EVENT-GAP-BIND': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-018'] },
+};
+const REQUIRED_ENVELOPE = [
+  'eventId', 'eventName', 'schema', 'version', 'occurredAt', 'aggregateType',
+  'aggregateId', 'actorId', 'traceId', 'requestId', 'schemaVersion', 'dedupeKey', 'payload',
+];
+const REQUIRED_CORRELATION = ['eventId', 'aggregateId', 'requestId', 'traceId', 'dedupeKey'];
+
+function isRecord(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function add(errors, condition, message) {
+  if (!condition) errors.push(message);
+}
+
+function nonEmptyString(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function exactKeys(errors, value, expected, label) {
+  add(errors, isRecord(value), `${label} must be an object`);
+  if (!isRecord(value)) return;
+  const actual = Object.keys(value).sort();
+  const wanted = [...expected].sort();
+  add(errors, JSON.stringify(actual) === JSON.stringify(wanted), `${label} keys must be exactly ${wanted.join(', ')}`);
+}
+
+function duplicates(values) {
+  return [...new Set(values.filter((value, index) => values.indexOf(value) !== index))].sort();
+}
+
+function stableJson(value) {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (isRecord(value)) {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function snakeCaseIdentifier(value) {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+}
+
+function resolveLocalReference(document, reference) {
+  if (typeof reference !== 'string' || !reference.startsWith('#/')) return undefined;
+  return reference.slice(2).split('/').reduce(
+    (current, token) => current?.[token.replaceAll('~1', '/').replaceAll('~0', '~')],
+    document,
+  );
+}
+
+function listEventFragments(root) {
+  const directory = path.join(root, 'packages', 'contracts', 'events', 'v1', 'fragments');
+  return fs.readdirSync(directory, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.events.json'))
+    .sort((left, right) => left.name.localeCompare(right.name))
+    .map((entry) => ({
+      path: `packages/contracts/events/v1/fragments/${entry.name}`,
+      data: JSON.parse(fs.readFileSync(path.join(directory, entry.name), 'utf8')),
+    }));
+}
+
+function checkPlatformGovernance(catalog, errors) {
+  exactKeys(errors, catalog, EXPECTED_CATALOG_KEYS, 'event catalog');
+  const governance = catalog['x-p1r-event-governance'];
+  exactKeys(errors, governance, [
+    'schemaVersion', 'maturity', 'runtimeStatus', 'transportPolicy', 'allowedStatuses',
+    'traceability', 'plannedClosures',
+  ], 'x-p1r-event-governance');
+  if (!isRecord(governance)) return;
+  add(errors, governance.schemaVersion === 'p1r.event-governance.v1', 'event governance schemaVersion must be p1r.event-governance.v1');
+  add(errors, governance.maturity === 'D2_CONTRACT_READY', 'event governance maturity must be D2_CONTRACT_READY');
+  add(errors, governance.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'event governance runtimeStatus must remain NOT_RUNTIME_VERIFIED');
+  exactKeys(errors, governance.transportPolicy, ['canonical', 'coreApiV1RabbitMq', 'redisStreams', 'clientProducer'], 'event transportPolicy');
+  add(errors, governance.transportPolicy?.canonical === 'KAFKA_COMPATIBLE_ONLY', 'canonical event transport must be Kafka-compatible only');
+  add(errors, governance.transportPolicy?.coreApiV1RabbitMq === 'HISTORICAL_MIGRATION_ONLY', 'RabbitMQ must remain core-api v1 historical migration only');
+  add(errors, governance.transportPolicy?.redisStreams === 'PROHIBITED', 'Redis Streams must be prohibited as a v2 event source');
+  add(errors, governance.transportPolicy?.clientProducer === 'PROHIBITED', 'clients must be prohibited from producing Kafka events');
+  add(errors, JSON.stringify(governance.allowedStatuses) === JSON.stringify(EXPECTED_STATUSES), 'allowed event statuses must be exact and ordered');
+  exactKeys(errors, governance.traceability, ['sourceRefs'], 'event governance traceability');
+  add(errors, governance.traceability?.sourceRefs?.includes('ARCH-EVT-001'), 'event governance must trace to ARCH-EVT-001');
+  add(errors, governance.traceability?.sourceRefs?.includes('INT-P1-017'), 'event governance must trace to INT-P1-017');
+
+  add(errors, Array.isArray(governance.plannedClosures), 'plannedClosures must be an array');
+  const gapIds = [];
+  for (const [index, closure] of (governance.plannedClosures ?? []).entries()) {
+    exactKeys(errors, closure, ['gapId', 'family', 'status', 'd2ClosureTasks'], `plannedClosures[${index}]`);
+    gapIds.push(closure?.gapId);
+    add(errors, nonEmptyString(closure?.gapId) && nonEmptyString(closure?.family), `plannedClosures[${index}] identifiers are required`);
+    add(errors, closure?.status === 'PLANNED', `plannedClosures[${index}] must remain PLANNED`);
+    add(errors, Array.isArray(closure?.d2ClosureTasks) && closure.d2ClosureTasks.includes('P1R-M1-006'), `plannedClosures[${index}] must include P1R-M1-006`);
+    add(errors, (closure?.d2ClosureTasks ?? []).every((taskId) => /^P1R-M1-\d{3}$/.test(taskId)), `plannedClosures[${index}] has an invalid D2 closure task`);
+    add(errors, duplicates(closure?.d2ClosureTasks ?? []).length === 0, `plannedClosures[${index}] duplicates a D2 closure task`);
+    const expected = EXPECTED_PLANNED_CLOSURES[closure?.gapId];
+    add(errors, expected?.family === closure?.family, `plannedClosures[${index}] family must match the frozen gap registry`);
+    add(errors, JSON.stringify(expected?.d2ClosureTasks) === JSON.stringify(closure?.d2ClosureTasks), `plannedClosures[${index}] D2 closure tasks must match the frozen task mapping`);
+  }
+  add(errors, duplicates(gapIds).length === 0, `plannedClosures duplicate gap IDs: ${duplicates(gapIds).join(', ')}`);
+  add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_PLANNED_GAPS), 'plannedClosures must cover the exact M1-006 event gap registry');
+  add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_PLANNED_GAP_ORDER), 'plannedClosures must preserve the canonical gap registry order');
+}
+
+function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors) {
+  const label = event.eventName;
+  const governance = event['x-p1r-governance'];
+  exactKeys(errors, governance, ['status', 'runtimeStatus', 'scope', 'producer', 'consumers', 'transport', 'schema', 'correlation', 'traceability'], `${label}.x-p1r-governance`);
+  if (!isRecord(governance)) return;
+  add(errors, governance.status === CANONICAL_STATUS, `${label} governance status must match CANONICAL_D2`);
+  add(errors, governance.runtimeStatus === 'NOT_RUNTIME_VERIFIED', `${label} must remain NOT_RUNTIME_VERIFIED`);
+  add(errors, governance.scope === 'CROSS_SERVICE_INTEGRATION_FACT', `${label} must be a cross-service integration fact`);
+
+  exactKeys(errors, governance.producer, ['service', 'dataOwner', 'outboxRequired', 'publishOperationId'], `${label}.producer`);
+  add(errors, services.has(governance.producer?.service), `${label} producer service is unknown`);
+  add(errors, dataOwners.has(governance.producer?.dataOwner), `${label} data owner is unknown`);
+  add(errors, governance.producer?.service === governance.producer?.dataOwner, `${label} producer must be its data owner`);
+  add(errors, governance.producer?.service !== 'api-gateway', `${label} Gateway cannot produce or own domain events`);
+  add(errors, governance.producer?.outboxRequired === true, `${label} canonical producer must require Outbox`);
+  const normalizedEventName = snakeCaseIdentifier(label);
+  add(errors, governance.producer?.publishOperationId === `publish_${normalizedEventName}`, `${label} publishOperationId must be canonical and deterministic`);
+  add(errors, !usedIds.has(governance.producer?.publishOperationId), `${label} publishOperationId is duplicated`);
+  usedIds.add(governance.producer?.publishOperationId);
+
+  add(errors, Array.isArray(governance.consumers) && governance.consumers.length > 0, `${label} must have at least one explicit consumer`);
+  const consumerGroups = [];
+  for (const [index, consumer] of (governance.consumers ?? []).entries()) {
+    exactKeys(errors, consumer, ['service', 'consumerGroup', 'subscriptionOperationId'], `${label}.consumers[${index}]`);
+    add(errors, services.has(consumer?.service) && consumer.service !== 'api-gateway', `${label} consumer service is unknown or forbidden`);
+    add(errors, /^cg\.[a-z0-9.-]+\.v\d+$/.test(consumer?.consumerGroup ?? ''), `${label} consumerGroup is invalid`);
+    add(errors, !/client|browser|frontend/i.test(consumer?.consumerGroup ?? ''), `${label} consumerGroup cannot represent a client`);
+    add(errors, consumer?.subscriptionOperationId === `subscribe_${normalizedEventName}_${snakeCaseIdentifier(consumer?.consumerGroup)}`, `${label} subscriptionOperationId must be canonical and deterministic`);
+    add(errors, !usedIds.has(consumer?.subscriptionOperationId), `${label} subscriptionOperationId is duplicated`);
+    usedIds.add(consumer?.subscriptionOperationId);
+    consumerGroups.push(consumer?.consumerGroup);
+    const route = routeByEvent.get(label);
+    const topic = topicByName.get(route?.topic);
+    const topicGroups = new Map((topic?.consumerGroups ?? []).map((group) => [group.name, group.service]));
+    const knownOwner = topicGroups.get(consumer?.consumerGroup);
+    add(errors, knownOwner === consumer?.service, `${label} ${consumer?.consumerGroup} must belong to ${knownOwner ?? '<unknown>'}`);
+    if (groupService.has(consumer?.consumerGroup)) {
+      add(errors, groupService.get(consumer.consumerGroup) === consumer.service, `${consumer.consumerGroup} cannot map to multiple services`);
+    } else {
+      groupService.set(consumer?.consumerGroup, consumer?.service);
+    }
+  }
+  add(errors, duplicates(consumerGroups).length === 0, `${label} duplicates consumer groups: ${duplicates(consumerGroups).join(', ')}`);
+  add(errors, JSON.stringify(consumerGroups) === JSON.stringify(routeByEvent.get(label)?.consumerGroups ?? []), `${label} consumers and order must match the B26 static routing seed`);
+
+  exactKeys(errors, governance.transport, ['protocol', 'topic', 'partitionKey', 'aggregateIdSource', 'delivery', 'bindingVersion', 'channelId'], `${label}.transport`);
+  const route = routeByEvent.get(label);
+  const topic = topicByName.get(route?.topic);
+  add(errors, isRecord(route), `${label} must have one B26 static routing record`);
+  add(errors, isRecord(topic), `${label} route must reference a declared B26 topic`);
+  add(errors, governance.producer?.service === topic?.ownerService, `${label} producer must match the B26 topic owner`);
+  add(errors, topic?.producerPrincipal === `svc.${governance.producer?.service}`, `${label} producer principal must match its service identity`);
+  add(errors, governance.transport?.protocol === 'kafka', `${label} protocol must be kafka`);
+  add(errors, governance.transport?.topic === route?.topic, `${label} topic must match the B26 static routing seed`);
+  add(errors, governance.transport?.partitionKey === 'aggregateId', `${label} partitionKey must be aggregateId`);
+  add(errors, governance.transport?.aggregateIdSource === `payload.${event.aggregateIdField}`, `${label} aggregateIdSource must match aggregateIdField`);
+  add(errors, governance.transport?.delivery === 'at-least-once', `${label} delivery must be at-least-once`);
+  add(errors, governance.transport?.bindingVersion === '0.5.0', `${label} Kafka bindingVersion must be 0.5.0`);
+  add(errors, governance.transport?.channelId === normalizedEventName, `${label} channelId must be canonical and deterministic`);
+  add(errors, !usedIds.has(governance.transport?.channelId), `${label} channelId is duplicated`);
+  usedIds.add(governance.transport?.channelId);
+
+  exactKeys(errors, governance.schema, ['schemaVersion', 'payloadRef', 'compatibility'], `${label}.schema`);
+  add(errors, governance.schema?.schemaVersion === event.schema, `${label} governed schemaVersion must match event schema`);
+  add(errors, governance.schema?.payloadRef === event.payloadSchema?.$ref, `${label} governed payloadRef must match event payloadSchema`);
+  add(errors, governance.schema?.compatibility === event.compatibility?.strategy && governance.schema?.compatibility === 'additive', `${label} compatibility must be additive and match the event`);
+  const payload = resolveLocalReference(catalog, event.payloadSchema?.$ref);
+  add(errors, isRecord(payload) && isRecord(payload.properties) && Object.hasOwn(payload.properties, event.aggregateIdField), `${label} aggregateIdField must exist in its payload schema`);
+
+  add(errors, JSON.stringify(governance.correlation) === JSON.stringify(REQUIRED_CORRELATION), `${label} correlation fields must be exact and ordered`);
+  add(errors, JSON.stringify(event['x-envelope-required']) === JSON.stringify(REQUIRED_ENVELOPE), `${label} must require the complete canonical envelope`);
+  add(errors, JSON.stringify(governance.traceability) === JSON.stringify(['ARCH-EVT-001', 'INT-P1-017']), `${label} traceability must bind ARCH-EVT-001 and INT-P1-017`);
+  add(errors, event['x-kafka'] === undefined, `${label} must not retain duplicate x-kafka metadata`);
+}
+
+export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, fragments = [], checkProjection = true } = {}) {
+  const errors = [];
+  add(errors, isRecord(catalog), 'event catalog must be an object');
+  add(errors, isRecord(ownerPolicy), 'data ownership policy must be an object');
+  add(errors, isRecord(b26Runtime), 'B26 static candidate must be an object');
+  if (errors.length > 0) return { result: 'FAIL', errors };
+
+  checkPlatformGovernance(catalog, errors);
+  add(errors, b26Runtime.mode === 'static-only' && b26Runtime.runtimeStatus === 'pending' && b26Runtime.defaultDecision === 'NO-GO', 'B26 input must remain static-only, pending and NO-GO');
+  add(errors, Array.isArray(catalog.events) && catalog.events.length === 154, 'event catalog must contain exactly 154 current candidates');
+
+  const services = new Set((ownerPolicy.serviceOwners ?? []).map((owner) => owner.service));
+  const dataOwners = new Set((ownerPolicy.serviceOwners ?? []).filter((owner) => owner.dataOwner === true).map((owner) => owner.service));
+  const topicNames = (b26Runtime.topics ?? []).map((topic) => topic?.name);
+  add(errors, duplicates(topicNames).length === 0, `B26 duplicates topic names: ${duplicates(topicNames).join(', ')}`);
+  const topicByName = new Map((b26Runtime.topics ?? []).map((topic) => [topic.name, topic]));
+  const groupNames = (b26Runtime.topics ?? []).flatMap((topic) => (topic.consumerGroups ?? []).map((group) => group?.name));
+  add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
+  const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
+  add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact seven canonical seed events');
+  const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
+  const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
+  add(errors, duplicates(eventNames).length === 0, `event catalog duplicates event names: ${duplicates(eventNames).join(', ')}`);
+
+  const canonicalNames = [];
+  const counts = { canonical: 0, historical: 0, deprecated: 0 };
+  const usedIds = new Set();
+  const groupService = new Map();
+  for (const [index, event] of (catalog.events ?? []).entries()) {
+    const label = `events[${index}]`;
+    add(errors, isRecord(event), `${label} must be an object`);
+    if (!isRecord(event)) continue;
+    add(errors, EXPECTED_STATUSES.includes(event.status), `${event.eventName ?? label} has an unsupported governance status`);
+    const expectedEventKeys = [
+      ...BASE_EVENT_KEYS,
+      ...(event['x-envelope-required'] === undefined ? [] : ['x-envelope-required']),
+      ...(event.status === CANONICAL_STATUS ? ['x-p1r-governance'] : []),
+      ...(event.status === DEPRECATED_STATUS ? ['x-p1r-deprecation'] : []),
+    ];
+    exactKeys(errors, event, expectedEventKeys, `${event.eventName ?? label}`);
+    if (event.status === CANONICAL_STATUS) {
+      counts.canonical += 1;
+      canonicalNames.push(event.eventName);
+      checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors);
+    } else if (event.status === HISTORICAL_STATUS) {
+      counts.historical += 1;
+      add(errors, event['x-p1r-governance'] === undefined, `${event.eventName} historical candidate cannot carry active v2 governance`);
+      add(errors, event['x-kafka'] === undefined, `${event.eventName} historical candidate cannot carry active Kafka metadata`);
+    } else if (event.status === DEPRECATED_STATUS) {
+      counts.deprecated += 1;
+      add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
+    }
+  }
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact seven B26 governance seed events');
+  add(errors, counts.historical === 147 && counts.deprecated === 0, 'event status counts must be 7 canonical / 147 historical / 0 deprecated');
+
+  const fragmentNames = fragments.map((fragment) => path.basename(fragment.path)).sort();
+  add(errors, JSON.stringify(fragmentNames) === JSON.stringify(EXPECTED_EVENT_FRAGMENT_NAMES), 'event fragment registry must contain the exact 14 governed fragment files');
+
+  for (const fragment of fragments) {
+    add(errors, isRecord(fragment.data), `${fragment.path} must be an object`);
+    add(errors, fragment.data?.asyncapi === undefined, `${fragment.path} must not define a second AsyncAPI source`);
+    add(errors, fragment.data?.status === undefined, `${fragment.path} must not define a root event status`);
+    add(errors, fragment.data?.['x-p1r-event-governance'] === undefined, `${fragment.path} must not define root platform event governance`);
+    add(errors, fragment.data?.['x-p1r-governance'] === undefined, `${fragment.path} must not define root event governance`);
+    add(errors, fragment.data?.['x-kafka'] === undefined, `${fragment.path} must not define root Kafka governance`);
+    for (const event of fragment.data?.events ?? []) {
+      add(errors, event.status === undefined, `${fragment.path}:${event.eventName} must not define catalog-owned status`);
+      add(errors, event['x-p1r-governance'] === undefined, `${fragment.path}:${event.eventName} must not define catalog-owned governance`);
+      add(errors, event['x-kafka'] === undefined, `${fragment.path}:${event.eventName} must not define duplicate Kafka governance`);
+    }
+  }
+
+  if (checkProjection) {
+    try {
+      const projectedCatalog = structuredClone(catalog);
+      projectCanonicalAsyncApi(projectedCatalog);
+      add(errors, stableJson(catalog.asyncapi) === stableJson(projectedCatalog.asyncapi), 'embedded AsyncAPI must be the exact canonical governance projection');
+    } catch (error) {
+      errors.push(`embedded AsyncAPI projection failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  return {
+    result: errors.length === 0 ? 'PASS' : 'FAIL',
+    summary: {
+      totalEvents: catalog.events?.length ?? 0,
+      canonicalEvents: counts.canonical,
+      historicalCandidates: counts.historical,
+      deprecatedEvents: counts.deprecated,
+      canonicalConsumerBindings: (catalog.events ?? []).filter((event) => event.status === CANONICAL_STATUS)
+        .reduce((total, event) => total + (event['x-p1r-governance']?.consumers?.length ?? 0), 0),
+      plannedEventGaps: catalog['x-p1r-event-governance']?.plannedClosures?.length ?? 0,
+      runtimeStatus: catalog['x-p1r-event-governance']?.runtimeStatus,
+      asyncApiChannels: Object.keys(catalog.asyncapi?.channels ?? {}).length,
+      asyncApiOperations: Object.keys(catalog.asyncapi?.operations ?? {}).length,
+    },
+    errors,
+  };
+}
+
+export function validateEventGovernance({ root = defaultRoot } = {}) {
+  const read = (relativePath) => JSON.parse(fs.readFileSync(path.join(root, ...relativePath.split('/')), 'utf8'));
+  return validateEventGovernanceData({
+    catalog: read('packages/contracts/events/v1/catalog.json'),
+    ownerPolicy: read('config/p1r-data-ownership.v1.json'),
+    b26Runtime: read('config/b26-event-runtime.json'),
+    fragments: listEventFragments(root),
+  });
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
+  try {
+    const report = validateEventGovernance();
+    if (process.argv.includes('--json')) console.log(JSON.stringify(report, null, 2));
+    else {
+      console.log(`P1R event governance static/D2 ${report.result} (${report.summary?.canonicalEvents ?? 0} canonical, ${report.summary?.historicalCandidates ?? 0} historical, ${report.summary?.canonicalConsumerBindings ?? 0} consumer bindings, runtimeStatus=${report.summary?.runtimeStatus ?? 'UNKNOWN'}).`);
+      for (const error of report.errors) console.error(`- ${error}`);
+    }
+    if (report.result !== 'PASS') process.exitCode = 1;
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
+}

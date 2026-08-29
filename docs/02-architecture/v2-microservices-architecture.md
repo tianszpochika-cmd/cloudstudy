@@ -6,6 +6,7 @@
 > 客服/隐私 owner：[ADR-0014：Phase 1 客服与隐私编排事实所有权](../10-decisions/0014-phase1-support-privacy-ownership.md)
 > 实施状态：目标架构已确定；自有 IAM、RS256/JWKS、Gateway 安全边界与服务侧 PEP 已形成代码和契约基线，但完整运行与发布证据仍未齐，不得宣称目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
 > 数据治理状态：[`config/p1r-data-ownership.v1.json`](../../config/p1r-data-ownership.v1.json) 是 P1R-M1-005 的 D2 机器可读事实源；它冻结目标 owner、schema、namespace 和治理责任，状态为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不构成任何运行验收。
+> 事件治理状态：[`packages/contracts/events/v1/catalog.json`](../../packages/contracts/events/v1/catalog.json) 是 P1R-M1-006 的机器可读治理源。当前 154 个条目分为 7 个 `CANONICAL_D2` 与 147 个 `HISTORICAL_CANDIDATE`；AsyncAPI 仅投影已签收的 7 个事件及其 21 个 send/receive operations，状态保持 `NOT_RUNTIME_VERIFIED`，不构成 Kafka 运行验收。
 
 ## 1. 这份文档解决什么问题
 
@@ -243,6 +244,7 @@ Phase 1 规范角色集合：`learner`、`content-editor`、`reviewer-l1`、`rev
 6. 跨服务业务采用 Outbox + 事件 + Saga/补偿；不使用分布式两阶段提交。订单、权益、学习完成等关键状态必须可重放、可对账、可人工恢复。
 7. 投递语义为至少一次；生产者按聚合 ID（如 `userId`、`orderId`、`attemptId`）选择分区键，消费者必须支持去重、乱序、重试、DLQ、回放和旧版本兼容。事件 schema 只允许向后兼容演进，破坏性变更必须新增版本。
 8. 事件 payload 遵循最小化原则：不传原始音频、支付凭证、Token、答案密钥或不必要的个人信息；分析和审计以脱敏事件 envelope/不可变审计记录读取，不得直连领域数据库。
+9. event fragments 只提供事件和 payload 语义；状态、owner、consumer group、topic、partition 与 compatibility governance 只允许由 canonical catalog 声明并生成 AsyncAPI。无法证明绑定的历史候选不得进入 AsyncAPI；`core-api` RabbitMQ 只保留 v1 historical compatibility，Redis/Redis Streams 不得成为 v2 事件事实源。
 
 ## 7. 可靠性、观测和运行治理
 

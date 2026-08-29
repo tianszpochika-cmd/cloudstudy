@@ -111,7 +111,17 @@ function generateEventTypes(catalog) {
   });
   const header = `/* eslint-disable */\n// GENERATED FILE. Source: packages/contracts/events/v1/catalog.json\n// Run node scripts/contracts/generate-contracts.mjs after changing the source.\n\n`;
   const envelope = `export interface PlatformEventEnvelope<TPayload> {\n  eventId: string;\n  eventName: string;\n  schema: ${JSON.stringify(catalog.envelope.schema)};\n  version: number;\n  occurredAt: string;\n  aggregateType: string;\n  aggregateId: string;\n  actorId: string;\n  traceId: string;\n  requestId: string;\n  schemaVersion?: string;\n  dedupeKey?: string;\n  clientEventId?: string;\n  contentVersionId?: number;\n  payload: TPayload;\n}\n`;
-  return `${header}${envelope}\n${payloadAliases.join('\n\n')}\n\n${eventTypes.join('\n\n')}\n\nexport type PlatformEvent = ${eventTypeNames.map((typeName) => `${typeName}Event`).join(' | ')};\n`;
+  const canonicalEventEntries = catalog.events
+    .map((event, index) => ({ event, typeName: eventTypeNames[index] }))
+    .filter(({ event }) => event.status === 'CANONICAL_D2');
+  const governanceRegistry = Object.fromEntries(canonicalEventEntries.map(({ event }) => [
+    event.eventName,
+    event['x-p1r-governance'],
+  ]));
+  const canonicalUnion = canonicalEventEntries.length > 0
+    ? canonicalEventEntries.map(({ typeName }) => `${typeName}Event`).join(' | ')
+    : 'never';
+  return `${header}${envelope}\n${payloadAliases.join('\n\n')}\n\n${eventTypes.join('\n\n')}\n\nexport type PlatformEvent = ${eventTypeNames.map((typeName) => `${typeName}Event`).join(' | ')};\n\nexport const canonicalEventGovernance = ${JSON.stringify(governanceRegistry, null, 2)} as const;\n\nexport type CanonicalEventName = keyof typeof canonicalEventGovernance;\nexport type CanonicalPlatformEvent = ${canonicalUnion};\n`;
 }
 
 function generateApiClientTypes(document) {
