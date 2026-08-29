@@ -236,6 +236,15 @@ test('unknown runtime-proof fields and aliased promoted states fail closed', () 
   }
 });
 
+test('candidate document shape freezes every array item field and value type', () => {
+  assertMutationFails((changed) => {
+    delete changed.redisRegistry.entries[0].security;
+  }, /document shape drifted/);
+  assertMutationFails((changed) => {
+    changed.redisRegistry.entries[0].keyPattern = 42;
+  }, /document shape drifted/);
+});
+
 test('governance prose fields cannot be replaced by keyword-containing negations', () => {
   assertMutationFails((changed) => {
     changed.policy.globalPolicies.tenant.phase3SharedSchemaRequirement = 'tenant_id has no unique index';

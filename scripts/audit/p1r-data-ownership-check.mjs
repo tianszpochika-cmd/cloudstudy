@@ -108,9 +108,9 @@ const EXPECTED_OWNER_GOVERNANCE = Object.freeze({
 
 const PROMOTED_STATES = new Set(['PASS', 'PASSED', 'ACCEPTED', 'VERIFIED', 'RUNTIME_VERIFIED', 'COMPLETE', 'CLOSED']);
 const EXPECTED_DOCUMENT_SHAPE_DIGESTS = Object.freeze({
-  policy: 'aafae41ef4f16fc4e06bff1c18609fc87cd3c51206641e622fb6044cbd692bd4',
-  b25: '6943655658c008d188861fa148ea8f9001f2121a39fcd65e94390b5d78307829',
-  redis: '0af970b01f606a1a49b242144a11a725f37229c3ea32bf5930dd94a3d7e5ea07',
+  policy: '46ac32963db1874d85f0f5afe575a96756aae57b7fc89f56ab66172367c54672',
+  b25: '507227b4bc819076810706f73f0a8fdacd24a390efaaf97d052eb9c6a56cd985',
+  redis: '38c319c1f690c07860807ab5b65765570b3431b6be71816a340826d072d0f44b',
 });
 const APPROVED_RUNTIME_GOVERNANCE_KEYS = new Set([
   'businessSchemaStatus',
@@ -354,18 +354,15 @@ function normalizedTextSha256(text) {
 }
 
 function documentShapeDigest(value) {
-  const rows = new Set();
-  const visit = (current, location) => {
-    const kind = Array.isArray(current) ? 'array' : current === null ? 'null' : typeof current;
-    rows.add(`${location}:${kind}`);
-    if (Array.isArray(current)) {
-      current.forEach((item) => visit(item, `${location}[]`));
-    } else if (isRecord(current)) {
-      Object.keys(current).sort().forEach((key) => visit(current[key], `${location}.${key}`));
+  const describe = (current) => {
+    if (Array.isArray(current)) return `array[${current.map(describe).sort().join(',')}]`;
+    if (current === null) return 'null';
+    if (isRecord(current)) {
+      return `object{${Object.keys(current).sort().map((key) => `${JSON.stringify(key)}:${describe(current[key])}`).join(',')}}`;
     }
+    return typeof current;
   };
-  visit(value, '$');
-  return crypto.createHash('sha256').update([...rows].sort().join('\n')).digest('hex');
+  return crypto.createHash('sha256').update(describe(value)).digest('hex');
 }
 
 function checkDocumentShape(value, errors, label, expectedDigest) {
