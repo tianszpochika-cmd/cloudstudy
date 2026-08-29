@@ -4,7 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
-import { findCanonicalMergeDrift, mergeEvents } from '../../scripts/contracts/merge-b1-fragments.mjs';
+import { findCanonicalMergeDrift, mergeEvents, selectEventFragmentFiles } from '../../scripts/contracts/merge-b1-fragments.mjs';
 import { buildGeneratedOutputs, findGeneratedOutputDrift } from '../../scripts/contracts/generate-contracts.mjs';
 import { compareContracts, runCompatibilityDiff } from '../../scripts/contracts/compatibility-diff.mjs';
 import { runGitBaselineCompatibility } from '../../scripts/contracts/compatibility-git-baseline.mjs';
@@ -60,6 +60,17 @@ test('B26 semantic fragments can evolve without taking ownership of status or go
     () => mergeEvents(base, forbidden, 'packages/contracts/events/v1/fragments/b26-reliability.events.json'),
     /must not define catalog-owned status/,
   );
+});
+
+test('event merge discovery includes every events fragment so unknown files fail governance instead of being ignored', () => {
+  assert.deepEqual(selectEventFragmentFiles([
+    'b26-reliability.events.json',
+    'z-unknown.events.json',
+    'notes.json',
+  ]), [
+    'b26-reliability.events.json',
+    'z-unknown.events.json',
+  ]);
 });
 
 test('no-write merge check preserves canonical artifacts whether it passes or reports drift', () => {
@@ -145,7 +156,35 @@ test('events compatibility freezes established governance but allows its first a
   const policyDrift = structuredClone(eventCatalog);
   policyDrift['x-p1r-event-governance'].transportPolicy.redisStreams = 'ALLOWED';
   assert.ok(compareContracts('events', current, policyDrift)
-    .some((change) => change.location === 'x-p1r-event-governance.transportPolicy'));
+    .some((change) => change.location === 'x-p1r-event-governance'));
+
+  const plannedClosureDrift = structuredClone(eventCatalog);
+  plannedClosureDrift['x-p1r-event-governance'].plannedClosures.pop();
+  assert.ok(compareContracts('events', current, plannedClosureDrift)
+    .some((change) => change.location === 'x-p1r-event-governance'));
+
+  const traceabilityDrift = structuredClone(eventCatalog);
+  traceabilityDrift['x-p1r-event-governance'].traceability.sourceRefs.reverse();
+  assert.ok(compareContracts('events', current, traceabilityDrift)
+    .some((change) => change.location === 'x-p1r-event-governance'));
+
+  const consumerOrderDrift = structuredClone(eventCatalog);
+  consumerOrderDrift.events.find((event) => event.status === 'CANONICAL_D2')['x-p1r-governance'].consumers.reverse();
+  assert.ok(compareContracts('events', current, consumerOrderDrift)
+    .some((change) => change.location.endsWith('.x-p1r-governance')));
+
+  for (const field of ['breakingChange', 'consumerRule']) {
+    const compatibilityDrift = structuredClone(eventCatalog);
+    const event = compatibilityDrift.events.find((candidate) => candidate.status === 'CANONICAL_D2');
+    event.compatibility[field] = `changed ${field}`;
+    assert.ok(compareContracts('events', current, compatibilityDrift)
+      .some((change) => change.location === `${event.eventName}.compatibility`));
+  }
+
+  const asyncApiRuntimeDrift = structuredClone(eventCatalog);
+  asyncApiRuntimeDrift.asyncapi['x-runtime-status'] = 'RUNTIME_VERIFIED';
+  assert.ok(compareContracts('events', current, asyncApiRuntimeDrift)
+    .some((change) => change.location === 'asyncapi'));
 
   const aggregateDrift = structuredClone(eventCatalog);
   aggregateDrift.events[0].aggregateIdField = 'changedId';

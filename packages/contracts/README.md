@@ -32,9 +32,10 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 
 ### P1R-M1-006 事件治理 profile
 
-- `events/v1/catalog.json` 是事件状态、producer/data owner、consumer group、topic、partition、schema 与兼容策略的唯一治理源；14 个 fragments 只能贡献事件和 payload 语义，不得手工声明 `status`、`x-p1r-governance`、`x-kafka` 或 AsyncAPI。
+- `events/v1/catalog.json` 是事件状态、producer/data owner、consumer group、topic、partition、schema 与兼容策略的唯一治理源；其中 `fragmentInventory` 冻结 14 个 fragments 及各自的有序事件清单。fragment 删除、重复、未知文件或顺序漂移都会失败；fragments 只能贡献事件和 payload 语义，不得手工声明 `status`、`x-p1r-governance`、`x-kafka` 或 AsyncAPI。
 - 154 个目录条目全部显式分类。当前只有 7 个已具备可信 B26 静态绑定的 workflow reliability 事件进入 `CANONICAL_D2`；其余 147 个保持 `HISTORICAL_CANDIDATE`，在对应领域契约任务签收前不会进入 canonical AsyncAPI，也不能由生成器补默认 owner/consumer。
 - canonical AsyncAPI 3.0 从 catalog 确定性投影为 7 个 channel、7 个 `send` 和 14 个 `receive` operation；Kafka topic、binding `0.5.0`、producer、data owner 与每个 consumer group 必须精确匹配。任何第二事实源、重复 ID、漂移或缺失 receive 都失败关闭。
+- `envelope.schema=platform.event.v1` 标识共享信封契约本身；每条目录记录的 `event.schema` 标识该事件 schema version。生成的 `PlatformEventEnvelope<TPayload,TEventSchema>` 与每个事件接口保留后者的字面量类型，避免把两者误合并。
 - `pnpm p1r:event-governance:check` 验证治理源、B26 静态 seed、fragment 边界和 AsyncAPI exact projection。它只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；真实 broker/topic/ACL/投递属于 M2-005，完整 Outbox/dedupe/retry/DLQ/replay/Saga 合同属于 M1-007。
 
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。

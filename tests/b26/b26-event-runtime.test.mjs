@@ -99,6 +99,24 @@ test('B26 rejects forged runtime status, Kafka RPC widening, wildcard ACL and cl
   assert.ok(result.errors.some((error) => error.includes('client authority fact tenantId must be forbidden')))
 })
 
+test('B26 rejects unknown runtime claims at the root and inside otherwise valid structures', () => {
+  const cases = [
+    (candidate) => { candidate.runtimeAttestation = 'PASS' },
+    (candidate) => { candidate.broker.certified = true },
+    (candidate) => { candidate.consumerReliability.replay.verification = { state: 'PASS' } },
+    (candidate) => { candidate.consumerReliability.replay.result = 'PASS' },
+    (candidate) => { candidate.topics[0].operationalStatus = 'PASS' },
+    (candidate) => { candidate.outbox.live = true },
+  ]
+  for (const mutate of cases) {
+    const candidate = clone(manifest)
+    mutate(candidate)
+    const result = validateB26EventRuntime(candidate, fragment)
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => error.includes('unknown runtime proof') || error.includes('B26 manifest keys must be exactly')))
+  }
+})
+
 test('B26 event and manifest fixtures contain no real secret, PII, payment or raw-media value', () => {
   const serialized = JSON.stringify({ manifest, fragment })
   assert.doesNotMatch(serialized, /Bearer\s+[A-Za-z0-9._~+/=-]{16,}/i)

@@ -212,6 +212,10 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canon
   }
 }
 
+export function selectEventFragmentFiles(files) {
+  return files.filter((filePath) => path.basename(filePath).endsWith('.events.json'));
+}
+
 export function mergeEvents(base, fragment, filePath) {
   if (fragment.asyncapi !== undefined) {
     throw new Error(`${filePath} must not define asyncapi; canonical channels and operations are generated from catalog event governance`);
@@ -291,7 +295,7 @@ export function merge({ write = false } = {}) {
   const openApiFiles = [...listJsonFiles(openApiSharedFragmentDir), ...listJsonFiles(openApiFragmentDir), ...listJsonFiles(openApiB2FragmentDir), ...listJsonFiles(openApiB3FragmentDir), ...listJsonFiles(openApiB8FragmentDir), ...listJsonFiles(openApiB9FragmentDir), ...listJsonFiles(openApiB10FragmentDir), ...listJsonFiles(openApiB11FragmentDir), ...listJsonFiles(openApiB12FragmentDir), ...listJsonFiles(openApiB13FragmentDir), ...listJsonFiles(openApiB25FragmentDir)]
     .filter((filePath, index, files) => files.indexOf(filePath) === index)
     .filter((filePath) => readJson(filePath)['x-contract-status'] !== 'historical-compatibility');
-  const eventFiles = listJsonFiles(eventFragmentDir).filter((filePath) => /^(b1|b2|b3|b4|b5|b6|b8|b9|b10|b11|b12|b13|b26)-/.test(path.basename(filePath)));
+  const eventFiles = selectEventFragmentFiles(listJsonFiles(eventFragmentDir));
 
   for (const filePath of openApiFiles) mergeOpenApi(openApi, readJson(filePath), path.relative(repoRoot, filePath), canonicalB8MetadataWrites, canonicalGatewayMetadataWrites);
   const missingCanonicalB8Metadata = requiredCanonicalB8Metadata.filter((metadataKey) => !canonicalB8MetadataWrites.has(metadataKey));

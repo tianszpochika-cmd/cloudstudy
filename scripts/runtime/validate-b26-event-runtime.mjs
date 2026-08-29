@@ -25,8 +25,45 @@ const requiredEnvelope = [
   'dedupeKey',
   'payload',
 ]
+const expectedManifestKeys = [
+  '$schema',
+  'schemaVersion',
+  'batch',
+  'taskIds',
+  'phase',
+  'mode',
+  'status',
+  'staticDecision',
+  'runtimeStatus',
+  'defaultDecision',
+  'scope',
+  'sourceRefs',
+  'execution',
+  'runtimeGate',
+  'safety',
+  'broker',
+  'topics',
+  'outbox',
+  'consumerReliability',
+  'saga',
+  'eventEnvelope',
+  'eventRouting',
+  'telemetryBridge',
+]
 const forbiddenRuntimeResults = /(?:captured|verified|accepted|passed|go|ready|connected|published|running)/i
 const forbiddenSecretValue = /(?:Bearer\s+[A-Za-z0-9._~+/=-]{16,}|-----BEGIN [A-Z ]+ PRIVATE KEY-----|(?:^|\D)(?:\+?86[- ]?)?1[3-9]\d{9}(?:$|\D)|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/i
+const allowedRuntimeClaimLocations = [
+  /^manifest\.(status|staticDecision|runtimeStatus|defaultDecision)$/,
+  /^manifest\.execution\.(runtimeEvidenceStatus|runtimeEvidence|staticValidatorCannotPromoteRuntime|syntheticEvidenceCannotPromoteRuntime|noUnverifiedKafkaClaim)$/,
+  /^manifest\.runtimeGate$/,
+  /^manifest\.runtimeGate\.(status|runtimeStatusWhenMissing|requiredEvidence|externalEvidenceRequired)$/,
+  /^manifest\.broker\.healthProbe\.runtimeStatus$/,
+  /^manifest\.topics\[\d+\]\.localRuntimeOverride$/,
+  /^manifest\.outbox\.exactlyOnceClaim$/,
+  /^manifest\.outbox\.publisher\.claimStrategy$/,
+  /^manifest\.consumerReliability\.(replay|ordering)\.runtimeStatus$/,
+  /^manifest\.telemetryBridge\.runtimeStatus$/,
+]
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(repoRoot, relativePath), 'utf8'))
@@ -51,6 +88,14 @@ function requireArray(value, label, errors, minimum = 1) {
 
 function requireString(value, label, errors) {
   requireCondition(typeof value === 'string' && value.length > 0, `${label} must be a non-empty string`, errors)
+}
+
+function requireExactKeys(value, expected, label, errors) {
+  requireCondition(isRecord(value), `${label} must be an object`, errors)
+  if (!isRecord(value)) return
+  const actualKeys = Object.keys(value).sort()
+  const expectedKeys = [...expected].sort()
+  requireCondition(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys), `${label} keys must be exactly ${expectedKeys.join(', ')}`, errors)
 }
 
 function scanForUnsafeValues(value, location, errors) {
@@ -246,6 +291,31 @@ function validateFragment(manifest, fragment, catalog, errors) {
   requireCondition(fragment.asyncapi === undefined, 'B26 fragment must not define a second AsyncAPI source', errors)
 }
 
+function isRuntimeClaimKey(key) {
+  const segments = String(key).replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase().split(/[^a-z0-9]+/)
+  return segments.some((segment) => [
+    'runtime', 'verification', 'verified', 'unverified', 'proof', 'evidence',
+    'attestation', 'certified', 'live', 'deployed', 'operational', 'status',
+    'decision', 'claim', 'result', 'outcome', 'promotion', 'promoted',
+    'passed', 'accepted', 'ready', 'connected', 'published', 'running',
+  ].includes(segment))
+}
+
+function scanForUnknownRuntimeClaims(value, location, errors) {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => scanForUnknownRuntimeClaims(item, `${location}[${index}]`, errors))
+    return
+  }
+  if (!isRecord(value)) return
+  for (const [key, item] of Object.entries(value)) {
+    const itemLocation = `${location}.${key}`
+    if (isRuntimeClaimKey(key) && !allowedRuntimeClaimLocations.some((pattern) => pattern.test(itemLocation))) {
+      errors.push(`${itemLocation} is an unknown runtime proof, verification or status claim`)
+    }
+    scanForUnknownRuntimeClaims(item, itemLocation, errors)
+  }
+}
+
 function validateTelemetryBridge(manifest, telemetrySchema, telemetryPolicy, errors) {
   const bridge = manifest.telemetryBridge
   requireCondition(bridge?.eventContractIsSeparateFromTelemetryEnvelope === true, 'B26 must keep event and telemetry envelopes distinct', errors)
@@ -268,7 +338,9 @@ export function validateB26EventRuntime(manifest, fragment, {
   if (!isRecord(fragment)) errors.push('B26 event fragment must be a JSON object')
   if (!isRecord(catalog)) errors.push('canonical event catalog must be a JSON object')
   if (errors.length === 0) {
+    requireExactKeys(manifest, expectedManifestKeys, 'B26 manifest', errors)
     scanForUnsafeValues(manifest, 'manifest', errors)
+    scanForUnknownRuntimeClaims(manifest, 'manifest', errors)
     scanForUnsafeValues(fragment, 'fragment', errors)
     validateIdentity(manifest, errors)
     validateExecutionAndSafety(manifest, errors)

@@ -95,7 +95,6 @@ function generateEventTypes(catalog) {
     'aggregateId', 'actorId', 'traceId', 'requestId', 'payload',
   ]);
   const envelopeFieldTypes = {
-    schemaVersion: 'string',
     dedupeKey: 'string',
     clientEventId: 'string',
     contentVersionId: 'number',
@@ -105,12 +104,12 @@ function generateEventTypes(catalog) {
     const payloadName = event.payloadSchema.$ref.split('/').at(-1);
     const requiredEnvelopeFields = (event['x-envelope-required'] ?? [])
       .filter((field) => !baseEnvelopeFields.has(field))
-      .map((field) => `  ${tsPropertyName(field)}: ${envelopeFieldTypes[field] ?? 'string'};`)
+      .map((field) => `  ${tsPropertyName(field)}: ${field === 'schemaVersion' ? JSON.stringify(event.schema) : (envelopeFieldTypes[field] ?? 'string')};`)
       .join('\n');
-    return `export interface ${typeName}Event extends PlatformEventEnvelope<${toTypeName(payloadName)}> {\n  eventName: ${JSON.stringify(event.eventName)};\n  version: ${event.version};${requiredEnvelopeFields ? `\n${requiredEnvelopeFields}` : ''}\n}`;
+    return `export interface ${typeName}Event extends PlatformEventEnvelope<${toTypeName(payloadName)}, ${JSON.stringify(event.schema)}> {\n  eventName: ${JSON.stringify(event.eventName)};\n  version: ${event.version};${requiredEnvelopeFields ? `\n${requiredEnvelopeFields}` : ''}\n}`;
   });
   const header = `/* eslint-disable */\n// GENERATED FILE. Source: packages/contracts/events/v1/catalog.json\n// Run node scripts/contracts/generate-contracts.mjs after changing the source.\n\n`;
-  const envelope = `export interface PlatformEventEnvelope<TPayload> {\n  eventId: string;\n  eventName: string;\n  schema: ${JSON.stringify(catalog.envelope.schema)};\n  version: number;\n  occurredAt: string;\n  aggregateType: string;\n  aggregateId: string;\n  actorId: string;\n  traceId: string;\n  requestId: string;\n  schemaVersion?: string;\n  dedupeKey?: string;\n  clientEventId?: string;\n  contentVersionId?: number;\n  payload: TPayload;\n}\n`;
+  const envelope = `/** Contract identity of the shared event envelope definition; event.schema remains event-specific. */\nexport const platformEventEnvelopeContractSchema = ${JSON.stringify(catalog.envelope.schema)} as const;\n\nexport interface PlatformEventEnvelope<TPayload, TEventSchema extends string = string> {\n  eventId: string;\n  eventName: string;\n  schema: TEventSchema;\n  version: number;\n  occurredAt: string;\n  aggregateType: string;\n  aggregateId: string;\n  actorId: string;\n  traceId: string;\n  requestId: string;\n  schemaVersion?: TEventSchema;\n  dedupeKey?: string;\n  clientEventId?: string;\n  contentVersionId?: number;\n  payload: TPayload;\n}\n`;
   const canonicalEventEntries = catalog.events
     .map((event, index) => ({ event, typeName: eventTypeNames[index] }))
     .filter(({ event }) => event.status === 'CANONICAL_D2');

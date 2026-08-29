@@ -16,22 +16,7 @@ const EXPECTED_CATALOG_KEYS = [
   'x-p1r-event-governance', 'envelope', 'compatibilityPolicy',
   'forbiddenPayloadFieldPatterns', 'payloadSchemas', 'events', 'asyncapi',
 ];
-const EXPECTED_EVENT_FRAGMENT_NAMES = [
-  'b1-assessment-privacy.events.json',
-  'b10-learning-assessment.events.json',
-  'b11-media-notification-offline.events.json',
-  'b12-gamification-social-notification.events.json',
-  'b13-commerce-admin-analytics.events.json',
-  'b2-assessment-mastery.events.json',
-  'b2-vocabulary-srs.events.json',
-  'b26-reliability.events.json',
-  'b3-multimodal.events.json',
-  'b4-gamification-social.events.json',
-  'b5-commerce-admin.events.json',
-  'b6-platform-quality.events.json',
-  'b8-auth-iam.events.json',
-  'b9-learner-content.events.json',
-].sort();
+const EVENT_FRAGMENT_PATH_PATTERN = /^packages\/contracts\/events\/v1\/fragments\/[a-z0-9-]+\.events\.json$/;
 const BASE_EVENT_KEYS = [
   'eventName', 'status', 'domain', 'version', 'schema', 'aggregateType',
   'aggregateIdField', 'payloadSchema', 'compatibility',
@@ -148,7 +133,7 @@ function checkPlatformGovernance(catalog, errors) {
   const governance = catalog['x-p1r-event-governance'];
   exactKeys(errors, governance, [
     'schemaVersion', 'maturity', 'runtimeStatus', 'transportPolicy', 'allowedStatuses',
-    'traceability', 'plannedClosures',
+    'traceability', 'fragmentInventory', 'plannedClosures',
   ], 'x-p1r-event-governance');
   if (!isRecord(governance)) return;
   add(errors, governance.schemaVersion === 'p1r.event-governance.v1', 'event governance schemaVersion must be p1r.event-governance.v1');
@@ -163,6 +148,19 @@ function checkPlatformGovernance(catalog, errors) {
   exactKeys(errors, governance.traceability, ['sourceRefs'], 'event governance traceability');
   add(errors, governance.traceability?.sourceRefs?.includes('ARCH-EVT-001'), 'event governance must trace to ARCH-EVT-001');
   add(errors, governance.traceability?.sourceRefs?.includes('INT-P1-017'), 'event governance must trace to INT-P1-017');
+
+  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 14, 'fragmentInventory must contain the exact 14 governed fragment records');
+  const inventoryPaths = [];
+  for (const [index, fragment] of (governance.fragmentInventory ?? []).entries()) {
+    exactKeys(errors, fragment, ['path', 'eventNames'], `fragmentInventory[${index}]`);
+    inventoryPaths.push(fragment?.path);
+    add(errors, EVENT_FRAGMENT_PATH_PATTERN.test(fragment?.path ?? ''), `fragmentInventory[${index}].path must identify one canonical .events.json fragment`);
+    add(errors, Array.isArray(fragment?.eventNames) && fragment.eventNames.length > 0, `fragmentInventory[${index}].eventNames must be a non-empty array`);
+    add(errors, (fragment?.eventNames ?? []).every((eventName) => /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\.v[0-9]+$/.test(eventName)), `fragmentInventory[${index}] contains an invalid event name`);
+    add(errors, duplicates(fragment?.eventNames ?? []).length === 0, `fragmentInventory[${index}] duplicates event names: ${duplicates(fragment?.eventNames ?? []).join(', ')}`);
+  }
+  add(errors, duplicates(inventoryPaths).length === 0, `fragmentInventory duplicates fragment paths: ${duplicates(inventoryPaths).join(', ')}`);
+  add(errors, JSON.stringify(inventoryPaths) === JSON.stringify([...inventoryPaths].sort()), 'fragmentInventory must preserve canonical path order');
 
   add(errors, Array.isArray(governance.plannedClosures), 'plannedClosures must be an array');
   const gapIds = [];
@@ -315,10 +313,27 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact seven B26 governance seed events');
   add(errors, counts.historical === 147 && counts.deprecated === 0, 'event status counts must be 7 canonical / 147 historical / 0 deprecated');
 
-  const fragmentNames = fragments.map((fragment) => path.basename(fragment.path)).sort();
-  add(errors, JSON.stringify(fragmentNames) === JSON.stringify(EXPECTED_EVENT_FRAGMENT_NAMES), 'event fragment registry must contain the exact 14 governed fragment files');
+  const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
+  const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);
+  const normalizedFragments = fragments.map((fragment) => ({
+    ...fragment,
+    path: String(fragment.path).replaceAll('\\', '/'),
+  }));
+  const fragmentPaths = normalizedFragments.map((fragment) => fragment.path);
+  add(errors, duplicates(fragmentPaths).length === 0, `event fragments duplicate paths: ${duplicates(fragmentPaths).join(', ')}`);
+  add(errors, JSON.stringify([...fragmentPaths].sort()) === JSON.stringify([...inventoryPaths].sort()), 'event fragment files must exactly match catalog fragmentInventory');
+  const fragmentByPath = new Map(normalizedFragments.map((fragment) => [fragment.path, fragment]));
+  const catalogEventNames = new Set(eventNames);
+  for (const [index, inventory] of fragmentInventory.entries()) {
+    const fragment = fragmentByPath.get(inventory.path);
+    const actualNames = (fragment?.data?.events ?? []).map((event) => event?.eventName);
+    add(errors, isRecord(fragment?.data), `${inventory.path} must exist and contain an object`);
+    add(errors, duplicates(actualNames).length === 0, `${inventory.path} duplicates event names: ${duplicates(actualNames).join(', ')}`);
+    add(errors, JSON.stringify(actualNames) === JSON.stringify(inventory.eventNames), `${inventory.path} events must exactly match fragmentInventory[${index}] in order`);
+    add(errors, (inventory.eventNames ?? []).every((eventName) => catalogEventNames.has(eventName)), `${inventory.path} fragmentInventory contains an event absent from the catalog`);
+  }
 
-  for (const fragment of fragments) {
+  for (const fragment of normalizedFragments) {
     add(errors, isRecord(fragment.data), `${fragment.path} must be an object`);
     add(errors, fragment.data?.asyncapi === undefined, `${fragment.path} must not define a second AsyncAPI source`);
     add(errors, fragment.data?.status === undefined, `${fragment.path} must not define a root event status`);

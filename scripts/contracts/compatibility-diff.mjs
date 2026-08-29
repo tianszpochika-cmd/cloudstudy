@@ -92,7 +92,7 @@ function resolveMaybe(document, value) {
 
 function stableGovernanceValue(value) {
   if (Array.isArray(value)) {
-    return `[${value.map(stableGovernanceValue).sort().join(',')}]`;
+    return `[${value.map(stableGovernanceValue).join(',')}]`;
   }
   if (isRecord(value)) {
     return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableGovernanceValue(value[key])}`).join(',')}}`;
@@ -201,13 +201,9 @@ function compareEvents(previous, current) {
     if (previousEvent.payloadSchema?.$ref !== undefined && currentEvent.payloadSchema?.$ref !== previousEvent.payloadSchema.$ref) {
       changes.push(describeChange('events', `${eventName}.payloadSchema.$ref`, 'existing payload schema identity changed'));
     }
-    if (previousEvent.compatibility?.strategy !== undefined
-      && currentEvent.compatibility?.strategy !== previousEvent.compatibility.strategy) {
-      changes.push(describeChange('events', `${eventName}.compatibility.strategy`, 'existing compatibility strategy changed'));
-    }
-    if (previousEvent.compatibility?.window !== undefined
-      && stableGovernanceValue(previousEvent.compatibility.window) !== stableGovernanceValue(currentEvent.compatibility?.window)) {
-      changes.push(describeChange('events', `${eventName}.compatibility.window`, 'existing compatibility window changed'));
+    if (previousEvent.compatibility !== undefined
+      && stableGovernanceValue(previousEvent.compatibility) !== stableGovernanceValue(currentEvent.compatibility)) {
+      changes.push(describeChange('events', `${eventName}.compatibility`, 'existing compatibility policy changed'));
     }
     const previousEnvelopeRequired = new Set(previousEvent['x-envelope-required'] ?? []);
     const currentEnvelopeRequired = new Set(currentEvent['x-envelope-required'] ?? []);
@@ -238,14 +234,13 @@ function compareEvents(previous, current) {
   const currentPlatformGovernance = current['x-p1r-event-governance'];
   if (previousPlatformGovernance !== undefined && currentPlatformGovernance === undefined) {
     changes.push(describeChange('events', 'x-p1r-event-governance', 'platform event governance was removed'));
-  } else if (previousPlatformGovernance !== undefined && currentPlatformGovernance !== undefined) {
-    for (const field of [
-      'schemaVersion', 'maturity', 'runtimeStatus', 'transportPolicy', 'allowedStatuses',
-    ]) {
-      if (stableGovernanceValue(previousPlatformGovernance[field]) !== stableGovernanceValue(currentPlatformGovernance[field])) {
-        changes.push(describeChange('events', `x-p1r-event-governance.${field}`, 'platform event governance changed'));
-      }
-    }
+  } else if (previousPlatformGovernance !== undefined && currentPlatformGovernance !== undefined
+    && stableGovernanceValue(previousPlatformGovernance) !== stableGovernanceValue(currentPlatformGovernance)) {
+    changes.push(describeChange('events', 'x-p1r-event-governance', 'established platform event governance changed'));
+  }
+  if (previousPlatformGovernance !== undefined
+    && stableGovernanceValue(previous.asyncapi) !== stableGovernanceValue(current.asyncapi)) {
+    changes.push(describeChange('events', 'asyncapi', 'established canonical AsyncAPI projection changed'));
   }
   return changes;
 }

@@ -71,6 +71,11 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
 
 test('generated TypeScript separates canonical publishers from historical catalog candidates', () => {
   const generated = fs.readFileSync(path.join(root, 'packages', 'contracts', 'generated', 'events.ts'), 'utf8');
+  assert.match(generated, /platformEventEnvelopeContractSchema = "platform\.event\.v1" as const/);
+  assert.match(generated, /PlatformEventEnvelope<TPayload, TEventSchema extends string = string>/);
+  assert.match(generated, /WorkflowOutboxPublishedEvent extends PlatformEventEnvelope<B26WorkflowOutboxPublished, "workflow\.event\.v1">/);
+  assert.match(generated, /WorkflowSagaCompensationRequestedEvent extends PlatformEventEnvelope<B26WorkflowCompensationRequested, "workflow\.saga\.v1">/);
+  assert.match(generated, /schemaVersion: "workflow\.event\.v1"/);
   assert.match(generated, /export type EventCatalogCandidate =/);
   assert.match(generated, /@deprecated Use CanonicalPlatformEvent for new v2 event publication/);
   assert.match(generated, /export type CanonicalEventName = keyof typeof canonicalEventGovernance/);
@@ -122,7 +127,20 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['incomplete planned closure task mapping', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].d2ClosureTasks.shift(); }, /D2 closure tasks must match the frozen task mapping/],
     ['planned closure order drift', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures.reverse(); }, /canonical gap registry order/],
     ['duplicate event name', (input) => { input.catalog.events.push(structuredClone(input.catalog.events[0])); }, /duplicates event names/],
-    ['missing fragment', (input) => { input.fragments.pop(); }, /exact 14 governed fragment files/],
+    ['missing fragment', (input) => { input.fragments.pop(); }, /must exactly match catalog fragmentInventory/],
+    ['unknown fragment', (input) => {
+      input.fragments.push({
+        path: 'packages/contracts/events/v1/fragments/z-unknown.events.json',
+        data: { version: '1.0.0', events: [], payloadSchemas: {} },
+      });
+    }, /must exactly match catalog fragmentInventory/],
+    ['fragment event removed behind stale catalog', (input) => {
+      input.fragments.find((fragment) => fragment.path.endsWith('b26-reliability.events.json')).data.events.pop();
+    }, /events must exactly match fragmentInventory/],
+    ['fragment event duplicated behind stale catalog', (input) => {
+      const fragment = input.fragments.find((candidate) => candidate.path.endsWith('b26-reliability.events.json'));
+      fragment.data.events.push(structuredClone(fragment.data.events[0]));
+    }, /duplicates event names|events must exactly match fragmentInventory/],
     ['fragment AsyncAPI source', (input) => { input.fragments[0].data.asyncapi = {}; }, /must not define a second AsyncAPI source/],
     ['fragment root governance', (input) => { input.fragments[0].data['x-p1r-event-governance'] = {}; }, /must not define root platform event governance/],
     ['fragment event status', (input) => { input.fragments[0].data.events[0].status = 'CANONICAL_D2'; }, /must not define catalog-owned status/],

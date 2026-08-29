@@ -2,10 +2,13 @@
 // GENERATED FILE. Source: packages/contracts/events/v1/catalog.json
 // Run node scripts/contracts/generate-contracts.mjs after changing the source.
 
-export interface PlatformEventEnvelope<TPayload> {
+/** Contract identity of the shared event envelope definition; event.schema remains event-specific. */
+export const platformEventEnvelopeContractSchema = "platform.event.v1" as const;
+
+export interface PlatformEventEnvelope<TPayload, TEventSchema extends string = string> {
   eventId: string;
   eventName: string;
-  schema: "platform.event.v1";
+  schema: TEventSchema;
   version: number;
   occurredAt: string;
   aggregateType: string;
@@ -13,7 +16,7 @@ export interface PlatformEventEnvelope<TPayload> {
   actorId: string;
   traceId: string;
   requestId: string;
-  schemaVersion?: string;
+  schemaVersion?: TEventSchema;
   dedupeKey?: string;
   clientEventId?: string;
   contentVersionId?: number;
@@ -570,893 +573,893 @@ export type AuthAccountRegistered = { principalId: string; accountStatus: "ACTIV
  */
 export type AuthLoginSucceeded = { principalId: string; sessionId: string; deviceId: string; authMethod: "PASSWORD"; loggedInAt: string; };
 
-export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated> {
+export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated, "learning.event.v1"> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
 }
 
-export interface VocabularyReviewAcceptedEvent extends PlatformEventEnvelope<VocabularyReviewAccepted> {
+export interface VocabularyReviewAcceptedEvent extends PlatformEventEnvelope<VocabularyReviewAccepted, "learning.event.v1"> {
   eventName: "vocabulary.review.accepted.v1";
   version: 1;
 }
 
-export interface VocabularySrsStateChangedEvent extends PlatformEventEnvelope<VocabularySrsStateChanged> {
+export interface VocabularySrsStateChangedEvent extends PlatformEventEnvelope<VocabularySrsStateChanged, "learning.event.v1"> {
   eventName: "vocabulary.srs.state_changed.v1";
   version: 1;
 }
 
-export interface AssessmentAnswerScoredEvent extends PlatformEventEnvelope<AssessmentAnswerScored> {
+export interface AssessmentAnswerScoredEvent extends PlatformEventEnvelope<AssessmentAnswerScored, "learning.event.v1"> {
   eventName: "assessment.answer_scored.v1";
   version: 1;
 }
 
-export interface MasteryStateChangedEvent extends PlatformEventEnvelope<MasteryStateChanged> {
+export interface MasteryStateChangedEvent extends PlatformEventEnvelope<MasteryStateChanged, "learning.event.v1"> {
   eventName: "mastery.state_changed.v1";
   version: 1;
 }
 
-export interface LearningTaskCompletedEvent extends PlatformEventEnvelope<LearningTaskCompleted> {
+export interface LearningTaskCompletedEvent extends PlatformEventEnvelope<LearningTaskCompleted, "learning.event.v1"> {
   eventName: "learning.task.completed.v1";
   version: 1;
 }
 
-export interface CmsContentSubmittedEvent extends PlatformEventEnvelope<CmsContentSubmitted> {
+export interface CmsContentSubmittedEvent extends PlatformEventEnvelope<CmsContentSubmitted, "content.event.v1"> {
   eventName: "cms.content.submitted.v1";
   version: 1;
 }
 
-export interface CmsReviewDecidedEvent extends PlatformEventEnvelope<CmsReviewDecided> {
+export interface CmsReviewDecidedEvent extends PlatformEventEnvelope<CmsReviewDecided, "content.event.v1"> {
   eventName: "cms.review.decided.v1";
   version: 1;
 }
 
-export interface CmsContentPublishedEvent extends PlatformEventEnvelope<CmsContentPublished> {
+export interface CmsContentPublishedEvent extends PlatformEventEnvelope<CmsContentPublished, "content.event.v1"> {
   eventName: "cms.content.published.v1";
   version: 1;
 }
 
-export interface CmsContentRolledBackEvent extends PlatformEventEnvelope<CmsContentRolledBack> {
+export interface CmsContentRolledBackEvent extends PlatformEventEnvelope<CmsContentRolledBack, "content.event.v1"> {
   eventName: "cms.content.rolled_back.v1";
   version: 1;
 }
 
-export interface CommerceOrderPaidEvent extends PlatformEventEnvelope<CommerceOrderPaid> {
+export interface CommerceOrderPaidEvent extends PlatformEventEnvelope<CommerceOrderPaid, "entitlement.event.v1"> {
   eventName: "commerce.order.paid.v1";
   version: 1;
 }
 
-export interface CommerceEntitlementActivatedEvent extends PlatformEventEnvelope<B13CommerceEntitlementActivated> {
+export interface CommerceEntitlementActivatedEvent extends PlatformEventEnvelope<B13CommerceEntitlementActivated, "commerce.event.v1"> {
   eventName: "commerce.entitlement.activated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "commerce.event.v1";
   dedupeKey: string;
 }
 
-export interface CommerceEntitlementRevokedEvent extends PlatformEventEnvelope<CommerceEntitlementRevoked> {
+export interface CommerceEntitlementRevokedEvent extends PlatformEventEnvelope<CommerceEntitlementRevoked, "entitlement.event.v1"> {
   eventName: "commerce.entitlement.revoked.v1";
   version: 1;
 }
 
-export interface CommerceSubscriptionChangedEvent extends PlatformEventEnvelope<CommerceSubscriptionChanged> {
+export interface CommerceSubscriptionChangedEvent extends PlatformEventEnvelope<CommerceSubscriptionChanged, "entitlement.event.v1"> {
   eventName: "commerce.subscription.changed.v1";
   version: 1;
 }
 
-export interface NotificationCreatedEvent extends PlatformEventEnvelope<NotificationCreated> {
+export interface NotificationCreatedEvent extends PlatformEventEnvelope<NotificationCreated, "notification.event.v1"> {
   eventName: "notification.created.v1";
   version: 1;
 }
 
-export interface NotificationDeliveredEvent extends PlatformEventEnvelope<B11NotificationDelivered> {
+export interface NotificationDeliveredEvent extends PlatformEventEnvelope<B11NotificationDelivered, "notification.event.v1"> {
   eventName: "notification.delivered.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "notification.event.v1";
   dedupeKey: string;
 }
 
-export interface NotificationReadEvent extends PlatformEventEnvelope<NotificationRead> {
+export interface NotificationReadEvent extends PlatformEventEnvelope<NotificationRead, "notification.event.v1"> {
   eventName: "notification.read.v1";
   version: 1;
 }
 
-export interface SyncLearningCheckpointSavedEvent extends PlatformEventEnvelope<SyncLearningCheckpointSaved> {
+export interface SyncLearningCheckpointSavedEvent extends PlatformEventEnvelope<SyncLearningCheckpointSaved, "sync.event.v1"> {
   eventName: "sync.learning.checkpoint_saved.v1";
   version: 1;
 }
 
-export interface SyncConflictDetectedEvent extends PlatformEventEnvelope<SyncConflictDetected> {
+export interface SyncConflictDetectedEvent extends PlatformEventEnvelope<SyncConflictDetected, "sync.event.v1"> {
   eventName: "sync.conflict.detected.v1";
   version: 1;
 }
 
-export interface SyncCursorAdvancedEvent extends PlatformEventEnvelope<SyncCursorAdvanced> {
+export interface SyncCursorAdvancedEvent extends PlatformEventEnvelope<SyncCursorAdvanced, "sync.event.v1"> {
   eventName: "sync.cursor.advanced.v1";
   version: 1;
 }
 
-export interface AuthSessionRevokedEvent extends PlatformEventEnvelope<AuthSessionRevoked> {
+export interface AuthSessionRevokedEvent extends PlatformEventEnvelope<AuthSessionRevoked, "auth.event.v1"> {
   eventName: "auth.session.revoked.v1";
   version: 1;
 }
 
-export interface AssessmentItemSubmittedEvent extends PlatformEventEnvelope<AssessmentItemSubmitted> {
+export interface AssessmentItemSubmittedEvent extends PlatformEventEnvelope<AssessmentItemSubmitted, "learning.event.v1"> {
   eventName: "assessment.item.submitted.v1";
   version: 1;
 }
 
-export interface AuthDeviceKickedEvent extends PlatformEventEnvelope<AuthDeviceKicked> {
+export interface AuthDeviceKickedEvent extends PlatformEventEnvelope<AuthDeviceKicked, "auth.event.v1"> {
   eventName: "auth.device.kicked.v1";
   version: 1;
 }
 
-export interface PrivacyExportRequestedEvent extends PlatformEventEnvelope<PrivacyExportRequested> {
+export interface PrivacyExportRequestedEvent extends PlatformEventEnvelope<PrivacyExportRequested, "privacy.event.v1"> {
   eventName: "privacy.export.requested.v1";
   version: 1;
 }
 
-export interface PrivacyExportCompletedEvent extends PlatformEventEnvelope<PrivacyExportCompleted> {
+export interface PrivacyExportCompletedEvent extends PlatformEventEnvelope<PrivacyExportCompleted, "privacy.event.v1"> {
   eventName: "privacy.export.completed.v1";
   version: 1;
 }
 
-export interface AssessmentStreamBuiltEvent extends PlatformEventEnvelope<AssessmentStreamBuilt> {
+export interface AssessmentStreamBuiltEvent extends PlatformEventEnvelope<AssessmentStreamBuilt, "assessment.event.v1"> {
   eventName: "assessment.stream_built.v1";
   version: 1;
 }
 
-export interface AssessmentAnswerSubmittedEvent extends PlatformEventEnvelope<AssessmentAnswerSubmitted> {
+export interface AssessmentAnswerSubmittedEvent extends PlatformEventEnvelope<AssessmentAnswerSubmitted, "assessment.event.v1"> {
   eventName: "assessment.answer_submitted.v1";
   version: 1;
 }
 
-export interface MasteryVerificationStateChangedEvent extends PlatformEventEnvelope<MasteryVerificationStateChanged> {
+export interface MasteryVerificationStateChangedEvent extends PlatformEventEnvelope<MasteryVerificationStateChanged, "mastery.event.v1"> {
   eventName: "mastery.verification_state_changed.v1";
   version: 1;
 }
 
-export interface ExamSessionStateChangedEvent extends PlatformEventEnvelope<ExamSessionStateChanged> {
+export interface ExamSessionStateChangedEvent extends PlatformEventEnvelope<ExamSessionStateChanged, "exam.event.v1"> {
   eventName: "exam.session_state_changed.v1";
   version: 1;
 }
 
-export interface ExamAntiCheatRecordedEvent extends PlatformEventEnvelope<ExamAntiCheatRecorded> {
+export interface ExamAntiCheatRecordedEvent extends PlatformEventEnvelope<ExamAntiCheatRecorded, "exam.event.v1"> {
   eventName: "exam.anti_cheat_recorded.v1";
   version: 1;
 }
 
-export interface ReportGeneratedEvent extends PlatformEventEnvelope<ReportGenerated> {
+export interface ReportGeneratedEvent extends PlatformEventEnvelope<ReportGenerated, "mastery.event.v1"> {
   eventName: "report.generated.v1";
   version: 1;
 }
 
-export interface VocabularyReviewFilteredEvent extends PlatformEventEnvelope<VocabularyReviewFiltered> {
+export interface VocabularyReviewFilteredEvent extends PlatformEventEnvelope<VocabularyReviewFiltered, "learning.event.v1"> {
   eventName: "vocabulary.review.filtered.v1";
   version: 1;
 }
 
-export interface VocabularyExpressionCreatedEvent extends PlatformEventEnvelope<VocabularyExpressionCreated> {
+export interface VocabularyExpressionCreatedEvent extends PlatformEventEnvelope<VocabularyExpressionCreated, "learning.event.v1"> {
   eventName: "vocabulary.expression.created.v1";
   version: 1;
 }
 
-export interface GrammarPracticeCompletedEvent extends PlatformEventEnvelope<GrammarPracticeCompleted> {
+export interface GrammarPracticeCompletedEvent extends PlatformEventEnvelope<GrammarPracticeCompleted, "grammar.event.v1"> {
   eventName: "grammar.practice.completed.v1";
   version: 1;
 }
 
-export interface WritingEvaluationCompletedEvent extends PlatformEventEnvelope<WritingEvaluationCompleted> {
+export interface WritingEvaluationCompletedEvent extends PlatformEventEnvelope<WritingEvaluationCompleted, "writing.event.v1"> {
   eventName: "writing.evaluation.completed.v1";
   version: 1;
 }
 
-export interface ListeningDictationSubmittedEvent extends PlatformEventEnvelope<ListeningDictationSubmitted> {
+export interface ListeningDictationSubmittedEvent extends PlatformEventEnvelope<ListeningDictationSubmitted, "listening.event.v1"> {
   eventName: "listening.dictation.submitted.v1";
   version: 1;
 }
 
-export interface ReadingProgressUpdatedEvent extends PlatformEventEnvelope<ReadingProgressUpdated> {
+export interface ReadingProgressUpdatedEvent extends PlatformEventEnvelope<ReadingProgressUpdated, "reading.event.v1"> {
   eventName: "reading.progress.updated.v1";
   version: 1;
 }
 
-export interface SpeakingSelfRatingSubmittedEvent extends PlatformEventEnvelope<SpeakingSelfRatingSubmitted> {
+export interface SpeakingSelfRatingSubmittedEvent extends PlatformEventEnvelope<SpeakingSelfRatingSubmitted, "speaking.event.v1"> {
   eventName: "speaking.self_rating.submitted.v1";
   version: 1;
 }
 
-export interface OfflineSyncAppliedEvent extends PlatformEventEnvelope<OfflineSyncApplied> {
+export interface OfflineSyncAppliedEvent extends PlatformEventEnvelope<OfflineSyncApplied, "offline.event.v1"> {
   eventName: "offline.sync.applied.v1";
   version: 1;
 }
 
-export interface GrammarMasteryUpdatedEvent extends PlatformEventEnvelope<GrammarMasteryUpdated> {
+export interface GrammarMasteryUpdatedEvent extends PlatformEventEnvelope<GrammarMasteryUpdated, "grammar.event.v1"> {
   eventName: "grammar.mastery.updated.v1";
   version: 1;
 }
 
-export interface ListeningProgressSavedEvent extends PlatformEventEnvelope<ListeningProgressSaved> {
+export interface ListeningProgressSavedEvent extends PlatformEventEnvelope<ListeningProgressSaved, "listening.event.v1"> {
   eventName: "listening.progress.saved.v1";
   version: 1;
 }
 
-export interface SpeakingShadowingProgressedEvent extends PlatformEventEnvelope<ShadowingProgressed> {
+export interface SpeakingShadowingProgressedEvent extends PlatformEventEnvelope<ShadowingProgressed, "speaking.event.v1"> {
   eventName: "speaking.shadowing.progressed.v1";
   version: 1;
 }
 
-export interface MediaOfflinePackageSyncedEvent extends PlatformEventEnvelope<OfflinePackageSynced> {
+export interface MediaOfflinePackageSyncedEvent extends PlatformEventEnvelope<OfflinePackageSynced, "offline.event.v1"> {
   eventName: "media.offline.package.synced.v1";
   version: 1;
 }
 
-export interface GamificationProfileUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationProfileUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.profile.updated.v1";
   version: 1;
 }
 
-export interface GamificationXpLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationXpLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.xp.ledger_appended.v1";
   version: 1;
 }
 
-export interface GamificationCurrencyLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationCurrencyLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.currency.ledger_appended.v1";
   version: 1;
 }
 
-export interface GamificationStreakDayValidatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationStreakDayValidatedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.streak.day_validated.v1";
   version: 1;
 }
 
-export interface GamificationStreakRescueCompletedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationStreakRescueCompletedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.streak.rescue_completed.v1";
   version: 1;
 }
 
-export interface GamificationQuestProgressedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationQuestProgressedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.quest.progressed.v1";
   version: 1;
 }
 
-export interface GamificationQuestClaimedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationQuestClaimedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.quest.claimed.v1";
   version: 1;
 }
 
-export interface GamificationAchievementUnlockedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationAchievementUnlockedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.achievement.unlocked.v1";
   version: 1;
 }
 
-export interface GamificationChestGrantedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationChestGrantedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.chest.granted.v1";
   version: 1;
 }
 
-export interface GamificationChestOpenedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationChestOpenedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.chest.opened.v1";
   version: 1;
 }
 
-export interface GamificationAvatarLoadoutEquippedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationAvatarLoadoutEquippedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.avatar.loadout_equipped.v1";
   version: 1;
 }
 
-export interface GamificationSeasonPointsUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamificationSeasonPointsUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.season.points_updated.v1";
   version: 1;
 }
 
-export interface GamesSessionCreatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamesSessionCreatedEvent extends PlatformEventEnvelope<B4FactPayload, "games.event.v1"> {
   eventName: "games.session.created.v1";
   version: 1;
 }
 
-export interface GamesSessionEventAcceptedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamesSessionEventAcceptedEvent extends PlatformEventEnvelope<B4FactPayload, "games.event.v1"> {
   eventName: "games.session.event_accepted.v1";
   version: 1;
 }
 
-export interface GamesSessionCompletedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface GamesSessionCompletedEvent extends PlatformEventEnvelope<B4FactPayload, "games.event.v1"> {
   eventName: "games.session.completed.v1";
   version: 1;
 }
 
-export interface SocialRoomJoinedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialRoomJoinedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.room.joined.v1";
   version: 1;
 }
 
-export interface SocialFocusStartedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialFocusStartedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.focus.started.v1";
   version: 1;
 }
 
-export interface SocialFocusCompletedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialFocusCompletedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.focus.completed.v1";
   version: 1;
 }
 
-export interface SocialInteractionSentEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialInteractionSentEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.interaction.sent.v1";
   version: 1;
 }
 
-export interface OfflinePackageAuthorizedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface OfflinePackageAuthorizedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.package.authorized.v1";
   version: 1;
 }
 
-export interface OfflineB4SyncAppliedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface OfflineB4SyncAppliedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.b4.sync_applied.v1";
   version: 1;
 }
 
-export interface SocialRoomLeftEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialRoomLeftEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.room.left.v1";
   version: 1;
 }
 
-export interface SocialFocusUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialFocusUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.focus.updated.v1";
   version: 1;
 }
 
-export interface SocialModerationReportedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialModerationReportedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.moderation.reported.v1";
   version: 1;
 }
 
-export interface SocialModerationBlockedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialModerationBlockedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.moderation.blocked.v1";
   version: 1;
 }
 
-export interface SocialModerationMutedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface SocialModerationMutedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.moderation.muted.v1";
   version: 1;
 }
 
-export interface NotificationsMessageReadEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface NotificationsMessageReadEvent extends PlatformEventEnvelope<B4FactPayload, "notifications.event.v1"> {
   eventName: "notifications.message_read.v1";
   version: 1;
 }
 
-export interface NotificationsPreferencesUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface NotificationsPreferencesUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "notifications.event.v1"> {
   eventName: "notifications.preferences_updated.v1";
   version: 1;
 }
 
-export interface OfflinePackageDownloadStateUpdatedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface OfflinePackageDownloadStateUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.package.download_state_updated.v1";
   version: 1;
 }
 
-export interface OfflineSyncConflictRecordedEvent extends PlatformEventEnvelope<B4FactPayload> {
+export interface OfflineSyncConflictRecordedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.sync.conflict_recorded.v1";
   version: 1;
 }
 
-export interface CommerceOrderCreatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CommerceOrderCreatedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.order.created.v1";
   version: 1;
 }
 
-export interface CommercePaymentRequestedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CommercePaymentRequestedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.payment.requested.v1";
   version: 1;
 }
 
-export interface CommercePaymentCallbackReceivedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CommercePaymentCallbackReceivedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.payment.callback_received.v1";
   version: 1;
 }
 
-export interface CommercePaymentVerifiedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CommercePaymentVerifiedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.payment.verified.v1";
   version: 1;
 }
 
-export interface CommerceRefundCompletedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CommerceRefundCompletedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.refund.completed.v1";
   version: 1;
 }
 
-export interface CommerceHouseholdChangedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CommerceHouseholdChangedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.household.changed.v1";
   version: 1;
 }
 
-export interface CmsContentVersionSavedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CmsContentVersionSavedEvent extends PlatformEventEnvelope<B5FactPayload, "cms.event.v1"> {
   eventName: "cms.content.version_saved.v1";
   version: 1;
 }
 
-export interface CmsImportCompletedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface CmsImportCompletedEvent extends PlatformEventEnvelope<B5FactPayload, "cms.event.v1"> {
   eventName: "cms.import.completed.v1";
   version: 1;
 }
 
-export interface SafetyPrecheckBlockedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface SafetyPrecheckBlockedEvent extends PlatformEventEnvelope<B5FactPayload, "safety.event.v1"> {
   eventName: "safety.precheck.blocked.v1";
   version: 1;
 }
 
-export interface RiskDecisionCreatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface RiskDecisionCreatedEvent extends PlatformEventEnvelope<B5FactPayload, "risk.event.v1"> {
   eventName: "risk.decision.created.v1";
   version: 1;
 }
 
-export interface FinanceReconciliationDiscrepancyEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface FinanceReconciliationDiscrepancyEvent extends PlatformEventEnvelope<B5FactPayload, "finance.event.v1"> {
   eventName: "finance.reconciliation.discrepancy.v1";
   version: 1;
 }
 
-export interface OpsFlagUpdatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface OpsFlagUpdatedEvent extends PlatformEventEnvelope<B5FactPayload, "ops.event.v1"> {
   eventName: "ops.flag.updated.v1";
   version: 1;
 }
 
-export interface SupportTicketCreatedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface SupportTicketCreatedEvent extends PlatformEventEnvelope<B5FactPayload, "support.event.v1"> {
   eventName: "support.ticket.created.v1";
   version: 1;
 }
 
-export interface SupportTicketResolvedEvent extends PlatformEventEnvelope<B5FactPayload> {
+export interface SupportTicketResolvedEvent extends PlatformEventEnvelope<B5FactPayload, "support.event.v1"> {
   eventName: "support.ticket.resolved.v1";
   version: 1;
 }
 
-export interface PlatformBuildRegisteredEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface PlatformBuildRegisteredEvent extends PlatformEventEnvelope<B6FactPayload, "platform.event.v1"> {
   eventName: "platform.build.registered.v1";
   version: 1;
 }
 
-export interface PlatformCompatibilityCheckedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface PlatformCompatibilityCheckedEvent extends PlatformEventEnvelope<B6FactPayload, "platform.event.v1"> {
   eventName: "platform.compatibility.checked.v1";
   version: 1;
 }
 
-export interface PlatformPerformanceDegradedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface PlatformPerformanceDegradedEvent extends PlatformEventEnvelope<B6FactPayload, "platform.event.v1"> {
   eventName: "platform.performance.degraded.v1";
   version: 1;
 }
 
-export interface QualityE2eCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface QualityE2eCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "quality.event.v1"> {
   eventName: "quality.e2e.completed.v1";
   version: 1;
 }
 
-export interface QualitySecurityScanCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface QualitySecurityScanCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "quality.event.v1"> {
   eventName: "quality.security.scan_completed.v1";
   version: 1;
 }
 
-export interface QualityReliabilityCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface QualityReliabilityCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "quality.event.v1"> {
   eventName: "quality.reliability.completed.v1";
   version: 1;
 }
 
-export interface ObservabilityAlertRaisedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface ObservabilityAlertRaisedEvent extends PlatformEventEnvelope<B6FactPayload, "observability.event.v1"> {
   eventName: "observability.alert.raised.v1";
   version: 1;
 }
 
-export interface DataBackupDrillCompletedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface DataBackupDrillCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "data.event.v1"> {
   eventName: "data.backup.drill_completed.v1";
   version: 1;
 }
 
-export interface ReleaseGateEvaluatedEvent extends PlatformEventEnvelope<B6FactPayload> {
+export interface ReleaseGateEvaluatedEvent extends PlatformEventEnvelope<B6FactPayload, "release.event.v1"> {
   eventName: "release.gate.evaluated.v1";
   version: 1;
 }
 
-export interface AuthPrincipalMappedEvent extends PlatformEventEnvelope<AuthPrincipalMapped> {
+export interface AuthPrincipalMappedEvent extends PlatformEventEnvelope<AuthPrincipalMapped, "iam.auth.event.v1"> {
   eventName: "auth.principal.mapped.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface AuthSessionRotatedEvent extends PlatformEventEnvelope<AuthSessionRotated> {
+export interface AuthSessionRotatedEvent extends PlatformEventEnvelope<AuthSessionRotated, "iam.auth.event.v1"> {
   eventName: "auth.session.rotated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface AuthSessionReplayDetectedEvent extends PlatformEventEnvelope<AuthSessionReplayDetected> {
+export interface AuthSessionReplayDetectedEvent extends PlatformEventEnvelope<AuthSessionReplayDetected, "iam.auth.event.v1"> {
   eventName: "auth.session.replay_detected.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface AuthDeviceRevokedEvent extends PlatformEventEnvelope<AuthDeviceRevoked> {
+export interface AuthDeviceRevokedEvent extends PlatformEventEnvelope<AuthDeviceRevoked, "iam.auth.event.v1"> {
   eventName: "auth.device.revoked.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface AuthConsentUpdatedEvent extends PlatformEventEnvelope<AuthConsentUpdated> {
+export interface AuthConsentUpdatedEvent extends PlatformEventEnvelope<AuthConsentUpdated, "iam.auth.event.v1"> {
   eventName: "auth.consent.updated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface AuthAdultGateRejectedEvent extends PlatformEventEnvelope<AuthAdultGateRejected> {
+export interface AuthAdultGateRejectedEvent extends PlatformEventEnvelope<AuthAdultGateRejected, "iam.auth.event.v1"> {
   eventName: "auth.adult_gate.rejected.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface IamPolicyVersionChangedEvent extends PlatformEventEnvelope<IamPolicyVersionChanged> {
+export interface IamPolicyVersionChangedEvent extends PlatformEventEnvelope<IamPolicyVersionChanged, "iam.security.event.v1"> {
   eventName: "iam.policy.version_changed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.security.event.v1";
   dedupeKey: string;
 }
 
-export interface LearnerProfileUpdatedEvent extends PlatformEventEnvelope<B9LearnerProfileUpdated> {
+export interface LearnerProfileUpdatedEvent extends PlatformEventEnvelope<B9LearnerProfileUpdated, "learner.event.v1"> {
   eventName: "learner.profile.updated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "learner.event.v1";
   dedupeKey: string;
 }
 
-export interface LearnerTargetUpdatedEvent extends PlatformEventEnvelope<B9LearnerTargetUpdated> {
+export interface LearnerTargetUpdatedEvent extends PlatformEventEnvelope<B9LearnerTargetUpdated, "learner.event.v1"> {
   eventName: "learner.target.updated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "learner.event.v1";
   dedupeKey: string;
 }
 
-export interface LearnerFirstDayProjectedEvent extends PlatformEventEnvelope<B9LearnerFirstDayProjected> {
+export interface LearnerFirstDayProjectedEvent extends PlatformEventEnvelope<B9LearnerFirstDayProjected, "learner.event.v1"> {
   eventName: "learner.first_day.projected.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "learner.event.v1";
   dedupeKey: string;
 }
 
-export interface ContentVersionSubmittedEvent extends PlatformEventEnvelope<B9ContentVersionSubmitted> {
+export interface ContentVersionSubmittedEvent extends PlatformEventEnvelope<B9ContentVersionSubmitted, "content.event.v1"> {
   eventName: "content.version.submitted.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "content.event.v1";
   dedupeKey: string;
 }
 
-export interface ContentVersionReviewedEvent extends PlatformEventEnvelope<B9ContentVersionReviewed> {
+export interface ContentVersionReviewedEvent extends PlatformEventEnvelope<B9ContentVersionReviewed, "content.event.v1"> {
   eventName: "content.version.reviewed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "content.event.v1";
   dedupeKey: string;
 }
 
-export interface ContentVersionPublishedEvent extends PlatformEventEnvelope<B9ContentVersionPublished> {
+export interface ContentVersionPublishedEvent extends PlatformEventEnvelope<B9ContentVersionPublished, "content.event.v1"> {
   eventName: "content.version.published.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "content.event.v1";
   dedupeKey: string;
 }
 
-export interface ContentVersionUnpublishedEvent extends PlatformEventEnvelope<B9ContentVersionUnpublished> {
+export interface ContentVersionUnpublishedEvent extends PlatformEventEnvelope<B9ContentVersionUnpublished, "content.event.v1"> {
   eventName: "content.version.unpublished.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "content.event.v1";
   dedupeKey: string;
 }
 
-export interface ContentVersionRolledBackEvent extends PlatformEventEnvelope<B9ContentVersionRolledBack> {
+export interface ContentVersionRolledBackEvent extends PlatformEventEnvelope<B9ContentVersionRolledBack, "content.event.v1"> {
   eventName: "content.version.rolled_back.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "content.event.v1";
   dedupeKey: string;
 }
 
-export interface ContentPublicProjectionInvalidatedEvent extends PlatformEventEnvelope<B9PublicProjectionInvalidated> {
+export interface ContentPublicProjectionInvalidatedEvent extends PlatformEventEnvelope<B9PublicProjectionInvalidated, "content.event.v1"> {
   eventName: "content.public_projection.invalidated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "content.event.v1";
   dedupeKey: string;
 }
 
-export interface AssessmentAttemptSubmittedEvent extends PlatformEventEnvelope<B10AssessmentAttemptSubmitted> {
+export interface AssessmentAttemptSubmittedEvent extends PlatformEventEnvelope<B10AssessmentAttemptSubmitted, "assessment.event.v1"> {
   eventName: "assessment.attempt.submitted.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "assessment.event.v1";
   dedupeKey: string;
 }
 
-export interface AssessmentAttemptAssessedEvent extends PlatformEventEnvelope<B10AssessmentAttemptAssessed> {
+export interface AssessmentAttemptAssessedEvent extends PlatformEventEnvelope<B10AssessmentAttemptAssessed, "assessment.event.v1"> {
   eventName: "assessment.attempt.assessed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "assessment.event.v1";
   dedupeKey: string;
 }
 
-export interface LearningMasteryProjectedEvent extends PlatformEventEnvelope<B10LearningMasteryProjected> {
+export interface LearningMasteryProjectedEvent extends PlatformEventEnvelope<B10LearningMasteryProjected, "learning.event.v1"> {
   eventName: "learning.mastery.projected.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "learning.event.v1";
   dedupeKey: string;
 }
 
-export interface LearningReviewScheduledEvent extends PlatformEventEnvelope<B10LearningReviewScheduled> {
+export interface LearningReviewScheduledEvent extends PlatformEventEnvelope<B10LearningReviewScheduled, "learning.event.v1"> {
   eventName: "learning.review.scheduled.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "learning.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowAssessmentLearningSagaStartedEvent extends PlatformEventEnvelope<B10SagaStarted> {
+export interface WorkflowAssessmentLearningSagaStartedEvent extends PlatformEventEnvelope<B10SagaStarted, "workflow.event.v1"> {
   eventName: "workflow.assessment_learning.saga_started.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowAssessmentLearningSagaCompensatedEvent extends PlatformEventEnvelope<B10SagaCompensated> {
+export interface WorkflowAssessmentLearningSagaCompensatedEvent extends PlatformEventEnvelope<B10SagaCompensated, "workflow.event.v1"> {
   eventName: "workflow.assessment_learning.saga_compensated.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowEventReplayedEvent extends PlatformEventEnvelope<B10EventReplayed> {
+export interface WorkflowEventReplayedEvent extends PlatformEventEnvelope<B10EventReplayed, "workflow.event.v1"> {
   eventName: "workflow.event.replayed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface MediaStartedEvent extends PlatformEventEnvelope<B11MediaStarted> {
+export interface MediaStartedEvent extends PlatformEventEnvelope<B11MediaStarted, "media.event.v1"> {
   eventName: "media.started.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "media.event.v1";
   dedupeKey: string;
 }
 
-export interface MediaSegmentCompletedEvent extends PlatformEventEnvelope<B11MediaSegmentCompleted> {
+export interface MediaSegmentCompletedEvent extends PlatformEventEnvelope<B11MediaSegmentCompleted, "media.event.v1"> {
   eventName: "media.segment_completed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "media.event.v1";
   dedupeKey: string;
 }
 
-export interface MediaDownloadedEvent extends PlatformEventEnvelope<B11MediaDownloaded> {
+export interface MediaDownloadedEvent extends PlatformEventEnvelope<B11MediaDownloaded, "media.event.v1"> {
   eventName: "media.downloaded.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "media.event.v1";
   dedupeKey: string;
 }
 
-export interface MediaRevokedEvent extends PlatformEventEnvelope<B11MediaRevoked> {
+export interface MediaRevokedEvent extends PlatformEventEnvelope<B11MediaRevoked, "media.event.v1"> {
   eventName: "media.revoked.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "media.event.v1";
   dedupeKey: string;
 }
 
-export interface SyncEnqueuedEvent extends PlatformEventEnvelope<B11SyncEnqueued> {
+export interface SyncEnqueuedEvent extends PlatformEventEnvelope<B11SyncEnqueued, "sync.event.v1"> {
   eventName: "sync.enqueued.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "sync.event.v1";
   dedupeKey: string;
 }
 
-export interface SyncConflictDetectedB11Event extends PlatformEventEnvelope<B11SyncConflictDetected> {
+export interface SyncConflictDetectedB11Event extends PlatformEventEnvelope<B11SyncConflictDetected, "sync.event.v1"> {
   eventName: "sync.conflict_detected.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "sync.event.v1";
   dedupeKey: string;
 }
 
-export interface SyncRecoveredEvent extends PlatformEventEnvelope<B11SyncRecovered> {
+export interface SyncRecoveredEvent extends PlatformEventEnvelope<B11SyncRecovered, "sync.event.v1"> {
   eventName: "sync.recovered.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "sync.event.v1";
   dedupeKey: string;
 }
 
-export interface RecordingSavedEvent extends PlatformEventEnvelope<B11RecordingSaved> {
+export interface RecordingSavedEvent extends PlatformEventEnvelope<B11RecordingSaved, "speaking.event.v1"> {
   eventName: "recording.saved.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "speaking.event.v1";
   dedupeKey: string;
 }
 
-export interface SpeakingPermissionRequestedEvent extends PlatformEventEnvelope<B11SpeakingPermissionRequested> {
+export interface SpeakingPermissionRequestedEvent extends PlatformEventEnvelope<B11SpeakingPermissionRequested, "speaking.event.v1"> {
   eventName: "speaking.permission_requested.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "speaking.event.v1";
   dedupeKey: string;
 }
 
-export interface ShadowingCompletedEvent extends PlatformEventEnvelope<B11ShadowingCompleted> {
+export interface ShadowingCompletedEvent extends PlatformEventEnvelope<B11ShadowingCompleted, "speaking.event.v1"> {
   eventName: "shadowing.completed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "speaking.event.v1";
   dedupeKey: string;
 }
 
-export interface GamificationSessionStartedEvent extends PlatformEventEnvelope<B12GrowthSessionStarted> {
+export interface GamificationSessionStartedEvent extends PlatformEventEnvelope<B12GrowthSessionStarted, "gamification.event.v1"> {
   eventName: "gamification.session_started.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "gamification.event.v1";
   dedupeKey: string;
 }
 
-export interface GamificationXpLedgerPostedEvent extends PlatformEventEnvelope<B12GrowthLedgerPosted> {
+export interface GamificationXpLedgerPostedEvent extends PlatformEventEnvelope<B12GrowthLedgerPosted, "gamification.event.v1"> {
   eventName: "gamification.xp.ledger_posted.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "gamification.event.v1";
   dedupeKey: string;
 }
 
-export interface GamificationRewardGrantedEvent extends PlatformEventEnvelope<B12RewardGranted> {
+export interface GamificationRewardGrantedEvent extends PlatformEventEnvelope<B12RewardGranted, "gamification.event.v1"> {
   eventName: "gamification.reward.granted.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "gamification.event.v1";
   dedupeKey: string;
 }
 
-export interface GamificationAvatarEquippedEvent extends PlatformEventEnvelope<B12AvatarEquipped> {
+export interface GamificationAvatarEquippedEvent extends PlatformEventEnvelope<B12AvatarEquipped, "gamification.event.v1"> {
   eventName: "gamification.avatar.equipped.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "gamification.event.v1";
   dedupeKey: string;
 }
 
-export interface StudyRoomJoinedEvent extends PlatformEventEnvelope<B12StudyRoomJoined> {
+export interface StudyRoomJoinedEvent extends PlatformEventEnvelope<B12StudyRoomJoined, "social.event.v1"> {
   eventName: "study_room.joined.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "social.event.v1";
   dedupeKey: string;
 }
 
-export interface StudyRoomFocusStartedEvent extends PlatformEventEnvelope<B12FocusStarted> {
+export interface StudyRoomFocusStartedEvent extends PlatformEventEnvelope<B12FocusStarted, "social.event.v1"> {
   eventName: "study_room.focus_started.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "social.event.v1";
   dedupeKey: string;
 }
 
-export interface StudyRoomLeftEvent extends PlatformEventEnvelope<B12StudyRoomLeft> {
+export interface StudyRoomLeftEvent extends PlatformEventEnvelope<B12StudyRoomLeft, "social.event.v1"> {
   eventName: "study_room.left.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "social.event.v1";
   dedupeKey: string;
 }
 
-export interface LeaderboardRefreshedEvent extends PlatformEventEnvelope<B12LeaderboardRefreshed> {
+export interface LeaderboardRefreshedEvent extends PlatformEventEnvelope<B12LeaderboardRefreshed, "social.event.v1"> {
   eventName: "leaderboard.refreshed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "social.event.v1";
   dedupeKey: string;
 }
 
-export interface SocialReportCreatedEvent extends PlatformEventEnvelope<B12SocialReportCreated> {
+export interface SocialReportCreatedEvent extends PlatformEventEnvelope<B12SocialReportCreated, "social.event.v1"> {
   eventName: "social.report.created.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "social.event.v1";
   dedupeKey: string;
 }
 
-export interface NotificationRequestedEvent extends PlatformEventEnvelope<B12NotificationRequested> {
+export interface NotificationRequestedEvent extends PlatformEventEnvelope<B12NotificationRequested, "notification.event.v1"> {
   eventName: "notification.requested.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "notification.event.v1";
   dedupeKey: string;
 }
 
-export interface NotificationRetryScheduledEvent extends PlatformEventEnvelope<B12NotificationRetryScheduled> {
+export interface NotificationRetryScheduledEvent extends PlatformEventEnvelope<B12NotificationRetryScheduled, "notification.event.v1"> {
   eventName: "notification.retry_scheduled.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "notification.event.v1";
   dedupeKey: string;
 }
 
-export interface NotificationRecoveryCompletedEvent extends PlatformEventEnvelope<B12NotificationRecoveryCompleted> {
+export interface NotificationRecoveryCompletedEvent extends PlatformEventEnvelope<B12NotificationRecoveryCompleted, "notification.event.v1"> {
   eventName: "notification.recovery.completed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "notification.event.v1";
   dedupeKey: string;
 }
 
-export interface CommerceOrderReconciledEvent extends PlatformEventEnvelope<B13CommerceOrderReconciled> {
+export interface CommerceOrderReconciledEvent extends PlatformEventEnvelope<B13CommerceOrderReconciled, "commerce.event.v1"> {
   eventName: "commerce.order.reconciled.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "commerce.event.v1";
   dedupeKey: string;
 }
 
-export interface AnalyticsMetricProjectedEvent extends PlatformEventEnvelope<B13AnalyticsMetricProjected> {
+export interface AnalyticsMetricProjectedEvent extends PlatformEventEnvelope<B13AnalyticsMetricProjected, "analytics.event.v1"> {
   eventName: "analytics.metric.projected.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "analytics.event.v1";
   dedupeKey: string;
 }
 
-export interface AnalyticsRecomputeRequestedEvent extends PlatformEventEnvelope<B13AnalyticsRecomputeRequested> {
+export interface AnalyticsRecomputeRequestedEvent extends PlatformEventEnvelope<B13AnalyticsRecomputeRequested, "analytics.event.v1"> {
   eventName: "analytics.recompute.requested.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "analytics.event.v1";
   dedupeKey: string;
 }
 
-export interface IamSessionRevokedEvent extends PlatformEventEnvelope<IamSessionRevoked> {
+export interface IamSessionRevokedEvent extends PlatformEventEnvelope<IamSessionRevoked, "iam.auth.event.v1"> {
   eventName: "iam.session.revoked.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowOutboxPublishedEvent extends PlatformEventEnvelope<B26WorkflowOutboxPublished> {
+export interface WorkflowOutboxPublishedEvent extends PlatformEventEnvelope<B26WorkflowOutboxPublished, "workflow.event.v1"> {
   eventName: "workflow.outbox.published.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowEventDeliveryFailedEvent extends PlatformEventEnvelope<B26WorkflowDeliveryFailed> {
+export interface WorkflowEventDeliveryFailedEvent extends PlatformEventEnvelope<B26WorkflowDeliveryFailed, "workflow.event.v1"> {
   eventName: "workflow.event.delivery_failed.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowEventDeadLetteredEvent extends PlatformEventEnvelope<B26WorkflowDeadLettered> {
+export interface WorkflowEventDeadLetteredEvent extends PlatformEventEnvelope<B26WorkflowDeadLettered, "workflow.event.v1"> {
   eventName: "workflow.event.dead_lettered.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowEventReplayRequestedEvent extends PlatformEventEnvelope<B26WorkflowReplayRequested> {
+export interface WorkflowEventReplayRequestedEvent extends PlatformEventEnvelope<B26WorkflowReplayRequested, "workflow.event.v1"> {
   eventName: "workflow.event.replay_requested.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowEventOrderingDeferredEvent extends PlatformEventEnvelope<B26WorkflowOrderingDeferred> {
+export interface WorkflowEventOrderingDeferredEvent extends PlatformEventEnvelope<B26WorkflowOrderingDeferred, "workflow.event.v1"> {
   eventName: "workflow.event.ordering_deferred.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.event.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowSagaCompensationRequestedEvent extends PlatformEventEnvelope<B26WorkflowCompensationRequested> {
+export interface WorkflowSagaCompensationRequestedEvent extends PlatformEventEnvelope<B26WorkflowCompensationRequested, "workflow.saga.v1"> {
   eventName: "workflow.saga.compensation_requested.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.saga.v1";
   dedupeKey: string;
 }
 
-export interface WorkflowSagaManualRecoveryRequestedEvent extends PlatformEventEnvelope<B26WorkflowManualRecoveryRequested> {
+export interface WorkflowSagaManualRecoveryRequestedEvent extends PlatformEventEnvelope<B26WorkflowManualRecoveryRequested, "workflow.saga.v1"> {
   eventName: "workflow.saga.manual_recovery_requested.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "workflow.saga.v1";
   dedupeKey: string;
 }
 
-export interface AuthAccountRegisteredEvent extends PlatformEventEnvelope<AuthAccountRegistered> {
+export interface AuthAccountRegisteredEvent extends PlatformEventEnvelope<AuthAccountRegistered, "iam.auth.event.v1"> {
   eventName: "auth.account.registered.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
-export interface AuthLoginSucceededEvent extends PlatformEventEnvelope<AuthLoginSucceeded> {
+export interface AuthLoginSucceededEvent extends PlatformEventEnvelope<AuthLoginSucceeded, "iam.auth.event.v1"> {
   eventName: "auth.login.succeeded.v1";
   version: 1;
-  schemaVersion: string;
+  schemaVersion: "iam.auth.event.v1";
   dedupeKey: string;
 }
 
