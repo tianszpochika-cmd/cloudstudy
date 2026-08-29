@@ -8,7 +8,7 @@
 - `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享产物在 `e4618b3` 完成 current-source revalidation。
 - `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`，独立评审 `m1_003_final_review`（Luna Max）；共享产物在 `e4618b3` 完成 current-source revalidation。
 - `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，最终实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`，独立终验 `m1_003_final_review`（Luna Max，仅 D2）。
-- 下一关键任务：`P1R-M1-005`（每服务数据 owner、schema/Flyway/Redis namespace/tenant guard/retention/迁移责任 D2）。
+- `P1R-M1-005`：`IN_PROGRESS`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，正在冻结每服务 data owner、schema/Flyway、Redis namespace、tenant guard、retention 和迁移/回滚责任 D2。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
 ## M1-003 执行轨道
@@ -61,3 +61,9 @@
 - 安全合同：精确 Origin、credentialed CORS 无 wildcard、Cookie CSRF/Origin/Referer、native secure storage、RS256/JWKS、具名 rate class、429 `Retry-After`、统一错误、关联 ID、脱敏审计和直连阻断均有正反例。
 - 验证：Gateway 15/15、P1R 72/72、B7 28/28、B8 29/29、G1 6/6；merge/generate/validate/typecheck PASS；相对 `e5110f2` 的 OpenAPI/events/schema 兼容均 0 breaking。
 - 未越界：真实 WebFlux 安全、public-path、Redis 限流、持久审计、网络隔离和跨进程 Evidence 仍归 `P1R-M2-001`；完整 G 保持既有 39/41，M0-006 仍 `BLOCKED`。
+
+## M1-005 启动边界
+
+1. 数据政策源：新增当前 P1R 机器可读 owner 矩阵，覆盖 Gateway 无业务 schema 边界、IAM、audit/workflow 平台 owner 和 11 个 Phase 1 领域 owner；明确 schema/凭据/Flyway/Redis/tenant/retention/删除与回滚责任。
+2. 静态失败关闭：验证 owner/schema/namespace 唯一、Gateway/core-api 禁止新写、迁移命名与责任、跨服务写/join/shared ORM 禁止，以及旧 Redis/B25 候选映射不能被误判为当前运行事实。
+3. 设计一致性：只对齐数据所有权、迁移和保留边界；空库、存量库、owner grants、Redis 重建、tenant 负例和回滚仍须由 `P1R-M2-004` 提供真实运行 Evidence。

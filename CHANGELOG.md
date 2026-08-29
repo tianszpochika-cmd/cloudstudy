@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-005-START-20260830] 启动 Phase 1 数据所有权与迁移政策 D2 任务：以 `dev@bb0ae3b` 为不可变来源基线，冻结 Gateway 无业务 schema 边界、IAM/audit/workflow 与 11 个领域 owner 的独立 schema/凭据/Flyway/Redis namespace、服务端 tenant guard、retention/删除和迁移/回滚责任，并以静态失败关闭检查禁止跨服务写/join/shared ORM。B25 合成清单、历史 `core-api.*` Redis owner 和已有 migration 目录只作为候选输入；真实空库/存量库、owner grants、Redis 重建、tenant 负例和回滚证据仍归 M2-004。
+
 - [P1R-M1-004-GATEWAY-CONTRACT-20260830] 接受 Phase 1 Gateway 边界与浏览器安全 D2 契约：52 条有序 route rule 唯一覆盖 326/326 public operations，51/51 internal operations 外部失败关闭；精确 Origin、credentialed CORS、Cookie CSRF/Origin/Referer、native secure storage、RS256/JWKS、具名限流、429 `Retry-After`、统一错误、requestId/traceId、脱敏审计与 direct-connect deny 均可机器检查。Gateway 变异测试 15/15、P1R 72/72、B7 28/28、B8 29/29、G1 6/6，合并/生成/校验/typecheck 通过且三类兼容 0 breaking；独立 Luna Max 只读终验接受实现源 `e4618b3`。真实 WebFlux 安全、public-path、Redis 限流、持久审计、网络隔离和跨进程 Evidence 仍归 M2-001；完整 G 仍为既有 39/41，M0-006 仍阻塞。
 
 - [P1R-M1-004-START-20260829] 启动 Phase 1 Gateway 边界与浏览器安全 D2 契约任务：以 `dev@e5110f2` 为不可变来源基线，冻结 `/api/v1` route owner、CORS/CSRF/Origin/Referer、Web Cookie 与原生 Bearer 分界、分级限流、RS256/JWKS 预检、requestId/traceId、401/403/429、边界审计和 direct-connect blocking。现有 Java Gateway 仅作为待 M2-001 复用/修正的候选实现，本条不代表运行验收或发布放行。

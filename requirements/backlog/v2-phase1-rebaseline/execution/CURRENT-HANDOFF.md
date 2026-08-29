@@ -12,6 +12,8 @@ M1-003 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2
 
 M1-004 Gateway 边界与浏览器安全 D2 契约已接受：最终实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，canonical manifest 为 `evidence/p1r/m1/P1R-M1-004/manifest.json`，独立终验为 `m1_003_final_review`（Luna Max，仅 D2）。现有 Java Gateway 仍只是 M2-001 的候选实现，不能据此声明真实运行验收。
 
+M1-005 数据所有权与迁移政策 D2 已从 `dev@bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d` 启动，当前为 `IN_PROGRESS`。现有 `config/b25-data.json` 只覆盖 8 个合成 owner，`database/redis/keyspace.registry.json` 仍含历史 `core-api.*` owner；两者只能作为迁移输入，不能成为当前完成证明。
+
 ## 1. 获取检查点
 
 ```powershell
@@ -78,7 +80,7 @@ pnpm --dir apps/mobile test:b12
 ## 5. 推荐接手顺序
 
 1. 确认上述恢复验证与本仓库 Evidence 一致。
-2. 当前关键路径是 `P1R-M1-005`：冻结全量服务 data owner、独立 schema/Flyway、Redis namespace、tenant guard、retention 与迁移/回滚责任；现有 B25 清单和 Redis registry 只作为候选输入。
+2. 当前关键路径是完成 `P1R-M1-005`：冻结全量服务 data owner、独立 schema/Flyway、Redis namespace、tenant guard、retention 与迁移/回滚责任；现有 B25 清单和 Redis registry 只作为候选输入。
 3. 每次修改公共 API、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-005 从远程 `dev` 的最新接受检查点开始，不得回退到旧 B/DEV/G 快照。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

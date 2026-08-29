@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`11 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 96 PLANNED`（共 108 项）。
+- 当前台账计数：`11 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 95 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -13,6 +13,7 @@
 - `P1R-M1-002` 已由独立 Terra Ultra 评审接受；原最终实现源为 `25705c4caab46449cfaa577db08bd13c8ad13fba`，共享产物由 Luna Max 在 `e4618b324e5a93926da0750a8100fc9377ac97ec` 完成 current-source revalidation，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-002/manifest.json`；M1 整体尚未完成。
 - `P1R-M1-003` 已由独立 Luna Max 评审接受；原最终实现源为 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，共享产物在 `e4618b324e5a93926da0750a8100fc9377ac97ec` 完成 current-source revalidation，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-003/manifest.json`；只证明 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2 契约，不冒充 M2 运行实现。
 - `P1R-M1-004` 已由独立 Luna Max 终验接受；Gateway D2 实现源为 `e4618b324e5a93926da0750a8100fc9377ac97ec`，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-004/manifest.json`。真实 WebFlux CORS/CSRF、public-path、Redis 限流、持久审计、网络直连隔离和跨进程证据仍属于 `P1R-M2-001`。
+- `P1R-M1-005` 已从 `dev@bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d` 启动，当前为 `IN_PROGRESS`；本任务只冻结 D2 数据所有权与迁移政策，不把 B25 合成清单、旧 `core-api.*` Redis owner 或已有 migration 目录冒充真实独立 schema/凭据/运行证据。
 
 ## M0 记录索引
 
@@ -37,3 +38,4 @@
 | `P1R-M1-002` | `P1R-M1-002.md` | `ACCEPTED` |
 | `P1R-M1-003` | `P1R-M1-003.md` | `ACCEPTED` |
 | `P1R-M1-004` | `P1R-M1-004.md` | `ACCEPTED` |
+| `P1R-M1-005` | `P1R-M1-005.md` | `IN_PROGRESS` |

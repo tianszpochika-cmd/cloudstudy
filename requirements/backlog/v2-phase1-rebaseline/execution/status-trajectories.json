@@ -1,7 +1,7 @@
 {
   "schemaVersion": "p1r.status-trajectories.v1",
   "historyMode": "m0-integration-reconstruction",
-  "recordedAt": "2026-08-30T00:42:00+08:00",
+  "recordedAt": "2026-08-30T00:50:00+08:00",
   "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
   "records": [
     {
@@ -99,6 +99,14 @@
       "actor": "root-coordinator",
       "reason": "Gateway route ownership, browser credential, rate-limit, JWT precheck, audit and direct-connect D2 contracts passed failure-closed checks and compatibility; independent Luna Max reviewer m1_003_final_review accepted source e4618b324e5a93926da0750a8100fc9377ac97ec without promoting M2-001 runtime gaps.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-004/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-005",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-30T00:50:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "M1-001 and M1-003 dependencies are accepted; data owner, schema/Flyway, Redis namespace, tenant guard, retention and migration responsibility D2 work started from immutable accepted checkpoint bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-005/manifest.json"
     }
   ]
 }
