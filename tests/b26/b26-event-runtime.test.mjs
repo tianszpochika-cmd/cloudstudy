@@ -59,6 +59,52 @@ test('B26 topics use fixed local port, aggregate partitioning, explicit ACL and 
   assert.equal(manifest.broker.aclWildcardAllowed, false)
 })
 
+test('B26 freezes the exact topic, owner, consumer-group, ACL and event-routing bindings', () => {
+  const cases = [
+    (candidate) => {
+      const extra = clone(candidate.topics[0])
+      extra.name = 'platform.extra.v1'
+      extra.purpose = 'otherwise valid but unbound integration topic'
+      extra.consumerGroups = [{
+        name: 'cg.workflow-from-extra.v1',
+        service: 'workflow-service',
+        principal: 'cg.workflow-from-extra.v1',
+        replayEnabled: true,
+      }]
+      extra.acl = [
+        { principal: extra.producerPrincipal, operation: 'WRITE', effect: 'ALLOW' },
+        { principal: 'cg.workflow-from-extra.v1', operation: 'READ', effect: 'ALLOW' },
+      ]
+      candidate.topics.push(extra)
+    },
+    (candidate) => {
+      const workflow = candidate.topics.find((topic) => topic.name === 'platform.workflow.v1')
+      workflow.consumerGroups.push({
+        name: 'cg.workflow-unused.v1',
+        service: 'workflow-service',
+        principal: 'cg.workflow-unused.v1',
+        replayEnabled: true,
+      })
+      workflow.acl.push({ principal: 'cg.workflow-unused.v1', operation: 'READ', effect: 'ALLOW' })
+    },
+    (candidate) => {
+      const workflow = candidate.topics.find((topic) => topic.name === 'platform.workflow.v1')
+      workflow.ownerService = 'audit-service'
+      workflow.producerPrincipal = 'svc.audit-service'
+      workflow.acl.find((entry) => entry.operation === 'WRITE').principal = 'svc.audit-service'
+    },
+    (candidate) => { candidate.eventRouting[0].partitionKey = 'eventId' },
+  ]
+
+  for (const mutate of cases) {
+    const candidate = clone(manifest)
+    mutate(candidate)
+    const result = validateB26EventRuntime(candidate, fragment)
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => error.includes('frozen M1-006 policy') || error.includes('routing partition key must be aggregateId')))
+  }
+})
+
 test('B26 reliability policy covers Outbox, at-least-once, idempotency, retry, DLQ, replay, ordering and Saga recovery', () => {
   assert.equal(manifest.outbox.sameTransactionAsAggregate, true)
   assert.equal(manifest.outbox.publishAfterCommit, true)

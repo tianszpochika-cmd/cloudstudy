@@ -129,6 +129,105 @@ const expectedB26PayloadRequired = {
   B26WorkflowCompensationRequested: ['sagaId', 'step', 'aggregateId', 'compensationCode', 'reasonCode', 'state'],
   B26WorkflowManualRecoveryRequested: ['recoveryId', 'sagaId', 'aggregateId', 'failedStep', 'reasonCode', 'approvalState', 'runbookRef'],
 }
+const expectedTopicBindings = [
+  {
+    name: 'platform.assessment.v1',
+    ownerService: 'assessment-service',
+    producerPrincipal: 'svc.assessment-service',
+    consumerGroups: [
+      'cg.learning-from-assessment.v1:learning-service:cg.learning-from-assessment.v1:true',
+      'cg.workflow-from-assessment.v1:workflow-service:cg.workflow-from-assessment.v1:true',
+    ],
+    acl: [
+      'cg.learning-from-assessment.v1:READ:ALLOW',
+      'cg.workflow-from-assessment.v1:READ:ALLOW',
+      'svc.assessment-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.content.v1',
+    ownerService: 'content-service',
+    producerPrincipal: 'svc.content-service',
+    consumerGroups: [
+      'cg.assessment-from-content.v1:assessment-service:cg.assessment-from-content.v1:true',
+      'cg.learner-from-content.v1:learner-service:cg.learner-from-content.v1:true',
+      'cg.learning-from-content.v1:learning-service:cg.learning-from-content.v1:true',
+    ],
+    acl: [
+      'cg.assessment-from-content.v1:READ:ALLOW',
+      'cg.learner-from-content.v1:READ:ALLOW',
+      'cg.learning-from-content.v1:READ:ALLOW',
+      'svc.content-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.events.dlq.v1',
+    ownerService: 'workflow-service',
+    producerPrincipal: 'svc.workflow-service',
+    consumerGroups: [
+      'cg.workflow-manual-recovery-dlq.v1:workflow-service:cg.workflow-manual-recovery-dlq.v1:true',
+    ],
+    acl: [
+      'cg.workflow-manual-recovery-dlq.v1:READ:ALLOW',
+      'svc.workflow-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.learning.v1',
+    ownerService: 'learning-service',
+    producerPrincipal: 'svc.learning-service',
+    consumerGroups: [
+      'cg.assessment-from-learning.v1:assessment-service:cg.assessment-from-learning.v1:true',
+      'cg.notification-from-learning.v1:notification-service:cg.notification-from-learning.v1:true',
+      'cg.workflow-from-learning.v1:workflow-service:cg.workflow-from-learning.v1:true',
+    ],
+    acl: [
+      'cg.assessment-from-learning.v1:READ:ALLOW',
+      'cg.notification-from-learning.v1:READ:ALLOW',
+      'cg.workflow-from-learning.v1:READ:ALLOW',
+      'svc.learning-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.notification.v1',
+    ownerService: 'notification-service',
+    producerPrincipal: 'svc.notification-service',
+    consumerGroups: [
+      'cg.analytics-from-notification.v1:analytics-service:cg.analytics-from-notification.v1:true',
+      'cg.workflow-from-notification.v1:workflow-service:cg.workflow-from-notification.v1:true',
+    ],
+    acl: [
+      'cg.analytics-from-notification.v1:READ:ALLOW',
+      'cg.workflow-from-notification.v1:READ:ALLOW',
+      'svc.notification-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.workflow.v1',
+    ownerService: 'workflow-service',
+    producerPrincipal: 'svc.workflow-service',
+    consumerGroups: [
+      'cg.audit-from-workflow.v1:audit-service:cg.audit-from-workflow.v1:true',
+      'cg.workflow-manual-recovery.v1:workflow-service:cg.workflow-manual-recovery.v1:true',
+      'cg.workflow-reliability.v1:workflow-service:cg.workflow-reliability.v1:true',
+    ],
+    acl: [
+      'cg.audit-from-workflow.v1:READ:ALLOW',
+      'cg.workflow-manual-recovery.v1:READ:ALLOW',
+      'cg.workflow-reliability.v1:READ:ALLOW',
+      'svc.workflow-service:WRITE:ALLOW',
+    ],
+  },
+]
+const expectedEventRoutingBindings = [
+  'workflow.event.dead_lettered.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
+  'workflow.event.delivery_failed.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
+  'workflow.event.ordering_deferred.v1|platform.workflow.v1|aggregateId|cg.workflow-manual-recovery.v1,cg.workflow-reliability.v1',
+  'workflow.event.replay_requested.v1|platform.workflow.v1|aggregateId|cg.workflow-manual-recovery.v1,cg.workflow-reliability.v1',
+  'workflow.outbox.published.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
+  'workflow.saga.compensation_requested.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
+  'workflow.saga.manual_recovery_requested.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
+]
 const runtimeClaimSubject = /(?:\bruntime\b|\bkafka\b|\bbroker\b|\btopic\b|\boutbox\b|\bdelivery\b|\bconsumer\b|\bsaga\b|\breplay\b)/i
 const forbiddenRuntimeResults = /(?:\bcaptured\b|\bverified\b|\baccepted\b|\bpassed\b|\bready\b|\bconnected\b|\bconfirmed\b|\brunning\b|\bhealthy\b|\bsuccessful\b|\bsucceeded\b|\bcompleted?\b|\bavailable\b|\bonline\b|\breachable\b|\bcertified\b|\bdeployed\b|\boperational\b)/i
 const forbiddenRuntimeClaimKeySegments = new Set(['runtime', 'attestation', 'certified', 'deployed', 'operational', 'promotion', 'promoted'])
@@ -289,6 +388,24 @@ function validateTopics(manifest, errors) {
   const topics = manifest.topics ?? []
   requireArray(topics, 'topics', errors, 6)
   unique(topics.map((topic) => topic?.name), 'topic names', errors)
+  const actualTopicBindings = topics
+    .map((topic) => ({
+      name: topic?.name,
+      ownerService: topic?.ownerService,
+      producerPrincipal: topic?.producerPrincipal,
+      consumerGroups: (topic?.consumerGroups ?? [])
+        .map((group) => `${group?.name}:${group?.service}:${group?.principal}:${String(group?.replayEnabled)}`)
+        .sort(),
+      acl: (topic?.acl ?? [])
+        .map((entry) => `${entry?.principal}:${entry?.operation}:${entry?.effect}`)
+        .sort(),
+    }))
+    .sort((left, right) => String(left.name).localeCompare(String(right.name), 'en'))
+  requireCondition(
+    stableJson(actualTopicBindings) === stableJson(expectedTopicBindings),
+    'B26 topic owner, consumer-group and ACL bindings must exactly match the frozen M1-006 policy',
+    errors,
+  )
   const groupNames = []
   for (const topic of topics) {
     requireCondition(/^platform\.[a-z0-9.]+\.v[0-9]+$/.test(topic?.name ?? ''), `${topic?.name} topic name is invalid`, errors)
@@ -405,6 +522,14 @@ function validateFragment(manifest, fragment, catalog, errors) {
     requireExactArray(fragment?.payloadSchemas?.[schemaName]?.required, requiredFields, `${schemaName}.required`, errors)
   }
   const names = []
+  const actualRoutingBindings = (manifest.eventRouting ?? [])
+    .map((item) => `${item?.eventName}|${item?.topic}|${item?.partitionKey}|${[...(item?.consumerGroups ?? [])].sort().join(',')}`)
+    .sort()
+  requireCondition(
+    stableJson(actualRoutingBindings) === stableJson(expectedEventRoutingBindings),
+    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006 policy',
+    errors,
+  )
   const routing = new Map((manifest.eventRouting ?? []).map((item) => [item.eventName, item]))
   const catalogEvents = new Map((catalog?.events ?? []).map((event) => [event.eventName, event]))
   for (const event of fragment.events ?? []) {
@@ -433,6 +558,7 @@ function validateFragment(manifest, fragment, catalog, errors) {
     requireCondition(governance?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', `${event?.eventName} runtime status must remain NOT_RUNTIME_VERIFIED`, errors)
     requireCondition(governance?.transport?.topic === routing.get(event?.eventName)?.topic, `${event?.eventName} Kafka topic routing mismatch`, errors)
     requireCondition(governance?.transport?.partitionKey === 'aggregateId' && governance?.transport?.delivery === 'at-least-once' && governance?.transport?.bindingVersion === '0.5.0', `${event?.eventName} Kafka governance is incomplete`, errors)
+    requireCondition(routing.get(event?.eventName)?.partitionKey === 'aggregateId', `${event?.eventName} B26 routing partition key must be aggregateId`, errors)
     const governedGroups = (governance?.consumers ?? []).map((consumer) => consumer.consumerGroup).sort()
     const routedGroups = [...(routing.get(event?.eventName)?.consumerGroups ?? [])].sort()
     requireCondition(JSON.stringify(governedGroups) === JSON.stringify(routedGroups), `${event?.eventName} consumer governance differs from B26 static routing`, errors)

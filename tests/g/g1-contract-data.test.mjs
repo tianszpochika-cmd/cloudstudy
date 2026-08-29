@@ -21,7 +21,7 @@ test('G1 static contract/data Gate passes with canonical/generated parity and re
   assert.equal(result.operationCount, 377)
   assert.equal(result.schemaCount, 536)
   assert.equal(result.eventCount, 154)
-  assert.equal(result.payloadSchemaCount, 110)
+  assert.equal(result.payloadSchemaCount, manifest.contractSources.asyncapi.expectedPayloadSchemaCount)
   assert.equal(result.dataOwnerCount, 15)
 })
 

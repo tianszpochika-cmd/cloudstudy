@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
 import {
   validateEventGovernance,
   validateEventGovernanceData,
+  listEventFragments,
 } from '../../scripts/audit/p1r-event-governance-check.mjs';
 import { projectCanonicalAsyncApi } from '../../scripts/contracts/event-governance-projection.mjs';
 import { validateAsyncApiProjection, validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
@@ -80,6 +82,37 @@ test('generated TypeScript separates canonical publishers from historical catalo
   assert.match(generated, /@deprecated Use CanonicalPlatformEvent for new v2 event publication/);
   assert.match(generated, /export type CanonicalEventName = keyof typeof canonicalEventGovernance/);
   assert.match(generated, /export type CanonicalPlatformEvent = WorkflowOutboxPublishedEvent/);
+
+  const eventInterfaces = [...generated.matchAll(/export interface [A-Za-z0-9_]+Event extends PlatformEventEnvelope<[^\n]+> \{\n([\s\S]*?)\n\}/g)];
+  assert.equal(eventInterfaces.length, baseline.catalog.events.length, 'every catalog event must have one generated concrete interface');
+  for (const event of baseline.catalog.events) {
+    const eventLine = `eventName: ${JSON.stringify(event.eventName)};`;
+    const matchingInterfaces = eventInterfaces.filter(([, body]) => body.includes(eventLine));
+    assert.equal(matchingInterfaces.length, 1, `${event.eventName} must map to exactly one generated interface`);
+    assert.ok(
+      matchingInterfaces[0][1].includes(`schemaVersion: ${JSON.stringify(event.schema)};`),
+      `${event.eventName} must explicitly require schemaVersion in its generated interface`,
+    );
+  }
+});
+
+test('event fragment discovery recurses and preserves path casing for frozen-inventory validation', () => {
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'p1r-event-fragments-'));
+  try {
+    const directory = path.join(temporaryRoot, 'packages', 'contracts', 'events', 'v1', 'fragments');
+    fs.mkdirSync(path.join(directory, 'nested'), { recursive: true });
+    fs.writeFileSync(path.join(directory, 'B26-RELIABILITY.EVENTS.JSON'), '{"events":[],"payloadSchemas":{}}\n');
+    fs.writeFileSync(path.join(directory, 'nested', 'z-unknown.events.json'), '{"events":[],"payloadSchemas":{}}\n');
+    assert.deepEqual(
+      listEventFragments(temporaryRoot).map((fragment) => fragment.path),
+      [
+        'packages/contracts/events/v1/fragments/B26-RELIABILITY.EVENTS.JSON',
+        'packages/contracts/events/v1/fragments/nested/z-unknown.events.json',
+      ],
+    );
+  } finally {
+    fs.rmSync(temporaryRoot, { recursive: true, force: true });
+  }
 });
 
 test('event governance fails closed on owner, routing, status, shape, projection, and fragment mutations', async (t) => {
@@ -159,6 +192,37 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['incomplete planned closure task mapping', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].d2ClosureTasks.shift(); }, /D2 closure tasks must match the frozen task mapping/],
     ['planned closure order drift', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures.reverse(); }, /canonical gap registry order/],
     ['duplicate event name', (input) => { input.catalog.events.push(structuredClone(input.catalog.events[0])); }, /duplicates event names/],
+    ['synchronized fragment inventory rename', (input) => {
+      const inventory = input.catalog['x-p1r-event-governance'].fragmentInventory[0];
+      const fragment = input.fragments.find((candidate) => candidate.path === inventory.path);
+      const renamedPath = 'packages/contracts/events/v1/fragments/renamed.events.json';
+      inventory.path = renamedPath;
+      fragment.path = renamedPath;
+    }, /frozen M1-006 (policy|source inventory)/],
+    ['synchronized fragment inventory casing rewrite', (input) => {
+      const inventory = input.catalog['x-p1r-event-governance'].fragmentInventory[0];
+      const fragment = input.fragments.find((candidate) => candidate.path === inventory.path);
+      const rewrittenPath = 'packages/contracts/events/v1/fragments/B1-ASSESSMENT-PRIVACY.EVENTS.JSON';
+      inventory.path = rewrittenPath;
+      fragment.path = rewrittenPath;
+    }, /frozen M1-006 (policy|source inventory)/],
+    ['synchronized nested fragment relocation', (input) => {
+      const inventory = input.catalog['x-p1r-event-governance'].fragmentInventory[0];
+      const fragment = input.fragments.find((candidate) => candidate.path === inventory.path);
+      const nestedPath = 'packages/contracts/events/v1/fragments/nested/b1-assessment-privacy.events.json';
+      inventory.path = nestedPath;
+      fragment.path = nestedPath;
+    }, /frozen M1-006 (policy|source inventory)/],
+    ['synchronized cross-fragment event move', (input) => {
+      const source = input.fragments.find((candidate) => candidate.path.endsWith('b26-reliability.events.json'));
+      const target = input.fragments.find((candidate) => candidate.path.endsWith('b1-assessment-privacy.events.json'));
+      const sourceInventory = input.catalog['x-p1r-event-governance'].fragmentInventory.find((candidate) => candidate.path === source.path);
+      const targetInventory = input.catalog['x-p1r-event-governance'].fragmentInventory.find((candidate) => candidate.path === target.path);
+      const moved = source.data.events.pop();
+      target.data.events.push(moved);
+      sourceInventory.eventNames.pop();
+      targetInventory.eventNames.push(moved.eventName);
+    }, /frozen M1-006 (policy|source inventory)/],
     ['missing fragment', (input) => { input.fragments.pop(); }, /must exactly match catalog fragmentInventory/],
     ['unknown fragment', (input) => {
       input.fragments.push({
@@ -173,10 +237,26 @@ test('event governance fails closed on owner, routing, status, shape, projection
       const fragment = input.fragments.find((candidate) => candidate.path.endsWith('b26-reliability.events.json'));
       fragment.data.events.push(structuredClone(fragment.data.events[0]));
     }, /duplicates event names|events must exactly match fragmentInventory/],
+    ['fragment local payload schema removed behind catalog', (input) => {
+      const fragment = input.fragments.find((candidate) => candidate.path.endsWith('b2-vocabulary-srs.events.json'));
+      delete fragment.data.payloadSchemas.VocabularyReviewAccepted;
+    }, /payloadSchema references missing payload schema VocabularyReviewAccepted/],
+    ['fragment local payload schema is unreferenced', (input) => {
+      const fragment = input.fragments.find((candidate) => candidate.path.endsWith('b2-vocabulary-srs.events.json'));
+      fragment.data.payloadSchemas.UnreferencedLocalPayload = { type: 'object', additionalProperties: false, properties: {} };
+    }, /local payload schema UnreferencedLocalPayload must be referenced by an event in the same fragment/],
     ['fragment AsyncAPI source', (input) => { input.fragments[0].data.asyncapi = {}; }, /must not define a second AsyncAPI source/],
     ['fragment root governance', (input) => { input.fragments[0].data['x-p1r-event-governance'] = {}; }, /must not define root platform event governance/],
     ['fragment event status', (input) => { input.fragments[0].data.events[0].status = 'CANONICAL_D2'; }, /must not define catalog-owned status/],
     ['B26 runtime promotion', (input) => { input.b26Runtime.runtimeStatus = 'PASS'; }, /must remain static-only, pending and NO-GO/],
+    ['historical payload reference has extra metadata', (input) => { historical(input).payloadSchema.source = 'fragment'; }, /payloadSchema must be exactly/],
+    ['historical payload reference is non-local', (input) => { historical(input).payloadSchema.$ref = 'https://example.test/schema.json'; }, /payloadSchema must reference one local/],
+    ['historical payload runtime-like field', (input) => {
+      input.catalog.payloadSchemas.LearningSrsBatchCreated.properties.connectionConfirmed = { type: 'boolean' };
+    }, /forbidden runtime-like payload field/],
+    ['unreferenced catalog payload schema', (input) => {
+      input.catalog.payloadSchemas.UnreferencedCatalogPayload = { type: 'object', additionalProperties: false, properties: {} };
+    }, /must be referenced by at least one catalog event/],
     ['missing receive operation', (input) => {
       const entry = Object.entries(input.catalog.asyncapi.operations).find(([, operation]) => operation.action === 'receive');
       delete input.catalog.asyncapi.operations[entry[0]];
@@ -206,6 +286,24 @@ test('contract validator rejects sensitive event payload fields and malformed re
   assert.throws(() => validateAsyncApiProjection(missingReceive), /keys must be exactly|consumer group mismatch/);
 });
 
+test('contract validator fails closed on exact payload references, runtime-like fields, and catalog orphans', () => {
+  const cases = [
+    [(catalog) => { historical({ catalog }).payloadSchema.annotation = 'not allowed'; }, /payloadSchema must be exactly/],
+    [(catalog) => { historical({ catalog }).payloadSchema.$ref = '#/payloadSchemas/DoesNotExist'; }, /references missing payload schema DoesNotExist/],
+    [(catalog) => {
+      catalog.payloadSchemas.LearningSrsBatchCreated.properties.executionSucceeded = { type: 'boolean' };
+    }, /forbidden runtime-like payload field/],
+    [(catalog) => {
+      catalog.payloadSchemas.UnreferencedCatalogPayload = { type: 'object', additionalProperties: false, properties: {} };
+    }, /must be referenced by at least one catalog event/],
+  ];
+  for (const [mutate, expected] of cases) {
+    const candidate = structuredClone(baseline.catalog);
+    mutate(candidate);
+    assert.throws(() => validateEventCatalog(candidate), expected);
+  }
+});
+
 test('contract validator freezes the envelope, platform, compatibility, deny table, and static-only claims', () => {
   const cases = [
     [(catalog) => { catalog.envelope.properties.eventId.pattern = '^.*$'; }, /event envelope must exactly match/],
@@ -218,7 +316,7 @@ test('contract validator freezes the envelope, platform, compatibility, deny tab
     [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.description = 'Kafka broker reachable'; }, /not an allowed M1-006 payload schema keyword|runtime success claim/],
     [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.connectionConfirmed = true; }, /not an allowed M1-006 payload schema keyword/],
     [(catalog) => { catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] }; }, /frozen B26 canonical payload digest/],
-    [(catalog) => { catalog.payloadSchemas.LearningSrsBatchCreated.properties.brokerUp = { type: 'boolean' }; }, /forbidden runtime proof field/],
+    [(catalog) => { catalog.payloadSchemas.LearningSrsBatchCreated.properties.brokerUp = { type: 'boolean' }; }, /forbidden runtime-like payload field/],
     [(catalog) => { catalog.payloadSchemas.LearningSrsBatchCreated.properties.deliveryState = { type: 'string', enum: ['BROKER_UP'] }; }, /cannot encode Kafka or broker runtime facts/],
     [(catalog) => { catalog.description = 'Kafka runtime verified and accepted'; }, /event catalog description must exactly match|runtime success claim/],
     [(catalog) => { historical({ catalog }).compatibility.consumerRule = 'runtime_verified'; }, /runtime success claim/],

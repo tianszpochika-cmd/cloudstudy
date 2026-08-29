@@ -68,6 +68,29 @@ export const EXPECTED_EVENT_COMPATIBILITY_POLICY = {
   replay: '事件不可变；重放不得重复发放奖励、权益或通知。',
 };
 
+const fragmentInventory = (path, eventNames) => ({ path, eventNames: eventNames.split(' ') });
+
+// This is deliberately a source-side inventory, rather than a rule inferred
+// from catalog metadata.  It freezes both the fourteen accepted fragment paths
+// and the ordered event contribution of each path, so a coordinated catalog
+// edit cannot hide a rename, nested file, or cross-fragment move.
+export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
+  fragmentInventory('packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json', 'assessment.item.submitted.v1 auth.device.kicked.v1 privacy.export.requested.v1 privacy.export.completed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b10-learning-assessment.events.json', 'assessment.attempt.submitted.v1 assessment.attempt.assessed.v1 learning.mastery.projected.v1 learning.review.scheduled.v1 workflow.assessment_learning.saga_started.v1 workflow.assessment_learning.saga_compensated.v1 workflow.event.replayed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json', 'media.started.v1 media.segment_completed.v1 media.downloaded.v1 media.revoked.v1 notification.delivered.v1 sync.enqueued.v1 sync.conflict_detected.v1 sync.recovered.v1 recording.saved.v1 speaking.permission_requested.v1 shadowing.completed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json', 'gamification.session_started.v1 gamification.xp.ledger_posted.v1 gamification.reward.granted.v1 gamification.avatar.equipped.v1 study_room.joined.v1 study_room.focus_started.v1 study_room.left.v1 leaderboard.refreshed.v1 social.report.created.v1 notification.requested.v1 notification.retry_scheduled.v1 notification.recovery.completed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json', 'commerce.order.created.v1 commerce.payment.callback_received.v1 commerce.entitlement.activated.v1 commerce.refund.completed.v1 commerce.order.reconciled.v1 support.ticket.created.v1 analytics.metric.projected.v1 analytics.recompute.requested.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b2-assessment-mastery.events.json', 'assessment.stream_built.v1 assessment.answer_submitted.v1 mastery.verification_state_changed.v1 exam.session_state_changed.v1 exam.anti_cheat_recorded.v1 report.generated.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b2-vocabulary-srs.events.json', 'vocabulary.review.accepted.v1 vocabulary.review.filtered.v1 vocabulary.expression.created.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b26-reliability.events.json', 'workflow.outbox.published.v1 workflow.event.delivery_failed.v1 workflow.event.dead_lettered.v1 workflow.event.replay_requested.v1 workflow.event.ordering_deferred.v1 workflow.saga.compensation_requested.v1 workflow.saga.manual_recovery_requested.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b3-multimodal.events.json', 'grammar.practice.completed.v1 writing.evaluation.completed.v1 listening.dictation.submitted.v1 reading.progress.updated.v1 speaking.self_rating.submitted.v1 offline.sync.applied.v1 grammar.mastery.updated.v1 listening.progress.saved.v1 speaking.shadowing.progressed.v1 media.offline.package.synced.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b4-gamification-social.events.json', 'gamification.profile.updated.v1 gamification.xp.ledger_appended.v1 gamification.currency.ledger_appended.v1 gamification.streak.day_validated.v1 gamification.streak.rescue_completed.v1 gamification.quest.progressed.v1 gamification.quest.claimed.v1 gamification.achievement.unlocked.v1 gamification.chest.granted.v1 gamification.chest.opened.v1 gamification.avatar.loadout_equipped.v1 gamification.season.points_updated.v1 games.session.created.v1 games.session.event_accepted.v1 games.session.completed.v1 social.room.joined.v1 social.focus.started.v1 social.focus.completed.v1 social.interaction.sent.v1 social.room.left.v1 social.focus.updated.v1 social.moderation.reported.v1 social.moderation.blocked.v1 social.moderation.muted.v1 notifications.message_read.v1 notifications.preferences_updated.v1 offline.package.download_state_updated.v1 offline.sync.conflict_recorded.v1 offline.package.authorized.v1 offline.b4.sync_applied.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b5-commerce-admin.events.json', 'commerce.order.created.v1 commerce.payment.requested.v1 commerce.payment.callback_received.v1 commerce.payment.verified.v1 commerce.refund.completed.v1 commerce.household.changed.v1 cms.content.version_saved.v1 cms.import.completed.v1 safety.precheck.blocked.v1 risk.decision.created.v1 finance.reconciliation.discrepancy.v1 ops.flag.updated.v1 support.ticket.created.v1 support.ticket.resolved.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b6-platform-quality.events.json', 'platform.build.registered.v1 platform.compatibility.checked.v1 platform.performance.degraded.v1 quality.e2e.completed.v1 quality.security.scan_completed.v1 quality.reliability.completed.v1 observability.alert.raised.v1 data.backup.drill_completed.v1 release.gate.evaluated.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b8-auth-iam.events.json', 'auth.account.registered.v1 auth.login.succeeded.v1 auth.principal.mapped.v1 auth.session.rotated.v1 auth.session.replay_detected.v1 auth.device.revoked.v1 iam.session.revoked.v1 auth.consent.updated.v1 auth.adult_gate.rejected.v1 iam.policy.version_changed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b9-learner-content.events.json', 'learner.profile.updated.v1 learner.target.updated.v1 learner.first_day.projected.v1 content.version.submitted.v1 content.version.reviewed.v1 content.version.published.v1 content.version.unpublished.v1 content.version.rolled_back.v1 content.public_projection.invalidated.v1'),
+]);
+
 export const EXPECTED_FORBIDDEN_PAYLOAD_FIELD_PATTERNS = [
   '^(access|refresh)?token$',
   '^authorization$',
@@ -191,6 +214,42 @@ function isRuntimeClaimKey(key) {
   return segments.some((segment) => forbiddenRuntimeClaimKeySegments.has(segment));
 }
 
+export function isRuntimeLikeEventPayloadField(propertyName) {
+  const segments = payloadFieldSegments(propertyName);
+  const runtimeSubjects = new Set(['broker', 'channel', 'connection', 'delivery', 'execution']);
+  const runtimeProofs = new Set([
+    'alive', 'available', 'condition', 'confirmed', 'reachable', 'ready',
+    'state', 'status', 'succeeded', 'successful', 'up',
+  ]);
+  return segments.some((segment) => runtimeSubjects.has(segment))
+    && segments.some((segment) => runtimeProofs.has(segment));
+}
+
+const eventPayloadReferencePattern = /^#\/payloadSchemas\/([A-Za-z][A-Za-z0-9_]*)$/;
+
+export function eventPayloadSchemaName(payloadSchema) {
+  if (!isRecord(payloadSchema) || Object.keys(payloadSchema).length !== 1 || !Object.hasOwn(payloadSchema, '$ref')) return undefined;
+  const match = eventPayloadReferencePattern.exec(payloadSchema.$ref);
+  return match?.[1];
+}
+
+export function validateExactEventPayloadReference(payloadSchema, payloadSchemas, label) {
+  const errors = [];
+  if (!isRecord(payloadSchema) || Object.keys(payloadSchema).length !== 1 || !Object.hasOwn(payloadSchema, '$ref')) {
+    errors.push(`${label} must be exactly { $ref: '#/payloadSchemas/<Name>' }`);
+    return errors;
+  }
+  const payloadName = eventPayloadSchemaName(payloadSchema);
+  if (!payloadName) {
+    errors.push(`${label} must reference one local #/payloadSchemas/<Name> definition`);
+    return errors;
+  }
+  if (!isRecord(payloadSchemas) || !Object.hasOwn(payloadSchemas, payloadName)) {
+    errors.push(`${label} references missing payload schema ${payloadName}`);
+  }
+  return errors;
+}
+
 function scanUnknownRuntimeClaimKeys(value, location, errors) {
   if (Array.isArray(value)) {
     value.forEach((item, index) => scanUnknownRuntimeClaimKeys(item, `${location}[${index}]`, errors));
@@ -270,8 +329,8 @@ function validatePayloadSchemaNode(schema, location, errors) {
         if (isForbiddenEventPayloadField(propertyName)) {
           errors.push(`${location}.properties.${propertyName} is a forbidden sensitive payload field`);
         }
-        if (forbiddenInfrastructureSubject.test(normalized) || isRuntimeClaimKey(propertyName)) {
-          errors.push(`${location}.properties.${propertyName} is a forbidden runtime proof field`);
+        if (forbiddenInfrastructureSubject.test(normalized) || isRuntimeClaimKey(propertyName) || isRuntimeLikeEventPayloadField(propertyName)) {
+          errors.push(`${location}.properties.${propertyName} is a forbidden runtime-like payload field`);
         }
         validatePayloadSchemaNode(propertySchema, `${location}.properties.${propertyName}`, errors);
       }
@@ -324,7 +383,24 @@ export function validateFrozenEventCatalogPolicy(catalog) {
   exact(errors, catalog.envelope, EXPECTED_EVENT_ENVELOPE, 'event envelope');
   exact(errors, catalog.compatibilityPolicy, EXPECTED_EVENT_COMPATIBILITY_POLICY, 'event compatibilityPolicy');
   exact(errors, catalog.forbiddenPayloadFieldPatterns, EXPECTED_FORBIDDEN_PAYLOAD_FIELD_PATTERNS, 'event forbiddenPayloadFieldPatterns');
+  exact(errors, catalog['x-p1r-event-governance']?.fragmentInventory, EXPECTED_EVENT_FRAGMENT_INVENTORY, 'event fragmentInventory');
   errors.push(...validateEventPayloadSchemas(catalog.payloadSchemas));
+  const referencedPayloadSchemas = new Set();
+  if (Array.isArray(catalog.events)) {
+    for (const event of catalog.events) {
+      const label = `${event?.eventName ?? 'event'} payloadSchema`;
+      const referenceErrors = validateExactEventPayloadReference(event?.payloadSchema, catalog.payloadSchemas, label);
+      errors.push(...referenceErrors);
+      if (referenceErrors.length === 0) referencedPayloadSchemas.add(eventPayloadSchemaName(event.payloadSchema));
+    }
+  }
+  if (isRecord(catalog.payloadSchemas)) {
+    for (const schemaName of Object.keys(catalog.payloadSchemas)) {
+      if (!referencedPayloadSchemas.has(schemaName)) {
+        errors.push(`event payload schema ${schemaName} must be referenced by at least one catalog event`);
+      }
+    }
+  }
   errors.push(...validateCanonicalEventPayloadMappings(catalog.events, 'canonical M1-006 events'));
   scanUnknownRuntimeClaimKeys(catalog, 'event catalog', errors);
   scanRuntimeSuccessClaims(catalog, 'event catalog', errors);

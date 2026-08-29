@@ -159,6 +159,21 @@ function listJsonFiles(directory) {
     .sort();
 }
 
+function listEventJsonFiles(directory) {
+  if (!fs.existsSync(directory)) return [];
+  const files = [];
+  const visit = (currentDirectory) => {
+    for (const entry of fs.readdirSync(currentDirectory, { withFileTypes: true })
+      .sort((left, right) => left.name.localeCompare(right.name))) {
+      const filePath = path.join(currentDirectory, entry.name);
+      if (entry.isDirectory()) visit(filePath);
+      else if (entry.isFile() && path.extname(entry.name).toLowerCase() === '.json') files.push(filePath);
+    }
+  };
+  visit(directory);
+  return files.sort();
+}
+
 function mergeNamedMap(target, source, label, { allowOverride = false } = {}) {
   for (const [name, value] of Object.entries(source ?? {})) {
     if (target[name] !== undefined && stableJson(target[name]) !== stableJson(value) && !allowOverride) {
@@ -213,7 +228,7 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canon
 }
 
 export function selectEventFragmentFiles(files) {
-  return files.filter((filePath) => path.basename(filePath).endsWith('.events.json'));
+  return files.filter((filePath) => path.basename(filePath).toLowerCase().endsWith('.events.json'));
 }
 
 export function mergeEvents(base, fragment, filePath) {
@@ -249,6 +264,32 @@ export function mergeEvents(base, fragment, filePath) {
     }
   }
   mergeNamedMap(base.payloadSchemas, fragment.payloadSchemas, 'event payload schema', { allowOverride: isOverrideFragment });
+}
+
+function eventPayloadSchemaName(event, label) {
+  const payloadSchema = event?.payloadSchema;
+  if (!payloadSchema || typeof payloadSchema !== 'object' || Array.isArray(payloadSchema)
+    || Object.keys(payloadSchema).length !== 1 || typeof payloadSchema.$ref !== 'string') {
+    throw new Error(`${label} payloadSchema must be exactly { $ref: '#/payloadSchemas/<Name>' } before merge pruning`);
+  }
+  const match = /^#\/payloadSchemas\/([A-Za-z][A-Za-z0-9_]*)$/.exec(payloadSchema.$ref);
+  if (!match) throw new Error(`${label} payloadSchema must reference a local #/payloadSchemas/<Name> definition before merge pruning`);
+  return match[1];
+}
+
+function pruneUnreferencedEventPayloadSchemas(catalog) {
+  const payloadSchemas = catalog.payloadSchemas ?? {};
+  const referenced = new Set();
+  for (const event of catalog.events ?? []) {
+    const schemaName = eventPayloadSchemaName(event, event?.eventName ?? 'event');
+    if (!Object.hasOwn(payloadSchemas, schemaName)) {
+      throw new Error(`${event?.eventName ?? 'event'} references missing payload schema ${schemaName} before merge pruning`);
+    }
+    referenced.add(schemaName);
+  }
+  for (const schemaName of Object.keys(payloadSchemas)) {
+    if (!referenced.has(schemaName)) delete payloadSchemas[schemaName];
+  }
 }
 
 export function findCanonicalMergeDrift({
@@ -295,7 +336,7 @@ export function merge({ write = false } = {}) {
   const openApiFiles = [...listJsonFiles(openApiSharedFragmentDir), ...listJsonFiles(openApiFragmentDir), ...listJsonFiles(openApiB2FragmentDir), ...listJsonFiles(openApiB3FragmentDir), ...listJsonFiles(openApiB8FragmentDir), ...listJsonFiles(openApiB9FragmentDir), ...listJsonFiles(openApiB10FragmentDir), ...listJsonFiles(openApiB11FragmentDir), ...listJsonFiles(openApiB12FragmentDir), ...listJsonFiles(openApiB13FragmentDir), ...listJsonFiles(openApiB25FragmentDir)]
     .filter((filePath, index, files) => files.indexOf(filePath) === index)
     .filter((filePath) => readJson(filePath)['x-contract-status'] !== 'historical-compatibility');
-  const eventFiles = selectEventFragmentFiles(listJsonFiles(eventFragmentDir));
+  const eventFiles = selectEventFragmentFiles(listEventJsonFiles(eventFragmentDir));
 
   for (const filePath of openApiFiles) mergeOpenApi(openApi, readJson(filePath), path.relative(repoRoot, filePath), canonicalB8MetadataWrites, canonicalGatewayMetadataWrites);
   const missingCanonicalB8Metadata = requiredCanonicalB8Metadata.filter((metadataKey) => !canonicalB8MetadataWrites.has(metadataKey));
@@ -307,6 +348,7 @@ export function merge({ write = false } = {}) {
     throw new Error(`${canonicalGatewayFragment} must define ${missingCanonicalGatewayMetadata.join(', ')} during every canonical merge`);
   }
   for (const filePath of eventFiles) mergeEvents(catalog, readJson(filePath), path.relative(repoRoot, filePath));
+  pruneUnreferencedEventPayloadSchemas(catalog);
   const eventGovernanceInputs = {
     catalog,
     ownerPolicy: readJson(dataOwnershipPath),

@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { projectCanonicalAsyncApi } from '../contracts/event-governance-projection.mjs';
 import {
   EXPECTED_EVENT_CATALOG_KEYS,
+  EXPECTED_EVENT_FRAGMENT_INVENTORY,
+  eventPayloadSchemaName,
+  validateEventPayloadSchemas,
+  validateExactEventPayloadReference,
   validateFrozenEventCatalogPolicy,
 } from '../contracts/event-catalog-policy.mjs';
 
@@ -116,14 +120,26 @@ function resolveLocalReference(document, reference) {
   );
 }
 
-function listEventFragments(root) {
+export function listEventFragments(root) {
   const directory = path.join(root, 'packages', 'contracts', 'events', 'v1', 'fragments');
-  return fs.readdirSync(directory, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.events.json'))
-    .sort((left, right) => left.name.localeCompare(right.name))
-    .map((entry) => ({
-      path: `packages/contracts/events/v1/fragments/${entry.name}`,
-      data: JSON.parse(fs.readFileSync(path.join(directory, entry.name), 'utf8')),
+  const files = [];
+  const visit = (currentDirectory) => {
+    for (const entry of fs.readdirSync(currentDirectory, { withFileTypes: true })
+      .sort((left, right) => left.name.localeCompare(right.name))) {
+      const filePath = path.join(currentDirectory, entry.name);
+      if (entry.isDirectory()) {
+        visit(filePath);
+      } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.events.json')) {
+        files.push(filePath);
+      }
+    }
+  };
+  visit(directory);
+  return files
+    .sort((left, right) => left.localeCompare(right))
+    .map((filePath) => ({
+      path: path.relative(root, filePath).replaceAll('\\', '/'),
+      data: JSON.parse(fs.readFileSync(filePath, 'utf8')),
     }));
 }
 
@@ -149,6 +165,7 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, governance.traceability?.sourceRefs?.includes('ARCH-EVT-001'), 'event governance must trace to ARCH-EVT-001');
   add(errors, governance.traceability?.sourceRefs?.includes('INT-P1-017'), 'event governance must trace to INT-P1-017');
 
+  add(errors, stableJson(governance.fragmentInventory) === stableJson(EXPECTED_EVENT_FRAGMENT_INVENTORY), 'fragmentInventory must exactly match the frozen M1-006 source inventory');
   add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 14, 'fragmentInventory must contain the exact 14 governed fragment records');
   const inventoryPaths = [];
   for (const [index, fragment] of (governance.fragmentInventory ?? []).entries()) {
@@ -340,10 +357,22 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
     add(errors, fragment.data?.['x-p1r-event-governance'] === undefined, `${fragment.path} must not define root platform event governance`);
     add(errors, fragment.data?.['x-p1r-governance'] === undefined, `${fragment.path} must not define root event governance`);
     add(errors, fragment.data?.['x-kafka'] === undefined, `${fragment.path} must not define root Kafka governance`);
+    const payloadSchemas = fragment.data?.payloadSchemas;
+    errors.push(...validateEventPayloadSchemas(payloadSchemas, `${fragment.path} payloadSchemas`));
+    const locallyReferencedPayloadSchemas = new Set();
     for (const event of fragment.data?.events ?? []) {
-      add(errors, event.status === undefined, `${fragment.path}:${event.eventName} must not define catalog-owned status`);
-      add(errors, event['x-p1r-governance'] === undefined, `${fragment.path}:${event.eventName} must not define catalog-owned governance`);
-      add(errors, event['x-kafka'] === undefined, `${fragment.path}:${event.eventName} must not define duplicate Kafka governance`);
+      const eventLabel = `${fragment.path}:${event?.eventName ?? '(missing eventName)'}`;
+      add(errors, event?.status === undefined, `${eventLabel} must not define catalog-owned status`);
+      add(errors, event?.['x-p1r-governance'] === undefined, `${eventLabel} must not define catalog-owned governance`);
+      add(errors, event?.['x-kafka'] === undefined, `${eventLabel} must not define duplicate Kafka governance`);
+      const referenceErrors = validateExactEventPayloadReference(event?.payloadSchema, payloadSchemas, `${eventLabel} payloadSchema`);
+      errors.push(...referenceErrors);
+      if (referenceErrors.length === 0) locallyReferencedPayloadSchemas.add(eventPayloadSchemaName(event.payloadSchema));
+    }
+    if (isRecord(payloadSchemas)) {
+      for (const schemaName of Object.keys(payloadSchemas)) {
+        add(errors, locallyReferencedPayloadSchemas.has(schemaName), `${fragment.path} local payload schema ${schemaName} must be referenced by an event in the same fragment`);
+      }
     }
   }
 

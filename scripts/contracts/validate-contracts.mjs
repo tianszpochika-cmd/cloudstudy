@@ -14,7 +14,9 @@ import {
 import { validateEventGovernance } from '../audit/p1r-event-governance-check.mjs';
 import {
   FORBIDDEN_EVENT_PAYLOAD_FIELD_PATTERNS,
+  eventPayloadSchemaName,
   isForbiddenEventPayloadField,
+  validateExactEventPayloadReference,
   validateFrozenEventCatalogPolicy,
 } from './event-catalog-policy.mjs';
 
@@ -298,6 +300,7 @@ export function validateEventCatalog(catalog) {
   validateEventPlatformMetadata(catalog);
 
   const names = new Set();
+  const referencedPayloadSchemas = new Set();
   for (const event of catalog.events) {
     assert(isRecord(event), 'event entry must be an object');
     assert(typeof event.eventName === 'string' && /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\.v[0-9]+$/.test(event.eventName), `invalid eventName: ${event.eventName}`);
@@ -307,7 +310,9 @@ export function validateEventCatalog(catalog) {
     assert(Number(event.version) === Number(versionMatch[1]), `${event.eventName} version must match eventName suffix`);
     assert(typeof event.domain === 'string' && /^[a-z][a-z0-9_]*$/.test(event.domain), `${event.eventName} domain is invalid`);
     assert(typeof event.aggregateType === 'string' && /^[a-z][a-z0-9_]{1,63}$/.test(event.aggregateType), `${event.eventName} aggregateType is invalid`);
-    assert(isRecord(event.payloadSchema) && typeof event.payloadSchema.$ref === 'string', `${event.eventName} payloadSchema must be a local ref`);
+    const payloadReferenceErrors = validateExactEventPayloadReference(event.payloadSchema, catalog.payloadSchemas, `${event.eventName} payloadSchema`);
+    assert(payloadReferenceErrors.length === 0, payloadReferenceErrors.join('\n'));
+    referencedPayloadSchemas.add(eventPayloadSchemaName(event.payloadSchema));
     if (event['x-envelope-required']) {
       assert(Array.isArray(event['x-envelope-required']) && event['x-envelope-required'].length > 0, `${event.eventName} x-envelope-required must be a non-empty array`);
       for (const field of event['x-envelope-required']) {
@@ -322,6 +327,9 @@ export function validateEventCatalog(catalog) {
       }
     });
     assert(isRecord(event.compatibility) && typeof event.compatibility.strategy === 'string', `${event.eventName} compatibility strategy is required`);
+  }
+  for (const schemaName of Object.keys(catalog.payloadSchemas)) {
+    assert(referencedPayloadSchemas.has(schemaName), `event payload schema ${schemaName} must be referenced by at least one catalog event`);
   }
 
   const asyncApiResult = validateAsyncApiProjection(catalog);

@@ -81,11 +81,6 @@ export type CommerceOrderPaid = { orderId: number; userId: number; entitlementId
 /**
  * Generated from the contract source.
  */
-export type CommerceEntitlementActivated = { entitlementId: number; userId: number; orderId?: number; planCode: string; startsAt: string; endsAt: string; status: "ACTIVE"; };
-
-/**
- * Generated from the contract source.
- */
 export type CommerceEntitlementRevoked = { entitlementId: number; userId: number; reasonCode: string; revokedAt: string; status: "REVOKED"; };
 
 /**
@@ -97,11 +92,6 @@ export type CommerceSubscriptionChanged = { entitlementId: number; userId: numbe
  * Generated from the contract source.
  */
 export type NotificationCreated = { notificationId: number; userId: number; category: "LEARNING" | "REMINDER" | "SECURITY" | "TRANSACTION" | "SYSTEM"; templateCode: string; dedupeKey: string; priority: "NORMAL" | "IMPORTANT" | "CRITICAL"; expiresAt?: string; };
-
-/**
- * Generated from the contract source.
- */
-export type NotificationDelivered = { notificationId: number; userId: number; channel: "IN_APP" | "PUSH" | "SMS" | "EMAIL"; status: "DELIVERED" | "SKIPPED" | "FAILED"; deliveredAt: string; providerCode?: string; };
 
 /**
  * Generated from the contract source.
@@ -486,32 +476,12 @@ export type B12NotificationRecoveryCompleted = { taskId: string; state: "SUCCEED
 /**
  * Generated from the contract source.
  */
-export type B13CommerceOrderCreated = { orderId: string; skuId: string; priceSnapshotId: string; amountMinor: number; currency: string; state: "CREATED" | "PENDING_PAYMENT" | "PAYMENT_PENDING"; };
-
-/**
- * Generated from the contract source.
- */
-export type B13CommercePaymentCallback = { providerEventRef: string; orderRef: string; callbackState: "VERIFIED_PAID" | "VERIFIED_REFUNDED" | "REJECTED"; amountMinor: number; currency: string; verificationRef: string; };
-
-/**
- * Generated from the contract source.
- */
 export type B13CommerceEntitlementActivated = { entitlementId: string; entitlementCode: string; sourceRef: string; startsAt: string; expiresAt: unknown; activationReason: "VERIFIED_PAYMENT" | "ACTIVATION_CODE"; };
 
 /**
  * Generated from the contract source.
  */
-export type B13CommerceRefundCompleted = { refundId: string; orderRef: string; state: "SUCCEEDED" | "REJECTED"; amountMinor: number; currency: string; completedAt: string; };
-
-/**
- * Generated from the contract source.
- */
 export type B13CommerceOrderReconciled = { batchRef: string; provider: string; differenceCount: number; state: "MATCHED" | "DIFF_FOUND" | "REPLAYED"; domainFactsUntouched: true; };
-
-/**
- * Generated from the contract source.
- */
-export type B13SupportTicketCreated = { ticketId: string; categoryCode: string; priority: string; slaDueAt: string; redactionVersion: string; };
 
 /**
  * Generated from the contract source.
@@ -576,56 +546,67 @@ export type AuthLoginSucceeded = { principalId: string; sessionId: string; devic
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated, "learning.event.v1"> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface VocabularyReviewAcceptedEvent extends PlatformEventEnvelope<VocabularyReviewAccepted, "learning.event.v1"> {
   eventName: "vocabulary.review.accepted.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface VocabularySrsStateChangedEvent extends PlatformEventEnvelope<VocabularySrsStateChanged, "learning.event.v1"> {
   eventName: "vocabulary.srs.state_changed.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface AssessmentAnswerScoredEvent extends PlatformEventEnvelope<AssessmentAnswerScored, "learning.event.v1"> {
   eventName: "assessment.answer_scored.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface MasteryStateChangedEvent extends PlatformEventEnvelope<MasteryStateChanged, "learning.event.v1"> {
   eventName: "mastery.state_changed.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface LearningTaskCompletedEvent extends PlatformEventEnvelope<LearningTaskCompleted, "learning.event.v1"> {
   eventName: "learning.task.completed.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface CmsContentSubmittedEvent extends PlatformEventEnvelope<CmsContentSubmitted, "content.event.v1"> {
   eventName: "cms.content.submitted.v1";
   version: 1;
+  schemaVersion: "content.event.v1";
 }
 
 export interface CmsReviewDecidedEvent extends PlatformEventEnvelope<CmsReviewDecided, "content.event.v1"> {
   eventName: "cms.review.decided.v1";
   version: 1;
+  schemaVersion: "content.event.v1";
 }
 
 export interface CmsContentPublishedEvent extends PlatformEventEnvelope<CmsContentPublished, "content.event.v1"> {
   eventName: "cms.content.published.v1";
   version: 1;
+  schemaVersion: "content.event.v1";
 }
 
 export interface CmsContentRolledBackEvent extends PlatformEventEnvelope<CmsContentRolledBack, "content.event.v1"> {
   eventName: "cms.content.rolled_back.v1";
   version: 1;
+  schemaVersion: "content.event.v1";
 }
 
 export interface CommerceOrderPaidEvent extends PlatformEventEnvelope<CommerceOrderPaid, "entitlement.event.v1"> {
   eventName: "commerce.order.paid.v1";
   version: 1;
+  schemaVersion: "entitlement.event.v1";
 }
 
 export interface CommerceEntitlementActivatedEvent extends PlatformEventEnvelope<B13CommerceEntitlementActivated, "commerce.event.v1"> {
@@ -638,16 +619,19 @@ export interface CommerceEntitlementActivatedEvent extends PlatformEventEnvelope
 export interface CommerceEntitlementRevokedEvent extends PlatformEventEnvelope<CommerceEntitlementRevoked, "entitlement.event.v1"> {
   eventName: "commerce.entitlement.revoked.v1";
   version: 1;
+  schemaVersion: "entitlement.event.v1";
 }
 
 export interface CommerceSubscriptionChangedEvent extends PlatformEventEnvelope<CommerceSubscriptionChanged, "entitlement.event.v1"> {
   eventName: "commerce.subscription.changed.v1";
   version: 1;
+  schemaVersion: "entitlement.event.v1";
 }
 
 export interface NotificationCreatedEvent extends PlatformEventEnvelope<NotificationCreated, "notification.event.v1"> {
   eventName: "notification.created.v1";
   version: 1;
+  schemaVersion: "notification.event.v1";
 }
 
 export interface NotificationDeliveredEvent extends PlatformEventEnvelope<B11NotificationDelivered, "notification.event.v1"> {
@@ -660,401 +644,481 @@ export interface NotificationDeliveredEvent extends PlatformEventEnvelope<B11Not
 export interface NotificationReadEvent extends PlatformEventEnvelope<NotificationRead, "notification.event.v1"> {
   eventName: "notification.read.v1";
   version: 1;
+  schemaVersion: "notification.event.v1";
 }
 
 export interface SyncLearningCheckpointSavedEvent extends PlatformEventEnvelope<SyncLearningCheckpointSaved, "sync.event.v1"> {
   eventName: "sync.learning.checkpoint_saved.v1";
   version: 1;
+  schemaVersion: "sync.event.v1";
 }
 
 export interface SyncConflictDetectedEvent extends PlatformEventEnvelope<SyncConflictDetected, "sync.event.v1"> {
   eventName: "sync.conflict.detected.v1";
   version: 1;
+  schemaVersion: "sync.event.v1";
 }
 
 export interface SyncCursorAdvancedEvent extends PlatformEventEnvelope<SyncCursorAdvanced, "sync.event.v1"> {
   eventName: "sync.cursor.advanced.v1";
   version: 1;
+  schemaVersion: "sync.event.v1";
 }
 
 export interface AuthSessionRevokedEvent extends PlatformEventEnvelope<AuthSessionRevoked, "auth.event.v1"> {
   eventName: "auth.session.revoked.v1";
   version: 1;
+  schemaVersion: "auth.event.v1";
 }
 
 export interface AssessmentItemSubmittedEvent extends PlatformEventEnvelope<AssessmentItemSubmitted, "learning.event.v1"> {
   eventName: "assessment.item.submitted.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface AuthDeviceKickedEvent extends PlatformEventEnvelope<AuthDeviceKicked, "auth.event.v1"> {
   eventName: "auth.device.kicked.v1";
   version: 1;
+  schemaVersion: "auth.event.v1";
 }
 
 export interface PrivacyExportRequestedEvent extends PlatformEventEnvelope<PrivacyExportRequested, "privacy.event.v1"> {
   eventName: "privacy.export.requested.v1";
   version: 1;
+  schemaVersion: "privacy.event.v1";
 }
 
 export interface PrivacyExportCompletedEvent extends PlatformEventEnvelope<PrivacyExportCompleted, "privacy.event.v1"> {
   eventName: "privacy.export.completed.v1";
   version: 1;
+  schemaVersion: "privacy.event.v1";
 }
 
 export interface AssessmentStreamBuiltEvent extends PlatformEventEnvelope<AssessmentStreamBuilt, "assessment.event.v1"> {
   eventName: "assessment.stream_built.v1";
   version: 1;
+  schemaVersion: "assessment.event.v1";
 }
 
 export interface AssessmentAnswerSubmittedEvent extends PlatformEventEnvelope<AssessmentAnswerSubmitted, "assessment.event.v1"> {
   eventName: "assessment.answer_submitted.v1";
   version: 1;
+  schemaVersion: "assessment.event.v1";
 }
 
 export interface MasteryVerificationStateChangedEvent extends PlatformEventEnvelope<MasteryVerificationStateChanged, "mastery.event.v1"> {
   eventName: "mastery.verification_state_changed.v1";
   version: 1;
+  schemaVersion: "mastery.event.v1";
 }
 
 export interface ExamSessionStateChangedEvent extends PlatformEventEnvelope<ExamSessionStateChanged, "exam.event.v1"> {
   eventName: "exam.session_state_changed.v1";
   version: 1;
+  schemaVersion: "exam.event.v1";
 }
 
 export interface ExamAntiCheatRecordedEvent extends PlatformEventEnvelope<ExamAntiCheatRecorded, "exam.event.v1"> {
   eventName: "exam.anti_cheat_recorded.v1";
   version: 1;
+  schemaVersion: "exam.event.v1";
 }
 
 export interface ReportGeneratedEvent extends PlatformEventEnvelope<ReportGenerated, "mastery.event.v1"> {
   eventName: "report.generated.v1";
   version: 1;
+  schemaVersion: "mastery.event.v1";
 }
 
 export interface VocabularyReviewFilteredEvent extends PlatformEventEnvelope<VocabularyReviewFiltered, "learning.event.v1"> {
   eventName: "vocabulary.review.filtered.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface VocabularyExpressionCreatedEvent extends PlatformEventEnvelope<VocabularyExpressionCreated, "learning.event.v1"> {
   eventName: "vocabulary.expression.created.v1";
   version: 1;
+  schemaVersion: "learning.event.v1";
 }
 
 export interface GrammarPracticeCompletedEvent extends PlatformEventEnvelope<GrammarPracticeCompleted, "grammar.event.v1"> {
   eventName: "grammar.practice.completed.v1";
   version: 1;
+  schemaVersion: "grammar.event.v1";
 }
 
 export interface WritingEvaluationCompletedEvent extends PlatformEventEnvelope<WritingEvaluationCompleted, "writing.event.v1"> {
   eventName: "writing.evaluation.completed.v1";
   version: 1;
+  schemaVersion: "writing.event.v1";
 }
 
 export interface ListeningDictationSubmittedEvent extends PlatformEventEnvelope<ListeningDictationSubmitted, "listening.event.v1"> {
   eventName: "listening.dictation.submitted.v1";
   version: 1;
+  schemaVersion: "listening.event.v1";
 }
 
 export interface ReadingProgressUpdatedEvent extends PlatformEventEnvelope<ReadingProgressUpdated, "reading.event.v1"> {
   eventName: "reading.progress.updated.v1";
   version: 1;
+  schemaVersion: "reading.event.v1";
 }
 
 export interface SpeakingSelfRatingSubmittedEvent extends PlatformEventEnvelope<SpeakingSelfRatingSubmitted, "speaking.event.v1"> {
   eventName: "speaking.self_rating.submitted.v1";
   version: 1;
+  schemaVersion: "speaking.event.v1";
 }
 
 export interface OfflineSyncAppliedEvent extends PlatformEventEnvelope<OfflineSyncApplied, "offline.event.v1"> {
   eventName: "offline.sync.applied.v1";
   version: 1;
+  schemaVersion: "offline.event.v1";
 }
 
 export interface GrammarMasteryUpdatedEvent extends PlatformEventEnvelope<GrammarMasteryUpdated, "grammar.event.v1"> {
   eventName: "grammar.mastery.updated.v1";
   version: 1;
+  schemaVersion: "grammar.event.v1";
 }
 
 export interface ListeningProgressSavedEvent extends PlatformEventEnvelope<ListeningProgressSaved, "listening.event.v1"> {
   eventName: "listening.progress.saved.v1";
   version: 1;
+  schemaVersion: "listening.event.v1";
 }
 
 export interface SpeakingShadowingProgressedEvent extends PlatformEventEnvelope<ShadowingProgressed, "speaking.event.v1"> {
   eventName: "speaking.shadowing.progressed.v1";
   version: 1;
+  schemaVersion: "speaking.event.v1";
 }
 
 export interface MediaOfflinePackageSyncedEvent extends PlatformEventEnvelope<OfflinePackageSynced, "offline.event.v1"> {
   eventName: "media.offline.package.synced.v1";
   version: 1;
+  schemaVersion: "offline.event.v1";
 }
 
 export interface GamificationProfileUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.profile.updated.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationXpLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.xp.ledger_appended.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationCurrencyLedgerAppendedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.currency.ledger_appended.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationStreakDayValidatedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.streak.day_validated.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationStreakRescueCompletedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.streak.rescue_completed.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationQuestProgressedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.quest.progressed.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationQuestClaimedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.quest.claimed.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationAchievementUnlockedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.achievement.unlocked.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationChestGrantedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.chest.granted.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationChestOpenedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.chest.opened.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationAvatarLoadoutEquippedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.avatar.loadout_equipped.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamificationSeasonPointsUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "gamification.event.v1"> {
   eventName: "gamification.season.points_updated.v1";
   version: 1;
+  schemaVersion: "gamification.event.v1";
 }
 
 export interface GamesSessionCreatedEvent extends PlatformEventEnvelope<B4FactPayload, "games.event.v1"> {
   eventName: "games.session.created.v1";
   version: 1;
+  schemaVersion: "games.event.v1";
 }
 
 export interface GamesSessionEventAcceptedEvent extends PlatformEventEnvelope<B4FactPayload, "games.event.v1"> {
   eventName: "games.session.event_accepted.v1";
   version: 1;
+  schemaVersion: "games.event.v1";
 }
 
 export interface GamesSessionCompletedEvent extends PlatformEventEnvelope<B4FactPayload, "games.event.v1"> {
   eventName: "games.session.completed.v1";
   version: 1;
+  schemaVersion: "games.event.v1";
 }
 
 export interface SocialRoomJoinedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.room.joined.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialFocusStartedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.focus.started.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialFocusCompletedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.focus.completed.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialInteractionSentEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.interaction.sent.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface OfflinePackageAuthorizedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.package.authorized.v1";
   version: 1;
+  schemaVersion: "offline.event.v1";
 }
 
 export interface OfflineB4SyncAppliedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.b4.sync_applied.v1";
   version: 1;
+  schemaVersion: "offline.event.v1";
 }
 
 export interface SocialRoomLeftEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.room.left.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialFocusUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.focus.updated.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialModerationReportedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.moderation.reported.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialModerationBlockedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.moderation.blocked.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface SocialModerationMutedEvent extends PlatformEventEnvelope<B4FactPayload, "social.event.v1"> {
   eventName: "social.moderation.muted.v1";
   version: 1;
+  schemaVersion: "social.event.v1";
 }
 
 export interface NotificationsMessageReadEvent extends PlatformEventEnvelope<B4FactPayload, "notifications.event.v1"> {
   eventName: "notifications.message_read.v1";
   version: 1;
+  schemaVersion: "notifications.event.v1";
 }
 
 export interface NotificationsPreferencesUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "notifications.event.v1"> {
   eventName: "notifications.preferences_updated.v1";
   version: 1;
+  schemaVersion: "notifications.event.v1";
 }
 
 export interface OfflinePackageDownloadStateUpdatedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.package.download_state_updated.v1";
   version: 1;
+  schemaVersion: "offline.event.v1";
 }
 
 export interface OfflineSyncConflictRecordedEvent extends PlatformEventEnvelope<B4FactPayload, "offline.event.v1"> {
   eventName: "offline.sync.conflict_recorded.v1";
   version: 1;
+  schemaVersion: "offline.event.v1";
 }
 
 export interface CommerceOrderCreatedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.order.created.v1";
   version: 1;
+  schemaVersion: "commerce.event.v1";
 }
 
 export interface CommercePaymentRequestedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.payment.requested.v1";
   version: 1;
+  schemaVersion: "commerce.event.v1";
 }
 
 export interface CommercePaymentCallbackReceivedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.payment.callback_received.v1";
   version: 1;
+  schemaVersion: "commerce.event.v1";
 }
 
 export interface CommercePaymentVerifiedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.payment.verified.v1";
   version: 1;
+  schemaVersion: "commerce.event.v1";
 }
 
 export interface CommerceRefundCompletedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.refund.completed.v1";
   version: 1;
+  schemaVersion: "commerce.event.v1";
 }
 
 export interface CommerceHouseholdChangedEvent extends PlatformEventEnvelope<B5FactPayload, "commerce.event.v1"> {
   eventName: "commerce.household.changed.v1";
   version: 1;
+  schemaVersion: "commerce.event.v1";
 }
 
 export interface CmsContentVersionSavedEvent extends PlatformEventEnvelope<B5FactPayload, "cms.event.v1"> {
   eventName: "cms.content.version_saved.v1";
   version: 1;
+  schemaVersion: "cms.event.v1";
 }
 
 export interface CmsImportCompletedEvent extends PlatformEventEnvelope<B5FactPayload, "cms.event.v1"> {
   eventName: "cms.import.completed.v1";
   version: 1;
+  schemaVersion: "cms.event.v1";
 }
 
 export interface SafetyPrecheckBlockedEvent extends PlatformEventEnvelope<B5FactPayload, "safety.event.v1"> {
   eventName: "safety.precheck.blocked.v1";
   version: 1;
+  schemaVersion: "safety.event.v1";
 }
 
 export interface RiskDecisionCreatedEvent extends PlatformEventEnvelope<B5FactPayload, "risk.event.v1"> {
   eventName: "risk.decision.created.v1";
   version: 1;
+  schemaVersion: "risk.event.v1";
 }
 
 export interface FinanceReconciliationDiscrepancyEvent extends PlatformEventEnvelope<B5FactPayload, "finance.event.v1"> {
   eventName: "finance.reconciliation.discrepancy.v1";
   version: 1;
+  schemaVersion: "finance.event.v1";
 }
 
 export interface OpsFlagUpdatedEvent extends PlatformEventEnvelope<B5FactPayload, "ops.event.v1"> {
   eventName: "ops.flag.updated.v1";
   version: 1;
+  schemaVersion: "ops.event.v1";
 }
 
 export interface SupportTicketCreatedEvent extends PlatformEventEnvelope<B5FactPayload, "support.event.v1"> {
   eventName: "support.ticket.created.v1";
   version: 1;
+  schemaVersion: "support.event.v1";
 }
 
 export interface SupportTicketResolvedEvent extends PlatformEventEnvelope<B5FactPayload, "support.event.v1"> {
   eventName: "support.ticket.resolved.v1";
   version: 1;
+  schemaVersion: "support.event.v1";
 }
 
 export interface PlatformBuildRegisteredEvent extends PlatformEventEnvelope<B6FactPayload, "platform.event.v1"> {
   eventName: "platform.build.registered.v1";
   version: 1;
+  schemaVersion: "platform.event.v1";
 }
 
 export interface PlatformCompatibilityCheckedEvent extends PlatformEventEnvelope<B6FactPayload, "platform.event.v1"> {
   eventName: "platform.compatibility.checked.v1";
   version: 1;
+  schemaVersion: "platform.event.v1";
 }
 
 export interface PlatformPerformanceDegradedEvent extends PlatformEventEnvelope<B6FactPayload, "platform.event.v1"> {
   eventName: "platform.performance.degraded.v1";
   version: 1;
+  schemaVersion: "platform.event.v1";
 }
 
 export interface QualityE2eCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "quality.event.v1"> {
   eventName: "quality.e2e.completed.v1";
   version: 1;
+  schemaVersion: "quality.event.v1";
 }
 
 export interface QualitySecurityScanCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "quality.event.v1"> {
   eventName: "quality.security.scan_completed.v1";
   version: 1;
+  schemaVersion: "quality.event.v1";
 }
 
 export interface QualityReliabilityCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "quality.event.v1"> {
   eventName: "quality.reliability.completed.v1";
   version: 1;
+  schemaVersion: "quality.event.v1";
 }
 
 export interface ObservabilityAlertRaisedEvent extends PlatformEventEnvelope<B6FactPayload, "observability.event.v1"> {
   eventName: "observability.alert.raised.v1";
   version: 1;
+  schemaVersion: "observability.event.v1";
 }
 
 export interface DataBackupDrillCompletedEvent extends PlatformEventEnvelope<B6FactPayload, "data.event.v1"> {
   eventName: "data.backup.drill_completed.v1";
   version: 1;
+  schemaVersion: "data.event.v1";
 }
 
 export interface ReleaseGateEvaluatedEvent extends PlatformEventEnvelope<B6FactPayload, "release.event.v1"> {
   eventName: "release.gate.evaluated.v1";
   version: 1;
+  schemaVersion: "release.event.v1";
 }
 
 export interface AuthPrincipalMappedEvent extends PlatformEventEnvelope<AuthPrincipalMapped, "iam.auth.event.v1"> {

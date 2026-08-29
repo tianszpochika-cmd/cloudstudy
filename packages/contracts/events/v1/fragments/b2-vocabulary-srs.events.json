@@ -46,6 +46,28 @@
     }
   ],
   "payloadSchemas": {
+    "VocabularyReviewAccepted": {
+      "$id": "platform.events.vocabulary.review.accepted.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewEventId",
+        "userId",
+        "srsStateId",
+        "stateVersion",
+        "effectiveQuality",
+        "riskDecision"
+      ],
+      "properties": {
+        "reviewEventId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "userId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "srsStateId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "stateVersion": { "type": "integer", "minimum": 1 },
+        "effectiveQuality": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "riskDecision": { "type": "string", "enum": ["ALLOW"] },
+        "itemType": { "type": "string", "enum": ["VOCAB", "PHRASE", "EXPRESSION"] }
+      }
+    },
     "VocabularyReviewFiltered": {
       "$id": "platform.events.vocabulary.review.filtered.v1.payload",
       "type": "object",

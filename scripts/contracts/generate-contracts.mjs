@@ -102,7 +102,12 @@ function generateEventTypes(catalog) {
   const eventTypes = catalog.events.map((event, index) => {
     const typeName = eventTypeNames[index];
     const payloadName = event.payloadSchema.$ref.split('/').at(-1);
-    const requiredEnvelopeFields = (event['x-envelope-required'] ?? [])
+    // Historical candidates stay non-publishable, but their generated event
+    // contracts must still require schemaVersion.  Do not let an optional base
+    // envelope property weaken any of the 154 concrete event interfaces.
+    const requiredEventEnvelopeFields = new Set(event['x-envelope-required'] ?? []);
+    requiredEventEnvelopeFields.add('schemaVersion');
+    const requiredEnvelopeFields = [...requiredEventEnvelopeFields]
       .filter((field) => !baseEnvelopeFields.has(field))
       .map((field) => `  ${tsPropertyName(field)}: ${field === 'schemaVersion' ? JSON.stringify(event.schema) : (envelopeFieldTypes[field] ?? 'string')};`)
       .join('\n');
