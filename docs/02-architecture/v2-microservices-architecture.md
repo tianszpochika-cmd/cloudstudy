@@ -5,6 +5,7 @@
 > 决策入口：[ADR-0010：Java 25 与微服务/Gateway/IAM 架构](../10-decisions/0010-java25-microservices-gateway-iam.md)  
 > 客服/隐私 owner：[ADR-0014：Phase 1 客服与隐私编排事实所有权](../10-decisions/0014-phase1-support-privacy-ownership.md)
 > 实施状态：目标架构已确定；自有 IAM、RS256/JWKS、Gateway 安全边界与服务侧 PEP 已形成代码和契约基线，但完整运行与发布证据仍未齐，不得宣称目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
+> 数据治理状态：[`config/p1r-data-ownership.v1.json`](../../config/p1r-data-ownership.v1.json) 是 P1R-M1-005 的 D2 机器可读事实源；它冻结目标 owner、schema、namespace 和治理责任，状态为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不构成任何运行验收。
 
 ## 1. 这份文档解决什么问题
 
@@ -77,7 +78,7 @@ Phase 3：guardian、institution、curriculum-rights 等受监管域
 
 | 服务 | 主要职责 | 不能做什么 | 首次建设阶段 |
 |---|---|---|---|
-| `api-gateway` | 外部入口、路由、API 版本、CORS、限流、请求/Trace 上下文、JWT 预校验、黑名单和边界审计 | 不写学习、订单、内容或权限业务事实；不接受客户端角色头 | Platform 0 |
+| `api-gateway` | 外部入口、路由、API 版本、CORS、限流、请求/Trace 上下文、JWT 预校验、黑名单和边界审计 | 无业务 schema、无领域写 authority、无业务 Flyway；不写学习、订单、内容或权限业务事实；不接受客户端角色头 | Platform 0 |
 | `iam-service` | 账号密码校验、JWT 签发、JWKS 公钥发布与轮换、不可变 principal、用户/租户/组织、设备、Refresh 会话、同意、角色、权限、策略版本、撤销和审计 | 不拥有课程、订单、学习记录等领域事实；不能接受客户端权限覆盖 | Platform 0 |
 | `audit-service`（可先作为平台模块） | 安全审计、管理操作审计、数据导出审计、合规留痕 | 不代替领域事件或业务数据库 | Platform 0/1 |
 | `workflow-service`（可先由 job-runner 承载） | Saga、定时任务、补偿、重试、死信和人工恢复 | 不直接改写其他服务数据库 | Platform 0/1 |
@@ -117,7 +118,67 @@ Phase 3：guardian、institution、curriculum-rights 等受监管域
 | 账号删除请求、冷静期和主体最终状态 | `iam-service` | workflow 编排各领域 owner 匿名化并收集 receipt | IAM 跨库删除领域数据，或只停用登录就宣称删除完成 |
 | 后台聚合、工作流、审计 | `admin-ops-service` / `workflow-service` / `audit-service` | 聚合只读投影、发出领域命令、记录不可变审计 | BFF、工作流或审计服务跨域写领域数据库；support 子域之外复制领域事实 |
 
-### 4.4 Phase 2/3 服务
+### 4.4 P1R-M1-005 D2 数据所有权、存储与生命周期政策
+
+本节把 Phase 1 的数据治理冻结为可审计的 D2 合同。15 个服务中，`api-gateway` 是唯一没有业务 schema、领域写 authority 或业务 Flyway 的边界服务；其余 14 个（IAM、audit、workflow 和 11 个领域服务）各自拥有一个目标 schema、一个 Redis namespace、一个逻辑运行凭据和一个 Flyway 位置。以下名称是目标责任分配，不是已部署的 schema、已授予的账号或运行通过结论。
+
+| 服务 | 业务 schema（唯一 owner） | Redis namespace | 逻辑运行凭据与 Flyway 位置 | D2 状态 |
+|---|---|---|---|---|
+| `api-gateway` | 不适用；无业务 schema/领域写 authority | `gateway`（仅边界短状态） | 不适用；无业务 Flyway | `NOT_APPLICABLE`；不得写领域事实 |
+| `iam-service` | `iam_service` | `iam` | `mysql-runtime-iam-service`；`services/iam-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `audit-service` | `audit_service` | `audit` | `mysql-runtime-audit-service`；`services/audit-service/src/main/resources/db/migration` | `PLANNED_M2_004` |
+| `workflow-service` | `workflow_service` | `workflow` | `mysql-runtime-workflow-service`；`services/workflow-service/src/main/resources/db/migration` | `PLANNED_M2_004` |
+| `learner-service` | `learner_service` | `learner` | `mysql-runtime-learner-service`；`services/learner-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `content-service` | `content_service` | `content` | `mysql-runtime-content-service`；`services/content-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `learning-service` | `learning_service` | `learning` | `mysql-runtime-learning-service`；`services/learning-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `assessment-service` | `assessment_service` | `assessment` | `mysql-runtime-assessment-service`；`services/assessment-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `media-service` | `media_service` | `media` | `mysql-runtime-media-service`；`services/media-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `gamification-service` | `gamification_service` | `gamification` | `mysql-runtime-gamification-service`；`services/gamification-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `social-service` | `social_service` | `social` | `mysql-runtime-social-service`；`services/social-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `commerce-service` | `commerce_service` | `commerce` | `mysql-runtime-commerce-service`；`services/commerce-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `notification-service` | `notification_service` | `notification` | `mysql-runtime-notification-service`；`services/notification-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `analytics-service` | `analytics_service` | `analytics` | `mysql-runtime-analytics-service`；`services/analytics-service/src/main/resources/db/migration` | 现有候选，未验证 |
+| `admin-ops-service` | `admin_ops_service` | `admin-ops` | `mysql-runtime-admin-ops-service`；`services/admin-ops-service/src/main/resources/db/migration` | 现有候选，未验证 |
+
+逻辑凭据 ID 只用于定位运行期 secret，凭据材料不得进入仓库；每个 owner 必须独享自己的运行凭据、schema grant、Flyway history 和回滚责任。Redis namespace 同样按服务隔离，Redis 永不成为身份、权限、学习、订单或审计事实的唯一来源。跨服务 SQL join、跨服务写表、共享 ORM entity、Gateway 业务写和 `core-api` 新业务写均默认禁止。
+
+#### 租户边界
+
+- Phase 1 仅使用服务端从已验证 IAM principal 和受控 `TenantScope` 派生的 `platform` tenant；客户端提交的 tenant、owner 或角色字段没有 authority。
+- 所有租户范围数据访问必须由已验证的 `TenantScope` 自动约束。当前或未来采用共享 schema 的租户业务表必须包含 `tenant_id`，其租户范围唯一约束和索引也必须包含 `tenant_id`；不能用全局唯一键或应用层约定替代。
+- MySQL 不提供自动行级隔离（RLS）。`TenantScope`、DDL、索引和跨租户拒绝仍须由 `P1R-M2-004` 在真实环境证明；现有 migration 文件不能代替这项证据。
+
+#### 保留、删除与 legal hold
+
+每个数据 owner 都有明确的 policy class 和执行 owner；policy class 规定责任边界，**不在本 D2 任务内冻结精确法定或业务保留期限**。具体期限及其适用条件由 `P1R-M1-017` 的具名政策补齐，Redis TTL 绝不充当保留期限。
+
+| 数据 owner | retention policy class | policy owner |
+|---|---|---|
+| `iam-service` | `IDENTITY_RETENTION_AND_DELETION` | `iam-service` |
+| `audit-service` | `AUDIT_RETENTION_AND_LEGAL_HOLD` | `audit-service` |
+| `workflow-service` | `WORKFLOW_RECOVERY_RETENTION` | `workflow-service` |
+| `learner-service` | `LEARNER_PRIVACY_RETENTION` | `learner-service.privacy` |
+| `content-service` | `CONTENT_RIGHTS_RETENTION` | `content-service` |
+| `learning-service` | `LEARNING_RECORD_RETENTION` | `learning-service` |
+| `assessment-service` | `ASSESSMENT_RECORD_RETENTION` | `assessment-service` |
+| `media-service` | `MEDIA_RETENTION_AND_RIGHTS` | `media-service` |
+| `gamification-service` | `GAMIFICATION_LEDGER_RETENTION` | `gamification-service` |
+| `social-service` | `SOCIAL_AND_MODERATION_RETENTION` | `social-service` |
+| `commerce-service` | `COMMERCE_AND_FINANCIAL_RETENTION` | `commerce-service` |
+| `notification-service` | `NOTIFICATION_RETENTION` | `notification-service` |
+| `analytics-service` | `ANALYTICS_CONSENT_AND_DELETION` | `analytics-service` |
+| `admin-ops-service` | `SUPPORT_AND_OPERATION_RETENTION` | `admin-ops-service.support` |
+
+删除或匿名化只能由数据 owner 在自己的事实边界执行，并且必须先检查 legal hold。`workflow-service` 只能编排领域命令和收集结果，不能跨 schema 删除；每个参与 owner 都必须将可追溯的删除/匿名化 receipt 交给 workflow 与 audit（workflow 自身的恢复 receipt 由 `audit-service` 留痕）。
+
+#### 迁移、修复与恢复责任
+
+- 数据库迁移采用前向兼容策略：`expand → compatible switch → contract`。失败优先做前向 repair；需要撤销业务效果时由 owner 使用兼容配置回退或领域补偿命令/事件，而不是破坏性 down migration 或跨服务写表。默认禁止 destructive down migration。
+- 当前可见的 12 份服务 migration collection（IAM 加 11 个领域 owner）仅是 `HISTORICAL_CANDIDATE_MIGRATION_INPUT`；`audit-service` 和 `workflow-service` 的 collection 为 `PLANNED_M2_004`。目录、SQL 文件数量或逻辑凭据均不证明独立 schema、grant、tenant 隔离、回滚或恢复已经完成。
+- `P1R-M2-004` 保持 OPEN，负责空库与存量库的 Flyway 跑通、owner grant 对账、跨 owner 拒绝、`TenantScope`/跨租户负例、Redis ACL/namespace、从持久 owner 事实重建 Redis，以及运行期 rollback/compensation 演练和 receipt。
+- `config/b25-data.json` 的 8-owner map 和 `database/redis/keyspace.registry.json` 中的 `core-api.*` owner 都是 `HISTORICAL_CANDIDATE_MIGRATION_INPUT`：它们只能帮助制定迁移映射，不能证明当前目标 owner、运行期 Redis ACL、可重建性或事实源。
+
+### 4.5 Phase 2/3 服务
 
 - `ai-orchestrator`：Python 3.11+，负责模型路由、LangGraph/LiteLLM、结构化 Schema、成本和失败降级；学习事实由 `learning-service`/`assessment-service` 持有。
 - `realtime-voice`：商业 RTC 的会话、令牌和断线恢复适配；不在客户端保存供应商密钥。

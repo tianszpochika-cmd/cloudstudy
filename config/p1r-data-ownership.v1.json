@@ -1,0 +1,333 @@
+{
+  "$schema": "p1r.data-ownership.v1",
+  "schemaVersion": "p1r.data-ownership.v1",
+  "taskId": "P1R-M1-005",
+  "phase": "PHASE_1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "sourceOfTruth": "config/p1r-data-ownership.v1.json",
+  "sourceRefs": [
+    "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M1-005.md",
+    "docs/02-architecture/v2-microservices-architecture.md#4.1",
+    "docs/02-architecture/v2-microservices-architecture.md#4.2",
+    "docs/02-architecture/v2-microservices-architecture.md#4.3",
+    "docs/10-decisions/0010-java25-microservices-gateway-iam.md#4"
+  ],
+  "coverage": {
+    "totalServices": 15,
+    "dataOwners": 14,
+    "gatewayWithoutBusinessSchema": 1,
+    "existingMigrationCollections": 12,
+    "plannedMigrationCollections": 2
+  },
+  "globalPolicies": {
+    "oneSchemaOneServiceOwner": true,
+    "serviceScopedDatabaseCredentialsRequired": true,
+    "perServiceFlywayRequired": true,
+    "perServiceRedisNamespaceRequired": true,
+    "redisIsNeverBusinessSourceOfTruth": true,
+    "crossServiceTableWrites": "PROHIBITED",
+    "crossServiceSqlJoins": "PROHIBITED",
+    "sharedOrmEntities": "PROHIBITED",
+    "gatewayBusinessWrites": "PROHIBITED",
+    "coreApiNewBusinessWrites": "PROHIBITED",
+    "destructiveDownMigrations": "PROHIBITED_BY_DEFAULT",
+    "tenant": {
+      "phase1Tenant": "platform",
+      "clientMaySelectTenant": false,
+      "authority": "verified IAM principal and service-derived TenantScope",
+      "phase3SharedSchemaRequirement": "tenant_id plus tenant-scoped unique constraints and indexes",
+      "mysqlProvidesAutomaticRowLevelIsolation": false,
+      "runtimeVerificationTask": "P1R-M2-004"
+    },
+    "lifecycle": {
+      "exactRetentionDurationsFrozen": false,
+      "exactDurationPolicyRef": "P1R-M1-017",
+      "redisTtlIsNotRetention": true,
+      "ownerMustExecuteDeleteOrAnonymize": true,
+      "ownerMustCheckLegalHoldBeforeDeletion": true,
+      "ownerMustReturnReceiptToWorkflowAndAudit": true
+    },
+    "migration": {
+      "strategy": "EXPAND_CONTRACT_FORWARD_REPAIR_COMPENSATE",
+      "forwardOnly": true,
+      "ownerGrantAndSchemaVerification": "P1R-M2-004",
+      "emptyAndExistingDatabaseVerification": "P1R-M2-004",
+      "rollbackAndCompensationRuntimeVerification": "P1R-M2-004"
+    }
+  },
+  "serviceOwners": [
+    {
+      "service": "api-gateway",
+      "role": "EDGE_BOUNDARY",
+      "dataOwner": false,
+      "businessSchema": null,
+      "businessSchemaStatus": "NOT_APPLICABLE",
+      "databaseCredential": {
+        "required": false,
+        "reason": "Gateway must not own or write domain business facts"
+      },
+      "flyway": {
+        "required": false,
+        "location": null,
+        "status": "NOT_APPLICABLE"
+      },
+      "redis": {
+        "namespace": "gateway",
+        "logicalCredentialId": "redis-runtime-gateway",
+        "allowedUses": ["rate-limit", "JWT-precheck-support", "edge-coordination"],
+        "businessSourceOfTruth": false,
+        "runtimeStatus": "P1R-M2-004_REQUIRED"
+      },
+      "writeAuthority": "NO_DOMAIN_WRITE_AUTHORITY",
+      "prohibitions": ["domain-table-write", "domain-schema-ownership", "client-role-or-tenant-authority"],
+      "runtimeVerificationTask": "P1R-M2-004"
+    },
+    {
+      "service": "iam-service",
+      "role": "PLATFORM_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "iam_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "iam-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-iam-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/iam-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "iam-service"},
+      "redis": {"namespace": "iam", "logicalCredentialId": "redis-runtime-iam-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "IDENTITY_AND_SECURITY", "policyClass": "IDENTITY_RETENTION_AND_DELETION", "policyOwner": "iam-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-workflow-receipt", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "iam-service", "rollback": "expand-contract-or-compensate", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "audit-service",
+      "role": "PLATFORM_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "audit_service", "status": "PLANNED_M2_004", "uniqueOwner": "audit-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-audit-service", "secretMaterialInRepository": false, "status": "PLANNED_M2_004"},
+      "flyway": {"location": "services/audit-service/src/main/resources/db/migration", "collectionStatus": "PLANNED_M2_004", "migrationOwner": "audit-service"},
+      "redis": {"namespace": "audit", "logicalCredentialId": "redis-runtime-audit-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "IMMUTABLE_AUDIT_AND_COMPLIANCE", "policyClass": "AUDIT_RETENTION_AND_LEGAL_HOLD", "policyOwner": "audit-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "policy-controlled-owner-executes", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "audit-service", "rollback": "expand-contract-or-compensate", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "workflow-service",
+      "role": "PLATFORM_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "workflow_service", "status": "PLANNED_M2_004", "uniqueOwner": "workflow-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-workflow-service", "secretMaterialInRepository": false, "status": "PLANNED_M2_004"},
+      "flyway": {"location": "services/workflow-service/src/main/resources/db/migration", "collectionStatus": "PLANNED_M2_004", "migrationOwner": "workflow-service"},
+      "redis": {"namespace": "workflow", "logicalCredentialId": "redis-runtime-workflow-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "SAGA_RECOVERY_AND_RECEIPT", "policyClass": "WORKFLOW_RECOVERY_RETENTION", "policyOwner": "workflow-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-domain-receipts", "legalHold": "owner-checks-before-delete", "receipt": "audit-service"},
+      "migrationResponsibility": {"forwardRepair": "workflow-service", "rollback": "compensate-by-command-or-event-never-cross-write", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "learner-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "learner_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "learner-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-learner-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/learner-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "learner-service"},
+      "redis": {"namespace": "learner", "logicalCredentialId": "redis-runtime-learner-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "LEARNER_PROFILE_AND_PRIVACY_REQUEST", "policyClass": "LEARNER_PRIVACY_RETENTION", "policyOwner": "learner-service.privacy", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-workflow-receipt", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "learner-service", "rollback": "expand-contract-or-compensate", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "content-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "content_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "content-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-content-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/content-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "content-service"},
+      "redis": {"namespace": "content", "logicalCredentialId": "redis-runtime-content-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "CONTENT_RIGHTS_AND_PUBLICATION", "policyClass": "CONTENT_RIGHTS_RETENTION", "policyOwner": "content-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-versioned-unpublish-or-delete", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "content-service", "rollback": "restore-verified-content-version-or-compensate", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "learning-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "learning_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "learning-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-learning-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/learning-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "learning-service"},
+      "redis": {"namespace": "learning", "logicalCredentialId": "redis-runtime-learning-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "PLAN_SRS_PROGRESS_AND_MASTERY", "policyClass": "LEARNING_RECORD_RETENTION", "policyOwner": "learning-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-rebuildable-projection-removal", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "learning-service", "rollback": "replay-or-compensate-from-owner-facts", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "assessment-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "assessment_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "assessment-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-assessment-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/assessment-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "assessment-service"},
+      "redis": {"namespace": "assessment", "logicalCredentialId": "redis-runtime-assessment-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "ATTEMPT_CHECKPOINT_SCORING_AND_REPORT", "policyClass": "ASSESSMENT_RECORD_RETENTION", "policyOwner": "assessment-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-auditable-report-policy", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "assessment-service", "rollback": "owner-compensation-and-versioned-snapshot-replay", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "media-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "media_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "media-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-media-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/media-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "media-service"},
+      "redis": {"namespace": "media", "logicalCredentialId": "redis-runtime-media-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "MEDIA_METADATA_RENDITION_AND_AUTHORIZATION", "policyClass": "MEDIA_RETENTION_AND_RIGHTS", "policyOwner": "media-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-object-store-receipt", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "media-service", "rollback": "versioned-rendition-restore-or-compensate", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "gamification-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "gamification_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "gamification-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-gamification-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/gamification-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "gamification-service"},
+      "redis": {"namespace": "gamification", "logicalCredentialId": "redis-runtime-gamification-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "REWARD_LEDGER_AND_GAME_STATE", "policyClass": "GAMIFICATION_LEDGER_RETENTION", "policyOwner": "gamification-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-immutable-ledger-policy", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "gamification-service", "rollback": "compensating-ledger-entry-never-cross-write", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "social-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "social_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "social-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-social-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/social-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "social-service"},
+      "redis": {"namespace": "social", "logicalCredentialId": "redis-runtime-social-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "STUDY_ROOM_SOCIAL_AND_MODERATION", "policyClass": "SOCIAL_AND_MODERATION_RETENTION", "policyOwner": "social-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-moderation-policy", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "social-service", "rollback": "owner-compensation-and-projection-rebuild", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "commerce-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "commerce_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "commerce-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-commerce-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/commerce-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "commerce-service"},
+      "redis": {"namespace": "commerce", "logicalCredentialId": "redis-runtime-commerce-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "ORDER_ENTITLEMENT_REFUND_AND_RECONCILIATION", "policyClass": "COMMERCE_AND_FINANCIAL_RETENTION", "policyOwner": "commerce-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-subject-to-financial-and-legal-policy", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "commerce-service", "rollback": "compensating-financial-state-transition", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "notification-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "notification_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "notification-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-notification-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/notification-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "notification-service"},
+      "redis": {"namespace": "notification", "logicalCredentialId": "redis-runtime-notification-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "NOTIFICATION_PREFERENCE_AND_DELIVERY", "policyClass": "NOTIFICATION_RETENTION", "policyOwner": "notification-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-with-delivery-audit-policy", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "notification-service", "rollback": "owner-compensation-and-redelivery-policy", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "analytics-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "analytics_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "analytics-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-analytics-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/analytics-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "analytics-service"},
+      "redis": {"namespace": "analytics", "logicalCredentialId": "redis-runtime-analytics-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "DEIDENTIFIED_ANALYTICS_AND_READ_MODEL", "policyClass": "ANALYTICS_CONSENT_AND_DELETION", "policyOwner": "analytics-service", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "owner-executes-after-consent-and-deletion-signal", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "analytics-service", "rollback": "rebuild-derived-read-model-or-compensate", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    },
+    {
+      "service": "admin-ops-service",
+      "role": "DOMAIN_DATA_OWNER",
+      "dataOwner": true,
+      "schema": {"name": "admin_ops_service", "status": "EXISTING_CANDIDATE_UNVERIFIED", "uniqueOwner": "admin-ops-service"},
+      "databaseCredential": {"logicalId": "mysql-runtime-admin-ops-service", "secretMaterialInRepository": false, "status": "P1R-M2-004_REQUIRED"},
+      "flyway": {"location": "services/admin-ops-service/src/main/resources/db/migration", "collectionStatus": "EXISTING_CANDIDATE_UNVERIFIED", "migrationOwner": "admin-ops-service"},
+      "redis": {"namespace": "admin-ops", "logicalCredentialId": "redis-runtime-admin-ops-service", "businessSourceOfTruth": false, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "tenantGuard": {"authority": "server-derived platform tenant and TenantScope", "clientSuppliedTenantAllowed": false, "phase3TenantIdAndScopedIndexesRequired": true, "runtimeStatus": "P1R-M2-004_REQUIRED"},
+      "lifecycle": {"dataClass": "SUPPORT_TICKET_ASSIGNMENT_SLA_AND_OPERATION", "policyClass": "SUPPORT_AND_OPERATION_RETENTION", "policyOwner": "admin-ops-service.support", "laterExactPolicyRef": "P1R-M1-017", "exactDurationFrozen": false, "deleteOrAnonymize": "support-owner-executes-with-workflow-receipt", "legalHold": "owner-checks-before-delete", "receipt": "workflow-and-audit"},
+      "migrationResponsibility": {"forwardRepair": "admin-ops-service", "rollback": "owner-compensation-without-copying-domain-facts", "destructiveDownMigration": "PROHIBITED", "runtimeVerificationTask": "P1R-M2-004"}
+    }
+  ],
+  "migrationInventory": {
+    "classification": "HISTORICAL_CANDIDATE_MIGRATION_INPUT",
+    "existingCollections": [
+      {"service": "iam-service", "path": "services/iam-service/src/main/resources/db/migration", "fileCount": 4},
+      {"service": "learner-service", "path": "services/learner-service/src/main/resources/db/migration", "fileCount": 8},
+      {"service": "content-service", "path": "services/content-service/src/main/resources/db/migration", "fileCount": 12},
+      {"service": "learning-service", "path": "services/learning-service/src/main/resources/db/migration", "fileCount": 7},
+      {"service": "assessment-service", "path": "services/assessment-service/src/main/resources/db/migration", "fileCount": 4},
+      {"service": "media-service", "path": "services/media-service/src/main/resources/db/migration", "fileCount": 3},
+      {"service": "gamification-service", "path": "services/gamification-service/src/main/resources/db/migration", "fileCount": 3},
+      {"service": "social-service", "path": "services/social-service/src/main/resources/db/migration", "fileCount": 2},
+      {"service": "commerce-service", "path": "services/commerce-service/src/main/resources/db/migration", "fileCount": 1},
+      {"service": "notification-service", "path": "services/notification-service/src/main/resources/db/migration", "fileCount": 4},
+      {"service": "analytics-service", "path": "services/analytics-service/src/main/resources/db/migration", "fileCount": 1},
+      {"service": "admin-ops-service", "path": "services/admin-ops-service/src/main/resources/db/migration", "fileCount": 2}
+    ],
+    "plannedCollections": [
+      {"service": "audit-service", "path": "services/audit-service/src/main/resources/db/migration", "status": "PLANNED_M2_004"},
+      {"service": "workflow-service", "path": "services/workflow-service/src/main/resources/db/migration", "status": "PLANNED_M2_004"}
+    ],
+    "gateway": {"service": "api-gateway", "businessFlyway": "NOT_APPLICABLE", "businessSchema": "NOT_APPLICABLE"},
+    "candidateOnly": true,
+    "mustNotBeTreatedAsRuntimeProof": ["independent-schema", "owner-grant", "tenant-isolation", "migration-recovery", "rollback", "redis-rebuild"]
+  },
+  "historicalCandidateInputs": {
+    "b25Data": {
+      "path": "config/b25-data.json",
+      "classification": "HISTORICAL_CANDIDATE_MIGRATION_INPUT",
+      "ownerMapCount": 8,
+      "ownerMap": [
+        {"service": "workflow-service", "schema": "workflow_service", "redisNamespace": "workflow"},
+        {"service": "learner-service", "schema": "learner_service", "redisNamespace": "learner"},
+        {"service": "content-service", "schema": "content_service", "redisNamespace": "content"},
+        {"service": "learning-service", "schema": "learning_service", "redisNamespace": "learning"},
+        {"service": "assessment-service", "schema": "assessment_service", "redisNamespace": "assessment"},
+        {"service": "media-service", "schema": "media_service", "redisNamespace": "media"},
+        {"service": "commerce-service", "schema": "commerce_service", "redisNamespace": "commerce"},
+        {"service": "notification-service", "schema": "notification_service", "redisNamespace": "notification"}
+      ],
+      "disposition": "Use only as a migration input; it cannot establish current owner grants, runtime schema isolation, or runtime Redis behavior."
+    },
+    "redisKeyspaceRegistry": {
+      "path": "database/redis/keyspace.registry.json",
+      "classification": "HISTORICAL_CANDIDATE_MIGRATION_INPUT",
+      "entryCount": 29,
+      "coreApiEntryCount": 28,
+      "legacyOwnerMappings": [
+        {"legacyOwner": "core-api.auth", "targetOwner": "iam-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.learning", "targetOwner": "learning-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.assessment", "targetOwner": "assessment-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.social", "targetOwner": "social-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.commerce", "targetOwner": "commerce-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.ops", "targetOwner": "admin-ops-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.risk", "targetOwner": "admin-ops-service", "migrationResponsibility": "P1R-M2-004"},
+        {"legacyOwner": "core-api.common", "targetOwner": "route-owning-domain-service", "migrationResponsibility": "P1R-M2-004", "rule": "Split common idempotency into the owning service; do not create a shared namespace."},
+        {"legacyOwner": "core-api.event-consumer", "targetOwner": "consumer-owning-domain-service", "migrationResponsibility": "P1R-M2-004", "rule": "Dedupe state belongs to each consumer owner and must be durable."},
+        {"legacyOwner": "core-api.sync", "targetOwner": "per-domain-service", "migrationResponsibility": "P1R-M2-004", "rule": "No shared sync data owner; cursor and dedupe state follow the domain stream owner."}
+      ],
+      "disposition": "Every historical core-api.* owner is a migration input, never proof of the target namespace, Redis ACL, rebuild, or source-of-truth behavior."
+    }
+  },
+  "m2RuntimeRequirements": [
+    {"id": "M2-004-OWNER-SCHEMA-GRANTS", "requirement": "Provision the declared schemas and service-scoped credentials; verify each service can write only its own schema."},
+    {"id": "M2-004-FLYWAY-EMPTY-AND-EXISTING", "requirement": "Run owner Flyway migrations against empty and existing databases, including compatible forward repair and failure recovery."},
+    {"id": "M2-004-TENANT-GUARD", "requirement": "Prove server-derived TenantScope, tenant_id/index rules where applicable, and cross-tenant denial; do not claim MySQL automatic row-level isolation."},
+    {"id": "M2-004-CROSS-OWNER-DENY", "requirement": "Prove cross-schema writes, cross-service joins, shared ORM entities, and Gateway/core-api new business writes are denied."},
+    {"id": "M2-004-REDIS-NAMESPACE-ACL", "requirement": "Provision per-service Redis namespaces and ACLs; prove Redis loss or restart cannot create or lose a business fact."},
+    {"id": "M2-004-REDIS-REBUILD", "requirement": "Prove cache, lock, dedupe, rate-limit, and projection rebuild/degradation behavior against durable owner facts."},
+    {"id": "M2-004-ROLLBACK-COMPENSATION", "requirement": "Exercise compatible rollback or owner compensation and record owner, trace, audit, and recovery receipts."},
+    {"id": "M2-004-RETENTION-DELETE-HOLD", "requirement": "Implement exact approved retention, deletion/anonymization, legal-hold, and cross-owner receipt policies after P1R-M1-017 freezes the governing contract."}
+  ],
+  "prohibitedClaims": [
+    "existing migration directory proves runtime schema isolation",
+    "logical credential identifier is a provisioned credential",
+    "Redis key TTL is a legal retention policy",
+    "historical B25 or core-api Redis ownership is a current target owner",
+    "D2 owner policy is a P1R-M2-004 runtime PASS"
+  ]
+}

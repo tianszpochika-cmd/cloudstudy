@@ -51,6 +51,16 @@ IAM 授权语义以 ADR-0010、B8 OpenAPI 和版本化策略包为事实源。`p
 
 P1R-M1-004 只完成上述 D2 合同与自动审计；现有 WebFlux 配置、真实 Redis/JWKS、浏览器行为和网络隔离由 P1R-M2-001 修复和验收。
 
+### 1.4 P1R-M1-005 数据 owner、租户与生命周期执行边界
+
+[`config/p1r-data-ownership.v1.json`](../../config/p1r-data-ownership.v1.json) 是数据所有权 D2 合同的机器可读事实源，状态为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`。`api-gateway` 是边界服务：没有业务 schema、领域写 authority 或业务 Flyway；即使使用 `gateway` Redis namespace，也只能保存边界短状态，不能形成或写入领域事实。
+
+- `iam-service`、`audit-service`、`workflow-service` 和 11 个领域服务是 14 个唯一数据 owner。每个 owner 都有一个目标 MySQL schema、一个独立逻辑 runtime credential、自己的 Flyway location 和 Redis namespace；逻辑凭据 ID 不是已发放凭据，secret 不得进入仓库。完整 schema/namespace 矩阵见 [v2 微服务目标架构的 D2 数据治理政策](./v2-microservices-architecture.md#44-p1r-m1-005-d2-数据所有权存储与生命周期政策)。
+- Phase 1 的 `platform` tenant 必须从已验证 IAM principal 和服务端 `TenantScope` 派生；客户端的 tenant、owner、角色字段没有 authority。所有租户范围访问由 `TenantScope` 约束；租户业务表必须以 `tenant_id` 及包含它的租户范围唯一约束/索引承载隔离。MySQL 不提供自动 RLS，缺少 scope、索引或租户事实必须拒绝，而不是依赖数据库默认行为。
+- 每个 owner 按其 retention policy class 和 policy owner 处理自己的事实：删除/匿名化前先检查 legal hold，执行结果以可追溯 receipt 回传 workflow 与 audit。精确期限由 `P1R-M1-017` 的具名政策确定；Redis TTL、缓存淘汰或 Stream trim 绝不是保留期限。
+- 迁移遵循前向 `expand → compatible switch → contract`、forward repair 和 owner compensation；默认禁止 destructive down migration、跨 schema 写、跨服务 SQL join、共享 ORM entity，以及 Gateway/`core-api` 新业务写。`workflow-service` 只能编排命令和 receipt，不能直接改写其他 owner 的数据库。
+- 空库/存量库 Flyway、owner grant、`TenantScope` 跨租户拒绝、Redis namespace/ACL 与重建、以及运行 rollback/compensation 都由 `P1R-M2-004` 保持 OPEN 并提供运行证据。现有 migration 目录、B25 8-owner map 或 `core-api.*` Redis owner 都只是 historical-candidate/migration input，不能提升为运行 PASS 或当前 owner 证明。
+
 ## 2. 导出字段策略
 
 `authorizeExport` 先检查角色、动作、租户/本人边界，再由 `maskExportFields` 输出。未知字段默认丢弃，禁止把“未配置”当作“原样导出”。

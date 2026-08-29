@@ -1,0 +1,201 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import test from 'node:test';
+
+import {
+  validateDataOwnership,
+  validateDataOwnershipData,
+  validateMigrationSqlText,
+} from '../../scripts/audit/p1r-data-ownership-check.mjs';
+
+const root = path.resolve(import.meta.dirname, '..', '..');
+const policy = JSON.parse(fs.readFileSync(path.join(root, 'config', 'p1r-data-ownership.v1.json'), 'utf8'));
+const b25 = JSON.parse(fs.readFileSync(path.join(root, 'config', 'b25-data.json'), 'utf8'));
+const redisRegistry = JSON.parse(fs.readFileSync(path.join(root, 'database', 'redis', 'keyspace.registry.json'), 'utf8'));
+
+function fixture() {
+  return {
+    policy: structuredClone(policy),
+    b25: structuredClone(b25),
+    redisRegistry: structuredClone(redisRegistry),
+  };
+}
+
+function assertMutationFails(mutate, expected) {
+  const changed = fixture();
+  mutate(changed);
+  const report = validateDataOwnershipData(changed);
+  assert.equal(report.result, 'FAIL', report.errors.join('\n'));
+  if (expected) assert(report.errors.some((error) => expected.test(error)), `missing ${expected}; got ${report.errors.join('\n')}`);
+}
+
+test('canonical data ownership policy passes static audit and retains D2 runtime boundary', () => {
+  const report = validateDataOwnership({ root });
+  assert.equal(report.result, 'PASS', report.errors.join('\n'));
+  assert.deepEqual(report.errors, []);
+  assert.deepEqual(report.summary, {
+    totalServices: 15,
+    dataOwners: 14,
+    gatewayWithoutBusinessSchema: 1,
+    existingMigrationCollections: 12,
+    plannedMigrationCollections: 2,
+    b25OwnerCount: 8,
+    redisEntryCount: 29,
+    redisCoreApiEntryCount: 28,
+    redisNamespaceCount: 15,
+    m2RuntimeRequirementCount: 8,
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+  });
+});
+
+test('service cardinality and data-owner count fail closed', () => {
+  assertMutationFails((changed) => {
+    changed.policy.serviceOwners.pop();
+    changed.policy.serviceOwners[0].dataOwner = true;
+  }, /exactly 15 services|serviceOwners must contain exactly|data owner count must be 14/);
+});
+
+test('Gateway cannot acquire a business schema or database write authority', () => {
+  assertMutationFails((changed) => {
+    const gateway = changed.policy.serviceOwners.find((owner) => owner.service === 'api-gateway');
+    gateway.businessSchema = 'gateway_service';
+    gateway.databaseCredential.required = true;
+    gateway.writeAuthority = 'gateway-service-only';
+  }, /Gateway must not own a business schema|Gateway database credential must not be required|Gateway must have NO_DOMAIN_WRITE_AUTHORITY/);
+});
+
+test('schema, database credential and Redis namespace identities are unique and owner-bound', () => {
+  assertMutationFails((changed) => {
+    changed.policy.serviceOwners.find((owner) => owner.service === 'content-service').schema.name = 'learner_service';
+  }, /schema is duplicated|content-service\.schema\.name must be content_service/);
+  assertMutationFails((changed) => {
+    changed.policy.serviceOwners.find((owner) => owner.service === 'content-service').databaseCredential.logicalId = 'mysql-runtime-learner-service';
+  }, /database credential is duplicated|logicalId must be mysql-runtime-content-service/);
+  assertMutationFails((changed) => {
+    changed.policy.serviceOwners.find((owner) => owner.service === 'content-service').redis.namespace = 'learner';
+  }, /Redis namespace is duplicated|content-service\.redis\.namespace must be content/);
+});
+
+test('all owner schema, Flyway and credential claims remain candidate/unverified until M2-004', () => {
+  assertMutationFails((changed) => {
+    const learner = changed.policy.serviceOwners.find((owner) => owner.service === 'learner-service');
+    learner.schema.status = 'RUNTIME_VERIFIED';
+    learner.databaseCredential.status = 'PROVISIONED';
+    learner.flyway.migrationOwner = 'other-service';
+  }, /schema\.status must be EXISTING_CANDIDATE_UNVERIFIED|databaseCredential\.status must be P1R-M2-004_REQUIRED|migrationOwner must be learner-service|promote/);
+});
+
+test('migration inventory freezes twelve existing candidates and two planned audit/workflow collections', () => {
+  assertMutationFails((changed) => {
+    changed.policy.migrationInventory.existingCollections.pop();
+    changed.policy.migrationInventory.plannedCollections[0].status = 'READY';
+  }, /12 existing candidate|planned migration must remain PLANNED_M2_004|planned migration services/);
+});
+
+test('cross-service writes, joins, shared ORM entities and legacy writes remain prohibited', () => {
+  assertMutationFails((changed) => {
+    changed.policy.globalPolicies.crossServiceTableWrites = 'ALLOWED';
+    changed.policy.globalPolicies.crossServiceSqlJoins = 'ALLOWED';
+    changed.policy.globalPolicies.sharedOrmEntities = 'ALLOWED';
+    changed.policy.globalPolicies.gatewayBusinessWrites = 'ALLOWED';
+    changed.policy.globalPolicies.coreApiNewBusinessWrites = 'ALLOWED';
+    changed.b25.dataOwnerPolicy.crossServiceWritesAllowed = true;
+  }, /crossServiceTableWrites must be PROHIBITED|crossServiceSqlJoins must be PROHIBITED|sharedOrmEntities must be PROHIBITED|gatewayBusinessWrites must be PROHIBITED|coreApiNewBusinessWrites must be PROHIBITED|B25 dataOwnerPolicy\.crossServiceWritesAllowed must be false/);
+});
+
+test('B25 is an eight-owner historical candidate and cannot become runtime proof', () => {
+  assertMutationFails((changed) => {
+    changed.policy.historicalCandidateInputs.b25Data.ownerMap.pop();
+    changed.policy.historicalCandidateInputs.b25Data.classification = 'CURRENT_RUNTIME_OWNER_MAP';
+    changed.b25.runtimeStatus = 'PASS';
+  }, /B25 candidate ownerMapCount must be 8|ownerMap must contain 8 owners|historical candidate migration input|B25 runtimeStatus must remain pending|promote/);
+});
+
+test('B25 owner map rejects a cross-owner schema/namespace mapping', () => {
+  assertMutationFails((changed) => {
+    const owner = changed.b25.dataOwnerPolicy.ownerMap.find((item) => item.service === 'content-service');
+    owner.schema = 'learner_service';
+    owner.redisNamespace = 'learner';
+  }, /B25 data owner mapping is invalid: content-service/);
+});
+
+test('historical core-api Redis entries require ten explicit migration mappings and remain non-authoritative', () => {
+  assertMutationFails((changed) => {
+    changed.policy.historicalCandidateInputs.redisKeyspaceRegistry.legacyOwnerMappings.pop();
+    changed.redisRegistry.entries.find((entry) => entry.owner === 'core-api.auth').sourceOfTruth = 'redis';
+  }, /legacyOwnerMappings must contain 10 mappings|legacy owner has no migration mapping|durable\/non-Redis source of truth/);
+});
+
+test('Redis keyspace cannot promote core-api.* ownership or omit durable rebuild semantics', () => {
+  assertMutationFails((changed) => {
+    const entry = changed.redisRegistry.entries.find((item) => item.owner === 'core-api.learning');
+    entry.owner = 'rogue-service';
+    entry.rebuildable = false;
+    entry.atomicity.notAuthoritative = false;
+  }, /unknown current owner|must be rebuildable|must be non-authoritative/);
+});
+
+test('tenant authority and retention policy cannot be client-selected or Redis-TTL-defined', () => {
+  assertMutationFails((changed) => {
+    changed.policy.globalPolicies.tenant.clientMaySelectTenant = true;
+    changed.policy.globalPolicies.tenant.mysqlProvidesAutomaticRowLevelIsolation = true;
+    changed.policy.globalPolicies.lifecycle.redisTtlIsNotRetention = false;
+    changed.policy.serviceOwners.find((owner) => owner.service === 'learning-service').tenantGuard.clientSuppliedTenantAllowed = true;
+  }, /clients must not select tenant|automatic row-level isolation|Redis TTL must not be treated as retention|must reject client-supplied tenant/);
+});
+
+test('M2-004 runtime gaps stay open and cannot be represented as PASS/ACCEPTED', () => {
+  assertMutationFails((changed) => {
+    changed.policy.runtimeStatus = 'RUNTIME_VERIFIED';
+    changed.policy.m2RuntimeRequirements[0].status = 'PASS';
+    changed.policy.maturity = 'ACCEPTED';
+  }, /runtimeStatus must remain NOT_RUNTIME_VERIFIED|must remain D2_CONTRACT_READY|promote/);
+});
+
+test('migration and Redis candidate metadata cannot be relabeled as current runtime evidence', () => {
+  assertMutationFails((changed) => {
+    changed.policy.migrationInventory.candidateOnly = false;
+    changed.policy.migrationInventory.classification = 'RUNTIME_VERIFIED';
+    changed.policy.historicalCandidateInputs.redisKeyspaceRegistry.disposition = 'current owner evidence';
+  }, /historical candidate input|candidateOnly must be true|historical owner promotion/);
+});
+
+test('owner lifecycle and forward-repair responsibilities remain complete', () => {
+  assertMutationFails((changed) => {
+    const owner = changed.policy.serviceOwners.find((item) => item.service === 'assessment-service');
+    owner.lifecycle.legalHold = 'skip';
+    owner.migrationResponsibility.forwardRepair = 'workflow-service';
+    owner.migrationResponsibility.destructiveDownMigration = 'ALLOWED';
+  }, /legalHold must be checked by the owner|forwardRepair must be assessment-service|destructive down migration must be PROHIBITED/);
+});
+
+test('migration SQL scan rejects owner switching, grant changes and foreign service schemas', () => {
+  const errors = validateMigrationSqlText({
+    service: 'learning-service',
+    filename: 'V99__unsafe_cross_owner.sql',
+    sql: `
+      USE learner_service;
+      GRANT SELECT ON learner_service.* TO 'learning';
+      INSERT INTO assessment_service.attempt_projection (attempt_id) VALUES ('synthetic-attempt');
+    `,
+  });
+  assert(errors.some((error) => /USE is forbidden/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /GRANT\/REVOKE is forbidden/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /cross-service schema reference is forbidden: learner_service/.test(error)), errors.join('\n'));
+  assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+});
+
+test('migration SQL scan ignores policy keywords inside comments and string literals', () => {
+  const errors = validateMigrationSqlText({
+    service: 'content-service',
+    filename: 'V99__safe_learning_copy.sql',
+    sql: `
+      -- USE learner_service; GRANT SELECT ON learner_service.* TO 'reader';
+      /* DROP SCHEMA assessment_service; */
+      INSERT INTO learning_example (copy_en, copy_zh)
+      VALUES ('Use content_service.lesson to build a habit', "GRANT is vocabulary, not a statement");
+    `,
+  });
+  assert.deepEqual(errors, []);
+});
