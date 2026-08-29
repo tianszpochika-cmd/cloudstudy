@@ -99,10 +99,11 @@ export const useSessionStore = defineStore('session', () => {
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
       const native = isNativeAppRuntime()
-      if (native && !refreshToken.value) { clear(); return false }
+      const nativeRefreshToken = native ? refreshToken.value : null
+      if (native && !nativeRefreshToken) { clear(); return false }
       status.value = 'refreshing'
       try {
-        setTokenPair(await adapter().refresh(native ? { refreshToken: refreshToken.value ?? undefined } : undefined))
+        setTokenPair(await adapter().refresh(nativeRefreshToken ? { refreshToken: nativeRefreshToken } : undefined))
         applySnapshot(await adapter().getPermissions())
         return true
       } catch (error) {
