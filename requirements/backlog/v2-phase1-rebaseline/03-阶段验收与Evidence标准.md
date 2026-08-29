@@ -158,7 +158,7 @@
 每个任务使用：
 
 ```text
-requirements/backlog/evidence/p1r/<TASK-ID>/
+evidence/p1r/m<里程碑数字>/<TASK-ID>/
 ├── manifest.json
 ├── 00-scope.md
 ├── 01-contract.md
@@ -169,6 +169,8 @@ requirements/backlog/evidence/p1r/<TASK-ID>/
 ├── 06-recovery-rollback.md
 └── 99-handoff.md
 ```
+
+例如 `P1R-M0-001` 的唯一 canonical manifest 路径是 `evidence/p1r/m0/P1R-M0-001/manifest.json`。`requirements/backlog/evidence/`、旧 `evidence/b*` 或其他历史目录不能满足 P1R Gate。
 
 `manifest.json` 至少包含：
 

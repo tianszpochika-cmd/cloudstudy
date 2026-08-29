@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { parseDependencyCell } from './p1r-evidence-gate.mjs';
 
 const root = process.cwd();
 const planDir = path.join(root, 'requirements', 'backlog', 'v2-phase1-rebaseline');
@@ -87,9 +88,14 @@ for (const line of taskRows) {
   if (!status || !allowedTaskStatuses.has(status)) {
     fail(`invalid task status: ${columns[0]}=${columns[7]}`);
   }
-  for (const dependency of collect(columns[4], /\b(M\d-\d{3})\b/g)) {
-    const normalized = `P1R-${dependency}`;
-    if (!taskIds.includes(normalized)) fail(`unknown dependency ${dependency} in ${columns[0]}`);
+  let dependencies;
+  try {
+    dependencies = parseDependencyCell(columns[4]);
+  } catch (error) {
+    fail(`${columns[0]} has invalid dependencies: ${error.message}`);
+  }
+  for (const dependency of dependencies) {
+    if (!taskIds.includes(dependency)) fail(`unknown dependency ${dependency} in ${columns[0]}`);
   }
 }
 

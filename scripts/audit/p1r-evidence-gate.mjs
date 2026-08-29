@@ -17,6 +17,15 @@ export const ALLOWED_STATUSES = new Set([
 const DEPENDENCY_READY_STATUSES = new Set(['READY', 'IN_PROGRESS', 'REVIEW', 'ACCEPTED']);
 const EVIDENCE_REQUIRED_STATUSES = new Set(['REVIEW', 'ACCEPTED', 'BLOCKED', 'REWORK']);
 const TERMINAL_DECISIONS = new Set(['ACCEPTED', 'BLOCKED', 'REWORK']);
+const STATUS_TRANSITIONS = new Map([
+  ['PLANNED', new Set(['READY'])],
+  ['READY', new Set(['IN_PROGRESS', 'BLOCKED'])],
+  ['IN_PROGRESS', new Set(['REVIEW', 'BLOCKED'])],
+  ['REVIEW', new Set(['ACCEPTED', 'REWORK', 'BLOCKED'])],
+  ['BLOCKED', new Set(['READY', 'IN_PROGRESS', 'REWORK'])],
+  ['REWORK', new Set(['IN_PROGRESS', 'BLOCKED'])],
+  ['ACCEPTED', new Set(['REWORK'])],
+]);
 const SHA40 = /^[0-9a-f]{40}$/i;
 const SHA256 = /^[0-9a-f]{64}$/i;
 
@@ -36,6 +45,27 @@ function splitRow(line) {
   return line.slice(1, -1).split('|').map((column) => column.trim());
 }
 
+export function parseDependencyCell(cell) {
+  const dependencies = new Set(
+    [...cell.matchAll(/\b(M\d-\d{3})\b/g)].map((match) => `P1R-${match[1]}`),
+  );
+  const rangePattern = /\b(M\d)-(\d{3})\s*(?:…|\.\.\.|–|—)\s*(?:(M\d)-)?(\d{3})\b/g;
+  for (const match of cell.matchAll(rangePattern)) {
+    const startMilestone = match[1];
+    const endMilestone = match[3] ?? startMilestone;
+    const start = Number(match[2]);
+    const end = Number(match[4]);
+    if (startMilestone !== endMilestone) {
+      throw new Error(`dependency range crosses milestones: ${match[0]}`);
+    }
+    if (end < start) throw new Error(`dependency range is descending: ${match[0]}`);
+    for (let index = start; index <= end; index += 1) {
+      dependencies.add(`P1R-${startMilestone}-${String(index).padStart(3, '0')}`);
+    }
+  }
+  return [...dependencies].sort((left, right) => left.localeCompare(right, 'en'));
+}
+
 export function parseLedger(text) {
   const rows = text
     .split(/\r?\n/)
@@ -45,8 +75,7 @@ export function parseLedger(text) {
     if (columns.length !== 8) throw new Error(`task row must have 8 columns: ${line}`);
     const id = columns[0].match(/^`(P1R-M\d-\d{3})`$/)?.[1];
     const status = columns[7].match(/^`([A-Z_]+)`$/)?.[1];
-    const dependencies = [...columns[4].matchAll(/\b(M\d-\d{3})\b/g)]
-      .map((match) => `P1R-${match[1]}`);
+    const dependencies = parseDependencyCell(columns[4]);
     if (!id) throw new Error(`invalid task ID cell: ${columns[0]}`);
     return {
       id,
@@ -57,6 +86,62 @@ export function parseLedger(text) {
     };
   });
   return tasks;
+}
+
+export function validateStatusTrajectories({ root, tasks, checkGit = true }) {
+  const errors = [];
+  const nonPlanned = tasks.filter((task) => task.status !== 'PLANNED');
+  const trajectoryPath = path.join(root, 'requirements', 'backlog', 'v2-phase1-rebaseline', 'execution', 'status-trajectories.json');
+  if (!fs.existsSync(trajectoryPath)) {
+    if (nonPlanned.length > 0) errors.push(`missing status trajectory registry: ${repositoryPath(root, trajectoryPath)}`);
+    return errors;
+  }
+  if (checkGit) validateCommittedPath(root, trajectoryPath, 'status trajectory registry', errors);
+
+  let registry;
+  try {
+    registry = JSON.parse(fs.readFileSync(trajectoryPath, 'utf8'));
+  } catch (error) {
+    return [...errors, `invalid status trajectory registry JSON: ${error.message}`];
+  }
+  add(errors, registry.schemaVersion === 'p1r.status-trajectories.v1', 'status trajectory registry has an unsupported schemaVersion');
+  add(errors, Array.isArray(registry.records), 'status trajectory registry records must be an array');
+  if (!Array.isArray(registry.records)) return errors;
+
+  const tasksById = new Map(tasks.map((task) => [task.id, task]));
+  const seen = new Set();
+  for (const [index, record] of registry.records.entries()) {
+    const label = `status trajectory records[${index}]`;
+    add(errors, isRecord(record), `${label} must be an object`);
+    if (!isRecord(record)) continue;
+    const task = tasksById.get(record.taskId);
+    add(errors, Boolean(task), `${label} references unknown task ${record.taskId ?? '<missing>'}`);
+    add(errors, !seen.has(record.taskId), `${label} duplicates task ${record.taskId ?? '<missing>'}`);
+    if (nonEmptyString(record.taskId)) seen.add(record.taskId);
+    add(errors, validTimestamp(record.recordedAt), `${label}.recordedAt must be an ISO timestamp`);
+    add(errors, nonEmptyString(record.actor), `${label}.actor is required`);
+    add(errors, nonEmptyString(record.reason), `${label}.reason is required`);
+    add(errors, nonEmptyString(record.evidencePath), `${label}.evidencePath is required`);
+    add(errors, Array.isArray(record.path) && record.path.length >= 2, `${label}.path must contain at least two states`);
+    if (!task || !Array.isArray(record.path) || record.path.length < 2) continue;
+    add(errors, record.path[0] === 'PLANNED', `${label}.path must start at PLANNED`);
+    for (const [stateIndex, state] of record.path.entries()) {
+      add(errors, ALLOWED_STATUSES.has(state), `${label}.path[${stateIndex}] is illegal: ${state}`);
+      if (stateIndex === 0) continue;
+      const from = record.path[stateIndex - 1];
+      add(errors, STATUS_TRANSITIONS.get(from)?.has(state) === true, `${label} has illegal transition ${from} -> ${state}`);
+    }
+    add(errors, record.path.at(-1) === task.status, `${label} final state ${record.path.at(-1)} does not match ledger ${task.status}`);
+    if (EVIDENCE_REQUIRED_STATUSES.has(task.status)) {
+      const expected = `evidence/p1r/${task.milestone.toLowerCase()}/${task.id}/manifest.json`;
+      add(errors, record.evidencePath === expected, `${label}.evidencePath must be ${expected}`);
+    }
+  }
+  for (const task of nonPlanned) add(errors, seen.has(task.id), `${task.id}: non-PLANNED status requires a status trajectory`);
+  for (const task of tasks.filter((item) => item.status === 'PLANNED')) {
+    add(errors, !seen.has(task.id), `${task.id}: PLANNED task must not have a completed trajectory record`);
+  }
+  return errors;
 }
 
 function resolveInside(root, relativePath, label, errors) {
@@ -100,6 +185,18 @@ function commandSucceeded(root, command, args) {
     windowsHide: true,
   });
   return result.status === 0;
+}
+
+function repositoryPath(root, filePath) {
+  return path.relative(root, filePath).split(path.sep).join('/');
+}
+
+function validateCommittedPath(root, filePath, label, errors) {
+  const relativePath = repositoryPath(root, filePath);
+  add(errors, commandSucceeded(root, 'git', ['ls-files', '--error-unmatch', '--', relativePath]), `${label} must be tracked by Git: ${relativePath}`);
+  add(errors, readGitBlob(root, 'HEAD', relativePath) !== null, `${label} must exist in HEAD: ${relativePath}`);
+  add(errors, commandSucceeded(root, 'git', ['diff', '--quiet', '--', relativePath]), `${label} has unstaged changes: ${relativePath}`);
+  add(errors, commandSucceeded(root, 'git', ['diff', '--cached', '--quiet', '--', relativePath]), `${label} has staged changes: ${relativePath}`);
 }
 
 export function validateManifest({ root, task, manifest, manifestPath, checkGit = true }) {
@@ -178,7 +275,6 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
     add(errors, manifest.draftOnly !== true, `${task.id}: ACCEPTED evidence cannot be draftOnly`);
     add(errors, manifest.decision === 'ACCEPTED', `${task.id}: decision must be ACCEPTED`);
     add(errors, nonEmptyString(manifest.reviewer), `${task.id}: reviewer is required`);
-    add(errors, !(actors ?? []).includes(manifest.reviewer), `${task.id}: reviewer must be independent from execution actors`);
     add(errors, !Array.isArray(manifest.blockers) || manifest.blockers.length === 0, `${task.id}: ACCEPTED evidence cannot retain blockers`);
   }
 
@@ -189,7 +285,11 @@ export function validateManifest({ root, task, manifest, manifestPath, checkGit 
   }
 
   if (TERMINAL_DECISIONS.has(manifest.decision)) {
-    add(errors, nonEmptyString(manifest.reviewer), `${task.id}: terminal decision requires reviewer`);
+    const reviewer = nonEmptyString(manifest.reviewer) ? manifest.reviewer.trim() : '';
+    const normalizedActors = (actors ?? []).filter(nonEmptyString).map((actor) => actor.trim());
+    add(errors, reviewer.length > 0, `${task.id}: terminal decision requires reviewer`);
+    add(errors, manifest.reviewer === reviewer, `${task.id}: reviewer identity must not contain surrounding whitespace`);
+    add(errors, !normalizedActors.includes(reviewer), `${task.id}: terminal reviewer must be independent from execution actors`);
   }
 
   const canonicalEvidenceRoot = path.join(root, 'evidence', 'p1r');
@@ -203,6 +303,7 @@ export function validateEvidenceGate({ root = process.cwd(), milestone, runPlanC
   const errors = [];
   const ledgerPath = path.join(root, 'requirements', 'backlog', 'v2-phase1-rebaseline', '02-编号任务台账.md');
   if (!fs.existsSync(ledgerPath)) return { result: 'FAIL', errors: [`missing ledger: ${ledgerPath}`], tasks: [] };
+  if (checkGit) validateCommittedPath(root, ledgerPath, 'canonical ledger', errors);
 
   let tasks;
   try {
@@ -216,6 +317,7 @@ export function validateEvidenceGate({ root = process.cwd(), milestone, runPlanC
   add(errors, tasks.length === 108, `expected 108 task rows, got ${tasks.length}`);
   add(errors, duplicates.length === 0, `duplicate task IDs: ${duplicates.join(', ')}`);
   const byId = new Map(tasks.map((task) => [task.id, task]));
+  errors.push(...validateStatusTrajectories({ root, tasks, checkGit }));
 
   for (const task of tasks) {
     add(errors, ALLOWED_STATUSES.has(task.status), `${task.id}: illegal status ${task.status ?? '<missing>'}`);
@@ -250,6 +352,7 @@ export function validateEvidenceGate({ root = process.cwd(), milestone, runPlanC
     if (EVIDENCE_REQUIRED_STATUSES.has(task.status)) {
       add(errors, fs.existsSync(manifestPath), `${task.id}: ${task.status} requires ${path.relative(root, manifestPath)}`);
       if (fs.existsSync(manifestPath)) {
+        if (checkGit) validateCommittedPath(root, manifestPath, `${task.id} canonical manifest`, errors);
         try {
           const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
           errors.push(...validateManifest({ root, task, manifest, manifestPath, checkGit }));

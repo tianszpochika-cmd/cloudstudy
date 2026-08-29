@@ -7,9 +7,11 @@ import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 import {
+  parseDependencyCell,
   parseLedger,
   validateEvidenceGate,
   validateManifest,
+  validateStatusTrajectories,
 } from '../../scripts/audit/p1r-evidence-gate.mjs';
 
 function row(id, depends, status) {
@@ -82,6 +84,40 @@ test('ledger parser extracts statuses and normalized dependencies', () => {
   assert.equal(tasks[1].status, 'READY');
 });
 
+test('dependency ranges expand completely and reject malformed ranges', () => {
+  assert.deepEqual(
+    parseDependencyCell('M8-002…006,M8-008'),
+    ['P1R-M8-002', 'P1R-M8-003', 'P1R-M8-004', 'P1R-M8-005', 'P1R-M8-006', 'P1R-M8-008'],
+  );
+  assert.throws(() => parseDependencyCell('M8-006…002'), /descending/);
+  assert.throws(() => parseDependencyCell('M7-010…M8-002'), /crosses milestones/);
+});
+
+test('status trajectories reject skipped transitions and ledger mismatch', () => {
+  withTempRepo((root) => {
+    const executionRoot = path.join(root, 'requirements', 'backlog', 'v2-phase1-rebaseline', 'execution');
+    fs.mkdirSync(executionRoot, { recursive: true });
+    fs.writeFileSync(path.join(executionRoot, 'status-trajectories.json'), JSON.stringify({
+      schemaVersion: 'p1r.status-trajectories.v1',
+      records: [{
+        taskId: 'P1R-M0-001',
+        path: ['PLANNED', 'ACCEPTED'],
+        recordedAt: '2026-08-29T00:00:00.000Z',
+        actor: 'coordinator',
+        reason: 'test invalid skip',
+        evidencePath: 'evidence/p1r/m0/P1R-M0-001/manifest.json',
+      }],
+    }));
+    const errors = validateStatusTrajectories({
+      root,
+      tasks: [{ id: 'P1R-M0-001', milestone: 'M0', status: 'REVIEW' }],
+      checkGit: false,
+    });
+    assert(errors.some((error) => error.includes('illegal transition PLANNED -> ACCEPTED')));
+    assert(errors.some((error) => error.includes('does not match ledger REVIEW')));
+  });
+});
+
 test('accepted manifest validates artifact digest and independent reviewer', () => {
   withTempRepo((root) => {
     const task = { id: 'P1R-M0-001', status: 'ACCEPTED' };
@@ -133,6 +169,22 @@ test('accepted manifest fails closed on digest mismatch and self review', () => 
   });
 });
 
+test('accepted reviewer identity rejects surrounding-whitespace bypass', () => {
+  withTempRepo((root) => {
+    const task = { id: 'P1R-M0-001', status: 'ACCEPTED' };
+    const manifestPath = path.join(root, 'evidence', 'p1r', 'm0', task.id, 'manifest.json');
+    const errors = validateManifest({
+      root,
+      task,
+      manifest: acceptedManifest(root, { reviewer: ' executor ' }),
+      manifestPath,
+      checkGit: false,
+    });
+    assert(errors.some((error) => error.includes('surrounding whitespace')));
+    assert(errors.some((error) => error.includes('terminal reviewer must be independent')));
+  });
+});
+
 test('blocked manifest requires blockers and next steps', () => {
   withTempRepo((root) => {
     const task = { id: 'P1R-M0-001', status: 'BLOCKED' };
@@ -147,6 +199,24 @@ test('blocked manifest requires blockers and next steps', () => {
     const errors = validateManifest({ root, task, manifest, manifestPath, checkGit: false });
     assert(errors.some((error) => error.includes('blockers are required')));
     assert(errors.some((error) => error.includes('nextSteps are required')));
+  });
+});
+
+test('blocked and rework decisions reject self review', () => {
+  withTempRepo((root) => {
+    for (const status of ['BLOCKED', 'REWORK']) {
+      const task = { id: 'P1R-M0-001', status };
+      const manifestPath = path.join(root, 'evidence', 'p1r', 'm0', task.id, 'manifest.json');
+      const manifest = acceptedManifest(root, {
+        canonicalTaskStatus: status,
+        decision: status,
+        reviewer: 'executor',
+        blockers: ['blocked for test'],
+        nextSteps: ['assign independent reviewer'],
+      });
+      const errors = validateManifest({ root, task, manifest, manifestPath, checkGit: false });
+      assert(errors.some((error) => error.includes('terminal reviewer must be independent')));
+    }
   });
 });
 
@@ -181,5 +251,33 @@ test('full gate rejects REVIEW without canonical evidence manifest', () => {
     const report = validateEvidenceGate({ root, milestone: 'M0', runPlanCheck: false, checkGit: false });
     assert.equal(report.result, 'FAIL');
     assert(report.errors.some((error) => error.includes('REVIEW requires')));
+  });
+});
+
+test('full gate rejects uncommitted ledger and canonical manifest', () => {
+  withTempRepo((root) => {
+    git(root, ['init']);
+    git(root, ['config', 'user.email', 'p1r-test@example.invalid']);
+    git(root, ['config', 'user.name', 'P1R Test']);
+    git(root, ['config', 'core.autocrlf', 'false']);
+    git(root, ['add', 'artifact.txt']);
+    git(root, ['commit', '-m', 'artifact only']);
+    const sourceCommit = git(root, ['rev-parse', 'HEAD']).trim();
+    const sourceBytes = git(root, ['show', `${sourceCommit}:artifact.txt`], null);
+    const digest = crypto.createHash('sha256').update(sourceBytes).digest('hex');
+
+    writeSyntheticLedger(root, { 'P1R-M0-001': { status: 'REVIEW' } });
+    const manifestPath = path.join(root, 'evidence', 'p1r', 'm0', 'P1R-M0-001', 'manifest.json');
+    fs.writeFileSync(manifestPath, JSON.stringify(acceptedManifest(root, {
+      canonicalTaskStatus: 'REVIEW',
+      sourceCommit,
+      artifactDigests: [{ path: 'artifact.txt', algorithm: 'sha256', digest }],
+      decision: 'PENDING',
+    })));
+
+    const report = validateEvidenceGate({ root, milestone: 'M0', runPlanCheck: false, checkGit: true });
+    assert.equal(report.result, 'FAIL');
+    assert(report.errors.some((error) => error.includes('canonical ledger must be tracked')));
+    assert(report.errors.some((error) => error.includes('canonical manifest must be tracked')));
   });
 });
