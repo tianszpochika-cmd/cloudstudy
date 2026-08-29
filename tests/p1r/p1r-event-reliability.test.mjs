@@ -18,7 +18,7 @@ test("canonical M1-007 reliability policy passes without runtime promotion", fun
   assert.equal(report.summary.maturity, "D2_CONTRACT_READY");
   assert.equal(report.summary.runtimeStatus, "NOT_RUNTIME_VERIFIED");
   assert.equal(report.summary.canonicalEvents, 7);
-  assert.equal(report.summary.receiptSchemas, 7);
+  assert.equal(report.summary.reliabilitySchemas, 8);
   assert.equal(report.summary.retryMaxAttempts, 5);
   assert.equal(report.summary.b26Mode, "static-only");
   assert.equal(report.summary.b26RuntimeStatus, "pending");
@@ -61,6 +61,13 @@ const mutations = [
       input.policy.catalog.currentCanonicalEvents.pop();
     },
     /canonical event set/,
+  ],
+  [
+    "source reference drift",
+    function (input) {
+      input.policy.sourceRefs.pop();
+    },
+    /sourceRefs drifted/,
   ],
   [
     "B26 authority promotion",
@@ -112,11 +119,25 @@ const mutations = [
     /replay must preserve sourceEventId/,
   ],
   [
+    "replay control event is client supplied",
+    function (input) {
+      input.policy.identityAndLineage.replay.controlEventId = "PRESERVE";
+    },
+    /controlEventId must be server-generated/,
+  ],
+  [
     "Outbox cross-owner storage",
     function (input) {
       input.policy.outbox.storage = "SHARED_SCHEMA";
     },
     /owner-local/,
+  ],
+  [
+    "Outbox record schema reference drift",
+    function (input) {
+      input.policy.outbox.recordSchemaRef = "platform.event.publish-receipt.v1";
+    },
+    /Outbox schema references/,
   ],
   [
     "Outbox transaction split",
@@ -163,6 +184,13 @@ const mutations = [
       input.policy.consumer.deduplication.primaryUniqueKey = ["eventId"];
     },
     /dedupe key/,
+  ],
+  [
+    "consumer receipt schema reference drift",
+    function (input) {
+      input.policy.consumer.receiptSchemaRef = "platform.event.dlq-record.v1";
+    },
+    /consumer owner, receipt, or delivery/,
   ],
   [
     "consumer effect not atomic",
@@ -214,6 +242,14 @@ const mutations = [
     /DLQ identity/,
   ],
   [
+    "DLQ record schema reference drift",
+    function (input) {
+      input.policy.deadLetter.recordSchemaRef =
+        "platform.event.publish-receipt.v1";
+    },
+    /DLQ source/,
+  ],
+  [
     "DLQ direct domain write",
     function (input) {
       input.policy.deadLetter.domainFactsDirectWrite = "ALLOWED";
@@ -226,6 +262,13 @@ const mutations = [
       input.policy.replay.sameConsumerPath = false;
     },
     /sameConsumerPath/,
+  ],
+  [
+    "replay request schema reference drift",
+    function (input) {
+      input.policy.replay.requestSchemaRef = "platform.event.dlq-record.v1";
+    },
+    /replay source or client boundary/,
   ],
   [
     "replay without independent approval",
@@ -263,18 +306,19 @@ const mutations = [
     /Saga recovery boundary/,
   ],
   [
-    "receipt schema removed",
+    "reliability schema removed",
     function (input) {
-      input.policy.receiptRegistry.requiredSchemas.pop();
+      input.policy.reliabilitySchemaRegistry.requiredSchemas.pop();
     },
-    /receipt schema set/,
+    /reliability schema set/,
   ],
   [
-    "receipt runtime claim",
+    "reliability runtime record claim",
     function (input) {
-      input.policy.receiptRegistry.runtimeReceiptPresenceClaim = "PASS";
+      input.policy.reliabilitySchemaRegistry.runtimeRecordPresenceClaim =
+        "PASS";
     },
-    /receipt safety/,
+    /record safety/,
   ],
   [
     "runtime exclusion removed",
@@ -291,6 +335,13 @@ const mutations = [
       }).status = "CANONICAL_D2";
     },
     /catalog canonical events/,
+  ],
+  [
+    "catalog unknown field",
+    function (input) {
+      input.catalog.runtimeProof = "PASS";
+    },
+    /event catalog: event catalog keys|runtimeProof/,
   ],
   [
     "catalog runtime promotion",
@@ -345,6 +396,77 @@ const mutations = [
       input.registry.schemas["platform.event.publish-receipt.v1"].allOf.pop();
     },
     /bind failureCode/,
+  ],
+  [
+    "Outbox record loses retry-state binding",
+    function (input) {
+      input.registry.schemas["platform.event.outbox-record.v1"].allOf.pop();
+    },
+    /Outbox record must bind|structure drifted/,
+  ],
+  [
+    "Outbox record state drift",
+    function (input) {
+      input.registry.schemas[
+        "platform.event.outbox-record.v1"
+      ].properties.state.enum.pop();
+    },
+    /Outbox record states|structure drifted/,
+  ],
+  [
+    "schema pattern weakened",
+    function (input) {
+      input.registry.schemas[
+        "platform.event.reliability-context.v1"
+      ].properties.eventId.pattern = ".*";
+    },
+    /structure drifted/,
+  ],
+  [
+    "schema nested runtime proof",
+    function (input) {
+      input.registry.schemas[
+        "platform.event.consumer-effect-receipt.v1"
+      ].properties.effectDigest.runtimeProof = "PASS";
+    },
+    /structure drifted/,
+  ],
+  [
+    "recovery task state drift",
+    function (input) {
+      input.registry.schemas[
+        "platform.workflow.recovery-task.v1"
+      ].properties.state.enum.pop();
+    },
+    /recovery task states|structure drifted/,
+  ],
+  [
+    "recovery closure loses precheck evidence",
+    function (input) {
+      const required =
+        input.registry.schemas["platform.workflow.recovery-closure-receipt.v1"]
+          .required;
+      required.splice(required.indexOf("precheckReconciliationId"), 1);
+    },
+    /required fields|missing required evidence|structure drifted/,
+  ],
+  [
+    "recovery closure accepts rejected approval",
+    function (input) {
+      input.registry.schemas[
+        "platform.workflow.recovery-closure-receipt.v1"
+      ].properties.approvalDecision.const = "REJECTED";
+    },
+    /bind CLOSED|structure drifted/,
+  ],
+  [
+    "replay loses action binding",
+    function (input) {
+      const required =
+        input.registry.schemas["platform.event.replay-request.v1"].required;
+      required.splice(required.indexOf("actionDigest"), 1);
+    },
+    /required fields|structure drifted/,
   ],
   [
     "sensitive receipt field",
@@ -409,8 +531,9 @@ for (const [name, mutate, expected] of mutations) {
   });
 }
 
-test("all reliability receipt schemas are additive, closed and generated from the shared registry", function () {
-  for (const schemaName of baseline.policy.receiptRegistry.requiredSchemas) {
+test("all reliability record schemas are additive, closed and generated from the shared registry", function () {
+  for (const schemaName of baseline.policy.reliabilitySchemaRegistry
+    .requiredSchemas) {
     const schema = baseline.registry.schemas[schemaName];
     assert.ok(schema, schemaName);
     assert.equal(schema.additionalProperties, false, schemaName);

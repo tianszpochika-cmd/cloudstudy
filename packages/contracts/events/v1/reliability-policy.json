@@ -86,10 +86,15 @@
     "replay": {
       "sourceEventId": "PRESERVE",
       "rootEventId": "PRESERVE",
+      "eventName": "PRESERVE",
+      "aggregateType": "PRESERVE",
       "aggregateId": "PRESERVE",
       "aggregateVersion": "PRESERVE",
       "schemaVersion": "PRESERVE",
       "dedupeKey": "PRESERVE",
+      "topic": "PRESERVE",
+      "partitionKey": "PRESERVE",
+      "payloadDigest": "PRESERVE",
       "replayRunId": "NEW_SERVER_GENERATED_OPERATION_ID",
       "controlEventId": "NEW_SERVER_GENERATED_EVENT_ID"
     },
@@ -98,7 +103,7 @@
   "outbox": {
     "owner": "EVENT_DATA_OWNER_SERVICE",
     "storage": "OWNER_SERVICE_MYSQL_SCHEMA",
-    "recordSchemaRef": "platform.event.reliability-context.v1",
+    "recordSchemaRef": "platform.event.outbox-record.v1",
     "publishReceiptSchemaRef": "platform.event.publish-receipt.v1",
     "aggregateAndOutboxSameTransaction": true,
     "eventImmutableAfterCommit": true,
@@ -272,11 +277,12 @@
     "kafkaRpc": false,
     "runtimeVerificationTask": "P1R-M2-006"
   },
-  "receiptRegistry": {
+  "reliabilitySchemaRegistry": {
     "path": "packages/contracts/schemas/v1/registry.json",
     "requiredSchemas": [
       "platform.event.consumer-effect-receipt.v1",
       "platform.event.dlq-record.v1",
+      "platform.event.outbox-record.v1",
       "platform.event.publish-receipt.v1",
       "platform.event.reliability-context.v1",
       "platform.event.replay-request.v1",
@@ -285,7 +291,7 @@
     ],
     "unknownFields": "REJECT",
     "sensitivePayloadOrCredentialFields": "PROHIBITED",
-    "runtimeReceiptPresenceClaim": "PROHIBITED_IN_D2_EVIDENCE"
+    "runtimeRecordPresenceClaim": "PROHIBITED_IN_D2_EVIDENCE"
   },
   "prohibitions": [
     "CLIENT_SUPPLIED_EVENT_IDENTITY",

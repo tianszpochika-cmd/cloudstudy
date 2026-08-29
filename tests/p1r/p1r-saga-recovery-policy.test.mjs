@@ -74,23 +74,190 @@ test("Saga and recovery illegal transitions cannot bypass compensation, review o
   }, /direct-close and re-execution transitions must be forbidden/);
 });
 
+test("state-machine contracts are exact and reject injected completion bypasses", () => {
+  const exactContractError = /must exactly match the frozen policy contract/;
+  for (const mutate of [
+    (input) => input.policy.saga.states.push("INJECTED_STATE"),
+    (input) => {
+      input.policy.saga.step.states = input.policy.saga.step.states.filter(
+        (state) => state !== "FAILED",
+      );
+    },
+    (input) => input.policy.compensation.states.push("INJECTED_STATE"),
+    (input) => {
+      input.policy.manualRecovery.states =
+        input.policy.manualRecovery.states.filter(
+          (state) => state !== "PRECHECK_RECONCILING",
+        );
+    },
+    (input) => {
+      input.policy.saga.initialState = "FORWARD_RUNNING";
+    },
+    (input) => {
+      input.policy.saga.step.initialState = "DISPATCHED";
+    },
+    (input) => {
+      input.policy.compensation.initialState = "DISPATCHED";
+    },
+    (input) => {
+      input.policy.manualRecovery.initialState = "PRECHECK_RECONCILING";
+    },
+    (input) => input.policy.saga.terminalStates.pop(),
+    (input) => input.policy.saga.step.terminalStates.pop(),
+    (input) => input.policy.compensation.terminalStates.pop(),
+    (input) => input.policy.manualRecovery.terminalStates.pop(),
+    (input) => input.policy.saga.transitions.shift(),
+    (input) => input.policy.saga.step.transitions.shift(),
+    (input) => input.policy.compensation.transitions.shift(),
+    (input) => input.policy.manualRecovery.transitions.shift(),
+  ]) {
+    assertMutationFails(mutate, exactContractError);
+  }
+
+  for (const mutate of [
+    (input) =>
+      input.policy.saga.transitions.push({
+        from: "FORWARD_RUNNING",
+        to: "COMPENSATED",
+      }),
+    (input) =>
+      input.policy.saga.transitions.push({
+        from: "COMPENSATION_PENDING",
+        to: "COMPENSATED",
+      }),
+    (input) =>
+      input.policy.saga.step.transitions.push({
+        from: "FAILED",
+        to: "COMPENSATED",
+      }),
+    (input) =>
+      input.policy.saga.step.transitions.push({
+        from: "SUCCEEDED",
+        to: "COMPENSATED",
+      }),
+    (input) =>
+      input.policy.compensation.transitions.push({
+        from: "PENDING",
+        to: "APPLIED",
+      }),
+    (input) =>
+      input.policy.manualRecovery.transitions.push({
+        from: "OPEN",
+        to: "CLOSED",
+      }),
+    (input) =>
+      input.policy.manualRecovery.transitions.push({
+        from: "PRECHECK_RECONCILING",
+        to: "CLOSED",
+      }),
+  ]) {
+    assertMutationFails(mutate, exactContractError);
+  }
+});
+
+test("required fields and key enumerations cannot be injected or deleted", () => {
+  const exactContractError = /must exactly match the frozen policy contract/;
+  for (const mutate of [
+    (input) => input.policy.correlation.requiredFields.push("actorRef"),
+    (input) => {
+      input.policy.saga.recordRequiredFields =
+        input.policy.saga.recordRequiredFields.filter(
+          (field) => field !== "auditId",
+        );
+    },
+    (input) => input.policy.saga.step.recordRequiredFields.push("tenantRef"),
+    (input) => {
+      input.policy.compensation.recordRequiredFields =
+        input.policy.compensation.recordRequiredFields.filter(
+          (field) => field !== "reasonCode",
+        );
+    },
+    (input) => input.policy.manualRecovery.recordRequiredFields.push("roles"),
+    (input) => {
+      input.policy.manualRecovery.approval.recordRequiredFields =
+        input.policy.manualRecovery.approval.recordRequiredFields.filter(
+          (field) => field !== "auditId",
+        );
+    },
+    (input) =>
+      input.policy.manualRecovery.reconciliation.recordRequiredFields.push(
+        "tenantRef",
+      ),
+    (input) => input.policy.manualRecovery.closure.requiredEvidence.pop(),
+    (input) => input.policy.receipt.requiredFields.push("sensitivePayload"),
+    (input) => {
+      input.policy.audit.requiredCorrelation =
+        input.policy.audit.requiredCorrelation.filter(
+          (field) => field !== "receiptId",
+        );
+    },
+    (input) => input.policy.saga.step.compensationDispositions.push("OPTIONAL"),
+    (input) => input.policy.manualRecovery.approval.decisions.pop(),
+    (input) =>
+      input.policy.manualRecovery.reconciliation.statuses.push("SKIPPED"),
+    (input) => input.policy.receipt.types.pop(),
+    (input) => input.policy.receipt.outcomes.push("RETRIED"),
+  ]) {
+    assertMutationFails(mutate, exactContractError);
+  }
+});
+
+test("complete error routing is frozen against additions, removals and route rewrites", () => {
+  const exactContractError =
+    /errorRouting\.errors must exactly match the frozen policy contract/;
+  assertMutationFails((input) => {
+    input.policy.errorRouting.errors.push({
+      code: "ATTACKER_CONTROLLED",
+      classification: "RETRYABLE",
+      action: "RETRY",
+    });
+  }, exactContractError);
+  assertMutationFails((input) => {
+    input.policy.errorRouting.errors = input.policy.errorRouting.errors.filter(
+      (entry) => entry.code !== "UNKNOWN_FAILURE",
+    );
+  }, exactContractError);
+  assertMutationFails((input) => {
+    input.policy.errorRouting.errors.find(
+      (entry) => entry.code === "TIMEOUT",
+    ).action = "DLQ";
+  }, exactContractError);
+});
+
 test("root-event causation preserves source lineage and rejects rewritten roots", () => {
+  const originalFact = {
+    eventId: "evt-origin-01",
+    rootEventId: "evt-origin-01",
+    causationEventId: null,
+    aggregateType: "assessment_attempt",
+    aggregateId: "attempt-01",
+    schemaVersion: "assessment.event.v1",
+    requestId: "request-0001",
+    traceId: "trace-0001",
+    dedupeKey: "dedupe-0001",
+    kind: "ORIGINAL_FACT",
+    sourceEventId: null,
+    sourceRootEventId: "evt-origin-01",
+  };
+  const derivedControlEvent = {
+    eventId: "evt-recovery-01",
+    rootEventId: "evt-origin-01",
+    causationEventId: "evt-delivery-failed-01",
+    aggregateType: "assessment_attempt",
+    aggregateId: "attempt-01",
+    schemaVersion: "workflow.saga.v1",
+    requestId: "request-0002",
+    traceId: "trace-0002",
+    dedupeKey: "dedupe-0002",
+    kind: "DERIVED_CONTROL_EVENT",
+    sourceEventId: "evt-delivery-failed-01",
+    sourceRootEventId: "evt-origin-01",
+  };
+
   const originalErrors = [];
   validateCausationRecord(
     baseline.policy.correlation,
-    {
-      eventId: "evt-origin-01",
-      rootEventId: "evt-origin-01",
-      causationEventId: "evt-origin-01",
-      aggregateType: "assessment_attempt",
-      aggregateId: "attempt-01",
-      schemaVersion: "assessment.event.v1",
-      requestId: "request-0001",
-      traceId: "trace-0001",
-      dedupeKey: "dedupe-0001",
-      kind: "ORIGINAL_FACT",
-      sourceRootEventId: "evt-origin-01",
-    },
+    originalFact,
     originalErrors,
   );
   assert.deepEqual(originalErrors, []);
@@ -98,42 +265,59 @@ test("root-event causation preserves source lineage and rejects rewritten roots"
   const derivedErrors = [];
   validateCausationRecord(
     baseline.policy.correlation,
-    {
-      eventId: "evt-recovery-01",
-      rootEventId: "evt-origin-01",
-      causationEventId: "evt-delivery-failed-01",
-      aggregateType: "assessment_attempt",
-      aggregateId: "attempt-01",
-      schemaVersion: "workflow.saga.v1",
-      requestId: "request-0002",
-      traceId: "trace-0002",
-      dedupeKey: "dedupe-0002",
-      kind: "DERIVED_CONTROL_EVENT",
-      sourceRootEventId: "evt-origin-01",
-    },
+    derivedControlEvent,
     derivedErrors,
   );
   assert.deepEqual(derivedErrors, []);
 
   const rewrittenRootErrors = [];
+  const rewrittenRoot = structuredClone(derivedControlEvent);
+  rewrittenRoot.rootEventId = "evt-attacker-rewrite";
   validateCausationRecord(
     baseline.policy.correlation,
-    {
-      eventId: "evt-recovery-01",
-      rootEventId: "evt-attacker-rewrite",
-      causationEventId: "evt-delivery-failed-01",
-      aggregateType: "assessment_attempt",
-      aggregateId: "attempt-01",
-      schemaVersion: "workflow.saga.v1",
-      requestId: "request-0002",
-      traceId: "trace-0002",
-      dedupeKey: "dedupe-0002",
-      kind: "DERIVED_CONTROL_EVENT",
-      sourceRootEventId: "evt-origin-01",
-    },
+    rewrittenRoot,
     rewrittenRootErrors,
   );
   assert.match(rewrittenRootErrors.join("\n"), /preserve source rootEventId/);
+
+  const originalWithCausationErrors = [];
+  const originalWithCausation = structuredClone(originalFact);
+  originalWithCausation.causationEventId = "evt-origin-01";
+  validateCausationRecord(
+    baseline.policy.correlation,
+    originalWithCausation,
+    originalWithCausationErrors,
+  );
+  assert.match(
+    originalWithCausationErrors.join("\n"),
+    /original fact causationEventId must be null/,
+  );
+
+  const derivedCausationMismatchErrors = [];
+  const derivedCausationMismatch = structuredClone(derivedControlEvent);
+  derivedCausationMismatch.causationEventId = "evt-attacker-rewrite";
+  validateCausationRecord(
+    baseline.policy.correlation,
+    derivedCausationMismatch,
+    derivedCausationMismatchErrors,
+  );
+  assert.match(
+    derivedCausationMismatchErrors.join("\n"),
+    /causationEventId must equal sourceEventId/,
+  );
+
+  const derivedSelfCausationErrors = [];
+  const derivedSelfCausation = structuredClone(derivedControlEvent);
+  derivedSelfCausation.eventId = derivedSelfCausation.sourceEventId;
+  validateCausationRecord(
+    baseline.policy.correlation,
+    derivedSelfCausation,
+    derivedSelfCausationErrors,
+  );
+  assert.match(
+    derivedSelfCausationErrors.join("\n"),
+    /eventId must differ from sourceEventId/,
+  );
 });
 
 test("two-person approval requires a server-derived independent approver and immutable action binding", () => {

@@ -1,6 +1,8 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateFrozenEventCatalogPolicy } from "../contracts/event-catalog-policy.mjs";
 import { validateB26EventRuntime } from "../runtime/validate-b26-event-runtime.mjs";
 import { validateSagaRecoveryData } from "./p1r-saga-recovery-check.mjs";
 
@@ -36,12 +38,39 @@ const CONTEXT_FIELDS = [
 const REQUIRED_SCHEMAS = [
   "platform.event.consumer-effect-receipt.v1",
   "platform.event.dlq-record.v1",
+  "platform.event.outbox-record.v1",
   "platform.event.publish-receipt.v1",
   "platform.event.reliability-context.v1",
   "platform.event.replay-request.v1",
   "platform.workflow.recovery-closure-receipt.v1",
   "platform.workflow.recovery-task.v1",
 ];
+const SOURCE_REFS = [
+  "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M1-007.md",
+  "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md#P1R-M1-007",
+  "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md#INT-P1-017",
+  "docs/02-architecture/v2-microservices-architecture.md",
+  "packages/contracts/events/v1/catalog.json",
+  DEFAULT_SAGA_POLICY,
+];
+const SCHEMA_DIGESTS = {
+  "platform.event.consumer-effect-receipt.v1":
+    "ff898e2ecc52f4274c58a1ab9f52828fbeab58f05ed82375a1d63e7206ee6d79",
+  "platform.event.dlq-record.v1":
+    "a03717a3dcaee8b2f35b3b356763bfba09f010c79db119ed0836a3a9e64341b6",
+  "platform.event.outbox-record.v1":
+    "95381205d6a5e7ed21191651064f41a1e83546f2e1c2048f8f9f712f85587375",
+  "platform.event.publish-receipt.v1":
+    "1f0622efe86fe06c89001c0fdac2db7bdf9c4dd225ca1fffb7db0387645bba04",
+  "platform.event.reliability-context.v1":
+    "9b9e05104b9035bf3b5cbc125139a4fea5977cb637b1d223b73644bb7a4bec5f",
+  "platform.event.replay-request.v1":
+    "6629d3a027235408da98b043da0aee23baa6fdf73fa420671657d8fe5920e12e",
+  "platform.workflow.recovery-closure-receipt.v1":
+    "02f1e5b0feb65772e6d52c5549d4b76ed351711e81db68203139b3a7096b34f8",
+  "platform.workflow.recovery-task.v1":
+    "cc0d3c826a5831f9c2bd518573a840d652c51eaa9c884941c9ca8c95679ed49c",
+};
 const RETRYABLE_CODES = [
   "CONFLICT_RETRYABLE",
   "TEMPORARY_UNAVAILABLE",
@@ -76,7 +105,7 @@ const POLICY_SHAPES = {
     "replay",
     "ordering",
     "sagaRecovery",
-    "receiptRegistry",
+    "reliabilitySchemaRegistry",
     "prohibitions",
     "runtimeEvidenceBoundary",
   ],
@@ -126,10 +155,15 @@ const POLICY_SHAPES = {
   "identityAndLineage.replay": [
     "sourceEventId",
     "rootEventId",
+    "eventName",
+    "aggregateType",
     "aggregateId",
     "aggregateVersion",
     "schemaVersion",
     "dedupeKey",
+    "topic",
+    "partitionKey",
+    "payloadDigest",
     "replayRunId",
     "controlEventId",
   ],
@@ -236,12 +270,12 @@ const POLICY_SHAPES = {
     "kafkaRpc",
     "runtimeVerificationTask",
   ],
-  receiptRegistry: [
+  reliabilitySchemaRegistry: [
     "path",
     "requiredSchemas",
     "unknownFields",
     "sensitivePayloadOrCredentialFields",
-    "runtimeReceiptPresenceClaim",
+    "runtimeRecordPresenceClaim",
   ],
   runtimeEvidenceBoundary: [
     "contractResult",
@@ -255,20 +289,57 @@ const POLICY_SHAPES = {
 
 const SCHEMA_REQUIRED = {
   "platform.event.reliability-context.v1": CONTEXT_FIELDS,
+  "platform.event.outbox-record.v1": [
+    "outboxId",
+    "ownerService",
+    "eventId",
+    "rootEventId",
+    "causationEventId",
+    "eventName",
+    "aggregateType",
+    "aggregateId",
+    "aggregateVersion",
+    "schemaVersion",
+    "requestId",
+    "traceId",
+    "dedupeKey",
+    "topic",
+    "partitionKey",
+    "payload",
+    "payloadDigest",
+    "state",
+    "attempt",
+    "leaseOwner",
+    "leaseExpiresAt",
+    "nextAttemptAt",
+    "lastFailureCode",
+    "createdAt",
+    "updatedAt",
+    "publishedAt",
+  ],
   "platform.event.publish-receipt.v1": [
     "receiptId",
     "outboxId",
     "producerService",
     "eventId",
     "rootEventId",
+    "eventName",
+    "aggregateType",
     "aggregateId",
     "aggregateVersion",
     "schemaVersion",
+    "dedupeKey",
+    "requestId",
+    "traceId",
     "topic",
     "partitionKey",
+    "payloadDigest",
     "attempt",
     "state",
     "failureCode",
+    "brokerPartition",
+    "brokerOffset",
+    "acknowledgedAt",
     "recordedAt",
   ],
   "platform.event.consumer-effect-receipt.v1": [
@@ -277,12 +348,20 @@ const SCHEMA_REQUIRED = {
     "consumerService",
     "eventId",
     "rootEventId",
+    "eventName",
+    "aggregateType",
     "dedupeKey",
     "aggregateId",
     "aggregateVersion",
     "schemaVersion",
+    "requestId",
+    "traceId",
+    "topic",
+    "partitionKey",
+    "payloadDigest",
     "effectType",
     "effectId",
+    "effectDigest",
     "attempt",
     "outcome",
     "auditRef",
@@ -292,58 +371,108 @@ const SCHEMA_REQUIRED = {
     "dlqRecordId",
     "eventId",
     "rootEventId",
+    "eventName",
+    "aggregateType",
     "aggregateId",
     "aggregateVersion",
     "schemaVersion",
     "dedupeKey",
     "requestId",
     "traceId",
+    "topic",
+    "partitionKey",
+    "payloadDigest",
     "consumerGroup",
     "failureCode",
     "attempt",
     "failedAt",
     "recoveryState",
+    "auditId",
   ],
   "platform.event.replay-request.v1": [
     "replayRunId",
+    "controlEventId",
     "sourceDlqRecordId",
     "sourceEventId",
     "rootEventId",
+    "eventName",
+    "aggregateType",
+    "aggregateId",
+    "aggregateVersion",
+    "schemaVersion",
+    "dedupeKey",
+    "topic",
+    "partitionKey",
+    "payloadDigest",
     "consumerGroup",
+    "sourceOwnerService",
     "requestedByRef",
     "approvedByRef",
+    "actionDigest",
+    "policyVersion",
     "reasonCode",
     "mode",
     "state",
     "requestedAt",
     "approvedAt",
+    "requestId",
+    "traceId",
     "auditRef",
   ],
   "platform.workflow.recovery-task.v1": [
     "taskId",
-    "sourceBusinessId",
+    "recoveryId",
+    "recoveryRevision",
     "sagaId",
+    "sourceBusinessId",
+    "sourceEventId",
+    "rootEventId",
+    "aggregateType",
+    "aggregateId",
+    "sourceOwnerService",
     "currentStage",
     "retryCount",
     "lastErrorCode",
     "nextAction",
     "ownerService",
-    "status",
-    "approvalState",
-    "auditRef",
+    "state",
+    "requestId",
+    "traceId",
+    "auditId",
     "createdAt",
     "updatedAt",
   ],
   "platform.workflow.recovery-closure-receipt.v1": [
     "receiptId",
+    "receiptType",
+    "schemaVersion",
+    "issuedAt",
+    "ownerService",
     "taskId",
+    "recoveryId",
+    "recoveryRevision",
     "sagaId",
     "sourceBusinessId",
-    "closureOutcome",
+    "sourceEventId",
+    "rootEventId",
+    "aggregateType",
+    "aggregateId",
+    "actionRef",
+    "actionDigest",
+    "idempotencyKey",
+    "outcome",
+    "recoveryState",
+    "resultDigest",
+    "precheckReconciliationId",
+    "postcheckReconciliationId",
+    "postcheckStatus",
     "domainReceiptRefs",
-    "auditRef",
+    "approvalId",
+    "approvalDecision",
+    "auditId",
+    "requestId",
+    "traceId",
     "closedByRef",
-    "closedAt",
   ],
 };
 
@@ -366,6 +495,10 @@ function stableJson(value) {
     );
   }
   return JSON.stringify(value);
+}
+
+function sha256(value) {
+  return crypto.createHash("sha256").update(stableJson(value)).digest("hex");
 }
 
 function add(errors, condition, message) {
@@ -493,11 +626,11 @@ function checkPolicy(policy, errors) {
     policy.sourceOfTruth === DEFAULT_RELIABILITY_POLICY,
     "reliability sourceOfTruth is invalid",
   );
-  unique(errors, policy.sourceRefs, "policy sourceRefs");
+  exact(errors, policy.sourceRefs, SOURCE_REFS, "policy sourceRefs drifted");
   add(
     errors,
-    policy.sourceRefs?.includes(DEFAULT_SAGA_POLICY),
-    "policy must reference the Saga recovery policy",
+    policy.catalog?.path === "packages/contracts/events/v1/catalog.json",
+    "event catalog source path is invalid",
   );
   exact(
     errors,
@@ -551,6 +684,12 @@ function checkPolicy(policy, errors) {
     CONTEXT_FIELDS,
     "reliability context fields drifted",
   );
+  add(
+    errors,
+    policy.identityAndLineage?.schemaRef ===
+      "platform.event.reliability-context.v1",
+    "reliability context schema reference is invalid",
+  );
   exact(
     errors,
     policy.identityAndLineage?.serverOwnedFields,
@@ -594,10 +733,15 @@ function checkPolicy(policy, errors) {
   for (const field of [
     "sourceEventId",
     "rootEventId",
+    "eventName",
+    "aggregateType",
     "aggregateId",
     "aggregateVersion",
     "schemaVersion",
     "dedupeKey",
+    "topic",
+    "partitionKey",
+    "payloadDigest",
   ]) {
     add(
       errors,
@@ -610,6 +754,12 @@ function checkPolicy(policy, errors) {
     policy.identityAndLineage?.replay?.replayRunId ===
       "NEW_SERVER_GENERATED_OPERATION_ID",
     "replayRunId must be server-generated",
+  );
+  add(
+    errors,
+    policy.identityAndLineage?.replay?.controlEventId ===
+      "NEW_SERVER_GENERATED_EVENT_ID",
+    "replay controlEventId must be server-generated",
   );
   add(
     errors,
@@ -636,6 +786,13 @@ function checkPolicy(policy, errors) {
     policy.outbox?.owner === "EVENT_DATA_OWNER_SERVICE" &&
       policy.outbox?.storage === "OWNER_SERVICE_MYSQL_SCHEMA",
     "Outbox must be owner-local",
+  );
+  add(
+    errors,
+    policy.outbox?.recordSchemaRef === "platform.event.outbox-record.v1" &&
+      policy.outbox?.publishReceiptSchemaRef ===
+        "platform.event.publish-receipt.v1",
+    "Outbox schema references are invalid",
   );
   add(
     errors,
@@ -700,6 +857,14 @@ function checkPolicy(policy, errors) {
     ],
     ["APPLIED", "DUPLICATE_SKIPPED", "DLQ"],
   );
+  add(
+    errors,
+    policy.consumer?.owner === "CONSUMER_SERVICE" &&
+      policy.consumer?.receiptSchemaRef ===
+        "platform.event.consumer-effect-receipt.v1" &&
+      policy.consumer?.delivery === "AT_LEAST_ONCE",
+    "consumer owner, receipt, or delivery boundary is invalid",
+  );
   exact(
     errors,
     policy.consumer?.deduplication?.primaryUniqueKey,
@@ -755,7 +920,8 @@ function checkPolicy(policy, errors) {
   );
   add(
     errors,
-    policy.deadLetter?.owner === "WORKFLOW_SERVICE" &&
+    policy.deadLetter?.recordSchemaRef === "platform.event.dlq-record.v1" &&
+      policy.deadLetter?.owner === "WORKFLOW_SERVICE" &&
       policy.deadLetter?.sourceRecordImmutable === true,
     "DLQ source must be immutable and workflow-owned",
   );
@@ -804,7 +970,8 @@ function checkPolicy(policy, errors) {
   }
   add(
     errors,
-    policy.replay?.source === "IMMUTABLE_OUTBOX_OR_DLQ_RECORD" &&
+    policy.replay?.requestSchemaRef === "platform.event.replay-request.v1" &&
+      policy.replay?.source === "IMMUTABLE_OUTBOX_OR_DLQ_RECORD" &&
       policy.replay?.clientTriggered === false,
     "replay source or client boundary is invalid",
   );
@@ -857,24 +1024,24 @@ function checkPolicy(policy, errors) {
 
   exact(
     errors,
-    policy.receiptRegistry?.requiredSchemas,
+    policy.reliabilitySchemaRegistry?.requiredSchemas,
     REQUIRED_SCHEMAS,
-    "receipt schema set or order drifted",
+    "reliability schema set or order drifted",
   );
   add(
     errors,
-    policy.receiptRegistry?.path ===
+    policy.reliabilitySchemaRegistry?.path ===
       "packages/contracts/schemas/v1/registry.json" &&
-      policy.receiptRegistry?.unknownFields === "REJECT",
-    "receipt registry boundary is invalid",
+      policy.reliabilitySchemaRegistry?.unknownFields === "REJECT",
+    "reliability schema registry boundary is invalid",
   );
   add(
     errors,
-    policy.receiptRegistry?.sensitivePayloadOrCredentialFields ===
+    policy.reliabilitySchemaRegistry?.sensitivePayloadOrCredentialFields ===
       "PROHIBITED" &&
-      policy.receiptRegistry?.runtimeReceiptPresenceClaim ===
+      policy.reliabilitySchemaRegistry?.runtimeRecordPresenceClaim ===
         "PROHIBITED_IN_D2_EVIDENCE",
-    "receipt safety/runtime boundary is invalid",
+    "reliability record safety/runtime boundary is invalid",
   );
   exact(
     errors,
@@ -942,6 +1109,8 @@ function checkPolicy(policy, errors) {
 }
 
 function checkCatalog(policy, catalog, errors) {
+  for (const error of validateFrozenEventCatalogPolicy(catalog))
+    errors.push("event catalog: " + error);
   const governance = catalog?.["x-p1r-event-governance"];
   add(
     errors,
@@ -1056,7 +1225,7 @@ function checkB26(policy, b26Runtime, b26Fragment, catalog, errors) {
   );
 }
 
-function checkSchemas(registry, errors) {
+function checkSchemas(registry, policy, sagaPolicy, errors) {
   add(
     errors,
     isRecord(registry?.schemas),
@@ -1097,8 +1266,38 @@ function checkSchemas(registry, errors) {
         !SENSITIVE_FIELD.test(field),
         name + " contains forbidden sensitive field " + field,
       );
+    add(
+      errors,
+      sha256(schema) === SCHEMA_DIGESTS[name],
+      name + " structure drifted from the frozen D2 contract",
+    );
   }
   unique(errors, ids, "reliability schema IDs");
+  const outboxSchema = registry?.schemas?.["platform.event.outbox-record.v1"];
+  exact(
+    errors,
+    outboxSchema?.properties?.state?.enum,
+    policy?.outbox?.states,
+    "Outbox record states differ from the reliability policy",
+  );
+  add(
+    errors,
+    outboxSchema?.properties?.attempt?.minimum === 0 &&
+      outboxSchema?.properties?.attempt?.maximum ===
+        policy?.retryBudget?.maxAttempts,
+    "Outbox record attempt budget is invalid",
+  );
+  add(
+    errors,
+    outboxSchema?.properties?.partitionKey?.const ===
+      policy?.ordering?.partitionKey,
+    "Outbox record partition key differs from the reliability policy",
+  );
+  add(
+    errors,
+    outboxSchema?.allOf?.length === 5,
+    "Outbox record must bind lease, retry, publish and DLQ state evidence",
+  );
   add(
     errors,
     registry?.schemas?.["platform.event.publish-receipt.v1"]?.properties
@@ -1129,11 +1328,54 @@ function checkSchemas(registry, errors) {
       ?.ownerService?.const === "workflow-service",
     "recovery task must be workflow-owned",
   );
+  exact(
+    errors,
+    registry?.schemas?.["platform.workflow.recovery-task.v1"]?.properties?.state
+      ?.enum,
+    sagaPolicy?.manualRecovery?.states,
+    "recovery task states differ from the Saga recovery policy",
+  );
   add(
     errors,
     registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
       ?.properties?.domainReceiptRefs?.minItems === 1,
     "recovery closure must include owner receipts",
+  );
+  add(
+    errors,
+    registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
+      ?.properties?.ownerService?.const === "workflow-service" &&
+      registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
+        ?.properties?.receiptType?.const === "RECOVERY_CLOSURE",
+    "recovery closure must be a workflow-owned closure receipt",
+  );
+  const closureRequired =
+    registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
+      ?.required ?? [];
+  for (const field of [
+    "precheckReconciliationId",
+    "postcheckReconciliationId",
+    "domainReceiptRefs",
+    "approvalId",
+    "approvalDecision",
+    "recoveryState",
+    "postcheckStatus",
+    "auditId",
+  ])
+    add(
+      errors,
+      closureRequired.includes(field),
+      "recovery closure is missing required evidence " + field,
+    );
+  add(
+    errors,
+    registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
+      ?.properties?.recoveryState?.const === "CLOSED" &&
+      registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
+        ?.properties?.postcheckStatus?.const === "MATCHED" &&
+      registry?.schemas?.["platform.workflow.recovery-closure-receipt.v1"]
+        ?.properties?.approvalDecision?.const === "APPROVED",
+    "recovery closure must bind CLOSED to matched postcheck and approval",
   );
 }
 
@@ -1168,7 +1410,7 @@ export function validateEventReliabilityData(input = {}) {
       input.catalog,
       errors,
     );
-    checkSchemas(input.registry, errors);
+    checkSchemas(input.registry, policy, input.sagaPolicy, errors);
     const sagaReport = validateSagaRecoveryData({
       policy: input.sagaPolicy,
       b26: input.b26Runtime,
@@ -1183,7 +1425,8 @@ export function validateEventReliabilityData(input = {}) {
       maturity: policy?.maturity,
       runtimeStatus: policy?.runtimeStatus,
       canonicalEvents: policy?.catalog?.currentCanonicalEvents?.length ?? 0,
-      receiptSchemas: policy?.receiptRegistry?.requiredSchemas?.length ?? 0,
+      reliabilitySchemas:
+        policy?.reliabilitySchemaRegistry?.requiredSchemas?.length ?? 0,
       outboxStates: policy?.outbox?.states?.length ?? 0,
       consumerStates: policy?.consumer?.states?.length ?? 0,
       retryMaxAttempts: policy?.retryBudget?.maxAttempts,
@@ -1236,8 +1479,8 @@ if (
           " (" +
           report.summary.canonicalEvents +
           " canonical events, " +
-          report.summary.receiptSchemas +
-          " receipt schemas, retry=" +
+          report.summary.reliabilitySchemas +
+          " reliability schemas, retry=" +
           report.summary.retryMaxAttempts +
           ", runtimeStatus=" +
           report.summary.runtimeStatus +

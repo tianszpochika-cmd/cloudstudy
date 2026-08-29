@@ -487,14 +487,23 @@ export const jsonSchemaRegistry = {
       "producerService",
       "eventId",
       "rootEventId",
+      "eventName",
+      "aggregateType",
       "aggregateId",
       "aggregateVersion",
       "schemaVersion",
+      "dedupeKey",
+      "requestId",
+      "traceId",
       "topic",
       "partitionKey",
+      "payloadDigest",
       "attempt",
       "state",
       "failureCode",
+      "brokerPartition",
+      "brokerOffset",
+      "acknowledgedAt",
       "recordedAt"
     ],
     "properties": {
@@ -514,13 +523,19 @@ export const jsonSchemaRegistry = {
       },
       "eventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
       },
       "rootEventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
       },
       "aggregateId": {
         "type": "string",
@@ -541,6 +556,10 @@ export const jsonSchemaRegistry = {
       },
       "partitionKey": {
         "const": "aggregateId"
+      },
+      "payloadDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
       },
       "attempt": {
         "type": "integer",
@@ -578,6 +597,51 @@ export const jsonSchemaRegistry = {
       "recordedAt": {
         "type": "string",
         "format": "date-time"
+      },
+      "dedupeKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "brokerPartition": {
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "brokerOffset": {
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "acknowledgedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     },
     "allOf": [
@@ -596,6 +660,18 @@ export const jsonSchemaRegistry = {
           "properties": {
             "failureCode": {
               "type": "null"
+            },
+            "brokerPartition": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "brokerOffset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "acknowledgedAt": {
+              "type": "string",
+              "format": "date-time"
             }
           }
         }
@@ -615,6 +691,15 @@ export const jsonSchemaRegistry = {
           "properties": {
             "failureCode": {
               "type": "string"
+            },
+            "brokerPartition": {
+              "type": "null"
+            },
+            "brokerOffset": {
+              "type": "null"
+            },
+            "acknowledgedAt": {
+              "type": "null"
             }
           }
         }
@@ -633,12 +718,20 @@ export const jsonSchemaRegistry = {
       "consumerService",
       "eventId",
       "rootEventId",
+      "eventName",
+      "aggregateType",
       "dedupeKey",
       "aggregateId",
       "aggregateVersion",
       "schemaVersion",
+      "requestId",
+      "traceId",
+      "topic",
+      "partitionKey",
+      "payloadDigest",
       "effectType",
       "effectId",
+      "effectDigest",
       "attempt",
       "outcome",
       "auditRef",
@@ -660,18 +753,23 @@ export const jsonSchemaRegistry = {
       },
       "eventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
       },
       "rootEventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
       },
       "dedupeKey": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 256
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
       },
       "aggregateId": {
         "type": "string",
@@ -715,6 +813,29 @@ export const jsonSchemaRegistry = {
       "processedAt": {
         "type": "string",
         "format": "date-time"
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "topic": {
+        "type": "string",
+        "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "partitionKey": {
+        "const": "aggregateId"
+      },
+      "payloadDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "effectDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
       }
     }
   },
@@ -728,17 +849,23 @@ export const jsonSchemaRegistry = {
       "dlqRecordId",
       "eventId",
       "rootEventId",
+      "eventName",
+      "aggregateType",
       "aggregateId",
       "aggregateVersion",
       "schemaVersion",
       "dedupeKey",
       "requestId",
       "traceId",
+      "topic",
+      "partitionKey",
+      "payloadDigest",
       "consumerGroup",
       "failureCode",
       "attempt",
       "failedAt",
-      "recoveryState"
+      "recoveryState",
+      "auditId"
     ],
     "properties": {
       "dlqRecordId": {
@@ -748,13 +875,11 @@ export const jsonSchemaRegistry = {
       },
       "eventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
       },
       "rootEventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
       },
       "aggregateId": {
         "type": "string",
@@ -771,18 +896,15 @@ export const jsonSchemaRegistry = {
       },
       "dedupeKey": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 256
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
       },
       "requestId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
       },
       "traceId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[a-f0-9]{32}$"
       },
       "consumerGroup": {
         "type": "string",
@@ -821,6 +943,30 @@ export const jsonSchemaRegistry = {
           "RESOLVED",
           "MANUAL_RECOVERY_REQUIRED"
         ]
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+      },
+      "topic": {
+        "type": "string",
+        "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "partitionKey": {
+        "const": "aggregateId"
+      },
+      "payloadDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "auditId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
       }
     }
   },
@@ -832,17 +978,32 @@ export const jsonSchemaRegistry = {
     "additionalProperties": false,
     "required": [
       "replayRunId",
+      "controlEventId",
       "sourceDlqRecordId",
       "sourceEventId",
       "rootEventId",
+      "eventName",
+      "aggregateType",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "dedupeKey",
+      "topic",
+      "partitionKey",
+      "payloadDigest",
       "consumerGroup",
+      "sourceOwnerService",
       "requestedByRef",
       "approvedByRef",
+      "actionDigest",
+      "policyVersion",
       "reasonCode",
       "mode",
       "state",
       "requestedAt",
       "approvedAt",
+      "requestId",
+      "traceId",
       "auditRef"
     ],
     "properties": {
@@ -851,6 +1012,10 @@ export const jsonSchemaRegistry = {
         "minLength": 8,
         "maxLength": 128
       },
+      "controlEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
       "sourceDlqRecordId": {
         "type": "string",
         "minLength": 8,
@@ -858,13 +1023,19 @@ export const jsonSchemaRegistry = {
       },
       "sourceEventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
       },
       "rootEventId": {
         "type": "string",
-        "minLength": 8,
-        "maxLength": 128
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
       },
       "consumerGroup": {
         "type": "string",
@@ -906,6 +1077,55 @@ export const jsonSchemaRegistry = {
         "type": "string",
         "minLength": 8,
         "maxLength": 128
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "aggregateVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+      },
+      "dedupeKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+      },
+      "topic": {
+        "type": "string",
+        "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "partitionKey": {
+        "const": "aggregateId"
+      },
+      "payloadDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "sourceOwnerService": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]+-service$"
+      },
+      "actionDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "policyVersion": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
       }
     }
   },
@@ -917,16 +1137,24 @@ export const jsonSchemaRegistry = {
     "additionalProperties": false,
     "required": [
       "taskId",
-      "sourceBusinessId",
+      "recoveryId",
+      "recoveryRevision",
       "sagaId",
+      "sourceBusinessId",
+      "sourceEventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "sourceOwnerService",
       "currentStage",
       "retryCount",
       "lastErrorCode",
       "nextAction",
       "ownerService",
-      "status",
-      "approvalState",
-      "auditRef",
+      "state",
+      "requestId",
+      "traceId",
+      "auditId",
       "createdAt",
       "updatedAt"
     ],
@@ -936,15 +1164,45 @@ export const jsonSchemaRegistry = {
         "minLength": 8,
         "maxLength": 128
       },
-      "sourceBusinessId": {
+      "recoveryId": {
         "type": "string",
-        "minLength": 1,
+        "minLength": 8,
         "maxLength": 128
+      },
+      "recoveryRevision": {
+        "type": "integer",
+        "minimum": 1
       },
       "sagaId": {
         "type": "string",
         "minLength": 8,
         "maxLength": 128
+      },
+      "sourceBusinessId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "sourceEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "rootEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "sourceOwnerService": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]+-service$"
       },
       "currentStage": {
         "type": "string",
@@ -973,28 +1231,30 @@ export const jsonSchemaRegistry = {
       "ownerService": {
         "const": "workflow-service"
       },
-      "status": {
+      "state": {
         "type": "string",
         "enum": [
           "OPEN",
-          "AWAITING_APPROVAL",
+          "PRECHECK_RECONCILING",
+          "PENDING_TWO_PERSON_REVIEW",
           "APPROVED",
           "EXECUTING",
-          "RESOLVED",
+          "POSTCHECK_RECONCILING",
+          "CLOSED",
           "REJECTED",
+          "EXPIRED",
           "ESCALATED"
         ]
       },
-      "approvalState": {
+      "requestId": {
         "type": "string",
-        "enum": [
-          "NOT_REQUESTED",
-          "PENDING",
-          "APPROVED",
-          "REJECTED"
-        ]
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
       },
-      "auditRef": {
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "auditId": {
         "type": "string",
         "minLength": 8,
         "maxLength": 128
@@ -1017,14 +1277,35 @@ export const jsonSchemaRegistry = {
     "additionalProperties": false,
     "required": [
       "receiptId",
+      "receiptType",
+      "schemaVersion",
+      "issuedAt",
+      "ownerService",
       "taskId",
+      "recoveryId",
+      "recoveryRevision",
       "sagaId",
       "sourceBusinessId",
-      "closureOutcome",
+      "sourceEventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "actionRef",
+      "actionDigest",
+      "idempotencyKey",
+      "outcome",
+      "recoveryState",
+      "resultDigest",
+      "precheckReconciliationId",
+      "postcheckReconciliationId",
+      "postcheckStatus",
       "domainReceiptRefs",
-      "auditRef",
-      "closedByRef",
-      "closedAt"
+      "approvalId",
+      "approvalDecision",
+      "auditId",
+      "requestId",
+      "traceId",
+      "closedByRef"
     ],
     "properties": {
       "receiptId": {
@@ -1032,10 +1313,32 @@ export const jsonSchemaRegistry = {
         "minLength": 8,
         "maxLength": 128
       },
+      "receiptType": {
+        "const": "RECOVERY_CLOSURE"
+      },
+      "schemaVersion": {
+        "const": "platform.workflow.recovery-closure-receipt.v1"
+      },
+      "issuedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "ownerService": {
+        "const": "workflow-service"
+      },
       "taskId": {
         "type": "string",
         "minLength": 8,
         "maxLength": 128
+      },
+      "recoveryId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "recoveryRevision": {
+        "type": "integer",
+        "minimum": 1
       },
       "sagaId": {
         "type": "string",
@@ -1047,14 +1350,65 @@ export const jsonSchemaRegistry = {
         "minLength": 1,
         "maxLength": 128
       },
-      "closureOutcome": {
+      "sourceEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "rootEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "actionRef": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "actionDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "idempotencyKey": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 256
+      },
+      "outcome": {
         "type": "string",
         "enum": [
-          "RECOVERED",
-          "COMPENSATED",
-          "REJECTED_WITH_REASON",
+          "APPLIED",
+          "DEDUPED_NO_EFFECT",
+          "REJECTED",
           "ESCALATED"
         ]
+      },
+      "recoveryState": {
+        "const": "CLOSED"
+      },
+      "resultDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "precheckReconciliationId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "postcheckReconciliationId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "postcheckStatus": {
+        "const": "MATCHED"
       },
       "domainReceiptRefs": {
         "type": "array",
@@ -1066,21 +1420,411 @@ export const jsonSchemaRegistry = {
           "maxLength": 128
         }
       },
-      "auditRef": {
+      "approvalId": {
         "type": "string",
         "minLength": 8,
         "maxLength": 128
+      },
+      "approvalDecision": {
+        "const": "APPROVED"
+      },
+      "auditId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
       },
       "closedByRef": {
         "type": "string",
         "minLength": 8,
         "maxLength": 128
-      },
-      "closedAt": {
-        "type": "string",
-        "format": "date-time"
       }
     }
+  },
+  "platform.event.outbox-record.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/event-outbox-record.v1.schema.json",
+    "title": "Owner-local transactional Outbox record",
+    "description": "D2 storage contract. Payload remains governed by the event-specific catalog schema; this schema does not claim that a runtime row exists.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "outboxId",
+      "ownerService",
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "eventName",
+      "aggregateType",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "requestId",
+      "traceId",
+      "dedupeKey",
+      "topic",
+      "partitionKey",
+      "payload",
+      "payloadDigest",
+      "state",
+      "attempt",
+      "leaseOwner",
+      "leaseExpiresAt",
+      "nextAttemptAt",
+      "lastFailureCode",
+      "createdAt",
+      "updatedAt",
+      "publishedAt"
+    ],
+    "properties": {
+      "outboxId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "ownerService": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]+-service$"
+      },
+      "eventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "rootEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "causationEventId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "aggregateVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "dedupeKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+      },
+      "topic": {
+        "type": "string",
+        "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "partitionKey": {
+        "const": "aggregateId"
+      },
+      "payload": {
+        "type": "object",
+        "description": "Validated against the event-specific payloadSchema before the owner transaction commits."
+      },
+      "payloadDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      },
+      "state": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PUBLISHING",
+          "PUBLISHED",
+          "RETRY_WAIT",
+          "DLQ"
+        ]
+      },
+      "attempt": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 5
+      },
+      "leaseOwner": {
+        "anyOf": [
+          {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "leaseExpiresAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "nextAttemptAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "lastFailureCode": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "CONFLICT_RETRYABLE",
+              "FORBIDDEN",
+              "OWNER_MISMATCH",
+              "RETRY_BUDGET_EXHAUSTED",
+              "SCHEMA_INVALID",
+              "STALE_VERSION",
+              "TEMPORARY_UNAVAILABLE",
+              "TIMEOUT",
+              "UNKNOWN_FAILURE"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "publishedAt": {
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "PENDING"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "attempt": {
+              "const": 0
+            },
+            "leaseOwner": {
+              "type": "null"
+            },
+            "leaseExpiresAt": {
+              "type": "null"
+            },
+            "nextAttemptAt": {
+              "type": "null"
+            },
+            "lastFailureCode": {
+              "type": "null"
+            },
+            "publishedAt": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "PUBLISHING"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "attempt": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "leaseOwner": {
+              "type": "string"
+            },
+            "leaseExpiresAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "nextAttemptAt": {
+              "type": "null"
+            },
+            "publishedAt": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "PUBLISHED"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "leaseOwner": {
+              "type": "null"
+            },
+            "leaseExpiresAt": {
+              "type": "null"
+            },
+            "nextAttemptAt": {
+              "type": "null"
+            },
+            "lastFailureCode": {
+              "type": "null"
+            },
+            "publishedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "RETRY_WAIT"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "attempt": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "leaseOwner": {
+              "type": "null"
+            },
+            "leaseExpiresAt": {
+              "type": "null"
+            },
+            "nextAttemptAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "lastFailureCode": {
+              "type": "string"
+            },
+            "publishedAt": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "DLQ"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "attempt": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "leaseOwner": {
+              "type": "null"
+            },
+            "leaseExpiresAt": {
+              "type": "null"
+            },
+            "nextAttemptAt": {
+              "type": "null"
+            },
+            "lastFailureCode": {
+              "type": "string"
+            },
+            "publishedAt": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    ]
   }
 } as const;
 

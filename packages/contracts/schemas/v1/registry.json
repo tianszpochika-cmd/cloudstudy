@@ -10,9 +10,18 @@
       "additionalProperties": false,
       "required": ["requestId", "traceId", "status"],
       "properties": {
-        "requestId": { "type": "string", "minLength": 1 },
-        "traceId": { "type": "string", "minLength": 1 },
-        "status": { "type": "string", "enum": ["ok", "degraded"] }
+        "requestId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "traceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ok", "degraded"]
+        }
       }
     },
     "platform.api.envelope.v1": {
@@ -22,9 +31,15 @@
       "description": "P1R-M1-001 canonical public API success, cursor-page and error envelope used by every active /api/v1 operation. Domain schemas are nested only as operation-specific data payloads.",
       "type": "object",
       "anyOf": [
-        { "$ref": "#/$defs/successEnvelope" },
-        { "$ref": "#/$defs/cursorPageEnvelope" },
-        { "$ref": "#/$defs/errorEnvelope" }
+        {
+          "$ref": "#/$defs/successEnvelope"
+        },
+        {
+          "$ref": "#/$defs/cursorPageEnvelope"
+        },
+        {
+          "$ref": "#/$defs/errorEnvelope"
+        }
       ],
       "$defs": {
         "requestId": {
@@ -50,14 +65,23 @@
             "serverTime"
           ],
           "properties": {
-            "requestId": { "$ref": "#/$defs/requestId" },
-            "traceId": { "$ref": "#/$defs/traceId" },
-            "apiVersion": { "const": "v1" },
+            "requestId": {
+              "$ref": "#/$defs/requestId"
+            },
+            "traceId": {
+              "$ref": "#/$defs/traceId"
+            },
+            "apiVersion": {
+              "const": "v1"
+            },
             "schemaVersion": {
               "type": "string",
               "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
             },
-            "serverTime": { "type": "string", "format": "date-time" }
+            "serverTime": {
+              "type": "string",
+              "format": "date-time"
+            }
           }
         },
         "cursorPageMeta": {
@@ -73,22 +97,40 @@
             "pageSize"
           ],
           "properties": {
-            "requestId": { "$ref": "#/$defs/requestId" },
-            "traceId": { "$ref": "#/$defs/traceId" },
-            "apiVersion": { "const": "v1" },
+            "requestId": {
+              "$ref": "#/$defs/requestId"
+            },
+            "traceId": {
+              "$ref": "#/$defs/traceId"
+            },
+            "apiVersion": {
+              "const": "v1"
+            },
             "schemaVersion": {
               "type": "string",
               "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
             },
-            "serverTime": { "type": "string", "format": "date-time" },
+            "serverTime": {
+              "type": "string",
+              "format": "date-time"
+            },
             "nextCursor": {
               "type": ["string", "null"],
               "minLength": 8,
               "maxLength": 512
             },
-            "snapshotAt": { "type": ["string", "null"], "format": "date-time" },
-            "hasMore": { "type": "boolean" },
-            "pageSize": { "type": "integer", "minimum": 1, "maximum": 100 }
+            "snapshotAt": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "hasMore": {
+              "type": "boolean"
+            },
+            "pageSize": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
           }
         },
         "error": {
@@ -123,8 +165,14 @@
                 "INTERNAL_ERROR"
               ]
             },
-            "message": { "type": "string", "minLength": 1, "maxLength": 500 },
-            "retryable": { "type": "boolean" },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "retryable": {
+              "type": "boolean"
+            },
             "details": {
               "type": "object",
               "description": "Only safe, structured client-action data. It never contains credentials, raw answers, raw media, payment callbacks or protected identity data.",
@@ -138,7 +186,9 @@
           "required": ["data", "meta"],
           "properties": {
             "data": {},
-            "meta": { "$ref": "#/$defs/meta" }
+            "meta": {
+              "$ref": "#/$defs/meta"
+            }
           }
         },
         "cursorPageEnvelope": {
@@ -147,7 +197,9 @@
           "required": ["data", "meta"],
           "properties": {
             "data": {},
-            "meta": { "$ref": "#/$defs/cursorPageMeta" }
+            "meta": {
+              "$ref": "#/$defs/cursorPageMeta"
+            }
           }
         },
         "errorEnvelope": {
@@ -155,8 +207,12 @@
           "additionalProperties": false,
           "required": ["error", "meta"],
           "properties": {
-            "error": { "$ref": "#/$defs/error" },
-            "meta": { "$ref": "#/$defs/meta" }
+            "error": {
+              "$ref": "#/$defs/error"
+            },
+            "meta": {
+              "$ref": "#/$defs/meta"
+            }
           }
         }
       }
@@ -180,17 +236,26 @@
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
         },
-        "traceId": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
         "schemaVersion": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_.-]{2,63}\\.v[0-9]+$"
         },
-        "aggregateId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
         "dedupeKey": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
         },
-        "payload": { "type": "object" }
+        "payload": {
+          "type": "object"
+        }
       }
     },
     "iam.authorization.decision.v1": {
@@ -201,13 +266,23 @@
       "additionalProperties": false,
       "required": ["action", "resourceType", "resourceId", "phase"],
       "properties": {
-        "action": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
+        "action": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
+        },
         "resourceType": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
         },
-        "resourceId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "phase": { "type": "string", "enum": ["P1", "P2", "P3"] },
+        "resourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "phase": {
+          "type": "string",
+          "enum": ["P1", "P2", "P3"]
+        },
         "contentRights": {
           "type": "string",
           "enum": ["PUBLISHED", "LICENSED", "INTERNAL", "UNKNOWN"]
@@ -245,8 +320,16 @@
       "additionalProperties": false,
       "required": ["requestId", "traceId", "code"],
       "properties": {
-        "requestId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "traceId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "traceId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
         "code": {
           "type": "string",
           "enum": [
@@ -258,8 +341,13 @@
             "policy_denied"
           ]
         },
-        "retryable": { "type": "boolean" },
-        "policyVersion": { "type": "string", "maxLength": 64 }
+        "retryable": {
+          "type": "boolean"
+        },
+        "policyVersion": {
+          "type": "string",
+          "maxLength": 64
+        }
       }
     },
     "platform.event.reliability-context.v1": {
@@ -297,7 +385,9 @@
               "type": "string",
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
             },
-            { "type": "null" }
+            {
+              "type": "null"
+            }
           ]
         },
         "eventName": {
@@ -308,8 +398,15 @@
           "type": "string",
           "pattern": "^[a-z][a-z0-9._-]{1,95}$"
         },
-        "aggregateId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "aggregateVersion": { "type": "integer", "minimum": 0 },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
         "schemaVersion": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
@@ -318,7 +415,10 @@
           "type": "string",
           "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
         },
-        "traceId": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
         "dedupeKey": {
           "type": "string",
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
@@ -337,27 +437,65 @@
         "producerService",
         "eventId",
         "rootEventId",
+        "eventName",
+        "aggregateType",
         "aggregateId",
         "aggregateVersion",
         "schemaVersion",
+        "dedupeKey",
+        "requestId",
+        "traceId",
         "topic",
         "partitionKey",
+        "payloadDigest",
         "attempt",
         "state",
         "failureCode",
+        "brokerPartition",
+        "brokerOffset",
+        "acknowledgedAt",
         "recordedAt"
       ],
       "properties": {
-        "receiptId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "outboxId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "receiptId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "outboxId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
         "producerService": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]+-service$"
         },
-        "eventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "rootEventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "aggregateId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "aggregateVersion": { "type": "integer", "minimum": 0 },
+        "eventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "eventName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
         "schemaVersion": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
@@ -366,9 +504,22 @@
           "type": "string",
           "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
         },
-        "partitionKey": { "const": "aggregateId" },
-        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "state": { "type": "string", "enum": ["PUBLISHED", "DLQ"] },
+        "partitionKey": {
+          "const": "aggregateId"
+        },
+        "payloadDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "state": {
+          "type": "string",
+          "enum": ["PUBLISHED", "DLQ"]
+        },
         "failureCode": {
           "anyOf": [
             {
@@ -385,25 +536,116 @@
                 "UNKNOWN_FAILURE"
               ]
             },
-            { "type": "null" }
+            {
+              "type": "null"
+            }
           ]
         },
-        "recordedAt": { "type": "string", "format": "date-time" }
+        "recordedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dedupeKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "brokerPartition": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "brokerOffset": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acknowledgedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "state": { "const": "PUBLISHED" } },
+            "properties": {
+              "state": {
+                "const": "PUBLISHED"
+              }
+            },
             "required": ["state"]
           },
-          "then": { "properties": { "failureCode": { "type": "null" } } }
+          "then": {
+            "properties": {
+              "failureCode": {
+                "type": "null"
+              },
+              "brokerPartition": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "brokerOffset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "acknowledgedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
         },
         {
           "if": {
-            "properties": { "state": { "const": "DLQ" } },
+            "properties": {
+              "state": {
+                "const": "DLQ"
+              }
+            },
             "required": ["state"]
           },
-          "then": { "properties": { "failureCode": { "type": "string" } } }
+          "then": {
+            "properties": {
+              "failureCode": {
+                "type": "string"
+              },
+              "brokerPartition": {
+                "type": "null"
+              },
+              "brokerOffset": {
+                "type": "null"
+              },
+              "acknowledgedAt": {
+                "type": "null"
+              }
+            }
+          }
         }
       ]
     },
@@ -419,19 +661,31 @@
         "consumerService",
         "eventId",
         "rootEventId",
+        "eventName",
+        "aggregateType",
         "dedupeKey",
         "aggregateId",
         "aggregateVersion",
         "schemaVersion",
+        "requestId",
+        "traceId",
+        "topic",
+        "partitionKey",
+        "payloadDigest",
         "effectType",
         "effectId",
+        "effectDigest",
         "attempt",
         "outcome",
         "auditRef",
         "processedAt"
       ],
       "properties": {
-        "receiptId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "receiptId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
         "consumerGroup": {
           "type": "string",
           "pattern": "^cg\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
@@ -440,11 +694,35 @@
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]+-service$"
         },
-        "eventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "rootEventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "dedupeKey": { "type": "string", "minLength": 8, "maxLength": 256 },
-        "aggregateId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "aggregateVersion": { "type": "integer", "minimum": 0 },
+        "eventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "eventName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
+        "dedupeKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
         "schemaVersion": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
@@ -453,14 +731,52 @@
           "type": "string",
           "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
         },
-        "effectId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "effectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
         "outcome": {
           "type": "string",
           "enum": ["APPLIED", "DUPLICATE_SKIPPED"]
         },
-        "auditRef": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "processedAt": { "type": "string", "format": "date-time" }
+        "auditRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "processedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "topic": {
+          "type": "string",
+          "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+        },
+        "partitionKey": {
+          "const": "aggregateId"
+        },
+        "payloadDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "effectDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
       }
     },
     "platform.event.dlq-record.v1": {
@@ -473,31 +789,63 @@
         "dlqRecordId",
         "eventId",
         "rootEventId",
+        "eventName",
+        "aggregateType",
         "aggregateId",
         "aggregateVersion",
         "schemaVersion",
         "dedupeKey",
         "requestId",
         "traceId",
+        "topic",
+        "partitionKey",
+        "payloadDigest",
         "consumerGroup",
         "failureCode",
         "attempt",
         "failedAt",
-        "recoveryState"
+        "recoveryState",
+        "auditId"
       ],
       "properties": {
-        "dlqRecordId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "eventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "rootEventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "aggregateId": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "aggregateVersion": { "type": "integer", "minimum": 0 },
+        "dlqRecordId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "eventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
         "schemaVersion": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
         },
-        "dedupeKey": { "type": "string", "minLength": 8, "maxLength": 256 },
-        "requestId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "traceId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "dedupeKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
         "consumerGroup": {
           "type": "string",
           "pattern": "^cg\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
@@ -516,8 +864,15 @@
             "UNKNOWN_FAILURE"
           ]
         },
-        "attempt": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "failedAt": { "type": "string", "format": "date-time" },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "failedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "recoveryState": {
           "type": "string",
           "enum": [
@@ -528,6 +883,30 @@
             "RESOLVED",
             "MANUAL_RECOVERY_REQUIRED"
           ]
+        },
+        "eventName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
+        "topic": {
+          "type": "string",
+          "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+        },
+        "partitionKey": {
+          "const": "aggregateId"
+        },
+        "payloadDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "auditId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
         }
       }
     },
@@ -539,28 +918,65 @@
       "additionalProperties": false,
       "required": [
         "replayRunId",
+        "controlEventId",
         "sourceDlqRecordId",
         "sourceEventId",
         "rootEventId",
+        "eventName",
+        "aggregateType",
+        "aggregateId",
+        "aggregateVersion",
+        "schemaVersion",
+        "dedupeKey",
+        "topic",
+        "partitionKey",
+        "payloadDigest",
         "consumerGroup",
+        "sourceOwnerService",
         "requestedByRef",
         "approvedByRef",
+        "actionDigest",
+        "policyVersion",
         "reasonCode",
         "mode",
         "state",
         "requestedAt",
         "approvedAt",
+        "requestId",
+        "traceId",
         "auditRef"
       ],
       "properties": {
-        "replayRunId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "replayRunId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "controlEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
         "sourceDlqRecordId": {
           "type": "string",
           "minLength": 8,
           "maxLength": 128
         },
-        "sourceEventId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "rootEventId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "sourceEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "eventName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
         "consumerGroup": {
           "type": "string",
           "pattern": "^cg\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
@@ -570,16 +986,84 @@
           "minLength": 8,
           "maxLength": 128
         },
-        "approvedByRef": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "reasonCode": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
+        "approvedByRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "reasonCode": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+        },
         "mode": {
           "type": "string",
           "enum": ["SINGLE_EVENT", "ORDERED_AGGREGATE_RANGE"]
         },
-        "state": { "const": "APPROVED" },
-        "requestedAt": { "type": "string", "format": "date-time" },
-        "approvedAt": { "type": "string", "format": "date-time" },
-        "auditRef": { "type": "string", "minLength": 8, "maxLength": 128 }
+        "state": {
+          "const": "APPROVED"
+        },
+        "requestedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "approvedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auditRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+        },
+        "dedupeKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+        },
+        "topic": {
+          "type": "string",
+          "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+        },
+        "partitionKey": {
+          "const": "aggregateId"
+        },
+        "payloadDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceOwnerService": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]+-service$"
+        },
+        "actionDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        }
       }
     },
     "platform.workflow.recovery-task.v1": {
@@ -590,59 +1074,136 @@
       "additionalProperties": false,
       "required": [
         "taskId",
-        "sourceBusinessId",
+        "recoveryId",
+        "recoveryRevision",
         "sagaId",
+        "sourceBusinessId",
+        "sourceEventId",
+        "rootEventId",
+        "aggregateType",
+        "aggregateId",
+        "sourceOwnerService",
         "currentStage",
         "retryCount",
         "lastErrorCode",
         "nextAction",
         "ownerService",
-        "status",
-        "approvalState",
-        "auditRef",
+        "state",
+        "requestId",
+        "traceId",
+        "auditId",
         "createdAt",
         "updatedAt"
       ],
       "properties": {
-        "taskId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "taskId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "recoveryId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "recoveryRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sagaId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
         "sourceBusinessId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 128
         },
-        "sagaId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "sourceEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "sourceOwnerService": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]+-service$"
+        },
         "currentStage": {
           "type": "string",
           "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
         },
-        "retryCount": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "retryCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
         "lastErrorCode": {
           "anyOf": [
-            { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
-            { "type": "null" }
+            {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
-        "nextAction": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,63}$" },
-        "ownerService": { "const": "workflow-service" },
-        "status": {
+        "nextAction": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+        },
+        "ownerService": {
+          "const": "workflow-service"
+        },
+        "state": {
           "type": "string",
           "enum": [
             "OPEN",
-            "AWAITING_APPROVAL",
+            "PRECHECK_RECONCILING",
+            "PENDING_TWO_PERSON_REVIEW",
             "APPROVED",
             "EXECUTING",
-            "RESOLVED",
+            "POSTCHECK_RECONCILING",
+            "CLOSED",
             "REJECTED",
+            "EXPIRED",
             "ESCALATED"
           ]
         },
-        "approvalState": {
+        "requestId": {
           "type": "string",
-          "enum": ["NOT_REQUESTED", "PENDING", "APPROVED", "REJECTED"]
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
         },
-        "auditRef": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "auditId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "platform.workflow.recovery-closure-receipt.v1": {
@@ -653,43 +1214,533 @@
       "additionalProperties": false,
       "required": [
         "receiptId",
+        "receiptType",
+        "schemaVersion",
+        "issuedAt",
+        "ownerService",
         "taskId",
+        "recoveryId",
+        "recoveryRevision",
         "sagaId",
         "sourceBusinessId",
-        "closureOutcome",
+        "sourceEventId",
+        "rootEventId",
+        "aggregateType",
+        "aggregateId",
+        "actionRef",
+        "actionDigest",
+        "idempotencyKey",
+        "outcome",
+        "recoveryState",
+        "resultDigest",
+        "precheckReconciliationId",
+        "postcheckReconciliationId",
+        "postcheckStatus",
         "domainReceiptRefs",
-        "auditRef",
-        "closedByRef",
-        "closedAt"
+        "approvalId",
+        "approvalDecision",
+        "auditId",
+        "requestId",
+        "traceId",
+        "closedByRef"
       ],
       "properties": {
-        "receiptId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "taskId": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "sagaId": { "type": "string", "minLength": 8, "maxLength": 128 },
+        "receiptId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "receiptType": {
+          "const": "RECOVERY_CLOSURE"
+        },
+        "schemaVersion": {
+          "const": "platform.workflow.recovery-closure-receipt.v1"
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ownerService": {
+          "const": "workflow-service"
+        },
+        "taskId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "recoveryId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "recoveryRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sagaId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
         "sourceBusinessId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 128
         },
-        "closureOutcome": {
+        "sourceEventId": {
           "type": "string",
-          "enum": [
-            "RECOVERED",
-            "COMPENSATED",
-            "REJECTED_WITH_REASON",
-            "ESCALATED"
-          ]
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "actionRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "actionDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 256
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["APPLIED", "DEDUPED_NO_EFFECT", "REJECTED", "ESCALATED"]
+        },
+        "recoveryState": {
+          "const": "CLOSED"
+        },
+        "resultDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "precheckReconciliationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "postcheckReconciliationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "postcheckStatus": {
+          "const": "MATCHED"
         },
         "domainReceiptRefs": {
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "minLength": 8, "maxLength": 128 }
+          "items": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          }
         },
-        "auditRef": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "closedByRef": { "type": "string", "minLength": 8, "maxLength": 128 },
-        "closedAt": { "type": "string", "format": "date-time" }
+        "approvalId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "approvalDecision": {
+          "const": "APPROVED"
+        },
+        "auditId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "closedByRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
       }
+    },
+    "platform.event.outbox-record.v1": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://contracts.englishflow.local/platform/event-outbox-record.v1.schema.json",
+      "title": "Owner-local transactional Outbox record",
+      "description": "D2 storage contract. Payload remains governed by the event-specific catalog schema; this schema does not claim that a runtime row exists.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outboxId",
+        "ownerService",
+        "eventId",
+        "rootEventId",
+        "causationEventId",
+        "eventName",
+        "aggregateType",
+        "aggregateId",
+        "aggregateVersion",
+        "schemaVersion",
+        "requestId",
+        "traceId",
+        "dedupeKey",
+        "topic",
+        "partitionKey",
+        "payload",
+        "payloadDigest",
+        "state",
+        "attempt",
+        "leaseOwner",
+        "leaseExpiresAt",
+        "nextAttemptAt",
+        "lastFailureCode",
+        "createdAt",
+        "updatedAt",
+        "publishedAt"
+      ],
+      "properties": {
+        "outboxId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "ownerService": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]+-service$"
+        },
+        "eventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "causationEventId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventName": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+        },
+        "aggregateType": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+        },
+        "aggregateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{32}$"
+        },
+        "dedupeKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+        },
+        "topic": {
+          "type": "string",
+          "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+        },
+        "partitionKey": {
+          "const": "aggregateId"
+        },
+        "payload": {
+          "type": "object",
+          "description": "Validated against the event-specific payloadSchema before the owner transaction commits."
+        },
+        "payloadDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["PENDING", "PUBLISHING", "PUBLISHED", "RETRY_WAIT", "DLQ"]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "leaseOwner": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leaseExpiresAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextAttemptAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastFailureCode": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "CONFLICT_RETRYABLE",
+                "FORBIDDEN",
+                "OWNER_MISMATCH",
+                "RETRY_BUDGET_EXHAUSTED",
+                "SCHEMA_INVALID",
+                "STALE_VERSION",
+                "TEMPORARY_UNAVAILABLE",
+                "TIMEOUT",
+                "UNKNOWN_FAILURE"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "publishedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "PENDING"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "attempt": {
+                "const": 0
+              },
+              "leaseOwner": {
+                "type": "null"
+              },
+              "leaseExpiresAt": {
+                "type": "null"
+              },
+              "nextAttemptAt": {
+                "type": "null"
+              },
+              "lastFailureCode": {
+                "type": "null"
+              },
+              "publishedAt": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "PUBLISHING"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "attempt": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "leaseOwner": {
+                "type": "string"
+              },
+              "leaseExpiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "nextAttemptAt": {
+                "type": "null"
+              },
+              "publishedAt": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "PUBLISHED"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "leaseOwner": {
+                "type": "null"
+              },
+              "leaseExpiresAt": {
+                "type": "null"
+              },
+              "nextAttemptAt": {
+                "type": "null"
+              },
+              "lastFailureCode": {
+                "type": "null"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "RETRY_WAIT"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "attempt": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "leaseOwner": {
+                "type": "null"
+              },
+              "leaseExpiresAt": {
+                "type": "null"
+              },
+              "nextAttemptAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "lastFailureCode": {
+                "type": "string"
+              },
+              "publishedAt": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "DLQ"
+              }
+            },
+            "required": ["state"]
+          },
+          "then": {
+            "properties": {
+              "attempt": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 5
+              },
+              "leaseOwner": {
+                "type": "null"
+              },
+              "leaseExpiresAt": {
+                "type": "null"
+              },
+              "nextAttemptAt": {
+                "type": "null"
+              },
+              "lastFailureCode": {
+                "type": "string"
+              },
+              "publishedAt": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

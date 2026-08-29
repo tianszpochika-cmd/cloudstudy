@@ -41,10 +41,10 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 ### P1R-M1-007 事件可靠性与恢复 profile
 
 - `events/v1/reliability-policy.json` 是 Outbox、consumer dedupe、重试、DLQ、replay、聚合顺序与回执的 D2 单一事实源；它引用而不改写 M1-006 的 catalog/AsyncAPI。`rootEventId`、`causationEventId` 和 `aggregateVersion` 由 owner 在 Outbox 边界写入补充可靠性记录，原始事实必须满足 `rootEventId=eventId`，重试和回放不得改写源事件身份。
-- owner 的领域事实与不可变 Outbox 记录同事务提交；只有 broker ack 后才能标记 `PUBLISHED`。consumer 以 `(consumerGroup,eventId)` 唯一去重，领域 effect 与 receipt 同 owner 事务提交，offset 只能随后提交。投递保持至少一次，不声明 exactly-once。
-- 重试预算固定为含首次投递最多 5 次、指数退避加 jitter、1–60 秒；未知错误失败关闭。预算耗尽进入不可变 DLQ，回放保留事件/root/聚合/schema/dedupe，使用新 `replayRunId`，且必须走原 consumer group/path、继续启用去重/顺序检查并经过不同人员审批。
+- owner 的领域事实与不可变 Outbox 记录同事务提交；Outbox 绑定事件 payload digest、owner、topic、聚合版本和完整因果链，只有 broker ack 后才能标记 `PUBLISHED`。consumer 以 `(consumerGroup,eventId)` 唯一去重，领域 effect 与 receipt 同 owner 事务提交，offset 只能随后提交。投递保持至少一次，不声明 exactly-once。
+- 重试预算固定为含首次投递最多 5 次、指数退避加 jitter、1–60 秒；未知错误失败关闭。预算耗尽进入不可变 DLQ，回放保留事件/root/聚合/schema/dedupe/topic/payload digest，使用新的 `replayRunId` 和控制事件 ID，且必须走原 consumer group/path、继续启用去重/顺序检查并经过不同人员审批。
 - `config/p1r-saga-recovery.v1.json` 冻结 workflow Saga、版本化幂等补偿、对账、请求者与独立审批者职责分离、人工恢复状态机和关闭 receipt。workflow/audit 只写各自 schema；领域补偿只能由目标 owner 通过版本化 API 或 canonical event 执行。
-- 7 个新增 JSON Schema 约束可靠性上下文、publish/consumer/DLQ/replay/recovery task/closure receipt，全部拒绝未知字段和敏感凭据字段。`pnpm p1r:event-reliability:check` 与 `pnpm p1r:saga-recovery:check` 只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`。真实 owner 事务/lease 属于 M2-004，Kafka/Outbox/consumer/DLQ/replay 属于 M2-005，Saga/审批/人工恢复运行闭环属于 M2-006；B26 继续为 `static-only` / `pending` / `NO-GO`。
+- 8 个新增 JSON Schema 分别约束可靠性上下文、owner-local Outbox record、publish/consumer/DLQ/replay/recovery task/closure receipt，全部拒绝未知字段和敏感凭据字段。`pnpm p1r:event-reliability:check` 与 `pnpm p1r:saga-recovery:check` 只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`。真实 owner 事务/lease 属于 M2-004，Kafka/Outbox/consumer/DLQ/replay 属于 M2-005，Saga/审批/人工恢复运行闭环属于 M2-006；B26 继续为 `static-only` / `pending` / `NO-GO`。
 
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。
 

@@ -4,6 +4,427 @@ import { fileURLToPath } from "node:url";
 
 const defaultRoot = path.resolve(import.meta.dirname, "..", "..");
 
+const FROZEN_POLICY = {
+  scope: [
+    "INT-P1-017",
+    "E2E-P1-RECOVERY",
+    "SAGA_AND_MANUAL_RECOVERY_CONTROL_PLANE",
+  ],
+  correlation: {
+    requiredFields: [
+      "eventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "schemaVersion",
+      "requestId",
+      "traceId",
+      "dedupeKey",
+    ],
+    serverDerivedFields: [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "actorRef",
+      "tenantRef",
+      "approvalRef",
+      "auditId",
+    ],
+    forbiddenClientAuthorityFields: [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "actorRef",
+      "tenantRef",
+      "approverRef",
+      "roles",
+      "permissions",
+    ],
+  },
+  saga: {
+    recordRequiredFields: [
+      "sagaId",
+      "sagaType",
+      "sagaVersion",
+      "rootEventId",
+      "sourceEventId",
+      "aggregateType",
+      "aggregateId",
+      "state",
+      "currentStepId",
+      "requestId",
+      "traceId",
+      "auditId",
+    ],
+    states: [
+      "NEW",
+      "FORWARD_RUNNING",
+      "FORWARD_COMPLETED",
+      "COMPENSATION_PENDING",
+      "COMPENSATING",
+      "COMPENSATED",
+      "MANUAL_RECOVERY_REQUIRED",
+    ],
+    initialState: "NEW",
+    terminalStates: [
+      "FORWARD_COMPLETED",
+      "COMPENSATED",
+      "MANUAL_RECOVERY_REQUIRED",
+    ],
+    transitions: [
+      { from: "NEW", to: "FORWARD_RUNNING" },
+      { from: "FORWARD_RUNNING", to: "FORWARD_COMPLETED" },
+      { from: "FORWARD_RUNNING", to: "COMPENSATION_PENDING" },
+      { from: "COMPENSATION_PENDING", to: "COMPENSATING" },
+      { from: "COMPENSATION_PENDING", to: "MANUAL_RECOVERY_REQUIRED" },
+      { from: "COMPENSATING", to: "COMPENSATED" },
+      { from: "COMPENSATING", to: "MANUAL_RECOVERY_REQUIRED" },
+    ],
+    forbiddenTransitions: [
+      { from: "NEW", to: "FORWARD_COMPLETED" },
+      { from: "NEW", to: "COMPENSATED" },
+      { from: "FORWARD_COMPLETED", to: "FORWARD_RUNNING" },
+      { from: "FORWARD_COMPLETED", to: "COMPENSATION_PENDING" },
+      { from: "COMPENSATED", to: "FORWARD_RUNNING" },
+      { from: "COMPENSATED", to: "FORWARD_COMPLETED" },
+      { from: "MANUAL_RECOVERY_REQUIRED", to: "FORWARD_RUNNING" },
+      { from: "COMPENSATING", to: "FORWARD_COMPLETED" },
+    ],
+  },
+  sagaStep: {
+    recordRequiredFields: [
+      "stepId",
+      "sagaId",
+      "sequence",
+      "ownerService",
+      "actionRef",
+      "actionSchemaVersion",
+      "idempotencyKey",
+      "expectedAggregateId",
+      "expectedAggregateVersion",
+      "sourceEventId",
+      "rootEventId",
+      "state",
+      "attempt",
+      "compensationDisposition",
+      "auditId",
+    ],
+    states: [
+      "PENDING",
+      "DISPATCHED",
+      "SUCCEEDED",
+      "FAILED",
+      "COMPENSATION_PENDING",
+      "COMPENSATING",
+      "COMPENSATED",
+      "MANUAL_RECOVERY_REQUIRED",
+    ],
+    initialState: "PENDING",
+    terminalStates: ["COMPENSATED", "MANUAL_RECOVERY_REQUIRED"],
+    transitions: [
+      { from: "PENDING", to: "DISPATCHED" },
+      { from: "DISPATCHED", to: "SUCCEEDED" },
+      { from: "DISPATCHED", to: "FAILED" },
+      { from: "FAILED", to: "COMPENSATION_PENDING" },
+      { from: "FAILED", to: "MANUAL_RECOVERY_REQUIRED" },
+      { from: "SUCCEEDED", to: "COMPENSATION_PENDING" },
+      { from: "COMPENSATION_PENDING", to: "COMPENSATING" },
+      { from: "COMPENSATION_PENDING", to: "MANUAL_RECOVERY_REQUIRED" },
+      { from: "COMPENSATING", to: "COMPENSATED" },
+      { from: "COMPENSATING", to: "MANUAL_RECOVERY_REQUIRED" },
+    ],
+    compensationDispositions: ["NOT_REQUIRED", "REQUIRED"],
+  },
+  compensation: {
+    recordRequiredFields: [
+      "compensationId",
+      "sagaId",
+      "stepId",
+      "compensationKey",
+      "ownerService",
+      "actionRef",
+      "actionSchemaVersion",
+      "idempotencyKey",
+      "sourceEventId",
+      "rootEventId",
+      "expectedAggregateId",
+      "expectedAggregateVersion",
+      "reasonCode",
+      "state",
+      "auditId",
+    ],
+    states: ["PENDING", "DISPATCHED", "APPLIED", "MANUAL_RECOVERY_REQUIRED"],
+    initialState: "PENDING",
+    terminalStates: ["APPLIED", "MANUAL_RECOVERY_REQUIRED"],
+    transitions: [
+      { from: "PENDING", to: "DISPATCHED" },
+      { from: "PENDING", to: "MANUAL_RECOVERY_REQUIRED" },
+      { from: "DISPATCHED", to: "APPLIED" },
+      { from: "DISPATCHED", to: "MANUAL_RECOVERY_REQUIRED" },
+    ],
+    idempotencyScope: ["sagaId", "stepId", "compensationKey", "ownerService"],
+  },
+  manualRecovery: {
+    recordRequiredFields: [
+      "recoveryId",
+      "recoveryRevision",
+      "sagaId",
+      "sourceBusinessId",
+      "sourceEventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "sourceOwnerService",
+      "currentStage",
+      "retryCount",
+      "lastErrorCode",
+      "nextAction",
+      "state",
+      "requestId",
+      "traceId",
+      "auditId",
+    ],
+    states: [
+      "OPEN",
+      "PRECHECK_RECONCILING",
+      "PENDING_TWO_PERSON_REVIEW",
+      "APPROVED",
+      "EXECUTING",
+      "POSTCHECK_RECONCILING",
+      "CLOSED",
+      "REJECTED",
+      "EXPIRED",
+      "ESCALATED",
+    ],
+    initialState: "OPEN",
+    terminalStates: ["CLOSED", "REJECTED", "EXPIRED", "ESCALATED"],
+    transitions: [
+      { from: "OPEN", to: "PRECHECK_RECONCILING" },
+      { from: "PRECHECK_RECONCILING", to: "PENDING_TWO_PERSON_REVIEW" },
+      { from: "PENDING_TWO_PERSON_REVIEW", to: "APPROVED" },
+      { from: "PENDING_TWO_PERSON_REVIEW", to: "REJECTED" },
+      { from: "PENDING_TWO_PERSON_REVIEW", to: "EXPIRED" },
+      { from: "APPROVED", to: "EXECUTING" },
+      { from: "APPROVED", to: "EXPIRED" },
+      { from: "EXECUTING", to: "POSTCHECK_RECONCILING" },
+      { from: "EXECUTING", to: "ESCALATED" },
+      { from: "POSTCHECK_RECONCILING", to: "CLOSED" },
+      { from: "POSTCHECK_RECONCILING", to: "ESCALATED" },
+    ],
+    forbiddenTransitions: [
+      { from: "OPEN", to: "APPROVED" },
+      { from: "PENDING_TWO_PERSON_REVIEW", to: "EXECUTING" },
+      { from: "APPROVED", to: "CLOSED" },
+      { from: "EXECUTING", to: "CLOSED" },
+      { from: "CLOSED", to: "EXECUTING" },
+      { from: "REJECTED", to: "APPROVED" },
+      { from: "EXPIRED", to: "EXECUTING" },
+      { from: "ESCALATED", to: "CLOSED" },
+    ],
+  },
+  approval: {
+    serverDerivedFields: [
+      "requesterPrincipalRef",
+      "approverPrincipalRef",
+      "tenantRef",
+      "roles",
+      "permissions",
+      "policyVersion",
+    ],
+    forbiddenClientAuthorityFields: [
+      "requesterPrincipalRef",
+      "approverPrincipalRef",
+      "tenantRef",
+      "roles",
+      "permissions",
+    ],
+    recordRequiredFields: [
+      "approvalId",
+      "recoveryId",
+      "recoveryRevision",
+      "actionDigest",
+      "rootEventId",
+      "requesterPrincipalRef",
+      "approverPrincipalRef",
+      "policyVersion",
+      "decision",
+      "decidedAt",
+      "expiresAt",
+      "requestId",
+      "traceId",
+      "auditId",
+    ],
+    decisions: ["APPROVED", "REJECTED", "EXPIRED"],
+    bindingFields: [
+      "recoveryId",
+      "recoveryRevision",
+      "actionDigest",
+      "rootEventId",
+      "aggregateId",
+      "sourceOwnerService",
+      "policyVersion",
+    ],
+  },
+  reconciliation: {
+    recordRequiredFields: [
+      "reconciliationId",
+      "recoveryId",
+      "ownerService",
+      "aggregateId",
+      "expectedStateDigest",
+      "actualStateDigest",
+      "status",
+      "checkedAt",
+      "auditId",
+    ],
+    statuses: ["MATCHED", "MISMATCH", "NOT_CHECKED"],
+  },
+  closure: {
+    requiredEvidence: [
+      "precheckReconciliationId",
+      "postcheckReconciliationId",
+      "ownerReceiptIds",
+      "closureReceiptId",
+      "auditId",
+    ],
+  },
+  receipt: {
+    types: ["OWNER_ACTION", "COMPENSATION", "RECOVERY_CLOSURE"],
+    outcomes: ["APPLIED", "DEDUPED_NO_EFFECT", "REJECTED", "ESCALATED"],
+    requiredFields: [
+      "receiptId",
+      "receiptType",
+      "schemaVersion",
+      "issuedAt",
+      "ownerService",
+      "recoveryId",
+      "sagaId",
+      "stepId",
+      "eventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "actionRef",
+      "actionDigest",
+      "idempotencyKey",
+      "outcome",
+      "resultDigest",
+      "reconciliationId",
+      "approvalId",
+      "auditId",
+      "requestId",
+      "traceId",
+    ],
+  },
+  audit: {
+    requiredCorrelation: [
+      "requestId",
+      "traceId",
+      "eventId",
+      "rootEventId",
+      "sagaId",
+      "recoveryId",
+      "receiptId",
+    ],
+  },
+  errorRouting: {
+    errors: [
+      { code: "TIMEOUT", classification: "RETRYABLE", action: "RETRY" },
+      {
+        code: "TEMPORARY_UNAVAILABLE",
+        classification: "RETRYABLE",
+        action: "RETRY",
+      },
+      {
+        code: "CONFLICT_RETRYABLE",
+        classification: "RETRYABLE",
+        action: "RETRY",
+      },
+      {
+        code: "SCHEMA_INVALID",
+        classification: "NON_RETRYABLE",
+        action: "DLQ_AND_MANUAL_REVIEW",
+      },
+      {
+        code: "FORBIDDEN",
+        classification: "NON_RETRYABLE",
+        action: "DLQ_AND_MANUAL_REVIEW",
+      },
+      {
+        code: "OWNER_MISMATCH",
+        classification: "NON_RETRYABLE",
+        action: "DLQ_AND_MANUAL_REVIEW",
+      },
+      {
+        code: "STALE_VERSION",
+        classification: "NON_RETRYABLE",
+        action: "AUDIT_AND_SKIP",
+      },
+      {
+        code: "RETRY_BUDGET_EXHAUSTED",
+        classification: "NON_RETRYABLE",
+        action: "DLQ",
+      },
+      {
+        code: "ORDERING_GAP",
+        classification: "MANUAL_RECOVERY",
+        action: "MANUAL_RECOVERY",
+      },
+      {
+        code: "COMPENSATION_FAILED",
+        classification: "MANUAL_RECOVERY",
+        action: "MANUAL_RECOVERY",
+      },
+      {
+        code: "RECONCILIATION_MISMATCH",
+        classification: "MANUAL_RECOVERY",
+        action: "MANUAL_RECOVERY",
+      },
+      {
+        code: "APPROVAL_SEPARATION_VIOLATION",
+        classification: "NON_RETRYABLE",
+        action: "REJECT",
+      },
+      {
+        code: "APPROVAL_EXPIRED",
+        classification: "NON_RETRYABLE",
+        action: "REJECT",
+      },
+      {
+        code: "AUDIT_REFERENCE_MISSING",
+        classification: "NON_RETRYABLE",
+        action: "ESCALATE",
+      },
+      {
+        code: "UNKNOWN_FAILURE",
+        classification: "NON_RETRYABLE",
+        action: "DLQ_AND_MANUAL_REVIEW",
+      },
+    ],
+  },
+  runtimeBoundary: {
+    prohibitedClaims: [
+      "broker-topic-or-acl-created",
+      "outbox-transaction-or-publisher-executed",
+      "consumer-deduplication-or-offset-commit-executed",
+      "dlq-or-replay-executed",
+      "compensation-or-manual-recovery-executed",
+      "approval-or-audit-runtime-evidence-captured",
+    ],
+  },
+  prohibitions: [
+    "workflow-service-direct-foreign-domain-write",
+    "audit-service-direct-domain-write",
+    "kafka-rpc",
+    "distributed-two-phase-commit",
+    "client-triggered-replay-or-manual-recovery",
+    "client-supplied-actor-tenant-or-approver-authority",
+    "closing-dlq-or-ticket-as-reconciliation",
+    "mutable-root-event-or-receipt",
+    "runtime-promotion-from-static-policy",
+  ],
+};
+
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
@@ -15,6 +436,37 @@ function add(errors, condition, message) {
 function hasAll(actual, expected) {
   return (
     Array.isArray(actual) && expected.every((item) => actual.includes(item))
+  );
+}
+
+function hasExactValue(actual, expected) {
+  if (Object.is(actual, expected)) return true;
+  if (Array.isArray(actual) || Array.isArray(expected)) {
+    return (
+      Array.isArray(actual) &&
+      Array.isArray(expected) &&
+      actual.length === expected.length &&
+      actual.every((item, index) => hasExactValue(item, expected[index]))
+    );
+  }
+  if (!isRecord(actual) || !isRecord(expected)) return false;
+  const actualKeys = Object.keys(actual).sort();
+  const expectedKeys = Object.keys(expected).sort();
+  return (
+    actualKeys.length === expectedKeys.length &&
+    actualKeys.every(
+      (key, index) =>
+        key === expectedKeys[index] &&
+        hasExactValue(actual[key], expected[key]),
+    )
+  );
+}
+
+function validateFrozenArray(actual, expected, label, errors) {
+  add(
+    errors,
+    hasExactValue(actual, expected),
+    `${label} must exactly match the frozen policy contract`,
   );
 }
 
@@ -137,6 +589,195 @@ function validateMachine(machine, label, errors, options = {}) {
   }
 }
 
+function validateFrozenMachine(machine, frozenMachine, label, errors) {
+  validateFrozenArray(
+    machine?.recordRequiredFields,
+    frozenMachine.recordRequiredFields,
+    `${label}.recordRequiredFields`,
+    errors,
+  );
+  validateFrozenArray(
+    machine?.states,
+    frozenMachine.states,
+    `${label}.states`,
+    errors,
+  );
+  add(
+    errors,
+    machine?.initialState === frozenMachine.initialState,
+    `${label}.initialState must exactly match the frozen policy contract`,
+  );
+  validateFrozenArray(
+    machine?.terminalStates,
+    frozenMachine.terminalStates,
+    `${label}.terminalStates`,
+    errors,
+  );
+  validateFrozenArray(
+    machine?.transitions,
+    frozenMachine.transitions,
+    `${label}.transitions`,
+    errors,
+  );
+  if (frozenMachine.forbiddenTransitions) {
+    validateFrozenArray(
+      machine?.forbiddenTransitions,
+      frozenMachine.forbiddenTransitions,
+      `${label}.forbiddenTransitions`,
+      errors,
+    );
+  }
+}
+
+function validateFrozenContractArrays(policy, errors) {
+  validateFrozenArray(policy?.scope, FROZEN_POLICY.scope, "scope", errors);
+  validateFrozenArray(
+    policy?.correlation?.requiredFields,
+    FROZEN_POLICY.correlation.requiredFields,
+    "correlation.requiredFields",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.correlation?.serverDerivedFields,
+    FROZEN_POLICY.correlation.serverDerivedFields,
+    "correlation.serverDerivedFields",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.correlation?.forbiddenClientAuthorityFields,
+    FROZEN_POLICY.correlation.forbiddenClientAuthorityFields,
+    "correlation.forbiddenClientAuthorityFields",
+    errors,
+  );
+
+  validateFrozenMachine(policy?.saga, FROZEN_POLICY.saga, "saga", errors);
+  validateFrozenMachine(
+    policy?.saga?.step,
+    FROZEN_POLICY.sagaStep,
+    "saga.step",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.saga?.step?.compensationDispositions,
+    FROZEN_POLICY.sagaStep.compensationDispositions,
+    "saga.step.compensationDispositions",
+    errors,
+  );
+  validateFrozenMachine(
+    policy?.compensation,
+    FROZEN_POLICY.compensation,
+    "compensation",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.compensation?.execution?.idempotencyScope,
+    FROZEN_POLICY.compensation.idempotencyScope,
+    "compensation.execution.idempotencyScope",
+    errors,
+  );
+  validateFrozenMachine(
+    policy?.manualRecovery,
+    FROZEN_POLICY.manualRecovery,
+    "manualRecovery",
+    errors,
+  );
+
+  const approval = policy?.manualRecovery?.approval;
+  validateFrozenArray(
+    approval?.serverDerivedFields,
+    FROZEN_POLICY.approval.serverDerivedFields,
+    "manualRecovery.approval.serverDerivedFields",
+    errors,
+  );
+  validateFrozenArray(
+    approval?.forbiddenClientAuthorityFields,
+    FROZEN_POLICY.approval.forbiddenClientAuthorityFields,
+    "manualRecovery.approval.forbiddenClientAuthorityFields",
+    errors,
+  );
+  validateFrozenArray(
+    approval?.recordRequiredFields,
+    FROZEN_POLICY.approval.recordRequiredFields,
+    "manualRecovery.approval.recordRequiredFields",
+    errors,
+  );
+  validateFrozenArray(
+    approval?.decisions,
+    FROZEN_POLICY.approval.decisions,
+    "manualRecovery.approval.decisions",
+    errors,
+  );
+  validateFrozenArray(
+    approval?.bindingFields,
+    FROZEN_POLICY.approval.bindingFields,
+    "manualRecovery.approval.bindingFields",
+    errors,
+  );
+
+  const reconciliation = policy?.manualRecovery?.reconciliation;
+  validateFrozenArray(
+    reconciliation?.recordRequiredFields,
+    FROZEN_POLICY.reconciliation.recordRequiredFields,
+    "manualRecovery.reconciliation.recordRequiredFields",
+    errors,
+  );
+  validateFrozenArray(
+    reconciliation?.statuses,
+    FROZEN_POLICY.reconciliation.statuses,
+    "manualRecovery.reconciliation.statuses",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.manualRecovery?.closure?.requiredEvidence,
+    FROZEN_POLICY.closure.requiredEvidence,
+    "manualRecovery.closure.requiredEvidence",
+    errors,
+  );
+
+  validateFrozenArray(
+    policy?.receipt?.types,
+    FROZEN_POLICY.receipt.types,
+    "receipt.types",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.receipt?.outcomes,
+    FROZEN_POLICY.receipt.outcomes,
+    "receipt.outcomes",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.receipt?.requiredFields,
+    FROZEN_POLICY.receipt.requiredFields,
+    "receipt.requiredFields",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.audit?.requiredCorrelation,
+    FROZEN_POLICY.audit.requiredCorrelation,
+    "audit.requiredCorrelation",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.errorRouting?.errors,
+    FROZEN_POLICY.errorRouting.errors,
+    "errorRouting.errors",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.runtimeBoundary?.prohibitedClaims,
+    FROZEN_POLICY.runtimeBoundary.prohibitedClaims,
+    "runtimeBoundary.prohibitedClaims",
+    errors,
+  );
+  validateFrozenArray(
+    policy?.prohibitions,
+    FROZEN_POLICY.prohibitions,
+    "prohibitions",
+    errors,
+  );
+}
+
 export function validateApprovalDecision(approvalPolicy, decision, errors) {
   hasExactKeys(
     decision,
@@ -196,6 +837,7 @@ export function validateCausationRecord(correlationPolicy, record, errors) {
       "traceId",
       "dedupeKey",
       "kind",
+      "sourceEventId",
       "sourceRootEventId",
     ],
     "causation record",
@@ -208,11 +850,21 @@ export function validateCausationRecord(correlationPolicy, record, errors) {
       `causation record requires ${key}`,
     );
   }
+  add(
+    errors,
+    ["ORIGINAL_FACT", "DERIVED_CONTROL_EVENT"].includes(record?.kind),
+    "causation record must use a declared event kind",
+  );
   if (record?.kind === "ORIGINAL_FACT") {
     add(
       errors,
       record.rootEventId === record.eventId,
       "original fact rootEventId must equal eventId",
+    );
+    add(
+      errors,
+      record.causationEventId === null,
+      "original fact causationEventId must be null",
     );
   }
   if (record?.kind === "DERIVED_CONTROL_EVENT") {
@@ -223,9 +875,19 @@ export function validateCausationRecord(correlationPolicy, record, errors) {
     );
     add(
       errors,
-      typeof record.causationEventId === "string" &&
-        record.causationEventId.length > 0,
-      "derived control event requires causationEventId",
+      typeof record.sourceEventId === "string" &&
+        record.sourceEventId.length > 0,
+      "derived control event requires sourceEventId",
+    );
+    add(
+      errors,
+      record.causationEventId === record.sourceEventId,
+      "derived control event causationEventId must equal sourceEventId",
+    );
+    add(
+      errors,
+      record.eventId !== record.sourceEventId,
+      "derived control event eventId must differ from sourceEventId",
     );
   }
 }
@@ -1273,6 +1935,7 @@ function validateErrorsAndRuntimeBoundary(policy, errors) {
 export function validateSagaRecoveryData({ policy, b26 }) {
   const errors = [];
   checkExactObjects(policy, errors);
+  validateFrozenContractArrays(policy, errors);
   validateIdentifiers(policy, b26, errors);
   validateCorrelationAndOwners(policy, errors);
   validateSagaAndCompensation(policy, errors);

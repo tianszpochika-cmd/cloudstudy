@@ -11,7 +11,7 @@
 | 事件名称、producer/data owner、consumer group、topic、partition、payload | `packages/contracts/events/v1/catalog.json`            | M1-006 D2，运行未验证               |
 | Outbox、消费去重、重试、DLQ、replay、顺序和回执                          | `packages/contracts/events/v1/reliability-policy.json` | M1-007 D2                           |
 | Saga、补偿、双人审批、对账、人工恢复与关闭                               | `config/p1r-saga-recovery.v1.json`                     | M1-007 D2                           |
-| 回执与恢复记录结构                                                       | `packages/contracts/schemas/v1/registry.json`          | 7 个新增闭合 Schema                 |
+| 可靠性、回执与恢复记录结构                                               | `packages/contracts/schemas/v1/registry.json`          | 8 个新增闭合 Schema                 |
 | B26                                                                      | `config/b26-event-runtime.json`                        | 仅历史静态候选，`pending` / `NO-GO` |
 
 M1-007 不改写 M1-006 已接受的 v1 事件 wire contract。`rootEventId`、`causationEventId` 与 `aggregateVersion` 在 owner 的 Outbox 边界形成补充可靠性记录；后续事件版本若要把它们加入 wire envelope，必须走独立兼容性决策。
@@ -21,7 +21,7 @@ M1-007 不改写 M1-006 已接受的 v1 事件 wire contract。`rootEventId`、`
 ```text
 客户端命令
   → Gateway / IAM / 领域服务 PEP
-  → owner 在一个 MySQL 事务中写领域事实 + immutable Outbox
+  → owner 在一个 MySQL 事务中写领域事实 + 带 payload digest 的 immutable Outbox
   → publisher 取得有时限的 lease
   → Kafka broker ack 后 Outbox 才能 PUBLISHED
   → consumer 按 aggregateId 分区接收
@@ -39,7 +39,7 @@ M1-007 不改写 M1-006 已接受的 v1 事件 wire contract。`rootEventId`、`
 - 原始事实：`rootEventId = eventId`，`causationEventId = null`。
 - 派生控制事件：生成新的 `eventId`，继承源 `rootEventId`，并令 `causationEventId` 指向直接来源事件。
 - retry：保留 event/root/causation/aggregate version/schema/dedupe 全部身份。
-- replay：保留源事件身份，另生成 `replayRunId`；描述回放动作的控制事件使用新的 `eventId`。
+- replay：保留源事件名、root、聚合、schema、topic、partition、dedupe 与 payload digest，另生成 `replayRunId`；描述回放动作的控制事件使用新的 `eventId`。
 - 客户端不得提供或改写上述身份、actor、tenant、角色、权限或 approver 事实。
 
 B26 的旧静态候选只声明 `payload.aggregateVersion`，也没有 `rootEventId`。M2 实现前，owner adapter 必须把它们转换为规范的 reliability context；静态候选本身不能被升级为运行证据。
@@ -75,13 +75,14 @@ RECEIVED --claim--> PROCESSING --effect+receipt commit--> APPLIED
 - Replay 只读取 immutable Outbox/DLQ 来源，继续使用原 consumer group/path、schema、顺序检查和去重；单批最多 1000 条。
 - 请求者需要 `event.replay.request`，审批者需要 `event.replay.approve`，两者必须是不同的、由服务端派生的 principal。
 - workflow-service 只编排；补偿必须由目标领域 owner 通过版本化 API 或 canonical event 幂等执行并返回 receipt。workflow/audit 都不能直接写其他 owner schema。
-- 人工恢复必须经过预对账、待双人审批、执行、后对账；只有后对账 `MATCHED`、owner receipts、closure receipt 与 immutable audit 均存在时才可 `CLOSED`。关闭工单或 DLQ 不等于业务已对账。
+- 人工恢复必须经过预对账、待双人审批、执行、后对账；closure receipt 必须同时绑定 `APPROVED` 决定、后对账 `MATCHED`、owner receipts 与 immutable audit 后才可声明 `CLOSED`。关闭工单或 DLQ 不等于业务已对账。
 
-## 6. 回执
+## 6. 可靠性记录与回执
 
 共享 registry 冻结以下闭合结构，全部 `additionalProperties=false`：
 
 - event reliability context；
+- owner-local transactional Outbox record；
 - Outbox publish receipt；
 - consumer effect/dedupe receipt；
 - immutable DLQ record；
