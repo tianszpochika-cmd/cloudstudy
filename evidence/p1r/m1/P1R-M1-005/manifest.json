@@ -1,0 +1,140 @@
+{
+  "taskId": "P1R-M1-005",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "21cdd3a94d0c721c96f5257d26efbb0c1b9354fb",
+  "artifactDigests": [
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "731a3546ebb438a6efbe370602a6dec5b4c26d70b9b54a71808a733567ed914d"
+    },
+    {
+      "path": "config/p1r-data-ownership.v1.json",
+      "algorithm": "sha256",
+      "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"
+    },
+    {
+      "path": "scripts/audit/p1r-data-ownership-check.mjs",
+      "algorithm": "sha256",
+      "digest": "327c59f7e6a3577b68704dc4dbfce37024d4fa0937ca6162b4187cbca8d55c4a"
+    },
+    {
+      "path": "tests/p1r/p1r-data-ownership.test.mjs",
+      "algorithm": "sha256",
+      "digest": "45ff98545bad7954ae0f095e31f232a3ba440e3beb54db77432ae225f1dd89a0"
+    },
+    {
+      "path": "database/redis/README.md",
+      "algorithm": "sha256",
+      "digest": "b7e732ba7d950b4aecc499f63e08f2a0e0ec1b72589d8cae17885700384e5acf"
+    },
+    {
+      "path": "docs/02-architecture/security-and-data-boundaries.md",
+      "algorithm": "sha256",
+      "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"
+    },
+    {
+      "path": "docs/02-architecture/v2-microservices-architecture.md",
+      "algorithm": "sha256",
+      "digest": "08ec94e017107dcec81d0e39577428cad9480a29b4f3b0f185d6ca473c6852e1"
+    }
+  ],
+  "environment": {
+    "kind": "repository-static-governance",
+    "branch": "dev",
+    "acceptedContractBaseline": "bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d",
+    "executionCheckpoint": "6f60df7269d7cbcd4e6f0589f635219ff8bb20d9"
+  },
+  "startedAt": "2026-08-30T00:53:14+08:00",
+  "finishedAt": "2026-08-30T02:12:45+08:00",
+  "actors": [
+    "m1_004_evidence",
+    "m1_004_evidence/data_owner_audit",
+    "m1_005_data_docs",
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-005",
+    "ARCH-DATA-001",
+    "ARCH-SVC-001",
+    "ADR-0010",
+    "B25-DATA",
+    "REDIS-KEYSPACE"
+  ],
+  "commands": [
+    "pnpm p1r:data-ownership:check",
+    "node --test tests/p1r/p1r-data-ownership.test.mjs",
+    "pnpm test:p1r",
+    "node scripts/database/validate-redis-keyspace.mjs",
+    "node scripts/database/validate-b25-data.mjs --mode static",
+    "pnpm p1r:auth-contract:check",
+    "pnpm p1r:iam-policy-contract:check",
+    "pnpm p1r:gateway-contract:check",
+    "node scripts/contracts/merge-b1-fragments.mjs",
+    "pnpm contracts:generate -- --check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d --kind all",
+    "pnpm --dir packages/contracts typecheck",
+    "pnpm --dir packages/api-client typecheck",
+    "pnpm test:b7",
+    "pnpm test:b8",
+    "node --test tests/g/g1-contract-data.test.mjs",
+    "pnpm plan:p1r:check",
+    "git diff --check",
+    "independent Luna Max adversarial acceptance review at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb"
+  ],
+  "results": [
+    {
+      "check": "service-owner-and-gateway-boundary",
+      "status": "PASS",
+      "details": "The D2 policy freezes 15 services and 14 data owners. Gateway has no business schema, database credential, Flyway collection or domain write authority; Maven and Gradle persistence dependencies plus Gateway source persistence markers fail closed."
+    },
+    {
+      "check": "schema-redis-tenant-and-lifecycle",
+      "status": "PASS",
+      "details": "Owner schema, logical credentials, Flyway locations and Redis namespaces are unique; tenant authority remains server-derived; all 14 owners have exact data class, policy owner, deletion/anonymization, legal-hold, receipt and forward-repair responsibilities."
+    },
+    {
+      "check": "candidate-and-runtime-separation",
+      "status": "PASS",
+      "details": "B25 remains an eight-owner historical candidate, 29 Redis entries remain non-authoritative migration inputs, and eight M2-004 runtime requirements remain OPEN. Policy, B25 and Redis field/type shapes reject unknown runtime-proof aliases without promoting static evidence."
+    },
+    {
+      "check": "migration-and-source-isolation",
+      "status": "PASS",
+      "details": "All 12 existing Flyway collections are recursively audited. The MySQL scanner covers executable comments, ANSI quotes, compact USE, MySQL comment rules, backticks, default and NO_BACKSLASH_ESCAPES modes, dynamic SQL and cross-owner schema references; the two historical IAM dynamic migrations require exact reviewed digests."
+    },
+    {
+      "check": "tests-and-compatibility",
+      "status": "PASS",
+      "details": "Data ownership tests pass 34/34 and P1R passes 106/106; Redis/B25 static, IAM, Gateway, B7 28/28, B8 29/29 and G1 6/6 pass. Contract merge/generation/validation and both TypeScript package checks pass; OpenAPI, events and JSON Schema report zero breaking changes against bb0ae3b."
+    },
+    {
+      "check": "independent-review",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max accepted 21cdd3a with zero current-source P1/P2 blockers after 27 SQL payloads, 15 runtime/shape mutations, eight Gateway build dependency mutations and M1-003/M1-004 current-source revalidation."
+    },
+    {
+      "check": "design-consistency",
+      "status": "PASS",
+      "details": "A Terra Ultra read-only review found the owner, tenant, retention, Gateway and migration policy consistent across the architecture, security and Redis documents; all runtime claims remain explicitly NOT_RUNTIME_VERIFIED."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "M1-005 source is isolated in commits 18bc504, 7f05da7, 3af3df3, 489eb35, bc344e1, 2525ef1, 1f0f320, 5620851 and 21cdd3a after execution checkpoint 6f60df7; reverting those source commits returns to the accepted bb0ae3b baseline plus the task-start record."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004 must provision and prove independent schemas and owner grants, empty/existing database migration, TenantScope and cross-tenant denial, Redis ACL/rebuild/restart behavior, rollback/compensation and retention/delete/legal-hold runtime behavior.",
+    "P1R-M1-017 must freeze exact approved business retention periods, privacy export, account deletion cooling-off and cross-owner receipt details; M1-005 freezes responsibility and policy classes only.",
+    "Java/Kotlin dynamically constructed SQL can exceed this static text scanner; current owner sources contain no foreign-qualified references, while M2-004 service-scoped database grants and runtime cross-owner denial remain the authoritative enforcement and Evidence.",
+    "Architecture/security/Redis prose was manually cross-checked but is not content-fingerprinted by the data ownership validator; the machine-readable policy remains the D2 source of truth.",
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still prevents M0-complete or release claims.",
+    "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the task-relevant G1 slice passes 6/6."
+  ],
+  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}

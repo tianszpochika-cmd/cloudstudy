@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
+  "sourceCommit": "21cdd3a94d0c721c96f5257d26efbb0c1b9354fb",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "0790ed7e97031cbdebb13d364e7ca3c4777a6aaabdf46cbc545bc6286bd6f0b1"
+      "digest": "731a3546ebb438a6efbe370602a6dec5b4c26d70b9b54a71808a733567ed914d"
     },
     {
       "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
@@ -47,7 +47,7 @@
     {
       "path": "docs/02-architecture/security-and-data-boundaries.md",
       "algorithm": "sha256",
-      "digest": "51d1245d489b6d700a488b60d729156ac26b18fd291fc7e39e804b79cebc231e"
+      "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"
     },
     {
       "path": "packages/contracts/README.md",
@@ -66,8 +66,14 @@
     "acceptedContractBaseline": "e5110f29d73724fd518fd6d4a6a7cbcdb08ece28",
     "executionCheckpoint": "62168eae300e74588e4487a7b54b2a9bc4377bc8"
   },
+  "provenance": {
+    "originalSourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
+    "originalFinishedAt": "2026-08-30T00:42:00+08:00",
+    "originalReviewer": "m1_003_final_review",
+    "currentSourceRevalidationTask": "P1R-M1-005"
+  },
   "startedAt": "2026-08-29T23:52:04+08:00",
-  "finishedAt": "2026-08-30T00:42:00+08:00",
+  "finishedAt": "2026-08-30T02:12:45+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -96,7 +102,10 @@
     "node --test tests/g/g1-contract-data.test.mjs",
     "pnpm test:g",
     "git diff --check",
-    "independent Luna Max read-only acceptance review"
+    "independent Luna Max read-only acceptance review",
+    "node --test tests/p1r/p1r-iam-policy-contract.test.mjs tests/p1r/p1r-gateway-contract.test.mjs",
+    "pnpm contracts:compatibility:git -- --ref bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d --kind all",
+    "independent Luna Max current-source revalidation review at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb"
   ],
   "results": [
     {
@@ -127,13 +136,13 @@
     {
       "check": "tests-and-independent-review",
       "status": "PASS",
-      "details": "Gateway audit passes; 15/15 failure-closed mutations, P1R 72/72, B7 28/28, B8 29/29 and G1 6/6 pass; independent reviewer m1_003_final_review accepted e4618b324e5a93926da0750a8100fc9377ac97ec using gpt-5.6-luna Max for the D2 scope only."
+      "details": "Gateway audit passes with 52 route rules, 326/326 public operations and 51/51 internal denials; IAM/Gateway 28/28, P1R 106/106, B7 28/28, B8 29/29 and G1 6/6 pass. Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max revalidated the accepted M1-004 D2 semantics at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb."
     }
   ],
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "The Gateway D2 source is isolated in e4618b3 after execution checkpoint 62168ea and immutable baseline e5110f2; reverting e4618b3 restores the start checkpoint, and canonical OpenAPI remains reproducible from fragments through the no-write merge and generation checks."
+      "details": "The Gateway D2 source remains isolated in e4618b3 after execution checkpoint 62168ea and immutable baseline e5110f2; current-source revalidation at 21cdd3a confirms no Gateway/contract regression, and canonical OpenAPI remains reproducible from fragments through the no-write merge and generation checks."
     }
   ],
   "knownGaps": [
@@ -144,6 +153,6 @@
     "The full historical G suite remains 39/41 because G0 and G3 assert the removed exact source marker `Phase 2/3 已移出当前批次`; the task-relevant G1 slice passes 6/6.",
     "This ACCEPTED decision covers D2 contract governance only and does not claim the existing Gateway Java candidate or any M2 runtime capability is complete."
   ],
-  "reviewer": "m1_003_final_review",
+  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

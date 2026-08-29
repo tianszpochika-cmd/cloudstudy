@@ -102,10 +102,10 @@
     },
     {
       "taskId": "P1R-M1-005",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-30T00:50:00+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-30T02:12:45+08:00",
       "actor": "root-coordinator",
-      "reason": "M1-001 and M1-003 dependencies are accepted; data owner, schema/Flyway, Redis namespace, tenant guard, retention and migration responsibility D2 work started from immutable accepted checkpoint bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d.",
+      "reason": "The 15-service/14-owner D2 matrix, recursive migration and Gateway/source boundaries, strict candidate-document shapes, Redis/B25 disposition, tenant/lifecycle governance and failure-closed adversarial checks passed at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb; independent Luna Max review accepted with zero current-source P1/P2 blockers without promoting M2-004 runtime gaps.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-005/manifest.json"
     }
   ]
