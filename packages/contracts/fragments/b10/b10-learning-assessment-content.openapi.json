@@ -1,535 +1,2055 @@
 {
   "tags": [
-    { "name": "b10-content-snapshot", "description": "B10 immutable content/version pin and protected assessment snapshot boundary" },
-    { "name": "b10-assessment", "description": "B10 assessment session, attempt, checkpoint and report contracts" },
-    { "name": "b10-learning", "description": "B10 plan, review queue and mastery projection read contracts" }
+    {
+      "name": "b10-content-snapshot",
+      "description": "B10 immutable content/version pin and protected assessment snapshot boundary"
+    },
+    {
+      "name": "b10-assessment",
+      "description": "B10 assessment session, attempt, checkpoint and report contracts"
+    },
+    {
+      "name": "b10-learning",
+      "description": "B10 plan, review queue and mastery projection read contracts"
+    }
   ],
   "paths": {
     "/api/v1/learning/content-snapshots/{contentVersionId}": {
       "get": {
-        "tags": ["b10-content-snapshot"],
+        "tags": [
+          "b10-content-snapshot"
+        ],
         "summary": "Read the learner-safe content snapshot for a pinned version",
         "operationId": "getB10LearnerContentSnapshot",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "x-contract": {
           "owner": "content-service",
           "consumer": "learner-web/mobile",
           "projection": "learner-safe",
           "answerProtection": "public item fields only; no grading rule or answer value"
         },
-        "parameters": [{ "$ref": "#/components/parameters/B10ContentVersionId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10ContentVersionId"
+          }
+        ],
         "responses": {
-          "200": { "description": "Learner-safe immutable snapshot", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10LearnerContentSnapshotResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "404": { "$ref": "#/components/responses/B10NotFound" },
-          "410": { "$ref": "#/components/responses/B10ContentUnavailable" }
+          "200": {
+            "description": "Learner-safe immutable snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10LearnerContentSnapshot"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/B10ContentUnavailable"
+          }
         }
       }
     },
     "/internal/v1/content/assessment-snapshots/{contentVersionId}": {
       "get": {
-        "tags": ["b10-content-snapshot"],
+        "tags": [
+          "b10-content-snapshot"
+        ],
         "summary": "Read the protected assessment snapshot owned by content-service",
         "operationId": "getB10AssessmentContentSnapshot",
-        "security": [{ "B8WorkloadIdentity": [] }],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
         "x-contract": {
           "owner": "content-service",
           "consumer": "assessment-service",
           "access": "workload identity only",
           "answerProtection": "rule metadata and sealed rule reference only; raw answer values never cross the event boundary"
         },
-        "parameters": [{ "$ref": "#/components/parameters/B10ContentVersionId" }],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10ContentVersionId"
+          }
+        ],
         "responses": {
-          "200": { "description": "Protected assessment snapshot", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10AssessmentContentSnapshotResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "404": { "$ref": "#/components/responses/B10NotFound" },
-          "410": { "$ref": "#/components/responses/B10ContentUnavailable" }
+          "200": {
+            "description": "Protected assessment snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B10AssessmentContentSnapshotResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/B10ContentUnavailable"
+          }
         }
       }
     },
     "/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery": {
       "get": {
-        "tags": ["b10-content-snapshot"],
+        "tags": [
+          "b10-content-snapshot"
+        ],
         "summary": "Resolve an unavailable pinned version without rewriting historical facts",
         "operationId": "resolveB10ContentSnapshotRecovery",
-        "security": [{ "B8WorkloadIdentity": [] }],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
         "x-contract": {
           "owner": "content-service",
           "consumer": "assessment-service/learning-service",
           "recovery": "exact immutable snapshot first; safe fallback only for future reads; never regrade a historical attempt"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B10ContentVersionId" },
-          { "$ref": "#/components/parameters/B10SnapshotHashOptional" }
+          {
+            "$ref": "#/components/parameters/B10ContentVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B10SnapshotHashOptional"
+          }
         ],
         "responses": {
-          "200": { "description": "Version pin recovery decision", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10ContentRecoveryResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "404": { "$ref": "#/components/responses/B10NotFound" },
-          "409": { "$ref": "#/components/responses/B10Conflict" }
+          "200": {
+            "description": "Version pin recovery decision",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B10ContentRecoveryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/B10Conflict"
+          }
         }
       }
     },
     "/api/v1/assessment/sessions": {
       "post": {
-        "tags": ["b10-assessment"],
+        "tags": [
+          "b10-assessment"
+        ],
         "summary": "Start an assessment session pinned to an immutable content snapshot",
         "operationId": "createB10AssessmentSession",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "x-contract": {
           "owner": "assessment-service",
           "contentSource": "content-service protected snapshot",
           "pinRule": "server resolves and persists the contentVersionId/contentEpoch/snapshotHash pin"
         },
-        "x-idempotency": { "required": true, "strategy": "b10-assessment-session-start", "keyHeader": "Idempotency-Key", "replayBehavior": "same subject, content pin and request hash return the original session" },
-        "parameters": [{ "$ref": "#/components/parameters/B10IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10CreateAssessmentSessionRequest" } } } },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-assessment-session-start",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject, content pin and request hash return the original session"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10CreateAssessmentSessionRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "201": { "description": "Assessment session created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10AssessmentSessionResponse" } } } },
-          "400": { "$ref": "#/components/responses/B10BadRequest" },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "409": { "$ref": "#/components/responses/B10Conflict" },
-          "410": { "$ref": "#/components/responses/B10ContentUnavailable" }
+          "201": {
+            "description": "Assessment session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10AssessmentSession"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/B10ContentUnavailable"
+          }
         }
       }
     },
     "/api/v1/assessment/sessions/{sessionId}": {
       "get": {
-        "tags": ["b10-assessment"],
+        "tags": [
+          "b10-assessment"
+        ],
         "summary": "Read an assessment session without exposing grading rules",
         "operationId": "getB10AssessmentSession",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "assessment-service", "resourceOwner": "authenticated principal", "answerProtection": "session state and learner-safe items only" },
-        "parameters": [{ "$ref": "#/components/parameters/B10SessionId" }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "assessment-service",
+          "resourceOwner": "authenticated principal",
+          "answerProtection": "session state and learner-safe items only"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10SessionId"
+          }
+        ],
         "responses": {
-          "200": { "description": "Assessment session", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10AssessmentSessionResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "404": { "$ref": "#/components/responses/B10NotFound" }
+          "200": {
+            "description": "Assessment session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10AssessmentSession"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/assessment/sessions/{sessionId}/attempts": {
       "post": {
-        "tags": ["b10-assessment"],
+        "tags": [
+          "b10-assessment"
+        ],
         "summary": "Submit an attempt; the server owns scoring and emits attempt.submitted",
         "operationId": "submitB10AssessmentAttempt",
-        "security": [{ "bearerAuth": [] }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "x-contract": {
           "owner": "assessment-service",
           "event": "assessment.attempt.submitted.v1",
           "rawResponse": "accepted only at the protected scoring boundary; never persisted in event payload or logs"
         },
-        "x-idempotency": { "required": true, "strategy": "b10-assessment-attempt-submit", "keyHeader": "Idempotency-Key", "replayBehavior": "same submission digest returns the original attempt and assessment status" },
-        "parameters": [{ "$ref": "#/components/parameters/B10SessionId" }, { "$ref": "#/components/parameters/B10IdempotencyKey" }, { "$ref": "#/components/parameters/B10IfMatch" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10SubmitAttemptRequest" } } } },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-assessment-attempt-submit",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same submission digest returns the original attempt and assessment status"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B10IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10SubmitAttemptRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "202": { "description": "Attempt accepted for deterministic assessment", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10AttemptResponse" } } } },
-          "400": { "$ref": "#/components/responses/B10BadRequest" },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "409": { "$ref": "#/components/responses/B10Conflict" },
-          "410": { "$ref": "#/components/responses/B10ContentUnavailable" }
+          "202": {
+            "description": "Attempt accepted for deterministic assessment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10Attempt"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/B10ContentUnavailable"
+          }
         }
       }
     },
     "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint": {
       "put": {
-        "tags": ["b10-assessment"],
+        "tags": [
+          "b10-assessment"
+        ],
         "summary": "Persist a resumable checkpoint without changing the final assessment result",
         "operationId": "putB10AssessmentCheckpoint",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "assessment-service", "checkpoint": "monotonic cursor; checkpoint replay is idempotent" },
-        "x-idempotency": { "required": true, "strategy": "b10-assessment-checkpoint", "keyHeader": "Idempotency-Key", "replayBehavior": "same checkpoint digest returns the original checkpoint version" },
-        "parameters": [{ "$ref": "#/components/parameters/B10SessionId" }, { "$ref": "#/components/parameters/B10AttemptId" }, { "$ref": "#/components/parameters/B10IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10CheckpointRequest" } } } },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "assessment-service",
+          "checkpoint": "monotonic cursor; checkpoint replay is idempotent"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-assessment-checkpoint",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same checkpoint digest returns the original checkpoint version"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B10AttemptId"
+          },
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10CheckpointRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "description": "Checkpoint saved", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10CheckpointResponse" } } } },
-          "400": { "$ref": "#/components/responses/B10BadRequest" },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "409": { "$ref": "#/components/responses/B10Conflict" }
+          "200": {
+            "description": "Checkpoint saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10Checkpoint"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/assessment/reports/{reportId}": {
       "get": {
-        "tags": ["b10-assessment"],
+        "tags": [
+          "b10-assessment"
+        ],
         "summary": "Read an immutable deterministic assessment report snapshot",
         "operationId": "getB10AssessmentReport",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "assessment-service", "report": "replayable from assessmentVersion and content snapshot pin", "answerProtection": "summary and mistake codes only" },
-        "parameters": [{ "$ref": "#/components/parameters/B10ReportId" }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "assessment-service",
+          "report": "replayable from assessmentVersion and content snapshot pin",
+          "answerProtection": "summary and mistake codes only"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10ReportId"
+          }
+        ],
         "responses": {
-          "200": { "description": "Assessment report", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10AssessmentReportResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "404": { "$ref": "#/components/responses/B10NotFound" }
+          "200": {
+            "description": "Assessment report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10AssessmentReport"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/learning/review-queue": {
       "get": {
-        "tags": ["b10-learning"],
+        "tags": [
+          "b10-learning"
+        ],
         "summary": "Read the server-owned review queue",
         "operationId": "listB10LearningReviewQueue",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "learning-service", "source": "learning facts and mastery projection", "contentPin": "each item retains its source content version pin" },
-        "parameters": [{ "$ref": "#/components/parameters/B10Cursor" }, { "$ref": "#/components/parameters/B10Limit" }, { "$ref": "#/components/parameters/B10LocalDateOptional" }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "source": "learning facts and mastery projection",
+          "contentPin": "each item retains its source content version pin"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10LocalDateOptional"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
         "responses": {
-          "200": { "description": "Review queue", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10ReviewQueueResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" }
+          "200": {
+            "description": "Review queue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/B10LearningQueueItem"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
         }
       }
     },
     "/api/v1/learning/review-queue/{queueItemId}/complete": {
       "post": {
-        "tags": ["b10-learning"],
+        "tags": [
+          "b10-learning"
+        ],
         "summary": "Complete a review action through learning-service",
         "operationId": "completeB10LearningReview",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "learning-service", "command": "learning.review.complete", "assessment": "only assessment-service may produce assessment result facts" },
-        "x-idempotency": { "required": true, "strategy": "b10-learning-review-complete", "keyHeader": "Idempotency-Key", "replayBehavior": "same queue item and action digest return the original projection version" },
-        "parameters": [{ "$ref": "#/components/parameters/B10QueueItemId" }, { "$ref": "#/components/parameters/B10IdempotencyKey" }, { "$ref": "#/components/parameters/B10IfMatch" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10CompleteReviewRequest" } } } },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "command": "learning.review.complete",
+          "assessment": "only assessment-service may produce assessment result facts"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-learning-review-complete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same queue item and action digest return the original projection version"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10QueueItemId"
+          },
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B10IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10CompleteReviewRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "description": "Review projected", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10MasteryProjectionResponse" } } } },
-          "400": { "$ref": "#/components/responses/B10BadRequest" },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "409": { "$ref": "#/components/responses/B10Conflict" },
-          "410": { "$ref": "#/components/responses/B10ContentUnavailable" }
+          "200": {
+            "description": "Review projected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10MasteryProjection"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/B10ContentUnavailable"
+          }
         }
       }
     },
     "/api/v1/learning/mastery/{itemId}": {
       "get": {
-        "tags": ["b10-learning"],
+        "tags": [
+          "b10-learning"
+        ],
         "summary": "Read the current mastery projection for an item",
         "operationId": "getB10LearningMasteryProjection",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "learning-service", "readModel": "mastery_projection", "historicalSource": "assessment event; no direct assessment table read" },
-        "parameters": [{ "$ref": "#/components/parameters/B10ItemId" }],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learning-service",
+          "readModel": "mastery_projection",
+          "historicalSource": "assessment event; no direct assessment table read"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10ItemId"
+          }
+        ],
         "responses": {
-          "200": { "description": "Mastery projection", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10MasteryProjectionResponse" } } } },
-          "401": { "$ref": "#/components/responses/B10Unauthorized" },
-          "403": { "$ref": "#/components/responses/B10Forbidden" },
-          "404": { "$ref": "#/components/responses/B10NotFound" }
+          "200": {
+            "description": "Mastery projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10MasteryProjection"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     }
   },
   "components": {
     "parameters": {
-      "B10ContentVersionId": { "name": "contentVersionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B10Int64Id" } },
-      "B10SnapshotHashOptional": { "name": "snapshotHash", "in": "query", "required": false, "schema": { "$ref": "#/components/schemas/B10Sha256" } },
-      "B10SessionId": { "name": "sessionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B10SessionId" } },
-      "B10AttemptId": { "name": "attemptId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B10AttemptId" } },
-      "B10ReportId": { "name": "reportId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B10ReportId" } },
-      "B10QueueItemId": { "name": "queueItemId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B10QueueItemId" } },
-      "B10ItemId": { "name": "itemId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B10Int64Id" } },
-      "B10IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 16, "maxLength": 192 } },
-      "B10IfMatch": { "name": "If-Match", "in": "header", "required": false, "schema": { "type": "string", "pattern": "^state-[0-9]+$", "maxLength": 64 } },
-      "B10Cursor": { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string", "maxLength": 256 } },
-      "B10Limit": { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 } },
-      "B10LocalDateOptional": { "name": "date", "in": "query", "required": false, "schema": { "type": "string", "format": "date" } }
+      "B10ContentVersionId": {
+        "name": "contentVersionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10Int64Id"
+        }
+      },
+      "B10SnapshotHashOptional": {
+        "name": "snapshotHash",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "$ref": "#/components/schemas/B10Sha256"
+        }
+      },
+      "B10SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10SessionId"
+        }
+      },
+      "B10AttemptId": {
+        "name": "attemptId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10AttemptId"
+        }
+      },
+      "B10ReportId": {
+        "name": "reportId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10ReportId"
+        }
+      },
+      "B10QueueItemId": {
+        "name": "queueItemId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10QueueItemId"
+        }
+      },
+      "B10ItemId": {
+        "name": "itemId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10Int64Id"
+        }
+      },
+      "B10IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 192
+        }
+      },
+      "B10IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "pattern": "^state-[0-9]+$",
+          "maxLength": 64
+        }
+      },
+      "B10Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "B10Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "B10LocalDateOptional": {
+        "name": "date",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      }
     },
     "responses": {
-      "B10BadRequest": { "description": "Invalid request or state transition" },
-      "B10Unauthorized": { "description": "Missing or invalid subject" },
-      "B10Forbidden": { "description": "Resource owner, policy or content rights denied" },
-      "B10NotFound": { "description": "Resource not found" },
-      "B10Conflict": { "description": "Idempotency, state version or content pin conflict" },
-      "B10ContentUnavailable": { "description": "Pinned content is unavailable and no safe recovery exists" }
+      "B10BadRequest": {
+        "description": "Invalid request or state transition"
+      },
+      "B10Unauthorized": {
+        "description": "Missing or invalid subject"
+      },
+      "B10Forbidden": {
+        "description": "Resource owner, policy or content rights denied"
+      },
+      "B10NotFound": {
+        "description": "Resource not found"
+      },
+      "B10Conflict": {
+        "description": "Idempotency, state version or content pin conflict"
+      },
+      "B10ContentUnavailable": {
+        "description": "Pinned content is unavailable and no safe recovery exists"
+      }
     },
     "schemas": {
-      "B10Int64Id": { "type": "integer", "format": "int64", "minimum": 1 },
-      "B10StateVersion": { "type": "integer", "format": "int64", "minimum": 0 },
-      "B10ContentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
-      "B10ProjectionVersion": { "type": "integer", "format": "int64", "minimum": 1 },
-      "B10DateTime": { "type": "string", "format": "date-time" },
-      "B10Sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
-      "B10ContentCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,127}$" },
-      "B10SnapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
-      "B10SessionId": { "type": "string", "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$" },
-      "B10AttemptId": { "type": "string", "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$" },
-      "B10ReportId": { "type": "string", "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$" },
-      "B10QueueItemId": { "type": "string", "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$" },
+      "B10Int64Id": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "B10StateVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 0
+      },
+      "B10ContentEpoch": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 0
+      },
+      "B10ProjectionVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "B10DateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "B10Sha256": {
+        "type": "string",
+        "pattern": "^[A-Fa-f0-9]{64}$"
+      },
+      "B10ContentCode": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._:-]{1,127}$"
+      },
+      "B10SnapshotId": {
+        "type": "string",
+        "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+      },
+      "B10SessionId": {
+        "type": "string",
+        "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+      },
+      "B10AttemptId": {
+        "type": "string",
+        "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+      },
+      "B10ReportId": {
+        "type": "string",
+        "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+      },
+      "B10QueueItemId": {
+        "type": "string",
+        "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$"
+      },
       "B10ContentVersionPin": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["contentCode", "contentVersionId", "contentEpoch", "snapshotId", "snapshotHash", "pinStatus", "pinnedAt"],
+        "required": [
+          "contentCode",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotId",
+          "snapshotHash",
+          "pinStatus",
+          "pinnedAt"
+        ],
         "properties": {
-          "contentCode": { "$ref": "#/components/schemas/B10ContentCode" },
-          "contentVersionId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "contentEpoch": { "$ref": "#/components/schemas/B10ContentEpoch" },
-          "snapshotId": { "$ref": "#/components/schemas/B10SnapshotId" },
-          "snapshotHash": { "$ref": "#/components/schemas/B10Sha256" },
-          "pinStatus": { "type": "string", "enum": ["PINNED", "UNPUBLISHED", "RECOVERABLE", "RECOVERED", "UNAVAILABLE"] },
-          "pinnedAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "fallbackVersionId": { "$ref": "#/components/schemas/B10Int64Id", "nullable": true },
-          "recoveryReasonCode": { "type": "string", "enum": ["NONE", "CONTENT_UNPUBLISHED", "RIGHTS_EXPIRED", "SNAPSHOT_MISSING", "POLICY_DENIED", "SERVICE_DEGRADED"] }
+          "contentCode": {
+            "$ref": "#/components/schemas/B10ContentCode"
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "snapshotId": {
+            "$ref": "#/components/schemas/B10SnapshotId"
+          },
+          "snapshotHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "pinStatus": {
+            "type": "string",
+            "enum": [
+              "PINNED",
+              "UNPUBLISHED",
+              "RECOVERABLE",
+              "RECOVERED",
+              "UNAVAILABLE"
+            ]
+          },
+          "pinnedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "fallbackVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id",
+            "nullable": true
+          },
+          "recoveryReasonCode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CONTENT_UNPUBLISHED",
+              "RIGHTS_EXPIRED",
+              "SNAPSHOT_MISSING",
+              "POLICY_DENIED",
+              "SERVICE_DEGRADED"
+            ]
+          }
         }
       },
       "B10ContentItemOption": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["optionId", "label"],
+        "required": [
+          "optionId",
+          "label"
+        ],
         "properties": {
-          "optionId": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{0,63}$" },
-          "label": { "type": "string", "minLength": 1, "maxLength": 512 }
+          "optionId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._:-]{0,63}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
         }
       },
       "B10LearnerContentItem": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["itemId", "itemCode", "itemType", "stem"],
+        "required": [
+          "itemId",
+          "itemCode",
+          "itemType",
+          "stem"
+        ],
         "properties": {
-          "itemId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "itemCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,127}$" },
-          "itemType": { "type": "string", "enum": ["VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "READING", "LISTENING", "WRITING"] },
-          "stem": { "type": "string", "minLength": 1, "maxLength": 4096 },
-          "options": { "type": "array", "items": { "$ref": "#/components/schemas/B10ContentItemOption" }, "maxItems": 32 },
-          "mediaRef": { "type": "string", "maxLength": 512 },
-          "displayOrder": { "type": "integer", "minimum": 0 }
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "itemCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._:-]{1,127}$"
+          },
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "PHRASE",
+              "GRAMMAR",
+              "SENTENCE",
+              "READING",
+              "LISTENING",
+              "WRITING"
+            ]
+          },
+          "stem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ContentItemOption"
+            },
+            "maxItems": 32
+          },
+          "mediaRef": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          }
         }
       },
       "B10RuleContract": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["ruleRef", "ruleVersion", "ruleDigest", "evaluationMode", "sealed"],
+        "required": [
+          "ruleRef",
+          "ruleVersion",
+          "ruleDigest",
+          "evaluationMode",
+          "sealed"
+        ],
         "description": "Protected grading contract metadata. It is not an answer key and is never emitted in integration events.",
         "properties": {
-          "ruleRef": { "type": "string", "pattern": "^rule:[a-z][a-z0-9._:-]{2,127}$" },
-          "ruleVersion": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$" },
-          "ruleDigest": { "$ref": "#/components/schemas/B10Sha256" },
-          "evaluationMode": { "type": "string", "enum": ["DETERMINISTIC", "MANUAL_REVIEW", "SELF_RATING"] },
-          "sealed": { "type": "boolean", "const": true }
+          "ruleRef": {
+            "type": "string",
+            "pattern": "^rule:[a-z][a-z0-9._:-]{2,127}$"
+          },
+          "ruleVersion": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$"
+          },
+          "ruleDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "evaluationMode": {
+            "type": "string",
+            "enum": [
+              "DETERMINISTIC",
+              "MANUAL_REVIEW",
+              "SELF_RATING"
+            ]
+          },
+          "sealed": {
+            "type": "boolean",
+            "const": true
+          }
         }
       },
       "B10AssessmentContentItem": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["itemId", "itemCode", "itemType", "stem", "ruleContract"],
+        "required": [
+          "itemId",
+          "itemCode",
+          "itemType",
+          "stem",
+          "ruleContract"
+        ],
         "properties": {
-          "itemId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "itemCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,127}$" },
-          "itemType": { "type": "string", "enum": ["VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "READING", "LISTENING", "WRITING"] },
-          "stem": { "type": "string", "minLength": 1, "maxLength": 4096 },
-          "options": { "type": "array", "items": { "$ref": "#/components/schemas/B10ContentItemOption" }, "maxItems": 32 },
-          "mediaRef": { "type": "string", "maxLength": 512 },
-          "displayOrder": { "type": "integer", "minimum": 0 },
-          "ruleContract": { "$ref": "#/components/schemas/B10RuleContract" }
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "itemCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._:-]{1,127}$"
+          },
+          "itemType": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "PHRASE",
+              "GRAMMAR",
+              "SENTENCE",
+              "READING",
+              "LISTENING",
+              "WRITING"
+            ]
+          },
+          "stem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ContentItemOption"
+            },
+            "maxItems": 32
+          },
+          "mediaRef": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ruleContract": {
+            "$ref": "#/components/schemas/B10RuleContract"
+          }
         }
       },
       "B10LearnerContentSnapshot": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["pin", "snapshotVersion", "availability", "items", "generatedAt"],
+        "required": [
+          "pin",
+          "snapshotVersion",
+          "availability",
+          "items",
+          "generatedAt"
+        ],
         "properties": {
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "snapshotVersion": { "$ref": "#/components/schemas/B10ProjectionVersion" },
-          "availability": { "type": "string", "enum": ["AVAILABLE", "STALE", "UNAVAILABLE"] },
-          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B10LearnerContentItem" }, "maxItems": 1000 },
-          "generatedAt": { "$ref": "#/components/schemas/B10DateTime" }
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "snapshotVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "STALE",
+              "UNAVAILABLE"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10LearnerContentItem"
+            },
+            "maxItems": 1000
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
         }
       },
       "B10AssessmentContentSnapshot": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["pin", "snapshotVersion", "gradingRuleSetVersion", "items", "generatedAt"],
+        "required": [
+          "pin",
+          "snapshotVersion",
+          "gradingRuleSetVersion",
+          "items",
+          "generatedAt"
+        ],
         "description": "Assessment-only snapshot. Content service remains the owner of question definitions and protected rule references; assessment does not maintain a content master table.",
         "properties": {
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "snapshotVersion": { "$ref": "#/components/schemas/B10ProjectionVersion" },
-          "gradingRuleSetVersion": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$" },
-          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B10AssessmentContentItem" }, "maxItems": 1000 },
-          "generatedAt": { "$ref": "#/components/schemas/B10DateTime" }
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "snapshotVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "gradingRuleSetVersion": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10AssessmentContentItem"
+            },
+            "maxItems": 1000
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
         }
       },
       "B10ContentRecovery": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["requestedVersionId", "resolution", "mustNotRegrade", "resolvedAt"],
+        "required": [
+          "requestedVersionId",
+          "resolution",
+          "mustNotRegrade",
+          "resolvedAt"
+        ],
         "properties": {
-          "requestedVersionId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "resolvedVersionId": { "$ref": "#/components/schemas/B10Int64Id", "nullable": true },
-          "resolvedSnapshotId": { "$ref": "#/components/schemas/B10SnapshotId", "nullable": true },
-          "resolution": { "type": "string", "enum": ["EXACT_PIN", "IMMUTABLE_SNAPSHOT", "SAFE_FUTURE_FALLBACK", "UNAVAILABLE"] },
-          "contentEpoch": { "$ref": "#/components/schemas/B10ContentEpoch" },
-          "recoveryReasonCode": { "type": "string", "enum": ["NONE", "CONTENT_UNPUBLISHED", "RIGHTS_EXPIRED", "SNAPSHOT_MISSING", "POLICY_DENIED", "SERVICE_DEGRADED"] },
-          "mustNotRegrade": { "type": "boolean", "const": true },
-          "resolvedAt": { "$ref": "#/components/schemas/B10DateTime" }
+          "requestedVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "resolvedVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id",
+            "nullable": true
+          },
+          "resolvedSnapshotId": {
+            "$ref": "#/components/schemas/B10SnapshotId",
+            "nullable": true
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "EXACT_PIN",
+              "IMMUTABLE_SNAPSHOT",
+              "SAFE_FUTURE_FALLBACK",
+              "UNAVAILABLE"
+            ]
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "recoveryReasonCode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CONTENT_UNPUBLISHED",
+              "RIGHTS_EXPIRED",
+              "SNAPSHOT_MISSING",
+              "POLICY_DENIED",
+              "SERVICE_DEGRADED"
+            ]
+          },
+          "mustNotRegrade": {
+            "type": "boolean",
+            "const": true
+          },
+          "resolvedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
         }
       },
       "B10CreateAssessmentSessionRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["contentVersionId", "mode"],
+        "required": [
+          "contentVersionId",
+          "mode"
+        ],
         "description": "The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.",
         "properties": {
-          "contentVersionId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "mode": { "type": "string", "enum": ["PRACTICE", "REVIEW", "PLACEMENT", "MOCK"] },
-          "itemIds": { "type": "array", "items": { "$ref": "#/components/schemas/B10Int64Id" }, "minItems": 1, "maxItems": 100 },
-          "clientSessionRef": { "type": "string", "maxLength": 128 }
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "PRACTICE",
+              "REVIEW",
+              "PLACEMENT",
+              "MOCK"
+            ]
+          },
+          "itemIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10Int64Id"
+            },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "clientSessionRef": {
+            "type": "string",
+            "maxLength": 128
+          }
         }
       },
       "B10AssessmentSession": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["sessionId", "status", "mode", "pin", "items", "stateVersion", "startedAt"],
+        "required": [
+          "sessionId",
+          "status",
+          "mode",
+          "pin",
+          "items",
+          "stateVersion",
+          "startedAt"
+        ],
         "properties": {
-          "sessionId": { "$ref": "#/components/schemas/B10SessionId" },
-          "status": { "type": "string", "enum": ["IN_PROGRESS", "SUBMITTED", "ASSESSED", "EXPIRED", "CANCELLED"] },
-          "mode": { "type": "string", "enum": ["PRACTICE", "REVIEW", "PLACEMENT", "MOCK"] },
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B10LearnerContentItem" }, "maxItems": 1000 },
-          "attemptCount": { "type": "integer", "minimum": 0 },
-          "stateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
-          "startedAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "expiresAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true },
-          "reportId": { "$ref": "#/components/schemas/B10ReportId", "nullable": true },
-          "lastAttemptId": { "$ref": "#/components/schemas/B10AttemptId", "nullable": true }
+          "sessionId": {
+            "$ref": "#/components/schemas/B10SessionId"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "IN_PROGRESS",
+              "SUBMITTED",
+              "ASSESSED",
+              "EXPIRED",
+              "CANCELLED"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "PRACTICE",
+              "REVIEW",
+              "PLACEMENT",
+              "MOCK"
+            ]
+          },
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10LearnerContentItem"
+            },
+            "maxItems": 1000
+          },
+          "attemptCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "startedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "expiresAt": {
+            "$ref": "#/components/schemas/B10DateTime",
+            "nullable": true
+          },
+          "reportId": {
+            "$ref": "#/components/schemas/B10ReportId",
+            "nullable": true
+          },
+          "lastAttemptId": {
+            "$ref": "#/components/schemas/B10AttemptId",
+            "nullable": true
+          }
         }
       },
       "B10AttemptSubmission": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["itemId", "sequence", "response"],
+        "required": [
+          "itemId",
+          "sequence",
+          "response"
+        ],
         "properties": {
-          "itemId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "sequence": { "type": "integer", "minimum": 0 },
-          "response": { "type": "object", "description": "Protected candidate response. It is read only by the scoring boundary and is not written to Outbox, logs or analytics.", "x-sensitive-fields": ["response"] },
-          "clientSubmissionId": { "type": "string", "minLength": 8, "maxLength": 128 }
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "response": {
+            "type": "object",
+            "description": "Protected candidate response. It is read only by the scoring boundary and is not written to Outbox, logs or analytics.",
+            "x-sensitive-fields": [
+              "response"
+            ]
+          },
+          "clientSubmissionId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          }
         }
       },
       "B10SubmitAttemptRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["expectedStateVersion", "submissionId", "items"],
+        "required": [
+          "expectedStateVersion",
+          "submissionId",
+          "items"
+        ],
         "properties": {
-          "expectedStateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
-          "submissionId": { "type": "string", "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$" },
-          "items": { "type": "array", "items": { "$ref": "#/components/schemas/B10AttemptSubmission" }, "minItems": 1, "maxItems": 1000 },
-          "clientEventId": { "type": "string", "minLength": 8, "maxLength": 96 }
+          "expectedStateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "submissionId": {
+            "type": "string",
+            "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10AttemptSubmission"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          }
         }
       },
       "B10Attempt": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["attemptId", "sessionId", "attemptVersion", "status", "itemCount", "submissionDigest", "pin", "createdAt"],
+        "required": [
+          "attemptId",
+          "sessionId",
+          "attemptVersion",
+          "status",
+          "itemCount",
+          "submissionDigest",
+          "pin",
+          "createdAt"
+        ],
         "properties": {
-          "attemptId": { "$ref": "#/components/schemas/B10AttemptId" },
-          "sessionId": { "$ref": "#/components/schemas/B10SessionId" },
-          "attemptVersion": { "type": "integer", "minimum": 1 },
-          "status": { "type": "string", "enum": ["ACCEPTED", "ASSESSING", "ASSESSED", "REJECTED", "COMPENSATED"] },
-          "itemCount": { "type": "integer", "minimum": 1 },
-          "submissionDigest": { "$ref": "#/components/schemas/B10Sha256" },
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "assessmentVersion": { "type": "string", "maxLength": 96 },
-          "scoreBucket": { "type": "string", "enum": ["UNASSESSED", "ZERO", "PARTIAL", "FULL", "PENDING_REVIEW"] },
-          "createdAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "assessedAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true },
-          "reportId": { "$ref": "#/components/schemas/B10ReportId", "nullable": true }
+          "attemptId": {
+            "$ref": "#/components/schemas/B10AttemptId"
+          },
+          "sessionId": {
+            "$ref": "#/components/schemas/B10SessionId"
+          },
+          "attemptVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "ASSESSING",
+              "ASSESSED",
+              "REJECTED",
+              "COMPENSATED"
+            ]
+          },
+          "itemCount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "submissionDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "assessmentVersion": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "scoreBucket": {
+            "type": "string",
+            "enum": [
+              "UNASSESSED",
+              "ZERO",
+              "PARTIAL",
+              "FULL",
+              "PENDING_REVIEW"
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "assessedAt": {
+            "$ref": "#/components/schemas/B10DateTime",
+            "nullable": true
+          },
+          "reportId": {
+            "$ref": "#/components/schemas/B10ReportId",
+            "nullable": true
+          }
         }
       },
       "B10CheckpointRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["checkpointVersion", "itemCursor", "checkpointDigest"],
+        "required": [
+          "checkpointVersion",
+          "itemCursor",
+          "checkpointDigest"
+        ],
         "properties": {
-          "checkpointVersion": { "type": "integer", "minimum": 1 },
-          "itemCursor": { "type": "integer", "minimum": 0 },
-          "completedItemIds": { "type": "array", "items": { "$ref": "#/components/schemas/B10Int64Id" }, "maxItems": 1000 },
-          "checkpointDigest": { "$ref": "#/components/schemas/B10Sha256" }
+          "checkpointVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "itemCursor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completedItemIds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10Int64Id"
+            },
+            "maxItems": 1000
+          },
+          "checkpointDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
         }
       },
       "B10Checkpoint": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["attemptId", "checkpointVersion", "itemCursor", "checkpointDigest", "savedAt"],
+        "required": [
+          "attemptId",
+          "checkpointVersion",
+          "itemCursor",
+          "checkpointDigest",
+          "savedAt"
+        ],
         "properties": {
-          "attemptId": { "$ref": "#/components/schemas/B10AttemptId" },
-          "checkpointVersion": { "type": "integer", "minimum": 1 },
-          "itemCursor": { "type": "integer", "minimum": 0 },
-          "checkpointDigest": { "$ref": "#/components/schemas/B10Sha256" },
-          "savedAt": { "$ref": "#/components/schemas/B10DateTime" }
+          "attemptId": {
+            "$ref": "#/components/schemas/B10AttemptId"
+          },
+          "checkpointVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "itemCursor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "checkpointDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "savedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
         }
       },
       "B10AssessmentReport": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["reportId", "attemptId", "reportVersion", "status", "scoreBucket", "mistakeCodes", "pin", "generatedAt", "replayable"],
+        "required": [
+          "reportId",
+          "attemptId",
+          "reportVersion",
+          "status",
+          "scoreBucket",
+          "mistakeCodes",
+          "pin",
+          "generatedAt",
+          "replayable"
+        ],
         "properties": {
-          "reportId": { "$ref": "#/components/schemas/B10ReportId" },
-          "attemptId": { "$ref": "#/components/schemas/B10AttemptId" },
-          "reportVersion": { "type": "integer", "minimum": 1 },
-          "status": { "type": "string", "enum": ["READY", "PARTIAL", "FAILED", "COMPENSATED"] },
-          "scoreBucket": { "type": "string", "enum": ["ZERO", "PARTIAL", "FULL", "PENDING_REVIEW"] },
-          "mistakeCodes": { "type": "array", "items": { "type": "string", "maxLength": 96 }, "maxItems": 64 },
-          "masterySignal": { "type": "string", "enum": ["NO_SIGNAL", "WEAK", "STABLE", "MASTERED", "RETRY"] },
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "generatedAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "replayable": { "type": "boolean", "const": true }
+          "reportId": {
+            "$ref": "#/components/schemas/B10ReportId"
+          },
+          "attemptId": {
+            "$ref": "#/components/schemas/B10AttemptId"
+          },
+          "reportVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "PARTIAL",
+              "FAILED",
+              "COMPENSATED"
+            ]
+          },
+          "scoreBucket": {
+            "type": "string",
+            "enum": [
+              "ZERO",
+              "PARTIAL",
+              "FULL",
+              "PENDING_REVIEW"
+            ]
+          },
+          "mistakeCodes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 96
+            },
+            "maxItems": 64
+          },
+          "masterySignal": {
+            "type": "string",
+            "enum": [
+              "NO_SIGNAL",
+              "WEAK",
+              "STABLE",
+              "MASTERED",
+              "RETRY"
+            ]
+          },
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "replayable": {
+            "type": "boolean",
+            "const": true
+          }
         }
       },
       "B10LearningQueueItem": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["queueItemId", "itemId", "source", "state", "dueAt", "priority", "pin", "stateVersion"],
+        "required": [
+          "queueItemId",
+          "itemId",
+          "source",
+          "state",
+          "dueAt",
+          "priority",
+          "pin",
+          "stateVersion"
+        ],
         "properties": {
-          "queueItemId": { "$ref": "#/components/schemas/B10QueueItemId" },
-          "itemId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "source": { "type": "string", "enum": ["NEW", "REVIEW", "MISTAKE", "RETRY"] },
-          "state": { "type": "string", "enum": ["LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REVIEW_QUEUE", "REOPENED"] },
-          "dueAt": { "$ref": "#/components/schemas/B10DateTime" },
-          "priority": { "type": "integer", "minimum": 0, "maximum": 1000 },
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "stateVersion": { "$ref": "#/components/schemas/B10StateVersion" }
+          "queueItemId": {
+            "$ref": "#/components/schemas/B10QueueItemId"
+          },
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "REVIEW",
+              "MISTAKE",
+              "RETRY"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REVIEW_QUEUE",
+              "REOPENED"
+            ]
+          },
+          "dueAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          },
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          }
         }
       },
       "B10CompleteReviewRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["expectedStateVersion", "verificationStage", "result"],
+        "required": [
+          "expectedStateVersion",
+          "verificationStage",
+          "result"
+        ],
         "properties": {
-          "expectedStateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
-          "verificationStage": { "type": "string", "enum": ["D0", "D1", "D7"] },
-          "result": { "type": "string", "enum": ["PASS", "FAIL", "SKIPPED"] },
-          "clientEventId": { "type": "string", "minLength": 8, "maxLength": 96 }
+          "expectedStateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "verificationStage": {
+            "type": "string",
+            "enum": [
+              "D0",
+              "D1",
+              "D7"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "SKIPPED"
+            ]
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          }
         }
       },
       "B10MasteryProjection": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["itemId", "fromState", "toState", "projectionVersion", "projectionStatus", "sourceAssessmentId", "pin", "projectedAt"],
+        "required": [
+          "itemId",
+          "fromState",
+          "toState",
+          "projectionVersion",
+          "projectionStatus",
+          "sourceAssessmentId",
+          "pin",
+          "projectedAt"
+        ],
         "properties": {
-          "itemId": { "$ref": "#/components/schemas/B10Int64Id" },
-          "fromState": { "type": "string", "enum": ["LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REVIEW_QUEUE", "REOPENED", "NONE"] },
-          "toState": { "type": "string", "enum": ["LEARNING", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REVIEW_QUEUE", "REOPENED"] },
-          "srsStage": { "type": "string", "enum": ["NEW", "D0", "D1", "D7", "MASTERED"] },
-          "nextReviewAt": { "$ref": "#/components/schemas/B10DateTime", "nullable": true },
-          "projectionVersion": { "$ref": "#/components/schemas/B10ProjectionVersion" },
-          "projectionStatus": { "type": "string", "enum": ["PENDING", "APPLIED", "RETRYING", "COMPENSATED", "MANUAL_REVIEW"] },
-          "sourceAssessmentId": { "$ref": "#/components/schemas/B10AttemptId" },
-          "pin": { "$ref": "#/components/schemas/B10ContentVersionPin" },
-          "projectedAt": { "$ref": "#/components/schemas/B10DateTime" }
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "fromState": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REVIEW_QUEUE",
+              "REOPENED",
+              "NONE"
+            ]
+          },
+          "toState": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REVIEW_QUEUE",
+              "REOPENED"
+            ]
+          },
+          "srsStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "D0",
+              "D1",
+              "D7",
+              "MASTERED"
+            ]
+          },
+          "nextReviewAt": {
+            "$ref": "#/components/schemas/B10DateTime",
+            "nullable": true
+          },
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "projectionStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPLIED",
+              "RETRYING",
+              "COMPENSATED",
+              "MANUAL_REVIEW"
+            ]
+          },
+          "sourceAssessmentId": {
+            "$ref": "#/components/schemas/B10AttemptId"
+          },
+          "pin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "projectedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
         }
       },
-      "B10LearnerContentSnapshotResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10LearnerContentSnapshot" } } },
-      "B10AssessmentContentSnapshotResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10AssessmentContentSnapshot" } } },
-      "B10ContentRecoveryResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10ContentRecovery" } } },
-      "B10AssessmentSessionResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10AssessmentSession" } } },
-      "B10AttemptResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10Attempt" } } },
-      "B10CheckpointResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10Checkpoint" } } },
-      "B10AssessmentReportResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10AssessmentReport" } } },
-      "B10ReviewQueueResponse": { "type": "object", "additionalProperties": false, "required": ["items", "nextCursor"], "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/B10LearningQueueItem" } }, "nextCursor": { "type": "string", "nullable": true } } },
-      "B10MasteryProjectionResponse": { "type": "object", "additionalProperties": false, "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10MasteryProjection" } } }
+      "B10LearnerContentSnapshotResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10LearnerContentSnapshot"
+          }
+        }
+      },
+      "B10AssessmentContentSnapshotResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10AssessmentContentSnapshot"
+          }
+        }
+      },
+      "B10ContentRecoveryResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10ContentRecovery"
+          }
+        }
+      },
+      "B10AssessmentSessionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10AssessmentSession"
+          }
+        }
+      },
+      "B10AttemptResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10Attempt"
+          }
+        }
+      },
+      "B10CheckpointResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10Checkpoint"
+          }
+        }
+      },
+      "B10AssessmentReportResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10AssessmentReport"
+          }
+        }
+      },
+      "B10ReviewQueueResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10LearningQueueItem"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "B10MasteryProjectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B10MasteryProjection"
+          }
+        }
+      }
     }
   }
 }

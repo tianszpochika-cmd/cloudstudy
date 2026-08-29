@@ -26,19 +26,35 @@ function parseArgs(argv) {
   return args;
 }
 
-function resolveInput(value, kind) {
-  return path.resolve(repoRoot, value ?? defaults[kind]);
+function resolveInput(value, kind, flag) {
+  if (!(kind in defaults)) throw new Error(`Unsupported contract kind: ${kind}`);
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new Error(`Compatibility ${flag} is required; pass both --baseline <old.json> and --current <new.json>.`);
+  }
+  return path.resolve(repoRoot, value);
 }
 
 function describeChange(kind, location, reason) {
   return { kind, location, reason };
 }
 
+function normalizedTypes(type) {
+  if (type === undefined) return null;
+  const values = Array.isArray(type) ? type : [type];
+  return [...new Set(values.map((value) => String(value)))].sort();
+}
+
+function sameTypes(previous, current) {
+  return previous.length === current.length && previous.every((value, index) => value === current[index]);
+}
+
 function compareSchema(previous, current, location, changes, kind) {
   if (!isRecord(previous) || !isRecord(current)) return;
 
-  if (previous.type && current.type && previous.type !== current.type) {
-    changes.push(describeChange(kind, location, `type changed from ${previous.type} to ${current.type}`));
+  const previousTypes = normalizedTypes(previous.type);
+  const currentTypes = normalizedTypes(current.type);
+  if (previousTypes && currentTypes && !sameTypes(previousTypes, currentTypes)) {
+    changes.push(describeChange(kind, location, `type changed from ${previousTypes.join(',')} to ${currentTypes.join(',')}`));
   }
 
   const previousEnum = Array.isArray(previous.enum) ? previous.enum : null;
@@ -185,8 +201,11 @@ export function compareContracts(kind, previous, current) {
 }
 
 export function runCompatibilityDiff({ kind = 'openapi', baseline, current } = {}) {
-  const baselinePath = resolveInput(baseline, kind);
-  const currentPath = resolveInput(current ?? baseline, kind);
+  const baselinePath = resolveInput(baseline, kind, '--baseline');
+  const currentPath = resolveInput(current, kind, '--current');
+  if (baselinePath === currentPath) {
+    throw new Error('Compatibility --baseline and --current must resolve to different files.');
+  }
   const previous = readJson(baselinePath);
   const next = readJson(currentPath);
   const breakingChanges = compareContracts(kind, previous, next);

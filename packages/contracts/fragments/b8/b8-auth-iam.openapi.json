@@ -7,15 +7,34 @@
     "issuerBoundary": {
       "tokenIssuer": "iam-service-only",
       "passwordReceiver": "iam-service-only",
-      "prohibitedTokenIssuers": ["api-gateway", "domain-service", "client-application"]
+      "prohibitedTokenIssuers": [
+        "api-gateway",
+        "domain-service",
+        "client-application"
+      ]
     },
     "accessToken": {
       "format": "JWT",
       "tokenType": "Bearer",
       "algorithm": "RS256",
       "audience": "yuxuexing-api",
-      "requiredClaims": ["iss", "sub", "aud", "exp", "iat", "nbf", "jti", "token_type", "scope"],
-      "authorizationClaims": ["permissions", "roles", "tenant_id", "session_id"],
+      "requiredClaims": [
+        "iss",
+        "sub",
+        "aud",
+        "exp",
+        "iat",
+        "nbf",
+        "jti",
+        "token_type",
+        "scope"
+      ],
+      "authorizationClaims": [
+        "permissions",
+        "roles",
+        "tenant_id",
+        "session_id"
+      ],
       "jwksUri": "/api/v1/auth/jwks"
     },
     "refreshToken": {
@@ -27,250 +46,2136 @@
         "mobile": "Keychain-or-Keystore-only"
       }
     },
-    "serverValidation": ["issuer", "signature", "algorithm", "audience", "time-window", "token-type", "scope-permission"],
+    "serverValidation": [
+      "issuer",
+      "signature",
+      "algorithm",
+      "audience",
+      "time-window",
+      "token-type",
+      "scope-permission"
+    ],
     "productionKeyBoundary": "KMS-or-secret-manager-only; never Git-image-log"
   },
   "x-b8-compatibility": {
     "legacyRoutes": [],
-    "removedFlows": ["external-provider-login", "external-browser-handoff", "browser-supplied-role-override"],
+    "removedFlows": [
+      "external-provider-login",
+      "external-browser-handoff",
+      "browser-supplied-role-override"
+    ],
     "rule": "Only iam-service may mint tokens. Compatibility routes are historical-only, cannot mint tokens, and fail closed."
   },
   "tags": [
-    { "name": "b8-auth", "description": "Self-owned JWT authentication center and IAM policy boundary" }
+    {
+      "name": "b8-auth",
+      "description": "Self-owned JWT authentication center and IAM policy boundary"
+    }
   ],
   "paths": {
     "/api/v1/auth/register": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "registerB8Account",
         "summary": "Create an adult Phase 1 account and establish a restricted JWT session",
         "description": "Unauthenticated public registration for people aged 18 or above. Only iam-service receives the password and issues the session; Phase 1 learning access remains denied until the server-derived adult Gate passes.",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-public-entry": { "audience": "adult-18-plus", "adultGate": "server-derived-before-learning-access", "credentialBoundary": "iam-service-only" },
-        "x-idempotency": { "required": true, "strategy": "account-registration", "keyHeader": "Idempotency-Key", "replayBehavior": "Return the original account/session result for the same request hash." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8RegisterRequest" } } } },
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-public-entry": {
+          "audience": "adult-18-plus",
+          "adultGate": "server-derived-before-learning-access",
+          "credentialBoundary": "iam-service-only"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "account-registration",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Return the original account/session result for the same request hash."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8RegisterRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "201": { "$ref": "#/components/responses/B8AuthTokensCreated" },
-          "400": { "$ref": "#/components/responses/B8BadRequest" },
-          "409": { "$ref": "#/components/responses/B8Conflict" },
-          "429": { "$ref": "#/components/responses/B8RateLimited" }
+          "201": {
+            "description": "Account created and JWT session issued",
+            "headers": {
+              "Set-Cookie": {
+                "$ref": "#/components/headers/B8RefreshCookie"
+              },
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8AuthTokenResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          }
         }
       }
     },
     "/api/v1/auth/login": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "loginB8Account",
         "summary": "Verify account password and issue a JWT session",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "account-login-session", "keyHeader": "Idempotency-Key", "replayBehavior": "The same request key returns the same login session result without creating a second session; a different request key is independently rate-limited and audited." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8LoginRequest" } } } },
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "account-login-session",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same request key returns the same login session result without creating a second session; a different request key is independently rate-limited and audited."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8LoginRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "$ref": "#/components/responses/B8AuthTokens" },
-          "401": { "$ref": "#/components/responses/B8Unauthorized" },
-          "423": { "$ref": "#/components/responses/B8AccountLocked" },
-          "429": { "$ref": "#/components/responses/B8RateLimited" }
+          "200": {
+            "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only",
+            "headers": {
+              "Set-Cookie": {
+                "$ref": "#/components/headers/B8RefreshCookie"
+              },
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8AuthTokenResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "423": {
+            "$ref": "#/components/responses/B8AccountLocked"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          }
         }
       }
     },
     "/api/v1/auth/token/refresh": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "refreshB8JwtSession",
         "summary": "Rotate the opaque Refresh Token and issue a new JWT",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "refresh-token-rotation", "keyHeader": "Idempotency-Key", "replayBehavior": "The same request key can safely retry the same rotation result; a previous Refresh Token presented with a different request key is a replay, so revoke its entire token family and return 401." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8RefreshRequest" } } } },
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "refresh-token-rotation",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same request key can safely retry the same rotation result; a previous Refresh Token presented with a different request key is a replay, so revoke its entire token family and return 401."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8RefreshRequest"
+              }
+            }
+          }
+        },
         "responses": {
-          "200": { "$ref": "#/components/responses/B8AuthTokens" },
-          "401": { "$ref": "#/components/responses/B8Unauthorized" }
+          "200": {
+            "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only",
+            "headers": {
+              "Set-Cookie": {
+                "$ref": "#/components/headers/B8RefreshCookie"
+              },
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8AuthTokenResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
         }
       }
     },
     "/api/v1/auth/logout": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "logoutB8JwtSession",
         "summary": "Revoke the current device session and clear the Web cookie",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "session-logout", "keyHeader": "Idempotency-Key", "replayBehavior": "Repeated logout is safe and returns the same terminal result." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8LogoutRequest" } } } },
-        "responses": { "200": { "$ref": "#/components/responses/B8SessionRevoked" }, "401": { "$ref": "#/components/responses/B8Unauthorized" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "session-logout",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Repeated logout is safe and returns the same terminal result."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8SessionRevocationResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        }
       }
     },
     "/api/v1/auth/sessions/{sessionId}/revoke": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "revokeB8JwtSession",
         "summary": "Revoke a server-owned device session",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "session-revoke", "keyHeader": "Idempotency-Key", "replayBehavior": "Repeated revocation is safe." },
-        "parameters": [{ "$ref": "#/components/parameters/B8SessionId" }, { "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "responses": { "200": { "$ref": "#/components/responses/B8SessionRevoked" }, "401": { "$ref": "#/components/responses/B8Unauthorized" }, "403": { "$ref": "#/components/responses/B8Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "session-revoke",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Repeated revocation is safe."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8SessionRevocationResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
       }
     },
     "/api/v1/auth/jwks": {
       "get": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "getB8JwtJwks",
         "summary": "Publish IAM public JWT verification keys",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt", "publicKeysOnly": true },
-        "responses": { "200": { "$ref": "#/components/responses/B8Jwks" } }
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt",
+          "publicKeysOnly": true
+        },
+        "responses": {
+          "200": {
+            "description": "Public IAM signing keys only; no private key material",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8JwksResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/auth/password-reset/request": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "requestB8PasswordReset",
         "summary": "Create a rate-limited one-time password reset challenge",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "password-reset-request", "keyHeader": "Idempotency-Key", "replayBehavior": "The same request key returns the same non-enumerating accepted result without issuing a second challenge." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8PasswordResetRequest" } } } },
-        "responses": { "202": { "$ref": "#/components/responses/B8Accepted" }, "429": { "$ref": "#/components/responses/B8RateLimited" } }
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "password-reset-request",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same request key returns the same non-enumerating accepted result without issuing a second challenge."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PasswordResetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted without account enumeration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "accepted"
+                          ],
+                          "properties": {
+                            "accepted": {
+                              "type": "boolean",
+                              "const": true,
+                              "description": "Always true so the response cannot reveal whether an account exists."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          }
+        }
       }
     },
     "/api/v1/auth/password-reset/confirm": {
       "post": {
-        "tags": ["b8-auth"],
+        "tags": [
+          "b8-auth"
+        ],
         "operationId": "confirmB8PasswordReset",
         "summary": "Consume a one-time password reset challenge",
         "security": [],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "password-reset-confirm", "keyHeader": "Idempotency-Key", "replayBehavior": "A reset challenge can be consumed once; repeats return 401." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8PasswordResetConfirmRequest" } } } },
-        "responses": { "204": { "$ref": "#/components/responses/B8NoContent" }, "400": { "$ref": "#/components/responses/B8BadRequest" }, "401": { "$ref": "#/components/responses/B8Unauthorized" } }
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "password-reset-confirm",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "A reset challenge can be consumed once; repeats return 401."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PasswordResetConfirmRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "$ref": "#/components/responses/B8NoContent"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        }
       }
     },
     "/api/v1/iam/principal/me": {
       "get": {
-        "tags": ["b8-auth"], "operationId": "getB8Principal", "summary": "Read the server-derived principal", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "responses": { "200": { "description": "Principal", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8PrincipalResponse" } } } }, "401": { "$ref": "#/components/responses/B8Unauthorized" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "getB8Principal",
+        "summary": "Read the server-derived principal",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "responses": {
+          "200": {
+            "description": "Principal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8PrincipalResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        }
       }
     },
     "/api/v1/iam/permissions": {
       "get": {
-        "tags": ["b8-auth"], "operationId": "getB8Permissions", "summary": "Read server-derived permissions", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "responses": { "200": { "description": "Permissions", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8PermissionsResponse" } } } }, "401": { "$ref": "#/components/responses/B8Unauthorized" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "getB8Permissions",
+        "summary": "Read server-derived permissions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "responses": {
+          "200": {
+            "description": "Permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8PermissionsResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        }
       }
     },
     "/api/v1/iam/devices": {
       "get": {
-        "tags": ["b8-auth"], "operationId": "listB8Devices", "summary": "List the current principal device sessions", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "responses": { "200": { "description": "Devices", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8DeviceListResponse" } } } }, "401": { "$ref": "#/components/responses/B8Unauthorized" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "listB8Devices",
+        "summary": "List the current principal device sessions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "responses": {
+          "200": {
+            "description": "Devices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "devices"
+                          ],
+                          "properties": {
+                            "devices": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/B8Device"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/iam/devices/{deviceId}/kickout": {
       "post": {
-        "tags": ["b8-auth"], "operationId": "kickoutB8Device", "summary": "Revoke a device session", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "device-kickout", "keyHeader": "Idempotency-Key", "replayBehavior": "Repeated device kickout is safe." },
-        "parameters": [{ "$ref": "#/components/parameters/B8DeviceId" }, { "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "responses": { "200": { "$ref": "#/components/responses/B8SessionRevoked" }, "401": { "$ref": "#/components/responses/B8Unauthorized" }, "403": { "$ref": "#/components/responses/B8Forbidden" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "kickoutB8Device",
+        "summary": "Revoke a device session",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "device-kickout",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Repeated device kickout is safe."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8DeviceId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8SessionRevocationResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
       }
     },
     "/api/v1/iam/adult-gate": {
       "post": {
-        "tags": ["b8-auth"], "operationId": "evaluateB8AdultGate", "summary": "Evaluate the Phase 1 adult gate", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "adult-gate", "keyHeader": "Idempotency-Key", "replayBehavior": "Same request hash returns the stored gate result." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AdultGateRequest" } } } },
-        "responses": { "200": { "description": "Adult gate", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AdultGateResponse" } } } }, "403": { "$ref": "#/components/responses/B8Forbidden" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "evaluateB8AdultGate",
+        "summary": "Evaluate the Phase 1 adult gate",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "adult-gate",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Same request hash returns the stored gate result."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8AdultGateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Adult gate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8AdultGateResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
       }
     },
     "/api/v1/iam/consents": {
       "get": {
-        "tags": ["b8-auth"], "operationId": "listB8Consents", "summary": "Read current consent state", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "responses": { "200": { "description": "Consents", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ConsentListResponse" } } } }, "401": { "$ref": "#/components/responses/B8Unauthorized" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "listB8Consents",
+        "summary": "Read current consent state",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "responses": {
+          "200": {
+            "description": "Consents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "items"
+                          ],
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/B8Consent"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       },
       "put": {
-        "tags": ["b8-auth"], "operationId": "updateB8Consent", "summary": "Update current consent state", "security": [{ "bearerAuth": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": true, "strategy": "consent-update", "keyHeader": "Idempotency-Key", "replayBehavior": "Same version and decision is idempotent." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ConsentUpdateRequest" } } } },
-        "responses": { "200": { "description": "Consent", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8Consent" } } } }, "401": { "$ref": "#/components/responses/B8Unauthorized" }, "409": { "$ref": "#/components/responses/B8Conflict" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "updateB8Consent",
+        "summary": "Update current consent state",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "consent-update",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Same version and decision is idempotent."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8ConsentUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Consent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B8Consent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/internal/v1/iam/authorization/decisions": {
       "post": {
-        "tags": ["b8-auth"], "operationId": "decideB8Authorization", "summary": "Evaluate an authorization decision from server-derived context", "security": [{ "B8ServiceIdentity": [] }],
-        "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
-        "x-idempotency": { "required": false, "strategy": "authorization-decision", "keyHeader": "Idempotency-Key", "replayBehavior": "Decision IDs are auditable and may be cached until cacheUntil." },
-        "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKeyOptional" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthorizationDecisionRequest" } } } },
-        "responses": { "200": { "description": "Decision", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthorizationDecisionResponse" } } } }, "401": { "$ref": "#/components/responses/B8Unauthorized" }, "403": { "$ref": "#/components/responses/B8Forbidden" } }
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "decideB8Authorization",
+        "summary": "Evaluate an authorization decision from server-derived context",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-idempotency": {
+          "required": false,
+          "strategy": "authorization-decision",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Decision IDs are auditable and may be cached until cacheUntil."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKeyOptional"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8AuthorizationDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B8AuthorizationDecisionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B8Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B8Forbidden"
+          }
+        }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "B8ServiceIdentity": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT", "description": "Internal service JWT; issuer, signature, algorithm, audience, time and token_type are independently validated." }
+      "B8ServiceIdentity": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Internal service JWT; issuer, signature, algorithm, audience, time and token_type are independently validated."
+      }
     },
     "parameters": {
-      "B8IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 16, "maxLength": 128 } },
-      "B8IdempotencyKeyOptional": { "name": "Idempotency-Key", "in": "header", "required": false, "schema": { "type": "string", "minLength": 16, "maxLength": 128 } },
-      "B8SessionId": { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
-      "B8DeviceId": { "name": "deviceId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+      "B8IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        }
+      },
+      "B8IdempotencyKeyOptional": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        }
+      },
+      "B8SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "B8DeviceId": {
+        "name": "deviceId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
     },
     "responses": {
-      "B8AuthTokensCreated": { "description": "Account created and JWT session issued", "headers": { "Set-Cookie": { "$ref": "#/components/headers/B8RefreshCookie" } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthTokenResponse" } } } },
-      "B8AuthTokens": { "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only", "headers": { "Set-Cookie": { "$ref": "#/components/headers/B8RefreshCookie" } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8AuthTokenResponse" } } } },
-      "B8SessionRevoked": { "description": "Session revoked", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8SessionRevocationResponse" } } } },
-      "B8Jwks": { "description": "Public IAM signing keys only; no private key material", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8JwksResponse" } } } },
-      "B8Accepted": { "description": "Accepted without account enumeration", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } },
-      "B8NoContent": { "description": "Password reset applied" },
-      "B8BadRequest": { "description": "Invalid request", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } },
-      "B8Unauthorized": { "description": "HTTP 401: account credentials or JWT issuer, signature, algorithm, audience, time window, token type, scope or session is invalid", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } },
-      "B8Forbidden": { "description": "HTTP 403: authenticated principal lacks the server-derived permission", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } },
-      "B8AccountLocked": { "description": "Account temporarily locked after failed attempts", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } },
-      "B8Conflict": { "description": "State conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } },
-      "B8RateLimited": { "description": "Rate limited", "headers": { "Retry-After": { "schema": { "type": "integer" } } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8ErrorEnvelope" } } } }
+      "B8AuthTokensCreated": {
+        "description": "Account created and JWT session issued",
+        "headers": {
+          "Set-Cookie": {
+            "$ref": "#/components/headers/B8RefreshCookie"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8AuthTokenResponse"
+            }
+          }
+        }
+      },
+      "B8AuthTokens": {
+        "description": "JWT Access Token issued; Web Refresh Token is an HttpOnly cookie and native Refresh Token is write-only",
+        "headers": {
+          "Set-Cookie": {
+            "$ref": "#/components/headers/B8RefreshCookie"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8AuthTokenResponse"
+            }
+          }
+        }
+      },
+      "B8SessionRevoked": {
+        "description": "Session revoked",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8SessionRevocationResponse"
+            }
+          }
+        }
+      },
+      "B8Jwks": {
+        "description": "Public IAM signing keys only; no private key material",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8JwksResponse"
+            }
+          }
+        }
+      },
+      "B8Accepted": {
+        "description": "Accepted without account enumeration",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8NoContent": {
+        "description": "Password reset applied"
+      },
+      "B8BadRequest": {
+        "description": "Invalid request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8Unauthorized": {
+        "description": "HTTP 401: account credentials or JWT issuer, signature, algorithm, audience, time window, token type, scope or session is invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8Forbidden": {
+        "description": "HTTP 403: authenticated principal lacks the server-derived permission",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8AccountLocked": {
+        "description": "Account temporarily locked after failed attempts",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8Conflict": {
+        "description": "State conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8RateLimited": {
+        "description": "Rate limited",
+        "headers": {
+          "Retry-After": {
+            "schema": {
+              "type": "integer"
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8ErrorEnvelope"
+            }
+          }
+        }
+      }
     },
     "headers": {
-      "B8RefreshCookie": { "description": "HttpOnly; Secure; SameSite=Lax Refresh Token cookie; omitted from public site responses", "schema": { "type": "string" } }
+      "B8RefreshCookie": {
+        "description": "HttpOnly; Secure; SameSite=Lax Refresh Token cookie; omitted from public site responses",
+        "schema": {
+          "type": "string"
+        }
+      }
     },
     "schemas": {
-      "B8ErrorEnvelope": { "type": "object", "required": ["requestId", "error"], "properties": { "requestId": { "type": "string", "format": "uuid" }, "error": { "$ref": "#/components/schemas/B8Error" } } },
-      "B8Error": { "type": "object", "required": ["code", "message", "retryable"], "properties": { "code": { "type": "string", "enum": ["invalid_request", "unauthorized", "forbidden", "adult_gate_required", "consent_required", "session_revoked", "policy_denied", "account_locked", "password_reset_invalid", "rate_limited", "conflict"] }, "message": { "type": "string", "maxLength": 256, "description": "Non-sensitive localizable message; never echo password, Refresh Token or key material." }, "retryable": { "type": "boolean" }, "policyVersion": { "type": "string" } } },
-      "B8RegisterRequest": { "type": "object", "additionalProperties": false, "required": ["identifier", "password", "device"], "x-client-authority-fields": [], "x-sensitive-fields": ["password"], "properties": { "identifier": { "type": "string", "minLength": 3, "maxLength": 128 }, "password": { "type": "string", "minLength": 12, "maxLength": 128, "writeOnly": true, "description": "TLS only; never log, persist plaintext, or return." }, "device": { "$ref": "#/components/schemas/B8DeviceInput" } } },
-      "B8LoginRequest": { "type": "object", "additionalProperties": false, "required": ["identifier", "password", "device"], "x-client-authority-fields": [], "x-sensitive-fields": ["password"], "properties": { "identifier": { "type": "string", "minLength": 3, "maxLength": 128 }, "password": { "type": "string", "minLength": 1, "maxLength": 128, "writeOnly": true, "description": "TLS only; never log, persist plaintext, or return." }, "device": { "$ref": "#/components/schemas/B8DeviceInput" } } },
-      "B8RefreshRequest": { "type": "object", "additionalProperties": false, "x-sensitive-fields": ["refreshToken"], "properties": { "refreshToken": { "type": "string", "minLength": 32, "maxLength": 512, "writeOnly": true, "description": "TLS only; optional native credential; Web sends HttpOnly cookie; 禁止日志或 Web storage 保存。" }, "deviceId": { "type": "string", "format": "uuid" } } },
-      "B8LogoutRequest": { "type": "object", "additionalProperties": false, "properties": { "allDevices": { "type": "boolean", "default": false } } },
-      "B8PasswordResetRequest": { "type": "object", "additionalProperties": false, "required": ["identifier"], "properties": { "identifier": { "type": "string", "minLength": 3, "maxLength": 128 } } },
-      "B8PasswordResetConfirmRequest": { "type": "object", "additionalProperties": false, "required": ["identifier", "resetToken", "newPassword"], "x-sensitive-fields": ["resetToken", "newPassword"], "properties": { "identifier": { "type": "string", "minLength": 3, "maxLength": 128 }, "resetToken": { "type": "string", "minLength": 32, "maxLength": 512, "writeOnly": true, "description": "TLS only; one-time credential; 禁止日志或明文持久化。" }, "newPassword": { "type": "string", "minLength": 12, "maxLength": 128, "writeOnly": true, "description": "TLS only; never log, persist plaintext, or return." } } },
-      "B8AuthTokenResponse": { "type": "object", "required": ["accessToken", "tokenType", "expiresIn", "refreshExpiresIn", "sessionId", "deviceId"], "x-sensitive-fields": ["accessToken", "refreshToken"], "properties": { "accessToken": { "type": "string", "writeOnly": true, "description": "TLS only; IAM-signed RS256 JWT; 禁止日志或 Web storage 保存。" }, "refreshToken": { "type": "string", "writeOnly": true, "description": "TLS only; native-only rotated opaque credential; Web receives an HttpOnly cookie; 禁止日志。" }, "tokenType": { "type": "string", "const": "Bearer" }, "expiresIn": { "type": "integer", "minimum": 1 }, "refreshExpiresIn": { "type": "integer", "minimum": 1 }, "sessionId": { "type": "string", "format": "uuid" }, "deviceId": { "type": "string", "format": "uuid" } } },
-      "B8SessionRevocationResponse": { "type": "object", "required": ["sessionId", "status"], "properties": { "sessionId": { "type": "string", "format": "uuid" }, "status": { "type": "string", "enum": ["REVOKED", "ALREADY_REVOKED"] } } },
-      "B8PrincipalResponse": { "type": "object", "required": ["principalId", "tenantId", "sessionId", "deviceId", "roles", "permissions", "authMode"], "x-server-authoritative-fields": ["principalId", "tenantId", "roles", "permissions", "status", "adultGate", "consentState"], "properties": { "principalId": { "type": "string", "format": "uuid" }, "tenantId": { "type": "string" }, "sessionId": { "type": "string", "format": "uuid" }, "deviceId": { "type": "string", "format": "uuid" }, "roles": { "type": "array", "items": { "type": "string" } }, "permissions": { "type": "array", "items": { "type": "string" } }, "authMode": { "type": "string", "const": "self-owned-jwt" }, "status": { "type": "string", "enum": ["ACTIVE", "RESTRICTED"] }, "adultGate": { "$ref": "#/components/schemas/B8AdultGateResponse" }, "consentState": { "$ref": "#/components/schemas/B8ConsentState" }, "policyVersion": { "type": "string" } } },
-      "B8PermissionsResponse": { "type": "object", "required": ["permissions", "roles", "policyVersion"], "properties": { "permissions": { "type": "array", "items": { "type": "string" } }, "roles": { "type": "array", "items": { "type": "string" } }, "policyVersion": { "type": "string" } } },
-      "B8DeviceInput": { "type": "object", "additionalProperties": false, "required": ["deviceType", "clientVersion"], "properties": { "deviceId": { "type": "string", "format": "uuid", "description": "Optional public device id; server generates one when absent." }, "deviceType": { "type": "string", "enum": ["IOS", "ANDROID", "WEB", "H5", "IPAD"] }, "deviceName": { "type": "string", "maxLength": 64 }, "osVersion": { "type": "string", "maxLength": 32 }, "clientVersion": { "type": "string", "maxLength": 32 } } },
-      "B8Device": { "type": "object", "required": ["deviceId", "deviceType", "status", "lastActiveAt"], "properties": { "deviceId": { "type": "string", "format": "uuid" }, "deviceType": { "type": "string" }, "status": { "type": "string", "enum": ["ACTIVE", "REVOKED"] }, "lastActiveAt": { "type": "string", "format": "date-time" } } },
-      "B8DeviceListResponse": { "type": "object", "required": ["devices"], "properties": { "devices": { "type": "array", "items": { "$ref": "#/components/schemas/B8Device" } } } },
-      "B8AdultGateRequest": { "type": "object", "additionalProperties": false, "required": ["confirmed", "birthYear", "policyVersion"], "properties": { "confirmed": { "type": "boolean", "const": true }, "birthYear": { "type": "integer", "minimum": 1900 }, "policyVersion": { "type": "string", "minLength": 1, "maxLength": 64 } } },
-      "B8AdultGateResponse": { "type": "object", "required": ["status", "effectiveAt"], "properties": { "status": { "type": "string", "enum": ["PASSED", "REJECTED"] }, "effectiveAt": { "type": "string", "format": "date-time" }, "policyVersion": { "type": "string" }, "retryAllowed": { "type": "boolean" } } },
-      "B8Consent": { "type": "object", "required": ["type", "version", "decision", "decidedAt"], "properties": { "type": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] }, "version": { "type": "string" }, "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] }, "decidedAt": { "type": "string", "format": "date-time" } } },
-      "B8ConsentUpdateRequest": { "type": "object", "additionalProperties": false, "required": ["type", "version", "decision"], "properties": { "type": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] }, "version": { "type": "string", "maxLength": 64 }, "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] } } },
-      "B8ConsentListResponse": { "type": "object", "required": ["items"], "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/B8Consent" } } } },
-      "B8JwksResponse": { "type": "object", "required": ["keys"], "x-jwks-boundary": "Public signing keys only; private key material is never exposed.", "properties": { "keys": { "type": "array", "items": { "type": "object", "required": ["kty", "kid", "use", "alg", "n", "e"], "properties": { "kty": { "type": "string", "const": "RSA" }, "kid": { "type": "string" }, "use": { "type": "string", "const": "sig" }, "alg": { "type": "string", "const": "RS256" }, "n": { "type": "string" }, "e": { "type": "string" } } } } } },
-      "B8AuthorizationDecisionRequest": { "type": "object", "additionalProperties": false, "required": ["action", "resourceType", "resourceId", "phase"], "x-server-derived-authorization-facts": ["subject", "tenant", "owner", "role", "permission", "consent", "policyVersion"], "properties": { "action": { "type": "string" }, "resourceType": { "type": "string" }, "resourceId": { "type": "string" }, "phase": { "type": "string", "enum": ["P1", "P2", "P3"] }, "contentRights": { "type": "string" }, "deviceTrust": { "type": "string" }, "consentRequirement": { "type": "string" } } },
-      "B8AuthorizationDecisionResponse": { "type": "object", "required": ["decisionId", "decision", "reasonCode", "policyVersion", "evaluatedAt"], "properties": { "decisionId": { "type": "string", "format": "uuid" }, "decision": { "type": "string", "enum": ["ALLOW", "DENY"] }, "reasonCode": { "type": "string", "enum": ["ALLOWED", "POLICY_DENIED", "ADULT_GATE_REQUIRED", "CONSENT_REQUIRED", "SESSION_REVOKED", "CONTEXT_MISSING", "POLICY_UNAVAILABLE"] }, "policyVersion": { "type": "string" }, "evaluatedAt": { "type": "string", "format": "date-time" }, "cacheUntil": { "type": "string", "format": "date-time" } } }
+      "B8ErrorEnvelope": {
+        "x-superseded-by": "#/components/schemas/ApiErrorEnvelope",
+        "description": "Compatibility error shape for existing IAM operations. New or migrated operations use ApiErrorEnvelope.",
+        "type": "object",
+        "required": [
+          "requestId",
+          "error"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "error": {
+            "$ref": "#/components/schemas/B8Error"
+          }
+        }
+      },
+      "B8Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid_request",
+              "unauthorized",
+              "forbidden",
+              "adult_gate_required",
+              "consent_required",
+              "session_revoked",
+              "policy_denied",
+              "account_locked",
+              "password_reset_invalid",
+              "rate_limited",
+              "conflict"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "Non-sensitive localizable message; never echo password, Refresh Token or key material."
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "policyVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "B8RegisterRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "password",
+          "device"
+        ],
+        "x-client-authority-fields": [],
+        "x-sensitive-fields": [
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          },
+          "device": {
+            "$ref": "#/components/schemas/B8DeviceInput"
+          }
+        }
+      },
+      "B8LoginRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "password",
+          "device"
+        ],
+        "x-client-authority-fields": [],
+        "x-sensitive-fields": [
+          "password"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          },
+          "device": {
+            "$ref": "#/components/schemas/B8DeviceInput"
+          }
+        }
+      },
+      "B8RefreshRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "x-sensitive-fields": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 512,
+            "writeOnly": true,
+            "description": "TLS only; optional native credential; Web sends HttpOnly cookie; 禁止日志或 Web storage 保存。"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "B8LogoutRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "allDevices": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "B8PasswordResetRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          }
+        }
+      },
+      "B8PasswordResetConfirmRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identifier",
+          "resetToken",
+          "newPassword"
+        ],
+        "x-sensitive-fields": [
+          "resetToken",
+          "newPassword"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "resetToken": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 512,
+            "writeOnly": true,
+            "description": "TLS only; one-time credential; 禁止日志或明文持久化。"
+          },
+          "newPassword": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128,
+            "writeOnly": true,
+            "description": "TLS only; never log, persist plaintext, or return."
+          }
+        }
+      },
+      "B8AuthTokenResponse": {
+        "type": "object",
+        "required": [
+          "accessToken",
+          "tokenType",
+          "expiresIn",
+          "refreshExpiresIn",
+          "sessionId",
+          "deviceId"
+        ],
+        "x-sensitive-fields": [
+          "accessToken",
+          "refreshToken"
+        ],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "writeOnly": true,
+            "description": "TLS only; IAM-signed RS256 JWT; 禁止日志或 Web storage 保存。"
+          },
+          "refreshToken": {
+            "type": "string",
+            "writeOnly": true,
+            "description": "TLS only; native-only rotated opaque credential; Web receives an HttpOnly cookie; 禁止日志。"
+          },
+          "tokenType": {
+            "type": "string",
+            "const": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "refreshExpiresIn": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "B8SessionRevocationResponse": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "status"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "REVOKED",
+              "ALREADY_REVOKED"
+            ]
+          }
+        }
+      },
+      "B8PrincipalResponse": {
+        "type": "object",
+        "required": [
+          "principalId",
+          "tenantId",
+          "sessionId",
+          "deviceId",
+          "roles",
+          "permissions",
+          "authMode"
+        ],
+        "x-server-authoritative-fields": [
+          "principalId",
+          "tenantId",
+          "roles",
+          "permissions",
+          "status",
+          "adultGate",
+          "consentState"
+        ],
+        "properties": {
+          "principalId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "authMode": {
+            "type": "string",
+            "const": "self-owned-jwt"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "RESTRICTED"
+            ]
+          },
+          "adultGate": {
+            "$ref": "#/components/schemas/B8AdultGateResponse"
+          },
+          "consentState": {
+            "$ref": "#/components/schemas/B8ConsentState"
+          },
+          "policyVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "B8PermissionsResponse": {
+        "type": "object",
+        "required": [
+          "permissions",
+          "roles",
+          "policyVersion"
+        ],
+        "properties": {
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "policyVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "B8DeviceInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deviceType",
+          "clientVersion"
+        ],
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Optional public device id; server generates one when absent."
+          },
+          "deviceType": {
+            "type": "string",
+            "enum": [
+              "IOS",
+              "ANDROID",
+              "WEB",
+              "H5",
+              "IPAD"
+            ]
+          },
+          "deviceName": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "osVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "clientVersion": {
+            "type": "string",
+            "maxLength": 32
+          }
+        }
+      },
+      "B8Device": {
+        "type": "object",
+        "required": [
+          "deviceId",
+          "deviceType",
+          "status",
+          "lastActiveAt"
+        ],
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deviceType": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "REVOKED"
+            ]
+          },
+          "lastActiveAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8DeviceListResponse": {
+        "type": "object",
+        "required": [
+          "devices"
+        ],
+        "properties": {
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B8Device"
+            }
+          }
+        }
+      },
+      "B8AdultGateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "confirmed",
+          "birthYear",
+          "policyVersion"
+        ],
+        "properties": {
+          "confirmed": {
+            "type": "boolean",
+            "const": true
+          },
+          "birthYear": {
+            "type": "integer",
+            "minimum": 1900
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          }
+        }
+      },
+      "B8AdultGateResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "effectiveAt"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASSED",
+              "REJECTED"
+            ]
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "retryAllowed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B8Consent": {
+        "type": "object",
+        "required": [
+          "type",
+          "version",
+          "decision",
+          "decidedAt"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "TERMS",
+              "PRIVACY",
+              "ADULT_LEARNING",
+              "PRODUCT_ANALYTICS"
+            ]
+          },
+          "version": {
+            "type": "string"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "WITHDRAWN"
+            ]
+          },
+          "decidedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8ConsentUpdateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "version",
+          "decision"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "TERMS",
+              "PRIVACY",
+              "ADULT_LEARNING",
+              "PRODUCT_ANALYTICS"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "WITHDRAWN"
+            ]
+          }
+        }
+      },
+      "B8ConsentListResponse": {
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B8Consent"
+            }
+          }
+        }
+      },
+      "B8JwksResponse": {
+        "type": "object",
+        "required": [
+          "keys"
+        ],
+        "x-jwks-boundary": "Public signing keys only; private key material is never exposed.",
+        "properties": {
+          "keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "kty",
+                "kid",
+                "use",
+                "alg",
+                "n",
+                "e"
+              ],
+              "properties": {
+                "kty": {
+                  "type": "string",
+                  "const": "RSA"
+                },
+                "kid": {
+                  "type": "string"
+                },
+                "use": {
+                  "type": "string",
+                  "const": "sig"
+                },
+                "alg": {
+                  "type": "string",
+                  "const": "RS256"
+                },
+                "n": {
+                  "type": "string"
+                },
+                "e": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "B8AuthorizationDecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "resourceType",
+          "resourceId",
+          "phase"
+        ],
+        "x-server-derived-authorization-facts": [
+          "subject",
+          "tenant",
+          "owner",
+          "role",
+          "permission",
+          "consent",
+          "policyVersion"
+        ],
+        "properties": {
+          "action": {
+            "type": "string"
+          },
+          "resourceType": {
+            "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ]
+          },
+          "contentRights": {
+            "type": "string"
+          },
+          "deviceTrust": {
+            "type": "string"
+          },
+          "consentRequirement": {
+            "type": "string"
+          }
+        }
+      },
+      "B8AuthorizationDecisionResponse": {
+        "type": "object",
+        "required": [
+          "decisionId",
+          "decision",
+          "reasonCode",
+          "policyVersion",
+          "evaluatedAt"
+        ],
+        "properties": {
+          "decisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "DENY"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "ALLOWED",
+              "POLICY_DENIED",
+              "ADULT_GATE_REQUIRED",
+              "CONSENT_REQUIRED",
+              "SESSION_REVOKED",
+              "CONTEXT_MISSING",
+              "POLICY_UNAVAILABLE"
+            ]
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cacheUntil": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
     }
   }
 }

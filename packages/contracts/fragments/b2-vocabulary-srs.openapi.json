@@ -6,44 +6,120 @@
     "description": "Phase 1 成人词汇、短语、表达与确定性 SRS 契约。答案字段只在词汇详情或揭晓后的受保护响应中出现。"
   },
   "tags": [
-    { "name": "vocabulary-content" },
-    { "name": "vocabulary-library" },
-    { "name": "expressions" },
-    { "name": "srs" }
+    {
+      "name": "vocabulary-content"
+    },
+    {
+      "name": "vocabulary-library"
+    },
+    {
+      "name": "expressions"
+    },
+    {
+      "name": "srs"
+    }
   ],
   "paths": {
     "/api/v1/vocab/wordbooks": {
       "get": {
         "operationId": "listWordbooks",
-        "tags": ["vocabulary-content"],
+        "tags": [
+          "vocabulary-content"
+        ],
         "parameters": [
-          { "$ref": "#/components/parameters/Cursor" },
-          { "$ref": "#/components/parameters/Limit" },
-          { "$ref": "#/components/parameters/Timezone" },
+          {
+            "$ref": "#/components/parameters/Timezone"
+          },
           {
             "name": "targetGoal",
             "in": "query",
-            "schema": { "type": "string", "maxLength": 32 }
+            "schema": {
+              "type": "string",
+              "maxLength": 32
+            }
           },
           {
             "name": "cefrLevel",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/CefrLevel" }
+            "schema": {
+              "$ref": "#/components/schemas/CefrLevel"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/WordbookPage" }
+          "200": {
+            "description": "已发布成人词书",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Wordbook"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
         }
       }
     },
     "/api/v1/vocab/wordbooks/{wordbookId}/activation": {
       "put": {
         "operationId": "activateWordbook",
-        "tags": ["vocabulary-content"],
-        "x-idempotency": { "required": true, "strategy": "wordbook-activation", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次激活结果" },
+        "tags": [
+          "vocabulary-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "wordbook-activation",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "返回首次激活结果"
+        },
         "parameters": [
-          { "$ref": "#/components/parameters/WordbookId" },
-          { "$ref": "#/components/parameters/IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/WordbookId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
@@ -51,129 +127,487 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["active"],
-                "properties": { "active": { "type": "boolean", "const": true } }
+                "required": [
+                  "active"
+                ],
+                "properties": {
+                  "active": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
               }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/Activation" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "200": {
+            "description": "词书切换结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "activeWordbookId",
+                            "planVersion"
+                          ],
+                          "properties": {
+                            "activeWordbookId": {
+                              "type": "integer",
+                              "format": "int64"
+                            },
+                            "planVersion": {
+                              "type": "integer",
+                              "format": "int64"
+                            },
+                            "retainedStateCount": {
+                              "type": "integer"
+                            },
+                            "firstSnapshotId": {
+                              "type": "integer",
+                              "nullable": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/vocab/wordbooks/{wordbookId}/items": {
       "get": {
         "operationId": "listWordbookItems",
-        "tags": ["vocabulary-content"],
+        "tags": [
+          "vocabulary-content"
+        ],
         "parameters": [
-          { "$ref": "#/components/parameters/WordbookId" },
-          { "$ref": "#/components/parameters/Cursor" },
-          { "$ref": "#/components/parameters/Limit" },
-          { "$ref": "#/components/parameters/Timezone" },
+          {
+            "$ref": "#/components/parameters/WordbookId"
+          },
+          {
+            "$ref": "#/components/parameters/Timezone"
+          },
           {
             "name": "masteryStatus",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/MasteryStatus" }
+            "schema": {
+              "$ref": "#/components/schemas/MasteryStatus"
+            }
           },
           {
             "name": "dueOnly",
             "in": "query",
-            "schema": { "type": "boolean", "default": false }
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/VocabItemPage" }
+          "200": {
+            "description": "词书词条与 SRS 摘要",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/VocabItem"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
         }
       }
     },
     "/api/v1/content/learner/vocabulary/{vocabularyId}": {
       "get": {
         "operationId": "getVocabDetail",
-        "tags": ["vocabulary-content"],
+        "tags": [
+          "vocabulary-content"
+        ],
         "parameters": [
-          { "$ref": "#/components/parameters/VocabId" },
+          {
+            "$ref": "#/components/parameters/VocabId"
+          },
           {
             "name": "contentVersion",
             "in": "query",
-            "schema": { "type": "string", "maxLength": 32 }
+            "schema": {
+              "type": "string",
+              "maxLength": 32
+            }
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/VocabDetail" },
-          "404": { "$ref": "#/components/responses/NotFound" }
+          "200": {
+            "description": "词汇详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/VocabDetail"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/vocab/chunks/{chunkId}": {
       "get": {
         "operationId": "getChunkDetail",
-        "tags": ["vocabulary-content"],
-        "parameters": [{ "$ref": "#/components/parameters/ChunkId" }],
-        "responses": { "200": { "$ref": "#/components/responses/ChunkDetail" } }
+        "tags": [
+          "vocabulary-content"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ChunkId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "句块详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ChunkDetail"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/vocab/roots/{rootId}": {
       "get": {
         "operationId": "getRootTopic",
-        "tags": ["vocabulary-content"],
-        "parameters": [
-          { "$ref": "#/components/parameters/RootId" },
-          { "$ref": "#/components/parameters/Cursor" },
-          { "$ref": "#/components/parameters/Limit" }
+        "tags": [
+          "vocabulary-content"
         ],
-        "responses": { "200": { "$ref": "#/components/responses/RootTopic" } }
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RootId"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "词根专题",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "rootId",
+                            "titleCn",
+                            "nodes"
+                          ],
+                          "properties": {
+                            "rootId": {
+                              "type": "integer"
+                            },
+                            "titleCn": {
+                              "type": "string"
+                            },
+                            "nodes": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/vocab/library": {
       "get": {
         "operationId": "listUserLibrary",
-        "tags": ["vocabulary-library"],
+        "tags": [
+          "vocabulary-library"
+        ],
         "parameters": [
-          { "$ref": "#/components/parameters/Cursor" },
-          { "$ref": "#/components/parameters/Limit" },
           {
             "name": "itemType",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/ItemType" }
+            "schema": {
+              "$ref": "#/components/schemas/ItemType"
+            }
           },
           {
             "name": "masteryStatus",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/MasteryStatus" }
+            "schema": {
+              "$ref": "#/components/schemas/MasteryStatus"
+            }
           },
           {
             "name": "collectionStatus",
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["NEW_WORD", "SAVED", "MASTERED"]
+              "enum": [
+                "NEW_WORD",
+                "SAVED",
+                "MASTERED"
+              ]
             }
           },
           {
             "name": "sourceType",
             "in": "query",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "dueRange",
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["TODAY", "UPCOMING", "OVERDUE"]
+              "enum": [
+                "TODAY",
+                "UPCOMING",
+                "OVERDUE"
+              ]
             }
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
           }
         ],
-        "responses": { "200": { "$ref": "#/components/responses/LibraryPage" } }
+        "responses": {
+          "200": {
+            "description": "个人词库",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/vocab/library/entries": {
       "post": {
         "operationId": "addLibraryEntry",
-        "tags": ["vocabulary-library"],
-        "x-idempotency": { "required": true, "strategy": "library-entry", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次收藏结果" },
-        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "tags": [
+          "vocabulary-library"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "library-entry",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "返回首次收藏结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -185,54 +619,220 @@
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/LibraryEntry" }
+          "200": {
+            "description": "收藏结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "entryId",
+                            "item"
+                          ],
+                          "properties": {
+                            "entryId": {
+                              "type": "integer"
+                            },
+                            "item": {
+                              "$ref": "#/components/schemas/LearningItemRef"
+                            },
+                            "collectionStatus": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
         }
       }
     },
     "/api/v1/vocab/library/entries/{entryId}": {
       "delete": {
         "operationId": "removeLibraryEntry",
-        "tags": ["vocabulary-library"],
-        "x-idempotency": { "required": true, "strategy": "library-entry-delete", "keyHeader": "Idempotency-Key", "replayBehavior": "重复删除保持幂等" },
-        "parameters": [
-          { "$ref": "#/components/parameters/EntryId" },
-          { "$ref": "#/components/parameters/IdempotencyKey" }
+        "tags": [
+          "vocabulary-library"
         ],
-        "responses": { "200": { "$ref": "#/components/responses/Empty" } }
+        "x-idempotency": {
+          "required": true,
+          "strategy": "library-entry-delete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复删除保持幂等"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EntryId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "空结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/vocab/expressions": {
       "get": {
         "operationId": "listExpressions",
-        "tags": ["expressions"],
+        "tags": [
+          "expressions"
+        ],
         "parameters": [
-          { "$ref": "#/components/parameters/Cursor" },
-          { "$ref": "#/components/parameters/Limit" },
           {
             "name": "sourceType",
             "in": "query",
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           },
           {
             "name": "wantToSay",
             "in": "query",
-            "schema": { "type": "boolean" }
+            "schema": {
+              "type": "boolean"
+            }
           },
           {
             "name": "tagId",
             "in": "query",
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/ExpressionPage" }
+          "200": {
+            "description": "表达库",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ExpressionResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
         }
       },
       "post": {
         "operationId": "createMinedExpression",
-        "tags": ["expressions"],
-        "x-idempotency": { "required": true, "strategy": "expression-create", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次表达记录" },
-        "parameters": [{ "$ref": "#/components/parameters/IdempotencyKey" }],
+        "tags": [
+          "expressions"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "expression-create",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "返回首次表达记录"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -244,19 +844,67 @@
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/Expression" },
-          "422": { "$ref": "#/components/responses/ValidationError" }
+          "200": {
+            "description": "表达结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExpressionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
         }
       }
     },
     "/api/v1/vocab/expressions/{expressionId}": {
       "patch": {
         "operationId": "updateMinedExpression",
-        "tags": ["expressions"],
-        "x-idempotency": { "required": true, "strategy": "expression-update", "keyHeader": "Idempotency-Key", "replayBehavior": "返回首次更新结果" },
+        "tags": [
+          "expressions"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "expression-update",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "返回首次更新结果"
+        },
         "parameters": [
-          { "$ref": "#/components/parameters/ExpressionId" },
-          { "$ref": "#/components/parameters/IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/ExpressionId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
@@ -268,101 +916,476 @@
             }
           }
         },
-        "responses": { "200": { "$ref": "#/components/responses/Expression" } }
+        "responses": {
+          "200": {
+            "description": "表达结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExpressionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       },
       "delete": {
         "operationId": "deleteMinedExpression",
-        "tags": ["expressions"],
-        "x-idempotency": { "required": true, "strategy": "expression-delete", "keyHeader": "Idempotency-Key", "replayBehavior": "重复删除保持幂等" },
-        "parameters": [
-          { "$ref": "#/components/parameters/ExpressionId" },
-          { "$ref": "#/components/parameters/IdempotencyKey" }
+        "tags": [
+          "expressions"
         ],
-        "responses": { "200": { "$ref": "#/components/responses/Empty" } }
+        "x-idempotency": {
+          "required": true,
+          "strategy": "expression-delete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复删除保持幂等"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ExpressionId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "空结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/vocab/offline/cards": {
       "get": {
         "operationId": "getOfflineVocabularyCards",
-        "tags": ["vocabulary-content"],
+        "tags": [
+          "vocabulary-content"
+        ],
         "parameters": [
           {
             "name": "wordbookId",
             "in": "query",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" }
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
           },
-          { "$ref": "#/components/parameters/Limit" },
-          { "$ref": "#/components/parameters/Timezone" }
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Timezone"
+          }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/OfflineCards" }
+          "200": {
+            "description": "不含答案的离线卡片包",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "manifestHash",
+                            "contentVersion",
+                            "cards",
+                            "answerFieldsIncluded"
+                          ],
+                          "properties": {
+                            "manifestHash": {
+                              "type": "string"
+                            },
+                            "contentVersion": {
+                              "type": "string"
+                            },
+                            "cards": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/OfflineCard"
+                              }
+                            },
+                            "answerFieldsIncluded": {
+                              "type": "boolean",
+                              "const": false
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
         }
       }
     },
     "/api/v1/learning/srs/batches": {
       "post": {
         "operationId": "createSrsBatch",
-        "tags": ["srs"],
-        "x-idempotency": { "required": true, "strategy": "srs-batch", "keyHeader": "Idempotency-Key", "replayBehavior": "相同请求返回首次快照" },
+        "tags": [
+          "srs"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "srs-batch",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "相同请求返回首次快照"
+        },
         "parameters": [
-          { "$ref": "#/components/parameters/IdempotencyKey" },
-          { "$ref": "#/components/parameters/Timezone" }
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/Timezone"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/SrsBatchCreateRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/SrsBatchCreateRequest"
+              }
             }
           }
         },
-        "responses": { "200": { "$ref": "#/components/responses/SrsBatch" } }
+        "responses": {
+          "200": {
+            "description": "不可变排程快照",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "snapshotId",
+                            "localDate",
+                            "status",
+                            "items"
+                          ],
+                          "properties": {
+                            "snapshotId": {
+                              "type": "integer"
+                            },
+                            "localDate": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "algorithmVersion": {
+                              "type": "string"
+                            },
+                            "rulesVersion": {
+                              "type": "string"
+                            },
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/SrsBatchItem"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/learning/srs/batches/{snapshotId}": {
       "get": {
         "operationId": "getSrsBatch",
-        "tags": ["srs"],
-        "parameters": [{ "$ref": "#/components/parameters/SnapshotId" }],
+        "tags": [
+          "srs"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SnapshotId"
+          }
+        ],
         "responses": {
-          "200": { "$ref": "#/components/responses/SrsBatch" },
-          "410": { "$ref": "#/components/responses/SnapshotExpired" }
+          "200": {
+            "description": "不可变排程快照",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "snapshotId",
+                            "localDate",
+                            "status",
+                            "items"
+                          ],
+                          "properties": {
+                            "snapshotId": {
+                              "type": "integer"
+                            },
+                            "localDate": {
+                              "type": "string",
+                              "format": "date"
+                            },
+                            "timezone": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "algorithmVersion": {
+                              "type": "string"
+                            },
+                            "rulesVersion": {
+                              "type": "string"
+                            },
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/SrsBatchItem"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "410": {
+            "$ref": "#/components/responses/SnapshotExpired"
+          }
         }
       }
     },
     "/api/v1/learning/srs/reviews": {
       "post": {
         "operationId": "submitReviewEvent",
-        "tags": ["srs"],
-        "x-idempotency": { "required": true, "strategy": "srs-review", "keyHeader": "Idempotency-Key", "replayBehavior": "重复复习事件只结算一次" },
+        "tags": [
+          "srs"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "srs-review",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复复习事件只结算一次"
+        },
         "parameters": [
-          { "$ref": "#/components/parameters/IdempotencyKey" },
-          { "$ref": "#/components/parameters/Timezone" }
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/Timezone"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ReviewEventRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/ReviewEventRequest"
+              }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/Review" },
-          "409": { "$ref": "#/components/responses/Conflict" },
-          "410": { "$ref": "#/components/responses/OfflineExpired" }
+          "200": {
+            "description": "复习结算结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ReviewEventResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/OfflineExpired"
+          }
         }
       }
     },
     "/api/v1/learning/srs/reviews:sync": {
       "post": {
         "operationId": "syncReviewEvents",
-        "tags": ["srs"],
-        "x-idempotency": { "required": true, "strategy": "srs-review-sync", "keyHeader": "Idempotency-Key", "replayBehavior": "逐事件返回首次结果" },
+        "tags": [
+          "srs"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "srs-review-sync",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "逐事件返回首次结果"
+        },
         "parameters": [
-          { "$ref": "#/components/parameters/IdempotencyKey" },
-          { "$ref": "#/components/parameters/Timezone" }
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/Timezone"
+          }
         ],
         "requestBody": {
           "required": true,
@@ -370,7 +1393,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["events"],
+                "required": [
+                  "events"
+                ],
                 "properties": {
                   "events": {
                     "type": "array",
@@ -385,45 +1410,191 @@
             }
           }
         },
-        "responses": { "200": { "$ref": "#/components/responses/ReviewSync" } }
+        "responses": {
+          "200": {
+            "description": "逐项同步结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "required": [
+                            "results"
+                          ],
+                          "properties": {
+                            "results": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/learning/srs/states": {
       "get": {
         "operationId": "listSrsStates",
-        "tags": ["srs"],
+        "tags": [
+          "srs"
+        ],
         "parameters": [
-          { "$ref": "#/components/parameters/Cursor" },
-          { "$ref": "#/components/parameters/Limit" },
           {
             "name": "itemType",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/ItemType" }
+            "schema": {
+              "$ref": "#/components/schemas/ItemType"
+            }
           },
           {
             "name": "masteryStatus",
             "in": "query",
-            "schema": { "$ref": "#/components/schemas/MasteryStatus" }
+            "schema": {
+              "$ref": "#/components/schemas/MasteryStatus"
+            }
           },
           {
             "name": "dueRange",
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["TODAY", "UPCOMING", "OVERDUE", "AT_RISK"]
+              "enum": [
+                "TODAY",
+                "UPCOMING",
+                "OVERDUE",
+                "AT_RISK"
+              ]
             }
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
           }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/SrsStatePage" }
+          "200": {
+            "description": "SRS 状态页",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SrsState"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
         }
       }
     },
     "/api/v1/learning/srs/overview": {
       "get": {
         "operationId": "getSrsOverview",
-        "tags": ["srs"],
-        "responses": { "200": { "$ref": "#/components/responses/SrsOverview" } }
+        "tags": [
+          "srs"
+        ],
+        "responses": {
+          "200": {
+            "description": "SRS 基础统计",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SrsOverview"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -434,7 +1605,9 @@
         "in": "query",
         "required": false,
         "description": "不透明、服务端签发的稳定游标；客户端不得解码或自行拼接。",
-        "schema": { "$ref": "#/components/schemas/Cursor" }
+        "schema": {
+          "$ref": "#/components/schemas/Cursor"
+        }
       },
       "Limit": {
         "name": "limit",
@@ -450,65 +1623,118 @@
         "name": "X-Timezone",
         "in": "header",
         "required": true,
-        "schema": { "type": "string", "maxLength": 64 }
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
       },
       "IdempotencyKey": {
         "name": "Idempotency-Key",
         "in": "header",
         "required": true,
-        "schema": { "type": "string", "minLength": 16, "maxLength": 128 }
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        }
       },
       "WordbookId": {
         "name": "wordbookId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "VocabId": {
         "name": "vocabularyId",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "minLength": 1, "maxLength": 96 }
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        }
       },
       "ChunkId": {
         "name": "chunkId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "RootId": {
         "name": "rootId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "EntryId": {
         "name": "entryId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "ExpressionId": {
         "name": "expressionId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "SnapshotId": {
         "name": "snapshotId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       }
     },
     "schemas": {
       "CefrLevel": {
         "type": "string",
-        "enum": ["A1", "A2", "B1", "B2", "C1", "C2"]
+        "enum": [
+          "A1",
+          "A2",
+          "B1",
+          "B2",
+          "C1",
+          "C2"
+        ]
       },
       "ItemType": {
         "type": "string",
-        "enum": ["VOCAB", "PHRASE", "CHUNK", "EXPRESSION", "GRAMMAR", "SENTENCE", "LISTENING", "READING", "WRITING", "EXERCISE"]
+        "enum": [
+          "VOCAB",
+          "PHRASE",
+          "CHUNK",
+          "EXPRESSION",
+          "GRAMMAR",
+          "SENTENCE",
+          "LISTENING",
+          "READING",
+          "WRITING",
+          "EXERCISE"
+        ]
       },
       "MasteryStatus": {
         "type": "string",
@@ -525,12 +1751,25 @@
       },
       "LearningItemRef": {
         "type": "object",
-        "required": ["itemType"],
+        "required": [
+          "itemType"
+        ],
         "properties": {
-          "itemType": { "$ref": "#/components/schemas/ItemType" },
-          "vocabId": { "type": "integer", "format": "int64" },
-          "chunkId": { "type": "integer", "format": "int64" },
-          "expressionId": { "type": "integer", "format": "int64" }
+          "itemType": {
+            "$ref": "#/components/schemas/ItemType"
+          },
+          "vocabId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "chunkId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "expressionId": {
+            "type": "integer",
+            "format": "int64"
+          }
         },
         "additionalProperties": false
       },
@@ -548,21 +1787,66 @@
           "stateVersion"
         ],
         "properties": {
-          "srsStateId": { "type": "integer", "format": "int64" },
-          "item": { "$ref": "#/components/schemas/LearningItemRef" },
-          "repetitionCount": { "type": "integer", "minimum": 0 },
-          "easeFactor": { "type": "number", "minimum": 1.3, "maximum": 2.5 },
-          "intervalDays": { "type": "integer", "minimum": 0, "maximum": 365 },
-          "dueAt": { "type": "string", "format": "date-time" },
-          "dueLocalDate": { "type": "string", "format": "date" },
-          "masteryStatus": { "$ref": "#/components/schemas/MasteryStatus" },
+          "srsStateId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "item": {
+            "$ref": "#/components/schemas/LearningItemRef"
+          },
+          "repetitionCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "easeFactor": {
+            "type": "number",
+            "minimum": 1.3,
+            "maximum": 2.5
+          },
+          "intervalDays": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 365
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueLocalDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "masteryStatus": {
+            "$ref": "#/components/schemas/MasteryStatus"
+          },
           "delayedVerifyStage": {
             "type": "string",
-            "enum": ["NONE", "D1_PENDING", "D7_PENDING", "PASSED", "FAILED"]
+            "enum": [
+              "NONE",
+              "D1_PENDING",
+              "D7_PENDING",
+              "PASSED",
+              "FAILED"
+            ]
           },
-          "stateVersion": { "type": "integer", "format": "int64" },
-          "riskBand": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
-          "explanation": { "type": "array", "items": { "type": "string" } }
+          "stateVersion": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "riskBand": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+            ]
+          },
+          "explanation": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       },
       "ReviewEventRequest": {
@@ -577,10 +1861,26 @@
           "baseStateVersion"
         ],
         "properties": {
-          "snapshotId": { "type": "integer", "format": "int64" },
-          "snapshotItemId": { "type": "integer", "format": "int64" },
-          "item": { "$ref": "#/components/schemas/LearningItemRef" },
-          "rawQuality": { "type": "integer", "enum": [0, 1, 2, 3] },
+          "snapshotId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "snapshotItemId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "item": {
+            "$ref": "#/components/schemas/LearningItemRef"
+          },
+          "rawQuality": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
           "answerOutcome": {
             "type": "string",
             "enum": [
@@ -590,64 +1890,138 @@
               "REVEALED_WITHOUT_ANSWER"
             ]
           },
-          "responseTimeMs": { "type": "integer", "minimum": 0 },
-          "revealElapsedMs": { "type": "integer", "minimum": 0 },
-          "attemptNo": { "type": "integer", "minimum": 1 },
+          "responseTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revealElapsedMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attemptNo": {
+            "type": "integer",
+            "minimum": 1
+          },
           "clientEventId": {
             "type": "string",
             "minLength": 8,
             "maxLength": 96
           },
-          "clientOccurredAt": { "type": "string", "format": "date-time" },
-          "baseStateVersion": { "type": "integer", "minimum": 0 }
+          "clientOccurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "baseStateVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
         }
       },
       "LibraryEntryCreateRequest": {
         "type": "object",
-        "required": ["itemType", "sourceType"],
+        "required": [
+          "itemType",
+          "sourceType"
+        ],
         "properties": {
-          "itemType": { "$ref": "#/components/schemas/ItemType" },
-          "vocabId": { "type": "integer" },
-          "chunkId": { "type": "integer" },
-          "expressionId": { "type": "integer" },
-          "sourceType": { "type": "string" },
+          "itemType": {
+            "$ref": "#/components/schemas/ItemType"
+          },
+          "vocabId": {
+            "type": "integer"
+          },
+          "chunkId": {
+            "type": "integer"
+          },
+          "expressionId": {
+            "type": "integer"
+          },
+          "sourceType": {
+            "type": "string"
+          },
           "collectionStatus": {
             "type": "string",
-            "enum": ["NEW_WORD", "SAVED", "MASTERED"]
+            "enum": [
+              "NEW_WORD",
+              "SAVED",
+              "MASTERED"
+            ]
           }
         }
       },
       "ExpressionCreateRequest": {
         "type": "object",
-        "required": ["sourceType", "sentenceText"],
+        "required": [
+          "sourceType",
+          "sentenceText"
+        ],
         "properties": {
           "sourceType": {
             "type": "string",
-            "enum": ["READING", "LISTENING", "SCENARIO", "VOCAB_EXAMPLE"]
+            "enum": [
+              "READING",
+              "LISTENING",
+              "SCENARIO",
+              "VOCAB_EXAMPLE"
+            ]
           },
-          "sourceRef": { "type": "string" },
-          "sourceContentVersion": { "type": "string" },
+          "sourceRef": {
+            "type": "string"
+          },
+          "sourceContentVersion": {
+            "type": "string"
+          },
           "sentenceText": {
             "type": "string",
             "minLength": 1,
             "maxLength": 5000
           },
-          "translationCn": { "type": "string" },
-          "selectedText": { "type": "string" },
-          "rangeStart": { "type": "integer", "minimum": 0 },
-          "rangeEnd": { "type": "integer", "minimum": 1 },
-          "wantToSay": { "type": "boolean" },
-          "addToSrs": { "type": "boolean" },
-          "privateNote": { "type": "string" }
+          "translationCn": {
+            "type": "string"
+          },
+          "selectedText": {
+            "type": "string"
+          },
+          "rangeStart": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rangeEnd": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "wantToSay": {
+            "type": "boolean"
+          },
+          "addToSrs": {
+            "type": "boolean"
+          },
+          "privateNote": {
+            "type": "string"
+          }
         }
       },
       "ExpressionUpdateRequest": {
         "type": "object",
         "properties": {
-          "wantToSay": { "type": "boolean" },
-          "privateNote": { "type": "string" },
-          "addTagIds": { "type": "array", "items": { "type": "integer" } },
-          "removeTagIds": { "type": "array", "items": { "type": "integer" } }
+          "wantToSay": {
+            "type": "boolean"
+          },
+          "privateNote": {
+            "type": "string"
+          },
+          "addTagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "removeTagIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
         }
       },
       "SrsBatchCreateRequest": {
@@ -660,46 +2034,100 @@
           "scheduleType"
         ],
         "properties": {
-          "localDate": { "type": "string", "format": "date" },
-          "timezone": { "type": "string" },
-          "dailyNewTarget": { "type": "integer", "minimum": 0, "maximum": 100 },
-          "maxDailyReview": { "type": "integer", "minimum": 1, "maximum": 200 },
+          "localDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "dailyNewTarget": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "maxDailyReview": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
           "scheduleType": {
             "type": "string",
-            "enum": ["DAILY", "CATCH_UP", "EXPRESSION"]
+            "enum": [
+              "DAILY",
+              "CATCH_UP",
+              "EXPRESSION"
+            ]
           }
         }
       },
       "OfflineCard": {
         "type": "object",
-        "required": ["snapshotItemId", "item", "front", "contentVersion"],
+        "required": [
+          "snapshotItemId",
+          "item",
+          "front",
+          "contentVersion"
+        ],
         "properties": {
-          "snapshotItemId": { "type": "integer" },
-          "item": { "$ref": "#/components/schemas/LearningItemRef" },
+          "snapshotItemId": {
+            "type": "integer"
+          },
+          "item": {
+            "$ref": "#/components/schemas/LearningItemRef"
+          },
           "front": {
             "type": "object",
-            "x-sensitive-fields": ["audio"],
+            "x-sensitive-fields": [
+              "audio"
+            ],
             "properties": {
-              "word": { "type": "string" },
-              "phoneticUs": { "type": "string" },
-              "phoneticUk": { "type": "string" },
-              "audio": { "type": "object", "description": "仅返回受控媒体引用；禁止传输原始音频字节或写入日志" }
+              "word": {
+                "type": "string"
+              },
+              "phoneticUs": {
+                "type": "string"
+              },
+              "phoneticUk": {
+                "type": "string"
+              },
+              "audio": {
+                "type": "object",
+                "description": "仅返回受控媒体引用；禁止传输原始音频字节或写入日志"
+              }
             }
           },
-          "contentVersion": { "type": "string" }
+          "contentVersion": {
+            "type": "string"
+          }
         },
         "additionalProperties": false
       },
       "PageMeta": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["hasMore", "pageSize"],
+        "required": [
+          "hasMore",
+          "pageSize"
+        ],
         "properties": {
-          "nextCursor": { "$ref": "#/components/schemas/Cursor", "nullable": true },
-          "serverTime": { "$ref": "#/components/schemas/DateTime" },
-          "snapshotAt": { "$ref": "#/components/schemas/DateTime", "nullable": true },
-          "hasMore": { "type": "boolean" },
-          "pageSize": { "$ref": "#/components/schemas/PageSize" }
+          "nextCursor": {
+            "$ref": "#/components/schemas/Cursor",
+            "nullable": true
+          },
+          "serverTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "snapshotAt": {
+            "$ref": "#/components/schemas/DateTime",
+            "nullable": true
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "pageSize": {
+            "$ref": "#/components/schemas/PageSize"
+          }
         }
       },
       "Wordbook": {
@@ -713,32 +2141,76 @@
           "wordCount"
         ],
         "properties": {
-          "wordbookId": { "type": "integer", "format": "int64" },
-          "code": { "type": "string" },
-          "nameCn": { "type": "string" },
-          "status": { "type": "string", "enum": ["PUBLISHED", "ARCHIVED"] },
-          "contentVersion": { "type": "string" },
-          "sourceVersion": { "type": "string" },
-          "minCefr": { "$ref": "#/components/schemas/CefrLevel" },
-          "maxCefr": { "$ref": "#/components/schemas/CefrLevel" },
-          "wordCount": { "type": "integer", "minimum": 0 },
-          "active": { "type": "boolean" }
+          "wordbookId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "code": {
+            "type": "string"
+          },
+          "nameCn": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PUBLISHED",
+              "ARCHIVED"
+            ]
+          },
+          "contentVersion": {
+            "type": "string"
+          },
+          "sourceVersion": {
+            "type": "string"
+          },
+          "minCefr": {
+            "$ref": "#/components/schemas/CefrLevel"
+          },
+          "maxCefr": {
+            "$ref": "#/components/schemas/CefrLevel"
+          },
+          "wordCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "active": {
+            "type": "boolean"
+          }
         }
       },
       "VocabItem": {
         "type": "object",
-        "required": ["vocabId", "word", "cefrLevel", "contentVersion"],
+        "required": [
+          "vocabId",
+          "word",
+          "cefrLevel",
+          "contentVersion"
+        ],
         "properties": {
-          "vocabId": { "type": "integer", "format": "int64" },
-          "word": { "type": "string" },
-          "cefrLevel": { "$ref": "#/components/schemas/CefrLevel" },
-          "contentVersion": { "type": "string" },
-          "srsState": { "$ref": "#/components/schemas/SrsState" }
+          "vocabId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "word": {
+            "type": "string"
+          },
+          "cefrLevel": {
+            "$ref": "#/components/schemas/CefrLevel"
+          },
+          "contentVersion": {
+            "type": "string"
+          },
+          "srsState": {
+            "$ref": "#/components/schemas/SrsState"
+          }
         }
       },
       "VocabDetail": {
         "type": "object",
-        "x-sensitive-fields": ["audio"],
+        "x-sensitive-fields": [
+          "audio"
+        ],
         "required": [
           "vocabId",
           "word",
@@ -747,38 +2219,107 @@
           "examples"
         ],
         "properties": {
-          "vocabId": { "type": "integer", "format": "int64" },
-          "word": { "type": "string" },
-          "phoneticUs": { "type": "string", "nullable": true },
-          "phoneticUk": { "type": "string", "nullable": true },
+          "vocabId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "word": {
+            "type": "string"
+          },
+          "phoneticUs": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneticUk": {
+            "type": "string",
+            "nullable": true
+          },
           "audio": {
             "type": "object",
             "description": "仅返回受控媒体引用；禁止传输原始音频字节或写入日志",
-            "additionalProperties": { "type": "string" }
+            "additionalProperties": {
+              "type": "string"
+            }
           },
-          "pronunciation": { "type": "object", "additionalProperties": true },
-          "cefrLevel": { "$ref": "#/components/schemas/CefrLevel" },
-          "frequencyRank": { "type": "integer", "nullable": true },
-          "definitions": { "type": "array", "items": { "type": "object" } },
-          "examples": { "type": "array", "items": { "type": "object" } },
-          "relations": { "type": "array", "items": { "type": "object" } },
-          "srsState": { "$ref": "#/components/schemas/SrsState" },
-          "contentVersion": { "type": "string" }
+          "pronunciation": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "cefrLevel": {
+            "$ref": "#/components/schemas/CefrLevel"
+          },
+          "frequencyRank": {
+            "type": "integer",
+            "nullable": true
+          },
+          "definitions": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "relations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "srsState": {
+            "$ref": "#/components/schemas/SrsState"
+          },
+          "contentVersion": {
+            "type": "string"
+          }
         }
       },
       "ChunkDetail": {
         "type": "object",
-        "required": ["chunkId", "canonicalText", "meaningCn", "contentVersion"],
+        "required": [
+          "chunkId",
+          "canonicalText",
+          "meaningCn",
+          "contentVersion"
+        ],
         "properties": {
-          "chunkId": { "type": "integer", "format": "int64" },
-          "canonicalText": { "type": "string" },
-          "chunkType": { "type": "string" },
-          "meaningCn": { "type": "string" },
-          "usageNote": { "type": "string", "nullable": true },
-          "scenarioCode": { "type": "string", "nullable": true },
-          "examples": { "type": "array", "items": { "type": "object" } },
-          "srsState": { "$ref": "#/components/schemas/SrsState" },
-          "contentVersion": { "type": "string" }
+          "chunkId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "canonicalText": {
+            "type": "string"
+          },
+          "chunkType": {
+            "type": "string"
+          },
+          "meaningCn": {
+            "type": "string"
+          },
+          "usageNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "scenarioCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "srsState": {
+            "$ref": "#/components/schemas/SrsState"
+          },
+          "contentVersion": {
+            "type": "string"
+          }
         }
       },
       "SrsBatchItem": {
@@ -792,9 +2333,17 @@
           "status"
         ],
         "properties": {
-          "snapshotItemId": { "type": "integer", "format": "int64" },
-          "sequenceNo": { "type": "integer", "minimum": 1 },
-          "item": { "$ref": "#/components/schemas/LearningItemRef" },
+          "snapshotItemId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sequenceNo": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "item": {
+            "$ref": "#/components/schemas/LearningItemRef"
+          },
           "sourceReason": {
             "type": "string",
             "enum": [
@@ -807,13 +2356,18 @@
               "EXPRESSION"
             ]
           },
-          "plannedLocalDate": { "type": "string", "format": "date" },
+          "plannedLocalDate": {
+            "type": "string",
+            "format": "date"
+          },
           "dueAtAtSnapshot": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "priorityScore": { "type": "number" },
+          "priorityScore": {
+            "type": "number"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -825,30 +2379,66 @@
               "RISK_FILTERED"
             ]
           },
-          "contentVersion": { "type": "string" }
+          "contentVersion": {
+            "type": "string"
+          }
         }
       },
       "ExpressionResponse": {
         "type": "object",
-        "required": ["expressionId", "sourceType", "sentenceText", "status"],
+        "required": [
+          "expressionId",
+          "sourceType",
+          "sentenceText",
+          "status"
+        ],
         "properties": {
-          "expressionId": { "type": "integer", "format": "int64" },
-          "sourceType": { "type": "string" },
-          "sourceRef": { "type": "string", "nullable": true },
-          "sentenceText": { "type": "string" },
-          "translationCn": { "type": "string", "nullable": true },
-          "selectedText": { "type": "string", "nullable": true },
-          "wantToSay": { "type": "boolean" },
-          "tags": { "type": "array", "items": { "type": "integer" } },
+          "expressionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sourceType": {
+            "type": "string"
+          },
+          "sourceRef": {
+            "type": "string",
+            "nullable": true
+          },
+          "sentenceText": {
+            "type": "string"
+          },
+          "translationCn": {
+            "type": "string",
+            "nullable": true
+          },
+          "selectedText": {
+            "type": "string",
+            "nullable": true
+          },
+          "wantToSay": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
           "privateNote": {
             "type": "string",
             "nullable": true,
             "writeOnly": true
           },
-          "srsState": { "$ref": "#/components/schemas/SrsState" },
+          "srsState": {
+            "$ref": "#/components/schemas/SrsState"
+          },
           "status": {
             "type": "string",
-            "enum": ["ACTIVE", "ARCHIVED", "DELETED"]
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED",
+              "DELETED"
+            ]
           }
         }
       },
@@ -861,7 +2451,10 @@
           "stateVersion"
         ],
         "properties": {
-          "reviewEventId": { "type": "integer", "format": "int64" },
+          "reviewEventId": {
+            "type": "integer",
+            "format": "int64"
+          },
           "eventStatus": {
             "type": "string",
             "enum": [
@@ -885,15 +2478,32 @@
           },
           "effectiveQuality": {
             "type": "integer",
-            "enum": [0, 1, 2, 3],
+            "enum": [
+              0,
+              1,
+              2,
+              3
+            ],
             "nullable": true
           },
-          "reconciled": { "type": "boolean" },
-          "stateVersion": { "type": "integer", "format": "int64" },
-          "srsState": { "$ref": "#/components/schemas/SrsState" },
+          "reconciled": {
+            "type": "boolean"
+          },
+          "stateVersion": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "srsState": {
+            "$ref": "#/components/schemas/SrsState"
+          },
           "rewardSettlementStatus": {
             "type": "string",
-            "enum": ["PENDING", "SETTLED", "NOT_ELIGIBLE", "DUPLICATE"]
+            "enum": [
+              "PENDING",
+              "SETTLED",
+              "NOT_ELIGIBLE",
+              "DUPLICATE"
+            ]
           },
           "nextSnapshotItemId": {
             "type": "integer",
@@ -913,12 +2523,30 @@
           "consolidated"
         ],
         "properties": {
-          "todayDue": { "type": "integer", "minimum": 0 },
-          "overdue": { "type": "integer", "minimum": 0 },
-          "atRisk": { "type": "integer", "minimum": 0 },
-          "shortTerm": { "type": "integer", "minimum": 0 },
-          "mastered": { "type": "integer", "minimum": 0 },
-          "consolidated": { "type": "integer", "minimum": 0 },
+          "todayDue": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "overdue": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "atRisk": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "shortTerm": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mastered": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "consolidated": {
+            "type": "integer",
+            "minimum": 0
+          },
           "last7DaysMasteryRate": {
             "type": "number",
             "minimum": 0,
@@ -934,19 +2562,29 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data", "meta"],
+              "required": [
+                "requestId",
+                "data",
+                "meta"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
                   "properties": {
                     "items": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/Wordbook" }
+                      "items": {
+                        "$ref": "#/components/schemas/Wordbook"
+                      }
                     }
                   }
                 },
-                "meta": { "$ref": "#/components/schemas/PageMeta" }
+                "meta": {
+                  "$ref": "#/components/schemas/PageMeta"
+                }
               }
             }
           }
@@ -958,20 +2596,36 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
-                  "required": ["activeWordbookId", "planVersion"],
+                  "required": [
+                    "activeWordbookId",
+                    "planVersion"
+                  ],
                   "properties": {
                     "activeWordbookId": {
                       "type": "integer",
                       "format": "int64"
                     },
-                    "planVersion": { "type": "integer", "format": "int64" },
-                    "retainedStateCount": { "type": "integer" },
-                    "firstSnapshotId": { "type": "integer", "nullable": true }
+                    "planVersion": {
+                      "type": "integer",
+                      "format": "int64"
+                    },
+                    "retainedStateCount": {
+                      "type": "integer"
+                    },
+                    "firstSnapshotId": {
+                      "type": "integer",
+                      "nullable": true
+                    }
                   }
                 }
               }
@@ -985,19 +2639,29 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data", "meta"],
+              "required": [
+                "requestId",
+                "data",
+                "meta"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
                   "properties": {
                     "items": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/VocabItem" }
+                      "items": {
+                        "$ref": "#/components/schemas/VocabItem"
+                      }
                     }
                   }
                 },
-                "meta": { "$ref": "#/components/schemas/PageMeta" }
+                "meta": {
+                  "$ref": "#/components/schemas/PageMeta"
+                }
               }
             }
           }
@@ -1009,10 +2673,17 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
-                "data": { "$ref": "#/components/schemas/VocabDetail" }
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/VocabDetail"
+                }
               }
             }
           }
@@ -1024,10 +2695,17 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
-                "data": { "$ref": "#/components/schemas/ChunkDetail" }
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/ChunkDetail"
+                }
               }
             }
           }
@@ -1039,16 +2717,34 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
-                  "required": ["rootId", "titleCn", "nodes"],
+                  "required": [
+                    "rootId",
+                    "titleCn",
+                    "nodes"
+                  ],
                   "properties": {
-                    "rootId": { "type": "integer" },
-                    "titleCn": { "type": "string" },
-                    "nodes": { "type": "array", "items": { "type": "object" } }
+                    "rootId": {
+                      "type": "integer"
+                    },
+                    "titleCn": {
+                      "type": "string"
+                    },
+                    "nodes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
                   }
                 }
               }
@@ -1062,16 +2758,29 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data", "meta"],
+              "required": [
+                "requestId",
+                "data",
+                "meta"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
                   "properties": {
-                    "items": { "type": "array", "items": { "type": "object" } }
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
                   }
                 },
-                "meta": { "$ref": "#/components/schemas/PageMeta" }
+                "meta": {
+                  "$ref": "#/components/schemas/PageMeta"
+                }
               }
             }
           }
@@ -1083,16 +2792,30 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
-                  "required": ["entryId", "item"],
+                  "required": [
+                    "entryId",
+                    "item"
+                  ],
                   "properties": {
-                    "entryId": { "type": "integer" },
-                    "item": { "$ref": "#/components/schemas/LearningItemRef" },
-                    "collectionStatus": { "type": "string" }
+                    "entryId": {
+                      "type": "integer"
+                    },
+                    "item": {
+                      "$ref": "#/components/schemas/LearningItemRef"
+                    },
+                    "collectionStatus": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -1106,10 +2829,17 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
-                "data": { "$ref": "#/components/schemas/ExpressionResponse" }
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/ExpressionResponse"
+                }
               }
             }
           }
@@ -1121,9 +2851,15 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data", "meta"],
+              "required": [
+                "requestId",
+                "data",
+                "meta"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
                   "properties": {
@@ -1135,7 +2871,9 @@
                     }
                   }
                 },
-                "meta": { "$ref": "#/components/schemas/PageMeta" }
+                "meta": {
+                  "$ref": "#/components/schemas/PageMeta"
+                }
               }
             }
           }
@@ -1147,9 +2885,14 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
                   "required": [
@@ -1159,11 +2902,17 @@
                     "answerFieldsIncluded"
                   ],
                   "properties": {
-                    "manifestHash": { "type": "string" },
-                    "contentVersion": { "type": "string" },
+                    "manifestHash": {
+                      "type": "string"
+                    },
+                    "contentVersion": {
+                      "type": "string"
+                    },
                     "cards": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/OfflineCard" }
+                      "items": {
+                        "$ref": "#/components/schemas/OfflineCard"
+                      }
                     },
                     "answerFieldsIncluded": {
                       "type": "boolean",
@@ -1182,22 +2931,47 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
-                  "required": ["snapshotId", "localDate", "status", "items"],
+                  "required": [
+                    "snapshotId",
+                    "localDate",
+                    "status",
+                    "items"
+                  ],
                   "properties": {
-                    "snapshotId": { "type": "integer" },
-                    "localDate": { "type": "string", "format": "date" },
-                    "timezone": { "type": "string" },
-                    "status": { "type": "string" },
-                    "algorithmVersion": { "type": "string" },
-                    "rulesVersion": { "type": "string" },
+                    "snapshotId": {
+                      "type": "integer"
+                    },
+                    "localDate": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "timezone": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "algorithmVersion": {
+                      "type": "string"
+                    },
+                    "rulesVersion": {
+                      "type": "string"
+                    },
                     "items": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/SrsBatchItem" }
+                      "items": {
+                        "$ref": "#/components/schemas/SrsBatchItem"
+                      }
                     }
                   }
                 }
@@ -1212,10 +2986,17 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
-                "data": { "$ref": "#/components/schemas/ReviewEventResponse" }
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/ReviewEventResponse"
+                }
               }
             }
           }
@@ -1227,16 +3008,25 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
-                  "required": ["results"],
+                  "required": [
+                    "results"
+                  ],
                   "properties": {
                     "results": {
                       "type": "array",
-                      "items": { "type": "object" }
+                      "items": {
+                        "type": "object"
+                      }
                     }
                   }
                 }
@@ -1251,19 +3041,29 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data", "meta"],
+              "required": [
+                "requestId",
+                "data",
+                "meta"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
+                "requestId": {
+                  "type": "string"
+                },
                 "data": {
                   "type": "object",
                   "properties": {
                     "items": {
                       "type": "array",
-                      "items": { "$ref": "#/components/schemas/SrsState" }
+                      "items": {
+                        "$ref": "#/components/schemas/SrsState"
+                      }
                     }
                   }
                 },
-                "meta": { "$ref": "#/components/schemas/PageMeta" }
+                "meta": {
+                  "$ref": "#/components/schemas/PageMeta"
+                }
               }
             }
           }
@@ -1275,10 +3075,17 @@
           "application/json": {
             "schema": {
               "type": "object",
-              "required": ["requestId", "data"],
+              "required": [
+                "requestId",
+                "data"
+              ],
               "properties": {
-                "requestId": { "type": "string" },
-                "data": { "$ref": "#/components/schemas/SrsOverview" }
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/SrsOverview"
+                }
               }
             }
           }
@@ -1286,33 +3093,42 @@
       },
       "Empty": {
         "description": "空结果",
-        "content": { "application/json": { "schema": { "type": "object" } } }
-      },
-      "Conflict": {
-        "description": "幂等、版本或 Token family 冲突",
-        "headers": {
-          "X-Request-Id": { "$ref": "#/components/headers/XRequestId" },
-          "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }
-        },
         "content": {
-          "application/json": { "schema": { "$ref": "#/components/schemas/ApiErrorResponse" } }
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
         }
       },
+      "Conflict": {
+        "$ref": "#/components/responses/ApiConflict"
+      },
       "NotFound": {
-        "description": "资源不存在",
-        "content": { "application/json": { "schema": { "type": "object" } } }
+        "$ref": "#/components/responses/ApiNotFound"
       },
       "ValidationError": {
-        "description": "参数校验失败",
-        "content": { "application/json": { "schema": { "type": "object" } } }
+        "$ref": "#/components/responses/ApiUnprocessableEntity"
       },
       "SnapshotExpired": {
         "description": "快照过期",
-        "content": { "application/json": { "schema": { "type": "object" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
       },
       "OfflineExpired": {
         "description": "离线事件超过 72 小时",
-        "content": { "application/json": { "schema": { "type": "object" } } }
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
       }
     }
   }

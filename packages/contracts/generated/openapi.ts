@@ -83,7 +83,7 @@ export type ApiVersion = "v1";
 export type SemanticVersion = string;
 
 /**
- * Generated from the contract source.
+ * Compatibility metadata retained for existing responses. New and migrated public operations use ApiResponseMeta.
  */
 export type ApiMeta = { apiVersion: ApiVersion; schemaVersion: SemanticVersion; serverTime: DateTime; traceId: TraceId; };
 
@@ -113,7 +113,7 @@ export type ErrorDetails = { [key: string]: ErrorDetailValue; };
 export type ApiError = { errorCode: ErrorCode; message: string; retryable: boolean; details?: ErrorDetails; };
 
 /**
- * Generated from the contract source.
+ * Compatibility envelope retained for existing operations. New and migrated public operations use ApiErrorEnvelope so success and error results share canonical metadata.
  */
 export type ApiErrorResponse = { requestId: RequestId; traceId: TraceId; error: ApiError; };
 
@@ -363,12 +363,12 @@ export type B1OfflineManifest = { manifestCode: string; manifestVersion: number;
 export type B1OfflineManifestEntry = { contentVersionId: number; mediaAssetId?: number | null; resourceKind: "CONTENT_JSON" | "MEDIA" | "INDEX"; resourceKey: string; resourceHash: string; contentLengthBytes: number; allowOffline: boolean; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing content operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B1ContentError = { code: string; message: string; requestId: string; details?: ReadonlyArray<string>; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing onboarding operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B1ErrorResponse = { requestId: string; traceId: string; error: { errorCode: "AUTH_REQUIRED" | "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "IDEMPOTENCY_CONFLICT"; message: string; retryable: boolean; }; };
 
@@ -543,7 +543,7 @@ export type B2Mistake = { mistakeId: number; itemId: number; questionId?: number
 export type B2Verification = { verificationId: number; mistakeId: number; stage: "D0" | "D1" | "D7"; result: "PENDING" | "PASSED" | "FAILED" | "NOT_DUE" | "EXPIRED"; dueAt: string; score?: number | null; maxScore?: number | null; nextState?: string; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing assessment operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B2ApiError = { requestId: string; error: { errorCode: string; message: string; retryable: boolean; }; };
 
@@ -678,7 +678,7 @@ export type B3Id = number;
 export type B3Response = { requestId: string; serverTime: string; data: { [key: string]: unknown; }; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing multimodal operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B3ErrorResponse = { requestId: string; error: { code: string; message: string; retryable?: boolean; }; };
 
@@ -938,7 +938,7 @@ export type B4Id = number;
 export type B4Envelope = { requestId: string; serverTime: string; data: { [key: string]: unknown; }; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing gamification and social operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B4ErrorResponse = { requestId: string; error: { code: string; message: string; retryable: boolean; }; };
 
@@ -1128,7 +1128,7 @@ export type B5SupportMessageRequest = { messageHash: string; clientMessageRef: s
 export type B6Envelope = { requestId: string; data: { [key: string]: unknown; }; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing platform-quality operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B6ErrorEnvelope = { requestId: string; error: B6Error; };
 
@@ -1173,7 +1173,7 @@ export type B6DrillRequest = { drillType: "MIGRATION_ROLLBACK" | "MYSQL_RESTORE"
 export type B6ReleaseGateRequest = { releaseVersion: string; candidateBuildIds: ReadonlyArray<string>; requiredChecks: ReadonlyArray<"COMPATIBILITY" | "E2E" | "SECURITY" | "RELIABILITY" | "BACKUP">; privacyStatus: "PASS" | "FAIL" | "PENDING"; copyrightStatus: "PASS" | "FAIL" | "PENDING"; merchantStatus: "PASS" | "FAIL" | "PENDING"; platformReviewStatus: "PASS" | "FAIL" | "PENDING" | "NOT_REQUIRED"; rollbackPlanRef: string; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error shape for existing IAM operations. New or migrated operations use ApiErrorEnvelope.
  */
 export type B8ErrorEnvelope = { requestId: string; error: B8Error; };
 
@@ -1523,7 +1523,7 @@ export type B9ContentVersionId = number;
 export type B9Locale = string;
 
 /**
- * Generated from the contract source.
+ * Compatibility error payload for existing B9 operations. New or migrated operations use ApiError inside ApiErrorEnvelope.
  */
 export type B9Problem = { code: "validation_error" | "unauthorized" | "forbidden" | "not_found" | "conflict" | "version_conflict" | "idempotency_conflict" | "content_unpublished" | "content_rights_expired" | "projection_stale" | "not_ready" | "service_unavailable"; message: string; traceId: string; requestId?: string; retryable?: boolean; details?: { [key: string]: unknown; }; };
 
@@ -1838,7 +1838,7 @@ export type B10ReviewQueueResponse = { items: ReadonlyArray<B10LearningQueueItem
 export type B10MasteryProjectionResponse = { data: B10MasteryProjection; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error payload for existing media and notification operations. New or migrated operations use ApiError inside ApiErrorEnvelope.
  */
 export type B11Error = { code: "unauthorized" | "forbidden" | "not_found" | "conflict" | "rights_revoked" | "range_invalid" | "storage_full"; message: string; retryable: boolean; };
 
@@ -1958,7 +1958,7 @@ export type B11MediaCompatibility = { legacyRefHash: string; targetRefHash: stri
 export type B11OfflineCompatibility = { legacyEventHash: string; targetEventHash: string; readOnly: true; domainFactsUntouched: true; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error payload for existing gamification, social and notification operations. New or migrated operations use ApiError inside ApiErrorEnvelope.
  */
 export type B12Error = { code: "unauthorized" | "forbidden" | "not_found" | "conflict" | "invalid_command" | "feature_disabled" | "lease_expired" | "retry_exhausted" | "policy_denied"; retryable: boolean; requestId?: string; };
 
@@ -2138,7 +2138,7 @@ export type B12NotificationPreferenceCommand = { enabled: boolean; locale: strin
 export type B12NotificationMessage = { messageId: string; notificationType: string; channel: "IN_APP" | "PUSH" | "EMAIL"; title: string; safeBody: string; contentVersion: string; createdAt: string; read: boolean; };
 
 /**
- * Generated from the contract source.
+ * Compatibility error payload for existing commerce, admin and analytics operations. New or migrated operations use ApiError inside ApiErrorEnvelope.
  */
 export type B13Problem = { code: string; message: string; traceRef: string; };
 
@@ -2407,6 +2407,31 @@ export type B8DeviceInput = { deviceId?: string; deviceType: "IOS" | "ANDROID" |
  */
 export type B4GameCatalogItem = { gameCode: "SENTENCE_TRAIN" | "WORD_MATCH" | "WORD_DEFENSE" | "WORD_PUZZLE" | "GRAMMAR_BLASTER" | "CATCH_MEANING"; releasePhase: "P0" | "P1" | "LONG_TERM"; enabled: boolean; maxMinutes?: number; pauseLimitMinutes?: number; passAccuracyPercent?: number; passCompletionPercent?: number; };
 
+/**
+ * Mandatory response metadata for newly created or migrated public operations. requestId and traceId are also returned as response headers.
+ */
+export type ApiResponseMeta = { requestId: RequestId; traceId: TraceId; apiVersion: ApiVersion; schemaVersion: SemanticVersion; serverTime: DateTime; };
+
+/**
+ * Cursor pagination metadata for every active list* operation and any other active operation declaring Cursor. nextCursor is null when there is no next page; hasMore must agree with nextCursor; cursor state must not be duplicated in data.
+ */
+export type ApiCursorPageMeta = { requestId: RequestId; traceId: TraceId; apiVersion: ApiVersion; schemaVersion: SemanticVersion; serverTime: DateTime; nextCursor?: Cursor | null; snapshotAt?: DateTime | null; hasMore: boolean; pageSize: PageSize; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ApiSuccessEnvelope = { data: unknown; meta: ApiResponseMeta; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ApiCursorPageEnvelope = { data: unknown; meta: ApiCursorPageMeta; };
+
+/**
+ * Generated from the contract source.
+ */
+export type ApiErrorEnvelope = { error: ApiError; meta: ApiResponseMeta; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -2426,332 +2451,332 @@ export interface CanonicalIdRegistry {
 }
 
 export interface ApiOperationRegistry {
-  getHealth: { method: "GET"; path: "/api/v1/health"; request: never; response: HealthResponse; idempotent: false };
-  createContentEntity: { method: "POST"; path: "/api/v1/content"; request: B1CreateContentRequest; response: unknown; idempotent: true };
-  createContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions"; request: B1CreateVersionRequest; response: unknown; idempotent: true };
-  previewContentVersion: { method: "GET"; path: "/api/v1/content/{contentId}/versions/{versionId}/preview"; request: never; response: unknown; idempotent: false };
-  diffContentVersions: { method: "GET"; path: "/api/v1/content/{contentId}/versions/{versionId}/diff"; request: never; response: B1ContentDiff; idempotent: false };
-  submitContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/submit"; request: B1ActorRequest; response: unknown; idempotent: true };
-  decideContentVersionReview: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/review"; request: B1ReviewDecisionRequest; response: unknown; idempotent: true };
-  publishContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/publish"; request: B1ActorRequest; response: unknown; idempotent: true };
-  archiveContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/archive"; request: B1ActorReasonRequest; response: unknown; idempotent: true };
-  restoreContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/restore"; request: B1ActorReasonRequest; response: unknown; idempotent: true };
-  importContentBatch: { method: "POST"; path: "/api/v1/content/imports"; request: B1ImportRequest; response: B1ImportReport; idempotent: true };
-  createContentMediaUploadIntent: { method: "POST"; path: "/api/v1/content/media/upload-intents"; request: B1MediaUploadRequest; response: B1MediaUploadIntent; idempotent: true };
-  completeContentMediaUpload: { method: "POST"; path: "/api/v1/content/media/{mediaAssetId}/complete"; request: B1MediaCompleteRequest; response: B1MediaAsset; idempotent: true };
-  signContentMediaAccess: { method: "POST"; path: "/api/v1/content/media/{mediaAssetId}/signed-access"; request: B1MediaAccessRequest; response: B1SignedMediaAccess; idempotent: true };
-  getContentOfflineManifest: { method: "GET"; path: "/api/v1/content/offline/manifests/{manifestCode}"; request: never; response: B1OfflineManifest; idempotent: false };
-  getPublishedContent: { method: "GET"; path: "/api/v1/content/{contentId}"; request: never; response: unknown; idempotent: false };
-  readPlacementSession: { method: "GET"; path: "/api/v1/assessment/placement/start"; request: never; response: B1AssessmentReadResponse; idempotent: false };
-  startPlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/start"; request: never; response: B1AssessmentStartResponse; idempotent: true };
-  submitPlacementStep: { method: "POST"; path: "/api/v1/assessment/placement/submit-step"; request: B1AssessmentStepRequest; response: B1AssessmentStepResponse; idempotent: true };
-  createPrivacyExport: { method: "POST"; path: "/api/v1/privacy/export"; request: B1PrivacyExportRequest; response: B1PrivacyExportResponse; idempotent: true };
-  registerB8Account: { method: "POST"; path: "/api/v1/auth/register"; request: B8RegisterRequest; response: unknown; idempotent: true };
-  logoutB8JwtSession: { method: "POST"; path: "/api/v1/auth/logout"; request: B8LogoutRequest; response: unknown; idempotent: true };
-  revokeB8JwtSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; request: never; response: unknown; idempotent: true };
-  getB1OnboardingOptions: { method: "GET"; path: "/api/v1/onboarding/options"; request: never; response: B1AnyData; idempotent: false };
-  getB1OnboardingProfile: { method: "GET"; path: "/api/v1/onboarding/profile"; request: never; response: B1AnyData; idempotent: false };
-  saveB1OnboardingProfile: { method: "POST"; path: "/api/v1/onboarding/profile"; request: B1OnboardingProfileRequest; response: B1AnyData; idempotent: true };
-  patchB1OnboardingProfile: { method: "PATCH"; path: "/api/v1/onboarding/profile"; request: B1OnboardingProfileRequest; response: B1AnyData; idempotent: true };
-  createB1FirstGoal: { method: "POST"; path: "/api/v1/onboarding/goals/first"; request: never; response: B1AnyData; idempotent: true };
-  getB1DailyTasks: { method: "GET"; path: "/api/v1/onboarding/daily-tasks/today"; request: never; response: B1AnyData; idempotent: false };
-  completeB1DailyTask: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/{taskId}/complete"; request: never; response: B1AnyData; idempotent: true };
-  reorderB1DailyTasks: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/reorder"; request: never; response: B1AnyData; idempotent: true };
-  skipB1Placement: { method: "POST"; path: "/api/v1/assessment/placement/skip"; request: B1PlacementSkipRequest; response: B1AnyData; idempotent: true };
-  getB1PlacementReport: { method: "GET"; path: "/api/v1/assessment/placement/report/{sessionId}"; request: never; response: B1AnyData; idempotent: false };
-  getB1ContinueContext: { method: "GET"; path: "/api/v1/learning/continue-context"; request: never; response: B1AnyData; idempotent: false };
-  saveB1ContinueContext: { method: "PUT"; path: "/api/v1/learning/continue-context"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  saveB1LearningCheckpoint: { method: "PUT"; path: "/api/v1/sync/checkpoints/{lessonId}"; request: B1AnyData; response: B1AnyData; idempotent: true };
-  getB2DailyStream: { method: "GET"; path: "/api/v1/assessment/daily-stream"; request: never; response: unknown; idempotent: false };
-  createB10AssessmentSession: { method: "POST"; path: "/api/v1/assessment/sessions"; request: B10CreateAssessmentSessionRequest; response: B10AssessmentSessionResponse; idempotent: true };
-  getB10AssessmentSession: { method: "GET"; path: "/api/v1/assessment/sessions/{sessionId}"; request: never; response: B10AssessmentSessionResponse; idempotent: false };
-  submitB2AssessmentAnswer: { method: "POST"; path: "/api/v1/assessment/sessions/{sessionId}/answers"; request: B2AnswerSubmissionRequest; response: unknown; idempotent: true };
-  saveB2AssessmentCheckpoint: { method: "PUT"; path: "/api/v1/assessment/sessions/{sessionId}/checkpoint"; request: B2CheckpointRequest; response: unknown; idempotent: true };
-  completeB2AssessmentSession: { method: "POST"; path: "/api/v1/assessment/sessions/{sessionId}/complete"; request: never; response: unknown; idempotent: true };
-  listB2ExamPapers: { method: "GET"; path: "/api/v1/exam/papers"; request: never; response: unknown; idempotent: false };
-  getB2ExamPaper: { method: "GET"; path: "/api/v1/exam/papers/{paperId}"; request: never; response: unknown; idempotent: false };
-  createB2ExamSession: { method: "POST"; path: "/api/v1/exam/sessions"; request: B2CreateExamSessionRequest; response: unknown; idempotent: true };
-  getB2ExamSession: { method: "GET"; path: "/api/v1/exam/sessions/{sessionId}"; request: never; response: unknown; idempotent: false };
-  b2ExamHeartbeat: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/heartbeat"; request: B2HeartbeatRequest; response: unknown; idempotent: true };
-  recordB2AntiCheatEvent: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/anti-cheat-events"; request: B2AntiCheatEventRequest; response: unknown; idempotent: true };
-  getB2AnswerSheet: { method: "GET"; path: "/api/v1/exam/sessions/{sessionId}/answer-sheet"; request: never; response: unknown; idempotent: false };
-  updateB2AnswerSheetMark: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/answer-sheet/marks"; request: B2AnswerSheetMarkRequest; response: unknown; idempotent: true };
-  saveB2ExamCheckpoint: { method: "PUT"; path: "/api/v1/exam/sessions/{sessionId}/checkpoint"; request: B2CheckpointRequest; response: unknown; idempotent: true };
-  submitB2ExamAnswer: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/answers"; request: B2AnswerSubmissionRequest; response: unknown; idempotent: true };
-  submitB2Exam: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/submit"; request: never; response: unknown; idempotent: true };
-  getB2ExamReport: { method: "GET"; path: "/api/v1/exam/sessions/{sessionId}/report"; request: never; response: unknown; idempotent: false };
-  listB2ExamHistory: { method: "GET"; path: "/api/v1/exam/history"; request: never; response: unknown; idempotent: false };
-  getB2MasteryOverview: { method: "GET"; path: "/api/v1/mastery/overview"; request: never; response: unknown; idempotent: false };
-  listB2Mistakes: { method: "GET"; path: "/api/v1/mastery/mistakes"; request: never; response: unknown; idempotent: false };
-  getB2MistakeDetail: { method: "GET"; path: "/api/v1/mastery/mistakes/{mistakeId}"; request: never; response: unknown; idempotent: false };
-  startB2MistakeRetry: { method: "POST"; path: "/api/v1/mastery/mistakes/{mistakeId}/retry"; request: never; response: unknown; idempotent: true };
-  listB2MasteryVerifications: { method: "GET"; path: "/api/v1/mastery/verifications"; request: never; response: unknown; idempotent: false };
-  submitB2MasteryVerification: { method: "POST"; path: "/api/v1/mastery/verifications/{verificationId}/submit"; request: B2VerificationSubmission; response: unknown; idempotent: true };
-  getB2DailyReport: { method: "GET"; path: "/api/v1/learning/stats/daily-report"; request: never; response: unknown; idempotent: false };
-  getB2WeeklyReport: { method: "GET"; path: "/api/v1/learning/stats/weekly-report"; request: never; response: unknown; idempotent: false };
-  createB2ShareAsset: { method: "POST"; path: "/api/v1/mastery/share-assets"; request: B2ShareAssetRequest; response: unknown; idempotent: true };
-  listWordbooks: { method: "GET"; path: "/api/v1/vocab/wordbooks"; request: never; response: unknown; idempotent: false };
-  activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; request: { active: true; }; response: unknown; idempotent: true };
-  listWordbookItems: { method: "GET"; path: "/api/v1/vocab/wordbooks/{wordbookId}/items"; request: never; response: unknown; idempotent: false };
-  getVocabDetail: { method: "GET"; path: "/api/v1/content/learner/vocabulary/{vocabularyId}"; request: never; response: unknown; idempotent: false };
-  getChunkDetail: { method: "GET"; path: "/api/v1/vocab/chunks/{chunkId}"; request: never; response: unknown; idempotent: false };
-  getRootTopic: { method: "GET"; path: "/api/v1/vocab/roots/{rootId}"; request: never; response: unknown; idempotent: false };
-  listUserLibrary: { method: "GET"; path: "/api/v1/vocab/library"; request: never; response: unknown; idempotent: false };
-  addLibraryEntry: { method: "POST"; path: "/api/v1/vocab/library/entries"; request: LibraryEntryCreateRequest; response: unknown; idempotent: true };
-  removeLibraryEntry: { method: "DELETE"; path: "/api/v1/vocab/library/entries/{entryId}"; request: never; response: unknown; idempotent: true };
-  listExpressions: { method: "GET"; path: "/api/v1/vocab/expressions"; request: never; response: unknown; idempotent: false };
-  createMinedExpression: { method: "POST"; path: "/api/v1/vocab/expressions"; request: ExpressionCreateRequest; response: unknown; idempotent: true };
-  updateMinedExpression: { method: "PATCH"; path: "/api/v1/vocab/expressions/{expressionId}"; request: ExpressionUpdateRequest; response: unknown; idempotent: true };
-  deleteMinedExpression: { method: "DELETE"; path: "/api/v1/vocab/expressions/{expressionId}"; request: never; response: unknown; idempotent: true };
-  getOfflineVocabularyCards: { method: "GET"; path: "/api/v1/vocab/offline/cards"; request: never; response: unknown; idempotent: false };
-  createSrsBatch: { method: "POST"; path: "/api/v1/learning/srs/batches"; request: SrsBatchCreateRequest; response: unknown; idempotent: true };
-  getSrsBatch: { method: "GET"; path: "/api/v1/learning/srs/batches/{snapshotId}"; request: never; response: unknown; idempotent: false };
-  submitReviewEvent: { method: "POST"; path: "/api/v1/learning/srs/reviews"; request: ReviewEventRequest; response: unknown; idempotent: true };
-  syncReviewEvents: { method: "POST"; path: "/api/v1/learning/srs/reviews:sync"; request: { events: ReadonlyArray<ReviewEventRequest>; }; response: unknown; idempotent: true };
-  listSrsStates: { method: "GET"; path: "/api/v1/learning/srs/states"; request: never; response: unknown; idempotent: false };
-  getSrsOverview: { method: "GET"; path: "/api/v1/learning/srs/overview"; request: never; response: unknown; idempotent: false };
-  getCurrentLearningPlan: { method: "GET"; path: "/api/v1/learning/plan/current"; request: never; response: unknown; idempotent: false };
-  getTodayLearningStream: { method: "GET"; path: "/api/v1/learning/stream/today"; request: never; response: unknown; idempotent: false };
-  submitLearningStreamAction: { method: "POST"; path: "/api/v1/learning/stream/action"; request: B2LearningStreamActionRequest; response: unknown; idempotent: true };
-  startLegacyAssessmentSession: { method: "POST"; path: "/api/v1/assessment/session/start"; request: B2CreateAssessmentSessionRequest; response: unknown; idempotent: true };
-  submitLegacyAssessmentAnswerItem: { method: "POST"; path: "/api/v1/assessment/session/answer-item"; request: B2LegacyAnswerItemRequest; response: unknown; idempotent: true };
-  submitLegacyAssessmentSession: { method: "POST"; path: "/api/v1/assessment/session/submit"; request: B2LegacySessionSubmitRequest; response: unknown; idempotent: true };
-  getLegacyAssessmentReport: { method: "GET"; path: "/api/v1/assessment/report/{sessionUuid}"; request: never; response: unknown; idempotent: false };
-  getLearningMistakeQueue: { method: "GET"; path: "/api/v1/learning/mistakes/queue"; request: never; response: unknown; idempotent: false };
-  verifyLearningMistake: { method: "POST"; path: "/api/v1/learning/mistakes/verify"; request: B2LegacyMistakeVerifyRequest; response: unknown; idempotent: true };
-  getDailyLearningSummary: { method: "GET"; path: "/api/v1/learning/stats/daily-summary"; request: never; response: unknown; idempotent: false };
-  listB3GrammarPoints: { method: "GET"; path: "/api/v1/grammar/points"; request: never; response: unknown; idempotent: false };
-  getB3GrammarPoint: { method: "GET"; path: "/api/v1/grammar/points/{grammarPointId}"; request: never; response: unknown; idempotent: false };
-  getB3SentenceGraph: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}"; request: never; response: unknown; idempotent: false };
-  createB3GrammarPracticeSession: { method: "POST"; path: "/api/v1/grammar/practice/sessions"; request: B3GrammarSessionRequest; response: unknown; idempotent: true };
-  submitB3GrammarAnswer: { method: "POST"; path: "/api/v1/grammar/practice/sessions/{sessionId}/answers"; request: B3GrammarAnswerRequest; response: unknown; idempotent: true };
-  listB3WritingPrompts: { method: "GET"; path: "/api/v1/writing/prompts"; request: never; response: unknown; idempotent: false };
-  createB3WritingSubmission: { method: "POST"; path: "/api/v1/writing/submissions"; request: B3WritingSubmissionRequest; response: unknown; idempotent: true };
-  getB3WritingEvaluation: { method: "GET"; path: "/api/v1/writing/submissions/{submissionId}"; request: never; response: unknown; idempotent: false };
-  submitB3Correction: { method: "POST"; path: "/api/v1/writing/corrections"; request: B3CorrectionRequest; response: unknown; idempotent: true };
-  listB3ListeningMaterials: { method: "GET"; path: "/api/v1/listening/materials"; request: never; response: unknown; idempotent: false };
-  getB3ListeningMaterial: { method: "GET"; path: "/api/v1/listening/materials/{materialId}"; request: never; response: unknown; idempotent: false };
-  createB3ListeningSession: { method: "POST"; path: "/api/v1/listening/sessions"; request: B3ListeningSessionRequest; response: unknown; idempotent: true };
-  submitB3Dictation: { method: "POST"; path: "/api/v1/listening/sessions/{sessionId}/dictation"; request: B3DictationRequest; response: unknown; idempotent: true };
-  updateB3ListeningProgress: { method: "PUT"; path: "/api/v1/listening/sessions/{sessionId}/progress"; request: B3ProgressRequest; response: unknown; idempotent: true };
-  listB3ReadingArticles: { method: "GET"; path: "/api/v1/reading/articles"; request: never; response: unknown; idempotent: false };
-  getB3ReadingArticle: { method: "GET"; path: "/api/v1/reading/articles/{articleId}"; request: never; response: unknown; idempotent: false };
-  updateB3ReadingProgress: { method: "PUT"; path: "/api/v1/reading/progress"; request: B3ProgressRequest; response: unknown; idempotent: true };
-  createB3SentenceMining: { method: "POST"; path: "/api/v1/reading/mining"; request: B3MiningRequest; response: unknown; idempotent: true };
-  getB3PhoneticsCatalog: { method: "GET"; path: "/api/v1/phonetics/catalog"; request: never; response: unknown; idempotent: false };
-  createB3SpeakingRecording: { method: "POST"; path: "/api/v1/speaking/recordings"; request: B3RecordingRequest; response: unknown; idempotent: true };
-  getB3SpeakingRecording: { method: "GET"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: unknown; idempotent: false };
-  deleteB3SpeakingRecording: { method: "DELETE"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: unknown; idempotent: true };
-  submitB3SpeakingSelfRating: { method: "POST"; path: "/api/v1/speaking/recordings/{recordingId}/self-rating"; request: B3SelfRatingRequest; response: unknown; idempotent: true };
-  pushB4OfflineSync: { method: "POST"; path: "/api/v1/offline/sync/push"; request: B4SyncRequest; response: unknown; idempotent: true };
-  pullB4OfflineSync: { method: "GET"; path: "/api/v1/offline/sync/pull"; request: never; response: unknown; idempotent: false };
-  getB3OfflineManifest: { method: "GET"; path: "/api/v1/offline/manifests/{manifestId}"; request: never; response: unknown; idempotent: false };
-  getB3GrammarTree: { method: "GET"; path: "/api/v1/grammar/tree"; request: never; response: unknown; idempotent: false };
-  listB3GrammarTraps: { method: "GET"; path: "/api/v1/grammar/points/{grammarPointId}/traps"; request: never; response: unknown; idempotent: false };
-  listB3GrammarExercises: { method: "GET"; path: "/api/v1/grammar/exercises"; request: never; response: unknown; idempotent: false };
-  getB3GrammarExercise: { method: "GET"; path: "/api/v1/grammar/exercises/{exerciseId}"; request: never; response: unknown; idempotent: false };
-  submitB3GrammarAttempt: { method: "POST"; path: "/api/v1/grammar/practice/attempts"; request: B3GrammarAttemptRequest; response: unknown; idempotent: true };
-  getB3GrammarMastery: { method: "GET"; path: "/api/v1/grammar/mastery"; request: never; response: unknown; idempotent: false };
-  getB3TargetedGrammarPack: { method: "GET"; path: "/api/v1/grammar/targeted-packs"; request: never; response: unknown; idempotent: false };
-  getB3SentenceXray: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}/xray"; request: never; response: unknown; idempotent: false };
-  getB3SentenceBlocks: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}/blocks"; request: never; response: unknown; idempotent: false };
-  submitB3SentenceBlocks: { method: "POST"; path: "/api/v1/grammar/sentences/{sentenceId}/blocks"; request: B3SentenceBlockRequest; response: unknown; idempotent: true };
-  submitB3SentenceImitation: { method: "POST"; path: "/api/v1/grammar/sentences/{sentenceId}/imitation"; request: B3ImitationRequest; response: unknown; idempotent: true };
-  listB3TranslationExercises: { method: "GET"; path: "/api/v1/writing/translation/exercises"; request: never; response: unknown; idempotent: false };
-  listB3WritingTemplates: { method: "GET"; path: "/api/v1/writing/templates"; request: never; response: unknown; idempotent: false };
-  listB3WritingMaterials: { method: "GET"; path: "/api/v1/writing/materials"; request: never; response: unknown; idempotent: false };
-  listB3ProofreadingExercises: { method: "GET"; path: "/api/v1/writing/proofreading/exercises"; request: never; response: unknown; idempotent: false };
-  listB3WritingHistory: { method: "GET"; path: "/api/v1/writing/history"; request: never; response: unknown; idempotent: false };
-  getB3ListeningTimeline: { method: "GET"; path: "/api/v1/listening/materials/{materialId}/timeline"; request: never; response: unknown; idempotent: false };
-  listB3LanguageClips: { method: "GET"; path: "/api/v1/listening/clips"; request: never; response: unknown; idempotent: false };
-  listB3OfflinePackages: { method: "GET"; path: "/api/v1/listening/offline-packages"; request: never; response: unknown; idempotent: false };
-  createB3OfflinePackage: { method: "POST"; path: "/api/v1/listening/offline-packages"; request: B3OfflinePackageRequest; response: unknown; idempotent: true };
-  getB3OfflinePackage: { method: "GET"; path: "/api/v1/listening/offline-packages/{packageId}"; request: never; response: unknown; idempotent: false };
-  downloadB3OfflineAsset: { method: "GET"; path: "/api/v1/listening/offline-packages/{packageId}/assets/{assetId}"; request: never; response: unknown; idempotent: false };
-  syncB3OfflinePackage: { method: "POST"; path: "/api/v1/listening/offline-packages/{packageId}/sync"; request: B3OfflinePackageSyncRequest; response: unknown; idempotent: true };
-  getB3ReadingDictionaryEntry: { method: "GET"; path: "/api/v1/reading/articles/{articleId}/dictionary"; request: never; response: unknown; idempotent: false };
-  getB3ReadingStory: { method: "GET"; path: "/api/v1/reading/articles/{articleId}/story"; request: never; response: unknown; idempotent: false };
-  listB3ReadingQuestions: { method: "GET"; path: "/api/v1/reading/questions"; request: never; response: unknown; idempotent: false };
-  submitB3ReadingAttempt: { method: "POST"; path: "/api/v1/reading/attempts"; request: B3ReadingAttemptRequest; response: unknown; idempotent: true };
-  listB3MinimalPairs: { method: "GET"; path: "/api/v1/phonetics/minimal-pairs"; request: never; response: unknown; idempotent: false };
-  createB3ShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions"; request: B3ShadowingSessionRequest; response: unknown; idempotent: true };
-  updateB3ShadowingProgress: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"; request: B3ShadowingProgressRequest; response: unknown; idempotent: true };
-  createB3RoleplaySession: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions"; request: B3RoleplaySessionRequest; response: unknown; idempotent: true };
-  submitB3RoleplayTurn: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions/{roleplaySessionId}/turns"; request: B3RoleplayTurnRequest; response: unknown; idempotent: true };
-  getB4Streak: { method: "GET"; path: "/api/v1/gamification/streak"; request: never; response: unknown; idempotent: false };
-  updateB4StreakSettings: { method: "PUT"; path: "/api/v1/gamification/streak/settings"; request: B4StreakSettingsRequest; response: unknown; idempotent: true };
-  rescueB4Streak: { method: "POST"; path: "/api/v1/gamification/streak/rescue"; request: B4RescueRequest; response: unknown; idempotent: true };
-  listB4Quests: { method: "GET"; path: "/api/v1/gamification/quests"; request: never; response: unknown; idempotent: false };
-  claimB4QuestReward: { method: "POST"; path: "/api/v1/gamification/quests/{questId}/claim"; request: never; response: unknown; idempotent: true };
-  listB4Achievements: { method: "GET"; path: "/api/v1/gamification/achievements"; request: never; response: unknown; idempotent: false };
-  updateB4AchievementShowcase: { method: "PUT"; path: "/api/v1/gamification/achievements/{achievementCode}/showcase"; request: B4ShowcaseRequest; response: unknown; idempotent: true };
-  listB4Chests: { method: "GET"; path: "/api/v1/gamification/chests"; request: never; response: unknown; idempotent: false };
-  getB4ChestProbability: { method: "GET"; path: "/api/v1/gamification/chests/{chestGrantId}/probability"; request: never; response: unknown; idempotent: false };
-  openB4Chest: { method: "POST"; path: "/api/v1/gamification/chests/{chestGrantId}/open"; request: never; response: unknown; idempotent: true };
-  getB4Collection: { method: "GET"; path: "/api/v1/gamification/collection"; request: never; response: unknown; idempotent: false };
-  listB4Catalog: { method: "GET"; path: "/api/v1/gamification/catalog"; request: never; response: unknown; idempotent: false };
-  redeemB4CatalogItem: { method: "POST"; path: "/api/v1/gamification/catalog/{catalogItemId}/redeem"; request: never; response: unknown; idempotent: true };
-  listB4SeasonRewards: { method: "GET"; path: "/api/v1/gamification/seasons/{seasonId}/rewards"; request: never; response: unknown; idempotent: false };
-  getB4AvatarProfile: { method: "GET"; path: "/api/v1/avatar/profile"; request: never; response: unknown; idempotent: false };
-  saveB4AvatarProfile: { method: "PUT"; path: "/api/v1/avatar/profile"; request: B4AvatarRequest; response: unknown; idempotent: true };
-  listB4AvatarItems: { method: "GET"; path: "/api/v1/avatar/items"; request: never; response: unknown; idempotent: false };
-  listB4AvatarLoadouts: { method: "GET"; path: "/api/v1/avatar/loadouts"; request: never; response: unknown; idempotent: false };
-  saveB4AvatarLoadout: { method: "PUT"; path: "/api/v1/avatar/loadouts/{loadoutId}"; request: B4LoadoutRequest; response: unknown; idempotent: true };
-  equipB4AvatarLoadout: { method: "POST"; path: "/api/v1/avatar/loadouts/{loadoutId}/equip"; request: never; response: unknown; idempotent: true };
-  getB4AvatarResources: { method: "GET"; path: "/api/v1/avatar/resources"; request: never; response: unknown; idempotent: false };
-  getB4StudySpace: { method: "GET"; path: "/api/v1/avatar/study-space"; request: never; response: unknown; idempotent: false };
-  saveB4StudySpace: { method: "PUT"; path: "/api/v1/avatar/study-space"; request: B4StudySpaceRequest; response: unknown; idempotent: true };
-  listB4Games: { method: "GET"; path: "/api/v1/games/catalog"; request: never; response: unknown; idempotent: false };
-  createB4GameSession: { method: "POST"; path: "/api/v1/games/sessions"; request: B4GameSessionRequest; response: unknown; idempotent: true };
-  getB4GameSession: { method: "GET"; path: "/api/v1/games/sessions/{sessionId}"; request: never; response: unknown; idempotent: false };
-  submitB4GameEvent: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/events"; request: B4GameEventRequest; response: unknown; idempotent: true };
-  pauseB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/pause"; request: never; response: unknown; idempotent: true };
-  resumeB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/resume"; request: never; response: unknown; idempotent: true };
-  finishB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/finish"; request: never; response: unknown; idempotent: true };
-  listB4SocialRooms: { method: "GET"; path: "/api/v1/social/rooms"; request: never; response: unknown; idempotent: false };
-  getB4SocialRoom: { method: "GET"; path: "/api/v1/social/rooms/{roomId}"; request: never; response: unknown; idempotent: false };
-  joinB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/join"; request: B4JoinRoomRequest; response: unknown; idempotent: true };
-  leaveB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/leave"; request: never; response: unknown; idempotent: true };
-  recordB12RoomInteraction: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/interactions"; request: B12PresetInteraction; response: B12InteractionResult; idempotent: true };
-  getB12Leaderboard: { method: "GET"; path: "/api/v1/social/leaderboards"; request: never; response: B12Leaderboard; idempotent: false };
-  createB4SocialWsTicket: { method: "POST"; path: "/api/v1/social/ws-ticket"; request: B4WsTicketRequest; response: unknown; idempotent: true };
-  listB4OfflinePackages: { method: "GET"; path: "/api/v1/sync/offline-packages"; request: never; response: unknown; idempotent: false };
-  authorizeB4OfflinePackage: { method: "POST"; path: "/api/v1/sync/offline-packages/{packageId}/authorize"; request: never; response: unknown; idempotent: true };
-  enqueueB11SyncChanges: { method: "POST"; path: "/api/v1/sync/changes"; request: B11SyncEnqueueRequest; response: B11SyncReceipt; idempotent: true };
-  listB11SyncChanges: { method: "GET"; path: "/api/v1/sync/changes"; request: never; response: B11SyncReceipt; idempotent: false };
-  pushB4SyncEvents: { method: "POST"; path: "/api/v1/sync/events"; request: B4SyncRequest; response: unknown; idempotent: true };
-  saveB4SyncCheckpoint: { method: "PUT"; path: "/api/v1/sync/checkpoints/{entityId}"; request: B4CheckpointRequest; response: unknown; idempotent: true };
-  createB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports"; request: B4ReportRequest; response: unknown; idempotent: true };
-  createB4Block: { method: "POST"; path: "/api/v1/social/moderation/blocks"; request: B4BlockRequest; response: unknown; idempotent: true };
-  createB4RoomMute: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/mutes"; request: B4MuteRequest; response: unknown; idempotent: true };
-  updateB4OfflineDownload: { method: "PATCH"; path: "/api/v1/sync/offline-downloads/{downloadId}"; request: B4OfflineDownloadRequest; response: unknown; idempotent: true };
-  cleanupB4OfflineDownload: { method: "POST"; path: "/api/v1/sync/offline-downloads/{downloadId}/cleanup"; request: never; response: unknown; idempotent: true };
-  appealB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports/{reportId}/appeal"; request: B4AppealRequest; response: unknown; idempotent: true };
-  listB13CommerceSkus: { method: "GET"; path: "/api/v1/commerce/skus"; request: never; response: ReadonlyArray<B13Sku>; idempotent: false };
-  getCommerceSku: { method: "GET"; path: "/api/v1/commerce/skus/{skuId}"; request: never; response: unknown; idempotent: false };
-  listB13CommerceOrders: { method: "GET"; path: "/api/v1/commerce/orders"; request: never; response: B13OrderPage; idempotent: false };
-  createB13CommerceOrder: { method: "POST"; path: "/api/v1/commerce/orders"; request: B13OrderCreateRequest; response: B13Order; idempotent: true };
-  getCommerceOrder: { method: "GET"; path: "/api/v1/commerce/orders/{orderId}"; request: never; response: unknown; idempotent: false };
-  receiveWechatCallback: { method: "POST"; path: "/api/v1/commerce/wechat/callback"; request: B5ProviderCallbackRequest; response: unknown; idempotent: true };
-  receiveAlipayNotify: { method: "POST"; path: "/api/v1/commerce/alipay/notify"; request: B5ProviderCallbackRequest; response: unknown; idempotent: true };
-  verifyAppleTransaction: { method: "POST"; path: "/api/v1/commerce/apple/transactions/verify"; request: B5AppleVerificationRequest; response: unknown; idempotent: true };
-  scanAppleRecovery: { method: "POST"; path: "/api/v1/commerce/apple/recovery/scan"; request: B5AppleVerificationRequest; response: unknown; idempotent: true };
-  receiveAppleNotification: { method: "POST"; path: "/api/v1/commerce/apple/notifications"; request: B5ProviderCallbackRequest; response: unknown; idempotent: true };
-  listB13MyEntitlements: { method: "GET"; path: "/api/v1/commerce/entitlements/me"; request: never; response: ReadonlyArray<B13Entitlement>; idempotent: false };
-  createHousehold: { method: "POST"; path: "/api/v1/commerce/households"; request: B5HouseholdRequest; response: unknown; idempotent: true };
-  createHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/{householdId}/invitations"; request: B5InvitationRequest; response: unknown; idempotent: true };
-  acceptHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/invitations/accept"; request: B5InvitationAcceptRequest; response: unknown; idempotent: true };
-  removeHouseholdMember: { method: "DELETE"; path: "/api/v1/commerce/households/{householdId}/members/{memberUserId}"; request: never; response: unknown; idempotent: true };
-  redeemB13ActivationCode: { method: "POST"; path: "/api/v1/commerce/activation-codes/redeem"; request: B13ActivationRedeemRequest; response: B13Entitlement; idempotent: true };
-  requestB13OrderRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: B13RefundRequest; response: B13Refund; idempotent: true };
-  listInvoices: { method: "GET"; path: "/api/v1/commerce/invoices"; request: never; response: unknown; idempotent: false };
-  createInvoice: { method: "POST"; path: "/api/v1/commerce/invoices"; request: B5InvoiceRequest; response: unknown; idempotent: true };
-  listSupportTickets: { method: "GET"; path: "/api/v1/support/tickets"; request: never; response: unknown; idempotent: false };
-  createSupportTicket: { method: "POST"; path: "/api/v1/support/tickets"; request: B5SupportTicketRequest; response: unknown; idempotent: true };
-  getSupportTicket: { method: "GET"; path: "/api/v1/support/tickets/{ticketId}"; request: never; response: unknown; idempotent: false };
-  addSupportTicketMessage: { method: "POST"; path: "/api/v1/support/tickets/{ticketId}/messages"; request: B5SupportMessageRequest; response: unknown; idempotent: true };
-  recordB6E2ERun: { method: "POST"; path: "/api/v1/quality/e2e-runs"; request: B6E2ERunRequest; response: unknown; idempotent: true };
-  getB6E2ERun: { method: "GET"; path: "/api/v1/quality/e2e-runs/{runId}"; request: never; response: unknown; idempotent: false };
-  recordB6SecurityScan: { method: "POST"; path: "/api/v1/quality/security-scans"; request: B6SecurityScanRequest; response: unknown; idempotent: true };
-  getB6SecurityScan: { method: "GET"; path: "/api/v1/quality/security-scans/{scanId}"; request: never; response: unknown; idempotent: false };
-  recordB6ReliabilityRun: { method: "POST"; path: "/api/v1/quality/reliability-runs"; request: B6ReliabilityRunRequest; response: unknown; idempotent: true };
-  getB6ReliabilityRun: { method: "GET"; path: "/api/v1/quality/reliability-runs/{runId}"; request: never; response: unknown; idempotent: false };
-  recordB6DataReliabilityDrill: { method: "POST"; path: "/api/v1/data-reliability/drills"; request: B6DrillRequest; response: unknown; idempotent: true };
-  getB6DataReliabilityDrill: { method: "GET"; path: "/api/v1/data-reliability/drills/{drillId}"; request: never; response: unknown; idempotent: false };
-  evaluateB6ReleaseGate: { method: "POST"; path: "/api/v1/release/gates/evaluate"; request: B6ReleaseGateRequest; response: unknown; idempotent: true };
-  getB6ReleaseGate: { method: "GET"; path: "/api/v1/release/gates/{gateId}"; request: never; response: unknown; idempotent: false };
-  getB8Principal: { method: "GET"; path: "/api/v1/iam/principal/me"; request: never; response: B8PrincipalResponse; idempotent: false };
-  listB8Devices: { method: "GET"; path: "/api/v1/iam/devices"; request: never; response: B8DeviceListResponse; idempotent: false };
-  kickoutB8Device: { method: "POST"; path: "/api/v1/iam/devices/{deviceId}/kickout"; request: never; response: unknown; idempotent: true };
-  evaluateB8AdultGate: { method: "POST"; path: "/api/v1/iam/adult-gate"; request: B8AdultGateRequest; response: B8AdultGateResponse; idempotent: true };
-  listB8Consents: { method: "GET"; path: "/api/v1/iam/consents"; request: never; response: B8ConsentListResponse; idempotent: false };
-  updateB8Consent: { method: "PUT"; path: "/api/v1/iam/consents"; request: B8ConsentUpdateRequest; response: B8Consent; idempotent: true };
+  getHealth: { method: "GET"; path: "/api/v1/health"; request: never; response: ApiSuccessEnvelope & { data: HealthData; }; idempotent: false };
+  createContentEntity: { method: "POST"; path: "/api/v1/content"; request: B1CreateContentRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  createContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions"; request: B1CreateVersionRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  previewContentVersion: { method: "GET"; path: "/api/v1/content/{contentId}/versions/{versionId}/preview"; request: never; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: false };
+  diffContentVersions: { method: "GET"; path: "/api/v1/content/{contentId}/versions/{versionId}/diff"; request: never; response: ApiSuccessEnvelope & { data: B1ContentDiff; }; idempotent: false };
+  submitContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/submit"; request: B1ActorRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  decideContentVersionReview: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/review"; request: B1ReviewDecisionRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  publishContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/publish"; request: B1ActorRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  archiveContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/archive"; request: B1ActorReasonRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  restoreContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions/{versionId}/restore"; request: B1ActorReasonRequest; response: ApiSuccessEnvelope & { data: B1ContentVersion; }; idempotent: true };
+  importContentBatch: { method: "POST"; path: "/api/v1/content/imports"; request: B1ImportRequest; response: ApiSuccessEnvelope & { data: B1ImportReport; }; idempotent: true };
+  createContentMediaUploadIntent: { method: "POST"; path: "/api/v1/content/media/upload-intents"; request: B1MediaUploadRequest; response: ApiSuccessEnvelope & { data: B1MediaUploadIntent; }; idempotent: true };
+  completeContentMediaUpload: { method: "POST"; path: "/api/v1/content/media/{mediaAssetId}/complete"; request: B1MediaCompleteRequest; response: ApiSuccessEnvelope & { data: B1MediaAsset; }; idempotent: true };
+  signContentMediaAccess: { method: "POST"; path: "/api/v1/content/media/{mediaAssetId}/signed-access"; request: B1MediaAccessRequest; response: ApiSuccessEnvelope & { data: B1SignedMediaAccess; }; idempotent: true };
+  getContentOfflineManifest: { method: "GET"; path: "/api/v1/content/offline/manifests/{manifestCode}"; request: never; response: ApiSuccessEnvelope & { data: B1OfflineManifest; }; idempotent: false };
+  getPublishedContent: { method: "GET"; path: "/api/v1/content/{contentId}"; request: never; response: ApiSuccessEnvelope & { data: B1LearnerContent; }; idempotent: false };
+  readPlacementSession: { method: "GET"; path: "/api/v1/assessment/placement/start"; request: never; response: ApiSuccessEnvelope & { data: B1AssessmentReadResponse; }; idempotent: false };
+  startPlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/start"; request: never; response: ApiSuccessEnvelope & { data: B1AssessmentStartResponse; }; idempotent: true };
+  submitPlacementStep: { method: "POST"; path: "/api/v1/assessment/placement/submit-step"; request: B1AssessmentStepRequest; response: ApiSuccessEnvelope & { data: B1AssessmentStepResponse; }; idempotent: true };
+  createPrivacyExport: { method: "POST"; path: "/api/v1/privacy/export"; request: B1PrivacyExportRequest; response: ApiSuccessEnvelope & { data: B1PrivacyExportResponse; }; idempotent: true };
+  registerB8Account: { method: "POST"; path: "/api/v1/auth/register"; request: B8RegisterRequest; response: ApiSuccessEnvelope & { data: B8AuthTokenResponse; }; idempotent: true };
+  logoutB8JwtSession: { method: "POST"; path: "/api/v1/auth/logout"; request: B8LogoutRequest; response: ApiSuccessEnvelope & { data: B8SessionRevocationResponse; }; idempotent: true };
+  revokeB8JwtSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; request: never; response: ApiSuccessEnvelope & { data: B8SessionRevocationResponse; }; idempotent: true };
+  getB1OnboardingOptions: { method: "GET"; path: "/api/v1/onboarding/options"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: false };
+  getB1OnboardingProfile: { method: "GET"; path: "/api/v1/onboarding/profile"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: false };
+  saveB1OnboardingProfile: { method: "POST"; path: "/api/v1/onboarding/profile"; request: B1OnboardingProfileRequest; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  patchB1OnboardingProfile: { method: "PATCH"; path: "/api/v1/onboarding/profile"; request: B1OnboardingProfileRequest; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  createB1FirstGoal: { method: "POST"; path: "/api/v1/onboarding/goals/first"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  getB1DailyTasks: { method: "GET"; path: "/api/v1/onboarding/daily-tasks/today"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: false };
+  completeB1DailyTask: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/{taskId}/complete"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  reorderB1DailyTasks: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/reorder"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  skipB1Placement: { method: "POST"; path: "/api/v1/assessment/placement/skip"; request: B1PlacementSkipRequest; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  getB1PlacementReport: { method: "GET"; path: "/api/v1/assessment/placement/report/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: false };
+  getB1ContinueContext: { method: "GET"; path: "/api/v1/learning/continue-context"; request: never; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: false };
+  saveB1ContinueContext: { method: "PUT"; path: "/api/v1/learning/continue-context"; request: B1AnyData; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  saveB1LearningCheckpoint: { method: "PUT"; path: "/api/v1/sync/checkpoints/{lessonId}"; request: B1AnyData; response: ApiSuccessEnvelope & { data: B1AnyData; }; idempotent: true };
+  getB2DailyStream: { method: "GET"; path: "/api/v1/assessment/daily-stream"; request: never; response: ApiSuccessEnvelope & { data: B2Session; }; idempotent: false };
+  createB10AssessmentSession: { method: "POST"; path: "/api/v1/assessment/sessions"; request: B10CreateAssessmentSessionRequest; response: ApiSuccessEnvelope & { data: B10AssessmentSession; }; idempotent: true };
+  getB10AssessmentSession: { method: "GET"; path: "/api/v1/assessment/sessions/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: B10AssessmentSession; }; idempotent: false };
+  submitB2AssessmentAnswer: { method: "POST"; path: "/api/v1/assessment/sessions/{sessionId}/answers"; request: B2AnswerSubmissionRequest; response: ApiSuccessEnvelope & { data: B2AnswerResult; }; idempotent: true };
+  saveB2AssessmentCheckpoint: { method: "PUT"; path: "/api/v1/assessment/sessions/{sessionId}/checkpoint"; request: B2CheckpointRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  completeB2AssessmentSession: { method: "POST"; path: "/api/v1/assessment/sessions/{sessionId}/complete"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  listB2ExamPapers: { method: "GET"; path: "/api/v1/exam/papers"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Record<string, never>>; }; idempotent: false };
+  getB2ExamPaper: { method: "GET"; path: "/api/v1/exam/papers/{paperId}"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: false };
+  createB2ExamSession: { method: "POST"; path: "/api/v1/exam/sessions"; request: B2CreateExamSessionRequest; response: ApiSuccessEnvelope & { data: B2Session; }; idempotent: true };
+  getB2ExamSession: { method: "GET"; path: "/api/v1/exam/sessions/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: B2Session; }; idempotent: false };
+  b2ExamHeartbeat: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/heartbeat"; request: B2HeartbeatRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  recordB2AntiCheatEvent: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/anti-cheat-events"; request: B2AntiCheatEventRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  getB2AnswerSheet: { method: "GET"; path: "/api/v1/exam/sessions/{sessionId}/answer-sheet"; request: never; response: ApiSuccessEnvelope & { data: { page?: Record<string, never>; items?: ReadonlyArray<Record<string, never>>; }; }; idempotent: false };
+  updateB2AnswerSheetMark: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/answer-sheet/marks"; request: B2AnswerSheetMarkRequest; response: ApiSuccessEnvelope & { data: { page?: Record<string, never>; items?: ReadonlyArray<Record<string, never>>; }; }; idempotent: true };
+  saveB2ExamCheckpoint: { method: "PUT"; path: "/api/v1/exam/sessions/{sessionId}/checkpoint"; request: B2CheckpointRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  submitB2ExamAnswer: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/answers"; request: B2AnswerSubmissionRequest; response: ApiSuccessEnvelope & { data: B2AnswerResult; }; idempotent: true };
+  submitB2Exam: { method: "POST"; path: "/api/v1/exam/sessions/{sessionId}/submit"; request: never; response: ApiSuccessEnvelope & { data: B2Report; }; idempotent: true };
+  getB2ExamReport: { method: "GET"; path: "/api/v1/exam/sessions/{sessionId}/report"; request: never; response: ApiSuccessEnvelope & { data: B2Report; }; idempotent: false };
+  listB2ExamHistory: { method: "GET"; path: "/api/v1/exam/history"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Record<string, never>>; }; idempotent: false };
+  getB2MasteryOverview: { method: "GET"; path: "/api/v1/mastery/overview"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: false };
+  listB2Mistakes: { method: "GET"; path: "/api/v1/mastery/mistakes"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Record<string, never>>; }; idempotent: false };
+  getB2MistakeDetail: { method: "GET"; path: "/api/v1/mastery/mistakes/{mistakeId}"; request: never; response: ApiSuccessEnvelope & { data: B2Mistake; }; idempotent: false };
+  startB2MistakeRetry: { method: "POST"; path: "/api/v1/mastery/mistakes/{mistakeId}/retry"; request: never; response: ApiSuccessEnvelope & { data: B2Verification; }; idempotent: true };
+  listB2MasteryVerifications: { method: "GET"; path: "/api/v1/mastery/verifications"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Record<string, never>>; }; idempotent: false };
+  submitB2MasteryVerification: { method: "POST"; path: "/api/v1/mastery/verifications/{verificationId}/submit"; request: B2VerificationSubmission; response: ApiSuccessEnvelope & { data: B2Verification; }; idempotent: true };
+  getB2DailyReport: { method: "GET"; path: "/api/v1/learning/stats/daily-report"; request: never; response: ApiSuccessEnvelope & { data: B2Report; }; idempotent: false };
+  getB2WeeklyReport: { method: "GET"; path: "/api/v1/learning/stats/weekly-report"; request: never; response: ApiSuccessEnvelope & { data: B2Report; }; idempotent: false };
+  createB2ShareAsset: { method: "POST"; path: "/api/v1/mastery/share-assets"; request: B2ShareAssetRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  listWordbooks: { method: "GET"; path: "/api/v1/vocab/wordbooks"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Wordbook>; }; idempotent: false };
+  activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; request: { active: true; }; response: ApiSuccessEnvelope & { data: { activeWordbookId: number; planVersion: number; retainedStateCount?: number; firstSnapshotId?: number | null; }; }; idempotent: true };
+  listWordbookItems: { method: "GET"; path: "/api/v1/vocab/wordbooks/{wordbookId}/items"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<VocabItem>; }; idempotent: false };
+  getVocabDetail: { method: "GET"; path: "/api/v1/content/learner/vocabulary/{vocabularyId}"; request: never; response: ApiSuccessEnvelope & { data: VocabDetail; }; idempotent: false };
+  getChunkDetail: { method: "GET"; path: "/api/v1/vocab/chunks/{chunkId}"; request: never; response: ApiSuccessEnvelope & { data: ChunkDetail; }; idempotent: false };
+  getRootTopic: { method: "GET"; path: "/api/v1/vocab/roots/{rootId}"; request: never; response: ApiCursorPageEnvelope & { data: { rootId: number; titleCn: string; nodes: ReadonlyArray<Record<string, never>>; }; }; idempotent: false };
+  listUserLibrary: { method: "GET"; path: "/api/v1/vocab/library"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Record<string, never>>; }; idempotent: false };
+  addLibraryEntry: { method: "POST"; path: "/api/v1/vocab/library/entries"; request: LibraryEntryCreateRequest; response: ApiSuccessEnvelope & { data: { entryId: number; item: LearningItemRef; collectionStatus?: string; }; }; idempotent: true };
+  removeLibraryEntry: { method: "DELETE"; path: "/api/v1/vocab/library/entries/{entryId}"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  listExpressions: { method: "GET"; path: "/api/v1/vocab/expressions"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<ExpressionResponse>; }; idempotent: false };
+  createMinedExpression: { method: "POST"; path: "/api/v1/vocab/expressions"; request: ExpressionCreateRequest; response: ApiSuccessEnvelope & { data: ExpressionResponse; }; idempotent: true };
+  updateMinedExpression: { method: "PATCH"; path: "/api/v1/vocab/expressions/{expressionId}"; request: ExpressionUpdateRequest; response: ApiSuccessEnvelope & { data: ExpressionResponse; }; idempotent: true };
+  deleteMinedExpression: { method: "DELETE"; path: "/api/v1/vocab/expressions/{expressionId}"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  getOfflineVocabularyCards: { method: "GET"; path: "/api/v1/vocab/offline/cards"; request: never; response: ApiSuccessEnvelope & { data: { manifestHash: string; contentVersion: string; cards: ReadonlyArray<OfflineCard>; answerFieldsIncluded: false; }; }; idempotent: false };
+  createSrsBatch: { method: "POST"; path: "/api/v1/learning/srs/batches"; request: SrsBatchCreateRequest; response: ApiSuccessEnvelope & { data: { snapshotId: number; localDate: string; timezone?: string; status: string; algorithmVersion?: string; rulesVersion?: string; items: ReadonlyArray<SrsBatchItem>; }; }; idempotent: true };
+  getSrsBatch: { method: "GET"; path: "/api/v1/learning/srs/batches/{snapshotId}"; request: never; response: ApiSuccessEnvelope & { data: { snapshotId: number; localDate: string; timezone?: string; status: string; algorithmVersion?: string; rulesVersion?: string; items: ReadonlyArray<SrsBatchItem>; }; }; idempotent: false };
+  submitReviewEvent: { method: "POST"; path: "/api/v1/learning/srs/reviews"; request: ReviewEventRequest; response: ApiSuccessEnvelope & { data: ReviewEventResponse; }; idempotent: true };
+  syncReviewEvents: { method: "POST"; path: "/api/v1/learning/srs/reviews:sync"; request: { events: ReadonlyArray<ReviewEventRequest>; }; response: ApiSuccessEnvelope & { data: { results: ReadonlyArray<Record<string, never>>; }; }; idempotent: true };
+  listSrsStates: { method: "GET"; path: "/api/v1/learning/srs/states"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<SrsState>; }; idempotent: false };
+  getSrsOverview: { method: "GET"; path: "/api/v1/learning/srs/overview"; request: never; response: ApiSuccessEnvelope & { data: SrsOverview; }; idempotent: false };
+  getCurrentLearningPlan: { method: "GET"; path: "/api/v1/learning/plan/current"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: false };
+  getTodayLearningStream: { method: "GET"; path: "/api/v1/learning/stream/today"; request: never; response: ApiSuccessEnvelope & { data: B2LearningStream; }; idempotent: false };
+  submitLearningStreamAction: { method: "POST"; path: "/api/v1/learning/stream/action"; request: B2LearningStreamActionRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  startLegacyAssessmentSession: { method: "POST"; path: "/api/v1/assessment/session/start"; request: B2CreateAssessmentSessionRequest; response: ApiSuccessEnvelope & { data: B2Session; }; idempotent: true };
+  submitLegacyAssessmentAnswerItem: { method: "POST"; path: "/api/v1/assessment/session/answer-item"; request: B2LegacyAnswerItemRequest; response: ApiSuccessEnvelope & { data: B2AnswerResult; }; idempotent: true };
+  submitLegacyAssessmentSession: { method: "POST"; path: "/api/v1/assessment/session/submit"; request: B2LegacySessionSubmitRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
+  getLegacyAssessmentReport: { method: "GET"; path: "/api/v1/assessment/report/{sessionUuid}"; request: never; response: ApiSuccessEnvelope & { data: B2Report; }; idempotent: false };
+  getLearningMistakeQueue: { method: "GET"; path: "/api/v1/learning/mistakes/queue"; request: never; response: ApiSuccessEnvelope & { data: { page?: Record<string, never>; items?: ReadonlyArray<Record<string, never>>; }; }; idempotent: false };
+  verifyLearningMistake: { method: "POST"; path: "/api/v1/learning/mistakes/verify"; request: B2LegacyMistakeVerifyRequest; response: ApiSuccessEnvelope & { data: B2Verification; }; idempotent: true };
+  getDailyLearningSummary: { method: "GET"; path: "/api/v1/learning/stats/daily-summary"; request: never; response: ApiSuccessEnvelope & { data: B2DailySummary; }; idempotent: false };
+  listB3GrammarPoints: { method: "GET"; path: "/api/v1/grammar/points"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3GrammarPoint: { method: "GET"; path: "/api/v1/grammar/points/{grammarPointId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3SentenceGraph: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB3GrammarPracticeSession: { method: "POST"; path: "/api/v1/grammar/practice/sessions"; request: B3GrammarSessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  submitB3GrammarAnswer: { method: "POST"; path: "/api/v1/grammar/practice/sessions/{sessionId}/answers"; request: B3GrammarAnswerRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB3WritingPrompts: { method: "GET"; path: "/api/v1/writing/prompts"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB3WritingSubmission: { method: "POST"; path: "/api/v1/writing/submissions"; request: B3WritingSubmissionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB3WritingEvaluation: { method: "GET"; path: "/api/v1/writing/submissions/{submissionId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  submitB3Correction: { method: "POST"; path: "/api/v1/writing/corrections"; request: B3CorrectionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB3ListeningMaterials: { method: "GET"; path: "/api/v1/listening/materials"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3ListeningMaterial: { method: "GET"; path: "/api/v1/listening/materials/{materialId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB3ListeningSession: { method: "POST"; path: "/api/v1/listening/sessions"; request: B3ListeningSessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  submitB3Dictation: { method: "POST"; path: "/api/v1/listening/sessions/{sessionId}/dictation"; request: B3DictationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  updateB3ListeningProgress: { method: "PUT"; path: "/api/v1/listening/sessions/{sessionId}/progress"; request: B3ProgressRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB3ReadingArticles: { method: "GET"; path: "/api/v1/reading/articles"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3ReadingArticle: { method: "GET"; path: "/api/v1/reading/articles/{articleId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  updateB3ReadingProgress: { method: "PUT"; path: "/api/v1/reading/progress"; request: B3ProgressRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createB3SentenceMining: { method: "POST"; path: "/api/v1/reading/mining"; request: B3MiningRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB3PhoneticsCatalog: { method: "GET"; path: "/api/v1/phonetics/catalog"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB3SpeakingRecording: { method: "POST"; path: "/api/v1/speaking/recordings"; request: B3RecordingRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB3SpeakingRecording: { method: "GET"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  deleteB3SpeakingRecording: { method: "DELETE"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  submitB3SpeakingSelfRating: { method: "POST"; path: "/api/v1/speaking/recordings/{recordingId}/self-rating"; request: B3SelfRatingRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  pushB4OfflineSync: { method: "POST"; path: "/api/v1/offline/sync/push"; request: B4SyncRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  pullB4OfflineSync: { method: "GET"; path: "/api/v1/offline/sync/pull"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3OfflineManifest: { method: "GET"; path: "/api/v1/offline/manifests/{manifestId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3GrammarTree: { method: "GET"; path: "/api/v1/grammar/tree"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3GrammarTraps: { method: "GET"; path: "/api/v1/grammar/points/{grammarPointId}/traps"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3GrammarExercises: { method: "GET"; path: "/api/v1/grammar/exercises"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3GrammarExercise: { method: "GET"; path: "/api/v1/grammar/exercises/{exerciseId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  submitB3GrammarAttempt: { method: "POST"; path: "/api/v1/grammar/practice/attempts"; request: B3GrammarAttemptRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB3GrammarMastery: { method: "GET"; path: "/api/v1/grammar/mastery"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3TargetedGrammarPack: { method: "GET"; path: "/api/v1/grammar/targeted-packs"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3SentenceXray: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}/xray"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3SentenceBlocks: { method: "GET"; path: "/api/v1/grammar/sentences/{sentenceId}/blocks"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  submitB3SentenceBlocks: { method: "POST"; path: "/api/v1/grammar/sentences/{sentenceId}/blocks"; request: B3SentenceBlockRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  submitB3SentenceImitation: { method: "POST"; path: "/api/v1/grammar/sentences/{sentenceId}/imitation"; request: B3ImitationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB3TranslationExercises: { method: "GET"; path: "/api/v1/writing/translation/exercises"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3WritingTemplates: { method: "GET"; path: "/api/v1/writing/templates"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3WritingMaterials: { method: "GET"; path: "/api/v1/writing/materials"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3ProofreadingExercises: { method: "GET"; path: "/api/v1/writing/proofreading/exercises"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3WritingHistory: { method: "GET"; path: "/api/v1/writing/history"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3ListeningTimeline: { method: "GET"; path: "/api/v1/listening/materials/{materialId}/timeline"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3LanguageClips: { method: "GET"; path: "/api/v1/listening/clips"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3OfflinePackages: { method: "GET"; path: "/api/v1/listening/offline-packages"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB3OfflinePackage: { method: "POST"; path: "/api/v1/listening/offline-packages"; request: B3OfflinePackageRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB3OfflinePackage: { method: "GET"; path: "/api/v1/listening/offline-packages/{packageId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  downloadB3OfflineAsset: { method: "GET"; path: "/api/v1/listening/offline-packages/{packageId}/assets/{assetId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  syncB3OfflinePackage: { method: "POST"; path: "/api/v1/listening/offline-packages/{packageId}/sync"; request: B3OfflinePackageSyncRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB3ReadingDictionaryEntry: { method: "GET"; path: "/api/v1/reading/articles/{articleId}/dictionary"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB3ReadingStory: { method: "GET"; path: "/api/v1/reading/articles/{articleId}/story"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB3ReadingQuestions: { method: "GET"; path: "/api/v1/reading/questions"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  submitB3ReadingAttempt: { method: "POST"; path: "/api/v1/reading/attempts"; request: B3ReadingAttemptRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB3MinimalPairs: { method: "GET"; path: "/api/v1/phonetics/minimal-pairs"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB3ShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions"; request: B3ShadowingSessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  updateB3ShadowingProgress: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"; request: B3ShadowingProgressRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createB3RoleplaySession: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions"; request: B3RoleplaySessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  submitB3RoleplayTurn: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions/{roleplaySessionId}/turns"; request: B3RoleplayTurnRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB4Streak: { method: "GET"; path: "/api/v1/gamification/streak"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  updateB4StreakSettings: { method: "PUT"; path: "/api/v1/gamification/streak/settings"; request: B4StreakSettingsRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  rescueB4Streak: { method: "POST"; path: "/api/v1/gamification/streak/rescue"; request: B4RescueRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4Quests: { method: "GET"; path: "/api/v1/gamification/quests"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  claimB4QuestReward: { method: "POST"; path: "/api/v1/gamification/quests/{questId}/claim"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4Achievements: { method: "GET"; path: "/api/v1/gamification/achievements"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  updateB4AchievementShowcase: { method: "PUT"; path: "/api/v1/gamification/achievements/{achievementCode}/showcase"; request: B4ShowcaseRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4Chests: { method: "GET"; path: "/api/v1/gamification/chests"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB4ChestProbability: { method: "GET"; path: "/api/v1/gamification/chests/{chestGrantId}/probability"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  openB4Chest: { method: "POST"; path: "/api/v1/gamification/chests/{chestGrantId}/open"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB4Collection: { method: "GET"; path: "/api/v1/gamification/collection"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB4Catalog: { method: "GET"; path: "/api/v1/gamification/catalog"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  redeemB4CatalogItem: { method: "POST"; path: "/api/v1/gamification/catalog/{catalogItemId}/redeem"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4SeasonRewards: { method: "GET"; path: "/api/v1/gamification/seasons/{seasonId}/rewards"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB4AvatarProfile: { method: "GET"; path: "/api/v1/avatar/profile"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  saveB4AvatarProfile: { method: "PUT"; path: "/api/v1/avatar/profile"; request: B4AvatarRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4AvatarItems: { method: "GET"; path: "/api/v1/avatar/items"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB4AvatarLoadouts: { method: "GET"; path: "/api/v1/avatar/loadouts"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  saveB4AvatarLoadout: { method: "PUT"; path: "/api/v1/avatar/loadouts/{loadoutId}"; request: B4LoadoutRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  equipB4AvatarLoadout: { method: "POST"; path: "/api/v1/avatar/loadouts/{loadoutId}/equip"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB4AvatarResources: { method: "GET"; path: "/api/v1/avatar/resources"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB4StudySpace: { method: "GET"; path: "/api/v1/avatar/study-space"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  saveB4StudySpace: { method: "PUT"; path: "/api/v1/avatar/study-space"; request: B4StudySpaceRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4Games: { method: "GET"; path: "/api/v1/games/catalog"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createB4GameSession: { method: "POST"; path: "/api/v1/games/sessions"; request: B4GameSessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB4GameSession: { method: "GET"; path: "/api/v1/games/sessions/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  submitB4GameEvent: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/events"; request: B4GameEventRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  pauseB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/pause"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  resumeB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/resume"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  finishB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/finish"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4SocialRooms: { method: "GET"; path: "/api/v1/social/rooms"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB4SocialRoom: { method: "GET"; path: "/api/v1/social/rooms/{roomId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  joinB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/join"; request: B4JoinRoomRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  leaveB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/leave"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  recordB12RoomInteraction: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/interactions"; request: B12PresetInteraction; response: ApiSuccessEnvelope & { data: B12InteractionResult; }; idempotent: true };
+  getB12Leaderboard: { method: "GET"; path: "/api/v1/social/leaderboards"; request: never; response: ApiSuccessEnvelope & { data: B12Leaderboard; }; idempotent: false };
+  createB4SocialWsTicket: { method: "POST"; path: "/api/v1/social/ws-ticket"; request: B4WsTicketRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB4OfflinePackages: { method: "GET"; path: "/api/v1/sync/offline-packages"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  authorizeB4OfflinePackage: { method: "POST"; path: "/api/v1/sync/offline-packages/{packageId}/authorize"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  enqueueB11SyncChanges: { method: "POST"; path: "/api/v1/sync/changes"; request: B11SyncEnqueueRequest; response: ApiSuccessEnvelope & { data: B11SyncReceipt; }; idempotent: true };
+  listB11SyncChanges: { method: "GET"; path: "/api/v1/sync/changes"; request: never; response: ApiCursorPageEnvelope & { data: { acceptedEventIds: ReadonlyArray<string>; conflicts: ReadonlyArray<B11SyncConflict>; }; }; idempotent: false };
+  pushB4SyncEvents: { method: "POST"; path: "/api/v1/sync/events"; request: B4SyncRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  saveB4SyncCheckpoint: { method: "PUT"; path: "/api/v1/sync/checkpoints/{entityId}"; request: B4CheckpointRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports"; request: B4ReportRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createB4Block: { method: "POST"; path: "/api/v1/social/moderation/blocks"; request: B4BlockRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createB4RoomMute: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/mutes"; request: B4MuteRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  updateB4OfflineDownload: { method: "PATCH"; path: "/api/v1/sync/offline-downloads/{downloadId}"; request: B4OfflineDownloadRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  cleanupB4OfflineDownload: { method: "POST"; path: "/api/v1/sync/offline-downloads/{downloadId}/cleanup"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  appealB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports/{reportId}/appeal"; request: B4AppealRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB13CommerceSkus: { method: "GET"; path: "/api/v1/commerce/skus"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13Sku>; }; idempotent: false };
+  getCommerceSku: { method: "GET"; path: "/api/v1/commerce/skus/{skuId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  listB13CommerceOrders: { method: "GET"; path: "/api/v1/commerce/orders"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13Order>; }; idempotent: false };
+  createB13CommerceOrder: { method: "POST"; path: "/api/v1/commerce/orders"; request: B13OrderCreateRequest; response: ApiSuccessEnvelope & { data: B13Order; }; idempotent: true };
+  getCommerceOrder: { method: "GET"; path: "/api/v1/commerce/orders/{orderId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  receiveWechatCallback: { method: "POST"; path: "/api/v1/commerce/wechat/callback"; request: B5ProviderCallbackRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  receiveAlipayNotify: { method: "POST"; path: "/api/v1/commerce/alipay/notify"; request: B5ProviderCallbackRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  verifyAppleTransaction: { method: "POST"; path: "/api/v1/commerce/apple/transactions/verify"; request: B5AppleVerificationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  scanAppleRecovery: { method: "POST"; path: "/api/v1/commerce/apple/recovery/scan"; request: B5AppleVerificationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  receiveAppleNotification: { method: "POST"; path: "/api/v1/commerce/apple/notifications"; request: B5ProviderCallbackRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listB13MyEntitlements: { method: "GET"; path: "/api/v1/commerce/entitlements/me"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13Entitlement>; }; idempotent: false };
+  createHousehold: { method: "POST"; path: "/api/v1/commerce/households"; request: B5HouseholdRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/{householdId}/invitations"; request: B5InvitationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  acceptHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/invitations/accept"; request: B5InvitationAcceptRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  removeHouseholdMember: { method: "DELETE"; path: "/api/v1/commerce/households/{householdId}/members/{memberUserId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  redeemB13ActivationCode: { method: "POST"; path: "/api/v1/commerce/activation-codes/redeem"; request: B13ActivationRedeemRequest; response: ApiSuccessEnvelope & { data: B13Entitlement; }; idempotent: true };
+  requestB13OrderRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: B13RefundRequest; response: ApiSuccessEnvelope & { data: B13Refund; }; idempotent: true };
+  listInvoices: { method: "GET"; path: "/api/v1/commerce/invoices"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createInvoice: { method: "POST"; path: "/api/v1/commerce/invoices"; request: B5InvoiceRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listSupportTickets: { method: "GET"; path: "/api/v1/support/tickets"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  createSupportTicket: { method: "POST"; path: "/api/v1/support/tickets"; request: B5SupportTicketRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getSupportTicket: { method: "GET"; path: "/api/v1/support/tickets/{ticketId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  addSupportTicketMessage: { method: "POST"; path: "/api/v1/support/tickets/{ticketId}/messages"; request: B5SupportMessageRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  recordB6E2ERun: { method: "POST"; path: "/api/v1/quality/e2e-runs"; request: B6E2ERunRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB6E2ERun: { method: "GET"; path: "/api/v1/quality/e2e-runs/{runId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  recordB6SecurityScan: { method: "POST"; path: "/api/v1/quality/security-scans"; request: B6SecurityScanRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB6SecurityScan: { method: "GET"; path: "/api/v1/quality/security-scans/{scanId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  recordB6ReliabilityRun: { method: "POST"; path: "/api/v1/quality/reliability-runs"; request: B6ReliabilityRunRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB6ReliabilityRun: { method: "GET"; path: "/api/v1/quality/reliability-runs/{runId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  recordB6DataReliabilityDrill: { method: "POST"; path: "/api/v1/data-reliability/drills"; request: B6DrillRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB6DataReliabilityDrill: { method: "GET"; path: "/api/v1/data-reliability/drills/{drillId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  evaluateB6ReleaseGate: { method: "POST"; path: "/api/v1/release/gates/evaluate"; request: B6ReleaseGateRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getB6ReleaseGate: { method: "GET"; path: "/api/v1/release/gates/{gateId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  getB8Principal: { method: "GET"; path: "/api/v1/iam/principal/me"; request: never; response: ApiSuccessEnvelope & { data: B8PrincipalResponse; }; idempotent: false };
+  listB8Devices: { method: "GET"; path: "/api/v1/iam/devices"; request: never; response: ApiCursorPageEnvelope & { data: { devices: ReadonlyArray<B8Device>; }; }; idempotent: false };
+  kickoutB8Device: { method: "POST"; path: "/api/v1/iam/devices/{deviceId}/kickout"; request: never; response: ApiSuccessEnvelope & { data: B8SessionRevocationResponse; }; idempotent: true };
+  evaluateB8AdultGate: { method: "POST"; path: "/api/v1/iam/adult-gate"; request: B8AdultGateRequest; response: ApiSuccessEnvelope & { data: B8AdultGateResponse; }; idempotent: true };
+  listB8Consents: { method: "GET"; path: "/api/v1/iam/consents"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B8Consent>; }; }; idempotent: false };
+  updateB8Consent: { method: "PUT"; path: "/api/v1/iam/consents"; request: B8ConsentUpdateRequest; response: ApiSuccessEnvelope & { data: B8Consent; }; idempotent: true };
   decideB8Authorization: { method: "POST"; path: "/internal/v1/iam/authorization/decisions"; request: B8AuthorizationDecisionRequest; response: B8AuthorizationDecisionResponse; idempotent: true };
-  getB8Permissions: { method: "GET"; path: "/api/v1/iam/permissions"; request: never; response: B8PermissionsResponse; idempotent: false };
-  listB9PublicContentCatalog: { method: "GET"; path: "/api/v1/public/content/catalog"; request: never; response: B9PublicContentCatalogResponse; idempotent: false };
-  getB9PublicContentProjection: { method: "GET"; path: "/api/v1/public/content/{contentCode}"; request: never; response: B9PublicContentProjectionResponse; idempotent: false };
-  getB9OfficialSiteProjection: { method: "GET"; path: "/api/v1/public/site/projection"; request: never; response: B9PublicSiteProjectionResponse; idempotent: false };
-  listB9LearnerContentCatalog: { method: "GET"; path: "/api/v1/content/learner/catalog"; request: never; response: B9LearnerContentCatalogResponse; idempotent: false };
-  getB9LearnerContentProjection: { method: "GET"; path: "/api/v1/content/learner/{contentCode}"; request: never; response: B9LearnerContentProjectionResponse; idempotent: false };
-  listB9AdminContentStates: { method: "GET"; path: "/api/v1/admin/content-commands"; request: never; response: B9AdminContentStateListResponse; idempotent: false };
-  submitB9ContentCommand: { method: "POST"; path: "/api/v1/admin/content-commands"; request: B9ContentCommandRequest; response: B9ContentCommandAcceptedResponse; idempotent: true };
-  getB9AdminContentState: { method: "GET"; path: "/api/v1/admin/content-commands/{contentCode}"; request: never; response: B9AdminContentStateResponse; idempotent: false };
+  getB8Permissions: { method: "GET"; path: "/api/v1/iam/permissions"; request: never; response: ApiSuccessEnvelope & { data: B8PermissionsResponse; }; idempotent: false };
+  listB9PublicContentCatalog: { method: "GET"; path: "/api/v1/public/content/catalog"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B9PublicContentCard>; }; idempotent: false };
+  getB9PublicContentProjection: { method: "GET"; path: "/api/v1/public/content/{contentCode}"; request: never; response: ApiSuccessEnvelope & { data: B9PublicContentProjection; }; idempotent: false };
+  getB9OfficialSiteProjection: { method: "GET"; path: "/api/v1/public/site/projection"; request: never; response: ApiSuccessEnvelope & { data: B9PublicSiteProjection; }; idempotent: false };
+  listB9LearnerContentCatalog: { method: "GET"; path: "/api/v1/content/learner/catalog"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B9PublicContentCard>; }; idempotent: false };
+  getB9LearnerContentProjection: { method: "GET"; path: "/api/v1/content/learner/{contentCode}"; request: never; response: ApiSuccessEnvelope & { data: B9LearnerContentProjection; }; idempotent: false };
+  listB9AdminContentStates: { method: "GET"; path: "/api/v1/admin/content-commands"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B9AdminContentState>; }; idempotent: false };
+  submitB9ContentCommand: { method: "POST"; path: "/api/v1/admin/content-commands"; request: B9ContentCommandRequest; response: ApiSuccessEnvelope & { data: B9ContentCommandAccepted; }; idempotent: true };
+  getB9AdminContentState: { method: "GET"; path: "/api/v1/admin/content-commands/{contentCode}"; request: never; response: ApiSuccessEnvelope & { data: B9AdminContentState; }; idempotent: false };
   getB9InternalPublicProjection: { method: "GET"; path: "/internal/v1/content/public-projections/{projectionKey}"; request: never; response: B9InternalPublicProjectionResponse; idempotent: false };
   getB9AssessmentContentSnapshot: { method: "GET"; path: "/internal/v1/content/versions/{contentVersionId}/assessment-snapshot"; request: never; response: B9AssessmentContentSnapshotResponse; idempotent: false };
-  getB9LearnerProfile: { method: "GET"; path: "/api/v1/learner/profile"; request: never; response: B9LearnerProfileResponse; idempotent: false };
-  patchB9LearnerProfile: { method: "PATCH"; path: "/api/v1/learner/profile"; request: B9LearnerProfilePatch; response: B9LearnerProfileResponse; idempotent: true };
-  getB9LearnerTarget: { method: "GET"; path: "/api/v1/learner/targets"; request: never; response: B9LearnerTargetResponse; idempotent: false };
-  putB9LearnerTarget: { method: "PUT"; path: "/api/v1/learner/targets"; request: B9LearnerTargetUpsert; response: B9LearnerTargetResponse; idempotent: true };
-  getB9LearnerPreferences: { method: "GET"; path: "/api/v1/learner/preferences"; request: never; response: B9LearnerPreferencesResponse; idempotent: false };
-  patchB9LearnerPreferences: { method: "PATCH"; path: "/api/v1/learner/preferences"; request: B9LearnerPreferencesPatch; response: B9LearnerPreferencesResponse; idempotent: true };
-  getB9FirstDayProjection: { method: "GET"; path: "/api/v1/learner/first-day"; request: never; response: B9FirstDayProjectionResponse; idempotent: false };
-  getB9LearnerHomeProjection: { method: "GET"; path: "/api/v1/learner/home"; request: never; response: B9HomeProjectionResponse; idempotent: false };
+  getB9LearnerProfile: { method: "GET"; path: "/api/v1/learner/profile"; request: never; response: ApiSuccessEnvelope & { data: B9LearnerProfile; }; idempotent: false };
+  patchB9LearnerProfile: { method: "PATCH"; path: "/api/v1/learner/profile"; request: B9LearnerProfilePatch; response: ApiSuccessEnvelope & { data: B9LearnerProfile; }; idempotent: true };
+  getB9LearnerTarget: { method: "GET"; path: "/api/v1/learner/targets"; request: never; response: ApiSuccessEnvelope & { data: B9LearnerTarget; }; idempotent: false };
+  putB9LearnerTarget: { method: "PUT"; path: "/api/v1/learner/targets"; request: B9LearnerTargetUpsert; response: ApiSuccessEnvelope & { data: B9LearnerTarget; }; idempotent: true };
+  getB9LearnerPreferences: { method: "GET"; path: "/api/v1/learner/preferences"; request: never; response: ApiSuccessEnvelope & { data: B9LearnerPreferences; }; idempotent: false };
+  patchB9LearnerPreferences: { method: "PATCH"; path: "/api/v1/learner/preferences"; request: B9LearnerPreferencesPatch; response: ApiSuccessEnvelope & { data: B9LearnerPreferences; }; idempotent: true };
+  getB9FirstDayProjection: { method: "GET"; path: "/api/v1/learner/first-day"; request: never; response: ApiSuccessEnvelope & { data: B9FirstDayProjection; }; idempotent: false };
+  getB9LearnerHomeProjection: { method: "GET"; path: "/api/v1/learner/home"; request: never; response: ApiSuccessEnvelope & { data: B9HomeProjection; }; idempotent: false };
   getB9LegacyLearnerProfileShadow: { method: "GET"; path: "/internal/v1/learner/shadow-profile/{principalId}"; request: never; response: B9LegacyShadowProfileResponse; idempotent: false };
   getB10CompatibilityReadShadow: { method: "GET"; path: "/internal/v1/compatibility/b10/read-shadow"; request: never; response: B10ReadShadowResponse; idempotent: false };
   createB10CompatibilityReconciliation: { method: "POST"; path: "/internal/v1/compatibility/b10/reconciliations"; request: B10ReconciliationRequest; response: B10ReadShadowResponse; idempotent: true };
   createB10CompatibilityRouteDecision: { method: "POST"; path: "/internal/v1/compatibility/b10/route-decisions"; request: B10RouteDecisionRequest; response: B10RouteDecisionResponse; idempotent: true };
   createB10CompatibilityRollback: { method: "POST"; path: "/internal/v1/compatibility/b10/rollbacks"; request: B10RollbackRequest; response: B10RouteDecisionResponse; idempotent: true };
-  getB10LearnerContentSnapshot: { method: "GET"; path: "/api/v1/learning/content-snapshots/{contentVersionId}"; request: never; response: B10LearnerContentSnapshotResponse; idempotent: false };
+  getB10LearnerContentSnapshot: { method: "GET"; path: "/api/v1/learning/content-snapshots/{contentVersionId}"; request: never; response: ApiSuccessEnvelope & { data: B10LearnerContentSnapshot; }; idempotent: false };
   getB10AssessmentContentSnapshot: { method: "GET"; path: "/internal/v1/content/assessment-snapshots/{contentVersionId}"; request: never; response: B10AssessmentContentSnapshotResponse; idempotent: false };
   resolveB10ContentSnapshotRecovery: { method: "GET"; path: "/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery"; request: never; response: B10ContentRecoveryResponse; idempotent: false };
-  submitB10AssessmentAttempt: { method: "POST"; path: "/api/v1/assessment/sessions/{sessionId}/attempts"; request: B10SubmitAttemptRequest; response: B10AttemptResponse; idempotent: true };
-  putB10AssessmentCheckpoint: { method: "PUT"; path: "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint"; request: B10CheckpointRequest; response: B10CheckpointResponse; idempotent: true };
-  getB10AssessmentReport: { method: "GET"; path: "/api/v1/assessment/reports/{reportId}"; request: never; response: B10AssessmentReportResponse; idempotent: false };
-  listB10LearningReviewQueue: { method: "GET"; path: "/api/v1/learning/review-queue"; request: never; response: B10ReviewQueueResponse; idempotent: false };
-  completeB10LearningReview: { method: "POST"; path: "/api/v1/learning/review-queue/{queueItemId}/complete"; request: B10CompleteReviewRequest; response: B10MasteryProjectionResponse; idempotent: true };
-  getB10LearningMasteryProjection: { method: "GET"; path: "/api/v1/learning/mastery/{itemId}"; request: never; response: B10MasteryProjectionResponse; idempotent: false };
-  getB11MediaAsset: { method: "GET"; path: "/api/v1/media/assets/{assetId}"; request: never; response: B11MediaAsset; idempotent: false };
-  getB11MediaManifest: { method: "GET"; path: "/api/v1/media/assets/{assetId}/manifest"; request: never; response: B11MediaManifest; idempotent: false };
-  streamB11MediaContent: { method: "GET"; path: "/api/v1/media/assets/{assetId}/content"; request: never; response: B11MediaContentRange; idempotent: false };
+  submitB10AssessmentAttempt: { method: "POST"; path: "/api/v1/assessment/sessions/{sessionId}/attempts"; request: B10SubmitAttemptRequest; response: ApiSuccessEnvelope & { data: B10Attempt; }; idempotent: true };
+  putB10AssessmentCheckpoint: { method: "PUT"; path: "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint"; request: B10CheckpointRequest; response: ApiSuccessEnvelope & { data: B10Checkpoint; }; idempotent: true };
+  getB10AssessmentReport: { method: "GET"; path: "/api/v1/assessment/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: B10AssessmentReport; }; idempotent: false };
+  listB10LearningReviewQueue: { method: "GET"; path: "/api/v1/learning/review-queue"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B10LearningQueueItem>; }; idempotent: false };
+  completeB10LearningReview: { method: "POST"; path: "/api/v1/learning/review-queue/{queueItemId}/complete"; request: B10CompleteReviewRequest; response: ApiSuccessEnvelope & { data: B10MasteryProjection; }; idempotent: true };
+  getB10LearningMasteryProjection: { method: "GET"; path: "/api/v1/learning/mastery/{itemId}"; request: never; response: ApiSuccessEnvelope & { data: B10MasteryProjection; }; idempotent: false };
+  getB11MediaAsset: { method: "GET"; path: "/api/v1/media/assets/{assetId}"; request: never; response: ApiSuccessEnvelope & { data: B11MediaAsset; }; idempotent: false };
+  getB11MediaManifest: { method: "GET"; path: "/api/v1/media/assets/{assetId}/manifest"; request: never; response: ApiSuccessEnvelope & { data: B11MediaManifest; }; idempotent: false };
+  streamB11MediaContent: { method: "GET"; path: "/api/v1/media/assets/{assetId}/content"; request: never; response: ApiSuccessEnvelope & { data: B11MediaContentRange; }; idempotent: false };
   revokeB11MediaAsset: { method: "POST"; path: "/internal/v1/media/assets/{assetId}/revoke"; request: B11MediaRevocation; response: unknown; idempotent: true };
   getB11MediaCompatibility: { method: "GET"; path: "/internal/v1/compatibility/b11/media-assets/{assetId}"; request: never; response: B11MediaCompatibility; idempotent: false };
   createB11MediaReconciliation: { method: "POST"; path: "/internal/v1/compatibility/b11/media-assets/reconciliations"; request: B11MediaCompatibility; response: unknown; idempotent: true };
   createB11MediaMigration: { method: "POST"; path: "/internal/v1/compatibility/b11/media-assets/{assetId}/migrations"; request: B11MediaMigration; response: unknown; idempotent: true };
-  getB11NotificationPreference: { method: "GET"; path: "/api/v1/settings/notifications"; request: never; response: B11NotificationPreference; idempotent: false };
-  updateB11NotificationPreference: { method: "PUT"; path: "/api/v1/settings/notifications"; request: B11NotificationPreference; response: B11NotificationPreference; idempotent: true };
-  listB11Messages: { method: "GET"; path: "/api/v1/messages"; request: never; response: B11MessagePage; idempotent: false };
+  getB11NotificationPreference: { method: "GET"; path: "/api/v1/settings/notifications"; request: never; response: ApiSuccessEnvelope & { data: B11NotificationPreference; }; idempotent: false };
+  updateB11NotificationPreference: { method: "PUT"; path: "/api/v1/settings/notifications"; request: B11NotificationPreference; response: ApiSuccessEnvelope & { data: B11NotificationPreference; }; idempotent: true };
+  listB11Messages: { method: "GET"; path: "/api/v1/messages"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B11Message>; }; idempotent: false };
   markB11MessageRead: { method: "POST"; path: "/api/v1/messages/{messageId}/read"; request: never; response: unknown; idempotent: true };
-  getB11SyncCursor: { method: "GET"; path: "/api/v1/sync/cursor"; request: never; response: B11VectorClock; idempotent: false };
-  updateB11SyncCursor: { method: "PUT"; path: "/api/v1/sync/cursor"; request: B11VectorClock; response: B11VectorClock; idempotent: true };
-  listB11SyncConflicts: { method: "GET"; path: "/api/v1/sync/conflicts"; request: never; response: B11SyncConflictPage; idempotent: false };
+  getB11SyncCursor: { method: "GET"; path: "/api/v1/sync/cursor"; request: never; response: ApiSuccessEnvelope & { data: B11VectorClock; }; idempotent: false };
+  updateB11SyncCursor: { method: "PUT"; path: "/api/v1/sync/cursor"; request: B11VectorClock; response: ApiSuccessEnvelope & { data: B11VectorClock; }; idempotent: true };
+  listB11SyncConflicts: { method: "GET"; path: "/api/v1/sync/conflicts"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B11SyncConflict>; }; idempotent: false };
   recoverB11SyncConflict: { method: "POST"; path: "/api/v1/sync/conflicts/{conflictId}/recovery"; request: B11SyncRecovery; response: unknown; idempotent: true };
   createB11OfflineCompatibility: { method: "POST"; path: "/internal/v1/compatibility/b11/offline"; request: B11OfflineCompatibility; response: unknown; idempotent: true };
-  createB11Recording: { method: "POST"; path: "/api/v1/multimodal/recordings"; request: B11RecordingMetadata; response: B11RecordingMetadata; idempotent: true };
-  getB12GamificationSummary: { method: "GET"; path: "/api/v1/gamification/me/summary"; request: never; response: B12GrowthSummary; idempotent: false };
-  listB12GamificationLedger: { method: "GET"; path: "/api/v1/gamification/me/ledger"; request: never; response: B12LedgerPage; idempotent: false };
-  listB12RewardGrants: { method: "GET"; path: "/api/v1/gamification/me/rewards"; request: never; response: B12RewardPage; idempotent: false };
-  getB12RewardProbability: { method: "GET"; path: "/api/v1/gamification/me/rewards/{grantId}/probability"; request: never; response: B12RewardProbability; idempotent: false };
-  claimB12Reward: { method: "POST"; path: "/api/v1/gamification/me/rewards/{grantId}/claim"; request: B12RewardClaimRequest; response: B12RewardClaimResult; idempotent: true };
+  createB11Recording: { method: "POST"; path: "/api/v1/multimodal/recordings"; request: B11RecordingMetadata; response: ApiSuccessEnvelope & { data: B11RecordingMetadata; }; idempotent: true };
+  getB12GamificationSummary: { method: "GET"; path: "/api/v1/gamification/me/summary"; request: never; response: ApiSuccessEnvelope & { data: B12GrowthSummary; }; idempotent: false };
+  listB12GamificationLedger: { method: "GET"; path: "/api/v1/gamification/me/ledger"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12LedgerEntry>; }; idempotent: false };
+  listB12RewardGrants: { method: "GET"; path: "/api/v1/gamification/me/rewards"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B12RewardGrant>; }; }; idempotent: false };
+  getB12RewardProbability: { method: "GET"; path: "/api/v1/gamification/me/rewards/{grantId}/probability"; request: never; response: ApiSuccessEnvelope & { data: B12RewardProbability; }; idempotent: false };
+  claimB12Reward: { method: "POST"; path: "/api/v1/gamification/me/rewards/{grantId}/claim"; request: B12RewardClaimRequest; response: ApiSuccessEnvelope & { data: B12RewardClaimResult; }; idempotent: true };
   consumeB12TrustedCompletion: { method: "POST"; path: "/internal/v1/gamification/trusted-events/completions"; request: B12TrustedCompletion; response: B12SettlementResult; idempotent: true };
-  disconnectB12StudyRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/disconnect"; request: B12RoomCommand; response: B12RoomState; idempotent: true };
-  recoverB12StudyRoomSeat: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/recover"; request: B12RoomCommand; response: B12RoomState; idempotent: true };
-  renewB12StudyRoomLease: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/lease/renew"; request: B12RoomCommand; response: B12RoomState; idempotent: true };
-  startB12RoomFocus: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusCommand; response: B12FocusSession; idempotent: true };
-  updateB12RoomFocus: { method: "PATCH"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusUpdateCommand; response: B12FocusSession; idempotent: true };
-  updateB12SocialVisibility: { method: "PATCH"; path: "/api/v1/social/me/visibility"; request: B12VisibilityCommand; response: B12Visibility; idempotent: true };
-  createB12SocialReport: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/reports"; request: B12ReportCommand; response: B12Report; idempotent: true };
-  getB12SocialReport: { method: "GET"; path: "/api/v1/social/reports/{reportId}"; request: never; response: B12Report; idempotent: false };
+  disconnectB12StudyRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/disconnect"; request: B12RoomCommand; response: ApiSuccessEnvelope & { data: B12RoomState; }; idempotent: true };
+  recoverB12StudyRoomSeat: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/recover"; request: B12RoomCommand; response: ApiSuccessEnvelope & { data: B12RoomState; }; idempotent: true };
+  renewB12StudyRoomLease: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/lease/renew"; request: B12RoomCommand; response: ApiSuccessEnvelope & { data: B12RoomState; }; idempotent: true };
+  startB12RoomFocus: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusCommand; response: ApiSuccessEnvelope & { data: B12FocusSession; }; idempotent: true };
+  updateB12RoomFocus: { method: "PATCH"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusUpdateCommand; response: ApiSuccessEnvelope & { data: B12FocusSession; }; idempotent: true };
+  updateB12SocialVisibility: { method: "PATCH"; path: "/api/v1/social/me/visibility"; request: B12VisibilityCommand; response: ApiSuccessEnvelope & { data: B12Visibility; }; idempotent: true };
+  createB12SocialReport: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/reports"; request: B12ReportCommand; response: ApiSuccessEnvelope & { data: B12Report; }; idempotent: true };
+  getB12SocialReport: { method: "GET"; path: "/api/v1/social/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: B12Report; }; idempotent: false };
   consumeB12SocialTrustedEvent: { method: "POST"; path: "/internal/v1/social/trusted-events"; request: B12TrustedSocialEvent; response: B12EventReceipt; idempotent: true };
   consumeB12NotificationTrustedEvent: { method: "POST"; path: "/internal/v1/notifications/trusted-events"; request: B12NotificationTrustedEvent; response: B12EventReceipt; idempotent: true };
   dispatchB12NotificationRetry: { method: "POST"; path: "/internal/v1/notifications/retry"; request: B12RetryCommand; response: B12RetryResult; idempotent: true };
   recoverB12NotificationTask: { method: "POST"; path: "/internal/v1/notifications/recovery"; request: B12RecoveryCommand; response: B12RecoveryResult; idempotent: true };
-  listB12ModerationReports: { method: "GET"; path: "/api/v1/admin/moderation/reports"; request: never; response: B12ReportPage; idempotent: false };
-  executeB12ModerationCommand: { method: "POST"; path: "/api/v1/admin/moderation/reports/{reportId}/commands"; request: B12ModerationCommand; response: B12Report; idempotent: true };
-  listB12RecoveryTasks: { method: "GET"; path: "/api/v1/admin/recovery/tasks"; request: never; response: B12RecoveryPage; idempotent: false };
-  executeB12RecoveryCommand: { method: "POST"; path: "/api/v1/admin/recovery/tasks/{taskId}/commands"; request: B12RecoveryCommand; response: B12RecoveryResult; idempotent: true };
-  listB12NotificationPreferences: { method: "GET"; path: "/api/v1/notifications/preferences"; request: never; response: ReadonlyArray<B12NotificationPreference>; idempotent: false };
-  updateB12NotificationPreference: { method: "PUT"; path: "/api/v1/notifications/preferences/{notificationType}/{channel}"; request: B12NotificationPreferenceCommand; response: B12NotificationPreference; idempotent: true };
-  listB12Notifications: { method: "GET"; path: "/api/v1/notifications/messages"; request: never; response: ReadonlyArray<B12NotificationMessage>; idempotent: false };
-  getB13PublicCommerceCatalog: { method: "GET"; path: "/api/v1/public/commerce/catalog"; request: never; response: B13PublicCatalog; idempotent: false };
-  getB13CommerceReadiness: { method: "GET"; path: "/api/v1/commerce/readiness"; request: never; response: B13PaymentReadiness; idempotent: false };
-  prepareB13PaymentIntent: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-intents"; request: B13PaymentIntentRequest; response: B13PaymentIntentResult; idempotent: true };
+  listB12ModerationReports: { method: "GET"; path: "/api/v1/admin/moderation/reports"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B12Report>; }; }; idempotent: false };
+  executeB12ModerationCommand: { method: "POST"; path: "/api/v1/admin/moderation/reports/{reportId}/commands"; request: B12ModerationCommand; response: ApiSuccessEnvelope & { data: B12Report; }; idempotent: true };
+  listB12RecoveryTasks: { method: "GET"; path: "/api/v1/admin/recovery/tasks"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B12RecoveryResult>; }; }; idempotent: false };
+  executeB12RecoveryCommand: { method: "POST"; path: "/api/v1/admin/recovery/tasks/{taskId}/commands"; request: B12RecoveryCommand; response: ApiSuccessEnvelope & { data: B12RecoveryResult; }; idempotent: true };
+  listB12NotificationPreferences: { method: "GET"; path: "/api/v1/notifications/preferences"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12NotificationPreference>; }; idempotent: false };
+  updateB12NotificationPreference: { method: "PUT"; path: "/api/v1/notifications/preferences/{notificationType}/{channel}"; request: B12NotificationPreferenceCommand; response: ApiSuccessEnvelope & { data: B12NotificationPreference; }; idempotent: true };
+  listB12Notifications: { method: "GET"; path: "/api/v1/notifications/messages"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12NotificationMessage>; }; idempotent: false };
+  getB13PublicCommerceCatalog: { method: "GET"; path: "/api/v1/public/commerce/catalog"; request: never; response: ApiSuccessEnvelope & { data: B13PublicCatalog; }; idempotent: false };
+  getB13CommerceReadiness: { method: "GET"; path: "/api/v1/commerce/readiness"; request: never; response: ApiSuccessEnvelope & { data: B13PaymentReadiness; }; idempotent: false };
+  prepareB13PaymentIntent: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-intents"; request: B13PaymentIntentRequest; response: ApiSuccessEnvelope & { data: B13PaymentIntentResult; }; idempotent: true };
   consumeB13PaymentProviderCallback: { method: "POST"; path: "/internal/v1/commerce/providers/{provider}/callbacks"; request: B13ProviderCallback; response: B13CallbackResult; idempotent: true };
   replayB13CommerceReconciliation: { method: "POST"; path: "/internal/v1/commerce/reconciliation/replay"; request: B13ReconciliationRequest; response: B13ReconciliationResult; idempotent: true };
-  listB13AdminCommerceOrders: { method: "GET"; path: "/api/v1/admin/ops/commerce/orders"; request: never; response: B13AdminOrderPage; idempotent: false };
-  listB13SupportTickets: { method: "GET"; path: "/api/v1/admin/ops/tickets"; request: never; response: B13SupportTicketPage; idempotent: false };
-  createB13SupportTicket: { method: "POST"; path: "/api/v1/admin/ops/tickets"; request: B13SupportTicketCreateRequest; response: B13SupportTicket; idempotent: true };
-  submitB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands"; request: B13AdminCommandRequest; response: B13AdminCommandResult; idempotent: true };
-  listB13AdminMetrics: { method: "GET"; path: "/api/v1/admin/ops/metrics"; request: never; response: ReadonlyArray<B13MetricProjection>; idempotent: false };
+  listB13AdminCommerceOrders: { method: "GET"; path: "/api/v1/admin/ops/commerce/orders"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13AdminOrderView>; }; idempotent: false };
+  listB13SupportTickets: { method: "GET"; path: "/api/v1/admin/ops/tickets"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13SupportTicket>; }; idempotent: false };
+  createB13SupportTicket: { method: "POST"; path: "/api/v1/admin/ops/tickets"; request: B13SupportTicketCreateRequest; response: ApiSuccessEnvelope & { data: B13SupportTicket; }; idempotent: true };
+  submitB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands"; request: B13AdminCommandRequest; response: ApiSuccessEnvelope & { data: B13AdminCommandResult; }; idempotent: true };
+  listB13AdminMetrics: { method: "GET"; path: "/api/v1/admin/ops/metrics"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13MetricProjection>; }; idempotent: false };
   ingestB13AnalyticsEvent: { method: "POST"; path: "/internal/v1/analytics/events"; request: B13AnalyticsEvent; response: B13AnalyticsReceipt; idempotent: true };
   requestB13AnalyticsRecompute: { method: "POST"; path: "/internal/v1/analytics/recompute"; request: B13RecomputeRequest; response: B13RecomputeJob; idempotent: true };
   b25ReadLearnerProfile: { method: "GET"; path: "/internal/v1/learner/profile"; request: never; response: unknown; idempotent: false };
@@ -2779,19 +2804,19 @@ export interface ApiOperationRegistry {
   b25ReadNotificationPreferences: { method: "GET"; path: "/internal/v1/notifications/preferences"; request: never; response: unknown; idempotent: false };
   b25UpdateNotificationPreference: { method: "PUT"; path: "/internal/v1/notifications/preferences/{notificationType}/{channel}"; request: never; response: unknown; idempotent: true };
   b25EnsureDailyTask: { method: "POST"; path: "/internal/v1/learner/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: unknown; idempotent: true };
-  markB12NotificationMessageRead: { method: "PUT"; path: "/api/v1/notifications/messages/{messageId}/read"; request: never; response: { messageId: string; updated: boolean; source: "mysql"; }; idempotent: true };
-  markAllB12NotificationMessagesRead: { method: "PUT"; path: "/api/v1/notifications/messages/read-all"; request: never; response: { messageId: "all"; updated: boolean; source: "mysql"; }; idempotent: true };
-  createB11MediaAccess: { method: "POST"; path: "/api/v1/media/assets/{assetId}/signed-url"; request: B11MediaAccessRequest; response: B11SignedMediaUrl; idempotent: true };
-  getB4Season: { method: "GET"; path: "/api/v1/gamification/season"; request: never; response: unknown; idempotent: false };
-  prepareB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands/prepare"; request: B13AdminCommandRequest; response: B13CommandPreparation; idempotent: true };
-  listB13AdminAudit: { method: "GET"; path: "/api/v1/admin/ops/audit"; request: never; response: B13AuditPage; idempotent: false };
-  updateB11MediaProgress: { method: "PUT"; path: "/api/v1/learning/media-progress"; request: B11MediaProgressRequest; response: B11MediaProgressReceipt; idempotent: true };
-  updateB11ShadowingCompletion: { method: "POST"; path: "/api/v1/speaking/shadowing/completions"; request: B11ShadowingCompletionRequest; response: B11ShadowingCompletionReceipt; idempotent: true };
-  b25EnsureDailyTaskPublic: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: unknown; idempotent: true };
-  loginB8Account: { method: "POST"; path: "/api/v1/auth/login"; request: B8LoginRequest; response: unknown; idempotent: true };
-  refreshB8JwtSession: { method: "POST"; path: "/api/v1/auth/token/refresh"; request: B8RefreshRequest; response: unknown; idempotent: true };
-  getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; request: never; response: unknown; idempotent: false };
-  requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; request: B8PasswordResetRequest; response: unknown; idempotent: true };
+  markB12NotificationMessageRead: { method: "PUT"; path: "/api/v1/notifications/messages/{messageId}/read"; request: never; response: ApiSuccessEnvelope & { data: { messageId: string; updated: boolean; source: "mysql"; }; }; idempotent: true };
+  markAllB12NotificationMessagesRead: { method: "PUT"; path: "/api/v1/notifications/messages/read-all"; request: never; response: ApiSuccessEnvelope & { data: { messageId: "all"; updated: boolean; source: "mysql"; }; }; idempotent: true };
+  createB11MediaAccess: { method: "POST"; path: "/api/v1/media/assets/{assetId}/signed-url"; request: B11MediaAccessRequest; response: ApiSuccessEnvelope & { data: B11SignedMediaUrl; }; idempotent: true };
+  getB4Season: { method: "GET"; path: "/api/v1/gamification/season"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
+  prepareB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands/prepare"; request: B13AdminCommandRequest; response: ApiSuccessEnvelope & { data: B13CommandPreparation; }; idempotent: true };
+  listB13AdminAudit: { method: "GET"; path: "/api/v1/admin/ops/audit"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B13AuditRecord>; redacted: true; }; }; idempotent: false };
+  updateB11MediaProgress: { method: "PUT"; path: "/api/v1/learning/media-progress"; request: B11MediaProgressRequest; response: ApiSuccessEnvelope & { data: B11MediaProgressReceipt; }; idempotent: true };
+  updateB11ShadowingCompletion: { method: "POST"; path: "/api/v1/speaking/shadowing/completions"; request: B11ShadowingCompletionRequest; response: ApiSuccessEnvelope & { data: B11ShadowingCompletionReceipt; }; idempotent: true };
+  b25EnsureDailyTaskPublic: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: ApiSuccessEnvelope & { data: unknown; }; idempotent: true };
+  loginB8Account: { method: "POST"; path: "/api/v1/auth/login"; request: B8LoginRequest; response: ApiSuccessEnvelope & { data: B8AuthTokenResponse; }; idempotent: true };
+  refreshB8JwtSession: { method: "POST"; path: "/api/v1/auth/token/refresh"; request: B8RefreshRequest; response: ApiSuccessEnvelope & { data: B8AuthTokenResponse; }; idempotent: true };
+  getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; request: never; response: ApiSuccessEnvelope & { data: B8JwksResponse; }; idempotent: false };
+  requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; request: B8PasswordResetRequest; response: ApiSuccessEnvelope & { data: { accepted: true; }; }; idempotent: true };
   confirmB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/confirm"; request: B8PasswordResetConfirmRequest; response: unknown; idempotent: true };
 }
 

@@ -32,6 +32,218 @@ export const jsonSchemaRegistry = {
       }
     }
   },
+  "platform.api.envelope.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/api-envelope.v1.schema.json",
+    "title": "Canonical public API envelope",
+    "description": "P1R-M1-001 canonical public API success, cursor-page and error envelope used by every active /api/v1 operation. Domain schemas are nested only as operation-specific data payloads.",
+    "type": "object",
+    "anyOf": [
+      {
+        "$ref": "#/$defs/successEnvelope"
+      },
+      {
+        "$ref": "#/$defs/cursorPageEnvelope"
+      },
+      {
+        "$ref": "#/$defs/errorEnvelope"
+      }
+    ],
+    "$defs": {
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._-]{7,127}$",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$",
+        "minLength": 32,
+        "maxLength": 32
+      },
+      "meta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requestId",
+          "traceId",
+          "apiVersion",
+          "schemaVersion",
+          "serverTime"
+        ],
+        "properties": {
+          "requestId": {
+            "$ref": "#/$defs/requestId"
+          },
+          "traceId": {
+            "$ref": "#/$defs/traceId"
+          },
+          "apiVersion": {
+            "const": "v1"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "cursorPageMeta": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requestId",
+          "traceId",
+          "apiVersion",
+          "schemaVersion",
+          "serverTime",
+          "hasMore",
+          "pageSize"
+        ],
+        "properties": {
+          "requestId": {
+            "$ref": "#/$defs/requestId"
+          },
+          "traceId": {
+            "$ref": "#/$defs/traceId"
+          },
+          "apiVersion": {
+            "const": "v1"
+          },
+          "schemaVersion": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 8,
+            "maxLength": 512
+          },
+          "snapshotAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "pageSize": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      },
+      "error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "errorCode",
+          "message",
+          "retryable"
+        ],
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "enum": [
+              "VALIDATION_ERROR",
+              "AUTH_REQUIRED",
+              "AUTH_INVALID_REFRESH_TOKEN",
+              "AUTH_REFRESH_TOKEN_EXPIRED",
+              "AUTH_REFRESH_TOKEN_REVOKED",
+              "AUTH_REFRESH_REUSE_DETECTED",
+              "AUTH_DEVICE_MISMATCH",
+              "AUTH_IDENTITY_BOUND_OTHER",
+              "FORBIDDEN",
+              "NOT_FOUND",
+              "CONFLICT",
+              "IDEMPOTENCY_REQUIRED",
+              "IDEMPOTENCY_CONFLICT",
+              "IDEMPOTENCY_KEY_REUSED",
+              "VERSION_CONFLICT",
+              "CONTENT_NOT_PUBLISHED",
+              "SYNC_CONFLICT",
+              "EVENT_EXPIRED",
+              "RATE_LIMITED",
+              "FEATURE_DISABLED",
+              "SERVICE_UNAVAILABLE",
+              "INTERNAL_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "details": {
+            "type": "object",
+            "description": "Only safe, structured client-action data. It never contains credentials, raw answers, raw media, payment callbacks or protected identity data.",
+            "additionalProperties": true
+          }
+        }
+      },
+      "successEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {},
+          "meta": {
+            "$ref": "#/$defs/meta"
+          }
+        }
+      },
+      "cursorPageEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {},
+          "meta": {
+            "$ref": "#/$defs/cursorPageMeta"
+          }
+        }
+      },
+      "errorEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "error": {
+            "$ref": "#/$defs/error"
+          },
+          "meta": {
+            "$ref": "#/$defs/meta"
+          }
+        }
+      }
+    }
+  },
   "iam.auth.event-envelope.v1": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://contracts.englishflow.local/iam/auth-event-envelope.v1.schema.json",

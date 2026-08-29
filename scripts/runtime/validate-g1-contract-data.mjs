@@ -183,8 +183,23 @@ function validateJsonSchemas(registry, sourceConfig, errors) {
   const entries = Object.entries(registry.schemas)
   requireCondition(entries.length === sourceConfig?.expectedSchemaCount, `JSON Schema count mismatch: expected ${sourceConfig?.expectedSchemaCount}, got ${entries.length}`, errors)
   for (const [name, schema] of entries) {
-    requireCondition(schema?.type === 'object' && schema?.additionalProperties === false, `${name} must be a closed object schema`, errors)
-    requireArray(schema?.required, `${name}.required`, errors)
+    requireCondition(schema?.type === 'object', `${name} must be an object schema`, errors)
+    const alternatives = schema?.oneOf ?? schema?.anyOf
+    if (Array.isArray(alternatives)) {
+      requireArray(alternatives, `${name}.oneOf/anyOf`, errors)
+      for (const [index, alternative] of alternatives.entries()) {
+        const reference = alternative?.$ref
+        const definitionName = typeof reference === 'string' && reference.startsWith('#/$defs/') ? reference.slice('#/$defs/'.length) : ''
+        const definition = definitionName ? schema?.$defs?.[definitionName] : null
+        requireCondition(isRecord(definition), `${name}.oneOf/anyOf[${index}] must reference a local $defs schema`, errors)
+        if (!isRecord(definition)) continue
+        requireCondition(definition.type === 'object' && definition.additionalProperties === false, `${name}.$defs.${definitionName} must be a closed object schema`, errors)
+        requireArray(definition.required, `${name}.$defs.${definitionName}.required`, errors)
+      }
+    } else {
+      requireCondition(schema?.additionalProperties === false, `${name} must be a closed object schema`, errors)
+      requireArray(schema?.required, `${name}.required`, errors)
+    }
     requireString(schema?.['$id'], `${name}.$id`, errors)
   }
   const generated = readText(sourceConfig?.generatedPaths?.[0], 'generated JSON Schemas', errors)

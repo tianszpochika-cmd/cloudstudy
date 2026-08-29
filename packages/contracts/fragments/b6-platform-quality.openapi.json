@@ -6,69 +6,1222 @@
     "description": "B6 cross-platform build, responsive/accessibility evidence, quality runs, observability, data recovery and release gate contracts. Device execution and real store publication remain test-stage activities."
   },
   "tags": [
-    { "name": "b6-platform", "description": "跨端构建、设备矩阵、响应式、无障碍和性能预算" },
-    { "name": "b6-quality", "description": "端到端、安全和可靠性质量运行记录" },
-    { "name": "b6-observability", "description": "业务指标、告警和 requestId 关联看板" },
-    { "name": "b6-data-reliability", "description": "备份、恢复、回滚和 RTO/RPO 演练记录" },
-    { "name": "b6-release", "description": "发布候选和上线 Gate 评估" }
+    {
+      "name": "b6-platform",
+      "description": "跨端构建、设备矩阵、响应式、无障碍和性能预算"
+    },
+    {
+      "name": "b6-quality",
+      "description": "端到端、安全和可靠性质量运行记录"
+    },
+    {
+      "name": "b6-observability",
+      "description": "业务指标、告警和 requestId 关联看板"
+    },
+    {
+      "name": "b6-data-reliability",
+      "description": "备份、恢复、回滚和 RTO/RPO 演练记录"
+    },
+    {
+      "name": "b6-release",
+      "description": "发布候选和上线 Gate 评估"
+    }
   ],
   "paths": {
     "/api/v1/quality/e2e-runs": {
-      "post": { "operationId": "recordB6E2ERun", "tags": ["b6-quality"], "x-idempotency": { "required": true, "strategy": "b6-e2e-run-record", "keyHeader": "Idempotency-Key", "replayBehavior": "同一场景、平台和源码修订只保留一个可审计运行结果" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6E2ERunRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" } } }
+      "post": {
+        "operationId": "recordB6E2ERun",
+        "tags": [
+          "b6-quality"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b6-e2e-run-record",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一场景、平台和源码修订只保留一个可审计运行结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B6E2ERunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/quality/e2e-runs/{runId}": {
-      "get": { "operationId": "getB6E2ERun", "tags": ["b6-quality"], "parameters": [{ "$ref": "#/components/parameters/B6RunId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
+      "get": {
+        "operationId": "getB6E2ERun",
+        "tags": [
+          "b6-quality"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6RunId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/quality/security-scans": {
-      "post": { "operationId": "recordB6SecurityScan", "tags": ["b6-quality"], "x-idempotency": { "required": true, "strategy": "b6-security-scan-record", "keyHeader": "Idempotency-Key", "replayBehavior": "同一源码修订和扫描规则版本只记录一个安全扫描结论" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6SecurityScanRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" } } }
+      "post": {
+        "operationId": "recordB6SecurityScan",
+        "tags": [
+          "b6-quality"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b6-security-scan-record",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一源码修订和扫描规则版本只记录一个安全扫描结论"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B6SecurityScanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/quality/security-scans/{scanId}": {
-      "get": { "operationId": "getB6SecurityScan", "tags": ["b6-quality"], "parameters": [{ "$ref": "#/components/parameters/B6ScanId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
+      "get": {
+        "operationId": "getB6SecurityScan",
+        "tags": [
+          "b6-quality"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6ScanId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/quality/reliability-runs": {
-      "post": { "operationId": "recordB6ReliabilityRun", "tags": ["b6-quality"], "x-idempotency": { "required": true, "strategy": "b6-reliability-run-record", "keyHeader": "Idempotency-Key", "replayBehavior": "同一可靠性场景和源码修订只记录一个可回放结果" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6ReliabilityRunRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" } } }
+      "post": {
+        "operationId": "recordB6ReliabilityRun",
+        "tags": [
+          "b6-quality"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b6-reliability-run-record",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一可靠性场景和源码修订只记录一个可回放结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B6ReliabilityRunRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/quality/reliability-runs/{runId}": {
-      "get": { "operationId": "getB6ReliabilityRun", "tags": ["b6-quality"], "parameters": [{ "$ref": "#/components/parameters/B6RunId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
+      "get": {
+        "operationId": "getB6ReliabilityRun",
+        "tags": [
+          "b6-quality"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6RunId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/data-reliability/drills": {
-      "post": { "operationId": "recordB6DataReliabilityDrill", "tags": ["b6-data-reliability"], "x-idempotency": { "required": true, "strategy": "b6-data-reliability-drill", "keyHeader": "Idempotency-Key", "replayBehavior": "同一备份恢复场景和源码修订只登记一次演练结果" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6DrillRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" } } }
+      "post": {
+        "operationId": "recordB6DataReliabilityDrill",
+        "tags": [
+          "b6-data-reliability"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b6-data-reliability-drill",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一备份恢复场景和源码修订只登记一次演练结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B6DrillRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/data-reliability/drills/{drillId}": {
-      "get": { "operationId": "getB6DataReliabilityDrill", "tags": ["b6-data-reliability"], "parameters": [{ "$ref": "#/components/parameters/B6DrillId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
+      "get": {
+        "operationId": "getB6DataReliabilityDrill",
+        "tags": [
+          "b6-data-reliability"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6DrillId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/release/gates/evaluate": {
-      "post": { "operationId": "evaluateB6ReleaseGate", "tags": ["b6-release"], "x-idempotency": { "required": true, "strategy": "b6-release-gate-evaluate", "keyHeader": "Idempotency-Key", "replayBehavior": "同一发布版本和候选构建集合只生成一个可审计 Gate 结论" }, "parameters": [{ "$ref": "#/components/parameters/B6IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6ReleaseGateRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B6GenericResponse" }, "409": { "$ref": "#/components/responses/B6Conflict" } } }
+      "post": {
+        "operationId": "evaluateB6ReleaseGate",
+        "tags": [
+          "b6-release"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b6-release-gate-evaluate",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一发布版本和候选构建集合只生成一个可审计 Gate 结论"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B6ReleaseGateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/release/gates/{gateId}": {
-      "get": { "operationId": "getB6ReleaseGate", "tags": ["b6-release"], "parameters": [{ "$ref": "#/components/parameters/B6GateId" }], "responses": { "200": { "$ref": "#/components/responses/B6GenericResponse" }, "404": { "$ref": "#/components/responses/B6NotFound" } } }
+      "get": {
+        "operationId": "getB6ReleaseGate",
+        "tags": [
+          "b6-release"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B6GateId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B6 structured response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     }
   },
   "components": {
     "parameters": {
-      "B6IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } },
-      "B6BuildId": { "name": "buildId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^b6-build-[a-z0-9-]+$" } },
-      "B6RunId": { "name": "runId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^b6-[a-z0-9-]+-[a-z0-9-]+$" } },
-      "B6ScanId": { "name": "scanId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^b6-security-[a-z0-9-]+$" } },
-      "B6DrillId": { "name": "drillId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^b6-drill-[a-z0-9-]+$" } },
-      "B6GateId": { "name": "gateId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^b6-gate-[a-z0-9-]+$" } }
+      "B6IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "B6BuildId": {
+        "name": "buildId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^b6-build-[a-z0-9-]+$"
+        }
+      },
+      "B6RunId": {
+        "name": "runId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^b6-[a-z0-9-]+-[a-z0-9-]+$"
+        }
+      },
+      "B6ScanId": {
+        "name": "scanId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^b6-security-[a-z0-9-]+$"
+        }
+      },
+      "B6DrillId": {
+        "name": "drillId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^b6-drill-[a-z0-9-]+$"
+        }
+      },
+      "B6GateId": {
+        "name": "gateId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^b6-gate-[a-z0-9-]+$"
+        }
+      }
     },
     "responses": {
-      "B6GenericResponse": { "description": "B6 structured response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6Envelope" } } } },
-      "B6NotFound": { "description": "Resource not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6ErrorEnvelope" } } } },
-      "B6Conflict": { "description": "State or idempotency conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B6ErrorEnvelope" } } } }
+      "B6GenericResponse": {
+        "description": "B6 structured response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B6Envelope"
+            }
+          }
+        }
+      },
+      "B6NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B6ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B6Conflict": {
+        "description": "State or idempotency conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B6ErrorEnvelope"
+            }
+          }
+        }
+      }
     },
     "schemas": {
-      "B6Envelope": { "type": "object", "required": ["requestId", "data"], "properties": { "requestId": { "type": "string" }, "data": { "type": "object", "additionalProperties": true } } },
-      "B6ErrorEnvelope": { "type": "object", "required": ["requestId", "error"], "properties": { "requestId": { "type": "string" }, "error": { "$ref": "#/components/schemas/B6Error" } } },
-      "B6Error": { "type": "object", "required": ["code", "message", "retryable"], "properties": { "code": { "type": "string" }, "message": { "type": "string" }, "retryable": { "type": "boolean" } } },
-      "B6BuildRequest": { "type": "object", "required": ["platformCode", "buildVersion", "sourceRevision", "artifactRef", "artifactSha256", "artifactSizeBytes", "status"], "properties": { "platformCode": { "type": "string", "enum": ["WEB", "H5", "ANDROID", "IOS", "IPAD", "WECHAT_MINI_PROGRAM", "WINDOWS_PWA"] }, "buildVersion": { "type": "string", "maxLength": 32 }, "sourceRevision": { "type": "string", "maxLength": 64 }, "artifactRef": { "type": "string", "maxLength": 255 }, "artifactSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "artifactSizeBytes": { "type": "integer", "minimum": 1 }, "status": { "type": "string", "enum": ["PENDING", "READY", "FAILED"] }, "capabilities": { "type": "array", "items": { "type": "string", "maxLength": 64 }, "maxItems": 24 } } },
-      "B6CompatibilityCheckRequest": { "type": "object", "required": ["buildId", "platformCode", "viewportCode", "orientation", "overflowCount", "keyboardReachable", "touchTargetFailures", "resultCode", "evidenceRef"], "properties": { "buildId": { "type": "string" }, "platformCode": { "type": "string" }, "viewportCode": { "type": "string", "maxLength": 32 }, "orientation": { "type": "string", "enum": ["PORTRAIT", "LANDSCAPE", "BOTH"] }, "overflowCount": { "type": "integer", "minimum": 0 }, "keyboardReachable": { "type": "boolean" }, "touchTargetFailures": { "type": "integer", "minimum": 0 }, "resultCode": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED"] }, "evidenceRef": { "type": "string", "maxLength": 255 } } },
-      "B6E2ERunRequest": { "type": "object", "required": ["scenarioCode", "surface", "platformCode", "sourceRevision", "status", "passedCount", "failedCount", "evidenceRef"], "properties": { "scenarioCode": { "type": "string", "maxLength": 80 }, "surface": { "type": "string", "enum": ["ONBOARDING", "LEARNING_LOOP", "CONTENT_VISIBILITY", "COMMERCE" ] }, "platformCode": { "type": "string" }, "sourceRevision": { "type": "string", "maxLength": 64 }, "status": { "type": "string", "enum": ["PASSED", "FAILED", "SKIPPED"] }, "passedCount": { "type": "integer", "minimum": 0 }, "failedCount": { "type": "integer", "minimum": 0 }, "evidenceRef": { "type": "string", "maxLength": 255 } } },
-      "B6SecurityScanRequest": { "type": "object", "required": ["scanType", "sourceRevision", "ruleVersion", "status", "criticalCount", "highCount", "mediumCount", "sensitiveFindingCount", "reportRef"], "properties": { "scanType": { "type": "string", "enum": ["AUTHORIZATION", "DEPENDENCY", "SECRET", "PRIVACY", "CONTRACT" ] }, "sourceRevision": { "type": "string", "maxLength": 64 }, "ruleVersion": { "type": "string", "maxLength": 64 }, "status": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED"] }, "criticalCount": { "type": "integer", "minimum": 0 }, "highCount": { "type": "integer", "minimum": 0 }, "mediumCount": { "type": "integer", "minimum": 0 }, "sensitiveFindingCount": { "type": "integer", "minimum": 0 }, "reportRef": { "type": "string", "maxLength": 255 } } },
-      "B6ReliabilityRunRequest": { "type": "object", "required": ["runType", "sourceRevision", "status", "duplicateWriteCount", "lostWriteCount", "retrySuccessRate", "p95LatencyMs", "reportRef"], "properties": { "runType": { "type": "string", "enum": ["LOAD", "CHAOS", "WEAK_NETWORK", "IDEMPOTENCY" ] }, "sourceRevision": { "type": "string", "maxLength": 64 }, "status": { "type": "string", "enum": ["PASS", "FAIL", "BLOCKED"] }, "duplicateWriteCount": { "type": "integer", "minimum": 0 }, "lostWriteCount": { "type": "integer", "minimum": 0 }, "retrySuccessRate": { "type": "number", "minimum": 0, "maximum": 1 }, "p95LatencyMs": { "type": "integer", "minimum": 0 }, "reportRef": { "type": "string", "maxLength": 255 } } },
-      "B6DrillRequest": { "type": "object", "required": ["drillType", "sourceRevision", "status", "rtoSeconds", "rpoSeconds", "restoredResourceCount", "failedResourceCount", "backupRef", "rollbackRef"], "properties": { "drillType": { "type": "string", "enum": ["MIGRATION_ROLLBACK", "MYSQL_RESTORE", "REDIS_REBUILD", "OBJECT_STORAGE_RESTORE" ] }, "sourceRevision": { "type": "string", "maxLength": 64 }, "status": { "type": "string", "enum": ["PASSED", "FAILED", "BLOCKED"] }, "rtoSeconds": { "type": "integer", "minimum": 0 }, "rpoSeconds": { "type": "integer", "minimum": 0 }, "restoredResourceCount": { "type": "integer", "minimum": 0 }, "failedResourceCount": { "type": "integer", "minimum": 0 }, "backupRef": { "type": "string", "maxLength": 255 }, "rollbackRef": { "type": "string", "maxLength": 255 } } },
-      "B6ReleaseGateRequest": { "type": "object", "required": ["releaseVersion", "candidateBuildIds", "requiredChecks", "privacyStatus", "copyrightStatus", "merchantStatus", "platformReviewStatus", "rollbackPlanRef"], "properties": { "releaseVersion": { "type": "string", "maxLength": 32 }, "candidateBuildIds": { "type": "array", "minItems": 1, "items": { "type": "string" } }, "requiredChecks": { "type": "array", "minItems": 1, "items": { "type": "string", "enum": ["COMPATIBILITY", "E2E", "SECURITY", "RELIABILITY", "BACKUP" ] } }, "privacyStatus": { "type": "string", "enum": ["PASS", "FAIL", "PENDING"] }, "copyrightStatus": { "type": "string", "enum": ["PASS", "FAIL", "PENDING"] }, "merchantStatus": { "type": "string", "enum": ["PASS", "FAIL", "PENDING"] }, "platformReviewStatus": { "type": "string", "enum": ["PASS", "FAIL", "PENDING", "NOT_REQUIRED"] }, "rollbackPlanRef": { "type": "string", "minLength": 8, "maxLength": 255 } } }
+      "B6Envelope": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "B6ErrorEnvelope": {
+        "x-superseded-by": "#/components/schemas/ApiErrorEnvelope",
+        "description": "Compatibility error shape for existing platform-quality operations. New or migrated operations use ApiErrorEnvelope.",
+        "type": "object",
+        "required": [
+          "requestId",
+          "error"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/components/schemas/B6Error"
+          }
+        }
+      },
+      "B6Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B6BuildRequest": {
+        "type": "object",
+        "required": [
+          "platformCode",
+          "buildVersion",
+          "sourceRevision",
+          "artifactRef",
+          "artifactSha256",
+          "artifactSizeBytes",
+          "status"
+        ],
+        "properties": {
+          "platformCode": {
+            "type": "string",
+            "enum": [
+              "WEB",
+              "H5",
+              "ANDROID",
+              "IOS",
+              "IPAD",
+              "WECHAT_MINI_PROGRAM",
+              "WINDOWS_PWA"
+            ]
+          },
+          "buildVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "sourceRevision": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "artifactRef": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "artifactSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "artifactSizeBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "READY",
+              "FAILED"
+            ]
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 24
+          }
+        }
+      },
+      "B6CompatibilityCheckRequest": {
+        "type": "object",
+        "required": [
+          "buildId",
+          "platformCode",
+          "viewportCode",
+          "orientation",
+          "overflowCount",
+          "keyboardReachable",
+          "touchTargetFailures",
+          "resultCode",
+          "evidenceRef"
+        ],
+        "properties": {
+          "buildId": {
+            "type": "string"
+          },
+          "platformCode": {
+            "type": "string"
+          },
+          "viewportCode": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "orientation": {
+            "type": "string",
+            "enum": [
+              "PORTRAIT",
+              "LANDSCAPE",
+              "BOTH"
+            ]
+          },
+          "overflowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "keyboardReachable": {
+            "type": "boolean"
+          },
+          "touchTargetFailures": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resultCode": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED"
+            ]
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "B6E2ERunRequest": {
+        "type": "object",
+        "required": [
+          "scenarioCode",
+          "surface",
+          "platformCode",
+          "sourceRevision",
+          "status",
+          "passedCount",
+          "failedCount",
+          "evidenceRef"
+        ],
+        "properties": {
+          "scenarioCode": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "surface": {
+            "type": "string",
+            "enum": [
+              "ONBOARDING",
+              "LEARNING_LOOP",
+              "CONTENT_VISIBILITY",
+              "COMMERCE"
+            ]
+          },
+          "platformCode": {
+            "type": "string"
+          },
+          "sourceRevision": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "SKIPPED"
+            ]
+          },
+          "passedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evidenceRef": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "B6SecurityScanRequest": {
+        "type": "object",
+        "required": [
+          "scanType",
+          "sourceRevision",
+          "ruleVersion",
+          "status",
+          "criticalCount",
+          "highCount",
+          "mediumCount",
+          "sensitiveFindingCount",
+          "reportRef"
+        ],
+        "properties": {
+          "scanType": {
+            "type": "string",
+            "enum": [
+              "AUTHORIZATION",
+              "DEPENDENCY",
+              "SECRET",
+              "PRIVACY",
+              "CONTRACT"
+            ]
+          },
+          "sourceRevision": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "ruleVersion": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED"
+            ]
+          },
+          "criticalCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "highCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mediumCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sensitiveFindingCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reportRef": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "B6ReliabilityRunRequest": {
+        "type": "object",
+        "required": [
+          "runType",
+          "sourceRevision",
+          "status",
+          "duplicateWriteCount",
+          "lostWriteCount",
+          "retrySuccessRate",
+          "p95LatencyMs",
+          "reportRef"
+        ],
+        "properties": {
+          "runType": {
+            "type": "string",
+            "enum": [
+              "LOAD",
+              "CHAOS",
+              "WEAK_NETWORK",
+              "IDEMPOTENCY"
+            ]
+          },
+          "sourceRevision": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED"
+            ]
+          },
+          "duplicateWriteCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lostWriteCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "retrySuccessRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "p95LatencyMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reportRef": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "B6DrillRequest": {
+        "type": "object",
+        "required": [
+          "drillType",
+          "sourceRevision",
+          "status",
+          "rtoSeconds",
+          "rpoSeconds",
+          "restoredResourceCount",
+          "failedResourceCount",
+          "backupRef",
+          "rollbackRef"
+        ],
+        "properties": {
+          "drillType": {
+            "type": "string",
+            "enum": [
+              "MIGRATION_ROLLBACK",
+              "MYSQL_RESTORE",
+              "REDIS_REBUILD",
+              "OBJECT_STORAGE_RESTORE"
+            ]
+          },
+          "sourceRevision": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PASSED",
+              "FAILED",
+              "BLOCKED"
+            ]
+          },
+          "rtoSeconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rpoSeconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "restoredResourceCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "failedResourceCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "backupRef": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "rollbackRef": {
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "B6ReleaseGateRequest": {
+        "type": "object",
+        "required": [
+          "releaseVersion",
+          "candidateBuildIds",
+          "requiredChecks",
+          "privacyStatus",
+          "copyrightStatus",
+          "merchantStatus",
+          "platformReviewStatus",
+          "rollbackPlanRef"
+        ],
+        "properties": {
+          "releaseVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "candidateBuildIds": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiredChecks": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "COMPATIBILITY",
+                "E2E",
+                "SECURITY",
+                "RELIABILITY",
+                "BACKUP"
+              ]
+            }
+          },
+          "privacyStatus": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PENDING"
+            ]
+          },
+          "copyrightStatus": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PENDING"
+            ]
+          },
+          "merchantStatus": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PENDING"
+            ]
+          },
+          "platformReviewStatus": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "FAIL",
+              "PENDING",
+              "NOT_REQUIRED"
+            ]
+          },
+          "rollbackPlanRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 255
+          }
+        }
+      }
     }
   }
 }

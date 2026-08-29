@@ -126,6 +126,8 @@
         "maxLength": 16
       },
       "B9Problem": {
+        "x-superseded-by": "#/components/schemas/ApiError",
+        "description": "Compatibility error payload for existing B9 operations. New or migrated operations use ApiError inside ApiErrorEnvelope.",
         "type": "object",
         "additionalProperties": false,
         "required": ["code", "message", "traceId"],

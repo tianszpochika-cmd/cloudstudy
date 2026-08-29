@@ -1,0 +1,399 @@
+{
+  "x-source-task": "P1R-M1-001",
+  "x-contract-status": "active",
+  "x-purpose": "Canonical public API envelope, correlation, pagination, idempotency, error and deprecation components used by every active /api/v1 operation. Every active list* operation and every other active operation already declaring Cursor uses Cursor + PageSize, ApiCursorPageEnvelope and x-pagination; cursor state is carried only by meta. Domain schemas remain only as operation-specific data payloads.",
+  "components": {
+    "headers": {
+      "XApiVersion": {
+        "description": "The served external API version. Every /api/v1 response returns v1.",
+        "schema": {
+          "$ref": "#/components/schemas/ApiVersion"
+        }
+      },
+      "RetryAfter": {
+        "description": "Seconds to wait before retrying. Required for HTTP 429 and present when an unavailable dependency provides a retry estimate.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "Deprecation": {
+        "description": "RFC 9745 structured-field Date for the resource deprecation instant, encoded as @<unix-seconds>.",
+        "schema": {
+          "type": "string",
+          "pattern": "^@-?[0-9]{1,16}$"
+        }
+      },
+      "Sunset": {
+        "description": "RFC 8594 HTTP-date at which the resource is expected to become unavailable. It must not be earlier than Deprecation.",
+        "schema": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 64
+        }
+      },
+      "DeprecationLink": {
+        "description": "RFC 8288 Link header containing rel=\"deprecation\" and a migration-guidance target.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
+        }
+      }
+    },
+    "responses": {
+      "ApiBadRequest": {
+        "description": "HTTP 400: request syntax, required headers or request parameters are invalid.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiUnauthorized": {
+        "description": "HTTP 401: credentials are missing, invalid, expired or revoked. A valid authenticated principal is not established.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "WWW-Authenticate": {
+            "description": "HTTP authentication challenge; it never exposes a token or internal validation detail.",
+            "schema": {
+              "type": "string",
+              "maxLength": 512
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiForbidden": {
+        "description": "HTTP 403: the authenticated principal is denied by server-derived policy, ownership, phase, consent or content-rights facts. It is never an empty result.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiNotFound": {
+        "description": "HTTP 404: the requested resource does not exist or is not visible under the applicable resource policy.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiConflict": {
+        "description": "HTTP 409: an idempotency binding, optimistic version, state transition or synchronization state conflicts with the request.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiUnprocessableEntity": {
+        "description": "HTTP 422: the JSON shape is understood but safe business validation rejects the submitted value. details may contain only safe field-addressable validation data.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiRateLimited": {
+        "description": "HTTP 429: a rate limit has been exceeded. The client must back off using Retry-After.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiInternalError": {
+        "description": "HTTP 500: an unexpected server failure occurred. The response does not expose stack traces, secrets or protected domain data.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiServiceUnavailable": {
+        "description": "HTTP 503: the service or a required upstream dependency is temporarily unavailable.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          },
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ApiGatewayTimeout": {
+        "description": "HTTP 504: the gateway or a bounded upstream call timed out. The response contains correlation IDs for recovery and audit.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ApiResponseMeta": {
+        "title": "Canonical API response metadata",
+        "description": "Mandatory response metadata for newly created or migrated public operations. requestId and traceId are also returned as response headers.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requestId",
+          "traceId",
+          "apiVersion",
+          "schemaVersion",
+          "serverTime"
+        ],
+        "properties": {
+          "requestId": {
+            "$ref": "#/components/schemas/RequestId"
+          },
+          "traceId": {
+            "$ref": "#/components/schemas/TraceId"
+          },
+          "apiVersion": {
+            "$ref": "#/components/schemas/ApiVersion"
+          },
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SemanticVersion"
+          },
+          "serverTime": {
+            "$ref": "#/components/schemas/DateTime"
+          }
+        }
+      },
+      "ApiCursorPageMeta": {
+        "title": "Canonical cursor page metadata",
+        "description": "Cursor pagination metadata for every active list* operation and any other active operation declaring Cursor. nextCursor is null when there is no next page; hasMore must agree with nextCursor; cursor state must not be duplicated in data.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requestId",
+          "traceId",
+          "apiVersion",
+          "schemaVersion",
+          "serverTime",
+          "hasMore",
+          "pageSize"
+        ],
+        "properties": {
+          "requestId": {
+            "$ref": "#/components/schemas/RequestId"
+          },
+          "traceId": {
+            "$ref": "#/components/schemas/TraceId"
+          },
+          "apiVersion": {
+            "$ref": "#/components/schemas/ApiVersion"
+          },
+          "schemaVersion": {
+            "$ref": "#/components/schemas/SemanticVersion"
+          },
+          "serverTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "nextCursor": {
+            "$ref": "#/components/schemas/Cursor",
+            "nullable": true
+          },
+          "snapshotAt": {
+            "$ref": "#/components/schemas/DateTime",
+            "nullable": true
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "pageSize": {
+            "$ref": "#/components/schemas/PageSize"
+          }
+        }
+      },
+      "ApiSuccessEnvelope": {
+        "title": "Canonical API success envelope",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "description": "Operation-specific successful result. Domain schemas define this value; no caller-provided authorization fact is echoed as trusted data."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiResponseMeta"
+          }
+        }
+      },
+      "ApiCursorPageEnvelope": {
+        "title": "Canonical cursor page envelope",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "meta"
+        ],
+        "properties": {
+          "data": {
+            "description": "Operation-specific cursor-page data. Collection operations normally return an item array; compound synchronization receipts may return an object while all cursor state remains in meta. Each operation declares x-pagination with the canonical Cursor, PageSize and ApiCursorPageMeta references."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiCursorPageMeta"
+          }
+        }
+      },
+      "ApiErrorEnvelope": {
+        "title": "Canonical API error envelope",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error",
+          "meta"
+        ],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ApiResponseMeta"
+          }
+        }
+      }
+    }
+  }
+}

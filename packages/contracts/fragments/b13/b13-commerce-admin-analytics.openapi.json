@@ -6,260 +6,2842 @@
     "description": "B13 商业化、运营后台、支持工单和脱敏分析边界。订单、支付回调、权益和退款事实由 commerce-service 拥有；admin-ops 只编排命令和只读投影；官网只消费公开价格投影。"
   },
   "tags": [
-    { "name": "B13-Commerce", "description": "SKU、价格快照、订单、支付闸门、权益、激活码、退款和对账" },
-    { "name": "B13-AdminOps", "description": "运营后台聚合、审批、风险命令、支持工单和审计关联" },
-    { "name": "B13-Analytics", "description": "脱敏事件接收、指标投影和可回放重算" },
-    { "name": "B13-OfficialSite", "description": "官网可公开的价格与权益投影" }
+    {
+      "name": "B13-Commerce",
+      "description": "SKU、价格快照、订单、支付闸门、权益、激活码、退款和对账"
+    },
+    {
+      "name": "B13-AdminOps",
+      "description": "运营后台聚合、审批、风险命令、支持工单和审计关联"
+    },
+    {
+      "name": "B13-Analytics",
+      "description": "脱敏事件接收、指标投影和可回放重算"
+    },
+    {
+      "name": "B13-OfficialSite",
+      "description": "官网可公开的价格与权益投影"
+    }
   ],
   "paths": {
     "/api/v1/public/commerce/catalog": {
       "get": {
-        "tags": ["B13-OfficialSite"],
+        "tags": [
+          "B13-OfficialSite"
+        ],
         "operationId": "getB13PublicCommerceCatalog",
         "security": [],
         "responses": {
-          "200": { "description": "已发布的公开价格投影", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13PublicCatalog" } } } },
-          "503": { "description": "公开投影暂不可用", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Problem" } } } }
+          "200": {
+            "description": "已发布的公开价格投影",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13PublicCatalog"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
         }
       }
     },
     "/api/v1/commerce/readiness": {
       "get": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "getB13CommerceReadiness",
-        "security": [{ "bearerAuth": [] }],
-        "responses": { "200": { "description": "支付发布闸门和渠道状态", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13PaymentReadiness" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "支付发布闸门和渠道状态",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13PaymentReadiness"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
       }
     },
     "/api/v1/commerce/skus": {
       "get": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "listB13CommerceSkus",
-        "security": [{ "bearerAuth": [] }],
-        "responses": { "200": { "description": "当前地区与主体可见 SKU", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/B13Sku" } } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "当前地区与主体可见 SKU",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/B13Sku"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/commerce/entitlements/me": {
       "get": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "listB13MyEntitlements",
-        "security": [{ "bearerAuth": [] }],
-        "responses": { "200": { "description": "服务端确认的当前权益", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/B13Entitlement" } } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "服务端确认的当前权益",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/B13Entitlement"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/commerce/orders": {
       "get": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "listB13CommerceOrders",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13PageLimit" }],
-        "responses": { "200": { "description": "当前主体订单状态页", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13OrderPage" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "当前主体订单状态页",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/B13Order"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       },
       "post": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "createB13CommerceOrder",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13OrderCreateRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "principal-sku-price-snapshot-key", "replayBehavior": "return-original-order" },
-        "responses": { "201": { "description": "订单已创建，尚未确认支付", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Order" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13OrderCreateRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-sku-price-snapshot-key",
+          "replayBehavior": "return-original-order"
+        },
+        "responses": {
+          "201": {
+            "description": "订单已创建，尚未确认支付",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13Order"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/commerce/orders/{orderId}/payment-intents": {
       "post": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "prepareB13PaymentIntent",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13OrderId" }, { "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13PaymentIntentRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "principal-order-provider-key", "replayBehavior": "return-readiness-or-intent-state" },
-        "responses": { "200": { "description": "支付准备状态；闸门关闭时不返回可支付凭证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13PaymentIntentResult" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "404": { "$ref": "#/components/responses/B13NotFound" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13OrderId"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13PaymentIntentRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-order-provider-key",
+          "replayBehavior": "return-readiness-or-intent-state"
+        },
+        "responses": {
+          "200": {
+            "description": "支付准备状态；闸门关闭时不返回可支付凭证",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13PaymentIntentResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/commerce/orders/{orderId}/refunds": {
       "post": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "requestB13OrderRefund",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13OrderId" }, { "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13RefundRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "principal-order-refund-key", "replayBehavior": "return-original-refund-state" },
-        "responses": { "202": { "description": "退款请求已进入服务端状态机", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Refund" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "404": { "$ref": "#/components/responses/B13NotFound" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13OrderId"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13RefundRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-order-refund-key",
+          "replayBehavior": "return-original-refund-state"
+        },
+        "responses": {
+          "202": {
+            "description": "退款请求已进入服务端状态机",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13Refund"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/commerce/activation-codes/redeem": {
       "post": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "redeemB13ActivationCode",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13ActivationRedeemRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "principal-code-digest-key", "replayBehavior": "return-original-entitlement-state" },
-        "responses": { "200": { "description": "激活码核销结果", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Entitlement" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13ActivationRedeemRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-code-digest-key",
+          "replayBehavior": "return-original-entitlement-state"
+        },
+        "responses": {
+          "200": {
+            "description": "激活码核销结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13Entitlement"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/internal/v1/commerce/providers/{provider}/callbacks": {
       "post": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "consumeB13PaymentProviderCallback",
-        "security": [{ "B8WorkloadIdentity": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13Provider" }, { "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13ProviderCallback" } } } },
-        "x-idempotency": { "required": true, "strategy": "provider-event-dedupe-key", "replayBehavior": "return-original-callback-receipt" },
-        "responses": { "202": { "description": "已验证或拒绝的回调接收回执", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13CallbackResult" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13Provider"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13ProviderCallback"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "provider-event-dedupe-key",
+          "replayBehavior": "return-original-callback-receipt"
+        },
+        "responses": {
+          "202": {
+            "description": "已验证或拒绝的回调接收回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B13CallbackResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B13Invalid"
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          }
+        }
       }
     },
     "/internal/v1/commerce/reconciliation/replay": {
       "post": {
-        "tags": ["B13-Commerce"],
+        "tags": [
+          "B13-Commerce"
+        ],
         "operationId": "replayB13CommerceReconciliation",
-        "security": [{ "B8WorkloadIdentity": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13ReconciliationRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "reconciliation-batch-replay-key", "replayBehavior": "return-original-reconciliation-state" },
-        "responses": { "202": { "description": "对账重放已受理", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13ReconciliationResult" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13ReconciliationRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "reconciliation-batch-replay-key",
+          "replayBehavior": "return-original-reconciliation-state"
+        },
+        "responses": {
+          "202": {
+            "description": "对账重放已受理",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B13ReconciliationResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          }
+        }
       }
     },
     "/api/v1/admin/ops/commerce/orders": {
       "get": {
-        "tags": ["B13-AdminOps"],
+        "tags": [
+          "B13-AdminOps"
+        ],
         "operationId": "listB13AdminCommerceOrders",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13PageLimit" }],
-        "responses": { "200": { "description": "脱敏订单只读投影", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminOrderPage" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "脱敏订单只读投影",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/B13AdminOrderView"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/admin/ops/tickets": {
       "get": {
-        "tags": ["B13-AdminOps"],
+        "tags": [
+          "B13-AdminOps"
+        ],
         "operationId": "listB13SupportTickets",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13PageLimit" }],
-        "responses": { "200": { "description": "脱敏支持工单列表", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13SupportTicketPage" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "脱敏支持工单列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/B13SupportTicket"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       },
       "post": {
-        "tags": ["B13-AdminOps"],
+        "tags": [
+          "B13-AdminOps"
+        ],
         "operationId": "createB13SupportTicket",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13SupportTicketCreateRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "principal-ticket-fingerprint-key", "replayBehavior": "return-original-ticket" },
-        "responses": { "201": { "description": "支持工单已创建", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13SupportTicket" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13SupportTicketCreateRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-ticket-fingerprint-key",
+          "replayBehavior": "return-original-ticket"
+        },
+        "responses": {
+          "201": {
+            "description": "支持工单已创建",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13SupportTicket"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/admin/ops/commands": {
       "post": {
-        "tags": ["B13-AdminOps"],
+        "tags": [
+          "B13-AdminOps"
+        ],
         "operationId": "submitB13AdminCommand",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminCommandRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "admin-command-fingerprint-key", "replayBehavior": "return-original-command-state" },
-        "responses": { "202": { "description": "运营命令进入审批或异步执行队列", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminCommandResult" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13AdminCommandRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-command-fingerprint-key",
+          "replayBehavior": "return-original-command-state"
+        },
+        "responses": {
+          "202": {
+            "description": "运营命令进入审批或异步执行队列",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13AdminCommandResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/admin/ops/commands/prepare": {
       "post": {
-        "tags": ["B13-AdminOps"],
+        "tags": [
+          "B13-AdminOps"
+        ],
         "operationId": "prepareB13AdminCommand",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AdminCommandRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "admin-command-preparation-key", "replayBehavior": "return-original-confirmation-state" },
-        "responses": { "200": { "description": "服务端签发的二次确认挑战", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13CommandPreparation" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13AdminCommandRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-command-preparation-key",
+          "replayBehavior": "return-original-confirmation-state"
+        },
+        "responses": {
+          "200": {
+            "description": "服务端签发的二次确认挑战",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B13CommandPreparation"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/admin/ops/metrics": {
       "get": {
-        "tags": ["B13-Analytics"],
+        "tags": [
+          "B13-Analytics"
+        ],
         "operationId": "listB13AdminMetrics",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13PageLimit" }],
-        "responses": { "200": { "description": "脱敏指标投影", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/B13MetricProjection" } } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "脱敏指标投影",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/B13MetricProjection"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/admin/ops/audit": {
       "get": {
-        "tags": ["B13-AdminOps"],
+        "tags": [
+          "B13-AdminOps"
+        ],
         "operationId": "listB13AdminAudit",
-        "security": [{ "bearerAuth": [] }],
-        "responses": { "200": { "description": "当前租户的脱敏追加审计记录", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AuditPage" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" } }
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "当前租户的脱敏追加审计记录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "items",
+                            "redacted"
+                          ],
+                          "properties": {
+                            "items": {
+                              "type": "array",
+                              "maxItems": 500,
+                              "items": {
+                                "$ref": "#/components/schemas/B13AuditRecord"
+                              }
+                            },
+                            "redacted": {
+                              "type": "boolean",
+                              "const": true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/internal/v1/analytics/events": {
       "post": {
-        "tags": ["B13-Analytics"],
+        "tags": [
+          "B13-Analytics"
+        ],
         "operationId": "ingestB13AnalyticsEvent",
-        "security": [{ "B8WorkloadIdentity": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AnalyticsEvent" } } } },
-        "x-idempotency": { "required": true, "strategy": "analytics-event-dedupe-key", "replayBehavior": "return-original-receipt" },
-        "responses": { "202": { "description": "脱敏事件接收回执", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13AnalyticsReceipt" } } } }, "400": { "$ref": "#/components/responses/B13Invalid" }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13AnalyticsEvent"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "analytics-event-dedupe-key",
+          "replayBehavior": "return-original-receipt"
+        },
+        "responses": {
+          "202": {
+            "description": "脱敏事件接收回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B13AnalyticsReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B13Invalid"
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          }
+        }
       }
     },
     "/internal/v1/analytics/recompute": {
       "post": {
-        "tags": ["B13-Analytics"],
+        "tags": [
+          "B13-Analytics"
+        ],
         "operationId": "requestB13AnalyticsRecompute",
-        "security": [{ "B8WorkloadIdentity": [] }],
-        "parameters": [{ "$ref": "#/components/parameters/B13IdempotencyKey" }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13RecomputeRequest" } } } },
-        "x-idempotency": { "required": true, "strategy": "metric-window-version-key", "replayBehavior": "return-original-recompute-job" },
-        "responses": { "202": { "description": "指标重算任务已受理", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13RecomputeJob" } } } }, "401": { "$ref": "#/components/responses/B13Unauthorized" }, "403": { "$ref": "#/components/responses/B13Forbidden" }, "409": { "$ref": "#/components/responses/B13Conflict" } }
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B13RecomputeRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "metric-window-version-key",
+          "replayBehavior": "return-original-recompute-job"
+        },
+        "responses": {
+          "202": {
+            "description": "指标重算任务已受理",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B13RecomputeJob"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          }
+        }
       }
     }
   },
   "components": {
     "parameters": {
-      "B13IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 16, "maxLength": 200 } },
-      "B13OrderId": { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } },
-      "B13Provider": { "name": "provider", "in": "path", "required": true, "schema": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "SANDBOX"] } },
-      "B13PageLimit": { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 } }
+      "B13IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 200
+        }
+      },
+      "B13OrderId": {
+        "name": "orderId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "B13Provider": {
+        "name": "provider",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "WECHAT",
+            "ALIPAY",
+            "APPLE",
+            "SANDBOX"
+          ]
+        }
+      },
+      "B13PageLimit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 50
+        }
+      }
     },
     "responses": {
-      "B13Unauthorized": { "description": "未认证", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Problem" } } } },
-      "B13Forbidden": { "description": "策略拒绝", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Problem" } } } },
-      "B13Invalid": { "description": "请求无效", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Problem" } } } },
-      "B13NotFound": { "description": "资源不存在", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Problem" } } } },
-      "B13Conflict": { "description": "幂等冲突或状态冲突", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B13Problem" } } } }
+      "B13Unauthorized": {
+        "description": "未认证",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
+      },
+      "B13Forbidden": {
+        "description": "策略拒绝",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
+      },
+      "B13Invalid": {
+        "description": "请求无效",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
+      },
+      "B13NotFound": {
+        "description": "资源不存在",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
+      },
+      "B13Conflict": {
+        "description": "幂等冲突或状态冲突",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
+      }
     },
     "schemas": {
-      "B13Problem": { "type": "object", "additionalProperties": false, "required": ["code", "message", "traceRef"], "properties": { "code": { "type": "string", "maxLength": 64 }, "message": { "type": "string", "maxLength": 240 }, "traceRef": { "type": "string", "maxLength": 128 } } },
-      "B13Sku": { "type": "object", "additionalProperties": false, "required": ["skuId", "title", "description", "billingPeriod", "currency", "amountMinor", "availability", "entitlementCode", "priceSnapshotId"], "properties": { "skuId": { "type": "string", "maxLength": 128 }, "title": { "type": "string", "maxLength": 160 }, "description": { "type": "string", "maxLength": 500 }, "billingPeriod": { "type": "string", "enum": ["ONE_TIME", "MONTH", "QUARTER", "YEAR"] }, "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }, "amountMinor": { "type": "integer", "minimum": 0 }, "availability": { "type": "string", "enum": ["PUBLISHED", "COMING_SOON", "UNAVAILABLE"] }, "entitlementCode": { "type": "string", "maxLength": 96 }, "priceSnapshotId": { "type": "string", "maxLength": 128 } } },
-      "B13PublicCatalog": { "type": "object", "additionalProperties": false, "required": ["catalogVersion", "uiLocale", "contentLocale", "plans", "publishedAt", "checkoutPath"], "properties": { "catalogVersion": { "type": "string", "maxLength": 64 }, "uiLocale": { "type": "string", "maxLength": 20 }, "contentLocale": { "type": "string", "maxLength": 20 }, "plans": { "type": "array", "maxItems": 50, "items": { "$ref": "#/components/schemas/B13PublicPlan" } }, "publishedAt": { "type": "string", "format": "date-time", "nullable": true }, "checkoutPath": { "type": "string", "pattern": "^/" } } },
-      "B13PublicPlan": { "type": "object", "additionalProperties": false, "required": ["planId", "name", "displayPrice", "unit", "features", "availability", "entitlementCode"], "properties": { "planId": { "type": "string", "maxLength": 128 }, "name": { "type": "string", "maxLength": 160 }, "displayPrice": { "type": "string", "maxLength": 80 }, "unit": { "type": "string", "maxLength": 32 }, "features": { "type": "array", "maxItems": 12, "items": { "type": "string", "maxLength": 160 } }, "availability": { "type": "string", "enum": ["available", "coming-soon", "unavailable"] }, "entitlementCode": { "type": "string", "maxLength": 96 } } },
-      "B13Entitlement": { "type": "object", "additionalProperties": false, "required": ["entitlementId", "entitlementCode", "state", "startsAt", "expiresAt", "sourceRef"], "properties": { "entitlementId": { "type": "string", "maxLength": 128 }, "entitlementCode": { "type": "string", "maxLength": 96 }, "state": { "type": "string", "enum": ["PENDING", "ACTIVE", "GRACE", "EXPIRED", "REVOKED"] }, "startsAt": { "type": "string", "format": "date-time" }, "expiresAt": { "type": "string", "format": "date-time" }, "sourceRef": { "type": "string", "maxLength": 128 } } },
-      "B13Order": { "type": "object", "additionalProperties": false, "required": ["orderId", "skuId", "priceSnapshotId", "state", "currency", "amountMinor", "channel", "createdAt", "updatedAt"], "properties": { "orderId": { "type": "string", "maxLength": 128 }, "skuId": { "type": "string", "maxLength": 128 }, "priceSnapshotId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["PENDING_PAYMENT", "PAYMENT_PENDING", "PAID", "FULFILLED", "CANCELLED", "REFUND_PENDING", "REFUNDED", "EXPIRED"] }, "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }, "amountMinor": { "type": "integer", "minimum": 0 }, "channel": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "SANDBOX"] }, "createdAt": { "type": "string", "format": "date-time" }, "updatedAt": { "type": "string", "format": "date-time" } } },
-      "B13OrderPage": { "type": "object", "additionalProperties": false, "required": ["items", "nextCursor"], "properties": { "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/B13Order" } }, "nextCursor": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13OrderCreateRequest": { "type": "object", "additionalProperties": false, "required": ["skuId", "priceSnapshotId", "channel", "sourcePlatform"], "properties": { "skuId": { "type": "string", "maxLength": 128 }, "priceSnapshotId": { "type": "string", "maxLength": 128 }, "channel": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "SANDBOX"] }, "sourcePlatform": { "type": "string", "enum": ["MOBILE", "WEB", "PWA"] }, "region": { "type": "string", "maxLength": 32, "nullable": true } } },
-      "B13PaymentReadiness": { "type": "object", "additionalProperties": false, "required": ["enabled", "reasonCode", "providers"], "properties": { "enabled": { "type": "boolean" }, "reasonCode": { "type": "string", "maxLength": 96 }, "providers": { "type": "array", "items": { "$ref": "#/components/schemas/B13ProviderReadiness" } } } },
-      "B13ProviderReadiness": { "type": "object", "additionalProperties": false, "required": ["provider", "enabled", "sandbox", "reasonCode"], "properties": { "provider": { "type": "string", "maxLength": 32 }, "enabled": { "type": "boolean" }, "sandbox": { "type": "boolean" }, "reasonCode": { "type": "string", "maxLength": 96 } } },
-      "B13PaymentIntentRequest": { "type": "object", "additionalProperties": false, "required": ["provider"], "properties": { "provider": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "SANDBOX"] } } },
-      "B13PaymentIntentResult": { "type": "object", "additionalProperties": false, "required": ["orderId", "state", "provider", "payable", "reasonCode"], "properties": { "orderId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "maxLength": 32 }, "provider": { "type": "string", "maxLength": 32 }, "payable": { "type": "boolean" }, "reasonCode": { "type": "string", "maxLength": 96 }, "intentRef": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13RefundRequest": { "type": "object", "additionalProperties": false, "required": ["reasonCode"], "properties": { "reasonCode": { "type": "string", "maxLength": 96 } } },
-      "B13Refund": { "type": "object", "additionalProperties": false, "required": ["refundId", "orderId", "state", "reasonCode", "createdAt"], "properties": { "refundId": { "type": "string", "maxLength": 128 }, "orderId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["REQUESTED", "PROCESSING", "SUCCEEDED", "REJECTED"] }, "reasonCode": { "type": "string", "maxLength": 96 }, "createdAt": { "type": "string", "format": "date-time" } } },
-      "B13ActivationRedeemRequest": { "type": "object", "additionalProperties": false, "required": ["code"], "properties": { "code": { "type": "string", "minLength": 8, "maxLength": 128, "description": "仅通过 TLS 短暂传输，服务端只保存 hash，日志和事件禁止记录原文。" } }, "x-sensitive-fields": ["code"] },
-      "B13ProviderCallback": { "type": "object", "additionalProperties": false, "required": ["providerEventRef", "orderRef", "callbackState", "amountMinor", "currency", "occurredAt", "verificationRef"], "properties": { "providerEventRef": { "type": "string", "maxLength": 160 }, "orderRef": { "type": "string", "maxLength": 128 }, "callbackState": { "type": "string", "enum": ["VERIFIED_PAID", "VERIFIED_REFUNDED", "REJECTED"] }, "amountMinor": { "type": "integer", "minimum": 0 }, "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }, "occurredAt": { "type": "string", "format": "date-time" }, "verificationRef": { "type": "string", "maxLength": 128 } } },
-      "B13CallbackResult": { "type": "object", "additionalProperties": false, "required": ["providerEventRef", "state", "replayed", "entitlementActivated"], "properties": { "providerEventRef": { "type": "string", "maxLength": 160 }, "state": { "type": "string", "enum": ["ACCEPTED", "REPLAYED", "REJECTED"] }, "replayed": { "type": "boolean" }, "entitlementActivated": { "type": "boolean" }, "reasonCode": { "type": "string", "maxLength": 96, "nullable": true } } },
-      "B13ReconciliationRequest": { "type": "object", "additionalProperties": false, "required": ["batchRef", "provider", "windowStart", "windowEnd"], "properties": { "batchRef": { "type": "string", "maxLength": 128 }, "provider": { "type": "string", "maxLength": 32 }, "windowStart": { "type": "string", "format": "date-time" }, "windowEnd": { "type": "string", "format": "date-time" } } },
-      "B13ReconciliationResult": { "type": "object", "additionalProperties": false, "required": ["batchRef", "state", "replayed", "domainFactsUntouched"], "properties": { "batchRef": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["ACCEPTED", "REPLAYED", "FAILED"] }, "replayed": { "type": "boolean" }, "domainFactsUntouched": { "type": "boolean", "const": true } } },
-      "B13AdminOrderView": { "type": "object", "additionalProperties": false, "required": ["orderRef", "state", "amountMinor", "currency", "createdAt", "redactionVersion"], "properties": { "orderRef": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "maxLength": 32 }, "amountMinor": { "type": "integer", "minimum": 0 }, "currency": { "type": "string", "maxLength": 3 }, "createdAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 } } },
-      "B13AdminOrderPage": { "type": "object", "additionalProperties": false, "required": ["items", "nextCursor"], "properties": { "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/B13AdminOrderView" } }, "nextCursor": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13SupportTicketCreateRequest": { "type": "object", "additionalProperties": false, "required": ["categoryCode", "resourceRef", "descriptionFingerprint", "priority"], "properties": { "categoryCode": { "type": "string", "maxLength": 64 }, "resourceRef": { "type": "string", "maxLength": 160 }, "descriptionFingerprint": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }, "priority": { "type": "string", "enum": ["LOW", "NORMAL", "HIGH", "URGENT"] }, "attachments": { "type": "array", "maxItems": 5, "items": { "$ref": "#/components/schemas/B13MediaObjectRef" } } } },
-      "B13MediaObjectRef": { "type": "object", "additionalProperties": false, "required": ["objectRef", "objectVersion", "purposeCode", "contentType", "sizeBytes"], "properties": { "objectRef": { "type": "string", "maxLength": 160 }, "objectVersion": { "type": "string", "maxLength": 160 }, "purposeCode": { "type": "string", "maxLength": 160 }, "contentType": { "type": "string", "maxLength": 160 }, "sizeBytes": { "type": "integer", "minimum": 0, "maximum": 52428800 } } },
-      "B13SupportTicket": { "type": "object", "additionalProperties": false, "required": ["ticketId", "categoryCode", "state", "priority", "slaDueAt", "redactionVersion"], "properties": { "ticketId": { "type": "string", "maxLength": 128 }, "categoryCode": { "type": "string", "maxLength": 64 }, "state": { "type": "string", "enum": ["OPEN", "IN_PROGRESS", "WAITING", "RESOLVED", "CLOSED"] }, "priority": { "type": "string", "maxLength": 32 }, "slaDueAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 } } },
-      "B13SupportTicketPage": { "type": "object", "additionalProperties": false, "required": ["items", "nextCursor"], "properties": { "items": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/B13SupportTicket" } }, "nextCursor": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13AdminCommandRequest": { "type": "object", "additionalProperties": false, "required": ["aggregateType", "aggregateRef", "actionCode", "reasonCode"], "properties": { "aggregateType": { "type": "string", "maxLength": 64 }, "aggregateRef": { "type": "string", "maxLength": 128 }, "actionCode": { "type": "string", "maxLength": 64 }, "reasonCode": { "type": "string", "maxLength": 96 }, "confirmationRef": { "type": "string", "maxLength": 128, "nullable": true } } },
-      "B13CommandPreparation": { "type": "object", "additionalProperties": false, "required": ["token", "decisionId", "action", "resourceRef", "expiresAt"], "properties": { "token": { "type": "string", "maxLength": 256, "description": "一次性短时确认令牌；仅允许通过 TLS 进入内存请求头，不得写入日志、数据库、URL 或客户端持久化。" }, "decisionId": { "type": "string", "maxLength": 128 }, "action": { "type": "string", "maxLength": 64 }, "resourceRef": { "type": "string", "maxLength": 128 }, "expiresAt": { "type": "string", "format": "date-time" } }, "x-sensitive-fields": ["token"] },
-      "B13AdminCommandResult": { "type": "object", "additionalProperties": false, "required": ["commandId", "state", "approvalRequired", "auditRef", "domainFactsUntouched"], "properties": { "commandId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["PENDING_APPROVAL", "CONFIRMED", "FORWARDED", "REJECTED", "COMPLETED"] }, "approvalRequired": { "type": "boolean" }, "auditRef": { "type": "string", "maxLength": 128 }, "domainFactsUntouched": { "type": "boolean", "const": true } } },
-      "B13AuditRecord": { "type": "object", "additionalProperties": false, "required": ["auditId", "operation", "resourceRef", "commandId", "traceId", "decisionId", "occurredAt", "redacted"], "properties": { "auditId": { "type": "string", "maxLength": 128 }, "operation": { "type": "string", "maxLength": 96 }, "resourceRef": { "type": "string", "maxLength": 128 }, "commandId": { "type": "string", "maxLength": 128 }, "traceId": { "type": "string", "maxLength": 160 }, "decisionId": { "type": "string", "maxLength": 128 }, "occurredAt": { "type": "string", "format": "date-time" }, "redacted": { "type": "boolean", "const": true } } },
-      "B13AuditPage": { "type": "object", "additionalProperties": false, "required": ["items", "redacted"], "properties": { "items": { "type": "array", "maxItems": 500, "items": { "$ref": "#/components/schemas/B13AuditRecord" } }, "redacted": { "type": "boolean", "const": true } } },
-      "B13MetricProjection": { "type": "object", "additionalProperties": false, "required": ["metricCode", "metricVersion", "periodStart", "periodEnd", "value", "state", "generatedAt"], "properties": { "metricCode": { "type": "string", "maxLength": 96 }, "metricVersion": { "type": "string", "maxLength": 32 }, "periodStart": { "type": "string", "format": "date-time" }, "periodEnd": { "type": "string", "format": "date-time" }, "value": { "type": "number" }, "state": { "type": "string", "enum": ["READY", "STALE", "RECOMPUTING", "UNAVAILABLE"] }, "generatedAt": { "type": "string", "format": "date-time" } } },
-      "B13AnalyticsEvent": { "type": "object", "additionalProperties": false, "required": ["eventId", "eventName", "schemaVersion", "aggregateType", "aggregateRef", "occurredAt", "redactionVersion", "dimensions"], "properties": { "eventId": { "type": "string", "maxLength": 128 }, "eventName": { "type": "string", "pattern": "^[a-z0-9_.-]+$", "maxLength": 96 }, "schemaVersion": { "type": "string", "maxLength": 32 }, "aggregateType": { "type": "string", "maxLength": 64 }, "aggregateRef": { "type": "string", "maxLength": 128 }, "occurredAt": { "type": "string", "format": "date-time" }, "redactionVersion": { "type": "string", "maxLength": 32 }, "dimensions": { "type": "array", "maxItems": 12, "items": { "$ref": "#/components/schemas/B13MetricDimension" } } } },
-      "B13MetricDimension": { "type": "object", "additionalProperties": false, "required": ["key", "value"], "properties": { "key": { "type": "string", "maxLength": 64 }, "value": { "type": "string", "maxLength": 128 } } },
-      "B13AnalyticsReceipt": { "type": "object", "additionalProperties": false, "required": ["eventId", "state", "replayed", "redactionVersion"], "properties": { "eventId": { "type": "string", "maxLength": 128 }, "state": { "type": "string", "enum": ["ACCEPTED", "REPLAYED", "REJECTED"] }, "replayed": { "type": "boolean" }, "redactionVersion": { "type": "string", "maxLength": 32 } } },
-      "B13RecomputeRequest": { "type": "object", "additionalProperties": false, "required": ["metricCode", "metricVersion", "windowStart", "windowEnd", "reasonCode"], "properties": { "metricCode": { "type": "string", "maxLength": 96 }, "metricVersion": { "type": "string", "maxLength": 32 }, "windowStart": { "type": "string", "format": "date-time" }, "windowEnd": { "type": "string", "format": "date-time" }, "reasonCode": { "type": "string", "maxLength": 96 } } },
-      "B13RecomputeJob": { "type": "object", "additionalProperties": false, "required": ["jobId", "metricCode", "state", "replayed", "requestedAt"], "properties": { "jobId": { "type": "string", "maxLength": 128 }, "metricCode": { "type": "string", "maxLength": 96 }, "state": { "type": "string", "enum": ["QUEUED", "RUNNING", "SUCCEEDED", "FAILED"] }, "replayed": { "type": "boolean" }, "requestedAt": { "type": "string", "format": "date-time" } } }
+      "B13Problem": {
+        "x-superseded-by": "#/components/schemas/ApiError",
+        "description": "Compatibility error payload for existing commerce, admin and analytics operations. New or migrated operations use ApiError inside ApiErrorEnvelope.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "message",
+          "traceRef"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "traceRef": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B13Sku": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skuId",
+          "title",
+          "description",
+          "billingPeriod",
+          "currency",
+          "amountMinor",
+          "availability",
+          "entitlementCode",
+          "priceSnapshotId"
+        ],
+        "properties": {
+          "skuId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "billingPeriod": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTH",
+              "QUARTER",
+              "YEAR"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "PUBLISHED",
+              "COMING_SOON",
+              "UNAVAILABLE"
+            ]
+          },
+          "entitlementCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "priceSnapshotId": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B13PublicCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogVersion",
+          "uiLocale",
+          "contentLocale",
+          "plans",
+          "publishedAt",
+          "checkoutPath"
+        ],
+        "properties": {
+          "catalogVersion": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "uiLocale": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "contentLocale": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "plans": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/B13PublicPlan"
+            }
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "checkoutPath": {
+            "type": "string",
+            "pattern": "^/"
+          }
+        }
+      },
+      "B13PublicPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "name",
+          "displayPrice",
+          "unit",
+          "features",
+          "availability",
+          "entitlementCode"
+        ],
+        "properties": {
+          "planId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "displayPrice": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "features": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "type": "string",
+              "maxLength": 160
+            }
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "coming-soon",
+              "unavailable"
+            ]
+          },
+          "entitlementCode": {
+            "type": "string",
+            "maxLength": 96
+          }
+        }
+      },
+      "B13Entitlement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entitlementId",
+          "entitlementCode",
+          "state",
+          "startsAt",
+          "expiresAt",
+          "sourceRef"
+        ],
+        "properties": {
+          "entitlementId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "entitlementCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ACTIVE",
+              "GRACE",
+              "EXPIRED",
+              "REVOKED"
+            ]
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sourceRef": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B13Order": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "orderId",
+          "skuId",
+          "priceSnapshotId",
+          "state",
+          "currency",
+          "amountMinor",
+          "channel",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "skuId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "priceSnapshotId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PENDING_PAYMENT",
+              "PAYMENT_PENDING",
+              "PAID",
+              "FULFILLED",
+              "CANCELLED",
+              "REFUND_PENDING",
+              "REFUNDED",
+              "EXPIRED"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "ALIPAY",
+              "APPLE",
+              "SANDBOX"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B13OrderPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/B13Order"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "maxLength": 128,
+            "nullable": true
+          }
+        }
+      },
+      "B13OrderCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skuId",
+          "priceSnapshotId",
+          "channel",
+          "sourcePlatform"
+        ],
+        "properties": {
+          "skuId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "priceSnapshotId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "ALIPAY",
+              "APPLE",
+              "SANDBOX"
+            ]
+          },
+          "sourcePlatform": {
+            "type": "string",
+            "enum": [
+              "MOBILE",
+              "WEB",
+              "PWA"
+            ]
+          },
+          "region": {
+            "type": "string",
+            "maxLength": 32,
+            "nullable": true
+          }
+        }
+      },
+      "B13PaymentReadiness": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "reasonCode",
+          "providers"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B13ProviderReadiness"
+            }
+          }
+        }
+      },
+      "B13ProviderReadiness": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "enabled",
+          "sandbox",
+          "reasonCode"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "sandbox": {
+            "type": "boolean"
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          }
+        }
+      },
+      "B13PaymentIntentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "ALIPAY",
+              "APPLE",
+              "SANDBOX"
+            ]
+          }
+        }
+      },
+      "B13PaymentIntentResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "orderId",
+          "state",
+          "provider",
+          "payable",
+          "reasonCode"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "payable": {
+            "type": "boolean"
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "intentRef": {
+            "type": "string",
+            "maxLength": 128,
+            "nullable": true
+          }
+        }
+      },
+      "B13RefundRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reasonCode"
+        ],
+        "properties": {
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          }
+        }
+      },
+      "B13Refund": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "refundId",
+          "orderId",
+          "state",
+          "reasonCode",
+          "createdAt"
+        ],
+        "properties": {
+          "refundId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "orderId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "REQUESTED",
+              "PROCESSING",
+              "SUCCEEDED",
+              "REJECTED"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B13ActivationRedeemRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "仅通过 TLS 短暂传输，服务端只保存 hash，日志和事件禁止记录原文。"
+          }
+        },
+        "x-sensitive-fields": [
+          "code"
+        ]
+      },
+      "B13ProviderCallback": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "providerEventRef",
+          "orderRef",
+          "callbackState",
+          "amountMinor",
+          "currency",
+          "occurredAt",
+          "verificationRef"
+        ],
+        "properties": {
+          "providerEventRef": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "orderRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "callbackState": {
+            "type": "string",
+            "enum": [
+              "VERIFIED_PAID",
+              "VERIFIED_REFUNDED",
+              "REJECTED"
+            ]
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "verificationRef": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B13CallbackResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "providerEventRef",
+          "state",
+          "replayed",
+          "entitlementActivated"
+        ],
+        "properties": {
+          "providerEventRef": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "REPLAYED",
+              "REJECTED"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "entitlementActivated": {
+            "type": "boolean"
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96,
+            "nullable": true
+          }
+        }
+      },
+      "B13ReconciliationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "batchRef",
+          "provider",
+          "windowStart",
+          "windowEnd"
+        ],
+        "properties": {
+          "batchRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "provider": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "windowStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "windowEnd": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B13ReconciliationResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "batchRef",
+          "state",
+          "replayed",
+          "domainFactsUntouched"
+        ],
+        "properties": {
+          "batchRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "REPLAYED",
+              "FAILED"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B13AdminOrderView": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "orderRef",
+          "state",
+          "amountMinor",
+          "currency",
+          "createdAt",
+          "redactionVersion"
+        ],
+        "properties": {
+          "orderRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redactionVersion": {
+            "type": "string",
+            "maxLength": 32
+          }
+        }
+      },
+      "B13AdminOrderPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/B13AdminOrderView"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "maxLength": 128,
+            "nullable": true
+          }
+        }
+      },
+      "B13SupportTicketCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "categoryCode",
+          "resourceRef",
+          "descriptionFingerprint",
+          "priority"
+        ],
+        "properties": {
+          "categoryCode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "resourceRef": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "descriptionFingerprint": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "NORMAL",
+              "HIGH",
+              "URGENT"
+            ]
+          },
+          "attachments": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/B13MediaObjectRef"
+            }
+          }
+        }
+      },
+      "B13MediaObjectRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "objectRef",
+          "objectVersion",
+          "purposeCode",
+          "contentType",
+          "sizeBytes"
+        ],
+        "properties": {
+          "objectRef": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "objectVersion": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "purposeCode": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "contentType": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 52428800
+          }
+        }
+      },
+      "B13SupportTicket": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "categoryCode",
+          "state",
+          "priority",
+          "slaDueAt",
+          "redactionVersion"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "categoryCode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "IN_PROGRESS",
+              "WAITING",
+              "RESOLVED",
+              "CLOSED"
+            ]
+          },
+          "priority": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "slaDueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redactionVersion": {
+            "type": "string",
+            "maxLength": 32
+          }
+        }
+      },
+      "B13SupportTicketPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/B13SupportTicket"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "maxLength": 128,
+            "nullable": true
+          }
+        }
+      },
+      "B13AdminCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aggregateType",
+          "aggregateRef",
+          "actionCode",
+          "reasonCode"
+        ],
+        "properties": {
+          "aggregateType": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "aggregateRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "actionCode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "confirmationRef": {
+            "type": "string",
+            "maxLength": 128,
+            "nullable": true
+          }
+        }
+      },
+      "B13CommandPreparation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "token",
+          "decisionId",
+          "action",
+          "resourceRef",
+          "expiresAt"
+        ],
+        "properties": {
+          "token": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "一次性短时确认令牌；仅允许通过 TLS 进入内存请求头，不得写入日志、数据库、URL 或客户端持久化。"
+          },
+          "decisionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "action": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "resourceRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-sensitive-fields": [
+          "token"
+        ]
+      },
+      "B13AdminCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandId",
+          "state",
+          "approvalRequired",
+          "auditRef",
+          "domainFactsUntouched"
+        ],
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PENDING_APPROVAL",
+              "CONFIRMED",
+              "FORWARDED",
+              "REJECTED",
+              "COMPLETED"
+            ]
+          },
+          "approvalRequired": {
+            "type": "boolean"
+          },
+          "auditRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B13AuditRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "auditId",
+          "operation",
+          "resourceRef",
+          "commandId",
+          "traceId",
+          "decisionId",
+          "occurredAt",
+          "redacted"
+        ],
+        "properties": {
+          "auditId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "operation": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "resourceRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "commandId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "traceId": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "decisionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B13AuditPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "redacted"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/B13AuditRecord"
+            }
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B13MetricProjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metricCode",
+          "metricVersion",
+          "periodStart",
+          "periodEnd",
+          "value",
+          "state",
+          "generatedAt"
+        ],
+        "properties": {
+          "metricCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "metricVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "periodStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "periodEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "value": {
+            "type": "number"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "STALE",
+              "RECOMPUTING",
+              "UNAVAILABLE"
+            ]
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B13AnalyticsEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "eventName",
+          "schemaVersion",
+          "aggregateType",
+          "aggregateRef",
+          "occurredAt",
+          "redactionVersion",
+          "dimensions"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "eventName": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.-]+$",
+            "maxLength": 96
+          },
+          "schemaVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "aggregateType": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "aggregateRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redactionVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "dimensions": {
+            "type": "array",
+            "maxItems": 12,
+            "items": {
+              "$ref": "#/components/schemas/B13MetricDimension"
+            }
+          }
+        }
+      },
+      "B13MetricDimension": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "value"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B13AnalyticsReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "state",
+          "replayed",
+          "redactionVersion"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "REPLAYED",
+              "REJECTED"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "redactionVersion": {
+            "type": "string",
+            "maxLength": 32
+          }
+        }
+      },
+      "B13RecomputeRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "metricCode",
+          "metricVersion",
+          "windowStart",
+          "windowEnd",
+          "reasonCode"
+        ],
+        "properties": {
+          "metricCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "metricVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "windowStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "windowEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          }
+        }
+      },
+      "B13RecomputeJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId",
+          "metricCode",
+          "state",
+          "replayed",
+          "requestedAt"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "metricCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "RUNNING",
+              "SUCCEEDED",
+              "FAILED"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
     }
   }
 }

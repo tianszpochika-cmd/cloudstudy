@@ -1,130 +1,1106 @@
 {
   "tags": [
-    { "name": "B1 Auth", "description": "Phase 1 adult learner authentication and device sessions" },
-    { "name": "B1 Onboarding", "description": "First-day goal, assessment, task and checkpoint APIs" },
-    { "name": "B1 User", "description": "Self-scoped profile, privacy and device APIs" }
+    {
+      "name": "B1 Auth",
+      "description": "Phase 1 adult learner authentication and device sessions"
+    },
+    {
+      "name": "B1 Onboarding",
+      "description": "First-day goal, assessment, task and checkpoint APIs"
+    },
+    {
+      "name": "B1 User",
+      "description": "Self-scoped profile, privacy and device APIs"
+    }
   ],
   "paths": {
     "/api/v1/auth/logout": {
       "post": {
-        "tags": ["B1 Auth"], "operationId": "logoutB1Session",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-revocation" },
-        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1LogoutRequest" } } } },
-        "responses": { "200": { "description": "Session revoked", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "401": { "description": "Authentication required" } }
+        "tags": [
+          "B1 Auth"
+        ],
+        "operationId": "logoutB1Session",
+        "x-idempotency": {
+          "strategy": "request-key",
+          "replayBehavior": "return-original-revocation"
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B1LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Session revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          }
+        }
       }
     },
     "/api/v1/auth/sessions": {
       "get": {
-        "tags": ["B1 Auth"], "operationId": "listB1AuthSessions",
-        "responses": { "200": { "description": "Owned device sessions", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Auth"
+        ],
+        "operationId": "listB1AuthSessions",
+        "responses": {
+          "200": {
+            "description": "Owned device sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
       }
     },
     "/api/v1/auth/sessions/{sessionId}/revoke": {
       "post": {
-        "tags": ["B1 Auth"], "operationId": "revokeB1AuthSession",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-revocation" },
-        "parameters": [{ "name": "sessionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/SessionId" } }],
-        "responses": { "200": { "description": "Session revoked", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "409": { "description": "Current session cannot be kicked" } }
+        "tags": [
+          "B1 Auth"
+        ],
+        "operationId": "revokeB1AuthSession",
+        "x-idempotency": {
+          "strategy": "request-key",
+          "replayBehavior": "return-original-revocation"
+        },
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/SessionId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/onboarding/options": {
       "get": {
-        "tags": ["B1 Onboarding"], "operationId": "getB1OnboardingOptions",
-        "responses": { "200": { "description": "Supported onboarding options", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "getB1OnboardingOptions",
+        "responses": {
+          "200": {
+            "description": "Supported onboarding options",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/onboarding/profile": {
       "get": {
-        "tags": ["B1 Onboarding"], "operationId": "getB1OnboardingProfile",
-        "responses": { "200": { "description": "Current learner profile", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "getB1OnboardingProfile",
+        "responses": {
+          "200": {
+            "description": "Current learner profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       },
       "post": {
-        "tags": ["B1 Onboarding"], "operationId": "saveB1OnboardingProfile",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-profile" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1OnboardingProfileRequest" } } } },
-        "responses": { "200": { "description": "Profile saved", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "409": { "description": "Version conflict" } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "saveB1OnboardingProfile",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-profile"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B1OnboardingProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       },
       "patch": {
-        "tags": ["B1 Onboarding"], "operationId": "patchB1OnboardingProfile",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-profile" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1OnboardingProfileRequest" } } } },
-        "responses": { "200": { "description": "Profile patched", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "409": { "description": "Version conflict" } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "patchB1OnboardingProfile",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-profile"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B1OnboardingProfileRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile patched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
       }
     },
     "/api/v1/onboarding/goals/first": {
       "post": {
-        "tags": ["B1 Onboarding"], "operationId": "createB1FirstGoal",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-goal" },
-        "responses": { "200": { "description": "First goal ensured", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "createB1FirstGoal",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-goal"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "First goal ensured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/onboarding/daily-tasks/today": {
       "get": {
-        "tags": ["B1 Onboarding"], "operationId": "getB1DailyTasks",
-        "responses": { "200": { "description": "Today's deterministic task plan", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "getB1DailyTasks",
+        "responses": {
+          "200": {
+            "description": "Today's deterministic task plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/onboarding/daily-tasks/{taskId}/complete": {
       "post": {
-        "tags": ["B1 Onboarding"], "operationId": "completeB1DailyTask",
-        "security": [{ "bearerAuth": [] }],
-        "x-contract": { "owner": "learner-service", "migration": "B25 durable learner daily-task projection; public Gateway path is retained for compatibility" },
-        "x-idempotency": { "required": true, "strategy": "principal-task-key", "keyHeader": "Idempotency-Key", "replayBehavior": "return-first-durable-task" },
-        "parameters": [{ "name": "taskId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } }, { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 192 } }],
-        "responses": { "200": { "description": "Task completed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "401": { "description": "Verified JWT required" }, "403": { "description": "Tenant/owner policy denied" }, "404": { "description": "Task not found" } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "completeB1DailyTask",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "migration": "B25 durable learner daily-task projection; public Gateway path is retained for compatibility"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-task-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-first-durable-task"
+        },
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 192
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task completed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
       }
     },
     "/api/v1/onboarding/daily-tasks/reorder": {
       "post": {
-        "tags": ["B1 Onboarding"], "operationId": "reorderB1DailyTasks",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-task-plan" },
-        "responses": { "200": { "description": "Task plan reordered", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "reorderB1DailyTasks",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-task-plan"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task plan reordered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/assessment/placement/skip": {
       "post": {
-        "tags": ["B1 Onboarding"], "operationId": "skipB1Placement",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-report" },
-        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1PlacementSkipRequest" } } } },
-        "responses": { "200": { "description": "Fast-track placement applied", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "skipB1Placement",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-report"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B1PlacementSkipRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fast-track placement applied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/assessment/placement/report/{sessionId}": {
       "get": {
-        "tags": ["B1 Onboarding"], "operationId": "getB1PlacementReport",
-        "parameters": [{ "name": "sessionId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/SessionId" } }],
-        "responses": { "200": { "description": "Placement report", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "getB1PlacementReport",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/SessionId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Placement report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/learning/continue-context": {
       "get": {
-        "tags": ["B1 Onboarding"], "operationId": "getB1ContinueContext",
-        "responses": { "200": { "description": "Continue-learning context", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "getB1ContinueContext",
+        "responses": {
+          "200": {
+            "description": "Continue-learning context",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       },
       "put": {
-        "tags": ["B1 Onboarding"], "operationId": "saveB1ContinueContext",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-context" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Context saved", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "saveB1ContinueContext",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-context"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B1AnyData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Context saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/sync/checkpoints/{lessonId}": {
       "put": {
-        "tags": ["B1 Onboarding"], "operationId": "saveB1LearningCheckpoint",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-checkpoint" },
-        "parameters": [{ "name": "lessonId", "in": "path", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 128 } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } },
-        "responses": { "200": { "description": "Checkpoint accepted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } } }
+        "tags": [
+          "B1 Onboarding"
+        ],
+        "operationId": "saveB1LearningCheckpoint",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "request-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-checkpoint"
+        },
+        "parameters": [
+          {
+            "name": "lessonId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B1AnyData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkpoint accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1AnyData"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "schemas": {
-      "B1AnyData": { "type": "object", "additionalProperties": true },
-      "B1DeviceInput": { "type": "object", "additionalProperties": false, "required": ["deviceId", "deviceType", "clientVersion"], "x-sensitive-fields": ["deviceId"], "properties": { "deviceId": { "type": "string", "description": "设备公开 ID 不得为硬件指纹原文；仅允许 hash/不可逆公开标识进入日志。" }, "deviceType": { "type": "string" }, "deviceName": { "type": "string" }, "clientVersion": { "type": "string" }, "regionCode": { "type": "string" } } },
-      "B1LogoutRequest": { "type": "object", "additionalProperties": false, "properties": { "allDevices": { "type": "boolean" } } },
-      "B1OnboardingProfileRequest": { "type": "object", "additionalProperties": false, "required": ["targetGoal", "dailyQuotaMinutes"], "properties": { "language": { "type": "string" }, "targetGoal": { "type": "string" }, "examType": { "type": "string" }, "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45] }, "preferenceTags": { "type": "array", "maxItems": 3, "items": { "type": "string" } }, "accentPreference": { "type": "string" }, "customHomeLayout": { "type": "boolean" }, "customHomeLayoutOrder": { "type": "array", "items": { "type": "string" } }, "expectedVersion": { "type": "integer", "format": "int64" } } },
-      "B1PlacementSkipRequest": { "type": "object", "additionalProperties": false, "properties": { "fastTrackLevel": { "type": "string", "enum": ["ZERO_A1", "CET4_B1", "CET6_B2", "POSTGRAD_B2_PLUS"] } } }
+      "B1AnyData": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "B1DeviceInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deviceId",
+          "deviceType",
+          "clientVersion"
+        ],
+        "x-sensitive-fields": [
+          "deviceId"
+        ],
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "description": "设备公开 ID 不得为硬件指纹原文；仅允许 hash/不可逆公开标识进入日志。"
+          },
+          "deviceType": {
+            "type": "string"
+          },
+          "deviceName": {
+            "type": "string"
+          },
+          "clientVersion": {
+            "type": "string"
+          },
+          "regionCode": {
+            "type": "string"
+          }
+        }
+      },
+      "B1LogoutRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "allDevices": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B1OnboardingProfileRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetGoal",
+          "dailyQuotaMinutes"
+        ],
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "targetGoal": {
+            "type": "string"
+          },
+          "examType": {
+            "type": "string"
+          },
+          "dailyQuotaMinutes": {
+            "type": "integer",
+            "enum": [
+              5,
+              15,
+              30,
+              45
+            ]
+          },
+          "preferenceTags": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "string"
+            }
+          },
+          "accentPreference": {
+            "type": "string"
+          },
+          "customHomeLayout": {
+            "type": "boolean"
+          },
+          "customHomeLayoutOrder": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "B1PlacementSkipRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fastTrackLevel": {
+            "type": "string",
+            "enum": [
+              "ZERO_A1",
+              "CET4_B1",
+              "CET6_B2",
+              "POSTGRAD_B2_PLUS"
+            ]
+          }
+        }
+      }
     }
   }
 }

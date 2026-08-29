@@ -331,7 +331,23 @@ function mergeEvents(base, fragment, filePath) {
   }
 }
 
-function merge({ write = false } = {}) {
+export function findCanonicalMergeDrift({
+  expectedOpenApi,
+  actualOpenApi,
+  expectedEventCatalog,
+  actualEventCatalog,
+} = {}) {
+  const drift = [];
+  if (stableJson(expectedOpenApi) !== stableJson(actualOpenApi)) {
+    drift.push('packages/contracts/openapi/v1/openapi.json');
+  }
+  if (stableJson(expectedEventCatalog) !== stableJson(actualEventCatalog)) {
+    drift.push('packages/contracts/events/v1/catalog.json');
+  }
+  return drift;
+}
+
+export function merge({ write = false } = {}) {
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
   // Never retain stale canonical authentication metadata from the previous
@@ -392,6 +408,16 @@ function merge({ write = false } = {}) {
   if (write) {
     writeJson(openApiPath, openApi);
     writeJson(eventCatalogPath, catalog);
+  } else {
+    const drift = findCanonicalMergeDrift({
+      expectedOpenApi: openApi,
+      actualOpenApi: readJson(openApiPath),
+      expectedEventCatalog: catalog,
+      actualEventCatalog: readJson(eventCatalogPath),
+    });
+    if (drift.length > 0) {
+      throw new Error(`Canonical merge drift detected in ${drift.join(', ')}. Run pnpm contracts:merge to write canonical outputs.`);
+    }
   }
 
   return {
@@ -404,10 +430,14 @@ function merge({ write = false } = {}) {
   };
 }
 
-try {
-  const result = merge({ write: process.argv.includes('--write') });
-  console.log(`Contract fragment merge ${process.argv.includes('--write') ? 'written' : 'checked'}: ${result.openApiFragments.length} OpenAPI fragments, ${result.eventFragments.length} event fragments, ${result.routes} routes, ${result.events} events, ${result.asyncApiChannels} AsyncAPI channels, ${result.asyncApiOperations} AsyncAPI operations.`);
-} catch (error) {
-  console.error(error instanceof Error ? error.message : String(error));
-  process.exitCode = 1;
+const isCli = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+if (isCli) {
+  try {
+    const write = process.argv.includes('--write');
+    const result = merge({ write });
+    console.log(`Contract fragment merge ${write ? 'written' : 'checked'}: ${result.openApiFragments.length} OpenAPI fragments, ${result.eventFragments.length} event fragments, ${result.routes} routes, ${result.events} events, ${result.asyncApiChannels} AsyncAPI channels, ${result.asyncApiOperations} AsyncAPI operations.`);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+  }
 }

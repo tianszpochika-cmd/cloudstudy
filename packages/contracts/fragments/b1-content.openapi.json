@@ -12,7 +12,9 @@
   "paths": {
     "/api/v1/content": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "创建内容身份和首个草稿版本",
         "operationId": "createContentEntity",
         "x-idempotency": {
@@ -22,28 +24,77 @@
           "replayBehavior": "同作用域同请求体返回首次内容身份；请求体不同返回 IDEMPOTENCY_CONFLICT"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1CreateContentRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1CreateContentRequest"
+              }
             }
           }
         },
         "responses": {
-          "201": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "409": { "$ref": "#/components/responses/B1Conflict" }
+          "201": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "为稳定内容身份创建不可变草稿版本",
         "operationId": "createContentVersion",
         "x-idempotency": {
@@ -53,71 +104,211 @@
           "replayBehavior": "相同内容身份和请求体只创建一个版本"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1CreateVersionRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1CreateVersionRequest"
+              }
             }
           }
         },
         "responses": {
-          "201": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "404": { "$ref": "#/components/responses/B1NotFound" }
+          "201": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/preview": {
       "get": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "预览草稿或审核版本",
         "operationId": "previewContentVersion",
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "404": { "$ref": "#/components/responses/B1NotFound" }
+          "200": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/diff": {
       "get": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "读取两个版本的可追溯字段差异",
         "operationId": "diffContentVersions",
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1AgainstVersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1AgainstVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          }
         ],
         "responses": {
           "200": {
             "description": "版本差异",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/B1ContentDiff" }
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentDiff"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "404": { "$ref": "#/components/responses/B1NotFound" }
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/submit": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "提交草稿进入一审",
         "operationId": "submitContentVersion",
         "x-idempotency": {
@@ -127,30 +318,83 @@
           "replayBehavior": "重复提交返回当前审核状态，不重复产生发布副作用"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1ActorRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1ActorRequest"
+              }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "409": { "$ref": "#/components/responses/B1Conflict" }
+          "200": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/review": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "提交一审或二审决定",
         "operationId": "decideContentVersionReview",
         "x-idempotency": {
@@ -160,30 +404,83 @@
           "replayBehavior": "同审核阶段和决定幂等，审核记录不可覆盖"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1ReviewDecisionRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1ReviewDecisionRequest"
+              }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "409": { "$ref": "#/components/responses/B1Conflict" }
+          "200": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/publish": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "发布通过双审和质量检查的版本",
         "operationId": "publishContentVersion",
         "x-idempotency": {
@@ -193,30 +490,83 @@
           "replayBehavior": "发布操作按内容版本幂等，旧发布版本进入 ARCHIVED 并失效缓存"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1ActorRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1ActorRequest"
+              }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "409": { "$ref": "#/components/responses/B1Conflict" }
+          "200": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/archive": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "下线指定已发布版本",
         "operationId": "archiveContentVersion",
         "x-idempotency": {
@@ -226,29 +576,80 @@
           "replayBehavior": "重复下线返回当前 ARCHIVED 状态"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1ActorReasonRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1ActorReasonRequest"
+              }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "409": { "$ref": "#/components/responses/B1Conflict" }
+          "200": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}/versions/{versionId}/restore": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "恢复指定历史版本为学习端当前版本",
         "operationId": "restoreContentVersion",
         "x-idempotency": {
@@ -258,29 +659,80 @@
           "replayBehavior": "恢复目标版本和目标内容身份幂等，并写入回滚审计"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" },
-          { "$ref": "#/components/parameters/B1VersionId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B1VersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1ActorReasonRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1ActorReasonRequest"
+              }
             }
           }
         },
         "responses": {
-          "200": { "$ref": "#/components/responses/B1ContentVersionResponse" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "409": { "$ref": "#/components/responses/B1Conflict" }
+          "200": {
+            "description": "内容版本",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ContentVersion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
         }
       }
     },
     "/api/v1/content/imports": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "校验并可选应用 CSV/JSON 内容导入批次",
         "operationId": "importContentBatch",
         "x-idempotency": {
@@ -290,14 +742,20 @@
           "replayBehavior": "同批次 hash 复用校验报告，不重复插入内容"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1ImportRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1ImportRequest"
+              }
             }
           }
         },
@@ -306,18 +764,52 @@
             "description": "导入校验报告",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/B1ImportReport" }
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1ImportReport"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
         }
       }
     },
     "/api/v1/content/media/upload-intents": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "创建私有媒体上传意图",
         "operationId": "createContentMediaUploadIntent",
         "x-idempotency": {
@@ -327,14 +819,20 @@
           "replayBehavior": "相同资源 hash 和版本复用未过期上传意图"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1MediaUploadRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1MediaUploadRequest"
+              }
             }
           }
         },
@@ -343,18 +841,52 @@
             "description": "短期上传意图",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/B1MediaUploadIntent" }
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1MediaUploadIntent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" }
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
         }
       }
     },
     "/api/v1/content/media/{mediaAssetId}/complete": {
       "post": {
-        "tags": ["content-supply-chain"],
+        "tags": [
+          "content-supply-chain"
+        ],
         "summary": "完成媒体上传并校验 hash、大小和 MIME",
         "operationId": "completeContentMediaUpload",
         "x-idempotency": {
@@ -364,15 +896,23 @@
           "replayBehavior": "同媒体对象重复完成返回同一 ACTIVE 元数据"
         },
         "parameters": [
-          { "$ref": "#/components/parameters/B1MediaAssetId" },
-          { "$ref": "#/components/parameters/B1ContentRole" },
-          { "$ref": "#/components/parameters/B1IdempotencyKey" }
+          {
+            "$ref": "#/components/parameters/B1MediaAssetId"
+          },
+          {
+            "$ref": "#/components/parameters/B1ContentRole"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1MediaCompleteRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1MediaCompleteRequest"
+              }
             }
           }
         },
@@ -381,19 +921,55 @@
             "description": "已校验的媒体元数据",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/B1MediaAsset" }
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1MediaAsset"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
-          "400": { "$ref": "#/components/responses/B1BadRequest" },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "404": { "$ref": "#/components/responses/B1NotFound" }
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
         }
       }
     },
     "/api/v1/content/media/{mediaAssetId}/signed-access": {
       "post": {
-        "tags": ["content-learner"],
+        "tags": [
+          "content-learner"
+        ],
         "summary": "为已发布媒体签发短期、可撤销的访问凭证",
         "operationId": "signContentMediaAccess",
         "x-idempotency": {
@@ -402,14 +978,24 @@
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "每次访问签发独立短期凭证，不返回永久公开 URL"
         },
+        "x-p1r-idempotency-exception": {
+          "rule": "writeIdempotency",
+          "reason": "The operation authorizes a read and returns a fresh short-lived credential; it creates no durable domain fact and intentionally must not replay a previous credential.",
+          "owner": "media-service",
+          "safeBehavior": "Each invocation is separately authorized and audited; a caller cannot use this exception to bypass idempotency for a persisted command."
+        },
         "parameters": [
-          { "$ref": "#/components/parameters/B1MediaAssetId" }
+          {
+            "$ref": "#/components/parameters/B1MediaAssetId"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/B1MediaAccessRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/B1MediaAccessRequest"
+              }
             }
           }
         },
@@ -418,50 +1004,166 @@
             "description": "短期签名访问",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/B1SignedMediaAccess" }
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1SignedMediaAccess"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
-          "403": { "$ref": "#/components/responses/B1Forbidden" },
-          "404": { "$ref": "#/components/responses/B1NotFound" },
-          "410": { "$ref": "#/components/responses/B1Gone" }
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/B1Gone"
+          }
         }
       }
     },
     "/api/v1/content/offline/manifests/{manifestCode}": {
       "get": {
-        "tags": ["content-learner"],
+        "tags": [
+          "content-learner"
+        ],
         "summary": "读取按发布版本和版权过滤的离线 manifest",
         "operationId": "getContentOfflineManifest",
         "parameters": [
-          { "$ref": "#/components/parameters/B1ManifestCode" }
+          {
+            "$ref": "#/components/parameters/B1ManifestCode"
+          }
         ],
         "responses": {
           "200": {
             "description": "离线 manifest",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/B1OfflineManifest" }
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1OfflineManifest"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
-          "404": { "$ref": "#/components/responses/B1NotFound" },
-          "410": { "$ref": "#/components/responses/B1Gone" }
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/B1Gone"
+          }
         }
       }
     },
     "/api/v1/content/{contentId}": {
       "get": {
-        "tags": ["content-learner"],
+        "tags": [
+          "content-learner"
+        ],
         "summary": "读取当前已发布内容版本",
         "operationId": "getPublishedContent",
         "parameters": [
-          { "$ref": "#/components/parameters/B1ContentId" }
+          {
+            "$ref": "#/components/parameters/B1ContentId"
+          }
         ],
         "responses": {
-          "200": { "$ref": "#/components/responses/B1LearnerContentResponse" },
-          "404": { "$ref": "#/components/responses/B1NotFound" },
-          "410": { "$ref": "#/components/responses/B1Gone" }
+          "200": {
+            "description": "学习端安全内容视图，不包含标准答案或内部评分规则",
+            "headers": {
+              "X-Content-Epoch": {
+                "$ref": "#/components/headers/B1ContentEpoch"
+              },
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B1LearnerContent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/B1Gone"
+          }
         }
       }
     }
@@ -480,53 +1182,92 @@
         "name": "contentId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "B1VersionId": {
         "name": "versionId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "B1AgainstVersionId": {
         "name": "againstVersionId",
         "in": "query",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "B1MediaAssetId": {
         "name": "mediaAssetId",
         "in": "path",
         "required": true,
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "B1ManifestCode": {
         "name": "manifestCode",
         "in": "path",
         "required": true,
-        "schema": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$" }
+        "schema": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"
+        }
       },
       "B1ContentRole": {
         "name": "X-Content-Role",
         "in": "header",
         "required": false,
-        "schema": { "type": "string", "enum": ["CONTENT_EDITOR", "CONTENT_REVIEWER", "CONTENT_PUBLISHER", "CONTENT_ADMIN", "LEARNER"] }
+        "schema": {
+          "type": "string",
+          "enum": [
+            "CONTENT_EDITOR",
+            "CONTENT_REVIEWER",
+            "CONTENT_PUBLISHER",
+            "CONTENT_ADMIN",
+            "LEARNER"
+          ]
+        }
       },
       "B1IdempotencyKey": {
         "name": "Idempotency-Key",
         "in": "header",
         "required": true,
-        "schema": { "type": "string", "minLength": 16, "maxLength": 128 }
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        }
       }
     },
     "headers": {
       "B1ContentEpoch": {
         "description": "客户端缓存和离线清单使用的单调内容 epoch",
-        "schema": { "type": "integer", "format": "int64", "minimum": 1 }
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
       },
       "B1SignedAccessExpiry": {
         "description": "签名访问凭证过期时间",
-        "schema": { "type": "string", "format": "date-time" }
+        "schema": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "responses": {
@@ -534,18 +1275,24 @@
         "description": "内容版本",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1ContentVersion" }
+            "schema": {
+              "$ref": "#/components/schemas/B1ContentVersion"
+            }
           }
         }
       },
       "B1LearnerContentResponse": {
         "description": "学习端安全内容视图，不包含标准答案或内部评分规则",
         "headers": {
-          "X-Content-Epoch": { "$ref": "#/components/headers/B1ContentEpoch" }
+          "X-Content-Epoch": {
+            "$ref": "#/components/headers/B1ContentEpoch"
+          }
         },
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1LearnerContent" }
+            "schema": {
+              "$ref": "#/components/schemas/B1LearnerContent"
+            }
           }
         }
       },
@@ -553,7 +1300,9 @@
         "description": "输入或内容质量不合法",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1ContentError" }
+            "schema": {
+              "$ref": "#/components/schemas/B1ContentError"
+            }
           }
         }
       },
@@ -561,7 +1310,9 @@
         "description": "角色或发布版权边界拒绝",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1ContentError" }
+            "schema": {
+              "$ref": "#/components/schemas/B1ContentError"
+            }
           }
         }
       },
@@ -569,7 +1320,9 @@
         "description": "内容、媒体或 manifest 不存在",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1ContentError" }
+            "schema": {
+              "$ref": "#/components/schemas/B1ContentError"
+            }
           }
         }
       },
@@ -577,7 +1330,9 @@
         "description": "非法状态迁移、版本冲突或幂等冲突",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1ContentError" }
+            "schema": {
+              "$ref": "#/components/schemas/B1ContentError"
+            }
           }
         }
       },
@@ -585,7 +1340,9 @@
         "description": "内容或离线资源已下线、授权失效或签名过期",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/B1ContentError" }
+            "schema": {
+              "$ref": "#/components/schemas/B1ContentError"
+            }
           }
         }
       }
@@ -593,108 +1350,313 @@
     "schemas": {
       "B1ContentStatus": {
         "type": "string",
-        "enum": ["DRAFT", "IN_REVIEW", "APPROVED", "PUBLISHED", "ARCHIVED"]
+        "enum": [
+          "DRAFT",
+          "IN_REVIEW",
+          "APPROVED",
+          "PUBLISHED",
+          "ARCHIVED"
+        ]
       },
       "B1ContentType": {
         "type": "string",
-        "enum": ["COURSE", "COURSE_UNIT", "VOCABULARY", "PHRASE", "GRAMMAR", "SENTENCE", "MEDIA", "QUESTION"]
+        "enum": [
+          "COURSE",
+          "COURSE_UNIT",
+          "VOCABULARY",
+          "PHRASE",
+          "GRAMMAR",
+          "SENTENCE",
+          "MEDIA",
+          "QUESTION"
+        ]
       },
       "B1ReviewStage": {
         "type": "string",
-        "enum": ["FIRST_REVIEW", "FINAL_REVIEW"]
+        "enum": [
+          "FIRST_REVIEW",
+          "FINAL_REVIEW"
+        ]
       },
       "B1ReviewDecision": {
         "type": "string",
-        "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"]
+        "enum": [
+          "APPROVED",
+          "REJECTED",
+          "CHANGES_REQUESTED"
+        ]
       },
       "B1LicenseStatus": {
         "type": "string",
-        "enum": ["PENDING", "ACTIVE", "EXPIRED", "REVOKED"]
+        "enum": [
+          "PENDING",
+          "ACTIVE",
+          "EXPIRED",
+          "REVOKED"
+        ]
       },
       "B1MediaKind": {
         "type": "string",
-        "enum": ["AUDIO", "IMAGE", "VIDEO", "MODEL_3D", "SVG", "WAVEFORM", "OFFLINE_BUNDLE"]
+        "enum": [
+          "AUDIO",
+          "IMAGE",
+          "VIDEO",
+          "MODEL_3D",
+          "SVG",
+          "WAVEFORM",
+          "OFFLINE_BUNDLE"
+        ]
       },
       "B1ContentSource": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["sourceCode", "sourceName", "sourceKind", "isSynthetic"],
+        "required": [
+          "sourceCode",
+          "sourceName",
+          "sourceKind",
+          "isSynthetic"
+        ],
         "properties": {
-          "sourceCode": { "type": "string", "minLength": 2, "maxLength": 96 },
-          "sourceName": { "type": "string", "minLength": 1, "maxLength": 255 },
-          "sourceKind": { "type": "string", "enum": ["INTERNAL", "LICENSED", "OPEN_LICENSE", "PUBLIC_DOMAIN", "USER_PROVIDED"] },
-          "sourceLocator": { "type": "string", "maxLength": 512 },
-          "copyrightOwner": { "type": "string", "maxLength": 255 },
-          "isSynthetic": { "type": "boolean" }
+          "sourceCode": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 96
+          },
+          "sourceName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "sourceKind": {
+            "type": "string",
+            "enum": [
+              "INTERNAL",
+              "LICENSED",
+              "OPEN_LICENSE",
+              "PUBLIC_DOMAIN",
+              "USER_PROVIDED"
+            ]
+          },
+          "sourceLocator": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "copyrightOwner": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "isSynthetic": {
+            "type": "boolean"
+          }
         }
       },
       "B1ContentLicense": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["licenseCode", "licenseName", "licenseStatus", "copyrightOwner", "allowsLearning", "allowsOffline"],
+        "required": [
+          "licenseCode",
+          "licenseName",
+          "licenseStatus",
+          "copyrightOwner",
+          "allowsLearning",
+          "allowsOffline"
+        ],
         "properties": {
-          "licenseCode": { "type": "string", "minLength": 2, "maxLength": 96 },
-          "licenseName": { "type": "string", "minLength": 1, "maxLength": 255 },
-          "licenseStatus": { "$ref": "#/components/schemas/B1LicenseStatus" },
-          "copyrightOwner": { "type": "string", "minLength": 1, "maxLength": 255 },
-          "authorizationEvidenceRef": { "type": "string", "maxLength": 512, "description": "凭证引用或开放许可依据；不得上传凭证原件中的敏感信息" },
-          "licenseUrl": { "type": "string", "format": "uri", "maxLength": 512 },
-          "permittedPlatforms": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
-          "allowsLearning": { "type": "boolean" },
-          "allowsOffline": { "type": "boolean" },
-          "attributionRequired": { "type": "boolean" },
-          "startsAt": { "type": "string", "format": "date-time" },
-          "expiresAt": { "type": "string", "format": "date-time" }
+          "licenseCode": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 96
+          },
+          "licenseName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "licenseStatus": {
+            "$ref": "#/components/schemas/B1LicenseStatus"
+          },
+          "copyrightOwner": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "authorizationEvidenceRef": {
+            "type": "string",
+            "maxLength": 512,
+            "description": "凭证引用或开放许可依据；不得上传凭证原件中的敏感信息"
+          },
+          "licenseUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 512
+          },
+          "permittedPlatforms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "allowsLearning": {
+            "type": "boolean"
+          },
+          "allowsOffline": {
+            "type": "boolean"
+          },
+          "attributionRequired": {
+            "type": "boolean"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "B1CreateContentRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["contentCode", "contentType", "title", "targetLevel", "goalCode", "payload", "source", "license", "actorId"],
+        "required": [
+          "contentCode",
+          "contentType",
+          "title",
+          "targetLevel",
+          "goalCode",
+          "payload",
+          "source",
+          "license",
+          "actorId"
+        ],
         "properties": {
-          "contentCode": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$" },
-          "contentType": { "$ref": "#/components/schemas/B1ContentType" },
-          "title": { "type": "string", "minLength": 1, "maxLength": 255 },
-          "locale": { "type": "string", "default": "en-US" },
-          "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
-          "goalCode": { "type": "string", "minLength": 2, "maxLength": 96 },
-          "parentContentId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "sortOrder": { "type": "integer", "minimum": 1 },
-          "payload": { "type": "object", "minProperties": 1 },
-          "source": { "$ref": "#/components/schemas/B1ContentSource" },
-          "license": { "$ref": "#/components/schemas/B1ContentLicense" },
-          "actorId": { "type": "string", "minLength": 2, "maxLength": 128 }
+          "contentCode": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"
+          },
+          "contentType": {
+            "$ref": "#/components/schemas/B1ContentType"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "locale": {
+            "type": "string",
+            "default": "en-US"
+          },
+          "targetLevel": {
+            "type": "string",
+            "enum": [
+              "A1",
+              "A2",
+              "B1",
+              "B2",
+              "C1",
+              "C2"
+            ]
+          },
+          "goalCode": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 96
+          },
+          "parentContentId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "payload": {
+            "type": "object",
+            "minProperties": 1
+          },
+          "source": {
+            "$ref": "#/components/schemas/B1ContentSource"
+          },
+          "license": {
+            "$ref": "#/components/schemas/B1ContentLicense"
+          },
+          "actorId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          }
         }
       },
       "B1CreateVersionRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["payload", "source", "license", "actorId"],
+        "required": [
+          "payload",
+          "source",
+          "license",
+          "actorId"
+        ],
         "properties": {
-          "payload": { "type": "object", "minProperties": 1 },
-          "source": { "$ref": "#/components/schemas/B1ContentSource" },
-          "license": { "$ref": "#/components/schemas/B1ContentLicense" },
-          "releaseNote": { "type": "string", "maxLength": 512 },
-          "rollbackOfVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "actorId": { "type": "string", "minLength": 2, "maxLength": 128 }
+          "payload": {
+            "type": "object",
+            "minProperties": 1
+          },
+          "source": {
+            "$ref": "#/components/schemas/B1ContentSource"
+          },
+          "license": {
+            "$ref": "#/components/schemas/B1ContentLicense"
+          },
+          "releaseNote": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "rollbackOfVersionId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "actorId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          }
         }
       },
       "B1ActorRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["actorId"],
+        "required": [
+          "actorId"
+        ],
         "properties": {
-          "actorId": { "type": "string", "minLength": 2, "maxLength": 128 },
-          "requestId": { "type": "string", "minLength": 8, "maxLength": 128 }
+          "actorId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          }
         }
       },
       "B1ActorReasonRequest": {
         "allOf": [
-          { "$ref": "#/components/schemas/B1ActorRequest" },
+          {
+            "$ref": "#/components/schemas/B1ActorRequest"
+          },
           {
             "type": "object",
             "properties": {
-              "reasonCode": { "type": "string", "minLength": 2, "maxLength": 96 }
+              "reasonCode": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 96
+              }
             }
           }
         ]
@@ -702,104 +1664,324 @@
       "B1ReviewDecisionRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["stage", "decision", "reviewerId"],
+        "required": [
+          "stage",
+          "decision",
+          "reviewerId"
+        ],
         "properties": {
-          "stage": { "$ref": "#/components/schemas/B1ReviewStage" },
-          "decision": { "$ref": "#/components/schemas/B1ReviewDecision" },
-          "reviewerId": { "type": "string", "minLength": 2, "maxLength": 128 },
-          "reasonCode": { "type": "string", "maxLength": 96 },
-          "note": { "type": "string", "maxLength": 2000 }
+          "stage": {
+            "$ref": "#/components/schemas/B1ReviewStage"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/B1ReviewDecision"
+          },
+          "reviewerId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          }
         }
       },
       "B1ImportRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["batchCode", "format", "payload", "actorId"],
+        "required": [
+          "batchCode",
+          "format",
+          "payload",
+          "actorId"
+        ],
         "properties": {
-          "batchCode": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$" },
-          "format": { "type": "string", "enum": ["CSV", "JSON"] },
-          "payload": { "type": "string", "minLength": 2, "description": "内容批次原文；不得包含真实用户隐私或生产凭证" },
-          "dryRun": { "type": "boolean", "default": true },
-          "actorId": { "type": "string", "minLength": 2, "maxLength": 128 }
+          "batchCode": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{2,127}$"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "CSV",
+              "JSON"
+            ]
+          },
+          "payload": {
+            "type": "string",
+            "minLength": 2,
+            "description": "内容批次原文；不得包含真实用户隐私或生产凭证"
+          },
+          "dryRun": {
+            "type": "boolean",
+            "default": true
+          },
+          "actorId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          }
         }
       },
       "B1ImportIssue": {
         "type": "object",
-        "required": ["rowNumber", "code", "message"],
+        "required": [
+          "rowNumber",
+          "code",
+          "message"
+        ],
         "properties": {
-          "rowNumber": { "type": "integer", "minimum": 1 },
-          "code": { "type": "string" },
-          "message": { "type": "string" },
-          "normalizedKey": { "type": "string" }
+          "rowNumber": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "normalizedKey": {
+            "type": "string"
+          }
         }
       },
       "B1ImportReport": {
         "type": "object",
-        "required": ["batchCode", "format", "acceptedCount", "rejectedCount", "duplicateCount", "issues", "applied"],
+        "required": [
+          "batchCode",
+          "format",
+          "acceptedCount",
+          "rejectedCount",
+          "duplicateCount",
+          "issues",
+          "applied"
+        ],
         "properties": {
-          "batchCode": { "type": "string" },
-          "format": { "type": "string", "enum": ["CSV", "JSON"] },
-          "acceptedCount": { "type": "integer", "minimum": 0 },
-          "rejectedCount": { "type": "integer", "minimum": 0 },
-          "duplicateCount": { "type": "integer", "minimum": 0 },
-          "issues": { "type": "array", "items": { "$ref": "#/components/schemas/B1ImportIssue" } },
-          "createdContentIds": { "type": "array", "items": { "type": "integer", "format": "int64" } },
-          "applied": { "type": "boolean" }
+          "batchCode": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "CSV",
+              "JSON"
+            ]
+          },
+          "acceptedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rejectedCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "duplicateCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B1ImportIssue"
+            }
+          },
+          "createdContentIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          "applied": {
+            "type": "boolean"
+          }
         }
       },
       "B1ContentVersion": {
         "type": "object",
-        "required": ["contentVersionId", "contentId", "versionNumber", "contentType", "status", "contentHash", "sourceCode", "licenseCode", "payload", "createdAt", "updatedAt"],
+        "required": [
+          "contentVersionId",
+          "contentId",
+          "versionNumber",
+          "contentType",
+          "status",
+          "contentHash",
+          "sourceCode",
+          "licenseCode",
+          "payload",
+          "createdAt",
+          "updatedAt"
+        ],
         "properties": {
-          "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "versionNumber": { "type": "integer", "minimum": 1 },
-          "contentType": { "$ref": "#/components/schemas/B1ContentType" },
-          "status": { "$ref": "#/components/schemas/B1ContentStatus" },
-          "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "sourceCode": { "type": "string" },
-          "licenseCode": { "type": "string" },
-          "editorId": { "type": "string" },
-          "firstReviewerId": { "type": "string", "nullable": true },
-          "finalReviewerId": { "type": "string", "nullable": true },
-          "publisherId": { "type": "string", "nullable": true },
-          "payload": { "type": "object" },
-          "publishedAt": { "type": "string", "format": "date-time", "nullable": true },
-          "archivedAt": { "type": "string", "format": "date-time", "nullable": true },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+          "contentVersionId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "versionNumber": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentType": {
+            "$ref": "#/components/schemas/B1ContentType"
+          },
+          "status": {
+            "$ref": "#/components/schemas/B1ContentStatus"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceCode": {
+            "type": "string"
+          },
+          "licenseCode": {
+            "type": "string"
+          },
+          "editorId": {
+            "type": "string"
+          },
+          "firstReviewerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "finalReviewerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "publisherId": {
+            "type": "string",
+            "nullable": true
+          },
+          "payload": {
+            "type": "object"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "archivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "B1LearnerContent": {
         "type": "object",
-        "required": ["contentId", "contentVersionId", "contentType", "status", "payload", "contentHash", "cacheEpoch"],
+        "required": [
+          "contentId",
+          "contentVersionId",
+          "contentType",
+          "status",
+          "payload",
+          "contentHash",
+          "cacheEpoch"
+        ],
         "properties": {
-          "contentId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "contentType": { "$ref": "#/components/schemas/B1ContentType" },
-          "status": { "const": "PUBLISHED" },
-          "payload": { "type": "object", "description": "已过滤答案、内部评分规则和后台凭证的学习端字段" },
-          "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "cacheEpoch": { "type": "integer", "format": "int64", "minimum": 1 }
+          "contentId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentVersionId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentType": {
+            "$ref": "#/components/schemas/B1ContentType"
+          },
+          "status": {
+            "const": "PUBLISHED"
+          },
+          "payload": {
+            "type": "object",
+            "description": "已过滤答案、内部评分规则和后台凭证的学习端字段"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "cacheEpoch": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          }
         }
       },
       "B1ContentDiff": {
         "type": "object",
-        "required": ["contentId", "fromVersionId", "toVersionId", "changes", "generatedAt"],
+        "required": [
+          "contentId",
+          "fromVersionId",
+          "toVersionId",
+          "changes",
+          "generatedAt"
+        ],
         "properties": {
-          "contentId": { "type": "integer", "format": "int64" },
-          "fromVersionId": { "type": "integer", "format": "int64" },
-          "toVersionId": { "type": "integer", "format": "int64" },
-          "changes": { "type": "array", "items": { "$ref": "#/components/schemas/B1ContentDiffChange" } },
-          "generatedAt": { "type": "string", "format": "date-time" }
+          "contentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "fromVersionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "toVersionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B1ContentDiffChange"
+            }
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "B1ContentDiffChange": {
         "type": "object",
-        "required": ["path", "changeType"],
+        "required": [
+          "path",
+          "changeType"
+        ],
         "properties": {
-          "path": { "type": "string" },
-          "changeType": { "type": "string", "enum": ["ADDED", "REMOVED", "CHANGED"] },
+          "path": {
+            "type": "string"
+          },
+          "changeType": {
+            "type": "string",
+            "enum": [
+              "ADDED",
+              "REMOVED",
+              "CHANGED"
+            ]
+          },
           "before": {},
           "after": {}
         }
@@ -807,113 +1989,358 @@
       "B1MediaUploadRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["mediaKind", "mimeType", "contentLengthBytes", "contentHash", "contentVersionId", "actorId"],
+        "required": [
+          "mediaKind",
+          "mimeType",
+          "contentLengthBytes",
+          "contentHash",
+          "contentVersionId",
+          "actorId"
+        ],
         "properties": {
-          "mediaKind": { "$ref": "#/components/schemas/B1MediaKind" },
-          "mimeType": { "type": "string", "maxLength": 128 },
-          "contentLengthBytes": { "type": "integer", "format": "int64", "minimum": 1 },
-          "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
-          "actorId": { "type": "string", "minLength": 2, "maxLength": 128 }
+          "mediaKind": {
+            "$ref": "#/components/schemas/B1MediaKind"
+          },
+          "mimeType": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "contentLengthBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "contentVersionId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "actorId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          }
         }
       },
       "B1MediaUploadIntent": {
         "type": "object",
-        "required": ["mediaAssetId", "uploadToken", "objectKey", "expiresAt", "maxBytes", "accessPolicy"],
+        "required": [
+          "mediaAssetId",
+          "uploadToken",
+          "objectKey",
+          "expiresAt",
+          "maxBytes",
+          "accessPolicy"
+        ],
         "properties": {
-          "mediaAssetId": { "type": "integer", "format": "int64" },
-          "uploadToken": { "type": "string", "description": "仅用于一次上传协商的短期 token，不是永久访问凭证" },
-          "objectKey": { "type": "string" },
-          "expiresAt": { "type": "string", "format": "date-time" },
-          "maxBytes": { "type": "integer", "format": "int64" },
-          "accessPolicy": { "type": "string", "enum": ["SIGNED", "PRIVATE"] },
-          "supportsRange": { "type": "boolean" }
+          "mediaAssetId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "uploadToken": {
+            "type": "string",
+            "description": "仅用于一次上传协商的短期 token，不是永久访问凭证"
+          },
+          "objectKey": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "maxBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "accessPolicy": {
+            "type": "string",
+            "enum": [
+              "SIGNED",
+              "PRIVATE"
+            ]
+          },
+          "supportsRange": {
+            "type": "boolean"
+          }
         }
       },
       "B1MediaCompleteRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["uploadToken", "contentLengthBytes", "contentHash", "mimeType", "actorId"],
+        "required": [
+          "uploadToken",
+          "contentLengthBytes",
+          "contentHash",
+          "mimeType",
+          "actorId"
+        ],
         "properties": {
-          "uploadToken": { "type": "string" },
-          "contentLengthBytes": { "type": "integer", "format": "int64", "minimum": 1 },
-          "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "mimeType": { "type": "string" },
-          "actorId": { "type": "string" }
+          "uploadToken": {
+            "type": "string"
+          },
+          "contentLengthBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": "string"
+          }
         }
       },
       "B1MediaAsset": {
         "type": "object",
-        "required": ["mediaAssetId", "mediaKind", "mimeType", "contentLengthBytes", "contentHash", "storageStatus", "accessPolicy", "supportsRange"],
+        "required": [
+          "mediaAssetId",
+          "mediaKind",
+          "mimeType",
+          "contentLengthBytes",
+          "contentHash",
+          "storageStatus",
+          "accessPolicy",
+          "supportsRange"
+        ],
         "properties": {
-          "mediaAssetId": { "type": "integer", "format": "int64" },
-          "mediaKind": { "$ref": "#/components/schemas/B1MediaKind" },
-          "mimeType": { "type": "string" },
-          "contentLengthBytes": { "type": "integer", "format": "int64" },
-          "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "storageStatus": { "type": "string", "enum": ["UPLOADING", "ACTIVE", "REVOKED", "DELETED"] },
-          "accessPolicy": { "type": "string", "enum": ["SIGNED", "PRIVATE"] },
-          "supportsRange": { "type": "boolean" },
-          "objectKey": { "type": "string", "description": "私有对象键；不向学习端暴露 bucket 或永久 URL" }
+          "mediaAssetId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "mediaKind": {
+            "$ref": "#/components/schemas/B1MediaKind"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "contentLengthBytes": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "storageStatus": {
+            "type": "string",
+            "enum": [
+              "UPLOADING",
+              "ACTIVE",
+              "REVOKED",
+              "DELETED"
+            ]
+          },
+          "accessPolicy": {
+            "type": "string",
+            "enum": [
+              "SIGNED",
+              "PRIVATE"
+            ]
+          },
+          "supportsRange": {
+            "type": "boolean"
+          },
+          "objectKey": {
+            "type": "string",
+            "description": "私有对象键；不向学习端暴露 bucket 或永久 URL"
+          }
         }
       },
       "B1MediaAccessRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["requesterId", "accessScope"],
+        "required": [
+          "requesterId",
+          "accessScope"
+        ],
         "properties": {
-          "requesterId": { "type": "string", "minLength": 2, "maxLength": 128 },
-          "accessScope": { "type": "string", "enum": ["STREAM", "DOWNLOAD", "OFFLINE"] },
-          "rangeStartBytes": { "type": "integer", "format": "int64", "minimum": 0 },
-          "rangeEndBytes": { "type": "integer", "format": "int64", "minimum": 0 }
+          "requesterId": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 128
+          },
+          "accessScope": {
+            "type": "string",
+            "enum": [
+              "STREAM",
+              "DOWNLOAD",
+              "OFFLINE"
+            ]
+          },
+          "rangeStartBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "rangeEndBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
         }
       },
       "B1SignedMediaAccess": {
         "type": "object",
-        "required": ["mediaAssetId", "signedUrl", "expiresAt", "accessScope", "supportsRange"],
+        "required": [
+          "mediaAssetId",
+          "signedUrl",
+          "expiresAt",
+          "accessScope",
+          "supportsRange"
+        ],
         "properties": {
-          "mediaAssetId": { "type": "integer", "format": "int64" },
-          "signedUrl": { "type": "string", "format": "uri", "description": "短期签名 URL；过期或版权撤销后不可用，不是永久公开 URL" },
-          "expiresAt": { "type": "string", "format": "date-time" },
-          "accessScope": { "type": "string", "enum": ["STREAM", "DOWNLOAD", "OFFLINE"] },
-          "supportsRange": { "type": "boolean" },
-          "signatureId": { "type": "string" }
+          "mediaAssetId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "signedUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "短期签名 URL；过期或版权撤销后不可用，不是永久公开 URL"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "accessScope": {
+            "type": "string",
+            "enum": [
+              "STREAM",
+              "DOWNLOAD",
+              "OFFLINE"
+            ]
+          },
+          "supportsRange": {
+            "type": "boolean"
+          },
+          "signatureId": {
+            "type": "string"
+          }
         }
       },
       "B1OfflineManifest": {
         "type": "object",
-        "required": ["manifestCode", "manifestVersion", "contentEpoch", "manifestHash", "generatedAt", "expiresAt", "entries"],
+        "required": [
+          "manifestCode",
+          "manifestVersion",
+          "contentEpoch",
+          "manifestHash",
+          "generatedAt",
+          "expiresAt",
+          "entries"
+        ],
         "properties": {
-          "manifestCode": { "type": "string" },
-          "manifestVersion": { "type": "integer", "minimum": 1 },
-          "contentEpoch": { "type": "integer", "format": "int64", "minimum": 1 },
-          "manifestHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "generatedAt": { "type": "string", "format": "date-time" },
-          "expiresAt": { "type": "string", "format": "date-time" },
-          "entries": { "type": "array", "items": { "$ref": "#/components/schemas/B1OfflineManifestEntry" } }
+          "manifestCode": {
+            "type": "string"
+          },
+          "manifestVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentEpoch": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "manifestHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B1OfflineManifestEntry"
+            }
+          }
         }
       },
       "B1OfflineManifestEntry": {
         "type": "object",
-        "required": ["contentVersionId", "resourceKind", "resourceKey", "resourceHash", "contentLengthBytes", "allowOffline"],
+        "required": [
+          "contentVersionId",
+          "resourceKind",
+          "resourceKey",
+          "resourceHash",
+          "contentLengthBytes",
+          "allowOffline"
+        ],
         "properties": {
-          "contentVersionId": { "type": "integer", "format": "int64" },
-          "mediaAssetId": { "type": "integer", "format": "int64", "nullable": true },
-          "resourceKind": { "type": "string", "enum": ["CONTENT_JSON", "MEDIA", "INDEX"] },
-          "resourceKey": { "type": "string" },
-          "resourceHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-          "contentLengthBytes": { "type": "integer", "format": "int64", "minimum": 1 },
-          "allowOffline": { "type": "boolean" }
+          "contentVersionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "mediaAssetId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "resourceKind": {
+            "type": "string",
+            "enum": [
+              "CONTENT_JSON",
+              "MEDIA",
+              "INDEX"
+            ]
+          },
+          "resourceKey": {
+            "type": "string"
+          },
+          "resourceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "contentLengthBytes": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "allowOffline": {
+            "type": "boolean"
+          }
         }
       },
       "B1ContentError": {
+        "x-superseded-by": "#/components/schemas/ApiErrorEnvelope",
+        "description": "Compatibility error shape for existing content operations. New or migrated operations use ApiErrorEnvelope.",
         "type": "object",
-        "required": ["code", "message", "requestId"],
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
         "properties": {
-          "code": { "type": "string" },
-          "message": { "type": "string" },
-          "requestId": { "type": "string" },
-          "details": { "type": "array", "items": { "type": "string" } }
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       }
     }

@@ -54,6 +54,7 @@
     "contracts:validate": "node scripts/contracts/validate-contracts.mjs",
     "contracts:generate": "node scripts/contracts/generate-contracts.mjs",
     "contracts:compatibility": "node scripts/contracts/compatibility-diff.mjs",
+    "contracts:compatibility:git": "node scripts/contracts/compatibility-git-baseline.mjs",
     "contracts:merge": "node scripts/contracts/merge-b1-fragments.mjs --write",
     "contracts:b2:merge": "node scripts/contracts/merge-b1-fragments.mjs --write",
     "contracts:b1:merge": "node scripts/contracts/merge-b1-fragments.mjs --write",

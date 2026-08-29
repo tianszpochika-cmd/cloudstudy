@@ -1,8 +1,14 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "语学星 B25 Phase 1 real-data adapter", "version": "1.0.0" },
+  "info": {
+    "title": "语学星 B25 Phase 1 real-data adapter",
+    "version": "1.0.0"
+  },
   "tags": [
-    { "name": "b25-real-data", "description": "Phase 1 local MySQL-backed learner/content/learning/assessment replay boundary" }
+    {
+      "name": "b25-real-data",
+      "description": "Phase 1 local MySQL-backed learner/content/learning/assessment replay boundary"
+    }
   ],
   "x-b25-real-data": {
     "syntheticFixture": true,
@@ -13,55 +19,823 @@
   },
   "paths": {
     "/internal/v1/learner/profile": {
-      "get": { "operationId": "b25ReadLearnerProfile", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "401": { "$ref": "#/components/responses/B25Unauthorized" } } },
-      "patch": { "operationId": "b25UpdateLearnerProfile", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-profile-key", "replayBehavior": "return-first-durable-profile" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "409": { "$ref": "#/components/responses/B25Conflict" } } }
+      "get": {
+        "operationId": "b25ReadLearnerProfile",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "401": {
+            "$ref": "#/components/responses/B25Unauthorized"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "b25UpdateLearnerProfile",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-profile-key",
+          "replayBehavior": "return-first-durable-profile"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "409": {
+            "$ref": "#/components/responses/B25Conflict"
+          }
+        }
+      }
     },
     "/internal/v1/learner/targets": {
-      "get": { "operationId": "b25ReadLearnerGoal", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } },
-      "put": { "operationId": "b25UpdateLearnerGoal", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-goal-key", "replayBehavior": "return-first-durable-goal" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "409": { "$ref": "#/components/responses/B25Conflict" } } }
+      "get": {
+        "operationId": "b25ReadLearnerGoal",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "put": {
+        "operationId": "b25UpdateLearnerGoal",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-goal-key",
+          "replayBehavior": "return-first-durable-goal"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "409": {
+            "$ref": "#/components/responses/B25Conflict"
+          }
+        }
+      }
     },
     "/internal/v1/learner/preferences": {
-      "get": { "operationId": "b25ReadLearnerPreferences", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } },
-      "patch": { "operationId": "b25UpdateLearnerPreferences", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-preferences-key", "replayBehavior": "return-first-durable-preferences" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" } } }
+      "get": {
+        "operationId": "b25ReadLearnerPreferences",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "b25UpdateLearnerPreferences",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-preferences-key",
+          "replayBehavior": "return-first-durable-preferences"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
     },
-    "/internal/v1/learner/first-day": { "get": { "operationId": "b25ReadFirstDayProjection", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/learner/home": { "get": { "operationId": "b25ReadLearnerHome", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/learner/onboarding/daily-tasks/{taskId}/complete": { "post": { "operationId": "b25CompleteDailyTask", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25TaskId" }, { "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-task-key", "replayBehavior": "return-first-durable-task" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "404": { "$ref": "#/components/responses/B25NotFound" } } } },
-    "/internal/v1/learner/onboarding/daily-tasks/ensure": { "post": { "operationId": "b25EnsureDailyTask", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B25EnsureDailyTaskRequest" } } } }, "x-idempotency": { "required": true, "strategy": "principal-daily-task-content-key", "replayBehavior": "return-first-durable-task-projection" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "400": { "$ref": "#/components/responses/B25BadRequest" } } } },
-    "/api/v1/onboarding/daily-tasks/ensure": { "post": { "operationId": "b25EnsureDailyTaskPublic", "tags": ["b25-real-data"], "security": [{ "bearerAuth": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B25EnsureDailyTaskRequest" } } } }, "x-idempotency": { "required": true, "strategy": "principal-daily-task-content-key", "replayBehavior": "return-first-durable-task-projection" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "400": { "$ref": "#/components/responses/B25BadRequest" }, "401": { "$ref": "#/components/responses/B25Unauthorized" }, "403": { "$ref": "#/components/responses/B25Forbidden" } } } },
-    "/internal/v1/content/learner/catalog": { "get": { "operationId": "b25ReadPublishedCatalog", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "403": { "$ref": "#/components/responses/B25Forbidden" } } } },
-    "/internal/v1/content/learner/{contentCode}": { "get": { "operationId": "b25ReadPublishedContent", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25ContentCode" }], "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "404": { "$ref": "#/components/responses/B25NotFound" } } } },
-    "/internal/v1/learning/plan/current": { "get": { "operationId": "b25ReadLearningPlan", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/learning/srs/batches": { "get": { "operationId": "b25ReadSrsBatch", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } }, "post": { "operationId": "b25CreateSrsBatch", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-srs-batch-key", "replayBehavior": "return-first-durable-batch" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/learning/srs/reviews": { "post": { "operationId": "b25SubmitSrsReview", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-srs-review-key", "replayBehavior": "return-first-durable-srs-state" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "400": { "$ref": "#/components/responses/B25BadRequest" } } } },
-    "/internal/v1/learning/srs/reviews:sync": { "post": { "operationId": "b25SyncSrsReviews", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-srs-sync-key", "replayBehavior": "return-first-durable-sync" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/learning/srs/overview": { "get": { "operationId": "b25ReadSrsOverview", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/assessment/placement/start": { "get": { "operationId": "b25ReadPlacement", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } }, "post": { "operationId": "b25StartPlacement", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-placement-start-key", "replayBehavior": "return-first-durable-session" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "404": { "$ref": "#/components/responses/B25NotFound" } } } },
-    "/internal/v1/assessment/placement/submit-step": { "post": { "operationId": "b25SubmitPlacementStep", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-placement-answer-key", "replayBehavior": "return-first-durable-answer-state" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "409": { "$ref": "#/components/responses/B25Conflict" } } } },
-    "/internal/v1/assessment/placement/skip": { "post": { "operationId": "b25SkipPlacement", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-placement-skip-key", "replayBehavior": "return-first-durable-report" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/assessment/placement/report/{sessionId}": { "get": { "operationId": "b25ReadPlacementReport", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25SessionId" }], "responses": { "200": { "$ref": "#/components/responses/B25Data" }, "404": { "$ref": "#/components/responses/B25NotFound" } } } },
-    "/internal/v1/notifications/preferences": { "get": { "operationId": "b25ReadNotificationPreferences", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } },
-    "/internal/v1/notifications/preferences/{notificationType}/{channel}": { "put": { "operationId": "b25UpdateNotificationPreference", "tags": ["b25-real-data"], "security": [{ "B8WorkloadIdentity": [] }], "parameters": [{ "$ref": "#/components/parameters/B25IdempotencyKey" }], "x-idempotency": { "required": true, "strategy": "principal-notification-preference-key", "replayBehavior": "return-first-durable-preference" }, "responses": { "200": { "$ref": "#/components/responses/B25Data" } } } }
+    "/internal/v1/learner/first-day": {
+      "get": {
+        "operationId": "b25ReadFirstDayProjection",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/home": {
+      "get": {
+        "operationId": "b25ReadLearnerHome",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/onboarding/daily-tasks/{taskId}/complete": {
+      "post": {
+        "operationId": "b25CompleteDailyTask",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25TaskId"
+          },
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-task-key",
+          "replayBehavior": "return-first-durable-task"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/learner/onboarding/daily-tasks/ensure": {
+      "post": {
+        "operationId": "b25EnsureDailyTask",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B25EnsureDailyTaskRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-daily-task-content-key",
+          "replayBehavior": "return-first-durable-task-projection"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "400": {
+            "$ref": "#/components/responses/B25BadRequest"
+          }
+        }
+      }
+    },
+    "/api/v1/onboarding/daily-tasks/ensure": {
+      "post": {
+        "operationId": "b25EnsureDailyTaskPublic",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B25EnsureDailyTaskRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-daily-task-content-key",
+          "replayBehavior": "return-first-durable-task-projection"
+        },
+        "responses": {
+          "200": {
+            "description": "Durable owner response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {}
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
+    },
+    "/internal/v1/content/learner/catalog": {
+      "get": {
+        "operationId": "b25ReadPublishedCatalog",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "403": {
+            "$ref": "#/components/responses/B25Forbidden"
+          }
+        }
+      }
+    },
+    "/internal/v1/content/learner/{contentCode}": {
+      "get": {
+        "operationId": "b25ReadPublishedContent",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25ContentCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/plan/current": {
+      "get": {
+        "operationId": "b25ReadLearningPlan",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/batches": {
+      "get": {
+        "operationId": "b25ReadSrsBatch",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "post": {
+        "operationId": "b25CreateSrsBatch",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-srs-batch-key",
+          "replayBehavior": "return-first-durable-batch"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/reviews": {
+      "post": {
+        "operationId": "b25SubmitSrsReview",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-srs-review-key",
+          "replayBehavior": "return-first-durable-srs-state"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "400": {
+            "$ref": "#/components/responses/B25BadRequest"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/reviews:sync": {
+      "post": {
+        "operationId": "b25SyncSrsReviews",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-srs-sync-key",
+          "replayBehavior": "return-first-durable-sync"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/learning/srs/overview": {
+      "get": {
+        "operationId": "b25ReadSrsOverview",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/start": {
+      "get": {
+        "operationId": "b25ReadPlacement",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      },
+      "post": {
+        "operationId": "b25StartPlacement",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-placement-start-key",
+          "replayBehavior": "return-first-durable-session"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/submit-step": {
+      "post": {
+        "operationId": "b25SubmitPlacementStep",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-placement-answer-key",
+          "replayBehavior": "return-first-durable-answer-state"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "409": {
+            "$ref": "#/components/responses/B25Conflict"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/skip": {
+      "post": {
+        "operationId": "b25SkipPlacement",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-placement-skip-key",
+          "replayBehavior": "return-first-durable-report"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/assessment/placement/report/{sessionId}": {
+      "get": {
+        "operationId": "b25ReadPlacementReport",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25SessionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          },
+          "404": {
+            "$ref": "#/components/responses/B25NotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/notifications/preferences": {
+      "get": {
+        "operationId": "b25ReadNotificationPreferences",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    },
+    "/internal/v1/notifications/preferences/{notificationType}/{channel}": {
+      "put": {
+        "operationId": "b25UpdateNotificationPreference",
+        "tags": [
+          "b25-real-data"
+        ],
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B25IdempotencyKey"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-notification-preference-key",
+          "replayBehavior": "return-first-durable-preference"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B25Data"
+          }
+        }
+      }
+    }
   },
   "components": {
     "parameters": {
-      "B25IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 192 } },
-      "B25TaskId": { "name": "taskId", "in": "path", "required": true, "schema": { "type": "string" } },
-      "B25ContentCode": { "name": "contentCode", "in": "path", "required": true, "schema": { "type": "string" } },
-      "B25SessionId": { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+      "B25IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 192
+        }
+      },
+      "B25TaskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "B25ContentCode": {
+        "name": "contentCode",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "B25SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
     },
     "responses": {
-      "B25Data": { "description": "Durable owner response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B25DataEnvelope" } } } },
-      "B25Unauthorized": { "description": "Verified JWT required" },
-      "B25Forbidden": { "description": "Tenant/owner/rights policy denied" },
-      "B25Conflict": { "description": "State or idempotency conflict" },
-      "B25NotFound": { "description": "Fact or published version not found" },
-      "B25BadRequest": { "description": "Invalid command" }
+      "B25Data": {
+        "description": "Durable owner response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B25DataEnvelope"
+            }
+          }
+        }
+      },
+      "B25Unauthorized": {
+        "description": "Verified JWT required"
+      },
+      "B25Forbidden": {
+        "description": "Tenant/owner/rights policy denied"
+      },
+      "B25Conflict": {
+        "description": "State or idempotency conflict"
+      },
+      "B25NotFound": {
+        "description": "Fact or published version not found"
+      },
+      "B25BadRequest": {
+        "description": "Invalid command"
+      }
     },
     "schemas": {
-      "B25DataEnvelope": { "type": "object", "additionalProperties": true, "properties": { "source": { "type": "string", "enum": ["mysql"] }, "data": {} } },
-      "B25EnsureDailyTaskRequest": { "type": "object", "additionalProperties": false, "required": ["contentCode", "title"], "properties": { "contentCode": { "type": "string", "minLength": 1, "maxLength": 128 }, "title": { "type": "string", "minLength": 1, "maxLength": 255 }, "minutes": { "type": "integer", "minimum": 1, "maximum": 60, "default": 5 } } },
-      "B25ReplayEvidence": { "type": "object", "required": ["idempotencyKey", "firstResult", "replayResult"], "properties": { "idempotencyKey": { "type": "string" }, "firstResult": {}, "replayResult": {}, "sameDigest": { "type": "boolean" } } }
+      "B25DataEnvelope": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "mysql"
+            ]
+          },
+          "data": {}
+        }
+      },
+      "B25EnsureDailyTaskRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentCode",
+          "title"
+        ],
+        "properties": {
+          "contentCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "minutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60,
+            "default": 5
+          }
+        }
+      },
+      "B25ReplayEvidence": {
+        "type": "object",
+        "required": [
+          "idempotencyKey",
+          "firstResult",
+          "replayResult"
+        ],
+        "properties": {
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "firstResult": {},
+          "replayResult": {},
+          "sameDigest": {
+            "type": "boolean"
+          }
+        }
+      }
     }
   }
 }

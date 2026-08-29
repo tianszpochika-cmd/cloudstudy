@@ -1,146 +1,3020 @@
 {
   "tags": [
-    { "name": "b2-assessment", "description": "规则化练习、题目版本、会话、判分和 4:4:2 日流" },
-    { "name": "b2-exam", "description": "CET/考研模拟考试、断点、交卷和防作弊元数据" },
-    { "name": "b2-mastery", "description": "错题、D+0/D+1/D+7 掌握闭环与报告聚合" }
+    {
+      "name": "b2-assessment",
+      "description": "规则化练习、题目版本、会话、判分和 4:4:2 日流"
+    },
+    {
+      "name": "b2-exam",
+      "description": "CET/考研模拟考试、断点、交卷和防作弊元数据"
+    },
+    {
+      "name": "b2-mastery",
+      "description": "错题、D+0/D+1/D+7 掌握闭环与报告聚合"
+    }
   ],
   "paths": {
     "/api/v1/assessment/daily-stream": {
-      "get": { "tags": ["b2-assessment"], "operationId": "getB2DailyStream", "summary": "获取已物化的 4:4:2 日流", "x-b2-acceptance": ["DEV-05-006", "DEV-05-005"], "parameters": [{ "$ref": "#/components/parameters/B2LocalDate" }, { "$ref": "#/components/parameters/B2TargetCount" }, { "$ref": "#/components/parameters/B2IdempotencyKeyOptional" }], "responses": { "200": { "$ref": "#/components/responses/B2SessionResponse" } } }
+      "get": {
+        "tags": [
+          "b2-assessment"
+        ],
+        "operationId": "getB2DailyStream",
+        "summary": "获取已物化的 4:4:2 日流",
+        "x-b2-acceptance": [
+          "DEV-05-006",
+          "DEV-05-005"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2LocalDate"
+          },
+          {
+            "$ref": "#/components/parameters/B2TargetCount"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKeyOptional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B2 session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Session"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/assessment/sessions": {
-      "post": { "tags": ["b2-assessment"], "operationId": "createB2AssessmentSession", "summary": "创建练习或阶段验收会话", "x-b2-acceptance": ["DEV-05-001", "DEV-05-004", "DEV-05-005"], "x-idempotency": { "required": true, "strategy": "assessment-session", "keyHeader": "Idempotency-Key", "replayBehavior": "同作用域同请求体返回首次 session；请求体不同返回 ASM_IDEMPOTENCY_KEY_REUSE" }, "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2CreateAssessmentSessionRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B2SessionResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-assessment"
+        ],
+        "operationId": "createB2AssessmentSession",
+        "summary": "创建练习或阶段验收会话",
+        "x-b2-acceptance": [
+          "DEV-05-001",
+          "DEV-05-004",
+          "DEV-05-005"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "assessment-session",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同作用域同请求体返回首次 session；请求体不同返回 ASM_IDEMPOTENCY_KEY_REUSE"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2CreateAssessmentSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B2 session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Session"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/assessment/sessions/{sessionId}": {
-      "get": { "tags": ["b2-assessment"], "operationId": "getB2AssessmentSession", "summary": "恢复练习会话和答案卡状态", "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }], "responses": { "200": { "$ref": "#/components/responses/B2SessionResponse" }, "404": { "$ref": "#/components/responses/B2NotFound" } } }
+      "get": {
+        "tags": [
+          "b2-assessment"
+        ],
+        "operationId": "getB2AssessmentSession",
+        "summary": "恢复练习会话和答案卡状态",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B2 session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Session"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/assessment/sessions/{sessionId}/answers": {
-      "post": { "tags": ["b2-assessment"], "operationId": "submitB2AssessmentAnswer", "summary": "提交练习答案并即时规则判分", "x-b2-acceptance": ["DEV-05-004", "DEV-05-007"], "x-idempotency": { "required": true, "strategy": "assessment-answer", "keyHeader": "Idempotency-Key", "replayBehavior": "相同 key 或 clientSubmissionId 返回第一次判分结果" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKeyOptional" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2AnswerSubmissionRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2AnswerResponse" }, "400": { "$ref": "#/components/responses/B2Unprocessable" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-assessment"
+        ],
+        "operationId": "submitB2AssessmentAnswer",
+        "summary": "提交练习答案并即时规则判分",
+        "x-b2-acceptance": [
+          "DEV-05-004",
+          "DEV-05-007"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "assessment-answer",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "相同 key 或 clientSubmissionId 返回第一次判分结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2AnswerSubmissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rule-scored answer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2AnswerResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/assessment/sessions/{sessionId}/checkpoint": {
-      "put": { "tags": ["b2-assessment"], "operationId": "saveB2AssessmentCheckpoint", "summary": "保存可恢复断点", "x-b2-acceptance": ["DEV-05-005"], "x-idempotency": { "required": true, "strategy": "assessment-checkpoint", "keyHeader": "Idempotency-Key", "replayBehavior": "相同 seq 重放返回首次确认；旧 seq 返回冲突" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2CheckpointRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2CheckpointResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "put": {
+        "tags": [
+          "b2-assessment"
+        ],
+        "operationId": "saveB2AssessmentCheckpoint",
+        "summary": "保存可恢复断点",
+        "x-b2-acceptance": [
+          "DEV-05-005"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "assessment-checkpoint",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "相同 seq 重放返回首次确认；旧 seq 返回冲突"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2CheckpointRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkpoint accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/assessment/sessions/{sessionId}/complete": {
-      "post": { "tags": ["b2-assessment"], "operationId": "completeB2AssessmentSession", "summary": "完成练习会话并结算", "x-idempotency": { "required": true, "strategy": "assessment-complete", "keyHeader": "Idempotency-Key", "replayBehavior": "重复完成只产生一次结算" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "responses": { "200": { "$ref": "#/components/responses/B2CompletionResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-assessment"
+        ],
+        "operationId": "completeB2AssessmentSession",
+        "summary": "完成练习会话并结算",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "assessment-complete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复完成只产生一次结算"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session completion",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/papers": {
-      "get": { "tags": ["b2-exam"], "operationId": "listB2ExamPapers", "summary": "获取已发布模考试卷（不含答案）", "parameters": [{ "$ref": "#/components/parameters/B2ExamCodeOptional" }], "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" } } }
+      "get": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "listB2ExamPapers",
+        "summary": "获取已发布模考试卷（不含答案）",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2ExamCodeOptional"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cursor page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
     },
     "/api/v1/exam/papers/{paperId}": {
-      "get": { "tags": ["b2-exam"], "operationId": "getB2ExamPaper", "summary": "获取版本化试卷结构（不含答案）", "parameters": [{ "$ref": "#/components/parameters/B2PaperId" }], "responses": { "200": { "$ref": "#/components/responses/B2PaperResponse" }, "404": { "$ref": "#/components/responses/B2NotFound" } } }
+      "get": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "getB2ExamPaper",
+        "summary": "获取版本化试卷结构（不含答案）",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2PaperId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paper without answers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions": {
-      "post": { "tags": ["b2-exam"], "operationId": "createB2ExamSession", "summary": "创建并启动模考会话", "x-b2-acceptance": ["DEV-05-010"], "x-idempotency": { "required": true, "strategy": "exam-session", "keyHeader": "Idempotency-Key", "replayBehavior": "重复创建返回原 exam session" }, "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2CreateExamSessionRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B2SessionResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "createB2ExamSession",
+        "summary": "创建并启动模考会话",
+        "x-b2-acceptance": [
+          "DEV-05-010"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "exam-session",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "重复创建返回原 exam session"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2CreateExamSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "B2 session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Session"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}": {
-      "get": { "tags": ["b2-exam"], "operationId": "getB2ExamSession", "summary": "恢复模考状态、服务端时钟和答案卡", "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }], "responses": { "200": { "$ref": "#/components/responses/B2SessionResponse" }, "410": { "$ref": "#/components/responses/B2Gone" } } }
+      "get": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "getB2ExamSession",
+        "summary": "恢复模考状态、服务端时钟和答案卡",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "B2 session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Session"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "410": {
+            "$ref": "#/components/responses/B2Gone"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/heartbeat": {
-      "post": { "tags": ["b2-exam"], "operationId": "b2ExamHeartbeat", "summary": "上报活动和设备时间元数据", "x-idempotency": { "required": true, "strategy": "exam-heartbeat", "keyHeader": "Idempotency-Key", "replayBehavior": "同一心跳幂等" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2HeartbeatRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2HeartbeatResponse" } } }
+      "post": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "b2ExamHeartbeat",
+        "summary": "上报活动和设备时间元数据",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "exam-heartbeat",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一心跳幂等"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2HeartbeatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Server clock",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/anti-cheat-events": {
-      "post": { "tags": ["b2-exam"], "operationId": "recordB2AntiCheatEvent", "summary": "记录切屏、失焦、设备或时钟异常元数据", "x-b2-acceptance": ["DEV-05-011"], "x-idempotency": { "required": true, "strategy": "anti-cheat-event", "keyHeader": "Idempotency-Key", "replayBehavior": "clientEventId 重放返回首次接受结果" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKeyOptional" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2AntiCheatEventRequest" } } } }, "responses": { "202": { "$ref": "#/components/responses/B2EventAccepted" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "recordB2AntiCheatEvent",
+        "summary": "记录切屏、失焦、设备或时钟异常元数据",
+        "x-b2-acceptance": [
+          "DEV-05-011"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "anti-cheat-event",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "clientEventId 重放返回首次接受结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2AntiCheatEventRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Metadata event accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/answer-sheet": {
-      "get": { "tags": ["b2-exam"], "operationId": "getB2AnswerSheet", "summary": "获取模考答题卡", "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }], "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" } } }
+      "get": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "getB2AnswerSheet",
+        "summary": "获取模考答题卡",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cursor page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "object"
+                            },
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/answer-sheet/marks": {
-      "post": { "tags": ["b2-exam"], "operationId": "updateB2AnswerSheetMark", "summary": "幂等更新疑问标记", "x-idempotency": { "required": true, "strategy": "answer-sheet-mark", "keyHeader": "Idempotency-Key", "replayBehavior": "同题同标记重放不产生副作用" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2AnswerSheetMarkRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "updateB2AnswerSheetMark",
+        "summary": "幂等更新疑问标记",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "answer-sheet-mark",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同题同标记重放不产生副作用"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2AnswerSheetMarkRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cursor page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "object"
+                            },
+                            "items": {
+                              "type": "array",
+                              "items": {
+                                "type": "object"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/checkpoint": {
-      "put": { "tags": ["b2-exam"], "operationId": "saveB2ExamCheckpoint", "summary": "保存模考断点，计时不暂停", "x-idempotency": { "required": true, "strategy": "exam-checkpoint", "keyHeader": "Idempotency-Key", "replayBehavior": "同 seq 重放不覆盖新状态" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2CheckpointRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2CheckpointResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "put": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "saveB2ExamCheckpoint",
+        "summary": "保存模考断点，计时不暂停",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "exam-checkpoint",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同 seq 重放不覆盖新状态"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2CheckpointRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkpoint accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/answers": {
-      "post": { "tags": ["b2-exam"], "operationId": "submitB2ExamAnswer", "summary": "保存模考答案修订，交卷前不返回判分", "x-b2-acceptance": ["DEV-05-010"], "x-idempotency": { "required": true, "strategy": "exam-answer", "keyHeader": "Idempotency-Key", "replayBehavior": "同 revision 重放返回首次接受结果" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKeyOptional" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2AnswerSubmissionRequest" } } } }, "responses": { "202": { "$ref": "#/components/responses/B2ExamAnswerAccepted" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "submitB2ExamAnswer",
+        "summary": "保存模考答案修订，交卷前不返回判分",
+        "x-b2-acceptance": [
+          "DEV-05-010"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "exam-answer",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同 revision 重放返回首次接受结果"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2AnswerSubmissionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted without answer disclosure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2AnswerResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/submit": {
-      "post": { "tags": ["b2-exam"], "operationId": "submitB2Exam", "summary": "交卷并生成可复算报告", "x-idempotency": { "required": true, "strategy": "exam-submit", "keyHeader": "Idempotency-Key", "replayBehavior": "并发交卷只生成一份最终报告" }, "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" }, "202": { "$ref": "#/components/responses/B2SubmitAccepted" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "submitB2Exam",
+        "summary": "交卷并生成可复算报告",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "exam-submit",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "并发交卷只生成一份最终报告"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Report"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "202": {
+            "description": "Submit accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/exam/sessions/{sessionId}/report": {
-      "get": { "tags": ["b2-exam"], "operationId": "getB2ExamReport", "summary": "读取模考诊断报告", "parameters": [{ "$ref": "#/components/parameters/B2SessionId" }], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" }, "202": { "$ref": "#/components/responses/B2ReportProcessing" } } }
+      "get": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "getB2ExamReport",
+        "summary": "读取模考诊断报告",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2SessionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Report"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "202": {
+            "description": "Report is still generating",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "status"
+                          ],
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "const": "GENERATING"
+                            },
+                            "retryAfterSeconds": {
+                              "type": "integer",
+                              "minimum": 1
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/exam/history": {
-      "get": { "tags": ["b2-exam"], "operationId": "listB2ExamHistory", "summary": "分页读取本人模考历史", "parameters": [{ "$ref": "#/components/parameters/B2ExamCodeOptional" }], "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" } } }
+      "get": {
+        "tags": [
+          "b2-exam"
+        ],
+        "operationId": "listB2ExamHistory",
+        "summary": "分页读取本人模考历史",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2ExamCodeOptional"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cursor page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
     },
     "/api/v1/mastery/overview": {
-      "get": { "tags": ["b2-mastery"], "operationId": "getB2MasteryOverview", "summary": "读取复习、D1/D7 和长期掌握概览", "responses": { "200": { "$ref": "#/components/responses/B2MasteryOverviewResponse" } } }
+      "get": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "getB2MasteryOverview",
+        "summary": "读取复习、D1/D7 和长期掌握概览",
+        "responses": {
+          "200": {
+            "description": "Mastery overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/mastery/mistakes": {
-      "get": { "tags": ["b2-mastery"], "operationId": "listB2Mistakes", "summary": "按错因和掌握状态分页读取错题", "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" } } }
+      "get": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "listB2Mistakes",
+        "summary": "按错因和掌握状态分页读取错题",
+        "responses": {
+          "200": {
+            "description": "Cursor page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
     },
     "/api/v1/mastery/mistakes/{mistakeId}": {
-      "get": { "tags": ["b2-mastery"], "operationId": "getB2MistakeDetail", "summary": "读取错题状态转移和解释证据", "parameters": [{ "$ref": "#/components/parameters/B2MistakeId" }], "responses": { "200": { "$ref": "#/components/responses/B2MistakeResponse" }, "404": { "$ref": "#/components/responses/B2NotFound" } } }
+      "get": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "getB2MistakeDetail",
+        "summary": "读取错题状态转移和解释证据",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2MistakeId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mistake",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Mistake"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     },
     "/api/v1/mastery/mistakes/{mistakeId}/retry": {
-      "post": { "tags": ["b2-mastery"], "operationId": "startB2MistakeRetry", "summary": "开始 D0 订正", "x-b2-acceptance": ["DEV-05-008", "DEV-05-009"], "x-idempotency": { "required": true, "strategy": "mastery-retry", "keyHeader": "Idempotency-Key", "replayBehavior": "同一错题只开启一个可重放订正" }, "parameters": [{ "$ref": "#/components/parameters/B2MistakeId" }, { "$ref": "#/components/parameters/B2IdempotencyKey" }], "responses": { "201": { "$ref": "#/components/responses/B2VerificationResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "startB2MistakeRetry",
+        "summary": "开始 D0 订正",
+        "x-b2-acceptance": [
+          "DEV-05-008",
+          "DEV-05-009"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "mastery-retry",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一错题只开启一个可重放订正"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2MistakeId"
+          },
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Verification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Verification"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     },
     "/api/v1/mastery/verifications": {
-      "get": { "tags": ["b2-mastery"], "operationId": "listB2MasteryVerifications", "summary": "读取 D0/D1/D7 验证队列和历史", "responses": { "200": { "$ref": "#/components/responses/B2PageResponse" } } }
+      "get": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "listB2MasteryVerifications",
+        "summary": "读取 D0/D1/D7 验证队列和历史",
+        "responses": {
+          "200": {
+            "description": "Cursor page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
     },
     "/api/v1/mastery/verifications/{verificationId}/submit": {
-      "post": { "tags": ["b2-mastery"], "operationId": "submitB2MasteryVerification", "summary": "提交 D0/D1/D7 验证答案", "x-idempotency": { "required": true, "strategy": "mastery-verification", "keyHeader": "Idempotency-Key", "replayBehavior": "同 verification 重放返回首次结果；未到 dueAt 不得通过" }, "parameters": [{ "name": "verificationId", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }, { "$ref": "#/components/parameters/B2IdempotencyKeyOptional" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2VerificationSubmission" } } } }, "responses": { "200": { "$ref": "#/components/responses/B2VerificationResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" }, "410": { "$ref": "#/components/responses/B2Gone" } } }
+      "post": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "submitB2MasteryVerification",
+        "summary": "提交 D0/D1/D7 验证答案",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "mastery-verification",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同 verification 重放返回首次结果；未到 dueAt 不得通过"
+        },
+        "parameters": [
+          {
+            "name": "verificationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2VerificationSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Verification"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/B2Gone"
+          }
+        }
+      }
     },
     "/api/v1/learning/stats/daily-report": {
-      "get": { "tags": ["b2-mastery"], "operationId": "getB2DailyReport", "summary": "读取 learning-service MySQL 学习日报投影", "x-b2-acceptance": ["DEV-05-012"], "parameters": [{ "$ref": "#/components/parameters/B2LocalDate" }], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" } } }
+      "get": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "getB2DailyReport",
+        "summary": "读取 learning-service MySQL 学习日报投影",
+        "x-b2-acceptance": [
+          "DEV-05-012"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2LocalDate"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Report"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/learning/stats/weekly-report": {
-      "get": { "tags": ["b2-mastery"], "operationId": "getB2WeeklyReport", "summary": "读取 learning-service MySQL 学习周报投影", "x-b2-acceptance": ["DEV-05-012"], "parameters": [{ "name": "weekStart", "in": "query", "required": false, "schema": { "type": "string", "format": "date" } }], "responses": { "200": { "$ref": "#/components/responses/B2ReportResponse" } } }
+      "get": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "getB2WeeklyReport",
+        "summary": "读取 learning-service MySQL 学习周报投影",
+        "x-b2-acceptance": [
+          "DEV-05-012"
+        ],
+        "parameters": [
+          {
+            "name": "weekStart",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B2Report"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          }
+        }
+      }
     },
     "/api/v1/mastery/share-assets": {
-      "post": { "tags": ["b2-mastery"], "operationId": "createB2ShareAsset", "summary": "为已完成报告创建过期分享资产", "x-idempotency": { "required": true, "strategy": "mastery-share-asset", "keyHeader": "Idempotency-Key", "replayBehavior": "同报告和模板只创建一个资产" }, "parameters": [{ "$ref": "#/components/parameters/B2IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ShareAssetRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B2ShareAssetResponse" }, "409": { "$ref": "#/components/responses/B2Conflict" } } }
+      "post": {
+        "tags": [
+          "b2-mastery"
+        ],
+        "operationId": "createB2ShareAsset",
+        "summary": "为已完成报告创建过期分享资产",
+        "x-idempotency": {
+          "required": true,
+          "strategy": "mastery-share-asset",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同报告和模板只创建一个资产"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B2IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B2ShareAssetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Expiring share asset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     }
   },
   "components": {
     "parameters": {
-      "B2IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } },
-      "B2IdempotencyKeyOptional": { "name": "Idempotency-Key", "in": "header", "required": false, "schema": { "type": "string", "minLength": 8, "maxLength": 128, "description": "缺省时使用 clientSubmissionId；服务端仍按请求哈希幂等" } },
-      "B2SessionId": { "name": "sessionId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
-      "B2PaperId": { "name": "paperId", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64", "minimum": 1 } },
-      "B2MistakeId": { "name": "mistakeId", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64", "minimum": 1 } },
-      "B2LocalDate": { "name": "date", "in": "query", "required": false, "schema": { "type": "string", "format": "date" } },
-      "B2TargetCount": { "name": "targetCount", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 15, "maximum": 20, "default": 15 } },
-      "B2ExamCodeOptional": { "name": "examCode", "in": "query", "required": false, "schema": { "type": "string", "enum": ["CET4", "CET6", "KY_ENGLISH_1", "KY_ENGLISH_2"] } }
+      "B2IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "B2IdempotencyKeyOptional": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "description": "缺省时使用 clientSubmissionId；服务端仍按请求哈希幂等"
+        }
+      },
+      "B2SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "B2PaperId": {
+        "name": "paperId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "B2MistakeId": {
+        "name": "mistakeId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        }
+      },
+      "B2LocalDate": {
+        "name": "date",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "B2TargetCount": {
+        "name": "targetCount",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 15,
+          "maximum": 20,
+          "default": 15
+        }
+      },
+      "B2ExamCodeOptional": {
+        "name": "examCode",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "CET4",
+            "CET6",
+            "KY_ENGLISH_1",
+            "KY_ENGLISH_2"
+          ]
+        }
+      }
     },
     "schemas": {
-      "B2CreateAssessmentSessionRequest": { "type": "object", "additionalProperties": false, "required": ["sessionType"], "properties": { "sessionType": { "type": "string", "enum": ["DAILY_STREAM", "QUICK_PRACTICE", "CHECKPOINT"] }, "targetCount": { "type": "integer", "minimum": 15, "maximum": 20 }, "planVersion": { "type": "string", "maxLength": 32 }, "streamRevision": { "type": "string", "maxLength": 32 } } },
-      "B2CreateExamSessionRequest": { "type": "object", "additionalProperties": false, "required": ["paperId", "examCode"], "properties": { "paperId": { "type": "integer", "format": "int64" }, "examCode": { "type": "string", "enum": ["CET4", "CET6", "KY_ENGLISH_1", "KY_ENGLISH_2"] }, "deviceHash": { "type": "string", "minLength": 64, "maxLength": 64 } } },
-      "B2AnswerSubmissionRequest": { "type": "object", "additionalProperties": false, "required": ["exerciseId", "clientSubmissionId", "revision", "answer"], "properties": { "exerciseId": { "type": "integer", "format": "int64" }, "clientSubmissionId": { "type": "string", "maxLength": 128 }, "revision": { "type": "integer", "minimum": 1 }, "answer": { "$ref": "#/components/schemas/B2AnswerByQuestionType" }, "confidence": { "type": "string", "enum": ["SURE", "FUZZY", "GUESS", "DONT_KNOW"] }, "elapsedMs": { "type": "integer", "minimum": 0 }, "checkpointSeq": { "type": "integer", "minimum": 0 } } },
-      "B2AnswerByQuestionType": { "type": "object", "description": "服务端按 questionType 校验；客户端不得传 score、isCorrect 或 correctAnswer", "additionalProperties": true, "properties": { "selectedOptionKeys": { "type": "array", "items": { "type": "string" } }, "blanks": { "type": "array", "items": { "type": "object", "required": ["blankId", "text"], "properties": { "blankId": { "type": "string" }, "text": { "type": "string" } } } }, "orderedTokenIds": { "type": "array", "items": { "type": "string" } }, "pairs": { "type": "array", "items": { "type": "object" } }, "text": { "type": "string", "x-sensitive-fields": ["text"], "description": "原始答案仅进入受保护答案存储，不进入事件和分析日志" } } },
-      "B2CheckpointRequest": { "type": "object", "additionalProperties": false, "required": ["checkpointSeq", "clientStateHash"], "properties": { "checkpointSeq": { "type": "integer", "minimum": 1 }, "currentExerciseId": { "type": "integer", "format": "int64" }, "clientState": { "type": "object" }, "clientStateHash": { "type": "string", "minLength": 64, "maxLength": 128 }, "monotonicElapsedMs": { "type": "integer", "minimum": 0 } } },
-      "B2HeartbeatRequest": { "type": "object", "additionalProperties": false, "required": ["checkpointSeq", "clientEpochMs", "deviceHash"], "properties": { "checkpointSeq": { "type": "integer", "minimum": 0 }, "clientEpochMs": { "type": "integer", "format": "int64" }, "deviceHash": { "type": "string", "minLength": 64, "maxLength": 64 }, "visibilityState": { "type": "string", "enum": ["VISIBLE", "HIDDEN"] }, "focusState": { "type": "string", "enum": ["FOCUSED", "BLURRED"] } } },
-      "B2AntiCheatEventRequest": { "type": "object", "additionalProperties": false, "required": ["clientEventId", "eventType", "deviceHash"], "properties": { "clientEventId": { "type": "string", "maxLength": 128 }, "eventType": { "type": "string", "enum": ["VISIBILITY_HIDDEN", "FOCUS_LOST", "FULLSCREEN_EXIT", "HEARTBEAT_MISSED", "MULTI_DEVICE", "CLOCK_SKEW", "CLIENT_TIME_BACKWARD", "ELAPSED_GAP", "PASTE_USED", "RAPID_SEQUENCE", "ANSWER_AFTER_DEADLINE", "CHECKPOINT_CONFLICT"] }, "sequence": { "type": "integer", "minimum": 0 }, "clientEpochMs": { "type": "integer", "format": "int64" }, "deviceHash": { "type": "string", "minLength": 64, "maxLength": 64 }, "metadata": { "type": "object", "description": "只允许枚举、计数、时间和 hash；禁止答案原文、音视频、屏幕像素" } } },
-      "B2AnswerSheetMarkRequest": { "type": "object", "additionalProperties": false, "required": ["exerciseId", "reviewMark"], "properties": { "exerciseId": { "type": "integer", "format": "int64" }, "reviewMark": { "type": "string", "enum": ["NONE", "REVIEW"] } } },
-      "B2VerificationSubmission": { "allOf": [{ "$ref": "#/components/schemas/B2AnswerSubmissionRequest" }, { "type": "object", "required": ["stage"], "properties": { "stage": { "type": "string", "enum": ["D0", "D1", "D7"] } } }] },
-      "B2ShareAssetRequest": { "type": "object", "additionalProperties": false, "required": ["reportId", "templateCode"], "properties": { "reportId": { "type": "integer", "format": "int64" }, "templateCode": { "type": "string", "maxLength": 64 }, "includeNickname": { "type": "boolean" }, "includeScore": { "type": "boolean" } } },
-      "B2Exercise": { "type": "object", "additionalProperties": false, "x-sensitive-fields": ["prompt"], "required": ["sessionId", "exerciseId", "questionId", "questionType", "position", "prompt"], "properties": { "sessionId": { "type": "string", "format": "uuid" }, "exerciseId": { "type": "integer", "format": "int64" }, "questionId": { "type": "integer", "format": "int64" }, "itemId": { "type": "integer", "format": "int64" }, "questionType": { "type": "string", "enum": ["CHOICE", "CONNECT_LINE", "DRAG_SORTER", "FILL_BLANK", "SPELL_INPUT", "LISTEN_CHOICE", "ERROR_CORRECTION", "TRANSLATION_INPUT"] }, "position": { "type": "integer" }, "sourceBucket": { "type": "string", "enum": ["NEW", "REVIEW", "MISTAKE", "EXAM"] }, "verificationStage": { "type": "string", "enum": ["D0", "D1", "D7"] }, "prompt": { "type": "object", "description": "题面原文仅按学习者权限返回；禁止进入日志和事件，不含 correctAnswer、答案标志或评分关键字" }, "interaction": { "type": "object" }, "feedbackPolicy": { "type": "string", "enum": ["IMMEDIATE", "AFTER_SUBMIT", "PENDING_MANUAL"] } } },
-      "B2Session": { "type": "object", "required": ["sessionId", "sessionType", "status", "serverNow", "exercises"], "properties": { "sessionId": { "type": "string", "format": "uuid" }, "sessionType": { "type": "string" }, "status": { "type": "string" }, "serverNow": { "type": "string", "format": "date-time" }, "deadlineAt": { "type": "string", "format": "date-time", "nullable": true }, "remainingSec": { "type": "integer" }, "lastCheckpointSeq": { "type": "integer" }, "exercises": { "type": "array", "items": { "$ref": "#/components/schemas/B2Exercise" } }, "answerSheet": { "type": "array", "items": { "type": "object" } }, "requestedQuota": { "type": "object" }, "actualQuota": { "type": "object" }, "degraded": { "type": "boolean" } } },
-      "B2AnswerResult": { "type": "object", "required": ["requestId", "exerciseId", "accepted", "scoringStatus"], "properties": { "requestId": { "type": "string" }, "exerciseId": { "type": "integer", "format": "int64" }, "accepted": { "type": "boolean" }, "revision": { "type": "integer" }, "scoringStatus": { "type": "string", "enum": ["SCORED", "PENDING_MANUAL", "REJECTED", "LATE", "ACCEPTED"] }, "isCorrect": { "type": "boolean", "nullable": true }, "score": { "type": "number", "nullable": true }, "maxScore": { "type": "number", "nullable": true }, "errorCauseCandidates": { "type": "array", "items": { "type": "string" } }, "masteryEffect": { "type": "object", "nullable": true } } },
-      "B2Report": { "type": "object", "required": ["reportId", "reportType", "status", "calculationVersion"], "properties": { "reportId": { "type": "integer", "format": "int64" }, "reportType": { "type": "string", "enum": ["EXAM_DIAGNOSTIC", "DAILY", "WEEKLY"] }, "status": { "type": "string", "enum": ["GENERATING", "READY", "PARTIAL", "FAILED"] }, "score": { "type": "number", "nullable": true }, "reportedMaxScore": { "type": "number", "nullable": true }, "percentile": { "type": "number", "nullable": true }, "cohortCount": { "type": "integer", "nullable": true }, "calculationVersion": { "type": "string" }, "metrics": { "type": "object" }, "evidence": { "type": "array", "items": { "type": "object" } }, "explanation": { "type": "object" } } },
-      "B2Mistake": { "type": "object", "required": ["mistakeId", "itemId", "mistakeStatus", "masteryStatus", "errorCategory"], "properties": { "mistakeId": { "type": "integer", "format": "int64" }, "itemId": { "type": "integer", "format": "int64" }, "questionId": { "type": "integer", "format": "int64" }, "mistakeStatus": { "type": "string", "enum": ["PENDING_RETRY", "DELAY_VERIFY_D1", "DELAY_VERIFY_D7", "MASTERED", "REOPENED"] }, "masteryStatus": { "type": "string", "enum": ["NEW", "LEARNING", "MASTERED", "CONSOLIDATED"] }, "errorCategory": { "type": "string" }, "reasonTrace": { "type": "array", "items": { "type": "object" } } } },
-      "B2Verification": { "type": "object", "required": ["verificationId", "mistakeId", "stage", "result", "dueAt"], "properties": { "verificationId": { "type": "integer", "format": "int64" }, "mistakeId": { "type": "integer", "format": "int64" }, "stage": { "type": "string", "enum": ["D0", "D1", "D7"] }, "result": { "type": "string", "enum": ["PENDING", "PASSED", "FAILED", "NOT_DUE", "EXPIRED"] }, "dueAt": { "type": "string", "format": "date-time" }, "score": { "type": "number", "nullable": true }, "maxScore": { "type": "number", "nullable": true }, "nextState": { "type": "string" } } },
-      "B2ApiError": { "type": "object", "required": ["requestId", "error"], "properties": { "requestId": { "type": "string" }, "error": { "type": "object", "required": ["errorCode", "message", "retryable"], "properties": { "errorCode": { "type": "string" }, "message": { "type": "string" }, "retryable": { "type": "boolean" } } } } }
+      "B2CreateAssessmentSessionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionType"
+        ],
+        "properties": {
+          "sessionType": {
+            "type": "string",
+            "enum": [
+              "DAILY_STREAM",
+              "QUICK_PRACTICE",
+              "CHECKPOINT"
+            ]
+          },
+          "targetCount": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 20
+          },
+          "planVersion": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "streamRevision": {
+            "type": "string",
+            "maxLength": 32
+          }
+        }
+      },
+      "B2CreateExamSessionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "paperId",
+          "examCode"
+        ],
+        "properties": {
+          "paperId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "examCode": {
+            "type": "string",
+            "enum": [
+              "CET4",
+              "CET6",
+              "KY_ENGLISH_1",
+              "KY_ENGLISH_2"
+            ]
+          },
+          "deviceHash": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          }
+        }
+      },
+      "B2AnswerSubmissionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exerciseId",
+          "clientSubmissionId",
+          "revision",
+          "answer"
+        ],
+        "properties": {
+          "exerciseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clientSubmissionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "answer": {
+            "$ref": "#/components/schemas/B2AnswerByQuestionType"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "SURE",
+              "FUZZY",
+              "GUESS",
+              "DONT_KNOW"
+            ]
+          },
+          "elapsedMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "checkpointSeq": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "B2AnswerByQuestionType": {
+        "type": "object",
+        "description": "服务端按 questionType 校验；客户端不得传 score、isCorrect 或 correctAnswer",
+        "additionalProperties": true,
+        "properties": {
+          "selectedOptionKeys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "blanks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "blankId",
+                "text"
+              ],
+              "properties": {
+                "blankId": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "orderedTokenIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pairs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "text": {
+            "type": "string",
+            "x-sensitive-fields": [
+              "text"
+            ],
+            "description": "原始答案仅进入受保护答案存储，不进入事件和分析日志"
+          }
+        }
+      },
+      "B2CheckpointRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkpointSeq",
+          "clientStateHash"
+        ],
+        "properties": {
+          "checkpointSeq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currentExerciseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "clientState": {
+            "type": "object"
+          },
+          "clientStateHash": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 128
+          },
+          "monotonicElapsedMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "B2HeartbeatRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkpointSeq",
+          "clientEpochMs",
+          "deviceHash"
+        ],
+        "properties": {
+          "checkpointSeq": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clientEpochMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "deviceHash": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "visibilityState": {
+            "type": "string",
+            "enum": [
+              "VISIBLE",
+              "HIDDEN"
+            ]
+          },
+          "focusState": {
+            "type": "string",
+            "enum": [
+              "FOCUSED",
+              "BLURRED"
+            ]
+          }
+        }
+      },
+      "B2AntiCheatEventRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientEventId",
+          "eventType",
+          "deviceHash"
+        ],
+        "properties": {
+          "clientEventId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "eventType": {
+            "type": "string",
+            "enum": [
+              "VISIBILITY_HIDDEN",
+              "FOCUS_LOST",
+              "FULLSCREEN_EXIT",
+              "HEARTBEAT_MISSED",
+              "MULTI_DEVICE",
+              "CLOCK_SKEW",
+              "CLIENT_TIME_BACKWARD",
+              "ELAPSED_GAP",
+              "PASTE_USED",
+              "RAPID_SEQUENCE",
+              "ANSWER_AFTER_DEADLINE",
+              "CHECKPOINT_CONFLICT"
+            ]
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "clientEpochMs": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "deviceHash": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "metadata": {
+            "type": "object",
+            "description": "只允许枚举、计数、时间和 hash；禁止答案原文、音视频、屏幕像素"
+          }
+        }
+      },
+      "B2AnswerSheetMarkRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exerciseId",
+          "reviewMark"
+        ],
+        "properties": {
+          "exerciseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "reviewMark": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "REVIEW"
+            ]
+          }
+        }
+      },
+      "B2VerificationSubmission": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B2AnswerSubmissionRequest"
+          },
+          {
+            "type": "object",
+            "required": [
+              "stage"
+            ],
+            "properties": {
+              "stage": {
+                "type": "string",
+                "enum": [
+                  "D0",
+                  "D1",
+                  "D7"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "B2ShareAssetRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportId",
+          "templateCode"
+        ],
+        "properties": {
+          "reportId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "templateCode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "includeNickname": {
+            "type": "boolean"
+          },
+          "includeScore": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B2Exercise": {
+        "type": "object",
+        "additionalProperties": false,
+        "x-sensitive-fields": [
+          "prompt"
+        ],
+        "required": [
+          "sessionId",
+          "exerciseId",
+          "questionId",
+          "questionType",
+          "position",
+          "prompt"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "exerciseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "questionType": {
+            "type": "string",
+            "enum": [
+              "CHOICE",
+              "CONNECT_LINE",
+              "DRAG_SORTER",
+              "FILL_BLANK",
+              "SPELL_INPUT",
+              "LISTEN_CHOICE",
+              "ERROR_CORRECTION",
+              "TRANSLATION_INPUT"
+            ]
+          },
+          "position": {
+            "type": "integer"
+          },
+          "sourceBucket": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "REVIEW",
+              "MISTAKE",
+              "EXAM"
+            ]
+          },
+          "verificationStage": {
+            "type": "string",
+            "enum": [
+              "D0",
+              "D1",
+              "D7"
+            ]
+          },
+          "prompt": {
+            "type": "object",
+            "description": "题面原文仅按学习者权限返回；禁止进入日志和事件，不含 correctAnswer、答案标志或评分关键字"
+          },
+          "interaction": {
+            "type": "object"
+          },
+          "feedbackPolicy": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "AFTER_SUBMIT",
+              "PENDING_MANUAL"
+            ]
+          }
+        }
+      },
+      "B2Session": {
+        "type": "object",
+        "required": [
+          "sessionId",
+          "sessionType",
+          "status",
+          "serverNow",
+          "exercises"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sessionType": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "serverNow": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deadlineAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "remainingSec": {
+            "type": "integer"
+          },
+          "lastCheckpointSeq": {
+            "type": "integer"
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B2Exercise"
+            }
+          },
+          "answerSheet": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "requestedQuota": {
+            "type": "object"
+          },
+          "actualQuota": {
+            "type": "object"
+          },
+          "degraded": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B2AnswerResult": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "exerciseId",
+          "accepted",
+          "scoringStatus"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "exerciseId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "scoringStatus": {
+            "type": "string",
+            "enum": [
+              "SCORED",
+              "PENDING_MANUAL",
+              "REJECTED",
+              "LATE",
+              "ACCEPTED"
+            ]
+          },
+          "isCorrect": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "score": {
+            "type": "number",
+            "nullable": true
+          },
+          "maxScore": {
+            "type": "number",
+            "nullable": true
+          },
+          "errorCauseCandidates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "masteryEffect": {
+            "type": "object",
+            "nullable": true
+          }
+        }
+      },
+      "B2Report": {
+        "type": "object",
+        "required": [
+          "reportId",
+          "reportType",
+          "status",
+          "calculationVersion"
+        ],
+        "properties": {
+          "reportId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "reportType": {
+            "type": "string",
+            "enum": [
+              "EXAM_DIAGNOSTIC",
+              "DAILY",
+              "WEEKLY"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "GENERATING",
+              "READY",
+              "PARTIAL",
+              "FAILED"
+            ]
+          },
+          "score": {
+            "type": "number",
+            "nullable": true
+          },
+          "reportedMaxScore": {
+            "type": "number",
+            "nullable": true
+          },
+          "percentile": {
+            "type": "number",
+            "nullable": true
+          },
+          "cohortCount": {
+            "type": "integer",
+            "nullable": true
+          },
+          "calculationVersion": {
+            "type": "string"
+          },
+          "metrics": {
+            "type": "object"
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "explanation": {
+            "type": "object"
+          }
+        }
+      },
+      "B2Mistake": {
+        "type": "object",
+        "required": [
+          "mistakeId",
+          "itemId",
+          "mistakeStatus",
+          "masteryStatus",
+          "errorCategory"
+        ],
+        "properties": {
+          "mistakeId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "itemId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "mistakeStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING_RETRY",
+              "DELAY_VERIFY_D1",
+              "DELAY_VERIFY_D7",
+              "MASTERED",
+              "REOPENED"
+            ]
+          },
+          "masteryStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "errorCategory": {
+            "type": "string"
+          },
+          "reasonTrace": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2Verification": {
+        "type": "object",
+        "required": [
+          "verificationId",
+          "mistakeId",
+          "stage",
+          "result",
+          "dueAt"
+        ],
+        "properties": {
+          "verificationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "mistakeId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "D0",
+              "D1",
+              "D7"
+            ]
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PASSED",
+              "FAILED",
+              "NOT_DUE",
+              "EXPIRED"
+            ]
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "score": {
+            "type": "number",
+            "nullable": true
+          },
+          "maxScore": {
+            "type": "number",
+            "nullable": true
+          },
+          "nextState": {
+            "type": "string"
+          }
+        }
+      },
+      "B2ApiError": {
+        "x-superseded-by": "#/components/schemas/ApiErrorEnvelope",
+        "description": "Compatibility error shape for existing assessment operations. New or migrated operations use ApiErrorEnvelope.",
+        "type": "object",
+        "required": [
+          "requestId",
+          "error"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "errorCode",
+              "message",
+              "retryable"
+            ],
+            "properties": {
+              "errorCode": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "retryable": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
     },
     "responses": {
-      "B2SessionResponse": { "description": "B2 session", "content": { "application/json": { "schema": { "type": "object", "properties": { "requestId": { "type": "string" }, "data": { "$ref": "#/components/schemas/B2Session" } } } } } },
-      "B2AnswerResponse": { "description": "Rule-scored answer", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2AnswerResult" } } } },
-      "B2ExamAnswerAccepted": { "description": "Accepted without answer disclosure", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2AnswerResult" } } } },
-      "B2ReportResponse": { "description": "Report", "content": { "application/json": { "schema": { "type": "object", "properties": { "requestId": { "type": "string" }, "data": { "$ref": "#/components/schemas/B2Report" } } } } } },
-      "B2MasteryOverviewResponse": { "description": "Mastery overview", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2MistakeResponse": { "description": "Mistake", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2Mistake" } } } },
-      "B2VerificationResponse": { "description": "Verification", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2Verification" } } } },
-      "B2ShareAssetResponse": { "description": "Expiring share asset", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2PageResponse": { "description": "Cursor page", "content": { "application/json": { "schema": { "type": "object", "properties": { "page": { "type": "object" }, "items": { "type": "array", "items": { "type": "object" } } } } } } },
-      "B2CheckpointResponse": { "description": "Checkpoint accepted", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2CompletionResponse": { "description": "Session completion", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2HeartbeatResponse": { "description": "Server clock", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2EventAccepted": { "description": "Metadata event accepted", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2SubmitAccepted": { "description": "Submit accepted", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2ReportProcessing": { "description": "Report is still generating", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ApiError" } } } },
-      "B2PaperResponse": { "description": "Paper without answers", "content": { "application/json": { "schema": { "type": "object" } } } },
-      "B2Conflict": { "description": "State or idempotency conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ApiError" } } } },
-      "B2NotFound": { "description": "Not found in actor scope", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ApiError" } } } },
-      "B2Gone": { "description": "Not due or expired", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ApiError" } } } },
-      "B2Unprocessable": { "description": "Invalid answer schema", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B2ApiError" } } } }
+      "B2SessionResponse": {
+        "description": "B2 session",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/B2Session"
+                }
+              }
+            }
+          }
+        }
+      },
+      "B2AnswerResponse": {
+        "description": "Rule-scored answer",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2AnswerResult"
+            }
+          }
+        }
+      },
+      "B2ExamAnswerAccepted": {
+        "description": "Accepted without answer disclosure",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2AnswerResult"
+            }
+          }
+        }
+      },
+      "B2ReportResponse": {
+        "description": "Report",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "requestId": {
+                  "type": "string"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/B2Report"
+                }
+              }
+            }
+          }
+        }
+      },
+      "B2MasteryOverviewResponse": {
+        "description": "Mastery overview",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2MistakeResponse": {
+        "description": "Mistake",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2Mistake"
+            }
+          }
+        }
+      },
+      "B2VerificationResponse": {
+        "description": "Verification",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2Verification"
+            }
+          }
+        }
+      },
+      "B2ShareAssetResponse": {
+        "description": "Expiring share asset",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2PageResponse": {
+        "description": "Cursor page",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "object"
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "B2CheckpointResponse": {
+        "description": "Checkpoint accepted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2CompletionResponse": {
+        "description": "Session completion",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2HeartbeatResponse": {
+        "description": "Server clock",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2EventAccepted": {
+        "description": "Metadata event accepted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2SubmitAccepted": {
+        "description": "Submit accepted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2ReportProcessing": {
+        "description": "Report is still generating",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2ApiError"
+            }
+          }
+        }
+      },
+      "B2PaperResponse": {
+        "description": "Paper without answers",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "B2Conflict": {
+        "description": "State or idempotency conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2ApiError"
+            }
+          }
+        }
+      },
+      "B2NotFound": {
+        "description": "Not found in actor scope",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2ApiError"
+            }
+          }
+        }
+      },
+      "B2Gone": {
+        "description": "Not due or expired",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2ApiError"
+            }
+          }
+        }
+      },
+      "B2Unprocessable": {
+        "description": "Invalid answer schema",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B2ApiError"
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -29,6 +29,10 @@ function writeFile(filePath, contents) {
   fs.writeFileSync(filePath, `${contents.trimEnd()}\n`, 'utf8');
 }
 
+function normalizedContents(contents) {
+  return `${contents.trimEnd()}\n`;
+}
+
 function schemaTypeAlias(name, schema, document) {
   const docs = schemaDescription(schema).length > 0 ? `${schemaDescription(schema).join('\n')}\n` : '';
   return `/**\n${docs || ' * Generated from the contract source.\n'} */\nexport type ${toTypeName(name)} = ${schemaToTs(document, schema)};`;
@@ -142,38 +146,59 @@ export type JsonSchemaId = keyof typeof jsonSchemaRegistry;
 `;
 }
 
-export function generateContracts() {
+export function buildGeneratedOutputs({ contractsOnly = false } = {}) {
   validateContracts({ quiet: true });
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
   const schemaRegistry = readJson(schemaRegistryPath);
-  writeFile(path.join(contractsGeneratedDir, 'openapi.ts'), generateOpenApiTypes(openApi));
-  writeFile(path.join(contractsGeneratedDir, 'events.ts'), generateEventTypes(catalog));
-  writeFile(path.join(contractsGeneratedDir, 'schemas.ts'), generateSchemaRegistry(schemaRegistry));
-  writeFile(path.join(contractsGeneratedDir, 'index.ts'), `export * from './openapi';\nexport * from './events';\nexport * from './schemas';`);
   const outputs = [
-    path.join(contractsGeneratedDir, 'openapi.ts'),
-    path.join(contractsGeneratedDir, 'events.ts'),
-    path.join(contractsGeneratedDir, 'schemas.ts'),
-    path.join(contractsGeneratedDir, 'index.ts'),
+    { path: path.join(contractsGeneratedDir, 'openapi.ts'), contents: normalizedContents(generateOpenApiTypes(openApi)) },
+    { path: path.join(contractsGeneratedDir, 'events.ts'), contents: normalizedContents(generateEventTypes(catalog)) },
+    { path: path.join(contractsGeneratedDir, 'schemas.ts'), contents: normalizedContents(generateSchemaRegistry(schemaRegistry)) },
+    { path: path.join(contractsGeneratedDir, 'index.ts'), contents: normalizedContents(`export * from './openapi';\nexport * from './events';\nexport * from './schemas';`) },
   ];
-  if (!process.argv.includes('--contracts-only')) {
-    writeFile(path.join(apiClientGeneratedDir, 'index.ts'), generateApiClientTypes(openApi));
-    outputs.push(path.join(apiClientGeneratedDir, 'index.ts'));
+  if (!contractsOnly) {
+    outputs.push({ path: path.join(apiClientGeneratedDir, 'index.ts'), contents: normalizedContents(generateApiClientTypes(openApi)) });
+  }
+  return outputs;
+}
+
+export function findGeneratedOutputDrift(outputs, { readFile = (filePath) => fs.readFileSync(filePath, 'utf8') } = {}) {
+  const drift = [];
+  for (const output of outputs) {
+    try {
+      if (readFile(output.path) !== output.contents) drift.push(output.path);
+    } catch {
+      drift.push(output.path);
+    }
+  }
+  return drift;
+}
+
+export function generateContracts({ write = true, contractsOnly = false } = {}) {
+  const generatedOutputs = buildGeneratedOutputs({ contractsOnly });
+  if (write) {
+    for (const output of generatedOutputs) writeFile(output.path, output.contents);
+  } else {
+    const drift = findGeneratedOutputDrift(generatedOutputs);
+    if (drift.length > 0) {
+      throw new Error(`Generated contract drift detected in ${drift.map((filePath) => path.relative(repoRoot, filePath)).join(', ')}. Run pnpm contracts:generate to write generated outputs.`);
+    }
   }
   return {
-    outputs,
+    outputs: generatedOutputs.map((output) => output.path),
   };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
   try {
     if (process.argv.includes('--help')) {
-      console.log('Usage: node scripts/contracts/generate-contracts.mjs [--contracts-only]');
+      console.log('Usage: node scripts/contracts/generate-contracts.mjs [--check] [--contracts-only]');
       process.exit(0);
     }
-    const result = generateContracts();
-    console.log(`Contract generation passed: ${result.outputs.length} generated files.`);
+    const check = process.argv.includes('--check');
+    const result = generateContracts({ write: !check, contractsOnly: process.argv.includes('--contracts-only') });
+    console.log(`Contract generation ${check ? 'checked' : 'passed'}: ${result.outputs.length} generated files.`);
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;

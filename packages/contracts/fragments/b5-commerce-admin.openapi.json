@@ -8,215 +8,2406 @@
   "x-contract-status": "historical-compatibility",
   "x-canonical-owner": "b13",
   "tags": [
-    { "name": "b5-commerce", "description": "SKU、订单、支付尝试、权益、家庭组、退款和发票" },
-    { "name": "b5-payment-callback", "description": "微信、支付宝、Apple sandbox callback and replay-safe verification" },
-    { "name": "b5-admin-content", "description": "教研内容、版本、双审、发布回滚和导入" },
-    { "name": "b5-admin-operations", "description": "运营指标、风险、对账、Feature Flag、审计和工单" },
-    { "name": "b5-support", "description": "用户纠错和客服工单，默认仅保存脱敏引用" }
+    {
+      "name": "b5-commerce",
+      "description": "SKU、订单、支付尝试、权益、家庭组、退款和发票"
+    },
+    {
+      "name": "b5-payment-callback",
+      "description": "微信、支付宝、Apple sandbox callback and replay-safe verification"
+    },
+    {
+      "name": "b5-admin-content",
+      "description": "教研内容、版本、双审、发布回滚和导入"
+    },
+    {
+      "name": "b5-admin-operations",
+      "description": "运营指标、风险、对账、Feature Flag、审计和工单"
+    },
+    {
+      "name": "b5-support",
+      "description": "用户纠错和客服工单，默认仅保存脱敏引用"
+    }
   ],
   "paths": {
     "/api/v1/commerce/skus": {
-      "get": { "operationId": "listCommerceSkus", "tags": ["b5-commerce"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "listCommerceSkus",
+        "tags": [
+          "b5-commerce"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/commerce/skus/{skuId}": {
-      "get": { "operationId": "getCommerceSku", "tags": ["b5-commerce"], "parameters": [{ "$ref": "#/components/parameters/B5SkuId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "404": { "$ref": "#/components/responses/B5NotFound" } } }
+      "get": {
+        "operationId": "getCommerceSku",
+        "tags": [
+          "b5-commerce"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5SkuId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/B5NotFound"
+          }
+        }
+      }
     },
     "/api/v1/commerce/orders": {
-      "get": { "operationId": "listCommerceOrders", "tags": ["b5-commerce"], "parameters": [{ "$ref": "#/components/parameters/B5Cursor" }, { "$ref": "#/components/parameters/B5Limit" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } },
-      "post": { "operationId": "createCommerceOrder", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-order-create", "keyHeader": "Idempotency-Key", "replayBehavior": "同一用户、SKU、价格快照只创建一个可复用订单" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5CreateOrderRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "get": {
+        "operationId": "listCommerceOrders",
+        "tags": [
+          "b5-commerce"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/B5Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createCommerceOrder",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-order-create",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一用户、SKU、价格快照只创建一个可复用订单"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5CreateOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/orders/{orderId}": {
-      "get": { "operationId": "getCommerceOrder", "tags": ["b5-commerce"], "parameters": [{ "$ref": "#/components/parameters/B5OrderId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "404": { "$ref": "#/components/responses/B5NotFound" } } }
+      "get": {
+        "operationId": "getCommerceOrder",
+        "tags": [
+          "b5-commerce"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5OrderId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/B5NotFound"
+          }
+        }
+      }
     },
     "/api/v1/commerce/orders/{orderId}/payment-intents": {
-      "post": { "operationId": "createPaymentAttempt", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-payment-attempt", "keyHeader": "Idempotency-Key", "replayBehavior": "同一订单和支付渠道只创建一个活跃支付尝试" }, "parameters": [{ "$ref": "#/components/parameters/B5OrderId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5PaymentAttemptRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "createPaymentAttempt",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-payment-attempt",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一订单和支付渠道只创建一个活跃支付尝试"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5OrderId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5PaymentAttemptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/wechat/callback": {
-      "post": { "operationId": "receiveWechatCallback", "tags": ["b5-payment-callback"], "x-idempotency": { "required": true, "strategy": "wechat-callback-event", "keyHeader": "Idempotency-Key", "replayBehavior": "按平台事件号和交易号幂等验签、验金额、入账" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ProviderCallbackRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "receiveWechatCallback",
+        "tags": [
+          "b5-payment-callback"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "wechat-callback-event",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "按平台事件号和交易号幂等验签、验金额、入账"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ProviderCallbackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/alipay/notify": {
-      "post": { "operationId": "receiveAlipayNotify", "tags": ["b5-payment-callback"], "x-idempotency": { "required": true, "strategy": "alipay-callback-event", "keyHeader": "Idempotency-Key", "replayBehavior": "按平台事件号和交易号幂等验签、验金额、入账" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ProviderCallbackRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "receiveAlipayNotify",
+        "tags": [
+          "b5-payment-callback"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "alipay-callback-event",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "按平台事件号和交易号幂等验签、验金额、入账"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ProviderCallbackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/apple/transactions/verify": {
-      "post": { "operationId": "verifyAppleTransaction", "tags": ["b5-payment-callback"], "x-idempotency": { "required": true, "strategy": "apple-transaction-verification", "keyHeader": "Idempotency-Key", "replayBehavior": "按 Apple transactionId 幂等校验并阻止重复权益" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5AppleVerificationRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "verifyAppleTransaction",
+        "tags": [
+          "b5-payment-callback"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "apple-transaction-verification",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "按 Apple transactionId 幂等校验并阻止重复权益"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5AppleVerificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/apple/recovery/scan": {
-      "post": { "operationId": "scanAppleRecovery", "tags": ["b5-payment-callback"], "x-idempotency": { "required": true, "strategy": "apple-recovery-scan", "keyHeader": "Idempotency-Key", "replayBehavior": "按用户和扫描窗口幂等恢复可验证的订阅事实" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5AppleVerificationRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "scanAppleRecovery",
+        "tags": [
+          "b5-payment-callback"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "apple-recovery-scan",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "按用户和扫描窗口幂等恢复可验证的订阅事实"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5AppleVerificationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/commerce/apple/notifications": {
-      "post": { "operationId": "receiveAppleNotification", "tags": ["b5-payment-callback"], "x-idempotency": { "required": true, "strategy": "apple-notification", "keyHeader": "Idempotency-Key", "replayBehavior": "按 notificationId 幂等更新订阅状态并保留审计" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ProviderCallbackRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "receiveAppleNotification",
+        "tags": [
+          "b5-payment-callback"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "apple-notification",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "按 notificationId 幂等更新订阅状态并保留审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ProviderCallbackRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/commerce/entitlements/me": {
-      "get": { "operationId": "getMyEntitlements", "tags": ["b5-commerce"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "getMyEntitlements",
+        "tags": [
+          "b5-commerce"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/commerce/households": {
-      "post": { "operationId": "createHousehold", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-household-create", "keyHeader": "Idempotency-Key", "replayBehavior": "同一用户只创建一个可管理家庭组" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": false, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5HouseholdRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "createHousehold",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-household-create",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一用户只创建一个可管理家庭组"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5HouseholdRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/households/{householdId}/invitations": {
-      "post": { "operationId": "createHouseholdInvitation", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-household-invite", "keyHeader": "Idempotency-Key", "replayBehavior": "同一家庭组和成员引用只生成一个待接受邀请" }, "parameters": [{ "$ref": "#/components/parameters/B5HouseholdId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5InvitationRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "createHouseholdInvitation",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-household-invite",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一家庭组和成员引用只生成一个待接受邀请"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5HouseholdId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5InvitationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/households/invitations/accept": {
-      "post": { "operationId": "acceptHouseholdInvitation", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-household-accept", "keyHeader": "Idempotency-Key", "replayBehavior": "邀请接受和成员占位只应用一次" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5InvitationAcceptRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "acceptHouseholdInvitation",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-household-accept",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "邀请接受和成员占位只应用一次"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5InvitationAcceptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/households/{householdId}/members/{memberUserId}": {
-      "delete": { "operationId": "removeHouseholdMember", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-household-remove", "keyHeader": "Idempotency-Key", "replayBehavior": "成员移除可重放且不删除学习事实" }, "parameters": [{ "$ref": "#/components/parameters/B5HouseholdId" }, { "$ref": "#/components/parameters/B5MemberUserId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "404": { "$ref": "#/components/responses/B5NotFound" } } }
+      "delete": {
+        "operationId": "removeHouseholdMember",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-household-remove",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "成员移除可重放且不删除学习事实"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5HouseholdId"
+          },
+          {
+            "$ref": "#/components/parameters/B5MemberUserId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/B5NotFound"
+          }
+        }
+      }
     },
     "/api/v1/commerce/activation-codes/redeem": {
-      "post": { "operationId": "redeemActivationCode", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-activation-redeem", "keyHeader": "Idempotency-Key", "replayBehavior": "激活码只能成功兑换一次，重复请求返回原兑换事实" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ActivationRedeemRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "redeemActivationCode",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-activation-redeem",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "激活码只能成功兑换一次，重复请求返回原兑换事实"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ActivationRedeemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/orders/{orderId}/refunds": {
-      "post": { "operationId": "requestCommerceRefund", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-refund-request", "keyHeader": "Idempotency-Key", "replayBehavior": "同一订单只创建一个可审计退款申请" }, "parameters": [{ "$ref": "#/components/parameters/B5OrderId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5RefundRequest" } } } }, "responses": { "202": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "requestCommerceRefund",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-refund-request",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一订单只创建一个可审计退款申请"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5OrderId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5RefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/commerce/invoices": {
-      "get": { "operationId": "listInvoices", "tags": ["b5-commerce"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } },
-      "post": { "operationId": "createInvoice", "tags": ["b5-commerce"], "x-idempotency": { "required": true, "strategy": "commerce-invoice-request", "keyHeader": "Idempotency-Key", "replayBehavior": "同一支付订单和发票版本只提交一次" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5InvoiceRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "get": {
+        "operationId": "listInvoices",
+        "tags": [
+          "b5-commerce"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      },
+      "post": {
+        "operationId": "createInvoice",
+        "tags": [
+          "b5-commerce"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "commerce-invoice-request",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一支付订单和发票版本只提交一次"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5InvoiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/support/tickets": {
-      "get": { "operationId": "listSupportTickets", "tags": ["b5-support"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } },
-      "post": { "operationId": "createSupportTicket", "tags": ["b5-support"], "x-idempotency": { "required": true, "strategy": "support-ticket-create", "keyHeader": "Idempotency-Key", "replayBehavior": "同一纠错引用只创建一个工单" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5SupportTicketRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "get": {
+        "operationId": "listSupportTickets",
+        "tags": [
+          "b5-support"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      },
+      "post": {
+        "operationId": "createSupportTicket",
+        "tags": [
+          "b5-support"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "support-ticket-create",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一纠错引用只创建一个工单"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5SupportTicketRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/support/tickets/{ticketId}": {
-      "get": { "operationId": "getSupportTicket", "tags": ["b5-support"], "parameters": [{ "$ref": "#/components/parameters/B5TicketId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "404": { "$ref": "#/components/responses/B5NotFound" } } }
+      "get": {
+        "operationId": "getSupportTicket",
+        "tags": [
+          "b5-support"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5TicketId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/B5NotFound"
+          }
+        }
+      }
     },
     "/api/v1/support/tickets/{ticketId}/messages": {
-      "post": { "operationId": "addSupportTicketMessage", "tags": ["b5-support"], "x-idempotency": { "required": true, "strategy": "support-ticket-message", "keyHeader": "Idempotency-Key", "replayBehavior": "工单消息按客户端引用幂等追加" }, "parameters": [{ "$ref": "#/components/parameters/B5TicketId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5SupportMessageRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "addSupportTicketMessage",
+        "tags": [
+          "b5-support"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "support-ticket-message",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "工单消息按客户端引用幂等追加"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5TicketId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5SupportMessageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/content": {
-      "post": { "operationId": "createContentDraft", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-content-create", "keyHeader": "Idempotency-Key", "replayBehavior": "同一内容编码只创建一个草稿实体" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ContentDraftRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "createContentDraft",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-content-create",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一内容编码只创建一个草稿实体"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ContentDraftRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/content/{contentId}/draft": {
-      "put": { "operationId": "saveContentDraft", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-content-draft-save", "keyHeader": "Idempotency-Key", "replayBehavior": "按内容和编辑版本幂等保存草稿" }, "parameters": [{ "$ref": "#/components/parameters/B5ContentId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ContentSaveRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "put": {
+        "operationId": "saveContentDraft",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-content-draft-save",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "按内容和编辑版本幂等保存草稿"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ContentSaveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/content/{contentId}/validate": {
-      "post": { "operationId": "validateContentDraft", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-content-validate", "keyHeader": "Idempotency-Key", "replayBehavior": "同一内容版本只生成一个结构校验结论" }, "parameters": [{ "$ref": "#/components/parameters/B5ContentId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "422": { "$ref": "#/components/responses/B5BadRequest" } } }
+      "post": {
+        "operationId": "validateContentDraft",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-content-validate",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一内容版本只生成一个结构校验结论"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/B5BadRequest"
+          }
+        }
+      }
     },
     "/api/v1/admin/content/{contentId}/submit-review": {
-      "post": { "operationId": "submitContentReview", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-content-submit-review", "keyHeader": "Idempotency-Key", "replayBehavior": "同一内容版本只进入一次双审队列" }, "parameters": [{ "$ref": "#/components/parameters/B5ContentId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "responses": { "202": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "submitContentReview",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-content-submit-review",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一内容版本只进入一次双审队列"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/reviews": {
-      "get": { "operationId": "listReviewTasks", "tags": ["b5-admin-content"], "parameters": [{ "$ref": "#/components/parameters/B5Cursor" }, { "$ref": "#/components/parameters/B5Limit" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "listReviewTasks",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/B5Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/reviews/{reviewTaskId}/decision": {
-      "post": { "operationId": "decideReviewTask", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-review-decision", "keyHeader": "Idempotency-Key", "replayBehavior": "审核节点和审核角色只应用一次并保留动作审计" }, "parameters": [{ "$ref": "#/components/parameters/B5ReviewTaskId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ReviewDecisionRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "decideReviewTask",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-review-decision",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "审核节点和审核角色只应用一次并保留动作审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ReviewTaskId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ReviewDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/content/{contentId}/publish": {
-      "post": { "operationId": "publishContent", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-content-publish", "keyHeader": "Idempotency-Key", "replayBehavior": "已完成双审的版本只发布一次" }, "parameters": [{ "$ref": "#/components/parameters/B5ContentId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "publishContent",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-content-publish",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "已完成双审的版本只发布一次"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/content/{contentId}/rollback": {
-      "post": { "operationId": "rollbackContent", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-content-rollback", "keyHeader": "Idempotency-Key", "replayBehavior": "回滚目标版本只切换一次发布指针并审计" }, "parameters": [{ "$ref": "#/components/parameters/B5ContentId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ContentSaveRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "rollbackContent",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-content-rollback",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "回滚目标版本只切换一次发布指针并审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ContentId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ContentSaveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/import-jobs": {
-      "post": { "operationId": "createImportJob", "tags": ["b5-admin-content"], "x-idempotency": { "required": true, "strategy": "admin-import-job", "keyHeader": "Idempotency-Key", "replayBehavior": "导入文件哈希和目标类型只创建一个任务" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ImportJobRequest" } } } }, "responses": { "202": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "createImportJob",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-import-job",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "导入文件哈希和目标类型只创建一个任务"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ImportJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/import-jobs/{importJobId}": {
-      "get": { "operationId": "getImportJob", "tags": ["b5-admin-content"], "parameters": [{ "$ref": "#/components/parameters/B5ImportJobId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "404": { "$ref": "#/components/responses/B5NotFound" } } }
+      "get": {
+        "operationId": "getImportJob",
+        "tags": [
+          "b5-admin-content"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ImportJobId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/B5NotFound"
+          }
+        }
+      }
     },
     "/api/v1/admin/correction-tickets": {
-      "get": { "operationId": "listCorrectionTickets", "tags": ["b5-admin-operations"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "listCorrectionTickets",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/correction-tickets/{ticketId}/resolve": {
-      "post": { "operationId": "resolveCorrectionTicket", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-correction-ticket-resolve", "keyHeader": "Idempotency-Key", "replayBehavior": "工单结论和状态只应用一次并保留 SLA 审计" }, "parameters": [{ "$ref": "#/components/parameters/B5TicketId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5CorrectionResolveRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "resolveCorrectionTicket",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-correction-ticket-resolve",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "工单结论和状态只应用一次并保留 SLA 审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5TicketId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5CorrectionResolveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/risk/users/{userId}": {
-      "get": { "operationId": "getRiskProfile", "tags": ["b5-admin-operations"], "parameters": [{ "$ref": "#/components/parameters/B5UserId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "getRiskProfile",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/risk/users/{userId}/actions": {
-      "post": { "operationId": "applyRiskAction", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-risk-action", "keyHeader": "Idempotency-Key", "replayBehavior": "风险动作按用户、动作和版本幂等执行并带 TTL" }, "parameters": [{ "$ref": "#/components/parameters/B5UserId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5RiskActionRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "applyRiskAction",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-risk-action",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "风险动作按用户、动作和版本幂等执行并带 TTL"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5UserId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5RiskActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/dashboard/metrics": {
-      "get": { "operationId": "getDashboardMetrics", "tags": ["b5-admin-operations"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "getDashboardMetrics",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/reconciliation/batches": {
-      "get": { "operationId": "listReconciliationBatches", "tags": ["b5-admin-operations"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "listReconciliationBatches",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/reconciliation/batches/import": {
-      "post": { "operationId": "importReconciliationBatch", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-reconciliation-import", "keyHeader": "Idempotency-Key", "replayBehavior": "平台对账文件哈希只导入一次，差异逐项生成" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ReconciliationImportRequest" } } } }, "responses": { "202": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "importReconciliationBatch",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-reconciliation-import",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "平台对账文件哈希只导入一次，差异逐项生成"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ReconciliationImportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/reconciliation/items/{itemId}/resolve": {
-      "post": { "operationId": "resolveReconciliationItem", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-reconciliation-resolve", "keyHeader": "Idempotency-Key", "replayBehavior": "对账差异人工结论只能落一次并关联操作审计" }, "parameters": [{ "$ref": "#/components/parameters/B5ReconItemId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ReconciliationResolveRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" }, "409": { "$ref": "#/components/responses/B5Conflict" } } }
+      "post": {
+        "operationId": "resolveReconciliationItem",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-reconciliation-resolve",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "对账差异人工结论只能落一次并关联操作审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ReconItemId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ReconciliationResolveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/B5Conflict"
+          }
+        }
+      }
     },
     "/api/v1/admin/feature-flags": {
-      "get": { "operationId": "listFeatureFlags", "tags": ["b5-admin-operations"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "listFeatureFlags",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/feature-flags/{flagKey}": {
-      "put": { "operationId": "updateFeatureFlag", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-feature-flag-update", "keyHeader": "Idempotency-Key", "replayBehavior": "Flag 版本和灰度规则按 key 幂等更新，默认关闭" }, "parameters": [{ "$ref": "#/components/parameters/B5FlagKey" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5FlagUpdateRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "put": {
+        "operationId": "updateFeatureFlag",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-feature-flag-update",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "Flag 版本和灰度规则按 key 幂等更新，默认关闭"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5FlagKey"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5FlagUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/activation-batches": {
-      "post": { "operationId": "createActivationBatch", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-activation-batch", "keyHeader": "Idempotency-Key", "replayBehavior": "激活码批次只生成一次并记录批次审计" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ActivationBatchRequest" } } } }, "responses": { "201": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "createActivationBatch",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-activation-batch",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "激活码批次只生成一次并记录批次审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5ActivationBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/activation-codes/{code}/revoke": {
-      "post": { "operationId": "revokeActivationCode", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-activation-revoke", "keyHeader": "Idempotency-Key", "replayBehavior": "激活码撤销状态只切换一次并保留审计" }, "parameters": [{ "$ref": "#/components/parameters/B5ActivationCode" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "revokeActivationCode",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-activation-revoke",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "激活码撤销状态只切换一次并保留审计"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5ActivationCode"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/commerce/orders/{orderId}/adjust": {
-      "post": { "operationId": "adjustCommerceOrder", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-commerce-adjustment", "keyHeader": "Idempotency-Key", "replayBehavior": "人工补偿或收回权益按订单和动作引用幂等" }, "parameters": [{ "$ref": "#/components/parameters/B5OrderId" }, { "$ref": "#/components/parameters/B5IdempotencyKey" }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5OrderAdjustmentRequest" } } } }, "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "adjustCommerceOrder",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-commerce-adjustment",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "人工补偿或收回权益按订单和动作引用幂等"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5OrderId"
+          },
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B5OrderAdjustmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/commerce/orders": {
-      "get": { "operationId": "listAdminCommerceOrders", "tags": ["b5-admin-operations"], "parameters": [{ "$ref": "#/components/parameters/B5Cursor" }, { "$ref": "#/components/parameters/B5Limit" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "listAdminCommerceOrders",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/B5Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/commerce/users/{userId}/entitlements": {
-      "get": { "operationId": "getAdminUserEntitlements", "tags": ["b5-admin-operations"], "parameters": [{ "$ref": "#/components/parameters/B5UserId" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "getAdminUserEntitlements",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5UserId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/session": {
-      "get": { "operationId": "getAdminSession", "tags": ["b5-admin-operations"], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "getAdminSession",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/audit-logs": {
-      "get": { "operationId": "searchAuditLogs", "tags": ["b5-admin-operations"], "parameters": [{ "$ref": "#/components/parameters/B5Cursor" }, { "$ref": "#/components/parameters/B5Limit" }], "responses": { "200": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "get": {
+        "operationId": "searchAuditLogs",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/B5Limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     },
     "/api/v1/admin/audit-logs/export": {
-      "post": { "operationId": "exportAuditReport", "tags": ["b5-admin-operations"], "x-idempotency": { "required": true, "strategy": "admin-audit-export", "keyHeader": "Idempotency-Key", "replayBehavior": "同一查询窗口和筛选条件只生成一个脱敏导出任务" }, "parameters": [{ "$ref": "#/components/parameters/B5IdempotencyKey" }], "responses": { "202": { "$ref": "#/components/responses/B5GenericResponse" } } }
+      "post": {
+        "operationId": "exportAuditReport",
+        "tags": [
+          "b5-admin-operations"
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "admin-audit-export",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一查询窗口和筛选条件只生成一个脱敏导出任务"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "202": {
+            "$ref": "#/components/responses/B5GenericResponse"
+          }
+        }
+      }
     }
   },
   "components": {
     "parameters": {
-      "B5IdempotencyKey": { "name": "Idempotency-Key", "in": "header", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 128 } },
-      "B5Cursor": { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string", "maxLength": 256 } },
-      "B5Limit": { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 20 } },
-      "B5SkuId": { "name": "skuId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5OrderId": { "name": "orderId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5HouseholdId": { "name": "householdId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5MemberUserId": { "name": "memberUserId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B5UserIdValue" } },
-      "B5UserId": { "name": "userId", "in": "path", "required": true, "schema": { "$ref": "#/components/schemas/B5UserIdValue" } },
-      "B5TicketId": { "name": "ticketId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5ContentId": { "name": "contentId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5ReviewTaskId": { "name": "reviewTaskId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5ImportJobId": { "name": "importJobId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5ReconItemId": { "name": "itemId", "in": "path", "required": true, "schema": { "type": "string", "maxLength": 64 } },
-      "B5FlagKey": { "name": "flagKey", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^[a-z][a-z0-9._-]{1,63}$" } },
-      "B5ActivationCode": { "name": "code", "in": "path", "required": true, "schema": { "type": "string", "minLength": 8, "maxLength": 64 } }
+      "B5IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "B5Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "B5Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "B5SkuId": {
+        "name": "skuId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5OrderId": {
+        "name": "orderId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5HouseholdId": {
+        "name": "householdId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5MemberUserId": {
+        "name": "memberUserId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B5UserIdValue"
+        }
+      },
+      "B5UserId": {
+        "name": "userId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B5UserIdValue"
+        }
+      },
+      "B5TicketId": {
+        "name": "ticketId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5ContentId": {
+        "name": "contentId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5ReviewTaskId": {
+        "name": "reviewTaskId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5ImportJobId": {
+        "name": "importJobId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5ReconItemId": {
+        "name": "itemId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64
+        }
+      },
+      "B5FlagKey": {
+        "name": "flagKey",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+        }
+      },
+      "B5ActivationCode": {
+        "name": "code",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 64
+        }
+      }
     },
     "responses": {
-      "B5GenericResponse": { "description": "B5 response envelope", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5Envelope" } } } },
-      "B5Conflict": { "description": "State or idempotency conflict", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ErrorEnvelope" } } } },
-      "B5BadRequest": { "description": "Validation failure", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ErrorEnvelope" } } } },
-      "B5NotFound": { "description": "Resource not found", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B5ErrorEnvelope" } } } }
+      "B5GenericResponse": {
+        "description": "B5 response envelope",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B5Envelope"
+            }
+          }
+        }
+      },
+      "B5Conflict": {
+        "description": "State or idempotency conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B5ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B5BadRequest": {
+        "description": "Validation failure",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B5ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B5NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B5ErrorEnvelope"
+            }
+          }
+        }
+      }
     },
     "schemas": {
-      "B5UserIdValue": { "type": "integer", "format": "int64", "minimum": 1 },
-      "B5Envelope": { "type": "object", "required": ["requestId", "data"], "properties": { "requestId": { "type": "string", "maxLength": 128 }, "data": { "type": "object", "additionalProperties": true }, "meta": { "type": "object", "additionalProperties": true } } },
-      "B5ErrorEnvelope": { "type": "object", "required": ["requestId", "error"], "properties": { "requestId": { "type": "string", "maxLength": 128 }, "error": { "type": "object", "required": ["code", "message"], "properties": { "code": { "type": "string", "maxLength": 64 }, "message": { "type": "string", "maxLength": 256 }, "retryable": { "type": "boolean" } } } } },
-      "B5CreateOrderRequest": { "type": "object", "required": ["skuId", "priceId", "channelCode"], "properties": { "skuId": { "type": "string", "maxLength": 64 }, "priceId": { "type": "string", "maxLength": 64 }, "channelCode": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "ACTIVATION_CODE"] }, "sourcePlatform": { "type": "string", "enum": ["WEB", "H5", "IOS", "ANDROID", "IPAD", "WECHAT_MINI_PROGRAM"] } } },
-      "B5PaymentAttemptRequest": { "type": "object", "required": ["channelCode"], "properties": { "channelCode": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE", "ACTIVATION_CODE"] }, "returnPath": { "type": "string", "maxLength": 256 } } },
-      "B5ProviderCallbackRequest": { "type": "object", "required": ["callbackEventId", "orderId", "channelTradeNo", "amountMinor", "currency", "payloadHash", "signatureSerial"], "properties": { "callbackEventId": { "type": "string", "maxLength": 128 }, "orderId": { "type": "string", "maxLength": 64 }, "channelTradeNo": { "type": "string", "maxLength": 128 }, "amountMinor": { "type": "integer", "format": "int64", "minimum": 0, "description": "金额使用最小货币单位，禁止浮点金额。" }, "currency": { "type": "string", "enum": ["CNY", "USD"] }, "payloadHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$", "description": "仅保存回调原文的 SHA-256 hash；原文禁止进入业务日志和持久化表。" }, "signatureSerial": { "type": "string", "maxLength": 128, "description": "平台证书序列号或 sandbox 证明引用，不保存私钥。" } } },
-      "B5AppleVerificationRequest": { "type": "object", "required": ["transactionId", "originalTransactionId", "productId", "environment", "bundleId", "payloadHash"], "properties": { "transactionId": { "type": "string", "maxLength": 128 }, "originalTransactionId": { "type": "string", "maxLength": 128 }, "productId": { "type": "string", "maxLength": 128 }, "environment": { "type": "string", "enum": ["Sandbox", "Production"] }, "bundleId": { "type": "string", "maxLength": 128 }, "appAccountTokenHash": { "type": "string", "maxLength": 128, "description": "只接收经过 hash 的账户绑定引用，原始标识禁止落库。" }, "payloadHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$", "description": "只保存签名载荷 hash；JWS 原文禁止进入日志和数据库。" } } },
-      "B5HouseholdRequest": { "type": "object", "properties": { "nameRef": { "type": "string", "maxLength": 64 } } },
-      "B5InvitationRequest": { "type": "object", "required": ["memberRefHash"], "properties": { "memberRefHash": { "type": "string", "maxLength": 128, "description": "成员引用的 hash，禁止保存原始联系方式。" } } },
-      "B5InvitationAcceptRequest": { "type": "object", "required": ["invitationId"], "properties": { "invitationId": { "type": "string", "maxLength": 64 } } },
-      "B5ActivationRedeemRequest": { "type": "object", "required": ["code"], "properties": { "code": { "type": "string", "minLength": 8, "maxLength": 64 } } },
-      "B5RefundRequest": { "type": "object", "required": ["reasonCode"], "properties": { "reasonCode": { "type": "string", "maxLength": 64 }, "amountMinor": { "type": "integer", "format": "int64", "minimum": 0, "description": "金额使用最小货币单位，禁止浮点金额。" } } },
-      "B5InvoiceRequest": { "type": "object", "required": ["orderId", "invoiceType", "recipientRefHash"], "properties": { "orderId": { "type": "string", "maxLength": 64 }, "invoiceType": { "type": "string", "enum": ["PERSONAL", "ORGANIZATION"] }, "recipientRefHash": { "type": "string", "maxLength": 128, "description": "开票抬头或收件引用的 hash，原文禁止落库。" } } },
-      "B5ContentDraftRequest": { "type": "object", "required": ["contentCode", "contentType", "title", "contentHash"], "properties": { "contentCode": { "type": "string", "maxLength": 128 }, "contentType": { "type": "string", "enum": ["COURSE", "UNIT", "VOCABULARY", "QUESTION", "MEDIA"] }, "title": { "type": "string", "maxLength": 256 }, "contentHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }, "sourceCode": { "type": "string", "maxLength": 128 }, "licenseCode": { "type": "string", "maxLength": 128 }, "payload": { "type": "object", "additionalProperties": true } } },
-      "B5ContentSaveRequest": { "type": "object", "required": ["contentHash"], "properties": { "contentHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }, "payload": { "type": "object", "additionalProperties": true }, "targetVersionId": { "type": "string", "maxLength": 64 }, "reasonCode": { "type": "string", "maxLength": 64 } } },
-      "B5ReviewDecisionRequest": { "type": "object", "required": ["stage", "decision"], "properties": { "stage": { "type": "string", "enum": ["FIRST", "FINAL"] }, "decision": { "type": "string", "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"] }, "reasonCode": { "type": "string", "maxLength": 64 } } },
-      "B5ImportJobRequest": { "type": "object", "required": ["targetType", "sourceHash"], "properties": { "targetType": { "type": "string", "enum": ["COURSE", "UNIT", "VOCABULARY", "QUESTION", "MEDIA"] }, "sourceHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }, "rows": { "type": "array", "maxItems": 10000, "items": { "type": "object", "additionalProperties": true } } } },
-      "B5CorrectionResolveRequest": { "type": "object", "required": ["decisionCode"], "properties": { "decisionCode": { "type": "string", "enum": ["FIXED", "REJECTED", "DUPLICATE", "NO_ACTION"] }, "resolutionRef": { "type": "string", "maxLength": 128 } } },
-      "B5RiskActionRequest": { "type": "object", "required": ["actionCode"], "properties": { "actionCode": { "type": "string", "enum": ["FREEZE_LOGIN", "FREEZE_PAYMENT", "RATE_LIMIT", "UNFREEZE"] }, "ttlSeconds": { "type": "integer", "minimum": 60, "maximum": 2592000 } } },
-      "B5ReconciliationImportRequest": { "type": "object", "required": ["channelCode", "sourceHash", "items"], "properties": { "channelCode": { "type": "string", "enum": ["WECHAT", "ALIPAY", "APPLE"] }, "sourceHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" }, "items": { "type": "array", "maxItems": 100000, "items": { "type": "object", "required": ["channelTradeNo", "orderId", "amountMinor"], "properties": { "channelTradeNo": { "type": "string", "maxLength": 128 }, "orderId": { "type": "string", "maxLength": 64 }, "amountMinor": { "type": "integer", "format": "int64", "minimum": 0, "description": "金额使用最小货币单位，禁止浮点金额。" } } } } } },
-      "B5ReconciliationResolveRequest": { "type": "object", "required": ["decisionCode"], "properties": { "decisionCode": { "type": "string", "enum": ["MATCHED", "REFUND_REQUIRED", "MANUAL_CREDIT", "IGNORE" ] }, "reasonCode": { "type": "string", "maxLength": 64 } } },
-      "B5FlagUpdateRequest": { "type": "object", "properties": { "enabled": { "type": "boolean", "default": false }, "rolloutPercent": { "type": "integer", "minimum": 0, "maximum": 100 }, "ruleVersion": { "type": "string", "maxLength": 64 }, "allowedPlatforms": { "type": "array", "items": { "type": "string", "maxLength": 32 } } } },
-      "B5SupportTicketRequest": { "type": "object", "required": ["ticketType", "resourceRef", "descriptionHash"], "properties": { "ticketType": { "type": "string", "enum": ["CONTENT_CORRECTION", "PAYMENT", "ACCOUNT", "OTHER"] }, "resourceRef": { "type": "string", "maxLength": 128 }, "descriptionHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$", "description": "只保存问题描述 hash；原文和附件原始内容禁止进入业务日志。" }, "attachmentRefs": { "type": "array", "maxItems": 5, "items": { "type": "string", "maxLength": 128 } } } },
-      "B5SupportMessageRequest": { "type": "object", "required": ["messageHash", "clientMessageRef"], "properties": { "messageHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$", "description": "客服消息只接收 hash 引用，原文禁止进入审计日志。" }, "clientMessageRef": { "type": "string", "maxLength": 128 } } },
-      "B5ActivationBatchRequest": { "type": "object", "required": ["skuId", "count", "expiresAt"], "properties": { "skuId": { "type": "string", "maxLength": 64 }, "count": { "type": "integer", "minimum": 1, "maximum": 10000 }, "expiresAt": { "type": "string", "format": "date-time" } } },
-      "B5OrderAdjustmentRequest": { "type": "object", "required": ["actionCode", "reasonCode"], "properties": { "actionCode": { "type": "string", "enum": ["GRANT_ENTITLEMENT", "REVOKE_ENTITLEMENT", "REFUND_MARK", "CHARGEBACK_MARK"] }, "reasonCode": { "type": "string", "maxLength": 64 } } }
+      "B5UserIdValue": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1
+      },
+      "B5Envelope": {
+        "type": "object",
+        "required": [
+          "requestId",
+          "data"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "B5ErrorEnvelope": {
+        "x-superseded-by": "#/components/schemas/ApiErrorEnvelope",
+        "description": "Compatibility error shape for existing commerce and administrative operations. New or migrated operations use ApiErrorEnvelope.",
+        "type": "object",
+        "required": [
+          "requestId",
+          "error"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string",
+                "maxLength": 64
+              },
+              "message": {
+                "type": "string",
+                "maxLength": 256
+              },
+              "retryable": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "B5CreateOrderRequest": {
+        "type": "object",
+        "required": [
+          "skuId",
+          "priceId",
+          "channelCode"
+        ],
+        "properties": {
+          "skuId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "priceId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "channelCode": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "ALIPAY",
+              "APPLE",
+              "ACTIVATION_CODE"
+            ]
+          },
+          "sourcePlatform": {
+            "type": "string",
+            "enum": [
+              "WEB",
+              "H5",
+              "IOS",
+              "ANDROID",
+              "IPAD",
+              "WECHAT_MINI_PROGRAM"
+            ]
+          }
+        }
+      },
+      "B5PaymentAttemptRequest": {
+        "type": "object",
+        "required": [
+          "channelCode"
+        ],
+        "properties": {
+          "channelCode": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "ALIPAY",
+              "APPLE",
+              "ACTIVATION_CODE"
+            ]
+          },
+          "returnPath": {
+            "type": "string",
+            "maxLength": 256
+          }
+        }
+      },
+      "B5ProviderCallbackRequest": {
+        "type": "object",
+        "required": [
+          "callbackEventId",
+          "orderId",
+          "channelTradeNo",
+          "amountMinor",
+          "currency",
+          "payloadHash",
+          "signatureSerial"
+        ],
+        "properties": {
+          "callbackEventId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "orderId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "channelTradeNo": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "amountMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "金额使用最小货币单位，禁止浮点金额。"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "CNY",
+              "USD"
+            ]
+          },
+          "payloadHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$",
+            "description": "仅保存回调原文的 SHA-256 hash；原文禁止进入业务日志和持久化表。"
+          },
+          "signatureSerial": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "平台证书序列号或 sandbox 证明引用，不保存私钥。"
+          }
+        }
+      },
+      "B5AppleVerificationRequest": {
+        "type": "object",
+        "required": [
+          "transactionId",
+          "originalTransactionId",
+          "productId",
+          "environment",
+          "bundleId",
+          "payloadHash"
+        ],
+        "properties": {
+          "transactionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "originalTransactionId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "productId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "Sandbox",
+              "Production"
+            ]
+          },
+          "bundleId": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "appAccountTokenHash": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "只接收经过 hash 的账户绑定引用，原始标识禁止落库。"
+          },
+          "payloadHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$",
+            "description": "只保存签名载荷 hash；JWS 原文禁止进入日志和数据库。"
+          }
+        }
+      },
+      "B5HouseholdRequest": {
+        "type": "object",
+        "properties": {
+          "nameRef": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "B5InvitationRequest": {
+        "type": "object",
+        "required": [
+          "memberRefHash"
+        ],
+        "properties": {
+          "memberRefHash": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "成员引用的 hash，禁止保存原始联系方式。"
+          }
+        }
+      },
+      "B5InvitationAcceptRequest": {
+        "type": "object",
+        "required": [
+          "invitationId"
+        ],
+        "properties": {
+          "invitationId": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "B5ActivationRedeemRequest": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 64
+          }
+        }
+      },
+      "B5RefundRequest": {
+        "type": "object",
+        "required": [
+          "reasonCode"
+        ],
+        "properties": {
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "amountMinor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "description": "金额使用最小货币单位，禁止浮点金额。"
+          }
+        }
+      },
+      "B5InvoiceRequest": {
+        "type": "object",
+        "required": [
+          "orderId",
+          "invoiceType",
+          "recipientRefHash"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "invoiceType": {
+            "type": "string",
+            "enum": [
+              "PERSONAL",
+              "ORGANIZATION"
+            ]
+          },
+          "recipientRefHash": {
+            "type": "string",
+            "maxLength": 128,
+            "description": "开票抬头或收件引用的 hash，原文禁止落库。"
+          }
+        }
+      },
+      "B5ContentDraftRequest": {
+        "type": "object",
+        "required": [
+          "contentCode",
+          "contentType",
+          "title",
+          "contentHash"
+        ],
+        "properties": {
+          "contentCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "contentType": {
+            "type": "string",
+            "enum": [
+              "COURSE",
+              "UNIT",
+              "VOCABULARY",
+              "QUESTION",
+              "MEDIA"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "sourceCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "licenseCode": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "B5ContentSaveRequest": {
+        "type": "object",
+        "required": [
+          "contentHash"
+        ],
+        "properties": {
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "targetVersionId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "B5ReviewDecisionRequest": {
+        "type": "object",
+        "required": [
+          "stage",
+          "decision"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "FIRST",
+              "FINAL"
+            ]
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "REJECTED",
+              "CHANGES_REQUESTED"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "B5ImportJobRequest": {
+        "type": "object",
+        "required": [
+          "targetType",
+          "sourceHash"
+        ],
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "COURSE",
+              "UNIT",
+              "VOCABULARY",
+              "QUESTION",
+              "MEDIA"
+            ]
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "rows": {
+            "type": "array",
+            "maxItems": 10000,
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        }
+      },
+      "B5CorrectionResolveRequest": {
+        "type": "object",
+        "required": [
+          "decisionCode"
+        ],
+        "properties": {
+          "decisionCode": {
+            "type": "string",
+            "enum": [
+              "FIXED",
+              "REJECTED",
+              "DUPLICATE",
+              "NO_ACTION"
+            ]
+          },
+          "resolutionRef": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B5RiskActionRequest": {
+        "type": "object",
+        "required": [
+          "actionCode"
+        ],
+        "properties": {
+          "actionCode": {
+            "type": "string",
+            "enum": [
+              "FREEZE_LOGIN",
+              "FREEZE_PAYMENT",
+              "RATE_LIMIT",
+              "UNFREEZE"
+            ]
+          },
+          "ttlSeconds": {
+            "type": "integer",
+            "minimum": 60,
+            "maximum": 2592000
+          }
+        }
+      },
+      "B5ReconciliationImportRequest": {
+        "type": "object",
+        "required": [
+          "channelCode",
+          "sourceHash",
+          "items"
+        ],
+        "properties": {
+          "channelCode": {
+            "type": "string",
+            "enum": [
+              "WECHAT",
+              "ALIPAY",
+              "APPLE"
+            ]
+          },
+          "sourceHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100000,
+            "items": {
+              "type": "object",
+              "required": [
+                "channelTradeNo",
+                "orderId",
+                "amountMinor"
+              ],
+              "properties": {
+                "channelTradeNo": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "orderId": {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                "amountMinor": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0,
+                  "description": "金额使用最小货币单位，禁止浮点金额。"
+                }
+              }
+            }
+          }
+        }
+      },
+      "B5ReconciliationResolveRequest": {
+        "type": "object",
+        "required": [
+          "decisionCode"
+        ],
+        "properties": {
+          "decisionCode": {
+            "type": "string",
+            "enum": [
+              "MATCHED",
+              "REFUND_REQUIRED",
+              "MANUAL_CREDIT",
+              "IGNORE"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      },
+      "B5FlagUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": false
+          },
+          "rolloutPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "ruleVersion": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "allowedPlatforms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 32
+            }
+          }
+        }
+      },
+      "B5SupportTicketRequest": {
+        "type": "object",
+        "required": [
+          "ticketType",
+          "resourceRef",
+          "descriptionHash"
+        ],
+        "properties": {
+          "ticketType": {
+            "type": "string",
+            "enum": [
+              "CONTENT_CORRECTION",
+              "PAYMENT",
+              "ACCOUNT",
+              "OTHER"
+            ]
+          },
+          "resourceRef": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "descriptionHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$",
+            "description": "只保存问题描述 hash；原文和附件原始内容禁止进入业务日志。"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        }
+      },
+      "B5SupportMessageRequest": {
+        "type": "object",
+        "required": [
+          "messageHash",
+          "clientMessageRef"
+        ],
+        "properties": {
+          "messageHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$",
+            "description": "客服消息只接收 hash 引用，原文禁止进入审计日志。"
+          },
+          "clientMessageRef": {
+            "type": "string",
+            "maxLength": 128
+          }
+        }
+      },
+      "B5ActivationBatchRequest": {
+        "type": "object",
+        "required": [
+          "skuId",
+          "count",
+          "expiresAt"
+        ],
+        "properties": {
+          "skuId": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B5OrderAdjustmentRequest": {
+        "type": "object",
+        "required": [
+          "actionCode",
+          "reasonCode"
+        ],
+        "properties": {
+          "actionCode": {
+            "type": "string",
+            "enum": [
+              "GRANT_ENTITLEMENT",
+              "REVOKE_ENTITLEMENT",
+              "REFUND_MARK",
+              "CHARGEBACK_MARK"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 64
+          }
+        }
+      }
     }
   },
   "x-canonical-id-fields": {}
