@@ -64,9 +64,21 @@ function compareSchema(previous, current, location, changes, kind) {
 
   const previousEnum = Array.isArray(previous.enum) ? previous.enum : null;
   const currentEnum = Array.isArray(current.enum) ? current.enum : null;
-  if ((previousEnum || currentEnum)
-    && stableGovernanceValue(previousEnum) !== stableGovernanceValue(currentEnum)) {
-    changes.push(describeChange(kind, `${location}.enum`, 'existing enum contract changed'));
+  if (previousEnum && currentEnum) {
+    const previousValues = new Map(previousEnum.map((value) => [stableGovernanceValue(value), value]));
+    const currentValues = new Map(currentEnum.map((value) => [stableGovernanceValue(value), value]));
+    for (const [stableValue, value] of previousValues) {
+      if (!currentValues.has(stableValue)) {
+        changes.push(describeChange(kind, `${location}.enum`, `existing enum value removed: ${String(value)}`));
+      }
+    }
+    for (const [stableValue, value] of currentValues) {
+      if (!previousValues.has(stableValue)) {
+        changes.push(describeChange(kind, `${location}.enum`, `new enum value added: ${String(value)}`));
+      }
+    }
+  } else if (previousEnum || currentEnum) {
+    changes.push(describeChange(kind, `${location}.enum`, `enum contract changed from ${previousEnum ? 'specified' : 'unspecified'} to ${currentEnum ? 'specified' : 'unspecified'}`));
   }
 
   const previousRequired = new Set(Array.isArray(previous.required) ? previous.required : []);
