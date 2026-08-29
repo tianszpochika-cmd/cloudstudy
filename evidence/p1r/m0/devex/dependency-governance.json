@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T10:00:40.611Z",
-  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "generatedAt": "2026-08-29T10:11:41.506Z",
+  "sourceCommit": "5deff771b3acb223e75b8f1e0696c34c056cbaac",
   "mode": "runtime",
   "result": "FAIL",
   "catalog": {
@@ -297,392 +297,392 @@
     {
       "name": "manifest pnpm-workspace.yaml",
       "passed": true,
-      "detail": "required manifest is missing"
+      "detail": "verified"
     },
     {
       "name": "manifest package.json",
       "passed": true,
-      "detail": "required manifest is missing"
+      "detail": "verified"
     },
     {
       "name": "manifest pnpm-lock.yaml",
       "passed": true,
-      "detail": "required manifest is missing"
+      "detail": "verified"
     },
     {
       "name": "manifest pom.xml",
       "passed": true,
-      "detail": "required manifest is missing"
+      "detail": "verified"
     },
     {
       "name": "manifest config/toolchain-baseline.json",
       "passed": true,
-      "detail": "required manifest is missing"
+      "detail": "verified"
     },
     {
       "name": "packageManager pin",
       "passed": true,
-      "detail": "expected pnpm@10.19.0"
+      "detail": "verified"
     },
     {
       "name": "Node engine pin",
       "passed": true,
-      "detail": "expected 20.19.5"
+      "detail": "verified"
     },
     {
       "name": "pnpm engine pin",
       "passed": true,
-      "detail": "expected 10.19.0"
+      "detail": "verified"
     },
     {
       "name": "Node catalog",
       "passed": true,
-      "detail": "toolchain and dependency catalogs differ"
+      "detail": "verified"
     },
     {
       "name": "Java catalog",
       "passed": true,
-      "detail": "toolchain and dependency catalogs differ"
+      "detail": "verified"
     },
     {
       "name": "Spring Boot catalog",
       "passed": true,
-      "detail": "toolchain and dependency catalogs differ"
+      "detail": "verified"
     },
     {
       "name": "Spring Cloud catalog",
       "passed": true,
-      "detail": "toolchain and dependency catalogs differ"
+      "detail": "verified"
     },
     {
       "name": "reactor java.version",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "reactor spring-boot.version",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "reactor spring-cloud.version",
       "passed": true,
-      "detail": "expected 2025.1.3"
+      "detail": "verified"
     },
     {
       "name": "reactor maven-enforcer-plugin.version",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "reactor cyclonedx-maven-plugin.version",
       "passed": true,
-      "detail": "expected 2.9.1"
+      "detail": "verified"
     },
     {
       "name": "api-gateway Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "api-gateway Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "api-gateway Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "api-gateway reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "iam-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "iam-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "iam-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "iam-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "learner-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "learner-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "learner-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "learner-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "content-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "content-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "content-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "content-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "learning-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "learning-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "learning-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "learning-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "assessment-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "assessment-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "assessment-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "assessment-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "media-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "media-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "media-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "media-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "notification-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "notification-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "notification-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "notification-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "gamification-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "gamification-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "gamification-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "gamification-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "social-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "social-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "social-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "social-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "commerce-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "commerce-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "commerce-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "commerce-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "admin-ops-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "admin-ops-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "admin-ops-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "admin-ops-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "analytics-service Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "analytics-service Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "analytics-service Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "analytics-service reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "service-template Boot pin",
       "passed": true,
-      "detail": "expected 4.1.1"
+      "detail": "verified"
     },
     {
       "name": "service-template Java pin",
       "passed": true,
-      "detail": "expected 25"
+      "detail": "verified"
     },
     {
       "name": "service-template Enforcer pin",
       "passed": true,
-      "detail": "expected 3.6.2"
+      "detail": "verified"
     },
     {
       "name": "service-template reactor membership",
       "passed": true,
-      "detail": "service is absent from root reactor"
+      "detail": "verified"
     },
     {
       "name": "Gateway Spring Cloud pin",
       "passed": true,
-      "detail": "expected 2025.1.3"
+      "detail": "verified"
     },
     {
       "name": "pnpm lock format",
       "passed": true,
-      "detail": "expected 9.0"
+      "detail": "verified"
     },
     {
       "name": "Node lock inventory",
       "passed": true,
-      "detail": "no package entries were extracted from pnpm-lock.yaml"
+      "detail": "verified"
     },
     {
       "name": "Maven direct inventory",
       "passed": true,
-      "detail": "no dependencies were extracted from v2 service POMs"
+      "detail": "verified"
     },
     {
       "name": "Node lock/license coverage",
       "passed": true,
-      "detail": "lock inventory 1097 is smaller than resolved license inventory 904"
+      "detail": "verified"
     }
   ],
   "warnings": [],

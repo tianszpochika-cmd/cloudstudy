@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-29T10:00:44.112Z",
-  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "generatedAt": "2026-08-29T10:11:43.970Z",
+  "sourceCommit": "5deff771b3acb223e75b8f1e0696c34c056cbaac",
   "decision": "BLOCKED",
   "scope": [
     "P1R-M0-003",
@@ -319,7 +319,7 @@
       "exitCode": 0,
       "outputTail": [
         "  ---",
-        "  duration_ms: 0.1147",
+        "  duration_ms: 0.0759",
         "  ...",
         "1..17",
         "# tests 17",
@@ -329,7 +329,7 @@
         "# cancelled 0",
         "# skipped 0",
         "# todo 3",
-        "# duration_ms 162.0606"
+        "# duration_ms 178.4531"
       ]
     }
   },
