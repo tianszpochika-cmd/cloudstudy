@@ -94,7 +94,7 @@ CI 直接调用 `node scripts/security/run-b0-harness.mjs` 即可；不需要编
 ## 6. v2 授权验收最低条件
 
 - Gateway 直连阻断、JWT/JWKS 轮换、Token 撤销和服务侧二次验签均有运行证据。
-- learner、tenant-admin、content-editor、finance、auditor、privacy-operator 等角色在本人/租户/资源 owner/动作矩阵上有 allow/deny 测试。
+- learner、content-editor、reviewer-l1、reviewer-l2、release-operator、finance、support、privacy、auditor、platform-admin 等 Phase 1 规范角色在本人/租户/资源 owner/动作矩阵上有 allow/deny 测试。
 - `X-B5-Role`、`X-Role`、客户端 tenant/owner 字段不能提升权限；缺少上下文默认 deny。
 - 权限变更、策略版本、决策 ID、403、导出和高风险后台操作可通过 requestId/traceId/auditId 回放。
 - 成人/required consent 的缺失、撤回、过期和重验证均有拒绝测试；策略 draft/submit/独立 approve/activate/revoke、职责分离与缓存失效均有契约和运行证据。

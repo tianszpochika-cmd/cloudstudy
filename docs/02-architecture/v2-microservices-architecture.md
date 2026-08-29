@@ -156,7 +156,7 @@ subjectId + tenantId + roles + permission + action + resourceType + resourceId
 5. 角色、权限、策略和授权决策均有版本、审计和撤销记录；高风险后台操作需要二次确认或双人审批。
 6. PEP 不能因 PDP、缓存或网络异常而放宽权限：已验证且未过期的本地策略/决策可在定义的短 TTL 内使用；策略版本过期、撤销状态不确定或高风险操作无法确认时一律拒绝并记录可回放原因。
 
-建议的初始角色集合：`learner`、`tenant-admin`、`content-editor`、`reviewer-l1`、`reviewer-l2`、`finance`、`support`、`auditor`、`privacy-operator`、`release-operator`、`platform-admin`。角色只是权限集合，不替代资源所有权、租户和阶段条件。
+Phase 1 规范角色集合：`learner`、`content-editor`、`reviewer-l1`、`reviewer-l2`、`release-operator`、`finance`、`support`、`privacy`、`auditor`、`platform-admin`，另有仅用于可信工作负载/验签渠道的 `system`、`payment-channel`。`tenant-admin` 与 `privacy-operator` 不作为 Phase 1 别名；未来多租户若需要新增角色，必须通过版本化 IAM policy、兼容迁移和独立审批引入。角色只是权限集合，不替代资源所有权、租户和阶段条件。
 
 ### 5.3 自有认证中心、授权执行与租户隔离
 
