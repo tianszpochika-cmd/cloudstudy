@@ -194,6 +194,16 @@ test('nested B25 and Redis candidate metadata cannot promote static inputs to ru
   }, /\.b25\.|\.redis\.|attempts to promote/);
 });
 
+test('governance prose fields cannot be replaced by keyword-containing negations', () => {
+  assertMutationFails((changed) => {
+    changed.policy.globalPolicies.tenant.phase3SharedSchemaRequirement = 'tenant_id has no unique index';
+    changed.policy.serviceOwners[0].prohibitions.push('domain-write-is-allowed');
+    changed.policy.historicalCandidateInputs.b25Data.disposition = 'migration input can become runtime proof';
+    changed.policy.historicalCandidateInputs.redisKeyspaceRegistry.disposition = 'historical core-api migration input is now runtime proof';
+    changed.policy.m2RuntimeRequirements[0].requirement = 'Schema grants are already complete and need no runtime proof.';
+  }, /shared-schema tenant_id|api-gateway\.prohibitions|frozen candidate boundary|frozen runtime gap/);
+});
+
 test('owner lifecycle and forward-repair responsibilities remain complete', () => {
   assertMutationFails((changed) => {
     const owner = changed.policy.serviceOwners.find((item) => item.service === 'assessment-service');

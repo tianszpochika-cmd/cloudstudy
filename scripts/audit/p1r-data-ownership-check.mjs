@@ -76,6 +76,18 @@ export const EXPECTED_M2_RUNTIME_REQUIREMENTS = Object.freeze([
   'M2-004-ROLLBACK-COMPENSATION',
   'M2-004-RETENTION-DELETE-HOLD',
 ]);
+const EXPECTED_M2_RUNTIME_REQUIREMENT_TEXT = Object.freeze({
+  'M2-004-OWNER-SCHEMA-GRANTS': 'Provision the declared schemas and service-scoped credentials; verify each service can write only its own schema.',
+  'M2-004-FLYWAY-EMPTY-AND-EXISTING': 'Run owner Flyway migrations against empty and existing databases, including compatible forward repair and failure recovery.',
+  'M2-004-TENANT-GUARD': 'Prove server-derived TenantScope, tenant_id/index rules where applicable, and cross-tenant denial; do not claim MySQL automatic row-level isolation.',
+  'M2-004-CROSS-OWNER-DENY': 'Prove cross-schema writes, cross-service joins, shared ORM entities, and Gateway/core-api new business writes are denied.',
+  'M2-004-REDIS-NAMESPACE-ACL': 'Provision per-service Redis namespaces and ACLs; prove Redis loss or restart cannot create or lose a business fact.',
+  'M2-004-REDIS-REBUILD': 'Prove cache, lock, dedupe, rate-limit, and projection rebuild/degradation behavior against durable owner facts.',
+  'M2-004-ROLLBACK-COMPENSATION': 'Exercise compatible rollback or owner compensation and record owner, trace, audit, and recovery receipts.',
+  'M2-004-RETENTION-DELETE-HOLD': 'Implement exact approved retention, deletion/anonymization, legal-hold, and cross-owner receipt policies after P1R-M1-017 freezes the governing contract.',
+});
+const EXPECTED_B25_DISPOSITION = 'Use only as a migration input; it cannot establish current owner grants, runtime schema isolation, or runtime Redis behavior.';
+const EXPECTED_REDIS_DISPOSITION = 'Every historical core-api.* owner is a migration input, never proof of the target namespace, Redis ACL, rebuild, or source-of-truth behavior.';
 
 const EXPECTED_OWNER_GOVERNANCE = Object.freeze({
   'iam-service': ['IDENTITY_AND_SECURITY', 'IDENTITY_RETENTION_AND_DELETION', 'iam-service', 'owner-executes-with-workflow-receipt', 'workflow-and-audit', 'expand-contract-or-compensate'],
@@ -406,7 +418,7 @@ function checkGlobalPolicies(policy, errors) {
   add(errors, tenant?.phase1Tenant === 'platform', 'Phase 1 tenant must be the server-derived platform tenant');
   add(errors, tenant?.clientMaySelectTenant === false, 'clients must not select tenant');
   add(errors, tenant?.authority === 'verified IAM principal and service-derived TenantScope', 'tenant authority must be a verified IAM principal and service-derived TenantScope');
-  add(errors, /tenant_id.*unique.*index/i.test(tenant?.phase3SharedSchemaRequirement ?? ''), 'Phase 3 shared-schema tenant_id and scoped-index rule is required');
+  add(errors, tenant?.phase3SharedSchemaRequirement === 'tenant_id plus tenant-scoped unique constraints and indexes', 'Phase 3 shared-schema tenant_id and scoped-index rule is required');
   add(errors, tenant?.mysqlProvidesAutomaticRowLevelIsolation === false, 'policy must not claim MySQL automatic row-level isolation');
   add(errors, tenant?.runtimeVerificationTask === 'P1R-M2-004', 'tenant runtime verification must remain assigned to P1R-M2-004');
 
@@ -526,7 +538,7 @@ function checkGatewayOwner(owner, errors, indexes) {
   add(errors, owner.businessSchema === null, 'Gateway must not own a business schema');
   add(errors, owner.businessSchemaStatus === 'NOT_APPLICABLE', 'Gateway business schema status must be NOT_APPLICABLE');
   add(errors, owner.writeAuthority === 'NO_DOMAIN_WRITE_AUTHORITY', 'Gateway must have NO_DOMAIN_WRITE_AUTHORITY');
-  add(errors, Array.isArray(owner.prohibitions) && ['domain-table-write', 'domain-schema-ownership', 'client-role-or-tenant-authority'].every((item) => owner.prohibitions.includes(item)), 'Gateway prohibitions must deny domain table/schema writes and client authority');
+  assertExpectedSet(errors, owner.prohibitions, ['domain-table-write', 'domain-schema-ownership', 'client-role-or-tenant-authority'], 'api-gateway.prohibitions');
   add(errors, owner.runtimeVerificationTask === 'P1R-M2-004', 'Gateway data boundary runtime verification must remain assigned to P1R-M2-004');
 
   const credential = owner.databaseCredential;
@@ -630,7 +642,7 @@ function checkB25OwnerMap(policy, b25, errors) {
   add(errors, metadata.path === DEFAULT_B25_INPUT.replaceAll('\\', '/'), 'B25 candidate path is invalid');
   add(errors, metadata.classification === 'HISTORICAL_CANDIDATE_MIGRATION_INPUT', 'B25 must remain a historical candidate migration input');
   add(errors, metadata.ownerMapCount === 8, 'B25 candidate ownerMapCount must be 8');
-  add(errors, /migration input/i.test(metadata.disposition ?? '') && /cannot.*runtime/i.test(metadata.disposition ?? ''), 'B25 disposition must deny runtime-proof promotion');
+  add(errors, metadata.disposition === EXPECTED_B25_DISPOSITION, 'B25 disposition must deny runtime-proof promotion with the frozen candidate boundary');
   add(errors, Array.isArray(metadata.ownerMap), 'B25 candidate ownerMap must be an array');
   const metadataOwners = Array.isArray(metadata.ownerMap) ? metadata.ownerMap : [];
   add(errors, metadataOwners.length === 8, 'B25 candidate ownerMap must contain 8 owners');
@@ -682,7 +694,7 @@ function checkRedisKeyspace(policy, redisRegistry, ownerByService, errors) {
   add(errors, metadata.classification === 'HISTORICAL_CANDIDATE_MIGRATION_INPUT', 'Redis keyspace must remain a historical candidate migration input');
   add(errors, metadata.entryCount === 29, 'Redis candidate entryCount must be 29');
   add(errors, metadata.coreApiEntryCount === 28, 'Redis candidate coreApiEntryCount must be 28');
-  add(errors, /historical.*core-api.*migration input/i.test(metadata.disposition ?? '') && /never proof/i.test(metadata.disposition ?? ''), 'Redis disposition must deny historical owner promotion');
+  add(errors, metadata.disposition === EXPECTED_REDIS_DISPOSITION, 'Redis disposition must deny historical owner promotion with the frozen candidate boundary');
 
   const entries = redisRegistry.entries;
   add(errors, Array.isArray(entries), 'Redis keyspace entries must be an array');
@@ -737,6 +749,7 @@ function checkM2Gaps(policy, errors) {
     if (!isRecord(requirement)) continue;
     assertString(errors, requirement.id, `m2RuntimeRequirements[${index}].id`);
     assertString(errors, requirement.requirement, `m2RuntimeRequirements[${index}].requirement`);
+    add(errors, requirement.requirement === EXPECTED_M2_RUNTIME_REQUIREMENT_TEXT[requirement.id], `m2RuntimeRequirements[${index}].requirement must match the frozen runtime gap`);
   }
 }
 
