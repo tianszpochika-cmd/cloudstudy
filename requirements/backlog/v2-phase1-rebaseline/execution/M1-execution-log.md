@@ -6,7 +6,16 @@
 
 - `P1R-M1-001`：`ACCEPTED`；实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`。
 - `P1R-M1-002`：`ACCEPTED`；最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，独立评审 `m1_002_final_review`（Terra Ultra）。
+- `P1R-M1-003`：`IN_PROGRESS`；不可变来源基线 `d7bf9ab2472cca36d110720acc135f2115a96fe5`，等待权限契约、失败关闭审计和设计一致性三轨集成。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
+
+## M1-003 执行轨道
+
+1. IAM 权限契约：只修改 B8 OpenAPI 源，冻结 principal、成人 Gate、consent、tenant、RBAC/ABAC、admin policy 生命周期与内部 PEP/PDP 输入输出。
+2. 失败关闭校验：只新增 M1-003 结构化审计/测试与命令入口，覆盖客户端伪造 authority、缺失 owner/tenant、默认拒绝、成人/同意限制、双人审批、撤销和缓存失效。
+3. 设计一致性：只对齐 ADR-0010、安全边界和契约说明，明确控制面、服务本地 PEP、远程 PDP 触发条件与 fail closed 语义。
+
+统筹 Agent 独占公共生成物、兼容基线、状态、Evidence、提交与远程推送。运行期 IAM、领域服务 PEP、真实数据库与 Gateway 仍分别属于 M2-002/M2-003/M1-004。
 
 ## M1-002 执行轨道
 

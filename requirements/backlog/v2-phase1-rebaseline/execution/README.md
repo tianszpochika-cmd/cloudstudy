@@ -10,6 +10,7 @@
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
 - `P1R-M1-001` 已由独立评审接受；实现源为 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-001/manifest.json`。
 - `P1R-M1-002` 已由独立 Terra Ultra 评审接受；最终实现源为 `25705c4caab46449cfaa577db08bd13c8ad13fba`，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-002/manifest.json`；M1 整体尚未完成。
+- `P1R-M1-003` 已从 `dev@d7bf9ab2472cca36d110720acc135f2115a96fe5` 启动，当前为 `IN_PROGRESS`；只冻结 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2 契约，不冒充 M2 运行实现。
 
 ## M0 记录索引
 
@@ -32,3 +33,4 @@
 |---|---|---|
 | `P1R-M1-001` | `P1R-M1-001.md` | `ACCEPTED` |
 | `P1R-M1-002` | `P1R-M1-002.md` | `ACCEPTED` |
+| `P1R-M1-003` | `P1R-M1-003.md` | `IN_PROGRESS` |

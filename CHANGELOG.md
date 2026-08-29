@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-003-START-20260829] 启动 Phase 1 IAM 权限、成人 Gate、consent、tenant、RBAC/ABAC、admin policy 与 PEP/PDP 契约任务：以 `dev@d7bf9ab` 为不可变来源基线，按 B8 OpenAPI、失败关闭审计和安全设计一致性三条互斥文件轨道执行；目标是冻结服务端派生 authority、默认拒绝、成人/同意限制、版本化策略包、双人审批/撤销/缓存失效以及本地 PEP 与远程 PDP 边界。本条仅记录 `IN_PROGRESS` 检查点，不代表运行实现、M1 或发布 Gate 已验收。
+
 ## Unreleased
 
 > 历史条目说明：本文件按时间保留当时的实现与验证快照。ADR-0013 之前记录的外部认证、OIDC、旧授权入口及其运行结果均为 Historical / Superseded，不得作为当前需求、实现命令或验收证据；当前认证基线以 ADR-0013 的平台自有 IAM、账号密码和短时 RS256 JWT 为准。历史事实不删除，仅用于审计与迁移追溯。

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "p1r.status-trajectories.v1",
   "historyMode": "m0-integration-reconstruction",
-  "recordedAt": "2026-08-29T10:30:00+08:00",
+  "recordedAt": "2026-08-29T22:19:13+08:00",
   "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
   "records": [
     {
@@ -83,6 +83,13 @@
       "actor": "root-coordinator",
       "reason": "The Web/native IAM lifecycle contract, generated unions, failure-closed audit and design alignment passed; independent Terra Ultra reviewer m1_002_final_review accepted source commit 25705c4caab46449cfaa577db08bd13c8ad13fba.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-002/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-003",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-29T22:19:13+08:00",
+      "actor": "root-coordinator",
+      "reason": "M1-002 is accepted and the IAM authorization, adult Gate, consent, tenant, admin policy and PEP/PDP D2 contract tracks have been assigned from immutable baseline d7bf9ab2472cca36d110720acc135f2115a96fe5."
     }
   ]
 }

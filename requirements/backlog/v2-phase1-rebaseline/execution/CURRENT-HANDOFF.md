@@ -8,6 +8,8 @@ M1-001 canonical API 基座的实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b
 
 M1-002 自有 IAM 认证生命周期契约已接受：最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，canonical manifest 为 `evidence/p1r/m1/P1R-M1-002/manifest.json`，独立评审为 `m1_002_final_review`（Terra Ultra）。
 
+M1-003 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP 契约已从 `dev@d7bf9ab2472cca36d110720acc135f2115a96fe5` 启动，当前为 `IN_PROGRESS`。接手时先查看 `P1R-M1-003.md`，不得把未生成 canonical manifest 的工作判断为已接受。
+
 ## 1. 获取检查点
 
 ```powershell
@@ -62,13 +64,14 @@ pnpm --dir apps/mobile test:b12
 - 严格供应链命令 `pnpm p1r:supply-chain:check` 预期非零：当前应只有 `GHSA-fx2h-pf6j-xcff` 这 1 个 high、0 critical。若 high 数增多或出现 critical，先停止后续依赖升级并检查 lockfile diff。
 - 不得为让 CI 变绿而加入漏洞豁免或强制把 mobile Vite 覆盖到 6.x。
 - `P1R-M1-002` 已接受：Web/H5 Cookie 与原生 Keychain/Keystore 请求/响应已分离，RS256/RSA JWKS、轮换/重放/撤销/重置、错误/关联 ID 和生成联合类型具备当前提交 Evidence。它仍只是 D2 合同，不是 IAM 运行实现。
+- `P1R-M1-003` 正在执行：文件轨道、退出条件、恢复命令和明确排除项已写入任务记录；运行期 IAM/PEP、真实数据库和 Gateway 均未提前声明完成。
 - `P1R-M1-001` 已接受：公共成功/错误 envelope、追踪/版本 headers、写幂等、统一 cursor 分页、只读 merge/generate 与真实 Git baseline compatibility 已有当前提交 Evidence。
 - 完整 `pnpm test:g` 当前仍为 39/41：G0/G3 都引用已删除的同一句旧 source marker；独立评审确认它们早于 M1-002，M1-002 所需 G1 为 6/6。接手时不得把完整 G 写成全绿。
 
 ## 5. 推荐接手顺序
 
 1. 确认上述恢复验证与本仓库 Evidence 一致。
-2. 下一项关键路径是 `P1R-M1-003`（principal、成人 Gate、consent、tenant、RBAC/ABAC、admin policy 和 PEP 输入）；接受后才处理 M1-004 Gateway。共享 OpenAPI/AsyncAPI/Flyway 由单一 owner 合并。
+2. 当前关键路径是完成并独立验收 `P1R-M1-003`（principal、成人 Gate、consent、tenant、RBAC/ABAC、admin policy 和 PEP 输入）；接受后才处理 M1-004 Gateway。共享 OpenAPI/AsyncAPI/Flyway 由单一 owner 合并。
 3. 每次修改公共 API 后，先从最近已接受任务 manifest 选择不可变 contract baseline；M1-003 的直接来源基线是 `25705c4caab46449cfaa577db08bd13c8ad13fba`。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。
