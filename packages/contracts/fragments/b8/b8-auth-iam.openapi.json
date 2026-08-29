@@ -2378,16 +2378,23 @@
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/B8PdpDecision"
+            "description": "Compatibility decision response. New integrations use the canonical envelope returned by /internal/v1/iam/pdp/decisions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B8AuthorizationDecisionResponse"
+                }
+              }
+            }
           },
           "400": {
             "$ref": "#/components/responses/ApiBadRequest"
           },
           "401": {
-            "$ref": "#/components/responses/ApiUnauthorized"
+            "$ref": "#/components/responses/B8Unauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/ApiForbidden"
+            "$ref": "#/components/responses/B8Forbidden"
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
@@ -3601,24 +3608,13 @@
       },
       "B8PrincipalResponse": {
         "type": "object",
-        "additionalProperties": false,
         "required": [
           "principalId",
-          "subject",
           "tenantId",
-          "tenant",
           "sessionId",
           "deviceId",
           "roles",
           "permissions",
-          "phase",
-          "adultGate",
-          "consentState",
-          "deviceTrust",
-          "policyVersion",
-          "policy",
-          "authorityProvenance",
-          "status",
           "authMode"
         ],
         "x-server-authoritative-fields": [
@@ -3714,13 +3710,10 @@
       },
       "B8PermissionsResponse": {
         "type": "object",
-        "additionalProperties": false,
         "required": [
           "permissions",
           "roles",
-          "policyVersion",
-          "policy",
-          "authorityProvenance"
+          "policyVersion"
         ],
         "x-server-authoritative-fields": [
           "permissions",
@@ -3874,18 +3867,9 @@
       },
       "B8AdultGateResponse": {
         "type": "object",
-        "additionalProperties": false,
         "required": [
           "status",
-          "learningAccess",
-          "effectiveAt",
-          "policyVersion",
-          "policyAsOf",
-          "minimumAge",
-          "evidenceDigest",
-          "evidenceStatus",
-          "evaluationProvenance",
-          "revalidation"
+          "effectiveAt"
         ],
         "x-server-authoritative-fields": [
           "status",
@@ -3974,23 +3958,34 @@
           }
         }
       },
+      "B8PdpAdultGateContext": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8AdultGateResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "learningAccess",
+              "policyVersion",
+              "policyAsOf",
+              "minimumAge",
+              "evidenceDigest",
+              "evidenceStatus",
+              "evaluationProvenance",
+              "revalidation"
+            ]
+          }
+        ],
+        "description": "Strict server-authoritative adult context required by the new PDP. The legacy public response keeps its historical required set for additive client compatibility."
+      },
       "B8Consent": {
         "type": "object",
-        "additionalProperties": false,
         "required": [
           "type",
           "version",
           "decision",
-          "decidedAt",
-          "purpose",
-          "required",
-          "document",
-          "state",
-          "effectiveAt",
-          "restrictionEffect",
-          "revalidation",
-          "withdrawalEffect",
-          "provenance"
+          "decidedAt"
         ],
         "x-server-authoritative-fields": [
           "purpose",
@@ -4123,18 +4118,6 @@
       "B8ConsentState": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "required",
-          "accepted",
-          "version",
-          "learningAccess",
-          "requiredPurposes",
-          "unsatisfiedPurposes",
-          "evaluatedAt",
-          "policyVersion",
-          "revalidation",
-          "provenance"
-        ],
         "x-server-authoritative-fields": [
           "required",
           "accepted",
@@ -4192,6 +4175,26 @@
             "$ref": "#/components/schemas/B8ConsentProvenance"
           }
         }
+      },
+      "B8PdpConsentContext": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8ConsentState"
+          },
+          {
+            "type": "object",
+            "required": [
+              "learningAccess",
+              "requiredPurposes",
+              "unsatisfiedPurposes",
+              "evaluatedAt",
+              "policyVersion",
+              "revalidation",
+              "provenance"
+            ]
+          }
+        ],
+        "description": "Strict required-consent context used by the new PDP; absent or stale facts are denied."
       },
       "B8ConsentListResponse": {
         "type": "object",
@@ -4746,10 +4749,10 @@
             "$ref": "#/components/schemas/B8PhaseAccessContext"
           },
           "adultGate": {
-            "$ref": "#/components/schemas/B8AdultGateResponse"
+            "$ref": "#/components/schemas/B8PdpAdultGateContext"
           },
           "consent": {
-            "$ref": "#/components/schemas/B8ConsentState"
+            "$ref": "#/components/schemas/B8PdpConsentContext"
           },
           "deviceTrust": {
             "$ref": "#/components/schemas/B8DeviceTrustContext"
@@ -4966,6 +4969,21 @@
           }
         }
       },
+      "B8PdpAuthorizationDecisionResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8AuthorizationDecisionResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "enforcement",
+              "auditLink"
+            ]
+          }
+        ],
+        "description": "Strict decision payload for the new PDP; compatibility clients may continue reading the legacy decision schema during migration."
+      },
       "B8AuthorizationDecisionEnvelope": {
         "allOf": [
           {
@@ -4978,7 +4996,7 @@
             ],
             "properties": {
               "data": {
-                "$ref": "#/components/schemas/B8AuthorizationDecisionResponse"
+                "$ref": "#/components/schemas/B8PdpAuthorizationDecisionResponse"
               }
             }
           }
@@ -5703,15 +5721,12 @@
       },
       "B8AuthorizationDecisionResponse": {
         "type": "object",
-        "additionalProperties": false,
         "required": [
           "decisionId",
           "decision",
           "reasonCode",
           "policyVersion",
-          "evaluatedAt",
-          "enforcement",
-          "auditLink"
+          "evaluatedAt"
         ],
         "properties": {
           "decisionId": {

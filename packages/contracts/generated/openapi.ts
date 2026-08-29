@@ -1190,7 +1190,7 @@ export type B8SessionRevocationResponse = { sessionId: string; status: "REVOKED"
 /**
  * Generated from the contract source.
  */
-export type B8PrincipalResponse = { principalId: string; tenantId: string; sessionId: string; deviceId: string; roles: ReadonlyArray<string>; permissions: ReadonlyArray<string>; authMode: "self-owned-jwt"; status?: "ACTIVE" | "RESTRICTED"; adultGate?: B8AdultGateResponse; consentState?: B8ConsentState; policyVersion?: string; };
+export type B8PrincipalResponse = { principalId: string; subject?: B8ServerDerivedSubject; tenantId: string; tenant?: B8ServerDerivedTenant; sessionId: string; deviceId: string; roles: ReadonlyArray<string>; permissions: ReadonlyArray<string>; phase?: B8PhaseAccessContext; authMode: "self-owned-jwt"; status?: "ACTIVE" | "RESTRICTED"; adultGate?: B8AdultGateResponse; consentState?: B8ConsentState; deviceTrust?: B8DeviceTrustContext; policyVersion?: string; policy?: B8PolicyVersionContext; authorityProvenance?: B8AuthorityProvenance; };
 
 /**
  * Generated from the contract source.
@@ -1210,17 +1210,17 @@ export type B8AdultGateRequest = { confirmed: true; birthYear: number; policyVer
 /**
  * Generated from the contract source.
  */
-export type B8AdultGateResponse = { status: "PASSED" | "REJECTED"; effectiveAt: string; policyVersion?: string; retryAllowed?: boolean; };
+export type B8AdultGateResponse = { status: "PASSED" | "REJECTED" | "NOT_EVALUATED"; learningAccess?: "ELIGIBLE" | "RESTRICTED"; effectiveAt: string; policyVersion?: string; policyAsOf?: string; minimumAge?: 18; evidenceDigest?: string; evidenceStatus?: "SERVER_VERIFIED" | "INSUFFICIENT" | "REJECTED"; evaluationProvenance?: B8AdultGateEvaluationProvenance; revalidation?: B8RevalidationRequirement; restrictionReasons?: ReadonlyArray<"ADULT_GATE_NOT_EVALUATED" | "ADULT_EVIDENCE_INSUFFICIENT" | "ADULT_EVIDENCE_REJECTED" | "ADULT_POLICY_SUPERSEDED" | "ADULT_REVALIDATION_REQUIRED">; retryAllowed?: boolean; };
 
 /**
  * Generated from the contract source.
  */
-export type B8Consent = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; decidedAt: string; };
+export type B8Consent = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; decidedAt: string; purpose?: "ACCOUNT_TERMS" | "PRIVACY_NOTICE" | "ADULT_LEARNING_ELIGIBILITY" | "PRODUCT_ANALYTICS"; required?: boolean; document?: B8ConsentDocument; state?: "GRANTED" | "WITHDRAWN"; effectiveAt?: string; restrictionEffect?: "NO_RESTRICTION" | "RESTRICT_PROTECTED_CAPABILITY" | "RESTRICT_ALL_LEARNING_ACCESS"; revalidation?: B8RevalidationRequirement; withdrawalEffect?: B8ConsentWithdrawalEffect; provenance?: B8ConsentProvenance; };
 
 /**
  * Generated from the contract source.
  */
-export type B8ConsentState = { required: boolean; accepted: boolean; version: string; };
+export type B8ConsentState = { required?: boolean; accepted?: boolean; version?: string; learningAccess?: "ELIGIBLE" | "RESTRICTED"; requiredPurposes?: ReadonlyArray<string>; unsatisfiedPurposes?: ReadonlyArray<string>; evaluatedAt?: string; policyVersion?: string; revalidation?: B8RevalidationRequirement; provenance?: B8ConsentProvenance; };
 
 /**
  * Generated from the contract source.
@@ -1230,7 +1230,7 @@ export type B8ConsentListResponse = { items: ReadonlyArray<B8Consent>; };
 /**
  * Generated from the contract source.
  */
-export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; };
+export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; expectedDocumentDigest?: string; };
 
 /**
  * Generated from the contract source.
@@ -1238,14 +1238,14 @@ export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNI
 export type B8JwksResponse = { keys: ReadonlyArray<{ kty: "RSA"; kid: string; use: "sig"; alg: "RS256"; n: string; e: string; }>; };
 
 /**
- * Generated from the contract source.
+ * Compatibility request shape for the deprecated authorization endpoint. New PEP integrations use B8PdpAuthorizationDecisionRequest with a trusted service identity, principal provenance, resource provenance and policy context.
  */
 export type B8AuthorizationDecisionRequest = { action: string; resourceType: string; resourceId: string; phase: "P1" | "P2" | "P3"; contentRights?: string; deviceTrust?: string; consentRequirement?: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8AuthorizationDecisionResponse = { decisionId: string; decision: "ALLOW" | "DENY"; reasonCode: "ALLOWED" | "POLICY_DENIED" | "ADULT_GATE_REQUIRED" | "CONSENT_REQUIRED" | "SESSION_REVOKED" | "CONTEXT_MISSING" | "POLICY_UNAVAILABLE"; policyVersion: string; evaluatedAt: string; cacheUntil?: string; };
+export type B8AuthorizationDecisionResponse = { decisionId: string; decision: "ALLOW" | "DENY"; reasonCode: "ALLOWED" | "POLICY_DENIED" | "ADULT_GATE_REQUIRED" | "CONSENT_REQUIRED" | "SESSION_REVOKED" | "CONTEXT_MISSING" | "POLICY_UNAVAILABLE" | "POLICY_VERSION_EXPIRED" | "REVOCATION_UNCERTAIN" | "PDP_ERROR" | "PDP_TIMEOUT" | "INVALID_SERVICE_IDENTITY" | "RESOURCE_PROVENANCE_MISSING" | "TENANT_PROVENANCE_MISMATCH" | "OWNER_PROVENANCE_MISMATCH"; policyVersion: string; evaluatedAt: string; cacheUntil?: string; enforcement?: B8AuthorizationEnforcement; auditLink?: B8AuditLink; };
 
 /**
  * Generated from the contract source.
@@ -1260,7 +1260,7 @@ export type B8DeviceId = string;
 /**
  * Generated from the contract source.
  */
-export type B8PermissionsResponse = { permissions: ReadonlyArray<string>; roles: ReadonlyArray<string>; policyVersion: string; };
+export type B8PermissionsResponse = { permissions: ReadonlyArray<string>; roles: ReadonlyArray<string>; policyVersion: string; policy?: B8PolicyVersionContext; authorityProvenance?: B8AuthorityProvenance; };
 
 /**
  * Generated from the contract source.
@@ -2487,6 +2487,201 @@ export type B8NativeAuthTokenResponse = { authTransport: "NATIVE_SECURE_STORAGE"
  */
 export type B8AuthTokenEnvelope = ApiSuccessEnvelope & { data: B8WebAuthTokenResponse | B8NativeAuthTokenResponse; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B8ServerDerivedSubject = { subjectId: string; source: "IAM_VALIDATED_JWT_AND_SESSION"; derivedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8ServerDerivedTenant = { tenantId: string; provenance: "IAM_PLATFORM_TENANT" | "IAM_VALIDATED_TENANT_SCOPE"; derivedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PhaseAccessContext = { currentPhase: "P1"; learningAccess: "ELIGIBLE" | "RESTRICTED"; provenance: "IAM_SERVER_DERIVED_PHASE_GATE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8DeviceTrustContext = { deviceId: string; trustLevel: "REGISTERED" | "VERIFIED" | "RESTRICTED"; sessionStatus: "ACTIVE" | "REVOKED" | "REVOCATION_UNCERTAIN"; provenance: "IAM_SERVER_OWNED_DEVICE_AND_SESSION"; evaluatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyVersionContext = { policyVersionId?: string; version: string; status: "ACTIVE" | "SUPERSEDED" | "REVOKED" | "EXPIRED"; effectiveAt: string; revocationState: "NOT_REVOKED" | "REVOKED" | "REVOCATION_UNCERTAIN"; provenance: "IAM_ACTIVE_POLICY_CONTROL_PLANE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8AuthorityProvenance = { authority: "IAM_SERVER_DERIVED"; derivedAt: string; jwtValidation: "VALIDATED_IAM_RS256_JWT"; tenantSource: "IAM_SERVER_DERIVED_TENANT"; rolePermissionSource: "IAM_ROLE_PERMISSION_ASSIGNMENTS"; policySource: "IAM_ACTIVE_VERSIONED_POLICY"; revocationState: "CONFIRMED_NOT_REVOKED" | "REVOKED" | "UNCERTAIN_FAIL_CLOSED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8RevalidationRequirement = { status: "CURRENT" | "REVALIDATION_REQUIRED" | "EXPIRED" | "REVOKED"; required: boolean; evaluatedAt: string; dueAt?: string; reasonCodes?: ReadonlyArray<string>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8AdultGateEvaluationProvenance = { authority: "IAM_SERVER_DERIVED"; evaluator: "iam-service"; evidenceSource: "SERVER_RECOGNIZED_EVIDENCE" | "CLIENT_ASSERTION_PENDING_SERVER_EVALUATION" | "NO_USABLE_EVIDENCE"; evaluatedAt: string; rawEvidenceReturned: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8ConsentDocument = { version: string; digest: string; publishedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8ConsentWithdrawalEffect = { effect: "NO_ACTION" | "RESTRICT_PROTECTED_CAPABILITY" | "RESTRICT_ALL_LEARNING_ACCESS" | "REVOKE_SENSITIVE_SESSION_SCOPE"; appliesAt: string; cacheInvalidationRequired: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8ConsentProvenance = { authority: "IAM_SERVER_RECORDED_CONSENT"; recordedAt: string; documentSource: "PUBLISHED_DOCUMENT_VERSION_AND_DIGEST"; policySource: "IAM_ACTIVE_POLICY_CONTROL_PLANE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8AuditLink = { auditId: string; decisionId?: string; requestId: string; traceId: string; recordedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8AuthorizationEnforcement = { defaultDecision: "DENY"; failureMode: "FAIL_CLOSED"; localPepRequired: true; decisionSource: "LOCAL_PEP" | "REMOTE_PDP"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PdpPrincipalContext = { subject: B8ServerDerivedSubject; tenant: B8ServerDerivedTenant; roles: ReadonlyArray<string>; permissions: ReadonlyArray<string>; phase: B8PhaseAccessContext; adultGate: B8PdpAdultGateContext; consent: B8PdpConsentContext; deviceTrust: B8DeviceTrustContext; authorityProvenance: B8AuthorityProvenance; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PdpResourceContext = { resourceType: string; resourceId: string; owner: { ownerId: string; provenance: "RESOURCE_OWNER_SERVICE"; }; tenant: B8ServerDerivedTenant; phase: "P1" | "P2" | "P3"; contentRights: "VALID" | "NOT_APPLICABLE" | "EXPIRED" | "REVOKED" | "UNCERTAIN"; provenance: { ownerService: string; resolvedAt: string; factDigest: string; }; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PdpPolicyContext = { policy: B8PolicyVersionContext; bundleVersion: string; cacheState: "CURRENT" | "MISS" | "EXPIRED" | "INVALIDATED"; revocationState: "CONFIRMED_NOT_REVOKED" | "REVOKED" | "UNCERTAIN_FAIL_CLOSED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8TrustedServiceIdentityContext = { serviceId: string; credentialBinding: "VALIDATED_SERVICE_JWT_BOUND_TO_PEP"; audience: string; authenticatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PdpAuthorizationDecisionRequest = { invocationReason: "HIGH_RISK_OPERATION" | "DYNAMIC_POLICY" | "SECURITY_CACHE_MISS"; action: string; principal: B8PdpPrincipalContext; resource: B8PdpResourceContext; policy: B8PdpPolicyContext; serviceIdentity: B8TrustedServiceIdentityContext; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8AuthorizationDecisionEnvelope = ApiSuccessEnvelope & { data: B8PdpAuthorizationDecisionResponse; };
+
+/**
+ * Versioned RBAC binding. It becomes authoritative only after independent approval and activation of the containing policy version; request payloads never change the caller's current authority.
+ */
+export type B8RolePermissionBinding = { roleCode: string; permissions: ReadonlyArray<string>; assignmentScope: "SERVER_DERIVED_PLATFORM_TENANT" | "SERVER_DERIVED_RESOURCE_TENANT"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyRule = { effect: "ALLOW" | "DENY"; requiredPermissions: ReadonlyArray<string>; actions: ReadonlyArray<string>; resourceTypes: ReadonlyArray<string>; conditions: { phases?: ReadonlyArray<"P1" | "P2" | "P3">; requiresAdultEligibility?: boolean; requiredConsentPurposes?: ReadonlyArray<string>; minimumDeviceTrust?: "REGISTERED" | "VERIFIED"; contentRights?: ReadonlyArray<"VALID" | "NOT_APPLICABLE">; ownerMatchRequired?: boolean; tenantMatchRequired?: boolean; }; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyDocument = { name: string; description?: string; roleBindings: ReadonlyArray<B8RolePermissionBinding>; rules: ReadonlyArray<B8PolicyRule>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyCacheInvalidationReceipt = { invalidationId?: string; required: boolean; status: "NOT_REQUIRED" | "PENDING" | "COMPLETED" | "FAILED"; scope: "NONE" | "POLICY_VERSION" | "AFFECTED_PEP_SECURITY_CACHES" | "REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"; issuedAt: string; completedAt?: string; denyUntilCurrentVersionProven: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyVersion = { policyVersionId: string; version: string; status: "DRAFT" | "SUBMITTED" | "APPROVED" | "ACTIVE" | "REVOKED"; revision: number; tenant: B8ServerDerivedTenant; document: B8PolicyDocument; artifactDigest: string; createdAt: string; updatedAt: string; createdBy: B8ServerDerivedSubject; submittedBy?: B8ServerDerivedSubject; approvedBy?: B8ServerDerivedSubject; activatedBy?: B8ServerDerivedSubject; revokedBy?: B8ServerDerivedSubject; separationOfDuties: { independentApprovalRequired: true; authorMayApprove: false; submitterMayApprove: false; satisfied: boolean; }; auditLinks: ReadonlyArray<B8AuditLink>; cacheInvalidation: B8PolicyCacheInvalidationReceipt; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyDraftCreateRequest = { policyDocument: B8PolicyDocument; changeReason: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyDraftUpdateRequest = { expectedRevision: number; policyDocument: B8PolicyDocument; changeReason: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicySubmitRequest = { expectedRevision: number; submissionReason: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyApprovalRequest = { expectedRevision: number; approvalNote: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyActivationRequest = { expectedRevision: number; activationReason: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyRevocationRequest = { expectedRevision: number; revocationReason: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyMutationResult = { policy: B8PolicyVersion; auditLink: B8AuditLink; cacheInvalidation: B8PolicyCacheInvalidationReceipt; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyVersionEnvelope = ApiSuccessEnvelope & { data: B8PolicyVersion; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyVersionMutationEnvelope = ApiSuccessEnvelope & { data: B8PolicyMutationResult; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyVersionListEnvelope = ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B8PolicyVersion>; }; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyBundle = { bundleId: string; policy: B8PolicyVersionContext; policyDocument: B8PolicyDocument; issuedAt: string; expiresAt: string; cacheMaxAgeSeconds: number; revocationState: "CONFIRMED_NOT_REVOKED" | "REVOKED" | "UNCERTAIN_FAIL_CLOSED"; provenance: "IAM_SIGNED_VERSIONED_POLICY_BUNDLE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PolicyBundleEnvelope = ApiSuccessEnvelope & { data: B8PolicyBundle; };
+
+/**
+ * Strict server-authoritative adult context required by the new PDP. The legacy public response keeps its historical required set for additive client compatibility.
+ */
+export type B8PdpAdultGateContext = B8AdultGateResponse & Record<string, never>;
+
+/**
+ * Strict required-consent context used by the new PDP; absent or stale facts are denied.
+ */
+export type B8PdpConsentContext = B8ConsentState & Record<string, never>;
+
+/**
+ * Strict decision payload for the new PDP; compatibility clients may continue reading the legacy decision schema during migration.
+ */
+export type B8PdpAuthorizationDecisionResponse = B8AuthorizationDecisionResponse & Record<string, never>;
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -2873,6 +3068,16 @@ export interface ApiOperationRegistry {
   getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; request: never; response: ApiSuccessEnvelope & { data: B8JwksResponse; }; idempotent: false };
   requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; request: B8PasswordResetRequest; response: ApiSuccessEnvelope & { data: { accepted: true; }; }; idempotent: true };
   confirmB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/confirm"; request: B8PasswordResetConfirmRequest; response: unknown; idempotent: true };
+  listB8PolicyVersions: { method: "GET"; path: "/api/v1/iam/policy-versions"; request: never; response: unknown; idempotent: false };
+  createB8PolicyDraft: { method: "POST"; path: "/api/v1/iam/policy-versions"; request: B8PolicyDraftCreateRequest; response: unknown; idempotent: true };
+  getB8PolicyVersion: { method: "GET"; path: "/api/v1/iam/policy-versions/{policyVersionId}"; request: never; response: unknown; idempotent: false };
+  updateB8PolicyDraft: { method: "PUT"; path: "/api/v1/iam/policy-versions/{policyVersionId}"; request: B8PolicyDraftUpdateRequest; response: unknown; idempotent: true };
+  submitB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/submit"; request: B8PolicySubmitRequest; response: unknown; idempotent: true };
+  approveB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/approvals"; request: B8PolicyApprovalRequest; response: unknown; idempotent: true };
+  activateB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/activate"; request: B8PolicyActivationRequest; response: unknown; idempotent: true };
+  revokeB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/revoke"; request: B8PolicyRevocationRequest; response: unknown; idempotent: true };
+  getB8ActivePolicyBundle: { method: "GET"; path: "/internal/v1/iam/policy-bundles/active"; request: never; response: unknown; idempotent: false };
+  evaluateB8PdpDecision: { method: "POST"; path: "/internal/v1/iam/pdp/decisions"; request: B8PdpAuthorizationDecisionRequest; response: unknown; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

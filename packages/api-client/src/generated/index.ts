@@ -371,6 +371,16 @@ export interface GeneratedApiOperationRegistry {
   getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; response: ApiSuccessEnvelope & { data: B8JwksResponse; }; };
   requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; response: ApiSuccessEnvelope & { data: { accepted: true; }; }; };
   confirmB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/confirm"; response: unknown; };
+  listB8PolicyVersions: { method: "GET"; path: "/api/v1/iam/policy-versions"; response: unknown; };
+  createB8PolicyDraft: { method: "POST"; path: "/api/v1/iam/policy-versions"; response: unknown; };
+  getB8PolicyVersion: { method: "GET"; path: "/api/v1/iam/policy-versions/{policyVersionId}"; response: unknown; };
+  updateB8PolicyDraft: { method: "PUT"; path: "/api/v1/iam/policy-versions/{policyVersionId}"; response: unknown; };
+  submitB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/submit"; response: unknown; };
+  approveB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/approvals"; response: unknown; };
+  activateB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/activate"; response: unknown; };
+  revokeB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/revoke"; response: unknown; };
+  getB8ActivePolicyBundle: { method: "GET"; path: "/internal/v1/iam/policy-bundles/active"; response: unknown; };
+  evaluateB8PdpDecision: { method: "POST"; path: "/internal/v1/iam/pdp/decisions"; response: unknown; };
 }
 
 export type GeneratedApiOperationId = keyof GeneratedApiOperationRegistry;

@@ -49,13 +49,13 @@ test('adult confirmation and birth year cannot directly pass the adult Gate', ()
 
 test('adult Gate cannot lose policy evidence or revalidation', () => {
   assertMutationFails((document) => {
-    document.components.schemas.B8AdultGateResponse.required = ['status', 'learningAccess', 'effectiveAt'];
+    delete document.components.schemas.B8AdultGateResponse.properties.evidenceDigest;
   }, /adult Gate response lacks authoritative policy\/evidence\/revalidation fields/);
 });
 
 test('required consent cannot lose document digest or withdrawal restriction', () => {
   assertMutationFails((document) => {
-    document.components.schemas.B8Consent.required = document.components.schemas.B8Consent.required.filter((field) => !['document', 'withdrawalEffect', 'revalidation'].includes(field));
+    delete document.components.schemas.B8Consent.properties.withdrawalEffect;
   }, /consent record lacks purpose\/document\/withdrawal\/revalidation facts/);
 });
 

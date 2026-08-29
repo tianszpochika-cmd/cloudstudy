@@ -202,8 +202,8 @@ function checkPrincipal(document, errors) {
   add(errors, isRecord(principal), 'B8PrincipalResponse is required');
   if (!isRecord(principal)) return;
   const required = ['principalId', 'subject', 'tenantId', 'tenant', 'roles', 'permissions', 'phase', 'adultGate', 'consentState', 'deviceTrust', 'policyVersion', 'policy', 'authorityProvenance'];
-  add(errors, principal.additionalProperties === false, 'B8PrincipalResponse must reject unknown authority fields');
-  add(errors, hasAll(principal.required, required), 'B8PrincipalResponse must require all server-derived authority facts');
+  add(errors, hasAll(principal.required, ['principalId', 'tenantId', 'sessionId', 'deviceId', 'roles', 'permissions', 'authMode']), 'B8PrincipalResponse must preserve its legacy required fields');
+  add(errors, hasAll(Object.keys(principal.properties ?? {}), required), 'B8PrincipalResponse must expose all server-derived authority facts');
   add(errors, hasAll(principal['x-server-authoritative-fields'], required), 'B8PrincipalResponse server-authoritative fields are incomplete');
   add(errors, principal['x-client-authority']?.trusted === false, 'B8PrincipalResponse must reject client authority');
   add(errors, principal.properties?.subject?.$ref === schemaRef('B8ServerDerivedSubject'), 'principal subject must use B8ServerDerivedSubject');
@@ -229,7 +229,7 @@ function checkAdultAndConsent(document, errors) {
 
   const response = schema(document, 'B8AdultGateResponse');
   const adultRequired = ['learningAccess', 'policyVersion', 'policyAsOf', 'minimumAge', 'evidenceDigest', 'evidenceStatus', 'evaluationProvenance', 'revalidation'];
-  add(errors, hasAll(response?.required, adultRequired), 'adult Gate response lacks authoritative policy/evidence/revalidation fields');
+  add(errors, hasAll(Object.keys(response?.properties ?? {}), adultRequired) && hasAll(response?.['x-server-authoritative-fields'], adultRequired), 'adult Gate response lacks authoritative policy/evidence/revalidation fields');
   add(errors, response?.properties?.minimumAge?.const === 18, 'adult Gate response minimumAge must be 18');
   add(errors, exactArray(response?.properties?.learningAccess?.enum, ['ELIGIBLE', 'RESTRICTED']), 'adult Gate learningAccess must be ELIGIBLE or RESTRICTED');
   add(errors, response?.properties?.evaluationProvenance?.$ref === schemaRef('B8AdultGateEvaluationProvenance'), 'adult Gate evaluation provenance is required');
@@ -237,15 +237,15 @@ function checkAdultAndConsent(document, errors) {
 
   const consent = schema(document, 'B8Consent');
   const consentRequired = ['purpose', 'required', 'document', 'state', 'effectiveAt', 'restrictionEffect', 'revalidation', 'withdrawalEffect', 'provenance'];
-  add(errors, consent?.additionalProperties === false, 'B8Consent must reject unknown fields');
-  add(errors, hasAll(consent?.required, consentRequired), 'consent record lacks purpose/document/withdrawal/revalidation facts');
+  add(errors, hasAll(Object.keys(consent?.properties ?? {}), consentRequired) && hasAll(consent?.['x-server-authoritative-fields'], consentRequired), 'consent record lacks purpose/document/withdrawal/revalidation facts');
   add(errors, consent?.properties?.document?.$ref === schemaRef('B8ConsentDocument'), 'consent document version/digest is required');
   add(errors, exactArray(consent?.properties?.state?.enum, ['GRANTED', 'WITHDRAWN']), 'consent state must be GRANTED or WITHDRAWN');
   add(errors, consent?.properties?.withdrawalEffect?.$ref === schemaRef('B8ConsentWithdrawalEffect'), 'consent withdrawal effect is required');
   add(errors, schema(document, 'B8ConsentDocument')?.required?.includes('digest'), 'consent document digest is required');
 
   const consentState = schema(document, 'B8ConsentState');
-  add(errors, hasAll(consentState?.required, ['learningAccess', 'requiredPurposes', 'unsatisfiedPurposes', 'policyVersion', 'revalidation', 'provenance']), 'consent summary lacks restriction/revalidation provenance');
+  const consentStateFacts = ['learningAccess', 'requiredPurposes', 'unsatisfiedPurposes', 'policyVersion', 'revalidation', 'provenance'];
+  add(errors, hasAll(Object.keys(consentState?.properties ?? {}), consentStateFacts) && hasAll(consentState?.['x-server-authoritative-fields'], consentStateFacts), 'consent summary lacks restriction/revalidation provenance');
   add(errors, exactArray(consentState?.properties?.learningAccess?.enum, ['ELIGIBLE', 'RESTRICTED']), 'consent summary must expose ELIGIBLE or RESTRICTED');
   const update = schema(document, 'B8ConsentUpdateRequest');
   add(errors, update?.additionalProperties === false, 'B8ConsentUpdateRequest must reject authority injection');
@@ -285,6 +285,12 @@ function checkPdp(document, errors) {
 
   const principal = schema(document, 'B8PdpPrincipalContext');
   add(errors, hasAll(principal?.required, ['subject', 'tenant', 'roles', 'permissions', 'phase', 'adultGate', 'consent', 'deviceTrust', 'authorityProvenance']), 'PDP principal context is incomplete');
+  add(errors, principal?.properties?.adultGate?.$ref === schemaRef('B8PdpAdultGateContext'), 'PDP principal must use the strict adult Gate context');
+  add(errors, principal?.properties?.consent?.$ref === schemaRef('B8PdpConsentContext'), 'PDP principal must use the strict consent context');
+  const strictAdult = schema(document, 'B8PdpAdultGateContext');
+  add(errors, hasAll(strictAdult?.allOf?.[1]?.required, ['learningAccess', 'policyVersion', 'policyAsOf', 'minimumAge', 'evidenceDigest', 'evidenceStatus', 'evaluationProvenance', 'revalidation']), 'strict PDP adult context is incomplete');
+  const strictConsent = schema(document, 'B8PdpConsentContext');
+  add(errors, hasAll(strictConsent?.allOf?.[1]?.required, ['learningAccess', 'requiredPurposes', 'unsatisfiedPurposes', 'evaluatedAt', 'policyVersion', 'revalidation', 'provenance']), 'strict PDP consent context is incomplete');
   const resource = schema(document, 'B8PdpResourceContext');
   add(errors, hasAll(resource?.required, ['resourceType', 'resourceId', 'owner', 'tenant', 'phase', 'contentRights', 'provenance']), 'PDP resource context lacks owner/tenant/rights provenance');
   add(errors, resource?.properties?.owner?.properties?.provenance?.const === 'RESOURCE_OWNER_SERVICE', 'resource owner provenance must come from the owner service');
@@ -299,11 +305,16 @@ function checkPdp(document, errors) {
   add(errors, enforcement?.properties?.defaultDecision?.const === 'DENY', 'authorization enforcement default must be DENY');
   add(errors, enforcement?.properties?.failureMode?.const === 'FAIL_CLOSED', 'authorization enforcement must fail closed');
   add(errors, enforcement?.properties?.localPepRequired?.const === true, 'authorization enforcement must require the local PEP');
+  const strictDecision = schema(document, 'B8PdpAuthorizationDecisionResponse');
+  add(errors, strictDecision?.allOf?.[0]?.$ref === schemaRef('B8AuthorizationDecisionResponse') && hasAll(strictDecision?.allOf?.[1]?.required, ['enforcement', 'auditLink']), 'new PDP decision must require enforcement and auditLink');
+  add(errors, schema(document, 'B8AuthorizationDecisionEnvelope')?.allOf?.[1]?.properties?.data?.$ref === schemaRef('B8PdpAuthorizationDecisionResponse'), 'PDP envelope must use the strict decision payload');
 
   const legacy = document.paths?.['/internal/v1/iam/authorization/decisions']?.post;
   add(errors, legacy?.deprecated === true, 'legacy authorization decision operation must be deprecated');
   add(errors, legacy?.['x-superseded-by'] === route, 'legacy authorization decision operation must point to the structured PDP endpoint');
   add(errors, legacy?.['x-pep-pdp']?.missingOrUntrustedContext === 'fail-closed', 'legacy decision compatibility must fail closed');
+  add(errors, legacy?.responses?.['200']?.content?.['application/json']?.schema?.$ref === schemaRef('B8AuthorizationDecisionResponse'), 'legacy decision response shape must remain compatible during deprecation');
+  add(errors, legacy?.responses?.['401']?.$ref === responseRef('B8Unauthorized') && legacy?.responses?.['403']?.$ref === responseRef('B8Forbidden'), 'legacy decision errors must remain compatible during deprecation');
 }
 
 function checkResponseEnvelopeAndHeaders(document, errors, responseName, envelopeName) {

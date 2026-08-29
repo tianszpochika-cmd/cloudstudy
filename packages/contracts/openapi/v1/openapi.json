@@ -16944,11 +16944,13 @@
     },
     "/internal/v1/iam/authorization/decisions": {
       "post": {
+        "deprecated": true,
+        "x-superseded-by": "/internal/v1/iam/pdp/decisions",
         "tags": [
           "b8-auth"
         ],
         "operationId": "decideB8Authorization",
-        "summary": "Evaluate an authorization decision from server-derived context",
+        "summary": "Compatibility authorization decision endpoint; new PEP integrations use the structured PDP endpoint",
         "security": [
           {
             "B8ServiceIdentity": []
@@ -16965,6 +16967,12 @@
           "strategy": "authorization-decision",
           "keyHeader": "Idempotency-Key",
           "replayBehavior": "Decision IDs are auditable and may be cached until cacheUntil."
+        },
+        "x-pep-pdp": {
+          "compatibilityOnly": true,
+          "defaultDecision": "DENY",
+          "missingOrUntrustedContext": "fail-closed",
+          "newIntegrations": "/internal/v1/iam/pdp/decisions"
         },
         "parameters": [
           {
@@ -16983,7 +16991,7 @@
         },
         "responses": {
           "200": {
-            "description": "Decision",
+            "description": "Compatibility decision response. New integrations use the canonical envelope returned by /internal/v1/iam/pdp/decisions.",
             "content": {
               "application/json": {
                 "schema": {
@@ -16992,11 +17000,23 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
           "401": {
             "$ref": "#/components/responses/B8Unauthorized"
           },
           "403": {
             "$ref": "#/components/responses/B8Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          },
+          "504": {
+            "$ref": "#/components/responses/ApiGatewayTimeout"
           }
         }
       }
@@ -24882,6 +24902,722 @@
           }
         }
       }
+    },
+    "/api/v1/iam/policy-versions": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "listB8PolicyVersions",
+        "summary": "List versioned IAM policy control-plane records",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "permission",
+            "policyVersion"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.version.listed.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionList"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "createB8PolicyDraft",
+        "summary": "Create a server-owned IAM policy draft",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.draft.create",
+          "defaultDecision": "DENY",
+          "serverDerivedActorAndTenant": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "policy-draft-create",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same request key and payload return the originally created draft and audit association."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.draft.created.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PolicyDraftCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/B8PolicyVersionCreated"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/policy-versions/{policyVersionId}": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "getB8PolicyVersion",
+        "summary": "Read an IAM policy version and its server-derived lifecycle facts",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.read",
+          "defaultDecision": "DENY",
+          "resourceTenantAndVisibility": "server-derived"
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.version.read.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8PolicyVersionId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionRead"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "updateB8PolicyDraft",
+        "summary": "Update a DRAFT IAM policy version",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.draft.update",
+          "defaultDecision": "DENY",
+          "requiredLifecycleState": "DRAFT",
+          "serverDerivedActorAndTenant": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "policy-draft-update",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same request key and expected revision return the originally applied revision."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.draft.updated.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8PolicyVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PolicyDraftUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionMutation"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/policy-versions/{policyVersionId}/submit": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "submitB8PolicyVersion",
+        "summary": "Submit a DRAFT IAM policy version for independent approval",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.submit",
+          "defaultDecision": "DENY",
+          "requiredLifecycleState": "DRAFT",
+          "serverDerivedActorAndTenant": true
+        },
+        "x-separation-of-duties": {
+          "submitter": "server-derived authenticated principal",
+          "approvalMustBeByDifferentPrincipal": true,
+          "clientSuppliedApprover": "forbidden"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "policy-version-submit",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same request key returns the same submitted version and approval requirements."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.version.submitted.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8PolicyVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PolicySubmitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionMutation"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/policy-versions/{policyVersionId}/approvals": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "approveB8PolicyVersion",
+        "summary": "Independently approve a submitted IAM policy version",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.approve",
+          "defaultDecision": "DENY",
+          "requiredLifecycleState": "SUBMITTED",
+          "serverDerivedActorAndTenant": true
+        },
+        "x-separation-of-duties": {
+          "approval": "second-person server-derived approval",
+          "mustDifferFrom": [
+            "draftAuthor",
+            "draftContributors",
+            "submitter"
+          ],
+          "selfApproval": "forbidden",
+          "clientSuppliedApprover": "forbidden",
+          "failure": "fail-closed-with-403-or-409-and-audit"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "policy-version-independent-approval",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same approval command returns the original approval result; a conflicting approver or state is rejected."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.version.independently_approved.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8PolicyVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PolicyApprovalRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionMutation"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/policy-versions/{policyVersionId}/activate": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "activateB8PolicyVersion",
+        "summary": "Activate an independently approved IAM policy version",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.activate",
+          "defaultDecision": "DENY",
+          "requiredLifecycleState": "APPROVED",
+          "serverDerivedActorAndTenant": true
+        },
+        "x-separation-of-duties": {
+          "requiresIndependentApproval": true,
+          "approvalMustAlreadyBeImmutable": true,
+          "clientSuppliedApproval": "forbidden"
+        },
+        "x-cache-invalidation": {
+          "required": true,
+          "scope": "policy-version-and-affected-pep-security-caches",
+          "failureMode": "deny-until-current-version-proven"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "policy-version-activate",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same activation command returns the original policy version, audit link and cache-invalidation receipt."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.version.activated.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8PolicyVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PolicyActivationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionMutation"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/policy-versions/{policyVersionId}/revoke": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "revokeB8PolicyVersion",
+        "summary": "Revoke an IAM policy version and invalidate affected PEP caches",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "authentication": "self-owned-jwt"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.policy.revoke",
+          "defaultDecision": "DENY",
+          "serverDerivedActorAndTenant": true
+        },
+        "x-cache-invalidation": {
+          "required": true,
+          "scope": "revoked-policy-version-and-affected-pep-security-caches",
+          "failureMode": "deny-until-revocation-observed"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "policy-version-revoke",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "The same revocation command returns the original terminal result and cache-invalidation receipt."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.policy.version.revoked.v1",
+          "correlation": "canonical-request-and-trace-ids"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8PolicyVersionId"
+          },
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PolicyRevocationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyVersionMutation"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/internal/v1/iam/policy-bundles/active": {
+      "get": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "getB8ActivePolicyBundle",
+        "summary": "Fetch the active versioned policy bundle for a trusted local PEP",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "internalOnly": true
+        },
+        "x-pep-pdp": {
+          "purpose": "policy-bundle-distribution-for-local-pep",
+          "perRequestRemotePdp": false,
+          "requiredCallerIdentity": "trusted-service-identity",
+          "cache": "bounded-security-cache-with-version-and-revocation-check",
+          "failureMode": "fail-closed"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PolicyBundle"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/internal/v1/iam/pdp/decisions": {
+      "post": {
+        "tags": [
+          "b8-auth"
+        ],
+        "operationId": "evaluateB8PdpDecision",
+        "summary": "Evaluate a remote PDP decision for a trusted PEP caller",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-contract": {
+          "domain": "iam",
+          "owner": "iam-service",
+          "phase": "P1",
+          "internalOnly": true
+        },
+        "x-pep-pdp": {
+          "remotePdpOnlyWhen": [
+            "HIGH_RISK_OPERATION",
+            "DYNAMIC_POLICY",
+            "SECURITY_CACHE_MISS"
+          ],
+          "requiredCallerIdentity": "trusted-service-identity-bound-to-pep",
+          "defaultDecision": "DENY",
+          "failureMode": "fail-closed"
+        },
+        "x-idempotency": {
+          "required": false,
+          "strategy": "authorization-decision-read",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "An optional key correlates duplicate remote decision reads and never creates a domain fact."
+        },
+        "x-audit": {
+          "required": true,
+          "event": "iam.authorization.pdp_decided.v1",
+          "correlation": "canonical-request-and-trace-ids-and-decision-id"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B8IdempotencyKeyOptional"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B8PdpAuthorizationDecisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/B8PdpDecision"
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          },
+          "504": {
+            "$ref": "#/components/responses/ApiGatewayTimeout"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -24901,7 +25637,20 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "Internal service JWT; issuer, signature, algorithm, audience, time and token_type are independently validated."
+        "description": "Internal service JWT only; iam-service independently validates issuer, signature, RS256 algorithm, audience, time window, token_type, service identity and caller-to-PEP binding. A client bearer token, forwarded role header or caller-supplied service name never satisfies this scheme.",
+        "x-trusted-service-identity": {
+          "requiredClaims": [
+            "sub",
+            "aud",
+            "exp",
+            "iat",
+            "jti",
+            "token_type",
+            "service_id"
+          ],
+          "tokenType": "service",
+          "failureMode": "fail-closed"
+        }
       }
     },
     "parameters": {
@@ -26405,6 +27154,16 @@
             "NATIVE_SECURE_STORAGE"
           ],
           "default": "WEB_COOKIE"
+        }
+      },
+      "B8PolicyVersionId": {
+        "name": "policyVersionId",
+        "in": "path",
+        "required": true,
+        "description": "Server-issued immutable policy-version identifier; it is never a tenant, owner, role or approval authority assertion.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
         }
       }
     },
@@ -28501,6 +29260,132 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      },
+      "B8PolicyVersionList": {
+        "description": "Cursor page of server-authoritative IAM policy versions visible to the authenticated principal.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8PolicyVersionListEnvelope"
+            }
+          }
+        }
+      },
+      "B8PolicyVersionCreated": {
+        "description": "A server-owned IAM policy draft has been created with an immutable audit association.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8PolicyVersionMutationEnvelope"
+            }
+          }
+        }
+      },
+      "B8PolicyVersionRead": {
+        "description": "A server-authoritative IAM policy version and its lifecycle, separation-of-duties and audit facts.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8PolicyVersionEnvelope"
+            }
+          }
+        }
+      },
+      "B8PolicyVersionMutation": {
+        "description": "A policy lifecycle command completed with an immutable audit association and any required cache-invalidation receipt.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8PolicyVersionMutationEnvelope"
+            }
+          }
+        }
+      },
+      "B8PolicyBundle": {
+        "description": "Versioned policy bundle for a trusted service-local PEP; unavailable or stale/revoked state must not be treated as an allow.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8PolicyBundleEnvelope"
+            }
+          }
+        }
+      },
+      "B8PdpDecision": {
+        "description": "Remote PDP decision for a trusted PEP caller. A transport, policy, revocation or context failure is not an ALLOW decision and the PEP must fail closed.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B8AuthorizationDecisionEnvelope"
             }
           }
         }
@@ -35864,20 +36749,39 @@
         ],
         "x-server-authoritative-fields": [
           "principalId",
+          "subject",
           "tenantId",
+          "tenant",
           "roles",
           "permissions",
+          "phase",
           "status",
           "adultGate",
-          "consentState"
+          "consentState",
+          "deviceTrust",
+          "policyVersion",
+          "policy",
+          "authorityProvenance"
         ],
+        "x-client-authority": {
+          "trusted": false,
+          "rule": "No request field, role header, tenant field, owner field or client-side gate/consent flag can alter this representation or produce an authorization allow."
+        },
         "properties": {
           "principalId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "Legacy principal identifier, server-derived from the authenticated IAM subject."
+          },
+          "subject": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
           },
           "tenantId": {
-            "type": "string"
+            "type": "string",
+            "description": "Legacy tenant identifier. The canonical tenant context includes provenance."
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/B8ServerDerivedTenant"
           },
           "sessionId": {
             "type": "string",
@@ -35899,6 +36803,9 @@
               "type": "string"
             }
           },
+          "phase": {
+            "$ref": "#/components/schemas/B8PhaseAccessContext"
+          },
           "authMode": {
             "type": "string",
             "const": "self-owned-jwt"
@@ -35916,8 +36823,18 @@
           "consentState": {
             "$ref": "#/components/schemas/B8ConsentState"
           },
+          "deviceTrust": {
+            "$ref": "#/components/schemas/B8DeviceTrustContext"
+          },
           "policyVersion": {
-            "type": "string"
+            "type": "string",
+            "description": "Legacy active policy version. The canonical policy field includes authority and lifecycle provenance."
+          },
+          "policy": {
+            "$ref": "#/components/schemas/B8PolicyVersionContext"
+          },
+          "authorityProvenance": {
+            "$ref": "#/components/schemas/B8AuthorityProvenance"
           }
         }
       },
@@ -35972,19 +36889,34 @@
           "birthYear",
           "policyVersion"
         ],
+        "x-client-assertion-fields": [
+          "confirmed",
+          "birthYear",
+          "policyVersion"
+        ],
+        "x-server-decision-required": {
+          "authority": "iam-service",
+          "rule": "Confirmation, birth information and a client-selected policy version are input assertions only. They do not authorize a protected capability without a server-derived eligibility decision."
+        },
+        "x-sensitive-fields": [
+          "birthYear"
+        ],
         "properties": {
           "confirmed": {
             "type": "boolean",
-            "const": true
+            "const": true,
+            "description": "User assertion required for the flow; it is not an adult-eligibility authorization fact."
           },
           "birthYear": {
             "type": "integer",
-            "minimum": 1900
+            "minimum": 1900,
+            "description": "Sensitive user assertion. iam-service evaluates eligibility from server-recognized evidence and policy; this value alone cannot grant access."
           },
           "policyVersion": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 64
+            "maxLength": 64,
+            "description": "Presented policy version selector. iam-service verifies it against the active published adult policy instead of trusting the client value."
           }
         }
       },
@@ -35994,20 +36926,87 @@
           "status",
           "effectiveAt"
         ],
+        "x-server-authoritative-fields": [
+          "status",
+          "learningAccess",
+          "effectiveAt",
+          "policyVersion",
+          "policyAsOf",
+          "minimumAge",
+          "evidenceDigest",
+          "evidenceStatus",
+          "evaluationProvenance",
+          "revalidation"
+        ],
         "properties": {
           "status": {
             "type": "string",
             "enum": [
               "PASSED",
-              "REJECTED"
-            ]
+              "REJECTED",
+              "NOT_EVALUATED"
+            ],
+            "description": "Compatibility status. learningAccess is the authoritative protected-capability gate."
+          },
+          "learningAccess": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "RESTRICTED"
+            ],
+            "description": "Server-derived access result. Any missing, revoked, stale or uncertain adult evidence results in RESTRICTED."
           },
           "effectiveAt": {
             "type": "string",
             "format": "date-time"
           },
           "policyVersion": {
-            "type": "string"
+            "type": "string",
+            "description": "Published adult-gate policy version selected and verified by iam-service."
+          },
+          "policyAsOf": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Server time at which the adult-gate policy/evidence decision applies."
+          },
+          "minimumAge": {
+            "type": "integer",
+            "const": 18,
+            "description": "Phase 1 server policy minimum age."
+          },
+          "evidenceDigest": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 160,
+            "description": "Non-reversible digest/reference of evaluated evidence. Raw birth data and evidence are not returned."
+          },
+          "evidenceStatus": {
+            "type": "string",
+            "enum": [
+              "SERVER_VERIFIED",
+              "INSUFFICIENT",
+              "REJECTED"
+            ]
+          },
+          "evaluationProvenance": {
+            "$ref": "#/components/schemas/B8AdultGateEvaluationProvenance"
+          },
+          "revalidation": {
+            "$ref": "#/components/schemas/B8RevalidationRequirement"
+          },
+          "restrictionReasons": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ADULT_GATE_NOT_EVALUATED",
+                "ADULT_EVIDENCE_INSUFFICIENT",
+                "ADULT_EVIDENCE_REJECTED",
+                "ADULT_POLICY_SUPERSEDED",
+                "ADULT_REVALIDATION_REQUIRED"
+              ]
+            },
+            "description": "Safe, non-sensitive reason codes when learningAccess is RESTRICTED."
           },
           "retryAllowed": {
             "type": "boolean"
@@ -36022,6 +37021,17 @@
           "decision",
           "decidedAt"
         ],
+        "x-server-authoritative-fields": [
+          "purpose",
+          "required",
+          "document",
+          "state",
+          "effectiveAt",
+          "restrictionEffect",
+          "revalidation",
+          "withdrawalEffect",
+          "provenance"
+        ],
         "properties": {
           "type": {
             "type": "string",
@@ -36033,7 +37043,8 @@
             ]
           },
           "version": {
-            "type": "string"
+            "type": "string",
+            "description": "Legacy document version alias. document.version is the authoritative record."
           },
           "decision": {
             "type": "string",
@@ -36045,27 +37056,113 @@
           "decidedAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_TERMS",
+              "PRIVACY_NOTICE",
+              "ADULT_LEARNING_ELIGIBILITY",
+              "PRODUCT_ANALYTICS"
+            ],
+            "description": "Server-published processing purpose associated with type."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether this consent is required for the evaluated Phase 1 capability."
+          },
+          "document": {
+            "$ref": "#/components/schemas/B8ConsentDocument"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "GRANTED",
+              "WITHDRAWN"
+            ],
+            "description": "Canonical server-recorded consent state."
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "restrictionEffect": {
+            "type": "string",
+            "enum": [
+              "NO_RESTRICTION",
+              "RESTRICT_PROTECTED_CAPABILITY",
+              "RESTRICT_ALL_LEARNING_ACCESS"
+            ]
+          },
+          "revalidation": {
+            "$ref": "#/components/schemas/B8RevalidationRequirement"
+          },
+          "withdrawalEffect": {
+            "$ref": "#/components/schemas/B8ConsentWithdrawalEffect"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/B8ConsentProvenance"
           }
         }
       },
       "B8ConsentState": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
+        "x-server-authoritative-fields": [
           "required",
           "accepted",
-          "version"
+          "version",
+          "learningAccess",
+          "requiredPurposes",
+          "unsatisfiedPurposes",
+          "evaluatedAt",
+          "policyVersion",
+          "revalidation",
+          "provenance"
         ],
         "properties": {
           "required": {
             "type": "boolean"
           },
           "accepted": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Legacy summary. It is true only when all applicable required consent is currently GRANTED and effective."
           },
           "version": {
             "type": "string",
-            "maxLength": 64
+            "description": "Legacy required-document version summary."
+          },
+          "learningAccess": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "RESTRICTED"
+            ]
+          },
+          "requiredPurposes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unsatisfiedPurposes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "policyVersion": {
+            "type": "string"
+          },
+          "revalidation": {
+            "$ref": "#/components/schemas/B8RevalidationRequirement"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/B8ConsentProvenance"
           }
         }
       },
@@ -36091,6 +37188,13 @@
           "version",
           "decision"
         ],
+        "x-client-assertion-fields": [
+          "type",
+          "version",
+          "decision",
+          "expectedDocumentDigest"
+        ],
+        "x-server-decision-required": "iam-service verifies the published purpose, required flag, document version/digest, prior state and protected-capability effects. The request cannot directly grant access.",
         "properties": {
           "type": {
             "type": "string",
@@ -36111,6 +37215,12 @@
               "ACCEPTED",
               "WITHDRAWN"
             ]
+          },
+          "expectedDocumentDigest": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 160,
+            "description": "Optional optimistic-concurrency assertion of the published document digest. A mismatch is a conflict/revalidation outcome, never an authorization allow."
           }
         }
       },
@@ -36186,6 +37296,9 @@
         }
       },
       "B8AuthorizationDecisionRequest": {
+        "deprecated": true,
+        "x-superseded-by": "#/components/schemas/B8PdpAuthorizationDecisionRequest",
+        "description": "Compatibility request shape for the deprecated authorization endpoint. New PEP integrations use B8PdpAuthorizationDecisionRequest with a trusted service identity, principal provenance, resource provenance and policy context.",
         "type": "object",
         "additionalProperties": false,
         "required": [
@@ -36203,6 +37316,10 @@
           "consent",
           "policyVersion"
         ],
+        "x-client-authority": {
+          "trusted": false,
+          "rule": "This compatibility shape cannot establish subject, tenant, owner, roles, permissions, consent, device trust, content rights or policy authority. Missing trusted context fails closed."
+        },
         "properties": {
           "action": {
             "type": "string"
@@ -36262,7 +37379,15 @@
               "CONSENT_REQUIRED",
               "SESSION_REVOKED",
               "CONTEXT_MISSING",
-              "POLICY_UNAVAILABLE"
+              "POLICY_UNAVAILABLE",
+              "POLICY_VERSION_EXPIRED",
+              "REVOCATION_UNCERTAIN",
+              "PDP_ERROR",
+              "PDP_TIMEOUT",
+              "INVALID_SERVICE_IDENTITY",
+              "RESOURCE_PROVENANCE_MISSING",
+              "TENANT_PROVENANCE_MISMATCH",
+              "OWNER_PROVENANCE_MISMATCH"
             ]
           },
           "policyVersion": {
@@ -36275,6 +37400,12 @@
           "cacheUntil": {
             "type": "string",
             "format": "date-time"
+          },
+          "enforcement": {
+            "$ref": "#/components/schemas/B8AuthorizationEnforcement"
+          },
+          "auditLink": {
+            "$ref": "#/components/schemas/B8AuditLink"
           }
         }
       },
@@ -36293,6 +37424,13 @@
           "roles",
           "policyVersion"
         ],
+        "x-server-authoritative-fields": [
+          "permissions",
+          "roles",
+          "policyVersion",
+          "policy",
+          "authorityProvenance"
+        ],
         "properties": {
           "permissions": {
             "type": "array",
@@ -36308,6 +37446,12 @@
           },
           "policyVersion": {
             "type": "string"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/B8PolicyVersionContext"
+          },
+          "authorityProvenance": {
+            "$ref": "#/components/schemas/B8AuthorityProvenance"
           }
         }
       },
@@ -44154,6 +45298,1431 @@
             }
           }
         ]
+      },
+      "B8ServerDerivedSubject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subjectId",
+          "source",
+          "derivedAt"
+        ],
+        "properties": {
+          "subjectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source": {
+            "type": "string",
+            "const": "IAM_VALIDATED_JWT_AND_SESSION"
+          },
+          "derivedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8ServerDerivedTenant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tenantId",
+          "provenance",
+          "derivedAt"
+        ],
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "IAM_PLATFORM_TENANT",
+              "IAM_VALIDATED_TENANT_SCOPE"
+            ]
+          },
+          "derivedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8PhaseAccessContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currentPhase",
+          "learningAccess",
+          "provenance"
+        ],
+        "properties": {
+          "currentPhase": {
+            "type": "string",
+            "const": "P1"
+          },
+          "learningAccess": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "RESTRICTED"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "const": "IAM_SERVER_DERIVED_PHASE_GATE"
+          }
+        }
+      },
+      "B8DeviceTrustContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deviceId",
+          "trustLevel",
+          "sessionStatus",
+          "provenance",
+          "evaluatedAt"
+        ],
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "trustLevel": {
+            "type": "string",
+            "enum": [
+              "REGISTERED",
+              "VERIFIED",
+              "RESTRICTED"
+            ]
+          },
+          "sessionStatus": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "REVOKED",
+              "REVOCATION_UNCERTAIN"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "const": "IAM_SERVER_OWNED_DEVICE_AND_SESSION"
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8PolicyVersionContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "status",
+          "effectiveAt",
+          "revocationState",
+          "provenance"
+        ],
+        "properties": {
+          "policyVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "SUPERSEDED",
+              "REVOKED",
+              "EXPIRED"
+            ]
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revocationState": {
+            "type": "string",
+            "enum": [
+              "NOT_REVOKED",
+              "REVOKED",
+              "REVOCATION_UNCERTAIN"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "const": "IAM_ACTIVE_POLICY_CONTROL_PLANE"
+          }
+        }
+      },
+      "B8AuthorityProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authority",
+          "derivedAt",
+          "jwtValidation",
+          "tenantSource",
+          "rolePermissionSource",
+          "policySource",
+          "revocationState"
+        ],
+        "properties": {
+          "authority": {
+            "type": "string",
+            "const": "IAM_SERVER_DERIVED"
+          },
+          "derivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "jwtValidation": {
+            "type": "string",
+            "const": "VALIDATED_IAM_RS256_JWT"
+          },
+          "tenantSource": {
+            "type": "string",
+            "const": "IAM_SERVER_DERIVED_TENANT"
+          },
+          "rolePermissionSource": {
+            "type": "string",
+            "const": "IAM_ROLE_PERMISSION_ASSIGNMENTS"
+          },
+          "policySource": {
+            "type": "string",
+            "const": "IAM_ACTIVE_VERSIONED_POLICY"
+          },
+          "revocationState": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED_NOT_REVOKED",
+              "REVOKED",
+              "UNCERTAIN_FAIL_CLOSED"
+            ]
+          }
+        }
+      },
+      "B8RevalidationRequirement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "required",
+          "evaluatedAt"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "CURRENT",
+              "REVALIDATION_REQUIRED",
+              "EXPIRED",
+              "REVOKED"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reasonCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "B8AdultGateEvaluationProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authority",
+          "evaluator",
+          "evidenceSource",
+          "evaluatedAt",
+          "rawEvidenceReturned"
+        ],
+        "properties": {
+          "authority": {
+            "type": "string",
+            "const": "IAM_SERVER_DERIVED"
+          },
+          "evaluator": {
+            "type": "string",
+            "const": "iam-service"
+          },
+          "evidenceSource": {
+            "type": "string",
+            "enum": [
+              "SERVER_RECOGNIZED_EVIDENCE",
+              "CLIENT_ASSERTION_PENDING_SERVER_EVALUATION",
+              "NO_USABLE_EVIDENCE"
+            ]
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "rawEvidenceReturned": {
+            "type": "boolean",
+            "const": false
+          }
+        }
+      },
+      "B8ConsentDocument": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "digest",
+          "publishedAt"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "digest": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 160,
+            "description": "Digest of the server-published consent document, never a client authority value."
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8ConsentWithdrawalEffect": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "effect",
+          "appliesAt",
+          "cacheInvalidationRequired"
+        ],
+        "properties": {
+          "effect": {
+            "type": "string",
+            "enum": [
+              "NO_ACTION",
+              "RESTRICT_PROTECTED_CAPABILITY",
+              "RESTRICT_ALL_LEARNING_ACCESS",
+              "REVOKE_SENSITIVE_SESSION_SCOPE"
+            ]
+          },
+          "appliesAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cacheInvalidationRequired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "B8ConsentProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "authority",
+          "recordedAt",
+          "documentSource",
+          "policySource"
+        ],
+        "properties": {
+          "authority": {
+            "type": "string",
+            "const": "IAM_SERVER_RECORDED_CONSENT"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "documentSource": {
+            "type": "string",
+            "const": "PUBLISHED_DOCUMENT_VERSION_AND_DIGEST"
+          },
+          "policySource": {
+            "type": "string",
+            "const": "IAM_ACTIVE_POLICY_CONTROL_PLANE"
+          }
+        }
+      },
+      "B8AuditLink": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "auditId",
+          "requestId",
+          "traceId",
+          "recordedAt"
+        ],
+        "properties": {
+          "auditId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "decisionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8AuthorizationEnforcement": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "defaultDecision",
+          "failureMode",
+          "localPepRequired",
+          "decisionSource"
+        ],
+        "properties": {
+          "defaultDecision": {
+            "type": "string",
+            "const": "DENY"
+          },
+          "failureMode": {
+            "type": "string",
+            "const": "FAIL_CLOSED"
+          },
+          "localPepRequired": {
+            "type": "boolean",
+            "const": true
+          },
+          "decisionSource": {
+            "type": "string",
+            "enum": [
+              "LOCAL_PEP",
+              "REMOTE_PDP"
+            ]
+          }
+        }
+      },
+      "B8PdpPrincipalContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subject",
+          "tenant",
+          "roles",
+          "permissions",
+          "phase",
+          "adultGate",
+          "consent",
+          "deviceTrust",
+          "authorityProvenance"
+        ],
+        "x-trust-boundary": "All values are read by the calling PEP from an independently validated IAM JWT/session context and remain subject to IAM PDP validation; client fields cannot populate this object.",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/B8ServerDerivedTenant"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phase": {
+            "$ref": "#/components/schemas/B8PhaseAccessContext"
+          },
+          "adultGate": {
+            "$ref": "#/components/schemas/B8PdpAdultGateContext"
+          },
+          "consent": {
+            "$ref": "#/components/schemas/B8PdpConsentContext"
+          },
+          "deviceTrust": {
+            "$ref": "#/components/schemas/B8DeviceTrustContext"
+          },
+          "authorityProvenance": {
+            "$ref": "#/components/schemas/B8AuthorityProvenance"
+          }
+        }
+      },
+      "B8PdpResourceContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resourceType",
+          "resourceId",
+          "owner",
+          "tenant",
+          "phase",
+          "contentRights",
+          "provenance"
+        ],
+        "x-trust-boundary": "The calling resource-owner service supplies only facts it owns and signs/attests their provenance through its trusted service identity. IAM denies when owner or tenant provenance is missing or inconsistent.",
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "resourceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "owner": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ownerId",
+              "provenance"
+            ],
+            "properties": {
+              "ownerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "provenance": {
+                "type": "string",
+                "const": "RESOURCE_OWNER_SERVICE"
+              }
+            }
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/B8ServerDerivedTenant"
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "P1",
+              "P2",
+              "P3"
+            ]
+          },
+          "contentRights": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "NOT_APPLICABLE",
+              "EXPIRED",
+              "REVOKED",
+              "UNCERTAIN"
+            ]
+          },
+          "provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ownerService",
+              "resolvedAt",
+              "factDigest"
+            ],
+            "properties": {
+              "ownerService": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "resolvedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "factDigest": {
+                "type": "string",
+                "minLength": 16,
+                "maxLength": 160
+              }
+            }
+          }
+        }
+      },
+      "B8PdpPolicyContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policy",
+          "bundleVersion",
+          "cacheState",
+          "revocationState"
+        ],
+        "properties": {
+          "policy": {
+            "$ref": "#/components/schemas/B8PolicyVersionContext"
+          },
+          "bundleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cacheState": {
+            "type": "string",
+            "enum": [
+              "CURRENT",
+              "MISS",
+              "EXPIRED",
+              "INVALIDATED"
+            ]
+          },
+          "revocationState": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED_NOT_REVOKED",
+              "REVOKED",
+              "UNCERTAIN_FAIL_CLOSED"
+            ]
+          }
+        }
+      },
+      "B8TrustedServiceIdentityContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "serviceId",
+          "credentialBinding",
+          "audience",
+          "authenticatedAt"
+        ],
+        "x-server-derived": "Validated from B8ServiceIdentity, not trusted from an arbitrary body field.",
+        "properties": {
+          "serviceId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "credentialBinding": {
+            "type": "string",
+            "const": "VALIDATED_SERVICE_JWT_BOUND_TO_PEP"
+          },
+          "audience": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "authenticatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "B8PdpAuthorizationDecisionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "invocationReason",
+          "action",
+          "principal",
+          "resource",
+          "policy",
+          "serviceIdentity"
+        ],
+        "x-server-derived-authorization-facts": [
+          "principal",
+          "resource.owner",
+          "resource.tenant",
+          "resource.contentRights",
+          "policy",
+          "serviceIdentity"
+        ],
+        "x-default-decision": "DENY",
+        "properties": {
+          "invocationReason": {
+            "type": "string",
+            "enum": [
+              "HIGH_RISK_OPERATION",
+              "DYNAMIC_POLICY",
+              "SECURITY_CACHE_MISS"
+            ]
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "principal": {
+            "$ref": "#/components/schemas/B8PdpPrincipalContext"
+          },
+          "resource": {
+            "$ref": "#/components/schemas/B8PdpResourceContext"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/B8PdpPolicyContext"
+          },
+          "serviceIdentity": {
+            "$ref": "#/components/schemas/B8TrustedServiceIdentityContext"
+          }
+        }
+      },
+      "B8AuthorizationDecisionEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/B8PdpAuthorizationDecisionResponse"
+              }
+            }
+          }
+        ]
+      },
+      "B8RolePermissionBinding": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roleCode",
+          "permissions",
+          "assignmentScope"
+        ],
+        "description": "Versioned RBAC binding. It becomes authoritative only after independent approval and activation of the containing policy version; request payloads never change the caller's current authority.",
+        "properties": {
+          "roleCode": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{1,63}$"
+          },
+          "permissions": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9.-]{2,127}$"
+            }
+          },
+          "assignmentScope": {
+            "type": "string",
+            "enum": [
+              "SERVER_DERIVED_PLATFORM_TENANT",
+              "SERVER_DERIVED_RESOURCE_TENANT"
+            ]
+          }
+        }
+      },
+      "B8PolicyRule": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "effect",
+          "requiredPermissions",
+          "actions",
+          "resourceTypes",
+          "conditions"
+        ],
+        "properties": {
+          "effect": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "DENY"
+            ]
+          },
+          "requiredPermissions": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "Permissions resolved from the active server-side role binding; a client-supplied permission never satisfies this requirement.",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9.-]{2,127}$"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "resourceTypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "conditions": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "phases": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "P1",
+                    "P2",
+                    "P3"
+                  ]
+                }
+              },
+              "requiresAdultEligibility": {
+                "type": "boolean"
+              },
+              "requiredConsentPurposes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "minimumDeviceTrust": {
+                "type": "string",
+                "enum": [
+                  "REGISTERED",
+                  "VERIFIED"
+                ]
+              },
+              "contentRights": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "VALID",
+                    "NOT_APPLICABLE"
+                  ]
+                }
+              },
+              "ownerMatchRequired": {
+                "type": "boolean"
+              },
+              "tenantMatchRequired": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "B8PolicyDocument": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "roleBindings",
+          "rules"
+        ],
+        "x-policy-language": "declarative-only; executable scripts, network callbacks and client-supplied authority expressions are prohibited",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "roleBindings": {
+            "type": "array",
+            "minItems": 1,
+            "description": "RBAC permission sets managed through the same immutable, independently approved policy lifecycle.",
+            "items": {
+              "$ref": "#/components/schemas/B8RolePermissionBinding"
+            }
+          },
+          "rules": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/B8PolicyRule"
+            }
+          }
+        }
+      },
+      "B8PolicyCacheInvalidationReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "required",
+          "status",
+          "scope",
+          "issuedAt",
+          "denyUntilCurrentVersionProven"
+        ],
+        "properties": {
+          "invalidationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NOT_REQUIRED",
+              "PENDING",
+              "COMPLETED",
+              "FAILED"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "POLICY_VERSION",
+              "AFFECTED_PEP_SECURITY_CACHES",
+              "REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"
+            ]
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "denyUntilCurrentVersionProven": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "B8PolicyVersion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyVersionId",
+          "version",
+          "status",
+          "revision",
+          "tenant",
+          "document",
+          "artifactDigest",
+          "createdAt",
+          "updatedAt",
+          "createdBy",
+          "separationOfDuties",
+          "auditLinks",
+          "cacheInvalidation"
+        ],
+        "x-server-authoritative-fields": [
+          "policyVersionId",
+          "version",
+          "status",
+          "revision",
+          "tenant",
+          "artifactDigest",
+          "createdBy",
+          "submittedBy",
+          "approvedBy",
+          "activatedBy",
+          "revokedBy",
+          "separationOfDuties",
+          "auditLinks",
+          "cacheInvalidation"
+        ],
+        "properties": {
+          "policyVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "SUBMITTED",
+              "APPROVED",
+              "ACTIVE",
+              "REVOKED"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tenant": {
+            "$ref": "#/components/schemas/B8ServerDerivedTenant"
+          },
+          "document": {
+            "$ref": "#/components/schemas/B8PolicyDocument"
+          },
+          "artifactDigest": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 160
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
+          },
+          "submittedBy": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
+          },
+          "approvedBy": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
+          },
+          "activatedBy": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
+          },
+          "revokedBy": {
+            "$ref": "#/components/schemas/B8ServerDerivedSubject"
+          },
+          "separationOfDuties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "independentApprovalRequired",
+              "authorMayApprove",
+              "submitterMayApprove",
+              "satisfied"
+            ],
+            "properties": {
+              "independentApprovalRequired": {
+                "type": "boolean",
+                "const": true
+              },
+              "authorMayApprove": {
+                "type": "boolean",
+                "const": false
+              },
+              "submitterMayApprove": {
+                "type": "boolean",
+                "const": false
+              },
+              "satisfied": {
+                "type": "boolean"
+              }
+            }
+          },
+          "auditLinks": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/B8AuditLink"
+            }
+          },
+          "cacheInvalidation": {
+            "$ref": "#/components/schemas/B8PolicyCacheInvalidationReceipt"
+          }
+        }
+      },
+      "B8PolicyDraftCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyDocument",
+          "changeReason"
+        ],
+        "x-client-authority-fields": [],
+        "x-server-derived-fields": [
+          "policyVersionId",
+          "tenant",
+          "createdBy",
+          "status",
+          "revision",
+          "auditLinks"
+        ],
+        "properties": {
+          "policyDocument": {
+            "$ref": "#/components/schemas/B8PolicyDocument"
+          },
+          "changeReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "B8PolicyDraftUpdateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedRevision",
+          "policyDocument",
+          "changeReason"
+        ],
+        "x-client-authority-fields": [],
+        "x-server-derived-fields": [
+          "tenant",
+          "lastModifiedBy",
+          "status",
+          "auditLinks"
+        ],
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "policyDocument": {
+            "$ref": "#/components/schemas/B8PolicyDocument"
+          },
+          "changeReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "B8PolicySubmitRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedRevision",
+          "submissionReason"
+        ],
+        "x-client-authority-fields": [],
+        "x-server-derived-fields": [
+          "submitter",
+          "tenant",
+          "approvalRequirements",
+          "auditLinks"
+        ],
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "submissionReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "B8PolicyApprovalRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedRevision",
+          "approvalNote"
+        ],
+        "x-client-authority-fields": [],
+        "x-server-derived-fields": [
+          "approver",
+          "tenant",
+          "separationOfDuties",
+          "auditLinks"
+        ],
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approvalNote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "B8PolicyActivationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedRevision",
+          "activationReason"
+        ],
+        "x-client-authority-fields": [],
+        "x-server-derived-fields": [
+          "activationActor",
+          "tenant",
+          "approvalState",
+          "cacheInvalidation",
+          "auditLinks"
+        ],
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "activationReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "B8PolicyRevocationRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedRevision",
+          "revocationReason"
+        ],
+        "x-client-authority-fields": [],
+        "x-server-derived-fields": [
+          "revocationActor",
+          "tenant",
+          "cacheInvalidation",
+          "auditLinks"
+        ],
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "revocationReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "B8PolicyMutationResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policy",
+          "auditLink",
+          "cacheInvalidation"
+        ],
+        "properties": {
+          "policy": {
+            "$ref": "#/components/schemas/B8PolicyVersion"
+          },
+          "auditLink": {
+            "$ref": "#/components/schemas/B8AuditLink"
+          },
+          "cacheInvalidation": {
+            "$ref": "#/components/schemas/B8PolicyCacheInvalidationReceipt"
+          }
+        }
+      },
+      "B8PolicyVersionEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/B8PolicyVersion"
+              }
+            }
+          }
+        ]
+      },
+      "B8PolicyVersionMutationEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/B8PolicyMutationResult"
+              }
+            }
+          }
+        ]
+      },
+      "B8PolicyVersionListEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "items"
+                ],
+                "properties": {
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/B8PolicyVersion"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "B8PolicyBundle": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bundleId",
+          "policy",
+          "policyDocument",
+          "issuedAt",
+          "expiresAt",
+          "cacheMaxAgeSeconds",
+          "revocationState",
+          "provenance"
+        ],
+        "properties": {
+          "bundleId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/B8PolicyVersionContext"
+          },
+          "policyDocument": {
+            "$ref": "#/components/schemas/B8PolicyDocument"
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cacheMaxAgeSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 300
+          },
+          "revocationState": {
+            "type": "string",
+            "enum": [
+              "CONFIRMED_NOT_REVOKED",
+              "REVOKED",
+              "UNCERTAIN_FAIL_CLOSED"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "const": "IAM_SIGNED_VERSIONED_POLICY_BUNDLE"
+          }
+        }
+      },
+      "B8PolicyBundleEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/B8PolicyBundle"
+              }
+            }
+          }
+        ]
+      },
+      "B8PdpAdultGateContext": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8AdultGateResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "learningAccess",
+              "policyVersion",
+              "policyAsOf",
+              "minimumAge",
+              "evidenceDigest",
+              "evidenceStatus",
+              "evaluationProvenance",
+              "revalidation"
+            ]
+          }
+        ],
+        "description": "Strict server-authoritative adult context required by the new PDP. The legacy public response keeps its historical required set for additive client compatibility."
+      },
+      "B8PdpConsentContext": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8ConsentState"
+          },
+          {
+            "type": "object",
+            "required": [
+              "learningAccess",
+              "requiredPurposes",
+              "unsatisfiedPurposes",
+              "evaluatedAt",
+              "policyVersion",
+              "revalidation",
+              "provenance"
+            ]
+          }
+        ],
+        "description": "Strict required-consent context used by the new PDP; absent or stale facts are denied."
+      },
+      "B8PdpAuthorizationDecisionResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B8AuthorizationDecisionResponse"
+          },
+          {
+            "type": "object",
+            "required": [
+              "enforcement",
+              "auditLink"
+            ]
+          }
+        ],
+        "description": "Strict decision payload for the new PDP; compatibility clients may continue reading the legacy decision schema during migration."
       }
     },
     "requestBodies": {},
