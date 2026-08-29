@@ -67,6 +67,14 @@
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
       "evidencePath": "evidence/p1r/m0/P1R-M0-008/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-001",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-29T11:15:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "M0-008 is ACCEPTED; three bounded implementation tracks started for the shared API contract foundation, failure-closed checks and GAP ownership record.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-001/manifest.json"
     }
   ]
 }
