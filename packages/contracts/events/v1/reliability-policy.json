@@ -1,0 +1,325 @@
+{
+  "$schema": "p1r.event-reliability.v1",
+  "schemaVersion": "p1r.event-reliability.v1",
+  "taskId": "P1R-M1-007",
+  "phase": "PHASE_1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "sourceOfTruth": "packages/contracts/events/v1/reliability-policy.json",
+  "sourceRefs": [
+    "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M1-007.md",
+    "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md#P1R-M1-007",
+    "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md#INT-P1-017",
+    "docs/02-architecture/v2-microservices-architecture.md",
+    "packages/contracts/events/v1/catalog.json",
+    "config/p1r-saga-recovery.v1.json"
+  ],
+  "catalog": {
+    "path": "packages/contracts/events/v1/catalog.json",
+    "governanceSchemaVersion": "p1r.event-governance.v1",
+    "applicationScope": "ALL_CURRENT_AND_FUTURE_CANONICAL_D2_EVENTS",
+    "currentCanonicalEvents": [
+      "workflow.event.dead_lettered.v1",
+      "workflow.event.delivery_failed.v1",
+      "workflow.event.ordering_deferred.v1",
+      "workflow.event.replay_requested.v1",
+      "workflow.outbox.published.v1",
+      "workflow.saga.compensation_requested.v1",
+      "workflow.saga.manual_recovery_requested.v1"
+    ],
+    "wireContractMutation": "PROHIBITED",
+    "reliabilityContext": "OWNER_LOCAL_OUTBOX_BOUNDARY_SUPPLEMENT"
+  },
+  "historicalCandidate": {
+    "path": "config/b26-event-runtime.json",
+    "authority": "STATIC_CROSS_CHECK_ONLY",
+    "mode": "static-only",
+    "runtimeStatus": "pending",
+    "defaultDecision": "NO-GO",
+    "missingRootEventId": true,
+    "sequenceSource": "payload.aggregateVersion",
+    "canonicalSequenceField": "aggregateVersion",
+    "migrationRule": "OWNER_ADAPTER_MUST_POPULATE_RELIABILITY_CONTEXT_BEFORE_M2_RUNTIME"
+  },
+  "identityAndLineage": {
+    "schemaRef": "platform.event.reliability-context.v1",
+    "requiredFields": [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "eventName",
+      "aggregateType",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "serverOwnedFields": [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "aggregateVersion",
+      "schemaVersion",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "rootEvent": {
+      "rootEventId": "MUST_EQUAL_EVENT_ID",
+      "causationEventId": "MUST_BE_NULL"
+    },
+    "derivedEvent": {
+      "eventId": "NEW_SERVER_GENERATED_ID",
+      "rootEventId": "INHERIT_SOURCE_ROOT_EVENT_ID",
+      "causationEventId": "MUST_EQUAL_SOURCE_EVENT_ID"
+    },
+    "retry": {
+      "eventId": "PRESERVE",
+      "rootEventId": "PRESERVE",
+      "causationEventId": "PRESERVE",
+      "aggregateVersion": "PRESERVE",
+      "schemaVersion": "PRESERVE",
+      "dedupeKey": "PRESERVE"
+    },
+    "replay": {
+      "sourceEventId": "PRESERVE",
+      "rootEventId": "PRESERVE",
+      "aggregateId": "PRESERVE",
+      "aggregateVersion": "PRESERVE",
+      "schemaVersion": "PRESERVE",
+      "dedupeKey": "PRESERVE",
+      "replayRunId": "NEW_SERVER_GENERATED_OPERATION_ID",
+      "controlEventId": "NEW_SERVER_GENERATED_EVENT_ID"
+    },
+    "clientMaySupplyIdentity": false
+  },
+  "outbox": {
+    "owner": "EVENT_DATA_OWNER_SERVICE",
+    "storage": "OWNER_SERVICE_MYSQL_SCHEMA",
+    "recordSchemaRef": "platform.event.reliability-context.v1",
+    "publishReceiptSchemaRef": "platform.event.publish-receipt.v1",
+    "aggregateAndOutboxSameTransaction": true,
+    "eventImmutableAfterCommit": true,
+    "delivery": "AT_LEAST_ONCE",
+    "exactlyOnceClaim": false,
+    "claim": {
+      "strategy": "ROW_LOCK_SKIP_LOCKED_WITH_LEASE",
+      "leaseDurationMs": 30000,
+      "leaseOwnerRequired": true,
+      "expiredLeaseMayBeReclaimed": true,
+      "concurrentOwnerRequired": true
+    },
+    "states": ["PENDING", "PUBLISHING", "PUBLISHED", "RETRY_WAIT", "DLQ"],
+    "transitions": [
+      { "from": "PENDING", "action": "CLAIM", "to": "PUBLISHING" },
+      { "from": "PUBLISHING", "action": "BROKER_ACK", "to": "PUBLISHED" },
+      {
+        "from": "PUBLISHING",
+        "action": "RETRYABLE_FAILURE_UNDER_BUDGET",
+        "to": "RETRY_WAIT"
+      },
+      {
+        "from": "PUBLISHING",
+        "action": "NON_RETRYABLE_OR_BUDGET_EXHAUSTED",
+        "to": "DLQ"
+      },
+      {
+        "from": "RETRY_WAIT",
+        "action": "DUE_AND_LEASE_ACQUIRED",
+        "to": "PUBLISHING"
+      }
+    ],
+    "ackRule": "BROKER_ACK_BEFORE_PUBLISHED",
+    "crashAfterAckRule": "RETRY_WITH_SAME_EVENT_ID_AND_CONSUMER_DEDUPE",
+    "terminalStates": ["PUBLISHED", "DLQ"],
+    "runtimeVerificationTask": "P1R-M2-005"
+  },
+  "consumer": {
+    "owner": "CONSUMER_SERVICE",
+    "receiptSchemaRef": "platform.event.consumer-effect-receipt.v1",
+    "delivery": "AT_LEAST_ONCE",
+    "deduplication": {
+      "primaryUniqueKey": ["consumerGroup", "eventId"],
+      "secondaryKey": "dedupeKey",
+      "sameDedupeKeyDifferentEventId": "REJECT_AND_AUDIT",
+      "effectAndReceiptSameOwnerTransaction": true,
+      "duplicateDomainEffect": "PROHIBITED",
+      "offsetCommit": "AFTER_EFFECT_AND_RECEIPT_COMMIT"
+    },
+    "states": [
+      "RECEIVED",
+      "PROCESSING",
+      "APPLIED",
+      "DUPLICATE_SKIPPED",
+      "RETRY_WAIT",
+      "DLQ"
+    ],
+    "transitions": [
+      { "from": "RECEIVED", "action": "CLAIM", "to": "PROCESSING" },
+      {
+        "from": "PROCESSING",
+        "action": "EFFECT_AND_RECEIPT_COMMITTED",
+        "to": "APPLIED"
+      },
+      {
+        "from": "PROCESSING",
+        "action": "EXISTING_APPLIED_RECEIPT",
+        "to": "DUPLICATE_SKIPPED"
+      },
+      {
+        "from": "PROCESSING",
+        "action": "RETRYABLE_FAILURE_UNDER_BUDGET",
+        "to": "RETRY_WAIT"
+      },
+      {
+        "from": "PROCESSING",
+        "action": "NON_RETRYABLE_OR_BUDGET_EXHAUSTED",
+        "to": "DLQ"
+      },
+      {
+        "from": "RETRY_WAIT",
+        "action": "DUE_AND_LEASE_ACQUIRED",
+        "to": "PROCESSING"
+      }
+    ],
+    "terminalStates": ["APPLIED", "DUPLICATE_SKIPPED", "DLQ"],
+    "runtimeVerificationTask": "P1R-M2-005"
+  },
+  "retryBudget": {
+    "bounded": true,
+    "attemptIncludesInitialDelivery": true,
+    "maxAttempts": 5,
+    "backoff": "EXPONENTIAL_WITH_JITTER",
+    "baseDelayMs": 1000,
+    "maxDelayMs": 60000,
+    "retryableFailureCodes": [
+      "CONFLICT_RETRYABLE",
+      "TEMPORARY_UNAVAILABLE",
+      "TIMEOUT"
+    ],
+    "nonRetryableFailureCodes": [
+      "FORBIDDEN",
+      "OWNER_MISMATCH",
+      "SCHEMA_INVALID",
+      "STALE_VERSION"
+    ],
+    "unknownFailureCode": "NON_RETRYABLE_FAIL_CLOSED",
+    "exhaustedAction": "ROUTE_TO_DLQ"
+  },
+  "deadLetter": {
+    "recordSchemaRef": "platform.event.dlq-record.v1",
+    "owner": "WORKFLOW_SERVICE",
+    "sourceRecordImmutable": true,
+    "preserveIdentityFields": [
+      "eventId",
+      "rootEventId",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "dedupeKey",
+      "requestId",
+      "traceId"
+    ],
+    "requiredFailureFields": [
+      "consumerGroup",
+      "failureCode",
+      "attempt",
+      "failedAt",
+      "recoveryState"
+    ],
+    "domainFactsDirectWrite": "PROHIBITED",
+    "rawAuthorizationOrSecrets": "PROHIBITED"
+  },
+  "replay": {
+    "requestSchemaRef": "platform.event.replay-request.v1",
+    "source": "IMMUTABLE_OUTBOX_OR_DLQ_RECORD",
+    "sameConsumerGroup": true,
+    "sameConsumerPath": true,
+    "sameSchemaVersion": true,
+    "dedupeRemainsEnabled": true,
+    "orderingChecksRemainEnabled": true,
+    "clientTriggered": false,
+    "operatorPermission": "event.replay.request",
+    "approvalPermission": "event.replay.approve",
+    "requesterMustDifferFromApprover": true,
+    "approvalAndAuditRequired": true,
+    "maxBatchSize": 1000,
+    "runtimeVerificationTask": "P1R-M2-005"
+  },
+  "ordering": {
+    "partitionKey": "aggregateId",
+    "sequenceField": "aggregateVersion",
+    "sameAggregateOrdered": true,
+    "crossAggregateOrder": "NOT_GUARANTEED",
+    "outOfOrderPolicy": "BOUNDED_HOLD_THEN_DLQ",
+    "maxBufferSize": 100,
+    "maxWaitMs": 30000,
+    "staleEventPolicy": "DEDUPE_AUDIT_AND_SKIP",
+    "gapOwner": "workflow-service",
+    "runtimeVerificationTask": "P1R-M2-005"
+  },
+  "sagaRecovery": {
+    "policyRef": "config/p1r-saga-recovery.v1.json",
+    "coordinator": "workflow-service",
+    "auditOwner": "audit-service",
+    "domainCommandOwner": "TARGET_DOMAIN_OWNER",
+    "workflowMayWriteForeignDomainFacts": false,
+    "auditMayWriteForeignDomainFacts": false,
+    "compensationTransport": "VERSIONED_DOMAIN_API_OR_CANONICAL_EVENT",
+    "twoPhaseCommit": false,
+    "kafkaRpc": false,
+    "runtimeVerificationTask": "P1R-M2-006"
+  },
+  "receiptRegistry": {
+    "path": "packages/contracts/schemas/v1/registry.json",
+    "requiredSchemas": [
+      "platform.event.consumer-effect-receipt.v1",
+      "platform.event.dlq-record.v1",
+      "platform.event.publish-receipt.v1",
+      "platform.event.reliability-context.v1",
+      "platform.event.replay-request.v1",
+      "platform.workflow.recovery-closure-receipt.v1",
+      "platform.workflow.recovery-task.v1"
+    ],
+    "unknownFields": "REJECT",
+    "sensitivePayloadOrCredentialFields": "PROHIBITED",
+    "runtimeReceiptPresenceClaim": "PROHIBITED_IN_D2_EVIDENCE"
+  },
+  "prohibitions": [
+    "CLIENT_SUPPLIED_EVENT_IDENTITY",
+    "CROSS_SERVICE_DATABASE_WRITE",
+    "DISTRIBUTED_TWO_PHASE_COMMIT",
+    "EXACTLY_ONCE_DELIVERY_CLAIM",
+    "KAFKA_AS_RPC_OR_TRANSACTION_COORDINATOR",
+    "REPLAY_BYPASSING_CONSUMER_PATH",
+    "REPLAY_WITHOUT_INDEPENDENT_APPROVAL",
+    "RETRY_WITH_NEW_EVENT_ID",
+    "STATIC_OR_SYNTHETIC_EVIDENCE_AS_RUNTIME_PROOF",
+    "UI_TELEMETRY_LOG_OR_METRIC_AS_DOMAIN_EVENT"
+  ],
+  "runtimeEvidenceBoundary": {
+    "contractResult": "D2_CONTRACT_READY",
+    "currentRuntimeResult": "NOT_RUNTIME_VERIFIED",
+    "b26MustRemain": "STATIC_ONLY_PENDING_NO_GO",
+    "m2RequiredTasks": ["P1R-M2-004", "P1R-M2-005", "P1R-M2-006"],
+    "cannotBeSatisfiedBy": [
+      "EMPTY_TOPIC",
+      "HEALTH_HTTP_200",
+      "IN_MEMORY_ADAPTER",
+      "SAME_PROCESS_TEST_DOUBLE",
+      "STATIC_MANIFEST",
+      "SYNTHETIC_RECEIPT",
+      "UNIT_TEST"
+    ],
+    "requiredRuntimeEvidence": [
+      "OWNER_MYSQL_TRANSACTION_AND_LEASE",
+      "BROKER_TOPIC_ACL_AND_ACK",
+      "PUBLISHER_CRASH_AFTER_ACK_RECOVERY",
+      "CONSUMER_DUPLICATE_OUT_OF_ORDER_AND_REBALANCE",
+      "DLQ_APPROVAL_REPLAY_WITHOUT_DUPLICATE_EFFECT",
+      "SAGA_COMPENSATION_AND_MANUAL_RECOVERY_AUDIT"
+    ]
+  }
+}

@@ -12,6 +12,7 @@ import {
   resolveJsonPointer,
 } from './schema-utils.mjs';
 import { validateEventGovernance } from '../audit/p1r-event-governance-check.mjs';
+import { validateEventReliability } from '../audit/p1r-event-reliability-check.mjs';
 import {
   FORBIDDEN_EVENT_PAYLOAD_FIELD_PATTERNS,
   eventPayloadSchemaName,
@@ -363,15 +364,30 @@ export function validateContracts({ quiet = false } = {}) {
     eventGovernanceResult.result === 'PASS',
     `event governance failed:\n${eventGovernanceResult.errors.join('\n')}`,
   );
+  const eventReliabilityResult = validateEventReliability({ root: repoRoot });
+  assert(
+    eventReliabilityResult.result === 'PASS',
+    `event reliability failed:\n${eventReliabilityResult.errors.join('\n')}`,
+  );
   const openApiResult = validateOpenApi(openApi);
   const eventResult = validateEventCatalog(catalog);
   const schemaResult = validateSchemaRegistry(schemaRegistry);
   const result = {
     openApi: openApiResult,
-    events: { ...eventResult, governance: eventGovernanceResult.summary },
+    events: {
+      ...eventResult,
+      governance: eventGovernanceResult.summary,
+      reliability: eventReliabilityResult.summary,
+    },
     schemas: schemaResult,
     runtimeStatus: eventGovernanceResult.summary.runtimeStatus,
-    sourceFiles: [openApiPath, eventCatalogPath, schemaRegistryPath],
+    sourceFiles: [
+      openApiPath,
+      eventCatalogPath,
+      schemaRegistryPath,
+      path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'reliability-policy.json'),
+      path.join(repoRoot, 'config', 'p1r-saga-recovery.v1.json'),
+    ],
   };
   if (!quiet) {
     console.log(`Contract validation passed: ${openApiResult.operationCount} operations, ${openApiResult.schemaCount} OpenAPI schemas, ${eventResult.eventCount} events, ${eventResult.payloadSchemaCount} event payload schemas, ${eventResult.asyncApiChannelCount} AsyncAPI channels, ${eventResult.asyncApiOperationCount} AsyncAPI operations, ${schemaResult.schemaCount} JSON Schemas.`);

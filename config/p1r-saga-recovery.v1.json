@@ -1,0 +1,537 @@
+{
+  "policyVersion": "1.0.0",
+  "schema": "p1r.saga-recovery.policy.v1",
+  "task": "P1R-M1-007",
+  "phase": "P1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "scope": [
+    "INT-P1-017",
+    "E2E-P1-RECOVERY",
+    "SAGA_AND_MANUAL_RECOVERY_CONTROL_PLANE"
+  ],
+  "sourceBoundaries": {
+    "m1_006": {
+      "task": "P1R-M1-006",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+      "catalogRole": "FROZEN_EVENT_GOVERNANCE_DEPENDENCY"
+    },
+    "b26": {
+      "path": "config/b26-event-runtime.json",
+      "mode": "static-only",
+      "runtimeStatus": "pending",
+      "defaultDecision": "NO-GO",
+      "classification": "HISTORICAL_STATIC_CANDIDATE",
+      "mayNotBePromotedByThisPolicy": true
+    },
+    "catalogInteraction": {
+      "frozenM1_006Catalog": "READ_ONLY_DEPENDENCY",
+      "rootEventProjection": "RELIABILITY_RECORD_AND_RECEIPT_ONLY_UNTIL_DOMAIN_EVENT_SCHEMAS_ARE_CLOSED",
+      "mayNotMutateB26PayloadOrCanonicalEnvelope": true
+    }
+  },
+  "correlation": {
+    "requiredFields": [
+      "eventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "schemaVersion",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "serverDerivedFields": [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "actorRef",
+      "tenantRef",
+      "approvalRef",
+      "auditId"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "actorRef",
+      "tenantRef",
+      "approverRef",
+      "roles",
+      "permissions"
+    ],
+    "rootEventRule": {
+      "originalFact": "rootEventId-equals-eventId",
+      "derivedControlEvent": "rootEventId-inherits-original-root-and-causationEventId-references-direct-source",
+      "immutable": true
+    }
+  },
+  "owners": {
+    "workflow": {
+      "service": "workflow-service",
+      "role": "SAGA_RECOVERY_COORDINATOR",
+      "factWriteBoundary": "workflow-service-schema-only",
+      "mayWriteForeignDomainSchema": false,
+      "commands": "VERSIONED_OWNER_API_OR_EVENT_ONLY",
+      "kafkaRpc": false,
+      "twoPhaseCommit": false
+    },
+    "audit": {
+      "service": "audit-service",
+      "role": "IMMUTABLE_AUDIT_RECORD_OWNER",
+      "factWriteBoundary": "audit-service-schema-only",
+      "mayWriteForeignDomainSchema": false,
+      "immutable": true
+    },
+    "domain": {
+      "serviceSelector": "SOURCE_DOMAIN_OWNER",
+      "factWriteBoundary": "own-schema-only",
+      "compensationExecution": "VERSIONED_OWNER_API_OR_EVENT",
+      "mustReturnReceipt": true
+    },
+    "authorization": {
+      "service": "iam-service",
+      "actorAndTenant": "SERVER_DERIVED",
+      "decisionFailure": "FAIL_CLOSED"
+    }
+  },
+  "saga": {
+    "recordRequiredFields": [
+      "sagaId",
+      "sagaType",
+      "sagaVersion",
+      "rootEventId",
+      "sourceEventId",
+      "aggregateType",
+      "aggregateId",
+      "state",
+      "currentStepId",
+      "requestId",
+      "traceId",
+      "auditId"
+    ],
+    "states": [
+      "NEW",
+      "FORWARD_RUNNING",
+      "FORWARD_COMPLETED",
+      "COMPENSATION_PENDING",
+      "COMPENSATING",
+      "COMPENSATED",
+      "MANUAL_RECOVERY_REQUIRED"
+    ],
+    "initialState": "NEW",
+    "terminalStates": [
+      "FORWARD_COMPLETED",
+      "COMPENSATED",
+      "MANUAL_RECOVERY_REQUIRED"
+    ],
+    "transitions": [
+      { "from": "NEW", "to": "FORWARD_RUNNING" },
+      { "from": "FORWARD_RUNNING", "to": "FORWARD_COMPLETED" },
+      { "from": "FORWARD_RUNNING", "to": "COMPENSATION_PENDING" },
+      { "from": "COMPENSATION_PENDING", "to": "COMPENSATING" },
+      { "from": "COMPENSATION_PENDING", "to": "MANUAL_RECOVERY_REQUIRED" },
+      { "from": "COMPENSATING", "to": "COMPENSATED" },
+      { "from": "COMPENSATING", "to": "MANUAL_RECOVERY_REQUIRED" }
+    ],
+    "forbiddenTransitions": [
+      { "from": "NEW", "to": "FORWARD_COMPLETED" },
+      { "from": "NEW", "to": "COMPENSATED" },
+      { "from": "FORWARD_COMPLETED", "to": "FORWARD_RUNNING" },
+      { "from": "FORWARD_COMPLETED", "to": "COMPENSATION_PENDING" },
+      { "from": "COMPENSATED", "to": "FORWARD_RUNNING" },
+      { "from": "COMPENSATED", "to": "FORWARD_COMPLETED" },
+      { "from": "MANUAL_RECOVERY_REQUIRED", "to": "FORWARD_RUNNING" },
+      { "from": "COMPENSATING", "to": "FORWARD_COMPLETED" }
+    ],
+    "step": {
+      "recordRequiredFields": [
+        "stepId",
+        "sagaId",
+        "sequence",
+        "ownerService",
+        "actionRef",
+        "actionSchemaVersion",
+        "idempotencyKey",
+        "expectedAggregateId",
+        "expectedAggregateVersion",
+        "sourceEventId",
+        "rootEventId",
+        "state",
+        "attempt",
+        "compensationDisposition",
+        "auditId"
+      ],
+      "states": [
+        "PENDING",
+        "DISPATCHED",
+        "SUCCEEDED",
+        "FAILED",
+        "COMPENSATION_PENDING",
+        "COMPENSATING",
+        "COMPENSATED",
+        "MANUAL_RECOVERY_REQUIRED"
+      ],
+      "initialState": "PENDING",
+      "terminalStates": ["COMPENSATED", "MANUAL_RECOVERY_REQUIRED"],
+      "transitions": [
+        { "from": "PENDING", "to": "DISPATCHED" },
+        { "from": "DISPATCHED", "to": "SUCCEEDED" },
+        { "from": "DISPATCHED", "to": "FAILED" },
+        { "from": "FAILED", "to": "COMPENSATION_PENDING" },
+        { "from": "FAILED", "to": "MANUAL_RECOVERY_REQUIRED" },
+        { "from": "SUCCEEDED", "to": "COMPENSATION_PENDING" },
+        { "from": "COMPENSATION_PENDING", "to": "COMPENSATING" },
+        { "from": "COMPENSATION_PENDING", "to": "MANUAL_RECOVERY_REQUIRED" },
+        { "from": "COMPENSATING", "to": "COMPENSATED" },
+        { "from": "COMPENSATING", "to": "MANUAL_RECOVERY_REQUIRED" }
+      ],
+      "compensationDispositions": ["NOT_REQUIRED", "REQUIRED"]
+    }
+  },
+  "compensation": {
+    "recordRequiredFields": [
+      "compensationId",
+      "sagaId",
+      "stepId",
+      "compensationKey",
+      "ownerService",
+      "actionRef",
+      "actionSchemaVersion",
+      "idempotencyKey",
+      "sourceEventId",
+      "rootEventId",
+      "expectedAggregateId",
+      "expectedAggregateVersion",
+      "reasonCode",
+      "state",
+      "auditId"
+    ],
+    "states": ["PENDING", "DISPATCHED", "APPLIED", "MANUAL_RECOVERY_REQUIRED"],
+    "initialState": "PENDING",
+    "terminalStates": ["APPLIED", "MANUAL_RECOVERY_REQUIRED"],
+    "transitions": [
+      { "from": "PENDING", "to": "DISPATCHED" },
+      { "from": "PENDING", "to": "MANUAL_RECOVERY_REQUIRED" },
+      { "from": "DISPATCHED", "to": "APPLIED" },
+      { "from": "DISPATCHED", "to": "MANUAL_RECOVERY_REQUIRED" }
+    ],
+    "execution": {
+      "idempotent": true,
+      "versioned": true,
+      "idempotencyScope": [
+        "sagaId",
+        "stepId",
+        "compensationKey",
+        "ownerService"
+      ],
+      "foreignSchemaWrite": "PROHIBITED",
+      "sourceFactRollback": "PROHIBITED",
+      "transport": "VERSIONED_OWNER_API_OR_EVENT",
+      "kafkaRpc": false,
+      "twoPhaseCommit": false,
+      "ownerReceiptRequiredBeforeApplied": true
+    }
+  },
+  "manualRecovery": {
+    "recordRequiredFields": [
+      "recoveryId",
+      "recoveryRevision",
+      "sagaId",
+      "sourceBusinessId",
+      "sourceEventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "sourceOwnerService",
+      "currentStage",
+      "retryCount",
+      "lastErrorCode",
+      "nextAction",
+      "state",
+      "requestId",
+      "traceId",
+      "auditId"
+    ],
+    "states": [
+      "OPEN",
+      "PRECHECK_RECONCILING",
+      "PENDING_TWO_PERSON_REVIEW",
+      "APPROVED",
+      "EXECUTING",
+      "POSTCHECK_RECONCILING",
+      "CLOSED",
+      "REJECTED",
+      "EXPIRED",
+      "ESCALATED"
+    ],
+    "initialState": "OPEN",
+    "terminalStates": ["CLOSED", "REJECTED", "EXPIRED", "ESCALATED"],
+    "transitions": [
+      { "from": "OPEN", "to": "PRECHECK_RECONCILING" },
+      { "from": "PRECHECK_RECONCILING", "to": "PENDING_TWO_PERSON_REVIEW" },
+      { "from": "PENDING_TWO_PERSON_REVIEW", "to": "APPROVED" },
+      { "from": "PENDING_TWO_PERSON_REVIEW", "to": "REJECTED" },
+      { "from": "PENDING_TWO_PERSON_REVIEW", "to": "EXPIRED" },
+      { "from": "APPROVED", "to": "EXECUTING" },
+      { "from": "APPROVED", "to": "EXPIRED" },
+      { "from": "EXECUTING", "to": "POSTCHECK_RECONCILING" },
+      { "from": "EXECUTING", "to": "ESCALATED" },
+      { "from": "POSTCHECK_RECONCILING", "to": "CLOSED" },
+      { "from": "POSTCHECK_RECONCILING", "to": "ESCALATED" }
+    ],
+    "forbiddenTransitions": [
+      { "from": "OPEN", "to": "APPROVED" },
+      { "from": "PENDING_TWO_PERSON_REVIEW", "to": "EXECUTING" },
+      { "from": "APPROVED", "to": "CLOSED" },
+      { "from": "EXECUTING", "to": "CLOSED" },
+      { "from": "CLOSED", "to": "EXECUTING" },
+      { "from": "REJECTED", "to": "APPROVED" },
+      { "from": "EXPIRED", "to": "EXECUTING" },
+      { "from": "ESCALATED", "to": "CLOSED" }
+    ],
+    "approval": {
+      "mode": "REQUESTER_PLUS_ONE_INDEPENDENT_APPROVER",
+      "distinctPrincipalCount": 2,
+      "independentApproverCount": 1,
+      "requesterMayApprove": false,
+      "serverDerivedFields": [
+        "requesterPrincipalRef",
+        "approverPrincipalRef",
+        "tenantRef",
+        "roles",
+        "permissions",
+        "policyVersion"
+      ],
+      "forbiddenClientAuthorityFields": [
+        "requesterPrincipalRef",
+        "approverPrincipalRef",
+        "tenantRef",
+        "roles",
+        "permissions"
+      ],
+      "recordRequiredFields": [
+        "approvalId",
+        "recoveryId",
+        "recoveryRevision",
+        "actionDigest",
+        "rootEventId",
+        "requesterPrincipalRef",
+        "approverPrincipalRef",
+        "policyVersion",
+        "decision",
+        "decidedAt",
+        "expiresAt",
+        "requestId",
+        "traceId",
+        "auditId"
+      ],
+      "decisions": ["APPROVED", "REJECTED", "EXPIRED"],
+      "bindingFields": [
+        "recoveryId",
+        "recoveryRevision",
+        "actionDigest",
+        "rootEventId",
+        "aggregateId",
+        "sourceOwnerService",
+        "policyVersion"
+      ],
+      "idempotency": "SAME_APPROVAL_COMMAND_RETURNS_ORIGINAL_DECISION_DIFFERENT_APPROVER_OR_STATE_IS_REJECTED",
+      "auditRequired": true
+    },
+    "reconciliation": {
+      "recordRequiredFields": [
+        "reconciliationId",
+        "recoveryId",
+        "ownerService",
+        "aggregateId",
+        "expectedStateDigest",
+        "actualStateDigest",
+        "status",
+        "checkedAt",
+        "auditId"
+      ],
+      "statuses": ["MATCHED", "MISMATCH", "NOT_CHECKED"],
+      "closeRequiresPostcheckStatus": "MATCHED",
+      "ticketOrDlqCloseIsNotReconciliation": true
+    },
+    "closure": {
+      "requiredEvidence": [
+        "precheckReconciliationId",
+        "postcheckReconciliationId",
+        "ownerReceiptIds",
+        "closureReceiptId",
+        "auditId"
+      ],
+      "closeOnlyFrom": "POSTCHECK_RECONCILING",
+      "requiredPostcheckStatus": "MATCHED",
+      "missingEvidenceAction": "ESCALATED"
+    },
+    "clientTriggered": false,
+    "directDomainWrite": false
+  },
+  "receipt": {
+    "types": ["OWNER_ACTION", "COMPENSATION", "RECOVERY_CLOSURE"],
+    "outcomes": ["APPLIED", "DEDUPED_NO_EFFECT", "REJECTED", "ESCALATED"],
+    "requiredFields": [
+      "receiptId",
+      "receiptType",
+      "schemaVersion",
+      "issuedAt",
+      "ownerService",
+      "recoveryId",
+      "sagaId",
+      "stepId",
+      "eventId",
+      "rootEventId",
+      "aggregateType",
+      "aggregateId",
+      "actionRef",
+      "actionDigest",
+      "idempotencyKey",
+      "outcome",
+      "resultDigest",
+      "reconciliationId",
+      "approvalId",
+      "auditId",
+      "requestId",
+      "traceId"
+    ],
+    "immutableAfterIssue": true,
+    "sensitivePayloadAllowed": false
+  },
+  "audit": {
+    "service": "audit-service",
+    "immutable": true,
+    "requiredCorrelation": [
+      "requestId",
+      "traceId",
+      "eventId",
+      "rootEventId",
+      "sagaId",
+      "recoveryId",
+      "receiptId"
+    ],
+    "auditUnavailableBlocksClose": true
+  },
+  "errorRouting": {
+    "retryBudget": {
+      "bounded": true,
+      "maxAttempts": 5,
+      "backoff": "EXPONENTIAL_WITH_JITTER",
+      "baseDelayMs": 1000,
+      "maxDelayMs": 60000,
+      "source": "B26_STATIC_CANDIDATE_ONLY"
+    },
+    "errors": [
+      { "code": "TIMEOUT", "classification": "RETRYABLE", "action": "RETRY" },
+      {
+        "code": "TEMPORARY_UNAVAILABLE",
+        "classification": "RETRYABLE",
+        "action": "RETRY"
+      },
+      {
+        "code": "CONFLICT_RETRYABLE",
+        "classification": "RETRYABLE",
+        "action": "RETRY"
+      },
+      {
+        "code": "SCHEMA_INVALID",
+        "classification": "NON_RETRYABLE",
+        "action": "DLQ_AND_MANUAL_REVIEW"
+      },
+      {
+        "code": "FORBIDDEN",
+        "classification": "NON_RETRYABLE",
+        "action": "DLQ_AND_MANUAL_REVIEW"
+      },
+      {
+        "code": "OWNER_MISMATCH",
+        "classification": "NON_RETRYABLE",
+        "action": "DLQ_AND_MANUAL_REVIEW"
+      },
+      {
+        "code": "STALE_VERSION",
+        "classification": "NON_RETRYABLE",
+        "action": "AUDIT_AND_SKIP"
+      },
+      {
+        "code": "RETRY_BUDGET_EXHAUSTED",
+        "classification": "NON_RETRYABLE",
+        "action": "DLQ"
+      },
+      {
+        "code": "ORDERING_GAP",
+        "classification": "MANUAL_RECOVERY",
+        "action": "MANUAL_RECOVERY"
+      },
+      {
+        "code": "COMPENSATION_FAILED",
+        "classification": "MANUAL_RECOVERY",
+        "action": "MANUAL_RECOVERY"
+      },
+      {
+        "code": "RECONCILIATION_MISMATCH",
+        "classification": "MANUAL_RECOVERY",
+        "action": "MANUAL_RECOVERY"
+      },
+      {
+        "code": "APPROVAL_SEPARATION_VIOLATION",
+        "classification": "NON_RETRYABLE",
+        "action": "REJECT"
+      },
+      {
+        "code": "APPROVAL_EXPIRED",
+        "classification": "NON_RETRYABLE",
+        "action": "REJECT"
+      },
+      {
+        "code": "AUDIT_REFERENCE_MISSING",
+        "classification": "NON_RETRYABLE",
+        "action": "ESCALATE"
+      },
+      {
+        "code": "UNKNOWN_FAILURE",
+        "classification": "NON_RETRYABLE",
+        "action": "DLQ_AND_MANUAL_REVIEW"
+      }
+    ]
+  },
+  "runtimeBoundary": {
+    "thisPolicy": "STATIC_D2_CONTRACT_ONLY",
+    "prohibitedClaims": [
+      "broker-topic-or-acl-created",
+      "outbox-transaction-or-publisher-executed",
+      "consumer-deduplication-or-offset-commit-executed",
+      "dlq-or-replay-executed",
+      "compensation-or-manual-recovery-executed",
+      "approval-or-audit-runtime-evidence-captured"
+    ],
+    "m2_005": {
+      "task": "P1R-M2-005",
+      "status": "PLANNED",
+      "responsibility": "REAL_KAFKA_OUTBOX_CONSUMER_DEDUPE_DLQ_REPLAY_AND_FAULT_EVIDENCE"
+    },
+    "m2_006": {
+      "task": "P1R-M2-006",
+      "status": "PLANNED",
+      "responsibility": "WORKFLOW_SAGA_COMPENSATION_LEASE_MANUAL_RECOVERY_TWO_PERSON_APPROVAL_RECEIPT_AND_IMMUTABLE_AUDIT_RUNTIME"
+    },
+    "m8RecoveryEvidence": {
+      "task": "P1R-M8-006/011/012",
+      "status": "PLANNED",
+      "responsibility": "END_TO_END_RECOVERY_FAULT_INJECTION_RECONCILIATION_AND_DISASTER_RECOVERY_EVIDENCE"
+    }
+  },
+  "prohibitions": [
+    "workflow-service-direct-foreign-domain-write",
+    "audit-service-direct-domain-write",
+    "kafka-rpc",
+    "distributed-two-phase-commit",
+    "client-triggered-replay-or-manual-recovery",
+    "client-supplied-actor-tenant-or-approver-authority",
+    "closing-dlq-or-ticket-as-reconciliation",
+    "mutable-root-event-or-receipt",
+    "runtime-promotion-from-static-policy"
+  ]
+}

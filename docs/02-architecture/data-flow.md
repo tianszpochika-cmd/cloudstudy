@@ -2,6 +2,8 @@
 
 > v2 数据流采用 Gateway → 服务侧 PEP → 领域服务 → Kafka + transactional Outbox + AsyncAPI。每个服务拥有自己的事实和写权限；`core-api` 仅是迁移期兼容实现。RabbitMQ 只保留其 v1 兼容语义，Redis 不是事件事实源。
 
+Outbox、consumer dedupe、重试/DLQ/replay、Saga/补偿、双人审批和人工恢复的 D2 状态机与运行边界见 [Phase 1 事件可靠性与恢复契约](event-reliability-and-recovery.md)。
+
 ## 用户身份
 
 平台登录凭证只在 `iam-service` 与 Gateway/IAM 边界处理；IAM 校验账号密码、签发自有 JWT Bearer Access Token 并发布 JWKS。API 只接收认证中心签发、audience 为 `yuxuexing-api` 的 Access Token。业务服务使用已验证的 subject/tenant 上下文，不在日志中打印手机号、邮箱、Refresh Token 或设备敏感标识。每个领域服务仍需独立验签并执行 PEP。

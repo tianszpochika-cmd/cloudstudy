@@ -399,6 +399,688 @@ export const jsonSchemaRegistry = {
         "maxLength": 64
       }
     }
+  },
+  "platform.event.reliability-context.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/event-reliability-context.v1.schema.json",
+    "title": "Owner-local event reliability context",
+    "description": "D2 record attached at the owner Outbox boundary without changing the accepted v1 wire event catalog.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "eventId",
+      "rootEventId",
+      "causationEventId",
+      "eventName",
+      "aggregateType",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "properties": {
+      "eventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "rootEventId": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+      },
+      "causationEventId": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "eventName": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+\\.v[1-9][0-9]*$"
+      },
+      "aggregateType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{1,95}$"
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "aggregateVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+      },
+      "requestId": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9._:-]{7,127}$"
+      },
+      "traceId": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "dedupeKey": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,255}$"
+      }
+    }
+  },
+  "platform.event.publish-receipt.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/event-publish-receipt.v1.schema.json",
+    "title": "Outbox publish receipt",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "receiptId",
+      "outboxId",
+      "producerService",
+      "eventId",
+      "rootEventId",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "topic",
+      "partitionKey",
+      "attempt",
+      "state",
+      "failureCode",
+      "recordedAt"
+    ],
+    "properties": {
+      "receiptId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "outboxId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "producerService": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]+-service$"
+      },
+      "eventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "rootEventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "aggregateVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+      },
+      "topic": {
+        "type": "string",
+        "pattern": "^platform\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "partitionKey": {
+        "const": "aggregateId"
+      },
+      "attempt": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      },
+      "state": {
+        "type": "string",
+        "enum": [
+          "PUBLISHED",
+          "DLQ"
+        ]
+      },
+      "failureCode": {
+        "anyOf": [
+          {
+            "type": "string",
+            "enum": [
+              "CONFLICT_RETRYABLE",
+              "FORBIDDEN",
+              "OWNER_MISMATCH",
+              "RETRY_BUDGET_EXHAUSTED",
+              "SCHEMA_INVALID",
+              "STALE_VERSION",
+              "TEMPORARY_UNAVAILABLE",
+              "TIMEOUT",
+              "UNKNOWN_FAILURE"
+            ]
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "recordedAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "PUBLISHED"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "failureCode": {
+              "type": "null"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "state": {
+              "const": "DLQ"
+            }
+          },
+          "required": [
+            "state"
+          ]
+        },
+        "then": {
+          "properties": {
+            "failureCode": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "platform.event.consumer-effect-receipt.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/event-consumer-effect-receipt.v1.schema.json",
+    "title": "Consumer domain effect and deduplication receipt",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "receiptId",
+      "consumerGroup",
+      "consumerService",
+      "eventId",
+      "rootEventId",
+      "dedupeKey",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "effectType",
+      "effectId",
+      "attempt",
+      "outcome",
+      "auditRef",
+      "processedAt"
+    ],
+    "properties": {
+      "receiptId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "consumerGroup": {
+        "type": "string",
+        "pattern": "^cg\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "consumerService": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]+-service$"
+      },
+      "eventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "rootEventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "dedupeKey": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 256
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "aggregateVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+      },
+      "effectType": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
+      },
+      "effectId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "attempt": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      },
+      "outcome": {
+        "type": "string",
+        "enum": [
+          "APPLIED",
+          "DUPLICATE_SKIPPED"
+        ]
+      },
+      "auditRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "processedAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "platform.event.dlq-record.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/event-dlq-record.v1.schema.json",
+    "title": "Immutable dead-letter record",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "dlqRecordId",
+      "eventId",
+      "rootEventId",
+      "aggregateId",
+      "aggregateVersion",
+      "schemaVersion",
+      "dedupeKey",
+      "requestId",
+      "traceId",
+      "consumerGroup",
+      "failureCode",
+      "attempt",
+      "failedAt",
+      "recoveryState"
+    ],
+    "properties": {
+      "dlqRecordId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "eventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "rootEventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "aggregateId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "aggregateVersion": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "schemaVersion": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_.-]{2,95}\\.v[1-9][0-9]*$"
+      },
+      "dedupeKey": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 256
+      },
+      "requestId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "traceId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "consumerGroup": {
+        "type": "string",
+        "pattern": "^cg\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "failureCode": {
+        "type": "string",
+        "enum": [
+          "CONFLICT_RETRYABLE",
+          "FORBIDDEN",
+          "OWNER_MISMATCH",
+          "RETRY_BUDGET_EXHAUSTED",
+          "SCHEMA_INVALID",
+          "STALE_VERSION",
+          "TEMPORARY_UNAVAILABLE",
+          "TIMEOUT",
+          "UNKNOWN_FAILURE"
+        ]
+      },
+      "attempt": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      },
+      "failedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "recoveryState": {
+        "type": "string",
+        "enum": [
+          "OPEN",
+          "REPLAY_REQUESTED",
+          "REPLAY_APPROVED",
+          "REPLAYING",
+          "RESOLVED",
+          "MANUAL_RECOVERY_REQUIRED"
+        ]
+      }
+    }
+  },
+  "platform.event.replay-request.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/event-replay-request.v1.schema.json",
+    "title": "Approved event replay request",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "replayRunId",
+      "sourceDlqRecordId",
+      "sourceEventId",
+      "rootEventId",
+      "consumerGroup",
+      "requestedByRef",
+      "approvedByRef",
+      "reasonCode",
+      "mode",
+      "state",
+      "requestedAt",
+      "approvedAt",
+      "auditRef"
+    ],
+    "properties": {
+      "replayRunId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "sourceDlqRecordId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "sourceEventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "rootEventId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "consumerGroup": {
+        "type": "string",
+        "pattern": "^cg\\.[a-z0-9.-]+\\.v[1-9][0-9]*$"
+      },
+      "requestedByRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "approvedByRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "reasonCode": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+      },
+      "mode": {
+        "type": "string",
+        "enum": [
+          "SINGLE_EVENT",
+          "ORDERED_AGGREGATE_RANGE"
+        ]
+      },
+      "state": {
+        "const": "APPROVED"
+      },
+      "requestedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "approvedAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "auditRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      }
+    }
+  },
+  "platform.workflow.recovery-task.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/workflow-recovery-task.v1.schema.json",
+    "title": "Workflow manual recovery task",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "taskId",
+      "sourceBusinessId",
+      "sagaId",
+      "currentStage",
+      "retryCount",
+      "lastErrorCode",
+      "nextAction",
+      "ownerService",
+      "status",
+      "approvalState",
+      "auditRef",
+      "createdAt",
+      "updatedAt"
+    ],
+    "properties": {
+      "taskId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "sourceBusinessId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "sagaId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "currentStage": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+      },
+      "retryCount": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 5
+      },
+      "lastErrorCode": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "nextAction": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+      },
+      "ownerService": {
+        "const": "workflow-service"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "OPEN",
+          "AWAITING_APPROVAL",
+          "APPROVED",
+          "EXECUTING",
+          "RESOLVED",
+          "REJECTED",
+          "ESCALATED"
+        ]
+      },
+      "approvalState": {
+        "type": "string",
+        "enum": [
+          "NOT_REQUESTED",
+          "PENDING",
+          "APPROVED",
+          "REJECTED"
+        ]
+      },
+      "auditRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "updatedAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  },
+  "platform.workflow.recovery-closure-receipt.v1": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://contracts.englishflow.local/platform/workflow-recovery-closure-receipt.v1.schema.json",
+    "title": "Manual recovery closure receipt",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "receiptId",
+      "taskId",
+      "sagaId",
+      "sourceBusinessId",
+      "closureOutcome",
+      "domainReceiptRefs",
+      "auditRef",
+      "closedByRef",
+      "closedAt"
+    ],
+    "properties": {
+      "receiptId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "taskId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "sagaId": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "sourceBusinessId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      },
+      "closureOutcome": {
+        "type": "string",
+        "enum": [
+          "RECOVERED",
+          "COMPENSATED",
+          "REJECTED_WITH_REASON",
+          "ESCALATED"
+        ]
+      },
+      "domainReceiptRefs": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "auditRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "closedByRef": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128
+      },
+      "closedAt": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
   }
 } as const;
 
