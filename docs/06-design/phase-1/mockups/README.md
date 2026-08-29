@@ -1,30 +1,34 @@
-# 语学星 Phase 1 · 高保真 UI/UX 稿件包（v0.1）
+# 语学星 Phase 1 · Aurora 本地 HTML 高保真 UI/UX 套件（v0.3）
 
-> 视觉方向：**A. 星海沉浸·平衡型**（Babbel 结构清晰 × Duolingo 地图激励）
+> 视觉方向：**Aurora 极光工作台**（清晰学习闭环 × 星图成长反馈）
 > 设计基线：`../uiux-specs/` 全部规范（01 设计系统令牌严格执行）
-> 所有页面共享 `tokens.css`（浅/深色双主题、品质色、语义色、组件基类）。
+> 本目录只维护一套当前主稿：同一份 HTML 通过 Mobile / Pad / Web 设备视图展示完整页面族，并支持浅色/深色主题。历史分散稿仍保留作回溯参考，但不再独立维护或作为视觉事实源。`tokens.css` 是交接给 Vue3 + TypeScript + uni-app 的共享令牌入口。
 
 ## 开发目标（自设定）与完成情况
 
-| 端 | 视口 | 页面 | 文件 | 状态 |
+> 生成方式：使用 Build Web Apps 设计并实现本地 HTML/CSS/JavaScript 稿件，先完成浏览器交互和响应式验收，再迁移到 Vue3 + TypeScript + uni-app。
+
+| 套件 | 视图 | 内容 | 文件 | 状态 |
 | :--- | :--- | :--- | :--- | :--- |
-| 移动端 | 390×844 | Adaptive Home 首页 | [adaptive-home.html](./adaptive-home.html) | ✅ v0.1 |
-| 移动端 | 390×844 | 词汇学习（背词会话 + 完课反馈） | [m-vocab.html](./m-vocab.html) | ✅ v0.1 |
-| 移动端 | 390×844 | 世界页（3D 人物/衣柜/奖励箱/图鉴） | [m-world.html](./m-world.html) | ✅ v0.1 |
-| 移动端 | 390×844 | Onboarding（目标→自测→计划三步） | [m-onboarding.html](./m-onboarding.html) | ✅ v0.1 |
-| Web 端 | 1280×800 | Adaptive Home（左侧导航三栏布局） | [web-home.html](./web-home.html) | ✅ v0.1 |
-| Web 端 | 1280×800 | 词汇学习（宽屏分栏：词卡+详情面板） | [web-vocab.html](./web-vocab.html) | ✅ v0.1 |
-| iPad 端 | 1024×768 | Adaptive Home（横屏分栏） | [ipad-home.html](./ipad-home.html) | ✅ v0.1 |
+| Aurora UI Suite | Mobile / Pad / Web | Onboarding、学习首页、词汇 SRS、练习、技能、世界、课程、账户服务、运营后台；54 条语义路由页面地图 | [complete-ui-ux-command-center.html](./complete-ui-ux-command-center.html) | ✅ v0.3 |
 
 ## 本地查看方式
 
 ```powershell
 # 在 mockups 目录下起静态服务器（中文文件名需走服务器访问）
 python -m http.server 18185 --bind 127.0.0.1 --directory docs/06-design/phase-1/mockups
-# 浏览器打开 http://127.0.0.1:18185/ 下对应文件
+# 浏览器打开 http://127.0.0.1:18185/complete-ui-ux-command-center.html
 ```
 
-也可直接双击 HTML 文件打开（tokens.css 为相对路径引用，均可用）。
+也可直接双击主稿打开。建议使用静态服务器，以便保留主题偏好和更接近真实部署的资源加载行为。
+
+主稿内可直接操作：
+
+- 顶部主题按钮切换浅色/深色，并保存本地偏好；
+- Mobile / Pad / Web 切换设备壳与信息密度；
+- 左侧导航、移动端底部 Tab 和页面地图进入 9 个页面族；
+- 页面地图查看完整语义路由覆盖，动效按钮支持减弱循环动效；
+- 重置按钮恢复 Mobile、浅色和默认首页。
 
 ## 跨端一致性说明
 
@@ -45,7 +49,7 @@ python -m http.server 18185 --bind 127.0.0.1 --directory docs/06-design/phase-1/
 
 ## 后续迭代建议
 
-1. 首页 v0.2：根据评审反馈调整主任务卡渐变强度与信息密度；
-2. 补充：听力精听页、阅读沉浸阅读器、考试计时页、个人中心页；
-3. 3D 人物区域目前是 CSS 占位，正式资产接入后替换为快照图/web-view；
-4. 深色模式下地图区域配色需视觉复核。
+1. 按页面地图把稳定的 HTML 组件契约迁移到 Vue3 + TypeScript + uni-app；
+2. 将音频、录音、支付、同步冲突等特殊状态替换为真实业务数据和可回放状态；
+3. 3D 人物区域接入正式资产后替换 CSS 占位，同时保留低配降级；
+4. 继续以 Browser 截图和交互回归作为每次 UI 变更的验收入口。

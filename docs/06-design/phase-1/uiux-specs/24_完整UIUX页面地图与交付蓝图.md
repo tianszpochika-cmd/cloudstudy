@@ -358,18 +358,13 @@ Household 共享会员权益，不共享学习数据；支付失败、退款中�
 
 | 交付物 | 作用 | 当前状态 |
 |---|---|---|
-| `mockups/complete-ui-ux-command-center.html` | 全产品导航总控：Onboarding、五 Tab、Skills、Admin、三端、明暗主题 | 已生成并完成基础交互回归 |
-| `mockups/aurora-light-lab.html` | 极光星图高保真三端稿，重点验证 iPhone 设备壳、主题、底部导航 | 已有，继续作为视觉细节基线 |
-| `mockups/practice-hub.html` | 练习中心入口、队列、筛选、Bottom Sheet 参考 | 已有，逐步迁移到 PracticeSession |
+| `mockups/complete-ui-ux-command-center.html` | 唯一 Aurora UI Suite 主稿：Onboarding、五 Tab、Skills、Admin、三端设备、明暗主题、页面地图与验收面板 | v0.3，已完成浏览器交互回归 |
 | `uiux-specs/22_移动端核心学习闭环与页面状态.md` | 移动端从 onboarding 到复盘的流程与异常状态 | 已完成 |
 | `uiux-specs/23_跨端设计系统与基础设施页面规范.md` | 跨端 Token、基础设施与状态规范 | 已完成并完成文档复核 |
-| `mockups/complete-practice-lab.html` | Practice Hub → Repair → 反馈 → Checkpoint/CET 页面族 | 已完成并完成交互回归 |
-| `mockups/complete-world-course-lab.html` | 世界成长、奖励、课程货架与内容详情页面族 | 已完成并完成交互回归 |
-| `mockups/complete-skills-session-lab.html` | 听说读写、语法、X-Ray、写作 Session 页面族 | 已完成并完成交互回归 |
-| `mockups/complete-account-service-lab.html` | 我的、商业、隐私、客服、同步页面族 | 已完成并完成交互回归 |
-| `mockups/complete-state-recovery-lab.html` | 全局 Loading/Empty/Error/Offline/Conflict/Permission 页面族 | 已完成并完成交互回归 |
 
-总控稿负责路线、角色和页面族之间的导航；业务稿负责关键 Session 的高保真状态；设计规格负责路由、契约、验收和边界。三者不能互相替代。
+主稿负责路线、角色、页面族和三端设备之间的导航与展示；设计规格负责路由、契约、状态、验收和边界。HTML 主稿与规格文档共同构成当前本地 UI/UX 事实源。
+
+`aurora-light-lab.html`、`practice-hub.html`、`complete-*-lab.html` 以及早期 Mobile/Web/iPad 分散稿继续保留为历史参考，便于核对设计演进；它们不再独立维护，也不覆盖 Aurora UI Suite 主稿。
 
 ## 11. P0 / P1 交付顺序
 

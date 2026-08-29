@@ -64,17 +64,13 @@ docs/06-design/phase-1/
 
 ## 高保真稿件（mockups/）
 
-视觉方向 A（星海沉浸·平衡型）· 共享令牌 [tokens.css](./mockups/tokens.css) · 完整索引见 [mockups/README.md](./mockups/README.md)
+Aurora 极光工作台视觉方向 · 共享令牌 [tokens.css](./mockups/tokens.css) · 完整索引见 [mockups/README.md](./mockups/README.md)
 
-Figma 续作与限流交接记录：[FIGMA_移动端UIUX_工作交接记录_2026-08-20.md](./FIGMA_移动端UIUX_工作交接记录_2026-08-20.md)
+本地 HTML UI 套件工作记录：[LOCAL_HTML_UIUX_WORK_LOG_2026-08-21.md](./LOCAL_HTML_UIUX_WORK_LOG_2026-08-21.md) · 构建清单：[html-ui-build-manifest.json](./html-ui-build-manifest.json)
 
-| 端 | 页面 | 文件 |
-| :--- | :--- | :--- |
-| 移动端 | Adaptive Home 首页 | [adaptive-home.html](./mockups/adaptive-home.html) |
-| 移动端 | 词汇学习（背词会话） | [m-vocab.html](./mockups/m-vocab.html) |
-| 移动端 | 世界页（3D 人物/奖励箱） | [m-world.html](./mockups/m-world.html) |
-| 移动端 | Onboarding 三步流 | [m-onboarding.html](./mockups/m-onboarding.html) |
-| Web 端 | 首页（侧边栏三栏） | [web-home.html](./mockups/web-home.html) |
-| Web 端 | 词汇学习（宽屏分栏） | [web-vocab.html](./mockups/web-vocab.html) |
-| iPad 端 | 首页（横屏分栏） | [ipad-home.html](./mockups/ipad-home.html) |
+| 套件 | 设备视图 | 内容 | 文件 |
+| :--- | :--- | :--- | :--- |
+| Aurora UI Suite v0.3 | Mobile / Pad / Web | 9 个核心页面族、43 条核心语义路由、54 个页面地图入口、浅色/深色主题与交互状态 | [complete-ui-ux-command-center.html](./mockups/complete-ui-ux-command-center.html) |
+
+旧的分散式 HTML 稿件已收束进主稿，并在仓库中作为历史参考保留，不再作为当前视觉事实源。Figma 阶段交接材料与清单同样保留，供设计演进追溯：[交接记录](./FIGMA_移动端UIUX_工作交接记录_2026-08-20.md)。
 

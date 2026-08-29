@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>语学星 · Phase 1 完整 UI/UX 总控预览</title>
+  <title>语学星 · Aurora UI Suite</title>
+  <link rel="stylesheet" href="tokens.css">
   <style>
     :root {
       --ux-page: #eef1fb;
@@ -161,17 +162,83 @@
     .ux-admin-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.ux-admin-kpi{padding:11px;border:1px solid var(--ux-screen-border);border-radius:13px;background:var(--ux-card)}.ux-admin-kpi b{display:block;font-size:17px}.ux-admin-kpi span{display:block;margin-top:4px;color:var(--ux-muted);font-size:10px}.ux-admin-table{display:grid;gap:7px;margin-top:12px}.ux-admin-row{display:grid;grid-template-columns:1.2fr .8fr .7fr auto;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--ux-screen-border);font-size:10px}.ux-status{padding:4px 7px;border-radius:999px;background:var(--ux-accent-soft);color:var(--ux-accent);font-size:9px}.ux-status.ok{background:rgba(37,184,138,.12);color:var(--ux-success)}
     @media (max-width:1100px){.ux-layout{grid-template-columns:1fr}.ux-rail{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.ux-brand,.ux-rail-label,.ux-rail-note{grid-column:1/-1}.ux-rail-nav{display:contents}.ux-rail-btn{min-height:34px}.ux-stage{min-height:790px}}
     @media (max-width:620px){.ux-shell{padding:0}.ux-header{display:block;padding:16px 14px 0}.ux-header h1{font-size:23px}.ux-controls{justify-content:flex-start;margin-top:12px}.ux-layout{display:block}.ux-rail{border-radius:0;border-left:0;border-right:0;padding:10px}.ux-rail-btn{font-size:11px}.ux-workspace{border-radius:0;border-left:0;border-right:0;padding:9px}.ux-preview-head{display:block}.ux-device-switch{justify-content:flex-start;margin-top:8px}.ux-stage{min-height:770px;padding:8px}}
+
+    /* Aurora UI Suite refinement: one coherent design-review surface. */
+    :root { --ux-page:#edf1fb; --ux-panel:rgba(255,255,255,.82); --ux-panel-solid:#fff; --ux-panel-soft:#f7f9ff; --ux-ink:#192137; --ux-muted:#7a849d; --ux-border:rgba(121,136,180,.22); --ux-border-strong:rgba(98,117,180,.38); --ux-accent:#5669f7; --ux-accent-2:#8b68ff; --ux-accent-soft:rgba(86,105,247,.11); --ux-shadow:0 18px 54px rgba(44,59,126,.10); --ux-screen:#f8f9fe; --ux-screen-border:rgba(113,128,177,.20); --ux-surface:#fff; }
+    html[data-theme="dark"] { --ux-page:#080b18; --ux-panel:rgba(17,23,48,.88); --ux-panel-solid:#111730; --ux-panel-soft:#121a37; --ux-ink:#f7f8ff; --ux-muted:#8994b8; --ux-border:rgba(151,169,236,.18); --ux-border-strong:rgba(151,169,236,.34); --ux-accent:#8291ff; --ux-accent-2:#c17eff; --ux-accent-soft:rgba(130,145,255,.14); --ux-shadow:0 20px 70px rgba(0,0,0,.34); --ux-screen:#0d1229; --ux-screen-border:rgba(159,175,240,.18); --ux-surface:#141b3a; }
+    body { overflow-x:hidden; background:radial-gradient(circle at 8% 2%,rgba(126,147,255,.18),transparent 32rem),radial-gradient(circle at 95% 10%,rgba(187,120,255,.15),transparent 34rem),linear-gradient(145deg,var(--ux-page),var(--ux-panel-soft)); transition:background .3s ease,color .3s ease; }
+    .ux-shell { width:min(1720px,100%); max-width:none; padding:24px 26px 34px; }
+    .ux-header { display:grid; grid-template-columns:auto minmax(250px,1fr) auto; align-items:center; gap:24px; margin-bottom:22px; }
+    .ux-header h1 { font-size:clamp(22px,2.7vw,31px); line-height:1.1; letter-spacing:-.055em; }
+    .ux-header p { font-size:12px; }
+    .ux-header > div:first-child:before { content:"PRODUCT DESIGN LAB"; display:block; margin:0 0 5px 43px; color:var(--ux-muted); font:700 9px/1.25 Inter,"SF Pro Text",system-ui,sans-serif; letter-spacing:.13em; }
+    .ux-controls { gap:7px; }
+    .ux-control { min-height:38px; padding:0 11px; border-radius:12px; color:var(--ux-ink); background:var(--ux-panel-solid); font-size:11px; font-weight:700; }
+    .ux-control:hover { border-color:rgba(86,105,247,.42); box-shadow:0 7px 18px rgba(86,105,247,.09); transform:translateY(-1px); }
+    .ux-layout { grid-template-columns:246px minmax(0,1fr) 224px; gap:16px; }
+    .ux-rail,.ux-workspace,.ux-inspector { border-color:var(--ux-border); background:var(--ux-panel); box-shadow:var(--ux-shadow); backdrop-filter:blur(22px); }
+    .ux-rail { position:sticky; top:18px; min-height:720px; padding:16px; border-radius:22px; }
+    .ux-brand { padding:7px 8px 19px; border-bottom:1px solid var(--ux-border); }
+    .ux-brand-mark { width:31px; height:31px; border-radius:10px; box-shadow:0 8px 18px rgba(86,105,247,.28); }
+    .ux-rail-label { margin-top:22px; letter-spacing:.13em; }
+    .ux-rail-btn { min-height:40px; border-radius:12px; font-size:11px; }
+    .ux-rail-btn.active { box-shadow:inset 3px 0 0 var(--ux-accent); }
+    .ux-rail-note { border-color:var(--ux-border); background:var(--ux-panel-soft); }
+    .ux-workspace { min-width:0; padding:15px; border-radius:22px; }
+    .ux-preview-head { margin:1px 2px 13px; }
+    .ux-preview-head strong { font-size:13px; }
+    .ux-preview-head span { font-size:10px; }
+     .ux-stage { position:relative; min-height:820px; padding:30px; border-color:var(--ux-border); border-radius:18px; background:radial-gradient(circle at 12% 12%,rgba(110,130,255,.16),transparent 25%),radial-gradient(circle at 86% 85%,rgba(188,119,255,.12),transparent 31%),var(--ux-panel-soft); }
+    html[data-theme="dark"] .ux-stage { background:radial-gradient(circle at 17% 12%,rgba(94,111,248,.14),transparent 26%),#0b1023; }
+    .ux-stage:before { content:"INTERACTIVE PREVIEW"; position:absolute; top:13px; left:17px; color:var(--ux-accent); font:800 9px Inter,"SF Pro Text",system-ui,sans-serif; letter-spacing:.14em; }
+    .ux-stage:after { content:"44pt touch target · safe area ready"; position:absolute; right:18px; bottom:13px; color:var(--ux-muted); font-size:9px; }
+     .ux-device { box-shadow:0 31px 80px rgba(26,39,93,.24); transition:width .3s cubic-bezier(.2,.8,.2,1),height .3s cubic-bezier(.2,.8,.2,1),border-radius .3s cubic-bezier(.2,.8,.2,1); }
+     .ux-device.mobile { border-radius:51px; box-shadow:0 0 0 1px rgba(255,255,255,.08),inset 0 0 0 1px rgba(0,0,0,.72),0 31px 80px rgba(26,39,93,.27); }
+     .ux-device.pad { width:min(1024px,100%); height:auto; aspect-ratio:4/3; }
+    .ux-island { width:125px; height:37px; top:13px; box-shadow:inset 0 1px 2px rgba(255,255,255,.08),0 2px 8px rgba(0,0,0,.24); }
+    .ux-main { padding-top:73px; }
+    .ux-card,.ux-metric,.ux-row,.ux-choice,.ux-skill { border-color:var(--ux-screen-border); box-shadow:var(--ux-shadow); }
+    .ux-hero { box-shadow:var(--ux-shadow); }
+    .ux-bottom { background:rgba(255,255,255,.88); backdrop-filter:blur(18px); }
+    html[data-theme="dark"] .ux-bottom { background:rgba(13,18,41,.92); }
+    .ux-inspector { display:block; position:sticky; top:18px; padding:15px; border:1px solid var(--ux-border); border-radius:22px; }
+    .ux-inspector-head { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:17px; }
+    .ux-inspector-kicker { color:var(--ux-muted); font:700 9px Inter,"SF Pro Text",system-ui,sans-serif; letter-spacing:.13em; }
+    .ux-inspector-head strong { display:block; margin-top:5px; font-size:15px; letter-spacing:-.04em; }
+    .ux-inspector-head span { color:var(--ux-muted); font-size:10px; }
+    .ux-inspector-card { padding:13px; margin-top:10px; border:1px solid var(--ux-border); border-radius:15px; background:var(--ux-panel-soft); }
+    .ux-inspector-card h3 { margin:0; font-size:11px; }
+    .ux-inspector-card p { margin:6px 0 0; color:var(--ux-muted); font-size:10px; line-height:1.55; }
+    .ux-inspector-stat { display:flex; align-items:end; justify-content:space-between; gap:8px; margin-top:10px; }
+    .ux-inspector-stat b { font:800 23px Inter,"SF Pro Text",system-ui,sans-serif; letter-spacing:-.08em; }
+    .ux-inspector-stat span { color:var(--ux-muted); font-size:9px; }
+    .ux-meter { height:6px; margin-top:10px; overflow:hidden; border-radius:99px; background:var(--ux-screen-border); }.ux-meter i{display:block;width:82%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--ux-accent),var(--ux-accent-2))}
+    .ux-token-row { display:flex; align-items:center; gap:7px; margin-top:9px; }.ux-token-swatch{width:20px;height:20px;border:1px solid var(--ux-border);border-radius:7px}.ux-token-copy{flex:1}.ux-token-copy b{display:block;font:700 10px Inter,"SF Pro Text",system-ui,sans-serif}.ux-token-copy span{display:block;margin-top:2px;color:var(--ux-muted);font-size:9px}.ux-token-value{color:var(--ux-muted);font:700 9px Inter,"SF Pro Text",system-ui,sans-serif}
+     .ux-inspector-actions { display:grid; gap:7px; margin-top:10px; }.ux-inspector-actions button{width:100%;min-height:36px;border-radius:10px;font-size:10px;font-weight:800;cursor:pointer}.ux-inspector-actions .primary{border:0;color:#fff;background:linear-gradient(135deg,var(--ux-accent),var(--ux-accent-2))}.ux-inspector-actions .secondary{border:1px solid var(--ux-border);color:var(--ux-ink);background:var(--ux-surface)}
+     .ux-sync-label { display:inline-flex; align-items:center; gap:7px; min-height:38px; padding:0 10px; border:1px solid var(--ux-border); border-radius:12px; color:var(--ux-muted); background:var(--ux-panel); font-size:10px; white-space:nowrap; }
+     .ux-sync-label i { width:7px; height:7px; border-radius:50%; background:var(--ux-success); box-shadow:0 0 0 4px rgba(37,184,137,.14); }
+     .ux-brand-img { width:31px; height:31px; display:block; border-radius:10px; box-shadow:0 8px 18px rgba(86,105,247,.28); }
+     .pad .ux-sidebar.ux-right { display:none; }
+    .ux-modal-backdrop { position:fixed; inset:0; z-index:80; display:grid; place-items:center; padding:24px; background:rgba(6,10,28,.54); opacity:0; pointer-events:none; transition:opacity .2s ease; }.ux-modal-backdrop.open{opacity:1;pointer-events:auto}.ux-coverage-modal{width:min(760px,100%);max-height:min(780px,calc(100vh - 48px));overflow:auto;padding:20px;border:1px solid var(--ux-border-strong);border-radius:22px;background:var(--ux-panel-solid);box-shadow:0 28px 90px rgba(0,0,0,.3)}.ux-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:15px}.ux-modal-head h2{margin:5px 0 0;font-size:22px;letter-spacing:-.05em}.ux-modal-head p{margin:6px 0 0;color:var(--ux-muted);font-size:11px}.ux-modal-close{width:32px;height:32px;border:1px solid var(--ux-border);border-radius:10px;background:var(--ux-surface);color:var(--ux-ink);cursor:pointer}.ux-coverage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ux-coverage-group{padding:12px;border:1px solid var(--ux-border);border-radius:14px;background:var(--ux-panel-soft)}.ux-coverage-group h3{margin:0 0 8px;font-size:11px}.ux-coverage-list{display:grid;gap:5px}.ux-coverage-item{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:7px 8px;border:0;border-radius:9px;color:var(--ux-ink);background:var(--ux-surface);cursor:pointer;text-align:left}.ux-coverage-item code{font:600 9px Inter,"SF Pro Text",system-ui,sans-serif}.ux-coverage-item span{color:var(--ux-success);font-size:10px}
+    @keyframes auroraDrift { 0%,100%{transform:translate3d(0,0,0) rotate(-18deg)}50%{transform:translate3d(-12px,9px,0) rotate(-15deg)} } @keyframes orbitPulse { 0%,100%{box-shadow:0 0 0 6px rgba(89,107,255,.12)}50%{box-shadow:0 0 0 10px rgba(89,107,255,.06)} }
+    body:before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.36; background:radial-gradient(ellipse at 84% 18%,transparent 0 18%,rgba(116,135,255,.08) 18.2% 18.4%,transparent 18.6% 24%,rgba(188,119,255,.06) 24.2% 24.4%,transparent 24.6%); animation:auroraDrift 13s ease-in-out infinite; }
+    .ux-node.current { animation:orbitPulse 2.8s ease-in-out infinite; }
+    html[data-motion="off"] body:before, html[data-motion="off"] .ux-node.current { animation:none; }
+    @media (max-width:1390px){.ux-layout{grid-template-columns:230px minmax(0,1fr)}.ux-inspector{display:none}.ux-header{grid-template-columns:auto minmax(0,1fr) auto}}
+    @media (max-width:930px){.ux-shell{padding:18px}.ux-header{grid-template-columns:1fr auto;gap:14px}.ux-header>div:nth-child(2){grid-column:1/-1;grid-row:2}.ux-controls{justify-content:flex-start}.ux-rail{position:static;min-height:0}.ux-layout{grid-template-columns:1fr}.ux-rail{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px}.ux-brand,.ux-rail-label,.ux-rail-note{grid-column:1/-1}.ux-rail-label{margin:8px 8px 2px}.ux-rail-nav{display:contents}.ux-rail-btn{min-height:36px}.ux-stage{min-height:780px}}
+     @media (max-width:620px){.ux-shell{padding:0 0 22px}.ux-header{display:block;padding:16px 14px 0}.ux-header>div:first-child{margin-bottom:16px}.ux-header h1{font-size:24px}.ux-controls{justify-content:flex-start;margin-top:14px}.ux-control{min-height:35px}.ux-rail{border-right:0;border-left:0;border-radius:0}.ux-workspace{padding:10px;border-right:0;border-left:0;border-radius:0}.ux-preview-head{display:block}.ux-device-switch{justify-content:flex-start;margin-top:10px}.ux-stage{min-height:770px;padding:24px 8px;overflow-x:hidden}.ux-device.mobile{width:min(390px,calc(100vw - 32px));height:min(844px,calc((100vw - 32px)*2.1641))}.ux-coverage-grid{grid-template-columns:1fr}.ux-modal-backdrop{padding:12px}.ux-coverage-modal{padding:16px}}
+    @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
   </style>
 </head>
 <body>
   <div class="ux-shell">
     <header class="ux-header">
-      <div><h1>语学星 · Phase 1 完整 UI/UX 总控预览</h1><p>一套学习闭环 · 16 个业务域 · Mobile / Pad / Web 统一体验地图</p></div>
-      <div class="ux-controls"><button class="ux-control active" id="themeBtn" type="button">主题：浅色</button><button class="ux-control" id="motionBtn" type="button">动效：开启</button><button class="ux-control" id="resetBtn" type="button">重置</button></div>
+      <div><h1>语学星 · Aurora UI Suite</h1><p>一套学习闭环 · Mobile / Pad / Web 统一体验地图</p></div>
+      <div class="ux-controls"><span class="ux-sync-label"><i></i>本地规范已加载</span><button class="ux-control active" id="themeBtn" type="button" aria-pressed="false" aria-label="切换浅色和深色模式">主题：浅色</button><button class="ux-control" id="motionBtn" type="button" aria-pressed="true" aria-label="切换动效强度">动效：开启</button><button class="ux-control" id="coverageBtn" type="button" aria-label="查看页面地图">页面地图</button><button class="ux-control" id="resetBtn" type="button">重置</button></div>
     </header>
     <div class="ux-layout">
       <aside class="ux-rail">
-        <div class="ux-brand"><span class="ux-brand-mark">星</span>语学星</div>
+        <div class="ux-brand"><span class="ux-brand-mark">✦</span><span>语学星</span></div>
         <div class="ux-rail-label">ONBOARDING</div>
         <div class="ux-rail-nav"><button class="ux-rail-btn" data-route="onboarding" type="button">01　目标与水平测评</button></div>
         <div class="ux-rail-label">LEARNING OS</div>
@@ -206,7 +273,21 @@
           </div>
         </div>
       </main>
+      <aside class="ux-inspector" aria-label="设计系统检查面板">
+        <div class="ux-inspector-head"><div><span class="ux-inspector-kicker">SUITE COVERAGE</span><strong>设计验收面板</strong></div><span>v0.3</span></div>
+        <div class="ux-inspector-card"><h3>当前页面</h3><div class="ux-inspector-stat"><b id="inspectorRoute">HOME</b><span>selected</span></div><div class="ux-meter"><i id="routeMeter"></i></div><p id="inspectorCopy">学习首页 · Adaptive Home<br>主任务、进度和下一个行动。</p></div>
+        <div class="ux-inspector-card"><h3>页面覆盖</h3><div class="ux-inspector-stat"><b>43</b><span>routes mapped</span></div><div class="ux-meter"><i style="width:86%"></i></div><p>9 个核心页面族，覆盖 onboarding、学习、练习、技能、成长、课程、服务和运营。</p></div>
+        <div class="ux-inspector-card"><h3>视觉令牌</h3><div class="ux-token-row"><span class="ux-token-swatch" style="background:var(--ux-accent)"></span><span class="ux-token-copy"><b>Accent</b><span>Primary action</span></span><span class="ux-token-value">#5669F7</span></div><div class="ux-token-row"><span class="ux-token-swatch" style="background:var(--ux-surface)"></span><span class="ux-token-copy"><b>Surface</b><span>Content canvas</span></span><span class="ux-token-value">surface</span></div><div class="ux-token-row"><span class="ux-token-swatch" style="background:var(--ux-success)"></span><span class="ux-token-copy"><b>Success</b><span>Completion feedback</span></span><span class="ux-token-value">#25B889</span></div></div>
+        <div class="ux-inspector-card"><h3>当前质量门</h3><p>浅色 / 深色 · Mobile / Pad / Web · 单主滚动容器 · 减弱动效 · 44pt 触控尺寸</p><div class="ux-inspector-actions"><button class="primary" id="inspectorMap" type="button">查看页面地图</button><button class="secondary" id="resetBtnSecondary" type="button">重置预览</button></div></div>
+      </aside>
     </div>
+  </div>
+
+  <div class="ux-modal-backdrop" id="mapModal" aria-hidden="true">
+    <section class="ux-coverage-modal" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+      <div class="ux-modal-head"><div><div class="ux-eyebrow">ROUTE INVENTORY</div><h2 id="mapTitle">Phase 1 页面地图</h2><p>一套 UI 稿覆盖 43 条核心语义路由，按页面族展示 54 个入口，页面族共享同一套组件和状态语言。</p></div><button class="ux-modal-close" id="closeMap" type="button" aria-label="关闭页面地图">×</button></div>
+      <div class="ux-coverage-grid" id="coverageGrid"></div>
+    </section>
   </div>
 
   <template id="tpl-onboarding"><div class="ux-page-head"><div><div class="ux-eyebrow">WELCOME TO 语学星</div><h1>先定一个真正想坚持的目标</h1><p>3 步完成定位，系统会把第一周安排得刚刚好。</p></div><span class="ux-streak">1 / 3</span></div><div class="ux-card"><div class="ux-card-head"><h3>你更想解决什么？</h3><span>可单选</span></div><div class="ux-choice-grid"><button class="ux-choice selected" type="button" data-action="choice"><b>日常交流</b><small>旅行、生活与真实场景</small></button><button class="ux-choice" type="button" data-action="choice"><b>CET-4 / CET-6</b><small>大学英语与阶段考试</small></button><button class="ux-choice" type="button" data-action="choice"><b>考研英语</b><small>阅读、写作与真题训练</small></button><button class="ux-choice" type="button" data-action="choice"><b>听说自练</b><small>跟读、听辨与表达</small></button></div><div class="ux-card-head" style="margin-top:17px"><h3>每天可投入多久？</h3><span>后续可调整</span></div><div class="ux-choice-grid"><button class="ux-choice selected" type="button" data-action="time"><b>15 分钟</b><small>稳步建立习惯</small></button><button class="ux-choice" type="button" data-action="time"><b>30 分钟</b><small>兼顾输入与练习</small></button></div><button class="ux-btn primary" style="width:100%;margin-top:15px" type="button" data-action="next">开始水平测评</button></div></template>
@@ -232,6 +313,7 @@
     const device = document.getElementById('uxDevice');
     const canvas = document.getElementById('uxCanvas');
     const toast = document.getElementById('uxToast');
+    const mapModal = document.getElementById('mapModal');
     const routeMeta = {
       onboarding: ['目标与水平测评','目标选择、规则化测评和首周计划'],
       home: ['学习首页 · Adaptive Home','今日任务、断点续学、学习世界与待办队列'],
@@ -244,6 +326,31 @@
       admin: ['教研与运营后台','内容资产、双审流、运营指标与工单']
     };
     const routeTpl = {onboarding:'tpl-onboarding',home:'tpl-home',vocab:'tpl-vocab',practice:'tpl-practice',skills:'tpl-skills',world:'tpl-world',courses:'tpl-courses',me:'tpl-me',admin:'tpl-admin'};
+    const routeCode = {onboarding:'ONBOARDING',home:'HOME',vocab:'VOCAB SRS',practice:'PRACTICE',skills:'SKILL STUDIO',world:'WORLD',courses:'COURSES',me:'ACCOUNT',admin:'OPERATIONS'};
+    const coverageGroups = [
+      ['Onboarding',['welcome','age','goal','assessment','result','plan'],'onboarding'],
+      ['Learning',['home','plan','map','node/:id','session/:id'],'home'],
+      ['Practice',['home','srs','srs/session/:id','mistakes','quick','checkpoint','cet','result/:id','mastery'],'practice'],
+      ['Skills',['vocabulary','grammar','listening','reading','speaking','writing'],'skills'],
+      ['World',['home','game/:id','avatar','reward','collection','leaderboard','study-room'],'world'],
+      ['Courses',['home',':id','vocabulary','grammar','listening','reading','speaking','writing'],'courses'],
+      ['Account & Service',['home','reports','messages','commerce','settings','privacy','support','sync'],'me'],
+      ['Operations',['dashboard','content','review','publishing','audit'],'admin']
+    ];
+    function readPreference(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch (error) { return fallback; } }
+    function writePreference(key, value) { try { localStorage.setItem(key, value); } catch (error) {} }
+    function syncControls() {
+      const theme = document.getElementById('themeBtn');
+      const motion = document.getElementById('motionBtn');
+      const isDark = root.dataset.theme === 'dark';
+      const isMotionOn = root.dataset.motion !== 'off';
+      theme.textContent = isDark ? '主题：深色' : '主题：浅色';
+      theme.setAttribute('aria-pressed', String(isDark));
+      theme.classList.toggle('active', isDark);
+      motion.textContent = isMotionOn ? '动效：开启' : '动效：减弱';
+      motion.setAttribute('aria-pressed', String(isMotionOn));
+      motion.classList.toggle('active', isMotionOn);
+    }
     let currentRoute = 'home';
     function showToast(message) { toast.textContent=message; toast.classList.add('show'); clearTimeout(window.__uxToast); window.__uxToast=setTimeout(()=>toast.classList.remove('show'),2200); }
     function setRoute(route, announce=true) {
@@ -254,12 +361,27 @@
       const meta=routeMeta[route]||routeMeta.home;
       document.getElementById('previewTitle').textContent=meta[0];
       document.getElementById('previewHint').textContent=meta[1];
+      const inspectorRoute=document.getElementById('inspectorRoute');
+      const inspectorCopy=document.getElementById('inspectorCopy');
+      const routeMeter=document.getElementById('routeMeter');
+      if(inspectorRoute) inspectorRoute.textContent=routeCode[route]||'HOME';
+      if(inspectorCopy) inspectorCopy.innerHTML=meta[0]+'<br>'+meta[1]+'。';
+      if(routeMeter) routeMeter.style.width=route==='admin'?'72%':route==='onboarding'?'64%':'88%';
       document.querySelector('.ux-main').scrollTop=0;
       if(announce) showToast('已进入“'+meta[0]+'”');
     }
     function setDevice(type) { root.dataset.device=type; device.className='ux-device '+type; document.querySelectorAll('[data-device]').forEach(btn=>btn.classList.toggle('active',btn.dataset.device===type)); showToast(type==='mobile'?'Mobile 预览':type==='pad'?'Pad 预览':'Web 预览'); }
-    function toggleTheme() { const dark=root.dataset.theme==='dark'; root.dataset.theme=dark?'light':'dark'; const btn=document.getElementById('themeBtn'); btn.textContent=dark?'主题：浅色':'主题：深色'; btn.classList.toggle('active',!dark); showToast(dark?'已切换到浅色极光':'已切换到深色极光'); }
-    function toggleMotion() { const off=root.dataset.motion==='off'; root.dataset.motion=off?'on':'off'; const btn=document.getElementById('motionBtn'); btn.textContent=off?'动效：开启':'动效：减弱'; showToast(off?'已恢复动效':'已减弱循环动效'); }
+    function setTheme(theme, announce=true) { root.dataset.theme=theme; writePreference('aurora-theme',theme); syncControls(); if(announce) showToast(theme==='dark'?'已切换到深色极光':'已切换到浅色极光'); }
+    function toggleTheme() { setTheme(root.dataset.theme==='dark'?'light':'dark'); }
+    function setMotion(mode, announce=true) { root.dataset.motion=mode; writePreference('aurora-motion',mode); syncControls(); if(announce) showToast(mode==='off'?'已减弱循环动效':'已恢复动效'); }
+    function toggleMotion() { setMotion(root.dataset.motion==='off'?'on':'off'); }
+    function renderCoverage() {
+      const grid=document.getElementById('coverageGrid');
+      if(!grid) return;
+      grid.innerHTML=coverageGroups.map(group=>'<article class="ux-coverage-group"><h3>'+group[0]+'</h3><div class="ux-coverage-list">'+group[1].map(route=>'<button class="ux-coverage-item" data-map-route="'+group[2]+'" type="button"><code>'+route+'</code><span>↗</span></button>').join('')+'</div></article>').join('');
+    }
+    function openMap() { if(!mapModal) return; mapModal.classList.add('open'); mapModal.setAttribute('aria-hidden','false'); document.getElementById('closeMap')?.focus(); }
+    function closeMap() { if(!mapModal) return; mapModal.classList.remove('open'); mapModal.setAttribute('aria-hidden','true'); }
     function handleAction(target) {
       const action=target.dataset.action;
       if(action==='choice'||action==='time'||action==='filter') { const group=target.parentElement; group.querySelectorAll('button').forEach(x=>x.classList.remove('selected')); target.classList.add('selected'); showToast('选择已更新'); }
@@ -287,10 +409,20 @@
       else if(action==='tickets') showToast('打开内容纠错工单工作台');
       else if(action==='flags') showToast('打开 Feature Flag 与 A/B 实验');
     }
-    document.addEventListener('click', event=>{ const routeBtn=event.target.closest('[data-route]'); if(routeBtn){setRoute(routeBtn.dataset.route);return;} const deviceBtn=event.target.closest('.ux-device-switch [data-device]'); if(deviceBtn){setDevice(deviceBtn.dataset.device);return;} const action=event.target.closest('[data-action]'); if(action) handleAction(action); });
+    document.addEventListener('click', event=>{ const mapBtn=event.target.closest('[data-map-route]'); if(mapBtn){setRoute(mapBtn.dataset.mapRoute);closeMap();return;} const routeBtn=event.target.closest('[data-route]'); if(routeBtn){setRoute(routeBtn.dataset.route);return;} const deviceBtn=event.target.closest('.ux-device-switch [data-device]'); if(deviceBtn){setDevice(deviceBtn.dataset.device);return;} const action=event.target.closest('[data-action]'); if(action) handleAction(action); });
     document.getElementById('themeBtn').addEventListener('click',toggleTheme);
     document.getElementById('motionBtn').addEventListener('click',toggleMotion);
-    document.getElementById('resetBtn').addEventListener('click',()=>{root.dataset.theme='light';root.dataset.motion='on';document.getElementById('themeBtn').textContent='主题：浅色';document.getElementById('themeBtn').classList.add('active');document.getElementById('motionBtn').textContent='动效：开启';setDevice('mobile');setRoute('home',false);showToast('总控预览已重置');});
+    document.getElementById('coverageBtn').addEventListener('click',openMap);
+    document.getElementById('inspectorMap').addEventListener('click',openMap);
+    document.getElementById('closeMap').addEventListener('click',closeMap);
+    document.getElementById('resetBtnSecondary').addEventListener('click',()=>document.getElementById('resetBtn').click());
+    mapModal.addEventListener('click',event=>{if(event.target===mapModal) closeMap();});
+    document.addEventListener('keydown',event=>{if(event.key==='Escape') closeMap();});
+    document.getElementById('resetBtn').addEventListener('click',()=>{try{localStorage.removeItem('aurora-theme');localStorage.removeItem('aurora-motion');}catch(error){} setTheme('light',false);setMotion('on',false);setDevice('mobile');setRoute('home',false);showToast('总控预览已重置');});
+    root.dataset.theme=readPreference('aurora-theme',root.dataset.theme||'light');
+    root.dataset.motion=readPreference('aurora-motion',root.dataset.motion||'on');
+    syncControls();
+    renderCoverage();
     setRoute('home',false);
   </script>
 </body>
