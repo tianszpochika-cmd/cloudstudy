@@ -1,0 +1,692 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-29T10:00:40.611Z",
+  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "mode": "runtime",
+  "result": "FAIL",
+  "catalog": {
+    "node": "20.19.5",
+    "pnpm": "10.19.0",
+    "java": 25,
+    "mavenMinimum": "3.9.9",
+    "springBoot": "4.1.1",
+    "springCloud": "2025.1.3",
+    "mavenEnforcerPlugin": "3.6.2",
+    "cycloneDxMavenPlugin": "2.9.1"
+  },
+  "hashes": {
+    "packageJson": "e2c26cd5ba501f88596bbdead41e19cbc1cfbf97a951ed46a0c3485baaea9262",
+    "pnpmLock": "356f62536d809e5f0359354659bab28ecf79d07ce7e9bfe6bd1ac6ce1458ef4e",
+    "reactorPom": "5ce41e82da6cded2e95db59d90e6c173e3ab99330d2bc88985f22448e5fa9197",
+    "toolchainBaseline": "2d63b4576f16e285c31e06e664ea794b55f7de5a5ab6ffbc667539595d6bd5d5",
+    "dependencyPolicy": "158a07e10e0e01ffb97801eddb79d98ffb1b2c39c0fd6fb148fe518b90d8de60"
+  },
+  "inventory": {
+    "nodeLockedComponents": 1097,
+    "mavenDirectComponents": 19
+  },
+  "licenses": {
+    "result": "PASS",
+    "nodeGroups": 11,
+    "mavenGroups": 11,
+    "denied": [],
+    "unknownNodeGroups": [],
+    "unknownMavenComponents": 0
+  },
+  "vulnerability": {
+    "checked": true,
+    "result": "FAIL",
+    "exitCode": 1,
+    "payload": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 6,
+        "moderate": 8,
+        "high": 1,
+        "critical": 0
+      },
+      "totalDependencies": 1109,
+      "advisories": [
+        {
+          "id": 1102341,
+          "githubAdvisoryId": "GHSA-67mh-4wv8-2f99",
+          "module": "esbuild",
+          "severity": "moderate",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "vulnerableVersions": "<=0.24.2",
+          "patchedVersions": ">=0.25.0",
+          "findings": [
+            {
+              "version": "0.20.2",
+              "paths": [
+                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>esbuild"
+              ]
+            },
+            {
+              "version": "0.21.5",
+              "paths": [
+                "apps__mobile>vite>esbuild"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1103907,
+          "githubAdvisoryId": "GHSA-pxg6-pf52-xh8x",
+          "module": "cookie",
+          "severity": "low",
+          "title": "cookie accepts cookie name, path, and domain with out of bounds characters",
+          "url": "https://github.com/advisories/GHSA-pxg6-pf52-xh8x",
+          "vulnerableVersions": "<0.7.0",
+          "patchedVersions": ">=0.7.0",
+          "findings": [
+            {
+              "version": "0.6.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>cookie"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1106453,
+          "githubAdvisoryId": "GHSA-x8qp-wqqm-57ph",
+          "module": "@intlify/core-base",
+          "severity": "moderate",
+          "title": "vue-i18n's escapeParameterHtml does not prevent DOM-based XSS through its tag attributes",
+          "url": "https://github.com/advisories/GHSA-x8qp-wqqm-57ph",
+          "vulnerableVersions": ">=9.0.0 <9.14.5",
+          "patchedVersions": ">=9.14.5",
+          "findings": [
+            {
+              "version": "9.1.11",
+              "paths": [
+                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>@intlify/core-base"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1109556,
+          "githubAdvisoryId": "GHSA-m6fv-jmcg-4jfg",
+          "module": "send",
+          "severity": "low",
+          "title": "send vulnerable to template injection that can lead to XSS",
+          "url": "https://github.com/advisories/GHSA-m6fv-jmcg-4jfg",
+          "vulnerableVersions": "<0.19.0",
+          "patchedVersions": ">=0.19.0",
+          "findings": [
+            {
+              "version": "0.18.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>serve-static>send"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1113161,
+          "githubAdvisoryId": "GHSA-w7fw-mjwx-w883",
+          "module": "qs",
+          "severity": "low",
+          "title": "qs's arrayLimit bypass in comma parsing allows denial of service",
+          "url": "https://github.com/advisories/GHSA-w7fw-mjwx-w883",
+          "vulnerableVersions": ">=6.7.0 <=6.14.1",
+          "patchedVersions": ">=6.14.2",
+          "findings": [
+            {
+              "version": "6.13.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>body-parser>qs"
+              ]
+            },
+            {
+              "version": "6.11.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>qs"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1113719,
+          "githubAdvisoryId": "GHSA-6rw7-vpxm-498p",
+          "module": "qs",
+          "severity": "moderate",
+          "title": "qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion",
+          "url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
+          "vulnerableVersions": "<6.14.1",
+          "patchedVersions": ">=6.14.1",
+          "findings": [
+            {
+              "version": "6.13.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>body-parser>qs"
+              ]
+            },
+            {
+              "version": "6.11.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>qs"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1116229,
+          "githubAdvisoryId": "GHSA-4w7w-66w2-5vf9",
+          "module": "vite",
+          "severity": "moderate",
+          "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+          "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+          "vulnerableVersions": "<=6.4.1",
+          "patchedVersions": ">=6.4.2",
+          "findings": [
+            {
+              "version": "5.4.21",
+              "paths": [
+                "apps__mobile>vite"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1119502,
+          "githubAdvisoryId": "GHSA-q8mj-m7cp-5q26",
+          "module": "qs",
+          "severity": "moderate",
+          "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+          "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+          "vulnerableVersions": ">=6.11.1 <=6.15.1",
+          "patchedVersions": ">=6.15.2",
+          "findings": [
+            {
+              "version": "6.13.0",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>body-parser>qs"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1120784,
+          "githubAdvisoryId": "GHSA-v6wh-96g9-6wx3",
+          "module": "vite",
+          "severity": "moderate",
+          "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+          "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+          "vulnerableVersions": "<=6.4.2",
+          "patchedVersions": ">=6.4.3",
+          "findings": [
+            {
+              "version": "5.4.21",
+              "paths": [
+                "apps__mobile>vite"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1123525,
+          "githubAdvisoryId": "GHSA-fx2h-pf6j-xcff",
+          "module": "vite",
+          "severity": "high",
+          "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+          "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+          "vulnerableVersions": "<=6.4.2",
+          "patchedVersions": ">=6.4.3",
+          "findings": [
+            {
+              "version": "5.4.21",
+              "paths": [
+                "apps__mobile>vite"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1123528,
+          "githubAdvisoryId": "GHSA-4x5r-pxfx-6jf8",
+          "module": "@babel/core",
+          "severity": "low",
+          "title": "@babel/core: Arbitrary File Read via sourceMappingURL Comment",
+          "url": "https://github.com/advisories/GHSA-4x5r-pxfx-6jf8",
+          "vulnerableVersions": "<=7.29.0",
+          "patchedVersions": ">=7.29.6",
+          "findings": [
+            {
+              "version": "7.25.2",
+              "paths": [
+                "apps__mobile>@dcloudio/uni-app>@dcloudio/uni-cloud>@dcloudio/uni-cli-shared>@babel/core"
+              ]
+            }
+          ]
+        },
+        {
+          "id": 1123977,
+          "githubAdvisoryId": "GHSA-v422-hmwv-36x6",
+          "module": "body-parser",
+          "severity": "low",
+          "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+          "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+          "vulnerableVersions": "<1.20.6",
+          "patchedVersions": ">=1.20.6",
+          "findings": [
+            {
+              "version": "1.20.3",
+              "paths": [
+                "apps__mobile>@dcloudio/vite-plugin-uni>express>body-parser"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mavenSbom": {
+    "checked": true,
+    "result": "PASS",
+    "exitCode": 0,
+    "path": "target/bom.json",
+    "diagnostics": null,
+    "components": 183,
+    "componentsWithLicense": 183
+  },
+  "checks": [
+    {
+      "name": "manifest pnpm-workspace.yaml",
+      "passed": true,
+      "detail": "required manifest is missing"
+    },
+    {
+      "name": "manifest package.json",
+      "passed": true,
+      "detail": "required manifest is missing"
+    },
+    {
+      "name": "manifest pnpm-lock.yaml",
+      "passed": true,
+      "detail": "required manifest is missing"
+    },
+    {
+      "name": "manifest pom.xml",
+      "passed": true,
+      "detail": "required manifest is missing"
+    },
+    {
+      "name": "manifest config/toolchain-baseline.json",
+      "passed": true,
+      "detail": "required manifest is missing"
+    },
+    {
+      "name": "packageManager pin",
+      "passed": true,
+      "detail": "expected pnpm@10.19.0"
+    },
+    {
+      "name": "Node engine pin",
+      "passed": true,
+      "detail": "expected 20.19.5"
+    },
+    {
+      "name": "pnpm engine pin",
+      "passed": true,
+      "detail": "expected 10.19.0"
+    },
+    {
+      "name": "Node catalog",
+      "passed": true,
+      "detail": "toolchain and dependency catalogs differ"
+    },
+    {
+      "name": "Java catalog",
+      "passed": true,
+      "detail": "toolchain and dependency catalogs differ"
+    },
+    {
+      "name": "Spring Boot catalog",
+      "passed": true,
+      "detail": "toolchain and dependency catalogs differ"
+    },
+    {
+      "name": "Spring Cloud catalog",
+      "passed": true,
+      "detail": "toolchain and dependency catalogs differ"
+    },
+    {
+      "name": "reactor java.version",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "reactor spring-boot.version",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "reactor spring-cloud.version",
+      "passed": true,
+      "detail": "expected 2025.1.3"
+    },
+    {
+      "name": "reactor maven-enforcer-plugin.version",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "reactor cyclonedx-maven-plugin.version",
+      "passed": true,
+      "detail": "expected 2.9.1"
+    },
+    {
+      "name": "api-gateway Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "api-gateway Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "api-gateway Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "api-gateway reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "iam-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "iam-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "iam-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "iam-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "learner-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "learner-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "learner-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "learner-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "content-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "content-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "content-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "content-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "learning-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "learning-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "learning-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "learning-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "assessment-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "assessment-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "assessment-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "assessment-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "media-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "media-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "media-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "media-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "notification-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "notification-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "notification-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "notification-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "gamification-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "gamification-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "gamification-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "gamification-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "social-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "social-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "social-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "social-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "commerce-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "commerce-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "commerce-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "commerce-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "admin-ops-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "admin-ops-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "admin-ops-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "admin-ops-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "analytics-service Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "analytics-service Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "analytics-service Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "analytics-service reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "service-template Boot pin",
+      "passed": true,
+      "detail": "expected 4.1.1"
+    },
+    {
+      "name": "service-template Java pin",
+      "passed": true,
+      "detail": "expected 25"
+    },
+    {
+      "name": "service-template Enforcer pin",
+      "passed": true,
+      "detail": "expected 3.6.2"
+    },
+    {
+      "name": "service-template reactor membership",
+      "passed": true,
+      "detail": "service is absent from root reactor"
+    },
+    {
+      "name": "Gateway Spring Cloud pin",
+      "passed": true,
+      "detail": "expected 2025.1.3"
+    },
+    {
+      "name": "pnpm lock format",
+      "passed": true,
+      "detail": "expected 9.0"
+    },
+    {
+      "name": "Node lock inventory",
+      "passed": true,
+      "detail": "no package entries were extracted from pnpm-lock.yaml"
+    },
+    {
+      "name": "Maven direct inventory",
+      "passed": true,
+      "detail": "no dependencies were extracted from v2 service POMs"
+    },
+    {
+      "name": "Node lock/license coverage",
+      "passed": true,
+      "detail": "lock inventory 1097 is smaller than resolved license inventory 904"
+    }
+  ],
+  "warnings": [],
+  "errors": [
+    "pnpm audit found a high/critical vulnerability or the registry was unavailable"
+  ]
+}

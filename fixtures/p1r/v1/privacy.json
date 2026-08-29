@@ -1,0 +1,38 @@
+{
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "synthetic": true,
+  "category": "privacy",
+  "ownerService": "learner-service",
+  "records": [
+    {
+      "id": "p1r-privacy-consent-001",
+      "subjectRef": "principal-ref://synthetic/p1r/learner-001",
+      "recordType": "CONSENT",
+      "ageBand": "adult-18-plus",
+      "region": "CN",
+      "termsVersion": "p1r-test-terms-v1",
+      "privacyVersion": "p1r-test-privacy-v1",
+      "decision": "ACCEPTED",
+      "effectiveAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p1r-privacy-export-001",
+      "subjectRef": "principal-ref://synthetic/p1r/learner-001",
+      "recordType": "EXPORT_REQUEST",
+      "status": "READY_SIMULATED",
+      "includedDomains": ["learner", "learning", "assessment"],
+      "personalPayloadStored": false,
+      "requestedAt": "2026-01-02T00:00:00.000Z"
+    },
+    {
+      "id": "p1r-privacy-delete-001",
+      "subjectRef": "principal-ref://synthetic/p1r/learner-001",
+      "recordType": "DELETION_REQUEST",
+      "status": "PENDING_SIMULATED",
+      "retentionPolicy": "TEST_FIXTURE_ONLY",
+      "personalPayloadStored": false,
+      "requestedAt": "2026-01-03T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "synthetic": true,
+  "category": "audioMetadata",
+  "ownerService": "media-service",
+  "records": [
+    {
+      "id": "p1r-audio-meta-001",
+      "contentRef": "p1r-content-lesson-001",
+      "mediaRef": "media-ref://synthetic/p1r/audio-001",
+      "mediaKind": "AUDIO",
+      "mimeType": "audio/wav",
+      "contentLocale": "en-US",
+      "durationMs": 2400,
+      "payloadMode": "METADATA_ONLY",
+      "binaryIncluded": false,
+      "sourceKind": "SYNTHETIC_PLACEHOLDER",
+      "rights": {
+        "origin": "SYNTHETIC_ORIGINAL",
+        "license": "INTERNAL_TEST_ONLY"
+      }
+    },
+    {
+      "id": "p1r-audio-meta-002",
+      "contentRef": "p1r-content-vocabulary-001",
+      "mediaRef": "media-ref://synthetic/p1r/audio-002",
+      "mediaKind": "AUDIO",
+      "mimeType": "audio/wav",
+      "contentLocale": "en-US",
+      "durationMs": 900,
+      "payloadMode": "METADATA_ONLY",
+      "binaryIncluded": false,
+      "sourceKind": "SYNTHETIC_PLACEHOLDER",
+      "rights": {
+        "origin": "SYNTHETIC_ORIGINAL",
+        "license": "INTERNAL_TEST_ONLY"
+      }
+    }
+  ]
+}

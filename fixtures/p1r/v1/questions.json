@@ -1,0 +1,40 @@
+{
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "synthetic": true,
+  "category": "questions",
+  "ownerService": "content-service",
+  "records": [
+    {
+      "id": "p1r-question-choice-001",
+      "contentRef": "p1r-content-lesson-001",
+      "questionType": "SINGLE_CHOICE",
+      "prompt": "Which action happens before breakfast?",
+      "options": [
+        {"id": "A", "text": "The learner reviews a short lesson."},
+        {"id": "B", "text": "The learner closes the course forever."},
+        {"id": "C", "text": "The learner opens an unrelated page."}
+      ],
+      "serverAnswerRule": {"operator": "EXACT_OPTION", "expectedOption": "A", "version": 1},
+      "phase": "phase-1",
+      "rights": {
+        "origin": "SYNTHETIC_ORIGINAL",
+        "license": "INTERNAL_TEST_ONLY",
+        "copiedFromExternalSource": false
+      }
+    },
+    {
+      "id": "p1r-question-text-001",
+      "contentRef": "p1r-content-vocabulary-001",
+      "questionType": "NORMALIZED_TEXT",
+      "prompt": "Complete the sentence: I will ___ the lesson tomorrow.",
+      "serverAnswerRule": {"operator": "NORMALIZED_EQUALS", "expectedText": "review", "version": 1},
+      "phase": "phase-1",
+      "rights": {
+        "origin": "SYNTHETIC_ORIGINAL",
+        "license": "INTERNAL_TEST_ONLY",
+        "copiedFromExternalSource": false
+      }
+    }
+  ]
+}

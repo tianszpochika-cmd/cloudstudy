@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "p1r.miniapp-archive.v1",
+  "status": "HISTORICAL_REWRITE",
+  "businessProject": false,
+  "buildable": false,
+  "publishable": false,
+  "sourceOfTruth": "apps/mobile",
+  "futureBuildTarget": "mp-weixin",
+  "activationBoundary": "post-phase-1-gated",
+  "baselineInventory": {
+    "businessFilesFound": 0,
+    "removedPlaceholders": [
+      "src/components/.gitkeep",
+      "src/pages/.gitkeep",
+      "src/services/.gitkeep"
+    ]
+  },
+  "allowedRepositoryFiles": [
+    "README.md",
+    "archive-boundary.json"
+  ],
+  "forbiddenEntries": [
+    "package.json",
+    "src/",
+    "pages/",
+    "services/",
+    "state/",
+    "api/",
+    "manifest.json",
+    "pages.json"
+  ],
+  "migrationRules": [
+    "Implement platform-neutral domain logic in shared packages.",
+    "Implement WeChat-specific adaptations behind apps/mobile conditional compilation.",
+    "Do not add this archive directory to workspace, CI, startup, or release routing."
+  ]
+}

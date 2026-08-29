@@ -26,6 +26,16 @@ const expectedMilestoneCounts = {
   M8: 16,
 };
 
+const allowedTaskStatuses = new Set([
+  'PLANNED',
+  'READY',
+  'IN_PROGRESS',
+  'REVIEW',
+  'ACCEPTED',
+  'BLOCKED',
+  'REWORK',
+]);
+
 function fail(message) {
   console.error(`FAIL: ${message}`);
   process.exit(1);
@@ -73,11 +83,21 @@ for (const line of taskRows) {
   const columns = line.slice(1, -1).split('|').map((column) => column.trim());
   if (columns.length !== 8) fail(`task row must have 8 columns: ${line}`);
   if (columns.some((column) => !column)) fail(`task row has an empty required column: ${line}`);
-  if (columns[7] !== '`PLANNED`') fail(`new task must start PLANNED: ${columns[0]}=${columns[7]}`);
+  const status = columns[7].match(/^`([A-Z_]+)`$/)?.[1];
+  if (!status || !allowedTaskStatuses.has(status)) {
+    fail(`invalid task status: ${columns[0]}=${columns[7]}`);
+  }
   for (const dependency of collect(columns[4], /\b(M\d-\d{3})\b/g)) {
     const normalized = `P1R-${dependency}`;
     if (!taskIds.includes(normalized)) fail(`unknown dependency ${dependency} in ${columns[0]}`);
   }
+}
+
+const statusCounts = {};
+for (const line of taskRows) {
+  const columns = line.slice(1, -1).split('|').map((column) => column.trim());
+  const status = columns[7].slice(1, -1);
+  statusCounts[status] = (statusCounts[status] ?? 0) + 1;
 }
 
 const actualMilestoneCounts = {};
@@ -198,5 +218,6 @@ console.log(JSON.stringify({
     Object.entries(registries).map(([name, ids]) => [name, ids.length]),
   ),
   gapCounts,
-  initialStatus: 'PLANNED',
+  statusCounts,
+  initialStatus: statusCounts.PLANNED === taskIds.length ? 'PLANNED' : 'MIXED',
 }, null, 2));

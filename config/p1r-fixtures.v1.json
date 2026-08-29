@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "p1r.fixtures.config.v1",
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "seedRunId": "seed-p1r-m0-v1",
+  "phase": "phase-1",
+  "authoredAgainstRevision": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "mode": "repository-synthetic-bundle",
+  "files": [
+    {
+      "category": "accounts",
+      "ownerService": "iam-service",
+      "path": "fixtures/p1r/v1/accounts.json",
+      "minimumRecords": 2
+    },
+    {
+      "category": "content",
+      "ownerService": "content-service",
+      "path": "fixtures/p1r/v1/content.json",
+      "minimumRecords": 2
+    },
+    {
+      "category": "questions",
+      "ownerService": "content-service",
+      "path": "fixtures/p1r/v1/questions.json",
+      "minimumRecords": 2
+    },
+    {
+      "category": "audioMetadata",
+      "ownerService": "media-service",
+      "path": "fixtures/p1r/v1/audio-metadata.json",
+      "minimumRecords": 2
+    },
+    {
+      "category": "orders",
+      "ownerService": "commerce-service",
+      "path": "fixtures/p1r/v1/orders.json",
+      "minimumRecords": 2
+    },
+    {
+      "category": "privacy",
+      "ownerService": "learner-service",
+      "path": "fixtures/p1r/v1/privacy.json",
+      "minimumRecords": 3
+    }
+  ],
+  "seed": {
+    "runtimeRoot": "evidence/p1r/m0/repo-fixtures/runtime",
+    "bundleFile": "seed-bundle.json",
+    "manifestFile": "seed-manifest.json",
+    "cleanupMarker": "p1r-m0-synthetic-v1"
+  },
+  "policy": {
+    "syntheticOnly": true,
+    "adultOnly": true,
+    "noRealPersonalData": true,
+    "noCredentialsOrSecrets": true,
+    "noExternalCopyrightText": true,
+    "noAudioBinary": true,
+    "sandboxOrdersOnly": true,
+    "externalCallsEnabled": false,
+    "productionWritesEnabled": false
+  }
+}

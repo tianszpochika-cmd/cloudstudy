@@ -44,6 +44,10 @@ storage/processed/*
 # generated artifacts
 *.generated.*
 *.lock.tmp
+*.class
+**/.compile-*/
+**/.tmp-*compile*/
+/evidence/p1r/m0/repo-fixtures/runtime/
 
 # Python
 __pycache__/

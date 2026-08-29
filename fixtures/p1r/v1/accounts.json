@@ -1,0 +1,33 @@
+{
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "synthetic": true,
+  "category": "accounts",
+  "ownerService": "iam-service",
+  "records": [
+    {
+      "id": "p1r-account-learner-001",
+      "principalRef": "principal-ref://synthetic/p1r/learner-001",
+      "tenantRef": "tenant-ref://synthetic/platform",
+      "loginAlias": "p1r_learner_001",
+      "persona": "adult-learner",
+      "ageBand": "adult-18-plus",
+      "roles": ["LEARNER"],
+      "authenticationScenario": "RUNTIME_INJECTED_TEST_CREDENTIAL",
+      "credentialMaterialStored": false,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "p1r-account-operator-001",
+      "principalRef": "principal-ref://synthetic/p1r/operator-001",
+      "tenantRef": "tenant-ref://synthetic/platform",
+      "loginAlias": "p1r_operator_001",
+      "persona": "content-operator",
+      "ageBand": "adult-18-plus",
+      "roles": ["CONTENT_OPERATOR"],
+      "authenticationScenario": "RUNTIME_INJECTED_TEST_CREDENTIAL",
+      "credentialMaterialStored": false,
+      "status": "ACTIVE"
+    }
+  ]
+}

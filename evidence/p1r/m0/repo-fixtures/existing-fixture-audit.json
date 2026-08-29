@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "p1r.existing-fixture-audit.v1",
+  "taskId": "P1R-M0-007",
+  "scope": "read-only sampling of existing versioned fixture baselines and their seed/scan tooling",
+  "reviewed": [
+    {
+      "path": "config/b19-test-fixtures.json",
+      "finding": "Useful synthetic subject and runtime-gate conventions, but it does not provide the six P1R categories or cleanup ownership."
+    },
+    {
+      "path": "database/mysql/fixtures/b25-phase1.json",
+      "finding": "Useful owner-service and deterministic seed conventions, but it is coupled to B25 schemas and does not provide order/privacy request fixtures."
+    },
+    {
+      "path": "deploy/b21/staging/sanitized-fixtures.yaml",
+      "finding": "Useful synthetic reference policy and raw-media prohibition; retained as historical staging evidence."
+    },
+    {
+      "path": "tests/b10/fixtures/b10-learning-assessment.fixture.json",
+      "finding": "Useful content snapshot, replay, and privacy projection conventions; retained as a task-specific historical fixture."
+    },
+    {
+      "path": "tests/b14/fixtures/phase1-chain.json",
+      "finding": "Useful owner-chain and no-raw-payload conventions, but it is not a seedable data set."
+    },
+    {
+      "path": "tests/fixtures/b0-security/export-record.json",
+      "finding": "Contains deliberately synthetic but email- and phone-shaped values for security tests; these values were not copied into the P1R baseline."
+    },
+    {
+      "path": "scripts/database/replay-b25-fixture.mjs",
+      "finding": "Provides guarded database replay/purge ideas, but has live MySQL mode and local credential defaults; the P1R M0 tool never imports or executes it."
+    },
+    {
+      "path": "scripts/database/validate-fixtures.mjs",
+      "finding": "Provides useful sensitive-field and destructive-SQL checks; P1R applies stricter reserved-reference, audio-metadata-only, sandbox-order, and ownership-marker checks."
+    },
+    {
+      "path": "scripts/security/scan-synthetic-fixtures.mjs",
+      "finding": "Provides useful non-synthetic domain scanning; P1R validation is self-contained and does not depend on business packages."
+    }
+  ],
+  "decision": {
+    "reuseMode": "conventions-only",
+    "reason": "Existing fixtures are fragmented by historical batch, schema, or test purpose and cannot form a standalone P1R seed/cleanup contract without inheriting legacy coupling.",
+    "newBaseline": "fixtures/p1r/v1",
+    "externalWrites": false
+  },
+  "result": "AUDITED"
+}

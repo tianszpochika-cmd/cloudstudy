@@ -1,0 +1,36 @@
+{
+  "taskId": "P1R-M0-002",
+  "draftOnly": true,
+  "canonicalTaskStatus": "PLANNED",
+  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "artifactDigests": [
+    {"path": "config/p1r-historical-candidate-map.json", "algorithm": "sha256", "digest": "dc96cf40d16702f1d95f103ae90967305dc429527fc8d1b343103ee814ec42d9"}
+  ],
+  "environment": "local",
+  "executionMode": "read-only history and attachment discovery",
+  "startedAt": "2026-08-29T09:14:55.6717585Z",
+  "finishedAt": null,
+  "actors": ["m0_governance"],
+  "sourceIds": ["P1R-M0-002", "ARCH-PLAT-001"],
+  "journeys": [],
+  "pages": [],
+  "rules": [],
+  "integrations": [],
+  "e2eScenarios": [],
+  "serviceOwners": [],
+  "dataOwners": [],
+  "commands": ["rg -o for B0-B36, V2-B*, DEV-* and G0-G4 identifiers", "git log --diff-filter=A for historical source documents and evidence manifests", "Get-Content/ConvertFrom-Json for evidence/b28 and evidence/b29", "Test-Path for repository-relative historical evidence references"],
+  "results": [
+    {"check": "legacy-batch-mapping", "status": "PASS", "details": "37 entries cover B0 through B36"},
+    {"check": "legacy-dev-mapping", "status": "PASS", "details": "14 prefix groups represent 140 discovered DEV identifiers"},
+    {"check": "legacy-gate-mapping", "status": "PASS", "details": "G0 through G4 are mapped"},
+    {"check": "historical-evidence-classification", "status": "PASS", "details": "B28 and B29 manifests are historical-candidate; zero P1R tasks are automatically accepted"}
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [],
+  "knownGaps": ["Missing historical child artifacts are not recreated.", "No historical status is reinterpreted as current success.", "A selected candidate must be reverified against the later current commit, environment, contract and P1R manifest."],
+  "reviewer": null,
+  "decision": null
+}

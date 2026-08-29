@@ -1,0 +1,36 @@
+{
+  "taskId": "P1R-M0-008",
+  "draftOnly": true,
+  "canonicalTaskStatus": "PLANNED",
+  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "artifactDigests": [
+    {"path": "requirements/backlog/v2-phase1-rebaseline/execution/README.md", "algorithm": "sha256", "digest": "b3e1af915a960942ef29db0bd0c1068b533450b6fdd1ad77c0e63e55a6a0c5bc"},
+    {"path": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M0-008.md", "algorithm": "sha256", "digest": "a20e16d2ab034b84f2490c27d493133174405ebaa16141c209df4eeb9728c165"}
+  ],
+  "environment": "local",
+  "executionMode": "documentation and manifest drafting under restricted file boundary",
+  "startedAt": "2026-08-29T09:14:55.6717585Z",
+  "finishedAt": null,
+  "actors": ["m0_governance"],
+  "sourceIds": ["P1R-M0-008", "ARCH-PLAT-001", "ACT-P1-*", "JNY-P1-*", "PAGE-P1-*", "RULE-P1-*", "INT-P1-*", "E2E-P1-*"],
+  "journeys": [],
+  "pages": [],
+  "rules": [],
+  "integrations": [],
+  "e2eScenarios": [],
+  "serviceOwners": [],
+  "dataOwners": [],
+  "commands": ["Read scripts/audit/verify-phase1-rebaseline-plan.mjs", "pnpm plan:p1r:check", "JSON parse and manifest field validation", "git diff --check"],
+  "results": [
+    {"check": "execution-record-index", "status": "PASS", "details": "M0-001, M0-002 and M0-008 records point to their manifest drafts"},
+    {"check": "plan-validator-run", "status": "PASS", "details": "pnpm plan:p1r:check reports 108 tasks; M0-M8 counts 8/18/10/10/10/14/11/11/16; coverage 13 ACT, 15 JNY, 56 PAGE, 8 RULE, 18 INT and 16 E2E"},
+    {"check": "full-validator-implementation", "status": "NOT_CLAIMED", "details": "Audit-tool changes are outside this execution slice's approved file boundary"}
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [],
+  "knownGaps": ["No canonical task status change was made.", "No new scripts/audit validator was added or modified.", "Evidence completeness/status/dependency enforcement remains a follow-on implementation responsibility."],
+  "reviewer": null,
+  "decision": null
+}

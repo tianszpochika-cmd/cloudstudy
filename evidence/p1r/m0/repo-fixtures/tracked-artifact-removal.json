@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "p1r.tracked-artifact-removal.v1",
+  "taskId": "P1R-M0-004",
+  "baselineRevision": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "verification": {
+    "repositoryContainedPathsOnly": true,
+    "trackedAndDiskCountsMatched": true,
+    "extensions": [".class"],
+    "sourceRootsPresent": true,
+    "recursiveUntrackedDeletionUsed": false
+  },
+  "totals": {
+    "rootCount": 21,
+    "fileCount": 1397,
+    "byteCount": 5061073
+  },
+  "roots": [
+    {"path": "services/admin-ops-service/.tmp-b13-compile", "files": 49, "bytes": 153793},
+    {"path": "services/analytics-service/.tmp-b13-compile", "files": 35, "bytes": 140107},
+    {"path": "services/commerce-service/.tmp-b13-compile", "files": 70, "bytes": 232181},
+    {"path": "services/content-service/.compile-check-20260822", "files": 46, "bytes": 163357},
+    {"path": "services/content-service/.compile-check-b9-final", "files": 48, "bytes": 174544},
+    {"path": "services/content-service/.compile-check-b9-final-2", "files": 48, "bytes": 175793},
+    {"path": "services/content-service/.compile-check-b9-final-3", "files": 48, "bytes": 175793},
+    {"path": "services/content-service/.compile-check-b9-final-4", "files": 48, "bytes": 177304},
+    {"path": "services/content-service/.compile-check-b9-final-5", "files": 48, "bytes": 177304},
+    {"path": "services/learner-service/.compile-check-b9-final", "files": 45, "bytes": 143661},
+    {"path": "services/learner-service/.compile-check-b9-final-2", "files": 45, "bytes": 144827},
+    {"path": "services/learner-service/.compile-check-b9-final-3", "files": 45, "bytes": 144827},
+    {"path": "services/learner-service/.compile-check-b9-final-5", "files": 45, "bytes": 144838},
+    {"path": "services/notification-service/.compile-all-final", "files": 113, "bytes": 424138},
+    {"path": "services/notification-service/.compile-all-final-v411", "files": 113, "bytes": 424138},
+    {"path": "services/notification-service/.compile-b12-run3", "files": 80, "bytes": 301657},
+    {"path": "services/notification-service/.compile-b25", "files": 89, "bytes": 319083},
+    {"path": "services/notification-service/.compile-core-b25", "files": 94, "bytes": 362573},
+    {"path": "services/notification-service/.compile-final", "files": 89, "bytes": 319083},
+    {"path": "services/notification-service/.compile-javac", "files": 81, "bytes": 311842},
+    {"path": "services/notification-service/.compile-main-all", "files": 118, "bytes": 450230}
+  ],
+  "result": "REMOVED"
+}

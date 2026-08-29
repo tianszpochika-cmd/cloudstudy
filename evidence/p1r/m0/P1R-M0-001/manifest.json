@@ -1,0 +1,35 @@
+{
+  "taskId": "P1R-M0-001",
+  "draftOnly": true,
+  "canonicalTaskStatus": "PLANNED",
+  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "artifactDigests": [
+    {"path": "config/p1r-current-asset-inventory.json", "algorithm": "sha256", "digest": "9cbdd360738d5d680071fe9b4e1f014a29c96b7f70f8896fccf5be11529457bc"}
+  ],
+  "environment": "local",
+  "executionMode": "read-only discovery",
+  "startedAt": "2026-08-29T09:14:55.6717585Z",
+  "finishedAt": null,
+  "actors": ["m0_governance"],
+  "sourceIds": ["P1R-M0-001", "ARCH-PLAT-001"],
+  "journeys": [],
+  "pages": [],
+  "rules": [],
+  "integrations": [],
+  "e2eScenarios": [],
+  "serviceOwners": ["api-gateway", "iam-service", "learner-service", "content-service", "learning-service", "assessment-service", "media-service", "gamification-service", "social-service", "commerce-service", "notification-service", "analytics-service", "admin-ops-service.support"],
+  "dataOwners": ["iam-service", "learner-service", "content-service", "learning-service", "assessment-service", "media-service", "gamification-service", "social-service", "commerce-service", "notification-service", "analytics-service", "admin-ops-service.support"],
+  "commands": ["git rev-parse HEAD", "rg --files apps packages services database deploy tests evidence requirements/backlog", "Get-Content/ConvertFrom-Json for route, contract, migration and configuration metadata", "Get-FileHash -Algorithm SHA256 config/p1r-current-asset-inventory.json"],
+  "results": [
+    {"check": "asset-categories-covered", "status": "PASS", "details": "modules, pages, contracts, services, data, tests, deployment and observed historical evidence are present"},
+    {"check": "required-entry-fields", "status": "PASS", "details": "all inventory entries have id, kind, owner, path, version, risk and reuseTag"},
+    {"check": "reuse-tag-policy", "status": "PASS", "details": "all tags are in REUSE-VERIFY, REPAIR, REWRITE, NEW, HISTORICAL or PHASE-GATED"}
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [],
+  "knownGaps": ["No toolchain, CI, fixture, contract, data-owner, runtime, browser or release validation is claimed.", "Inventory triage is not a per-task reuse decision.", "Independent review and current evidence are still required before REVIEW or ACCEPTED."],
+  "reviewer": null,
+  "decision": null
+}

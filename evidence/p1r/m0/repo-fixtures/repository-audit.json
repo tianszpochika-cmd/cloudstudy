@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "gitRevision": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "miniappArchive": {
+    "files": [
+      "README.md",
+      "archive-boundary.json"
+    ],
+    "matchesAllowlist": true,
+    "sourceOfTruth": "apps/mobile",
+    "status": "HISTORICAL_REWRITE"
+  },
+  "result": "PASS",
+  "schemaVersion": "p1r.repo-fixture-audit.v1",
+  "trackedGeneratedArtifactCount": 0,
+  "trackedGeneratedArtifacts": []
+}

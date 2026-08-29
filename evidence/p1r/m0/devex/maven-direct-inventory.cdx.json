@@ -1,0 +1,264 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-08-29T10:00:40.611Z",
+    "properties": [
+      {
+        "name": "englishflow:sourceCommit",
+        "value": "41f6a43b54bc51187fb71513e80468311cb1e411"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "group": "com.fasterxml.jackson.core",
+      "name": "jackson-databind",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:com.fasterxml.jackson.core:jackson-databind@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/iam-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "com.mysql",
+      "name": "mysql-connector-j",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:com.mysql:mysql-connector-j@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/analytics-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "io.projectreactor",
+      "name": "reactor-test",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:io.projectreactor:reactor-test@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.flywaydb",
+      "name": "flyway-core",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.flywaydb:flyway-core@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.flywaydb",
+      "name": "flyway-mysql",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.flywaydb:flyway-mysql@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework",
+      "name": "spring-jdbc",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework:spring-jdbc@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/content-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-actuator",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-actuator@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-data-redis",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-data-redis@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-jdbc",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-jdbc@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/analytics-service/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-oauth2-resource-server",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-oauth2-resource-server@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-opentelemetry",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-opentelemetry@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-security-oauth2-resource-server",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-security-oauth2-resource-server@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-security",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-security@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-test",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-test@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-validation",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-validation@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-starter-web",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.boot:spring-boot-starter-web@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/service-template/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.cloud",
+      "name": "spring-cloud-dependencies",
+      "version": "${spring-cloud.version}",
+      "bom-ref": "maven:org.springframework.cloud:spring-cloud-dependencies@${spring-cloud.version}",
+      "purl": "pkg:maven/org.springframework.cloud/spring-cloud-dependencies@%24%7Bspring-cloud.version%7D",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.cloud",
+      "name": "spring-cloud-starter-gateway-server-webflux",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.cloud:spring-cloud-starter-gateway-server-webflux@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "group": "org.springframework.security",
+      "name": "spring-security-test",
+      "version": "managed-by-spring-boot-4.1.1",
+      "bom-ref": "maven:org.springframework.security:spring-security-test@managed-by-spring-boot-4.1.1",
+      "properties": [
+        {
+          "name": "englishflow:source",
+          "value": "services/api-gateway/pom.xml"
+        }
+      ]
+    }
+  ]
+}

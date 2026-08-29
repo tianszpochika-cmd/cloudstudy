@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "p1r.seed-cleanup-verification.v1",
+  "taskId": "P1R-M0-007",
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "gitRevision": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "seedRuns": 2,
+  "recordCount": 13,
+  "deterministic": true,
+  "hashes": {
+    "seedBundleSha256": "9cbcebf3d60006e58b880843e9abb958dae2676ab9b0dbd237dc09bcd1330447",
+    "seedManifestSha256": "9c4d0c93cfd4864433dbe145414beb6c5168c752c894ba5e3ab51c357d4cbc17"
+  },
+  "cleanup": {
+    "firstRun": "REMOVED_OWNED_OUTPUT",
+    "secondRun": "NO_OP",
+    "runtimeDirectoryRemaining": false,
+    "ownershipMarkerRequired": true,
+    "outOfScopeOutputRefused": true,
+    "recursiveUnknownFileDeletion": false
+  },
+  "externalSystems": {
+    "databaseConnected": false,
+    "cacheConnected": false,
+    "eventBusConnected": false,
+    "paymentProviderCalled": false
+  },
+  "result": "PASS"
+}

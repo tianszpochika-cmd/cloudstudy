@@ -1,0 +1,54 @@
+{
+  "checks": {
+    "adultPhase1Boundary": true,
+    "deterministicSourceDigests": true,
+    "noAudioBinary": true,
+    "noSensitiveMaterial": true,
+    "sandboxOrdersOnly": true,
+    "syntheticOnly": true
+  },
+  "errors": [],
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "gitRevision": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "recordCounts": {
+    "accounts": 2,
+    "audioMetadata": 2,
+    "content": 2,
+    "orders": 2,
+    "privacy": 3,
+    "questions": 2
+  },
+  "result": "PASS",
+  "schemaVersion": "p1r.fixture-validation.v1",
+  "sourceFiles": [
+    {
+      "path": "config/p1r-fixtures.v1.json",
+      "sha256": "1bc01e37625723280f3e5eb6ac44653b79b5970d69426dc73c85a6d436b3fa06"
+    },
+    {
+      "path": "fixtures/p1r/v1/accounts.json",
+      "sha256": "3b07edff83ddef7296526a7e68a8e574eccfe7316f1a8c1d7df6f988d305901d"
+    },
+    {
+      "path": "fixtures/p1r/v1/content.json",
+      "sha256": "33b1022d5540cefada90f47e9ec6dd7b9b34b36f6e2b8d045d83456fb1b9ebdf"
+    },
+    {
+      "path": "fixtures/p1r/v1/questions.json",
+      "sha256": "a75b4ee9e61512f92e4ff14dfd7bbfbb8440aebc58e90d7bbf0412e9d27e52a3"
+    },
+    {
+      "path": "fixtures/p1r/v1/audio-metadata.json",
+      "sha256": "7690344fdd3501fd09b29f4ca67b1f884c6ff099df7172098201103e52ec3566"
+    },
+    {
+      "path": "fixtures/p1r/v1/orders.json",
+      "sha256": "7f42f401c1e75f9100afb39e10d12c0eaed13365c6a1b53b0dfa073018d85302"
+    },
+    {
+      "path": "fixtures/p1r/v1/privacy.json",
+      "sha256": "80414fa2db3d992e910f08feb744602033a59c58c1ea0e812d5dbaf9261e8776"
+    }
+  ]
+}

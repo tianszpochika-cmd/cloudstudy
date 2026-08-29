@@ -1,0 +1,39 @@
+{
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "synthetic": true,
+  "category": "content",
+  "ownerService": "content-service",
+  "records": [
+    {
+      "id": "p1r-content-lesson-001",
+      "contentCode": "P1R-SYNTHETIC-DAILY-ROUTINE",
+      "contentVersion": 1,
+      "contentLocale": "en-US",
+      "uiTitleKey": "fixture.p1r.lesson.dailyRoutine.title",
+      "body": "A learner reviews a short lesson before breakfast.",
+      "targetLevel": "A2",
+      "publicationState": "FIXTURE_ONLY",
+      "rights": {
+        "origin": "SYNTHETIC_ORIGINAL",
+        "license": "INTERNAL_TEST_ONLY",
+        "copiedFromExternalSource": false
+      }
+    },
+    {
+      "id": "p1r-content-vocabulary-001",
+      "contentCode": "P1R-SYNTHETIC-VOCAB-REVIEW",
+      "contentVersion": 1,
+      "contentLocale": "en-US",
+      "term": "review",
+      "definition": "to study something again so it is easier to remember",
+      "targetLevel": "A2",
+      "publicationState": "FIXTURE_ONLY",
+      "rights": {
+        "origin": "SYNTHETIC_ORIGINAL",
+        "license": "INTERNAL_TEST_ONLY",
+        "copiedFromExternalSource": false
+      }
+    }
+  ]
+}

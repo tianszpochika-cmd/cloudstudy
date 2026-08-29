@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "1.0.0",
+  "inventoryId": "P1R-M0-001-current-asset-inventory",
+  "generatedAt": "2026-08-29T09:14:55.6717585Z",
+  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "designBaselineCommit": "b01505a71f8b6f980d63cd58e3c3687e59daa13a",
+  "designBaselineIsAncestorOfSourceCommit": true,
+  "scope": {
+    "phase": "Phase 1 adult and university learner planning only",
+    "discoveryMethod": "read-only filesystem, Git, package manifest, Maven POM, route-registry, migration-manifest, contract-catalog and test-tree inspection",
+    "claimBoundary": [
+      "Path presence is not an implementation, contract, runtime, security, browser, release or acceptance claim.",
+      "reuseTag is an M0 triage candidate and requires current-contract and current-evidence verification before use.",
+      "No entry in this inventory changes a canonical P1R task status or inherits a historical completion state."
+    ]
+  },
+  "fieldContract": ["id", "kind", "owner", "path", "version", "risk", "reuseTag"],
+  "modules": [
+    {"id": "module:apps/mobile", "kind": "frontend-module", "owner": "learner-apps", "path": "apps/mobile", "version": "@englishflow/mobile@1.0.0", "risk": "Candidate uni-app application contains 28 declared current page entries; all required PAGE-P1 mappings, eight states and secure-storage behavior still need verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:apps/learner-web", "kind": "frontend-module", "owner": "learner-apps", "path": "apps/learner-web", "version": "@englishflow/learner-web@1.0.0", "risk": "Candidate Vue Web/PWA application has historical B-prefixed routes and needs canonical PAGE-P1, browser and PWA verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:apps/admin-web", "kind": "frontend-module", "owner": "admin-experience", "path": "apps/admin-web", "version": "@englishflow/admin-web@1.0.0", "risk": "Candidate admin application exposes only a subset of planned admin routes; RBAC/ABAC and owner-bound command behavior require verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:apps/official-site", "kind": "frontend-module", "owner": "public-experience", "path": "apps/official-site", "version": "@englishflow/official-site@1.0.0", "risk": "Candidate Nuxt public site has seven filesystem pages, fewer than the eleven planned official PAGE-P1 entries; public projection and no-token boundaries need verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:apps/miniapp-wechat", "kind": "historical-frontend-module", "owner": "architecture-governance", "path": "apps/miniapp-wechat", "version": "no package manifest observed", "risk": "Only README.md is present; four-project boundary requires this directory to remain historical and not become a fifth business application.", "reuseTag": "HISTORICAL"},
+    {"id": "module:packages/contracts", "kind": "shared-module", "owner": "contract-governance", "path": "packages/contracts", "version": "@englishflow/contracts@1.0.0", "risk": "OpenAPI and event catalog candidates exist, but M1 must establish canonical operation, event, schema, generation and compatibility ownership.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/api-client", "kind": "shared-module", "owner": "client-platform", "path": "packages/api-client", "version": "@englishflow/api-client@1.0.0", "risk": "Client candidate must be generated and checked against the M1 canonical contract; presence does not prove Gateway-only access.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/design-tokens", "kind": "shared-module", "owner": "design-system", "path": "packages/design-tokens", "version": "@englishflow/design-tokens@1.0.0", "risk": "Theme token candidate needs four-project, contrast and high-contrast validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/i18n", "kind": "shared-module", "owner": "client-platform", "path": "packages/i18n", "version": "@englishflow/i18n@1.0.0", "risk": "UI locale/contentLocale separation and fallback need cross-client verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/performance", "kind": "shared-module", "owner": "client-platform", "path": "packages/performance", "version": "@englishflow/performance@1.0.0", "risk": "Adaptive-performance candidate requires four-level performance and device evidence.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/telemetry", "kind": "shared-module", "owner": "platform-observability", "path": "packages/telemetry", "version": "@englishflow/telemetry@1.0.0", "risk": "Telemetry candidate must be verified for consent, deletion and sensitive-field isolation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/ai-prompts", "kind": "phase-gated-module", "owner": "ai-platform", "path": "packages/ai-prompts", "version": "no package manifest observed", "risk": "Phase 2-related candidate must remain unreachable from Phase 1 default routes.", "reuseTag": "PHASE-GATED"},
+    {"id": "module:packages/config", "kind": "shared-module", "owner": "platform-engineering", "path": "packages/config", "version": "no package manifest observed", "risk": "Configuration candidate requires M0 toolchain and fixed-port validation before reuse.", "reuseTag": "REPAIR"},
+    {"id": "module:packages/content-schema", "kind": "shared-module", "owner": "content-service", "path": "packages/content-schema", "version": "no package manifest observed", "risk": "Content schema candidate cannot supersede the M1 content contract or service ownership decision.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/domain", "kind": "shared-module", "owner": "architecture-governance", "path": "packages/domain", "version": "no package manifest observed", "risk": "Shared domain code risks crossing target service ownership boundaries; audit before reuse.", "reuseTag": "REPAIR"},
+    {"id": "module:packages/ui-mobile", "kind": "shared-module", "owner": "learner-apps", "path": "packages/ui-mobile", "version": "no package manifest observed", "risk": "UI candidate needs uni-app compatibility and design-token verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "module:packages/ui-web", "kind": "shared-module", "owner": "web-experience", "path": "packages/ui-web", "version": "no package manifest observed", "risk": "UI candidate needs learner/admin separation and design-token verification.", "reuseTag": "REUSE-VERIFY"}
+  ],
+  "pages": [
+    {
+      "id": "pages:mobile:declared-registry",
+      "kind": "page-registry",
+      "owner": "learner-apps",
+      "path": "apps/mobile/src/pages.json",
+      "version": "source@41f6a43",
+      "risk": "28 declared entries are current-source candidates only; PAGE-P1 coverage, canonical deep links, eight states and browser/device evidence remain unverified.",
+      "reuseTag": "REUSE-VERIFY",
+      "observedEntries": ["pages/home/home", "pages/learn/learn", "pages/practice/practice", "pages/b2-vocabulary/b2-vocabulary", "pages/b2-practice/b2-practice", "pages/b3-grammar/b3-grammar", "pages/b3-writing/b3-writing", "pages/b3-listening/b3-listening", "pages/b3-reading/b3-reading", "pages/b3-speaking/b3-speaking", "pages/b11-listening/b11-listening", "pages/b11-reading/b11-reading", "pages/b11-speaking/b11-speaking", "pages/world/world", "pages/b5-commerce/b5-commerce", "pages/b6-platform/b6-platform", "pages/b4-games/b4-games", "pages/b4-social/b4-social", "pages/b4-avatar/b4-avatar", "pages/b4-offline/b4-offline", "pages/profile/profile", "pages/login/login", "pages/forbidden/forbidden", "pages/onboarding/onboarding", "pages/assessment/assessment", "pages/today/today", "pages/b10-report/b10-report", "pages/settings/settings"]
+    },
+    {
+      "id": "pages:learner-web:route-registry",
+      "kind": "page-registry",
+      "owner": "learner-apps",
+      "path": "apps/learner-web/src/router/index.ts",
+      "version": "source@41f6a43",
+      "risk": "27 declared route records include historical B-prefixed and compatibility routes; canonical PAGE-P1 mapping and adult/permission behavior must be verified.",
+      "reuseTag": "REUSE-VERIFY",
+      "observedRoutes": ["/", "/login", "/home", "/onboarding", "/assessment", "/today", "/vocabulary", "/learn/session", "/learn", "/practice", "/b2/report", "/reports/weakness", "/grammar", "/writing", "/writing/practice", "/listening", "/reading", "/reader", "/speaking", "/world", "/adult-gate", "/forbidden", "/commerce", "/platform", "/courses", "/me", "/settings", "/settings/:section", "/:pathMatch(.*)*"]
+    },
+    {
+      "id": "pages:admin-web:route-registry",
+      "kind": "page-registry",
+      "owner": "admin-experience",
+      "path": "apps/admin-web/src/router/index.ts",
+      "version": "source@41f6a43",
+      "risk": "Ten declared route records do not demonstrate the planned full admin page set, server-side PEP, or human-recovery flows.",
+      "reuseTag": "REUSE-VERIFY",
+      "observedRoutes": ["/login", "/forbidden", "/", "/dashboard", "/content", "/commerce", "/audit", "/release", "/governance", "/support"]
+    },
+    {
+      "id": "pages:official-site:filesystem-registry",
+      "kind": "page-registry",
+      "owner": "public-experience",
+      "path": "apps/official-site/pages",
+      "version": "source@41f6a43",
+      "risk": "Seven source pages were observed; planned privacy, terms, minors and status pages must be accounted for before page coverage is claimed.",
+      "reuseTag": "REUSE-VERIFY",
+      "observedEntries": ["index.vue", "about.vue", "announcements.vue", "compliance.vue", "courses/index.vue", "download.vue", "pricing.vue"]
+    },
+    {
+      "id": "pages:miniapp-wechat:historical-boundary",
+      "kind": "historical-page-boundary",
+      "owner": "architecture-governance",
+      "path": "apps/miniapp-wechat/README.md",
+      "version": "source@41f6a43",
+      "risk": "No standalone page source was observed; any future miniapp page must be conditionally built from apps/mobile rather than added here.",
+      "reuseTag": "HISTORICAL"
+    }
+  ],
+  "contracts": [
+    {"id": "contract:openapi:v1", "kind": "openapi-candidate", "owner": "contract-governance", "path": "packages/contracts/openapi/v1/openapi.json", "version": "OpenAPI 3.0.3; 338 paths observed", "risk": "M1 must verify operation ownership, error semantics, generated clients and compatibility; current path count is not a D2 PASS.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "contract:openapi:fragments", "kind": "openapi-fragment-set", "owner": "contract-governance", "path": "packages/contracts/fragments", "version": "source@41f6a43", "risk": "Historical B1-B25 fragments require canonical merge, deprecation and compatibility audit.", "reuseTag": "REPAIR"},
+    {"id": "contract:event-catalog:v1", "kind": "event-catalog-candidate", "owner": "event-governance", "path": "packages/contracts/events/v1/catalog.json", "version": "platform.event.catalog.v1; catalogVersion 1.0.0; 154 events observed", "risk": "M1 must normalize Kafka/AsyncAPI ownership, bindings, envelope, dedupe and replay; existing catalog is not accepted event evidence.", "reuseTag": "REPAIR"},
+    {"id": "contract:event-fragments", "kind": "event-fragment-set", "owner": "event-governance", "path": "packages/contracts/events/v1/fragments", "version": "source@41f6a43", "risk": "Historical B1-B26 fragments require canonical topic, producer/consumer and schema compatibility audit.", "reuseTag": "REPAIR"},
+    {"id": "contract:generated-types", "kind": "generated-contract-artifact", "owner": "contract-governance", "path": "packages/contracts/generated", "version": "@englishflow/contracts@1.0.0", "risk": "Generated TypeScript exists but generation provenance and current-contract freshness need verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "contract:api-client", "kind": "client-contract-consumer", "owner": "client-platform", "path": "packages/api-client", "version": "@englishflow/api-client@1.0.0", "risk": "Must be regenerated and checked against M1 source of truth; no client may become an independent contract owner.", "reuseTag": "REUSE-VERIFY"}
+  ],
+  "services": [
+    {"id": "service:api-gateway", "kind": "platform-service-candidate", "owner": "api-gateway", "path": "services/api-gateway", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Directory and POM exist; external routing, direct-access block, rate limit and boundary audit still require current evidence.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:iam-service", "kind": "platform-service-candidate", "owner": "iam-service", "path": "services/iam-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Current source candidate includes IAM migrations; RS256/JWKS, refresh replay, adult consent and durable PEP evidence are not inherited.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:learner-service", "kind": "domain-service-candidate", "owner": "learner-service", "path": "services/learner-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target owner candidate; owner schema, tenant guard and current PEP/integration proof remain required.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:content-service", "kind": "domain-service-candidate", "owner": "content-service", "path": "services/content-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target content/version/rights owner candidate; review, publish, rollback and event boundaries require M1-M3 verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:learning-service", "kind": "domain-service-candidate", "owner": "learning-service", "path": "services/learning-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target plan/SRS/mastery owner candidate; shared or historical schema semantics must be audited.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:assessment-service", "kind": "domain-service-candidate", "owner": "assessment-service", "path": "services/assessment-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target assessment/attempt/report owner candidate; content snapshot and idempotent scoring contracts need verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:media-service", "kind": "domain-service-candidate", "owner": "media-service", "path": "services/media-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target media owner candidate; authorization URL, retention and no-raw-audio event rules require verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:gamification-service", "kind": "domain-service-candidate", "owner": "gamification-service", "path": "services/gamification-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target trusted-reward owner candidate; source whitelist, immutable ledger and replay evidence are required.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:social-service", "kind": "domain-service-candidate", "owner": "social-service", "path": "services/social-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target social owner candidate; lease, moderation and low-UGC restrictions need verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:commerce-service", "kind": "domain-service-candidate", "owner": "commerce-service", "path": "services/commerce-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target commerce/entitlement owner candidate; sandbox-only payment, replay and revocation evidence remain required.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:notification-service", "kind": "domain-service-candidate", "owner": "notification-service", "path": "services/notification-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target notification owner candidate; retry/DLQ/recovery and preference/privacy boundaries need verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:analytics-service", "kind": "domain-service-candidate", "owner": "analytics-service", "path": "services/analytics-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Target sanitized analytics owner candidate; consent/delete linkage and payload allowlist require verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:admin-ops-service", "kind": "domain-service-candidate", "owner": "admin-ops-service.support", "path": "services/admin-ops-service", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Only support owns tickets/messages/SLA; aggregation and command boundaries must be audited for cross-domain writes.", "reuseTag": "REPAIR"},
+    {"id": "service:service-template", "kind": "service-template-candidate", "owner": "platform-engineering", "path": "services/service-template", "version": "0.1.0-SNAPSHOT; Java 25; Spring Boot 4.1.1", "risk": "Template presence does not prove every domain service has PEP, probes, observability or deployment isolation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "service:core-api", "kind": "legacy-compatibility-service", "owner": "migration-governance", "path": "services/core-api", "version": "1.0.0-SNAPSHOT; Java 17; Spring Boot 3.5.3", "risk": "Historical compatibility and rollback boundary only; it cannot receive new default v2 business ownership.", "reuseTag": "HISTORICAL"},
+    {"id": "service:job-runner", "kind": "workflow-placeholder", "owner": "workflow-service", "path": "services/job-runner", "version": "no POM observed", "risk": "Workflow/Saga/DLQ/manual-recovery owner is not proven by this directory; M1/M2 design and runtime work are required.", "reuseTag": "NEW"},
+    {"id": "service:content-worker", "kind": "worker-placeholder", "owner": "content-service", "path": "services/content-worker", "version": "no POM observed", "risk": "Worker boundary, deployment and data ownership are not proven by path presence.", "reuseTag": "NEW"},
+    {"id": "service:analytics-worker", "kind": "worker-placeholder", "owner": "analytics-service", "path": "services/analytics-worker", "version": "no POM observed", "risk": "Worker boundary, deployment and data ownership are not proven by path presence.", "reuseTag": "NEW"},
+    {"id": "service:notification-worker", "kind": "worker-placeholder", "owner": "notification-service", "path": "services/notification-worker", "version": "no POM observed", "risk": "Worker boundary, deployment and recovery ownership are not proven by path presence.", "reuseTag": "NEW"},
+    {"id": "service:ai-orchestrator", "kind": "phase-gated-service", "owner": "ai-platform", "path": "services/ai-orchestrator", "version": "no POM observed", "risk": "Phase 2 placeholder must stay disabled and unreachable in Phase 1.", "reuseTag": "PHASE-GATED"},
+    {"id": "service:realtime-voice", "kind": "phase-gated-service", "owner": "realtime-voice", "path": "services/realtime-voice", "version": "no POM observed", "risk": "Phase 2 RTC placeholder must stay disabled and unreachable in Phase 1.", "reuseTag": "PHASE-GATED"}
+  ],
+  "data": [
+    {"id": "data:mysql:legacy-root-migrations", "kind": "migration-set", "owner": "migration-governance", "path": "database/mysql/migrations", "version": "MySQL 8.0 manifest; V0001-V0024 observed", "risk": "Root migration set includes historical cross-domain/B-series semantics and cannot establish target per-service ownership without M1/M2 audit.", "reuseTag": "REPAIR"},
+    {"id": "data:redis:keyspace", "kind": "keyspace-candidate", "owner": "platform-engineering", "path": "database/redis", "version": "source@41f6a43", "risk": "Redis must not become a unique fact or event source; namespace and rebuild behavior require verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:iam-service:migrations", "kind": "service-migration-set", "owner": "iam-service", "path": "services/iam-service/src/main/resources/db/migration", "version": "V1,V3,V4,V5 active files observed", "risk": "IAM schema candidate needs current migration, key, session and consent validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:learner-service:migrations", "kind": "service-migration-set", "owner": "learner-service", "path": "services/learner-service/src/main/resources/db/migration", "version": "V1-V8 observed", "risk": "Target learner ownership and tenant constraints require verification.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:content-service:migrations", "kind": "service-migration-set", "owner": "content-service", "path": "services/content-service/src/main/resources/db/migration", "version": "V1,V3-V13 observed", "risk": "Content/version/rights migration candidate needs owner and rollback audit.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:learning-service:migrations", "kind": "service-migration-set", "owner": "learning-service", "path": "services/learning-service/src/main/resources/db/migration", "version": "V1-V7 observed", "risk": "Plan/SRS/mastery migration candidate needs single-write-path and replay validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:assessment-service:migrations", "kind": "service-migration-set", "owner": "assessment-service", "path": "services/assessment-service/src/main/resources/db/migration", "version": "V1-V4 observed", "risk": "Attempt/report migration candidate needs snapshot and idempotency validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:media-service:migrations", "kind": "service-migration-set", "owner": "media-service", "path": "services/media-service/src/main/resources/db/migration", "version": "V1-V3 observed", "risk": "Media ownership, retention and authorization URL rules need validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:notification-service:migrations", "kind": "service-migration-set", "owner": "notification-service", "path": "services/notification-service/src/main/resources/db/migration", "version": "V1-V4 observed", "risk": "Delivery/recovery ownership and DLQ behavior require validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:gamification-service:migrations", "kind": "service-migration-set", "owner": "gamification-service", "path": "services/gamification-service/src/main/resources/db/migration", "version": "V1-V3 observed", "risk": "Trusted completion, immutable ledger and duplication protection require validation.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:social-service:migrations", "kind": "service-migration-set", "owner": "social-service", "path": "services/social-service/src/main/resources/db/migration", "version": "V1,V2 active plus one .disabled baseline file observed", "risk": "Room/lease/moderation ownership and migration selection require validation.", "reuseTag": "REPAIR"},
+    {"id": "data:commerce-service:migrations", "kind": "service-migration-set", "owner": "commerce-service", "path": "services/commerce-service/src/main/resources/db/migration", "version": "V1 observed", "risk": "Commerce schema candidate needs sandbox, entitlement and reconciliation evidence; production payment stays off.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "data:admin-ops-service:migrations", "kind": "service-migration-set", "owner": "admin-ops-service.support", "path": "services/admin-ops-service/src/main/resources/db/migration", "version": "V1-V2 observed", "risk": "Support-only data owner needs cross-domain write boundary validation.", "reuseTag": "REPAIR"},
+    {"id": "data:analytics-service:migrations", "kind": "service-migration-set", "owner": "analytics-service", "path": "services/analytics-service/src/main/resources/db/migration", "version": "V1 observed", "risk": "Sanitized ingress and delete/consent lifecycle are not established by migration presence.", "reuseTag": "REUSE-VERIFY"}
+  ],
+  "tests": [
+    {"id": "test:historical-b-series", "kind": "test-suite-candidate", "owner": "qa-engineering", "path": "tests/b1, tests/b2, tests/b3, tests/b4, tests/b5, tests/b6, tests/b7, tests/b8, tests/b9, tests/b10, tests/b11, tests/b12, tests/b13, tests/b14, tests/b15, tests/b16, tests/b17, tests/b18, tests/b19, tests/b20, tests/b21, tests/b22, tests/b23, tests/b24, tests/b25, tests/b26, tests/b27, tests/b28, tests/b29, tests/b30, tests/b31, tests/b32, tests/b33, tests/b35", "version": "source@41f6a43", "risk": "Historical test paths are candidate regression inputs only; a passing historical test is not P1R D3/D4 acceptance.", "reuseTag": "HISTORICAL"},
+    {"id": "test:contract", "kind": "test-suite-candidate", "owner": "contract-governance", "path": "tests/contract", "version": "4 files observed", "risk": "Candidate contract tests need M1 canonical contract and generation coverage.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "test:integration", "kind": "test-suite-candidate", "owner": "qa-engineering", "path": "tests/integration", "version": "3 files observed", "risk": "Source presence does not establish Gateway-to-owner-DB-to-event integration evidence.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "test:e2e", "kind": "test-suite-candidate", "owner": "qa-engineering", "path": "tests/e2e", "version": "6 files observed", "risk": "Current source candidate must be reworked against the sixteen P1R E2E scenarios and current runtime evidence model.", "reuseTag": "REPAIR"},
+    {"id": "test:fixtures", "kind": "fixture-candidate", "owner": "qa-engineering", "path": "tests/fixtures", "version": "7 files observed", "risk": "M0-007 must verify synthetic-only data, repeatable setup/cleanup and provenance before fixtures are accepted.", "reuseTag": "REPAIR"},
+    {"id": "test:security", "kind": "test-suite-candidate", "owner": "security-engineering", "path": "tests/security", "version": "1 file observed", "risk": "Candidate must be expanded for authorization, tenancy, privacy and secret boundary requirements.", "reuseTag": "REPAIR"},
+    {"id": "test:performance", "kind": "test-suite-candidate", "owner": "performance-engineering", "path": "tests/performance", "version": "1 file observed", "risk": "Candidate requires four-level visual/media/low-device and weak-network runtime evidence.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "test:database", "kind": "test-suite-candidate", "owner": "data-engineering", "path": "tests/database", "version": "1 file observed", "risk": "Migration, owner schema, tenant and recovery requirements need current Testcontainers or real-storage coverage.", "reuseTag": "REPAIR"},
+    {"id": "test:gates", "kind": "historical-gate-suite", "owner": "qa-governance", "path": "tests/g", "version": "5 files observed", "risk": "Historical G0-G4 code checks cannot be treated as P1R Gate PASS without current evidence.", "reuseTag": "HISTORICAL"}
+  ],
+  "deployment": [
+    {"id": "deploy:docker-local", "kind": "local-compose-candidate", "owner": "platform-engineering", "path": "infra/docker/docker-compose.dev.yml", "version": "source@41f6a43", "risk": "Local compose candidate needs M0 fixed-port/toolchain validation and cannot prove production topology.", "reuseTag": "REUSE-VERIFY"},
+    {"id": "deploy:b21", "kind": "historical-deployment-set", "owner": "platform-engineering", "path": "deploy/b21", "version": "23 files observed", "risk": "Overlapping historical deployment candidate; M8 must converge to one deployment source of truth.", "reuseTag": "REWRITE"},
+    {"id": "deploy:b22", "kind": "historical-deployment-set", "owner": "platform-engineering", "path": "deploy/b22", "version": "18 files observed", "risk": "Overlapping historical deployment candidate; M8 must converge to one deployment source of truth.", "reuseTag": "REWRITE"},
+    {"id": "deploy:g4", "kind": "historical-deployment-set", "owner": "platform-engineering", "path": "deploy/g4", "version": "12 files observed", "risk": "Overlapping historical release/deployment candidate; M8 must converge to one deployment source of truth.", "reuseTag": "REWRITE"},
+    {"id": "deploy:ci", "kind": "ci-candidate", "owner": "devex", "path": ".github/workflows/ci.yml", "version": "source@41f6a43", "risk": "Workflow exists but M0-005/M2-009 must establish branch trigger, real commands and fail-closed behavior.", "reuseTag": "REWRITE"}
+  ],
+  "observedEvidence": [
+    {"id": "evidence:b28-runtime", "kind": "historical-runtime-manifest", "owner": "qa-governance", "path": "evidence/b28/b28-runtime-20260824121425.json", "version": "capturedAt=2026-08-24T12:14:58.656Z; sourceRevision=93db302-dirty", "risk": "Manifest marks itself SUPERSEDED and its six repository-relative evidence references were absent at the current checkout.", "reuseTag": "HISTORICAL"},
+    {"id": "evidence:b29-runtime", "kind": "historical-runtime-manifest", "owner": "qa-governance", "path": "evidence/b29/b29-runtime-20260824125527.json", "version": "capturedAt=2026-08-24T12:55:35.772Z; sourceRevision=93db302", "risk": "Manifest has historical PASS fields, but all 94 repository-relative evidence references were absent at the current checkout and it cannot be inherited.", "reuseTag": "HISTORICAL"}
+  ]
+}

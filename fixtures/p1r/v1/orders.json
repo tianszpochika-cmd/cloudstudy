@@ -1,0 +1,33 @@
+{
+  "fixtureSetId": "p1r-m0-synthetic-v1",
+  "fixtureVersion": "1.0.0",
+  "synthetic": true,
+  "category": "orders",
+  "ownerService": "commerce-service",
+  "records": [
+    {
+      "id": "p1r-order-sandbox-paid-001",
+      "subjectRef": "principal-ref://synthetic/p1r/learner-001",
+      "productRef": "product-ref://synthetic/p1r/monthly-plan",
+      "environment": "SANDBOX",
+      "currency": "CNY",
+      "amountMinor": 990,
+      "status": "PAID_SIMULATED",
+      "externalProviderCallsEnabled": false,
+      "paymentInstrumentStored": false,
+      "idempotencyKey": "p1r-order-sandbox-paid-001-v1"
+    },
+    {
+      "id": "p1r-order-sandbox-refund-001",
+      "subjectRef": "principal-ref://synthetic/p1r/learner-001",
+      "productRef": "product-ref://synthetic/p1r/monthly-plan",
+      "environment": "SANDBOX",
+      "currency": "CNY",
+      "amountMinor": 990,
+      "status": "REFUNDED_SIMULATED",
+      "externalProviderCallsEnabled": false,
+      "paymentInstrumentStored": false,
+      "idempotencyKey": "p1r-order-sandbox-refund-001-v1"
+    }
+  ]
+}
