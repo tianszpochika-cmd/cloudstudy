@@ -1,6 +1,6 @@
 # 本地开发基础设施
 
-`docker-compose.dev.yml` 为语学星 Phase 1 提供五项本地依赖：MySQL 8、Redis 7、Kafka-compatible broker、MinIO 和 RabbitMQ 兼容边界。账号密码认证与 JWT/JWKS 由 `iam-service`（固定端口 `18087`）提供，不再依赖外部身份提供方容器。所有宿主机端口只绑定到 `127.0.0.1`，不会对局域网暴露。
+`docker-compose.dev.yml` 为语学星 Phase 1 提供四项 v2 本地依赖：MySQL 8、Redis 7、Kafka-compatible broker 和 MinIO；另保留 RabbitMQ 仅作为 `services/core-api` v1 兼容运行边界。v2 跨服务事实事件只使用 Kafka + Outbox，RabbitMQ 不属于 v2 事件事实源。账号密码认证与 JWT/JWKS 由 `iam-service`（固定端口 `18087`）提供，不再依赖外部身份提供方容器。所有宿主机端口只绑定到 `127.0.0.1`，不会对局域网暴露。
 
 ## 固定端口
 
@@ -13,8 +13,8 @@
 | MinIO API | `19000` | `9000` | S3 兼容对象存储 |
 | MinIO Console | `19001` | `9001` | 本地对象存储管理台 |
 | Kafka-compatible broker | `19092` | `19092` 外部 listener / `9092` 容器 listener | v2 跨服务事实事件 |
-| RabbitMQ AMQP | `15689` | `5672` | 异步消息 |
-| RabbitMQ Management | `15690` | `15672` | 消息管理台 |
+| RabbitMQ AMQP | `15689` | `5672` | `core-api` v1 兼容异步消息（历史，不是 v2 事实事件） |
+| RabbitMQ Management | `15690` | `15672` | `core-api` v1 兼容管理台（历史，不是 v2 事件管理台） |
 
 不得为单个 Agent 自动递增、随机改用或复用其他端口。端口发生变更时必须同步端口注册表、环境变量、启动脚本、Compose 映射和文档。
 
@@ -42,7 +42,7 @@ pnpm auth:local:check
 
 - MySQL：数据库 `yuxuexing`，用户/密码 `yuxuexing`，root 密码 `root-local-only`；
 - MinIO：`change-me` / `change-me-local`；
-- RabbitMQ：`yuxuexing` / `rabbitmq-local-only`；
+- RabbitMQ（仅 `core-api` v1 兼容）：`yuxuexing` / `rabbitmq-local-only`；v2 不使用它承载事实事件；
 - Kafka-compatible broker：external listener `127.0.0.1:19092`，container listener `kafka:9092`；仅用于 v2 跨服务事件测试，不承载 RPC 或分布式事务；
 - IAM JWT/JWKS：`http://127.0.0.1:18087/api/v1/auth/jwks`；issuer 为 `http://127.0.0.1:18087`，只绑定回环地址；
 - Redis：仅绑定回环地址，默认不启用密码。
@@ -63,7 +63,7 @@ docker compose -f infra/docker/docker-compose.dev.yml stop
 docker compose -f infra/docker/docker-compose.dev.yml down
 ```
 
-删除本地开发数据前，必须确认不再需要 MySQL、Redis、MinIO 和 RabbitMQ 的数据：
+删除本地开发数据前，必须确认不再需要 MySQL、Redis、MinIO 和 v1 兼容 RabbitMQ 的数据：
 
 ```powershell
 docker compose -f infra/docker/docker-compose.dev.yml down -v
@@ -79,7 +79,7 @@ docker compose -f infra/docker/docker-compose.dev.yml down -v
 node scripts/check-local-infra.mjs --static-only
 ```
 
-Docker 可用时，默认命令还会输出 MySQL、Redis、Kafka、MinIO、RabbitMQ 五项运行态状态：
+Docker 可用时，默认命令还会输出 MySQL、Redis、Kafka、MinIO 和 v1 兼容 RabbitMQ 的运行态状态：
 
 ```powershell
 node scripts/check-local-infra.mjs
@@ -99,7 +99,7 @@ node scripts/check-local-infra.mjs --require-healthy
 2. 容器未启动：执行 `docker compose -f infra/docker/docker-compose.dev.yml ps -a`，再查看 `docker compose -f infra/docker/docker-compose.dev.yml logs <service>`。
 3. MySQL 一直不健康：检查 13306 是否被其他 MySQL 占用；首次启动需要初始化数据，等待健康检查完成。
 4. MinIO bucket 不存在：查看 `minio-init` 日志；确认 MinIO 已健康后，可重新执行 `docker compose -f infra/docker/docker-compose.dev.yml up minio-init`。
-5. Kafka broker 不健康：查看 `docker compose -f infra/docker/docker-compose.dev.yml logs kafka`，确认 `127.0.0.1:19092` 未被占用；RabbitMQ 管理台使用 `http://127.0.0.1:15690`，AMQP 客户端使用 `127.0.0.1:15689`。
+5. Kafka broker 不健康：查看 `docker compose -f infra/docker/docker-compose.dev.yml logs kafka`，确认 `127.0.0.1:19092` 未被占用；如需检查 `core-api` v1 兼容 RabbitMQ，管理台使用 `http://127.0.0.1:15690`，AMQP 客户端使用 `127.0.0.1:15689`，不得将其当作 v2 事实事件平台。
 6. IAM 登录或 JWKS 不可用：确认 `iam-service` 使用固定端口 `18087` 启动，并检查 `GET /api/v1/auth/jwks`；若使用持久化模式，先确认 MySQL `iam_service` schema 和 Secret 配置，不要改用外部身份提供方。
 7. 数据是否持久化：默认数据位于 Compose 命名卷；重建容器不会丢失数据，只有 `down -v` 才会删除这些卷。
 

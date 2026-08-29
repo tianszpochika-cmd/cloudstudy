@@ -46,6 +46,7 @@ import {
 import { ApiError } from '../api/client'
 import {
   B4_PERFORMANCE_LEVELS,
+  B4_GAME_RELEASE_PHASES,
   B4_REPORT_REASONS,
   createB4ClientEventId,
   isRecord,
@@ -65,6 +66,7 @@ import {
   type B4FocusSession,
   type B4GameCatalogItem,
   type B4GameCode,
+  type B4GameReleasePhase,
   type B4GameFinishResult,
   type B4Galaxy,
   type B4GameSession,
@@ -193,7 +195,11 @@ function parseAvatarResources(value: unknown): B4AvatarResources | null {
 function parseGameCatalogItem(value: Record<string, unknown>): B4GameCatalogItem | null {
   const code = gameCode(value.gameCode)
   if (!code) return null
-  return { gameCode: code, maxMinutes: numberValue(value.maxMinutes), pauseLimitMinutes: numberValue(value.pauseLimitMinutes), passAccuracyPercent: numberValue(value.passAccuracyPercent), passCompletionPercent: numberValue(value.passCompletionPercent) }
+  const releasePhase = typeof value.releasePhase === 'string' && B4_GAME_RELEASE_PHASES.includes(value.releasePhase as B4GameReleasePhase)
+    ? value.releasePhase as B4GameReleasePhase
+    : null
+  if (!releasePhase) return null
+  return { gameCode: code, releasePhase, enabled: value.enabled === true, maxMinutes: numberValue(value.maxMinutes), pauseLimitMinutes: numberValue(value.pauseLimitMinutes), passAccuracyPercent: numberValue(value.passAccuracyPercent), passCompletionPercent: numberValue(value.passCompletionPercent) }
 }
 
 function parseGameSession(value: unknown): B4GameSession | null {

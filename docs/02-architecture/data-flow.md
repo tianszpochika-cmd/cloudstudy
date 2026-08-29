@@ -1,6 +1,6 @@
 # 数据流与边界
 
-> v2 数据流采用 Gateway → 服务侧 PEP → 领域服务 → Outbox/Event Bus。每个服务拥有自己的事实和写权限；`core-api` 仅是迁移期兼容实现。
+> v2 数据流采用 Gateway → 服务侧 PEP → 领域服务 → Kafka + transactional Outbox + AsyncAPI。每个服务拥有自己的事实和写权限；`core-api` 仅是迁移期兼容实现。RabbitMQ 只保留其 v1 兼容语义，Redis 不是事件事实源。
 
 ## 用户身份
 

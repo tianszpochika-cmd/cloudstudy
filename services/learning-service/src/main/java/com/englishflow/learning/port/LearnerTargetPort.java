@@ -1,5 +1,6 @@
 package com.englishflow.learning.port;
 
+import com.englishflow.learning.domain.DailyQuotaMinutes;
 import com.englishflow.learning.domain.LearningPrincipalContext;
 import com.englishflow.learning.domain.LearningTenantScope;
 
@@ -30,9 +31,7 @@ public interface LearnerTargetPort {
             if (goalCode == null || !goalCode.matches("[a-z][a-z0-9._-]{1,63}")) {
                 throw new IllegalArgumentException("goalCode is invalid");
             }
-            if (dailyQuotaMinutes < 5 || dailyQuotaMinutes > 240) {
-                throw new IllegalArgumentException("dailyQuotaMinutes must be between 5 and 240");
-            }
+            DailyQuotaMinutes.require(dailyQuotaMinutes);
             if (timeZoneId == null || timeZoneId.isBlank()) {
                 throw new IllegalArgumentException("timeZoneId is required");
             }

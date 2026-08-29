@@ -70,6 +70,7 @@ public final class LearningDomainSmoke {
 
     public static void main(String[] args) {
         testSchemaAndDefaultDeny();
+        testDailyQuotaValidation();
         Fixture fixture = new Fixture();
         testPlanUniquenessAndTimezone(fixture);
         testSm2ReplayAndRules(fixture);
@@ -107,6 +108,17 @@ public final class LearningDomainSmoke {
                 "learning-plan", "1000", "other-tenant", PRINCIPAL);
         assertEquals(LearningDecisionCode.TENANT_MISMATCH, tenantMismatch.code(),
                 "cross-tenant access is denied");
+    }
+
+    private static void testDailyQuotaValidation() {
+        expectIllegalArgument(() -> new LearnerTargetPort.LearnerTargetSnapshot(
+                        LearningTenantScope.forPhaseOne(PRINCIPAL, 7001), 7001,
+                        "foundation", 60, "Asia/Shanghai", 8001, 1),
+                "learner target rejects the retired 60-minute quota");
+        expectIllegalArgument(() -> LearningPlan.draft(
+                        9001, LearningTenantScope.forPhaseOne(PRINCIPAL, 7001), 7001,
+                        "foundation", 8001, 1, "Asia/Shanghai", 60, List.of(), NOW),
+                "learning plan rejects the retired 60-minute quota");
     }
 
     private static void testPlanUniquenessAndTimezone(Fixture fixture) {
@@ -323,6 +335,15 @@ public final class LearningDomainSmoke {
             throw new AssertionError(message + " must fail");
         } catch (IllegalArgumentException expected) {
             // Schema boundary rejects foreign facts before an application decision exists.
+        }
+    }
+
+    private static void expectIllegalArgument(Runnable action, String message) {
+        try {
+            action.run();
+            throw new AssertionError(message + " must fail");
+        } catch (IllegalArgumentException expected) {
+            // Shared Phase 1 quota validation rejects values outside the frozen set.
         }
     }
 

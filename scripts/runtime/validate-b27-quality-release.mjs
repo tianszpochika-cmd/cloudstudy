@@ -156,7 +156,7 @@ function validateAuthorizationAndSecurity(config, errors) {
   const jwks = quality?.jwks
   fail(jwks?.protocol === 'self-owned-JWT', 'JWKS must be bound to the platform-owned JWT authentication center', errors)
   fail(jwks?.issuerSource === 'runtime-env-only' && jwks?.jwksUriSource === 'runtime-env-only', 'JWKS issuer and URI must be runtime-only', errors)
-  fail(JSON.stringify(jwks?.allowedAlgorithms) === JSON.stringify(['RS256', 'ES256']), 'JWKS allowed algorithms must be asymmetric', errors)
+  fail(JSON.stringify(jwks?.allowedAlgorithms) === JSON.stringify(['RS256']), 'Phase 1 JWKS allowed algorithms must be exactly RS256', errors)
   fail((jwks?.forbiddenAlgorithms ?? []).includes('none') && (jwks?.forbiddenAlgorithms ?? []).includes('HS256'), 'JWKS unsafe algorithms must be forbidden', errors)
   for (const field of ['issuerAndAudienceValidation', 'keyRotationRequired', 'tokenForwardingToLogs']) fail(jwks?.[field] === (field === 'tokenForwardingToLogs' ? false : true), `jwks.${field} has unsafe value`, errors)
   fail(jwks?.unknownKeyDecision === 'fail-closed' && jwks?.jwksUnavailableDecision === 'fail-closed', 'JWKS failure paths must fail closed', errors)

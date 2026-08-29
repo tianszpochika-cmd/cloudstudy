@@ -1,6 +1,8 @@
 package com.englishflow.gamification.adapter.http;
 
 import com.englishflow.gamification.application.GamificationApplicationService;
+import com.englishflow.gamification.domain.GameCatalog;
+import com.englishflow.gamification.domain.GameCatalog.GameDefinition;
 import com.englishflow.gamification.domain.RewardClaimReceipt;
 import com.englishflow.gamification.domain.RewardGrantView;
 import com.englishflow.gamification.domain.RewardListView;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,10 +40,6 @@ import tools.jackson.databind.ObjectMapper;
 @Profile("local-real")
 @RequestMapping("/internal/v1/gamification")
 public final class GamificationLocalFeatureController {
-
-    private static final List<String> GAME_CODES = List.of(
-            "SENTENCE_TRAIN", "WORD_MATCH", "WORD_DEFENSE", "WORD_PUZZLE",
-            "GRAMMAR_BLASTER", "CATCH_MEANING");
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper mapper;
@@ -258,20 +257,43 @@ public final class GamificationLocalFeatureController {
 
     @GetMapping("/games/catalog")
     public Map<String, Object> gameCatalog(Authentication authentication) {
-        return state(principals.requireUser(authentication), "game-catalog", defaultGameCatalog());
+        String subject = principals.requireUser(authentication);
+        Map<String, Object> current = state(subject, "game-catalog", defaultGameCatalog());
+        // A persisted snapshot may predate the release gate.  Server-owned
+        // registry facts always win over that snapshot.
+        current.put("items", GameCatalog.entries().stream().map(this::gameCatalogItem).toList());
+        return current;
     }
 
     @PostMapping("/games/sessions")
     public ResponseEntity<Map<String, Object>> createGame(Authentication authentication,
             @RequestBody Map<String, Object> body) {
         String subject = principals.requireUser(authentication);
-        String code = String.valueOf(body.getOrDefault("gameCode", "WORD_MATCH"));
-        if (!GAME_CODES.contains(code)) return ResponseEntity.badRequest().body(map("code", "GAME_CODE_INVALID"));
+        Object rawCode = body == null ? null : body.get("gameCode");
+        if (!(rawCode instanceof String value) || value.isBlank()) {
+            return gameError(HttpStatus.BAD_REQUEST, "GAME_CODE_INVALID", "gameCode is required", null);
+        }
+        String code = value.trim();
+        GameDefinition definition;
+        try {
+            definition = GameCatalog.requireEnabled(code);
+        } catch (GameCatalog.InvalidGameCodeException exception) {
+            return gameError(HttpStatus.BAD_REQUEST, "GAME_CODE_INVALID", "gameCode is not in the B4 registry", null);
+        } catch (GameCatalog.GameNotAvailableException exception) {
+            return gameError(HttpStatus.CONFLICT, "GAME_NOT_AVAILABLE",
+                    "game is not enabled for its release phase", exception.definition().releasePhase().name());
+        }
         String sessionId = "game-" + UUID.randomUUID();
         Map<String, Object> session = newGameSession(sessionId, code,
-                String.valueOf(body.getOrDefault("performanceTier", "Medium")));
+                body.get("performanceTier") == null ? "Medium" : String.valueOf(body.get("performanceTier")));
         saveGame(subject, sessionId, code, "RUNNING", session);
         return ResponseEntity.status(201).body(session);
+    }
+
+    private static ResponseEntity<Map<String, Object>> gameError(HttpStatus status, String code,
+            String message, String releasePhase) {
+        return ResponseEntity.status(status).body(map("code", code, "message", message,
+                "retryable", false, "releasePhase", releasePhase));
     }
 
     @GetMapping("/games/sessions/{sessionId}")
@@ -428,7 +450,22 @@ public final class GamificationLocalFeatureController {
     private static Map<String, Object> defaultAvatarLoadouts() { return map("items", new ArrayList<>(List.of(map("loadoutId", "starter-loadout", "name", "晨间学习", "equipped", true, "items", List.of("ITEM_STARTER"))))); }
     private static Map<String, Object> defaultAvatarResources() { return map("resourceVersion", "avatar-2026.08.1", "manifestHash", "local-real-avatar-manifest", "fallbackMode", "2D_FALLBACK", "performanceTiers", List.of("Ultra", "High", "Medium", "Performance")); }
     private static Map<String, Object> defaultStudySpace() { return map("spaceId", "study-space-default", "themeCode", "CALM_BLUE", "version", 1, "items", List.of("DESK_STARTER", "LAMP_WARM")); }
-    private static Map<String, Object> defaultGameCatalog() { return map("items", GAME_CODES.stream().map(code -> map("gameCode", code, "maxMinutes", 10, "pauseLimitMinutes", 2, "passAccuracyPercent", 60, "passCompletionPercent", 60)).toList()); }
+    private static Map<String, Object> defaultGameCatalog() {
+        return map("items", GameCatalog.entries().stream().map(entry -> map(
+                "gameCode", entry.gameCode(), "releasePhase", entry.releasePhase().name(),
+                "enabled", entry.enabled(), "maxMinutes", entry.maxMinutes(),
+                "pauseLimitMinutes", entry.pauseLimitMinutes(),
+                "passAccuracyPercent", entry.passAccuracyPercent(),
+                "passCompletionPercent", entry.passCompletionPercent())).toList());
+    }
+
+    private Map<String, Object> gameCatalogItem(GameDefinition entry) {
+        return map("gameCode", entry.gameCode(), "releasePhase", entry.releasePhase().name(),
+                "enabled", entry.enabled(), "maxMinutes", entry.maxMinutes(),
+                "pauseLimitMinutes", entry.pauseLimitMinutes(),
+                "passAccuracyPercent", entry.passAccuracyPercent(),
+                "passCompletionPercent", entry.passCompletionPercent());
+    }
 
     private static Map<String, Object> newGameSession(String sessionId, String gameCode, String performanceTier) {
         List<Map<String, Object>> challenges = List.of(

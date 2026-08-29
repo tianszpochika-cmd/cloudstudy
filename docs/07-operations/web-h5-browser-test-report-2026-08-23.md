@@ -1,4 +1,6 @@
-# Web / H5 内置浏览器真实测试报告
+# Web / H5 内置浏览器真实测试报告（2026-08-23；Historical / Superseded）
+
+> 状态：Historical / Superseded（2026-08-23 原始运行快照）。本报告仅保留当时页面与运行证据；当时旧外部认证入口的 404/阻塞不代表当前 IAM 认证边界，也不得作为当前实现或验收结论。当前执行以 ADR-0013 与现行 IAM `/api/v1/auth/*` 入口为准。
 
 > 执行日期：2026-08-23  
 > 测试方式：Codex 内置 Browser，真实启动本地 Web/H5 服务后进行页面导航、控件点击、表单输入、错误态和浏览器 Console 检查。  
@@ -8,7 +10,7 @@
 
 本轮 Web、官网、管理后台和 Mobile H5 已完成一轮真实浏览器测试，并对测试途中发现的问题直接修复后回归。公开页面、未登录边界、移动端主导航、目标设置、错误态、深链保护和构建均有证据。
 
-不能宣告“全系统浏览器测试通过”或“可以生产上线”：真实 自有 JWT 登录 身份服务尚未获批，无法创建真实测试账户或取得有效 Token；Gateway 下游领域服务、MySQL/Kafka/Redis 等完整运行链路未启动。因此，登录后学习闭环、管理命令、跨服务写入、真实数据提交和权限矩阵仍属于阻塞/未覆盖，而不是用合成登录结果代替。
+不能宣告“全系统浏览器测试通过”或“可以生产上线”：当时的旧外部认证服务尚未获批，无法创建真实测试账户或取得有效 Token；Gateway 下游领域服务、MySQL/Kafka/Redis 等完整运行链路未启动。因此，登录后学习闭环、管理命令、跨服务写入、真实数据提交和权限矩阵仍属于阻塞/未覆盖，而不是用合成登录结果代替。
 
 ## 2. 运行环境与证据边界
 
@@ -28,7 +30,7 @@
 - `GET /actuator/health`（IAM）：HTTP `200`，状态 `UP`。
 - `GET /actuator/health`（Gateway）：HTTP `503`，状态 `DOWN`，原因是领域目标服务未全部运行。
 - `GET /api/v1/iam/principal/me`（Gateway）：HTTP `401`，返回结构化 `unauthorized`、`requestId` 和 `traceId`，默认拒绝生效。
-- 标准 自有 JWT 登录 authorization start 当前返回 HTTP `404`；浏览器点击 Gateway 深链还受到内置浏览器本地端口导航策略限制。没有绕过该限制，也没有伪造登录成功。
+- 当时尝试的旧外部认证 `authorization-start` 入口返回 HTTP `404`；该入口现已废弃，不代表当前 IAM `/api/v1/auth/*` 入口。浏览器点击 Gateway 深链还受到内置浏览器本地端口导航策略限制；没有绕过该限制，也没有伪造登录成功。
 
 ## 3. 合成测试输入
 
@@ -60,7 +62,7 @@
 |---|---|---|---|
 | `LWR-001` | 直达 `/home`，观察冷启动、未登录保护和登录页 | PASS | 先显示安全启动状态，随后稳定进入登录边界，无空白页；Console `[]` |
 | `LWR-002` | 首页“开始学习” → 登录页 → “返回登录” | PASS | 两次导航均可完成，未产生客户端异常 |
-| `LWR-003` | 检查登录页的 Gateway 深链和“恢复已有会话” | PARTIAL/BLOCKED | 深链结构正确；自有 JWT 登录 未配置，无法完成真实 session restore |
+| `LWR-003` | 检查登录页的 Gateway 深链和“恢复已有会话” | PARTIAL/BLOCKED | 深链结构正确；当时旧外部认证流程未配置，无法完成真实 session restore |
 | `LWR-004` | 验证已登录 AppShell 页面内容渲染 | BLOCKED | 没有有效测试 Token，不能用假 Token 代替；AppShell 嵌套 RouterView 已改为外层 RouterView slot，并由 typecheck/build 验证 |
 
 学习 Web 的启动空白问题已修复：应用先挂载并显示短暂的安全恢复状态，路由恢复失败时进入明确的登录/错误边界。AppShell 不再嵌套一个会吞掉页面内容的 RouterView。
@@ -120,7 +122,7 @@ H5 的深链修复通过两层完成：移动 API 客户端增加 Promise 级超
 
 ## 7. 未覆盖、阻塞与下一步
 
-- **真实身份链路**：需要批准的 自有 JWT 登录 IAM JWT 认证中心、测试账号、JWKS、redirect URI 和可回收 session；完成后再测登录、登出、refresh、撤销、成人 Gate、RBAC/ABAC 和管理员权限矩阵。
+- **真实身份链路**：当时需要批准旧外部认证服务、测试账号、JWKS、redirect URI 和可回收 session；该链路现已废弃，当前应改按 IAM `/api/v1/auth/*` 入口重新验收登录、登出、refresh、撤销、成人 Gate、RBAC/ABAC 和管理员权限矩阵。
 - **完整后端链路**：Gateway 当前能启动并正确返回 401，但健康检查因领域目标服务未全启动而为 `503 DOWN`；需要 Java 25/Maven、MySQL、Redis、Kafka 及各服务独立进程后，才能测真实读写、Outbox、事件、幂等、补偿和报告闭环。
 - **已认证页面**：learner-web 的学习首页/课程/练习/报告、admin-web 的教研/运营/客服命令尚未以真实 principal 验收；本轮没有用假 Token 取得“通过”。
 - **设备和响应式**：需要真实 Chrome/Firefox/Safari 矩阵、Android/iOS/iPad、微信小程序条件编译和真机触控/麦克风/弱网；当前内置 Browser 没有 viewport capability，不能替代设备验收。
@@ -146,7 +148,7 @@ H5 的深链修复通过两层完成：移动 API 客户端增加 Promise 级超
 1. `B12RewardsCard` 和 `B12SocialExtensions` 将 401 与 403 统一纳入 permission 状态，提供登录入口并隐藏原始 HTTP 错误。
 2. 延续 B4 成长页的 401 权限态处理，保证成长/奖励/社交模块的错误语义一致。
 
-本轮能够证明的是：H5 页面交互、客户端本地草稿持久化、Gateway 401 到权限态的错误处理和登录边界可用；不能证明真实用户资料、目标、奖励或社交记录已经写入后端。真实 自有 JWT 登录、领域服务 Controller/运行进程及 MySQL/Redis/Kafka 未就绪，因此本轮没有以本地假数据冒充服务端数据往返。
+本轮能够证明的是：H5 页面交互、客户端本地草稿持久化、Gateway 401 到权限态的错误处理和登录边界可用；不能证明真实用户资料、目标、奖励或社交记录已经写入后端。当时旧外部认证服务、领域服务 Controller/运行进程及 MySQL/Redis/Kafka 未就绪，因此本轮没有以本地假数据冒充服务端数据往返。
 
 ## 9. 第二轮构建与测试证据
 

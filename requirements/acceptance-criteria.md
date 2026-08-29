@@ -1,5 +1,7 @@
 # 验收标准
 
+> **文档分类：当前执行验收基线**。验收必须绑定 v2-980plus 设计单元、`ARCH-*` 能力和实际证据；`V2-980-0001..0980` 的 930+50 登记口径及 184/486/310 成熟度只用于范围与追溯，不等于完成。
+
 ## A. Phase 1 新用户首日路径
 
 - 用户能在 3 分钟内完成登录、年龄边界确认和学习目标选择。
@@ -58,7 +60,7 @@
 ## H. v2 IAM、RBAC 与 ABAC 验收
 
 - `iam-service` 使用账号密码校验并直接签发符合 ADR-0013 的短时非对称 JWT Bearer Access Token；认证中心发布 JWKS 并支持公钥轮换。登录、刷新、登出、会话撤销、Refresh Token 轮换/重放检测、密码重置、设备撤销和审计均有测试证据；正式方案不使用 OIDC/OAuth、Keycloak 或第三方身份提供方。
-- Access Token 至少包含 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type`、`scope`，必要时包含服务端生成的 `permission`/`permissions`、`role`/`roles`、`tenant_id` 和 `session_id`；`aud` 固定为 `yuxuexing-api`，算法只允许登记的 RS256/ES256。
+- Access Token 至少包含 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type`、`scope`，必要时包含服务端生成的 `permission`/`permissions`、`role`/`roles`、`tenant_id` 和 `session_id`；`aud` 固定为 `yuxuexing-api`，Phase 1 算法固定为 RS256。ES256 只能在新增 ADR、契约/JWKS key schema、密钥管理和运行实现同步完成并通过验证后引入。
 - Gateway 与每个领域服务独立通过 JWKS 验证 issuer、签名、算法、audience、时间窗口、token type 和权限声明；错误 issuer/audience/signature/algorithm/expired token 返回 401，身份有效但无权限返回 403。
 - Web Access Token 不写入 localStorage/sessionStorage；Refresh Token 仅使用 HttpOnly + Secure + SameSite Cookie。移动端 Refresh Token 只能进入 Keychain/Keystore 等系统安全存储，安全存储不可用时不得降级到普通 storage；official-site 不保存业务 Token。
 - 密码只以 Argon2id（不可用时 BCrypt cost≥12）哈希保存；登录接口必须限流、失败锁定、返回不泄漏账号存在性的错误，密码重置令牌一次性、短时、可撤销且不写日志。

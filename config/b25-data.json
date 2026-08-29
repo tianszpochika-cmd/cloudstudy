@@ -25,6 +25,7 @@
   },
   "migration": {
     "rootFile": "database/mysql/migrations/V0023__create_phase1_real_data_b25.sql",
+    "quotaFreezeFile": "database/mysql/migrations/V0024__freeze_phase1_daily_quota_minutes.sql",
     "manifestFile": "database/mysql/migrations/migration-manifest.json",
     "rootVersion": "0023",
     "runner": "Flyway-per-service-with-repository-compatibility-fixture",

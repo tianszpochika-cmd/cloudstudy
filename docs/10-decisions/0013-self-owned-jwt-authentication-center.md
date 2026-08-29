@@ -23,7 +23,7 @@
 
 ## 安全约束
 
-1. Access Token 默认 5–15 分钟，使用 RS256 或 ES256；JWT 必须有 `iss/sub/aud/exp/iat/nbf/jti/token_type/scope`，`aud=yuxuexing-api`。
+1. Access Token 默认 5–15 分钟，Phase 1 固定使用 RS256；JWT 必须有 `iss/sub/aud/exp/iat/nbf/jti/token_type/scope`，`aud=yuxuexing-api`。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。
 2. Gateway 与每一个领域服务独立通过 `jwk-set-uri` 获取 JWKS，并 fail closed 校验 issuer、签名、算法、audience、时间、token type、scope/permission；Gateway 验证不能替代服务侧 PEP。轮换时先发布新私钥/`kid`，通过 `IAM_JWT_PREVIOUS_PUBLIC_KEYS_JSON` 发布旧公钥重叠窗口，窗口至少覆盖 Access Token TTL + clock skew 后再下线旧公钥。
 3. 密码使用 Argon2id；运行时不支持时使用 BCrypt cost≥12。登录限流、连续失败锁定、账号恢复、密码重置、设备管理和审计必须落库。
 4. Refresh Token 为高熵不透明值，只保存摘要和轮换历史；重放、撤销、过期和设备失效一律拒绝，并撤销 token family。

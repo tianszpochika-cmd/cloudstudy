@@ -1,15 +1,17 @@
 # 3D Avatar 渲染技术方案（Avatar Studio / Wardrobe / 学习空间）
 
+> **状态：Historical / Superseded（当前范围）**。本文件仅保留旧视觉资产和性能降级方案的审计参考，不能作为 Phase 1/P0 的交付、契约或实现依据。当前游戏化 P0 仅为“拼句小火车”；P1 经验收后累计最多四款，3D Avatar、衣柜和星球探索属于后续另行立项的候选能力。范围以 [ADR-0007](../10-decisions/0007-phase1-scope-and-development-governance.md) 为准，前端宿主以 [ADR-0008](../10-decisions/0008-four-frontend-projects-and-platform-targets.md) 为准。
+
 > 需求溯源：PRD v3.3 §16.4 Avatar Studio（3D 半写实个性化人物）、§16.5 Wardrobe、§16.6 品质等级、§16.12 成员资料卡、§18.1 个人中心。
-> 依赖主线：Vue 3 + uni-app（ADR-0004）、四级画质引擎（cross-platform-and-performance-adaptive.md）。
+> 依赖主线（历史）：Vue 3 + uni-app（现行项目矩阵见 ADR-0008）、四级画质引擎（cross-platform-and-performance-adaptive.md）。
 
 ---
 
-## 1. 需求摘要
+## 1. 历史方案摘要（非当前承诺）
 
-- Phase 1 交付**3D 风格化半写实人物**：预设脸型/体型/发型组合创建，支持肤色、发型发色、眉形、眼睛风格、表情、站姿编辑。
-- Wardrobe 装扮体系（人物装扮 16 类 + 场景装扮 14 类 + 收藏扩展），品质五级（白/蓝/紫/橙/红）。
-- 性能策略（PRD 明确）：高性能 App 实时 3D；普通设备降精度；**H5/低性能设备允许预渲染人物快照**；学习页面不常驻高成本 3D 渲染。
+- 曾设想 3D 风格化半写实人物、预设脸型/体型/发型组合及外观编辑。
+- 曾设想 Wardrobe 装扮体系和品质分级。
+- 如未来重新立项，必须先通过范围 Gate；当时的性能降级思路可作为参考，且不能阻塞核心学习链路。
 
 ## 2. 技术选型
 

@@ -42,7 +42,7 @@ B5 是跨第 09、10、11、12 章的执行批次，共 22 项任务：
 代码层已具备进入测试阶段的条件，但以下项目不能凭静态代码宣称完成：
 
 1. 微信支付 V3、支付宝 RSA2、Apple StoreKit 2/JWS 的真实 sandbox SDK、证书链、KMS 密钥轮换和回调重试；当前实现是 provider boundary + sandbox/fail-closed 状态机，支付通道默认关闭；
-2. MySQL/Redis 事务、锁、outbox、幂等记录和跨进程恢复，以及 RabbitMQ/Redis Streams 的真实投递/死信；
+2. MySQL/Redis 事务、锁、Outbox、幂等记录和跨进程恢复；RabbitMQ/Redis Streams 仅属于 v1 `core-api` 的历史验证范围，v2 运行态只验证 Kafka + Outbox 的投递、幂等、重试、死信和恢复；
 3. S3 账单/媒体对象存储、真实对账文件导入、10 万行任务恢复和权限隔离；
 4. 真实 SSO/RBAC/权限中心、浏览器 E2E、iOS/Android/iPad/微信小程序真机结算和弱网恢复；
 5. Admin 生产环境的审计保留/删除证明、导出限额、水印和合规审批。

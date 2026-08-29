@@ -13,6 +13,18 @@ const phaseOrder = ['Phase 1', 'Phase 2', 'Phase 3'];
 const phaseTotals = { 'Phase 1': 540, 'Phase 2': 228, 'Phase 3': 212 };
 const phaseShort = { 'Phase 1': 'P1', 'Phase 2': 'P2', 'Phase 3': 'P3' };
 const refinementStatus = '待细化签收';
+const decisionBatch = '2026-08-29';
+const frozenCounts = Object.freeze({ total: 980, business: 930, cross: 50, explicit: 184, atomic: 486, pending: 310 });
+const atomDecisionOverrides = Object.freeze({
+  'PRD-ATOM-0358': Object.freeze({
+    legacySource: '0.75x / 1.0x / 1.25x / 1.5x',
+    source: '0.5x~2.0x 连续变速，快捷档 0.5/0.75/1/1.25/1.5/2，保持音高',
+    sourceAnchor: 'PRD §8.1',
+  }),
+});
+const contentRightsScope = '内容来源仅限自有、开放许可或合法授权；第三方品牌、教材、词书、释义、例句、音频、题目和统计数据须绑定有效授权凭证及使用范围，缺失或过期不得发布。';
+const gameScopeNote = 'P0 仅上线 1 款学习游戏：拼句小火车 (Sentence Train)；P1 扩展至总计 4 款；6~8 款是长期目标，不属于 P0 或 P1 交付承诺。';
+const paymentScopeNote = 'P0 仅建设微信/支付宝/Apple provider 适配、回调验签、退款/对账与沙盒验证；生产开关默认关闭，只有资质、平台审核、沙盒、验签、退款、对账、回滚和审计 Gate 全部通过后才可开启；首发不启用自动续费。';
 const domainOrder = [
   'ONB', 'VOC', 'GRM', 'LST', 'RDG', 'SPK', 'WRT', 'ASM', 'GAM', 'SOC', 'USR', 'INF', 'COM', 'ADM', 'AI2', 'K12',
 ];
@@ -37,12 +49,12 @@ const domains = {
     designDoc: '03-Phase1-学习闭环功能设计.md',
     route: 'courses；practice/srs；practice/quick；practice/mastery；vocab/*',
     platforms: 'apps/mobile（H5/App/iPad）+ apps/learner-web（PC/PWA）',
-    intent: '把内容浏览、主动回忆、信心度反馈、SRS 排程和 D+1/D+7 验证串成可回放的记忆闭环。',
+    intent: '把内容浏览、主动回忆、信心度反馈、SRS 排程和 D+1/D+7 验证串成可回放的记忆闭环。内容范围遵循合法来源与可追溯授权边界。',
     flow: '进入词书/生词本 → 查看词条 → 主动回忆/作答 → 选择信心度 → 即时反馈 → 写入 SRS → 到期复习',
     action: '浏览/筛选 → 作答或评定 → 提交 → 反馈 → 加入下一轮复习',
     states: 'ST-D/ST-E/ST-F；NEW/LEARNING/MASTERED/CONSOLIDATED；队列为空、内容版本失效、媒体失败、重复复习和离线恢复',
     contract: 'Gateway → content-service + learning-service；vocab_*、chunk、expression、lrn_srs_state、review_event、content_version',
-    permission: '已发布内容可读；个人生词、掌握度和复习记录仅本人可读写；内容编辑权限不进入学习端。',
+    permission: `${contentRightsScope} 已发布内容可读；个人生词、掌握度和复习记录仅本人可读写；内容编辑权限不进入学习端。`,
     event: 'vocab.item_viewed.v1、srs.review_submitted.v1、srs.schedule_rebuilt.v1、mastery.updated.v1',
     acceptance: '同一 Idempotency-Key 不重复记账；复习状态只由 VOC/SRS 事实源更新；断网先入有序队列，重连后按 clientSeq 合并。',
   },
@@ -131,16 +143,16 @@ const domains = {
     acceptance: '断点恢复不丢作答；超时自动提交可追溯；重复提交不重算奖励/掌握度；报告能回到题目和错因。',
   },
   GAM: {
-    name: '游戏化数值、六大游戏、3D 衣柜与奖励箱',
+    name: '游戏化数值、学习游戏、3D 衣柜与奖励箱',
     designDoc: '04-Phase1-成长社群商业后台功能设计.md',
     route: 'world；games/*；avatar；reward；collection；streak',
     platforms: 'apps/mobile（H5/App/iPad）+ apps/learner-web（PC/PWA）',
-    intent: '把学习结果转成可审计的 XP、星币、连续学习、成长资产和非现金奖励，不破坏学习闭环。',
+    intent: `${gameScopeNote} 把学习结果转成可审计的 XP、星币、连续学习、成长资产和非现金奖励，不破坏学习闭环。`,
     flow: '进入世界/游戏 → 选择玩法 → 完成学习相关动作 → 结算 → 查看流水 → 领取/装备 → 回到学习任务',
     action: '进入 → 选择 → 开始 → 结算 → 领取/回放',
     states: 'ST-H；结算中、资产缺失、奖励待确认、离线不发奖、性能降级和幂等补偿',
     contract: 'Gateway → gamification-service；xp_ledger、coin_ledger、streak、avatar、reward_chest、game_session',
-    permission: '学习结果驱动奖励；客户端不能直接记账；奖励概率、兑换和库存均受服务端规则、审计和阶段 Gate 控制。',
+    permission: `${gameScopeNote} 学习结果驱动奖励；客户端不能直接记账；奖励概率、兑换和库存均受服务端规则、审计和阶段 Gate 控制。`,
     event: 'gamification.session_started.v1、xp.ledger_posted.v1、reward.granted.v1、avatar.equipped.v1',
     acceptance: '重复事件不重复发奖；断网不产生伪奖励；低配设备可退到 2.5D/静态切片；无现金随机抽奖和学习无关变现。',
   },
@@ -191,12 +203,12 @@ const domains = {
     designDoc: '04-Phase1-成长社群商业后台功能设计.md',
     route: 'commerce/*；me/membership；orders；official-site/pricing',
     platforms: 'apps/mobile + apps/learner-web + apps/official-site；收银和回调由 commerce-service 统一拥有',
-    intent: '把 SKU、订单、支付回调、权益、退款和家庭组放在可审计的商业链路中，避免前端自行判断权益。',
+    intent: `${paymentScopeNote} 把 SKU、订单、支付回调、权益、退款和家庭组放在可审计的商业链路中，避免前端自行判断权益。`,
     flow: '浏览方案 → 选择 SKU → 创建订单 → 支付/回调 → 权益激活 → 使用 → 到期/退款/降级',
     action: '查看 → 选择 → 下单 → 回调确认 → 查看权益/退款',
     states: 'ST-L/ST-J；PENDING/ACTIVE/GRACE/EXPIRED/REVOKED；支付等待、重复回调、退款和权益延迟可追溯',
     contract: 'Gateway → commerce-service；sku、order、payment_callback、entitlement、household、refund、audit_log',
-    permission: '订单与权益按主体隔离；财务、客服、审计为独立 scope；真实微信/支付宝/Apple 收单在 Phase 1 默认关闭，需资质和沙盒证据。',
+    permission: `${paymentScopeNote} 订单与权益按主体隔离；财务、客服、审计为独立 scope。`,
     event: 'order.created.v1、payment.callback_received.v1、entitlement.activated.v1、refund.completed.v1',
     acceptance: '支付回调按供应商事件号/JWS 去重；前端不展示未确认权益；退款和到期降级为不可变流水并可回放。',
   },
@@ -210,7 +222,7 @@ const domains = {
     action: '检索 → 编辑 → 提交 → 双审 → 发布/回滚',
     states: 'ST-M/ST-N；DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；REJECTED、ROLLBACK_PENDING 作为动作结果表达',
     contract: 'Gateway → admin-ops-service + content-service + commerce-service + analytics-service；content_version、review_task、audit_log、feature_flag、risk_case、export_job、media_asset',
-    permission: '默认拒绝；content-editor、review L1、review L2、finance、auditor、客服等为独立 scope；作者不能审自己的版本。',
+    permission: `${contentRightsScope} 默认拒绝；content-editor、review L1、review L2、finance、auditor、客服等为独立 scope；作者不能审自己的版本。`,
     event: 'content.submitted.v1、content.reviewed.v1、content.published.v1、content.rolled_back.v1、audit.exported.v1',
     acceptance: '双审职责分离；发布/下线/导出/风控/退款均审计；异步任务可查询；租户隔离和脱敏导出可证明。',
   },
@@ -292,6 +304,19 @@ function norm(value) {
   return clean(value).toLowerCase().replaceAll(/[^a-z0-9\u4e00-\u9fff]+/gi, '');
 }
 
+function applyAtomDecision(atom) {
+  const decision = atomDecisionOverrides[atom.id];
+  // Require the exact legacy evidence text as well as the current ID; never trust
+  // an atom ID alone when the atomic inventory is regenerated.
+  if (!decision || atom.source !== decision.legacySource) return atom;
+  return {
+    ...atom,
+    source: decision.source,
+    sourceAnchor: decision.sourceAnchor,
+    decisionBatch,
+  };
+}
+
 function parseMatrix() {
   const text = fs.readFileSync(matrixPath, 'utf8');
   const lines = text.split(/\r?\n/);
@@ -337,7 +362,7 @@ function parseAtomicInventory() {
     .filter((line) => /^\|\s*PRD-ATOM-\d+\s*\|/.test(line))
     .map((line) => {
       const parts = splitCells(line);
-      return {
+      return applyAtomDecision({
         id: clean(parts[0]),
         line: clean(parts[1]),
         phase: clean(parts[2]),
@@ -349,7 +374,7 @@ function parseAtomicInventory() {
         design: clean(parts[8]),
         status: clean(parts[9]),
         sourceType: 'PRD 原子证据',
-      };
+      });
     });
 }
 
@@ -404,7 +429,7 @@ function buildUnits(matrix, atoms) {
         const atom = pool[atomIndex++];
         const sourceKey = norm(atom.source);
         if (!sourceKey || used.has(sourceKey)) continue;
-        units.push({ phase, domain, sourceId: atom.id, sourceType: atom.sourceType, sourceText: atom.source, detail: atom.section, sourceAnchor: `requirements/product-requirements.md:${atom.line}`, category: atom.kind, status: 'PRD 原子证据已映射' });
+        units.push({ phase, domain, sourceId: atom.id, sourceType: atom.sourceType, sourceText: atom.source, detail: atom.section, sourceAnchor: atom.sourceAnchor ?? `requirements/product-requirements.md:${atom.line}`, category: atom.kind, status: 'PRD 原子证据已映射' });
         used.add(sourceKey);
       }
       let extIndex = 1;
@@ -518,11 +543,12 @@ function countsBy(items, key) {
 function generateReadme(units, atoms, matrix, warnings) {
   const statusCounts = countsBy(units, 'status');
   const phaseCounts = countsBy(units, 'phase');
-  return `# 980+ 全量功能设计 v2
+  return `# v2-980 全量设计单元登记基线
 
 > 版本：v2.2 架构绑定与一致性审核版  
 > 生成器：scripts/audit/generate-v2-design-package.mjs  
 > 设计状态：v2 全量范围已冻结；其中缺少独立名称/验收的单元须完成细化签收后才能进入实现排期。
+> 计数声明（冻结）：\`V2-980-0001\` 至 \`V2-980-0980\` 是连续的范围登记编号，不代表 980 份已经可实施或已经完成的详细设计。
 
 > 架构基线：[v2 微服务技术架构](../../02-architecture/v2-microservices-architecture.md)；[平台能力矩阵](../../02-architecture/v2-platform-capability-matrix.md)；[架构映射与任务重基线](11-架构映射与任务重基线.md)；[B7+ 代码任务基线](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)。本目录的契约、数据、权限、事件和验收设计均服从这些文档。
 
@@ -532,28 +558,38 @@ function generateReadme(units, atoms, matrix, warnings) {
 
 新版本的设计对象是 design unit，不把一个页面状态、一个按钮或一条 API 机械地算成业务功能。显式 FEAT-* 继续作为功能包主键；PRD-ATOM-* 是需求证据主键；V2-EXT-* 是已登记在 v2 范围内、但尚未细化到独立名称和验收的透明单元。它们不回退到 v1，也不得在细化签收前被当成可实施功能。
 
-## 2. 可验证的数量口径
+## 2. 已冻结的数量口径
 
 | 口径 | 数量 | 说明 |
 |---|---:|---|
-| 矩阵顶部目标 | 980 | Phase 1 540、Phase 2 228、Phase 3 212 |
-| 各业务域汇总 | 930 | 16 个业务域的分期数字相加 |
-| 本版设计单元 | ${units.length} | 930 个业务域单元 + 50 个跨域扩展单元 |
+| 矩阵范围目标 | 980 | Phase 1 540、Phase 2 228、Phase 3 212；是范围规划总量 |
+| 业务域设计单元 | 930 | 16 个业务域的分期数字相加，不含跨域扩展登记位 |
+| 范围登记行 | ${units.length} | 930 个业务域设计单元 + 50 个跨域扩展登记位（Phase 2 20、Phase 3 30） |
 | PRD 原子候选证据 | ${atoms.length} | 来自既有追溯清单，不等于功能数量 |
 | 显式 FEAT 功能包 | ${matrix.explicit.length} | 继续复用既有编号，不重新造 ID |
 
 ${mdTable(phaseOrder.map((phase) => ({ phase, target: phaseTotals[phase], actual: phaseCounts[phase] ?? 0 })), [
   { label: '阶段', value: (row) => row.phase },
-  { label: '顶部目标', value: (row) => row.target },
-  { label: '本版单元', value: (row) => row.actual },
+  { label: '范围目标', value: (row) => row.target },
+  { label: '范围登记行', value: (row) => row.actual },
   { label: '设计边界', value: (row) => row.phase === 'Phase 1' ? '成人/大学生；规则化学习；无生成式 AI' : row.phase === 'Phase 2' ? '成人 AI；通过 Gate 后启用' : 'K12；资质、版权和未成年人合规后启用' },
 ])}
 
-状态分布：${Object.entries(statusCounts).map(([key, value]) => `${key} ${value}`).join('；')}。
+### 2.1 登记行成熟度
+
+以下三类是 ${units.length} 条范围登记行的互斥成熟度状态，不是 ${units.length} 份可实施详细设计的完成证明：
+
+| 成熟度状态 | 登记行数 | 含义 |
+|---|---:|---|
+| 显式功能包已设计 | ${statusCounts['显式功能包已设计'] ?? 0} | 已绑定现有 \`FEAT-*\`、矩阵细节和 v2 设计锚点；仍需通过契约、迁移、测试和 DoD |
+| PRD 原子证据已映射 | ${statusCounts['PRD 原子证据已映射'] ?? 0} | 已绑定 \`PRD-ATOM-*\` 和域级设计模板；仍需补独立名称、验收、owner 或实现证据 |
+| 待细化签收 | ${statusCounts['待细化签收'] ?? 0} | 已登记在 v2 范围内的透明占位；不得进入实现排期、接口发布或默认路由 |
+
+因此，\`${statusCounts['显式功能包已设计'] ?? 0} + ${statusCounts['PRD 原子证据已映射'] ?? 0} + ${statusCounts['待细化签收'] ?? 0} = ${units.length}\` 只说明登记行的覆盖和成熟度分布；它不等于“${units.length} 个功能已完成”，也不等于“${units.length} 份详细设计可直接开发”。
 
 ## 3. 文档导航
 
-1. [00-版本基线与980+计数口径](00-版本基线与980+计数口径.md)：事实源、数量冲突、设计单元和升格规则。
+1. [00-版本基线与980+计数口径](00-版本基线与980+计数口径.md)：冻结的范围登记、930/50 拆分、成熟度和升格规则。
 2. [01-统一交互与页面状态设计](01-统一交互与页面状态设计.md)：所有功能必须套用的入口、主流程、八态、权限、弱网和验收模板。
 3. [02-全端信息架构与交互模式](02-全端信息架构与交互模式.md)：四个前端项目、路由族、导航、深链和响应式模式。
 4. [03-Phase1-学习闭环功能设计](03-Phase1-学习闭环功能设计.md)：ONB/VOC/GRM/LST/RDG/SPK/WRT/ASM。
@@ -561,7 +597,7 @@ ${mdTable(phaseOrder.map((phase) => ({ phase, target: phaseTotals[phase], actual
 6. [05-Phase2-AI成人高级能力功能设计](05-Phase2-AI成人高级能力功能设计.md)：AI2 与 Phase 2 Gate、Schema、RTC 和降级。
 7. [06-Phase3-K12合规与教师机构功能设计](06-Phase3-K12合规与教师机构功能设计.md)：K12、监护、教师机构、版权和防沉迷。
 8. [07-跨域契约数据事件与验收设计](07-跨域契约数据事件与验收设计.md)：四项目横向约束、跨域扩展单元和验收证据。
-9. [08-980plus-功能点设计登记册](08-980plus-功能点设计登记册.md)：V2-980-0001 至 V2-980-${String(units.length).padStart(4, '0')} 的逐条设计登记。
+9. [08-980plus-功能点设计登记册](08-980plus-功能点设计登记册.md)：\`V2-980-0001\` 至 \`V2-980-${String(units.length).padStart(4, '0')}\` 的逐条范围登记；行级状态不代表实现完成。
 10. [09-追溯与验收矩阵](09-追溯与验收矩阵.md)：来源 → 设计 → 契约/数据 → 页面状态 → 埋点 → AC/测试追溯。
 11. [10-设计评审与未决项](10-设计评审与未决项.md)：必须由产品/架构/合规签收的数量和交互问题。
 12. [11-架构映射与任务重基线](11-架构映射与任务重基线.md)：V2-980 业务单元与 ARCH 平台能力的依赖、任务卡和验收字段。
@@ -572,7 +608,7 @@ ${mdTable(phaseOrder.map((phase) => ({ phase, target: phaseTotals[phase], actual
 
 - 新服务目标运行时为 Java 25 LTS + Spring Boot 4.1.x/Spring Framework 7.x；Phase 2 AI 编排仍为 Python 3.11+。
 - 外部调用统一经过 api-gateway；身份、租户、会话、RBAC/ABAC 和策略撤销由 iam-service 负责，领域服务必须再次执行服务侧 PEP 校验。
-- 认证统一采用平台自有 IAM 账号密码登录；iam-service 直接签发短时 RS256/ES256 JWT Bearer Access Token，并通过 JWKS 发布公钥。Refresh Token 由 IAM 会话边界轮换、检测重放并撤销；JWT profile、存储和异常交互以 [ADR-0013](../../10-decisions/0013-self-owned-jwt-authentication-center.md) 为准。
+- 认证统一采用平台自有 IAM 账号密码登录；iam-service 在 Phase 1 直接签发短时 RS256 JWT Bearer Access Token，并通过 RSA JWKS 发布公钥。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。Refresh Token 由 IAM 会话边界轮换、检测重放并撤销；JWT profile、存储和异常交互以 [ADR-0013](../../10-decisions/0013-self-owned-jwt-authentication-center.md) 为准。
 - 四端只能通过 Authorization: Bearer 发送 Access Token；Token 不得进入 URL、localStorage、日志、事件、埋点或错误响应；Gateway 与每个领域服务必须独立通过 JWKS 验签并执行 PEP。
 - packages/contracts/ 是 OpenAPI、AsyncAPI 和 JSON Schema 的事实源；领域服务各自拥有数据、迁移、Redis 命名空间、Outbox 和审计边界。
 - 现有 services/core-api（Java 17/Spring Boot 3）仅作为 v1 兼容单体和 Strangler Fig 迁移边界，不代表 v2 微服务已实现完成；任何迁移都必须有契约、数据、权限、观测、回滚和 SLO 证据。
@@ -587,13 +623,14 @@ node scripts/audit/generate-v2-design-package.mjs
 node scripts/audit/verify-v2-design-package.mjs
 ~~~
 
-生成器只写入本目录；验证器会检查 980 行、阶段/域数量、每行来源和设计字段、四项目边界、Phase 1/2/3 Gate、V2-EXT 占位标记和关键模板锚点。
+生成器只写入本目录；验证器会检查 ${units.length} 条连续登记行、阶段/域数量、每行来源和设计字段、四项目边界、Phase 1/2/3 Gate、V2-EXT 占位标记和关键模板锚点。验证通过只证明范围登记结构完整，不证明 ${units.length} 条都已具备可实施详细设计或代码实现。
 
 ${warnings.length ? `当前生成警告：${warnings.join('；')}` : '本次生成没有目标数量警告。'}
 `;
 }
 
 function generateBaseline(units, matrix, atoms) {
+  const statusCounts = countsBy(units, 'status');
   const domainSummary = matrix.summary.map((row) => ({
     domain: row.domain,
     name: row.name,
@@ -603,7 +640,7 @@ function generateBaseline(units, matrix, atoms) {
     total: row.total,
     actual: units.filter((unit) => unit.domain === row.domain).length,
   }));
-  return `# 版本基线与 980+ 计数口径
+  return `# 版本基线与 V2-980 计数口径
 
 ## 1. 继承关系与禁止事项
 
@@ -616,14 +653,21 @@ function generateBaseline(units, matrix, atoms) {
 
 本版禁止：为补齐数量私造 FEAT-*、把页面状态计为业务功能、把 Phase 2/3 能力提前放入 Phase 1、绕过四项目边界、在客户端复制领域事实，或用旧版文档推翻本版设计。
 
-## 2. 数量校准
+## 2. 冻结的范围与计数口径
 
-功能矩阵顶部给出 Phase 1 540、Phase 2 228、Phase 3 212，共 980；但业务域汇总行直接相加为 Phase 1 540、Phase 2 208、Phase 3 182，共 930。差额为 Phase 2 20、Phase 3 30。本版按以下可审计方式处理：
+功能矩阵顶部的范围目标为 Phase 1 540、Phase 2 228、Phase 3 212，共 980；业务域汇总行相加为 Phase 1 540、Phase 2 208、Phase 3 182，共 930。差额不是未核准的“功能数”，而是按本版冻结规则登记为 Phase 2 20 个、Phase 3 30 个跨域扩展登记位：
 
-1. 930 个业务域设计单元：按矩阵每个业务域和阶段的汇总目标生成；优先绑定显式 FEAT-*，其次绑定 PRD-ATOM-*；
-2. 50 个跨域扩展设计单元：使用 V2-EXT-P2-TOTAL-* 和 V2-EXT-P3-TOTAL-*，设计其跨域入口、状态、事件、性能、恢复和验收模板，并标记为“待细化签收”；
-3. 任何 V2-EXT 单元在 v2 设计 owner 补齐正式名称、来源映射和独立验收前，不得进入开发 WBS、接口实现或上线统计；
-4. 因此，本目录交付的是“980 个属于 v2 范围、但成熟度不同的设计单元”；范围已以 v2 为准，未细化单元仍不能假装已经具备可实施定义。
+1. 930 个业务域设计单元：按矩阵每个业务域和阶段的汇总目标生成；优先绑定显式 \`FEAT-*\`，其次绑定 \`PRD-ATOM-*\`；
+2. 50 个跨域扩展登记位：使用 \`V2-EXT-P2-TOTAL-*\` 和 \`V2-EXT-P3-TOTAL-*\` 保留连续登记编号，记录跨域入口、状态、事件、性能、恢复和验收模板，并统一标记为“待细化签收”；
+3. 任何 \`V2-EXT-*\` 登记位在 v2 设计 owner 补齐正式名称、来源映射和独立验收前，不得进入开发 WBS、接口实现或上线统计；
+4. \`V2-980-0001\` 至 \`V2-980-0980\` 是范围登记行，不是 980 份可实施详细设计，也不是 980 个已完成功能。编号必须保留，不因本次口径冻结重新编号。
+
+| 层级 | Phase 1 | Phase 2 | Phase 3 | 合计 | 计数含义 |
+|---|---:|---:|---:|---:|---|
+| 矩阵范围目标 | 540 | 228 | 212 | 980 | 冻结的阶段范围目标，含扩展登记位 |
+| 业务域设计单元 | 540 | 208 | 182 | 930 | 16 个业务域明细行之和 |
+| 跨域扩展登记位 | 0 | 20 | 30 | 50 | \`V2-EXT-*\` 透明占位，不计为业务域功能 |
+| 范围登记行 | 540 | 228 | 212 | 980 | 业务域单元与扩展登记位的连续登记总量 |
 
 ${mdTable(domainSummary, [
   { label: '域', value: (row) => row.domain },
@@ -635,17 +679,21 @@ ${mdTable(domainSummary, [
   { label: '本版业务域单元', value: (row) => row.actual },
 ])}
 
-## 3. 设计单元升格规则
+## 3. 登记行成熟度与升格规则
 
-| 状态 | 进入条件 | 可做的工作 | 不允许 |
-|---|---|---|---|
-| 显式功能包已设计 | 有 FEAT-*、矩阵细节和既有设计锚点 | 进行逐条交互评审、契约拆解和实现排期评估 | 以设计完成代替代码验收 |
-| PRD 原子证据已映射 | 有 PRD-ATOM-*、来源行和域级设计模板 | 补充独立页面/接口/权限/验收判断 | 把候选证据直接当成已签收功能 |
-| 待细化签收 | 已纳入 v2 范围，但只有矩阵目标或差额信息 | 做交互占位、冲突识别和独立验收细化 | 写实现代码、承诺上线或回退到 v1 取定义 |
+${units.length} 条登记行的成熟度分布如下，三类状态互斥且合计为 ${units.length}；它们不能被概括为 ${units.length} 份可实施详细设计：
+
+| 状态 | 登记行数 | 进入条件 | 可做的工作 | 不允许 |
+|---|---:|---|---|---|
+| 显式功能包已设计 | ${statusCounts['显式功能包已设计'] ?? 0} | 有 \`FEAT-*\`、矩阵细节和既有设计锚点 | 进行逐条交互评审、契约拆解和实现排期评估 | 以设计完成代替代码验收 |
+| PRD 原子证据已映射 | ${statusCounts['PRD 原子证据已映射'] ?? 0} | 有 \`PRD-ATOM-*\`、来源行和域级设计模板 | 补充独立页面/接口/权限/验收判断 | 把候选证据直接当成已签收功能 |
+| 待细化签收 | ${statusCounts['待细化签收'] ?? 0} | 已纳入 v2 范围，但只有矩阵目标、差额信息或扩展登记位 | 做交互占位、冲突识别和独立验收细化 | 写实现代码、承诺上线或回退到 v1 取定义 |
+
+\`${statusCounts['显式功能包已设计'] ?? 0} + ${statusCounts['PRD 原子证据已映射'] ?? 0} + ${statusCounts['待细化签收'] ?? 0} = ${units.length}\` 是范围登记的成熟度分布；只有逐条通过契约、数据、权限、测试和 DoD 的登记行，才可独立评估实现排期。
 
 ## 4. 设计完整性定义
 
-每个 V2-980 单元必须同时拥有：来源主键、PRD/矩阵锚点、所属阶段和业务域、四项目页面宿主、主流程、成功/空/加载/错误/离线/权限/恢复状态、API/数据事实源、权限与隐私、事件埋点、验收标准和 review 状态。缺一项即视为设计不完整。
+每个 V2-980 登记行必须同时拥有：来源主键、PRD/矩阵锚点、所属阶段和业务域、四项目页面宿主、主流程、成功/空/加载/错误/离线/权限/恢复状态、API/数据事实源、权限与隐私、事件埋点、验收标准和 review 状态。字段齐全是追溯完整性的要求，不代表代码、契约、迁移和测试已经完成。
 
 ## 5. 阶段门
 
@@ -653,7 +701,7 @@ ${mdTable(domainSummary, [
 - Phase 2：AI 请求必须经过前置敏感拦截、结构化 Schema、后置合规核验、成本/同意/超时降级和审计；实时语音使用商业 RTC，不用 HTTP 轮询。
 - Phase 3：K12 仅在资质、版权、主体、监护授权、未成年人保护和专项合规通过后开启；默认关闭并可回放撤回。
 
-PRD 原子候选证据 ${atoms.length} 条仅作为追溯输入，不能替代产品对 980 设计单元的正式签收。
+PRD 原子候选证据 ${atoms.length} 条仅作为追溯输入，不能替代产品对 ${units.length} 条范围登记行的正式签收，更不能把登记行数量当作可实施详细设计数量。
 `;
 }
 
@@ -808,14 +856,14 @@ function generateIA() {
 ## 3.1 认证与会话交互
 
 ~~~text
-点击登录/注册 → 统一账号密码页面提交到 IAM
-   → IAM 校验密码并签发 JWT Access Token + rotated Refresh Token 会话
+点击登录/注册 → 统一账号密码页面直接提交到 IAM
+   → IAM 校验密码并在 Phase 1 签发 RS256 JWT Access Token + rotated Refresh Token 会话
    → API 使用 Bearer（JWT） → Gateway 验签 → 服务侧再次验签与 PEP
 ~~~
 
-- 深链和 returnTo 必须经过 allow-list 校验；URL 中不得出现 Access/Refresh Token。
+- 深链和 returnTo 必须经过 allow-list 校验；URL 中不得出现 Access/Refresh Token，也不保留外部浏览器认证往返路由。
 - Access Token 过期时 token manager 只做一次并发合并的静默 refresh；refresh 失败、重放或会话撤销后清理本地状态并回到登录入口。
-- official-site 只产生公开登录 deep link，不保存登录后业务 Token；admin-web 使用独立登录页面和前端会话边界，业务 API audience 统一为 yuxuexing-api，scope/permission 由服务侧 PEP 决定且不共享 Refresh Token。
+- official-site 只产生公开登录 deep link，不保存登录后业务 Token；admin-web 与学习端共用 IAM 的账号密码入口和 yuxuexing-api audience，但使用独立的后台权限、设备会话与 Refresh Token 策略，不能与学习者会话共享。scope/permission 始终由服务侧 PEP 决定。
 
 ## 4. 交互模式注册表
 
@@ -1000,6 +1048,7 @@ function generateRegister(units) {
 }
 
 function generateTraceability(units, matrix, atoms) {
+  const statusCounts = countsBy(units, 'status');
   const phaseRows = phaseOrder.map((phase) => {
     const phaseUnits = units.filter((unit) => unit.phase === phase);
     return { phase, target: phaseTotals[phase], units: phaseUnits.length, explicit: phaseUnits.filter((unit) => unit.sourceType === '显式功能矩阵').length, atom: phaseUnits.filter((unit) => unit.sourceType === 'PRD 原子证据').length, pending: phaseUnits.filter((unit) => unit.status === refinementStatus).length };
@@ -1008,18 +1057,33 @@ function generateTraceability(units, matrix, atoms) {
     const domainUnits = units.filter((unit) => unit.domain === domain);
     return { domain, name: domains[domain].name, p1: domainUnits.filter((unit) => unit.phase === 'Phase 1').length, p2: domainUnits.filter((unit) => unit.phase === 'Phase 2').length, p3: domainUnits.filter((unit) => unit.phase === 'Phase 3').length, pending: domainUnits.filter((unit) => unit.status === refinementStatus).length };
   });
+  const crossUnits = units.filter((unit) => unit.domain === 'CROSS');
+  const businessDomainUnits = units.length - crossUnits.length;
+  const businessDomainPending = units.filter((unit) => unit.domain !== 'CROSS' && unit.status === refinementStatus).length;
+  domainRows.push({
+    domain: 'CROSS',
+    name: '跨域扩展登记位（不计业务域）',
+    p1: crossUnits.filter((unit) => unit.phase === 'Phase 1').length,
+    p2: crossUnits.filter((unit) => unit.phase === 'Phase 2').length,
+    p3: crossUnits.filter((unit) => unit.phase === 'Phase 3').length,
+    pending: crossUnits.filter((unit) => unit.status === refinementStatus).length,
+  });
   return `# 追溯与验收矩阵
+
+> 计数声明：本矩阵追踪的是 \`V2-980-0001\` 至 \`V2-980-0980\` 的范围登记行。${units.length} = ${businessDomainUnits} 个业务域设计单元 + ${crossUnits.length} 个跨域扩展登记位，不等于 ${units.length} 份可实施详细设计或已完成实现。
 
 ## 1. 阶段追溯覆盖
 
 ${mdTable(phaseRows, [
   { label: '阶段', value: (row) => row.phase },
-  { label: '矩阵顶部目标', value: (row) => row.target },
-  { label: '本版单元', value: (row) => row.units },
-  { label: '显式 FEAT', value: (row) => row.explicit },
-  { label: 'PRD 原子证据', value: (row) => row.atom },
+  { label: '范围目标（冻结）', value: (row) => row.target },
+  { label: '范围登记行', value: (row) => row.units },
+  { label: '显式功能包已设计', value: (row) => row.explicit },
+  { label: 'PRD 原子证据已映射', value: (row) => row.atom },
   { label: '待细化签收', value: (row) => row.pending },
 ])}
+
+三类成熟度状态按登记行统计且互斥：显式功能包已设计 \`${statusCounts['显式功能包已设计'] ?? 0}\` 条，PRD 原子证据已映射 \`${statusCounts['PRD 原子证据已映射'] ?? 0}\` 条，待细化签收 \`${statusCounts['待细化签收'] ?? 0}\` 条。这里的“PRD 原子证据已映射”是 V2 登记行状态，不是 ${atoms.length} 条 PRD 源证据的数量。
 
 ## 2. 业务域追溯覆盖
 
@@ -1029,22 +1093,24 @@ ${mdTable(domainRows, [
   { label: 'P1', value: (row) => row.p1 },
   { label: 'P2', value: (row) => row.p2 },
   { label: 'P3', value: (row) => row.p3 },
-  { label: '待确认', value: (row) => row.pending },
+  { label: '待细化', value: (row) => row.pending },
 ])}
+
+业务域行合计为 ${businessDomainUnits}；\`CROSS\` 行的 ${crossUnits.length} 个登记位补齐范围登记总量 ${units.length}。业务域行的“待细化”合计 ${businessDomainPending}，加上 CROSS 的 ${crossUnits.length} 个待细化登记位，得到总计 ${statusCounts['待细化签收'] ?? 0}。
 
 ## 3. 端到端追溯链
 
 ~~~text
 PRD / feature-matrix
   → PRD-ATOM-* 或 FEAT-*
-  → V2-980-* design unit
+  → V2-980-* scope registry row
   → 域级设计文档 + 统一交互模板
   → route/page state + API contract + data owner
   → event/audit/analytics
   → acceptance criteria + unit/integration/e2e evidence
 ~~~
 
-登记册中的来源主键必须能回到 requirements/product-requirements.md 或 requirements/feature-matrix.md。设计文档锚点必须回到本目录；契约和数据列必须指向唯一事实源；测试任务以后以 V2 ID 作为关联标签。
+登记册中的来源主键必须能回到 requirements/product-requirements.md 或 requirements/feature-matrix.md。设计文档锚点必须回到本目录；契约和数据列必须指向唯一事实源；测试任务以后以 V2 ID 作为关联标签。追溯链完整只证明登记行可定位，不证明该行已完成实现。
 
 ## 4. 每个设计单元的验收门
 
@@ -1060,26 +1126,37 @@ PRD / feature-matrix
 
 ## 5. 统计声明
 
-本矩阵验证的是本目录已生成 ${units.length} 行设计登记。它不把 ${atoms.length} 条 PRD 原子候选直接当成 ${units.length} 个功能，也不把待细化签收的 V2-EXT 行当成可实施功能。v2 细化签收后，必须同步回写 feature-matrix.md、WBS、contracts、测试台账和 CHANGELOG。
+本矩阵验证的是本目录已生成的 ${units.length} 条范围登记行：${businessDomainUnits} 个业务域设计单元与 ${crossUnits.length} 个跨域扩展登记位。它不把 ${atoms.length} 条 PRD 原子候选直接当成功能数，也不把 ${units.length} 条登记行当成 ${units.length} 份可实施详细设计；待细化签收的 \`V2-EXT-*\` 登记位不得当成可实施功能。v2 逐条细化签收后，必须同步回写 feature-matrix.md、WBS、contracts、测试台账和 CHANGELOG。
 `;
 }
 
 function generateReview(units, matrix, atoms) {
   const pending = units.filter((unit) => unit.status === refinementStatus);
+  const statusCounts = countsBy(units, 'status');
+  const crossCount = units.filter((unit) => unit.domain === 'CROSS').length;
+  const businessCount = units.length - crossCount;
   return `# 设计评审与未决项
 
-## 1. 必须先签收的数量问题
+> 决策批次：${decisionBatch}；依据：[traceability/05-设计签收与冲突清单.md](../traceability/05-设计签收与冲突清单.md)。本文件把已冻结计数与后续细化责任分开，不能把范围登记误读为实现完成。
 
-| 问题 | 证据 | 当前处理 | 需要谁决定 |
-|---|---|---|---|
-| 顶部 980 与业务域 930 不一致 | feature-matrix.md 汇总表 | 本版保留 930 业务域单元 + 50 跨域扩展单元 | 产品负责人 |
-| 显式 FEAT 仅 ${matrix.explicit.length} 条 | 功能矩阵 FEAT 行扫描 | 不重新造 FEAT；其余按 PRD-ATOM 或 V2-EXT 登记 | 产品/教研 |
-| PRD 原子候选 ${atoms.length} 条不等于功能数 | PRD 原子候选清单 | 先做证据层，再确认哪些独立验收并升格 SUBFEAT | 产品/架构 |
-| Phase 2/3 设计提前出现的风险 | 既有设计与阶段边界 | 目录分阶段；Gate 未通过前只保留设计，不进 Phase 1 默认路由 | 产品/合规 |
+## 1. 已冻结计数与后续细化责任
 
-## 2. 当前待细化签收单元
+本批次已冻结以下口径，980 与 930 的差额按跨域扩展登记位登记，不再作为数量冲突处理：
 
-本版有 ${pending.length} 个待细化签收单元，全部为 V2-EXT 透明占位。它们属于 v2 范围，但必须先补正式名称、v2 来源映射和独立验收；不能直接拆成代码任务。
+| 冻结项 | 已裁决内容 | 后续细化责任 |
+|---|---|---|
+| 范围登记 | V2-980-0001..0980 是连续范围登记行；${frozenCounts.total} = ${frozenCounts.business} 个业务域设计单元 + ${frozenCounts.cross} 个跨域扩展登记位（本次生成 ${businessCount} + ${crossCount}） | 保持编号、阶段和域计数稳定；跨域登记位在补齐正式名称、来源映射和独立验收前不得冒充业务功能 |
+| 成熟度 | ${frozenCounts.explicit} 条显式功能包已设计 / ${frozenCounts.atomic} 条 PRD 原子证据已映射 / ${frozenCounts.pending} 条待细化签收（本次生成 ${statusCounts['显式功能包已设计'] ?? 0} / ${statusCounts['PRD 原子证据已映射'] ?? 0} / ${statusCounts['待细化签收'] ?? 0}） | 细化 owner 只补独立名称、来源锚点、AC、契约/数据、权限和 Evidence；不得把状态改写成已完成 |
+| Phase 1 GAM | ${gameScopeNote} | GAM owner 为每款登记 gameCode、规则、结算、性能降级和验收证据，不扩张 P0/P1 数量 |
+| Phase 1 LST | 0.5x~2.0x 连续变速，快捷档 0.5/0.75/1/1.25/1.5/2，保持音高；来源锚点使用 PRD §8.1 | 内容与媒体 owner 补充音频版本、设备兼容、弱网恢复和验收证据，不回写旧速度表述 |
+| Phase 1 COM | ${paymentScopeNote} | commerce owner 补齐 provider 合同、回调验签、退款/对账、资质、Gate、回滚和审计证据 |
+| 内容权利 | ${contentRightsScope} | content/admin owner 为每个可发布版本绑定凭证、范围、地域、用途和有效期；缺证据保持不可发布 |
+| 显式 FEAT 与 PRD 原子 | ${matrix.explicit.length} 个 FEAT 继续沿用既有主键；${atoms.length} 条 PRD 原子只是证据层，不直接等于功能数 | 产品/教研/架构按独立用户价值和 AC 评审是否升格 SUBFEAT，不改变 V2 登记总量 |
+| Phase 2/3 | AI、K12 和受监管扩展继续由阶段 Gate 控制，未通过前不进入 Phase 1 默认路由 | 合规与架构 owner 维护 Gate、审计、回滚和启用证据 |
+
+## 2. 当前待细化签收单元（冻结基线 ${frozenCounts.pending}）
+
+本版有 ${pending.length} 个待细化签收单元，当前冻结基线为 ${frozenCounts.pending}，全部为 V2-EXT 透明占位。它们属于 v2 范围，但必须由后续 owner 补正式名称、v2 来源映射和独立验收；不能直接拆成代码任务，也不能通过重编号掩盖数量偏差。
 
 ${mdTable(pending.map((unit, index) => ({ ...unit, number: index + 1 })), [
   { label: '顺序', value: (row) => row.number },
@@ -1097,8 +1174,8 @@ ${mdTable(pending.map((unit, index) => ({ ...unit, number: index + 1 })), [
 - 是否有自动保存、幂等键、checkpoint、重试预算和恢复入口？
 - 是否使用唯一领域事实源，没有在前端或跨域复制掌握度、权益、奖励、审核和 K12 主体？
 - 是否有真实数据版本、权限、隐私、审计和埋点证据？
-- 是否遵循 ADR-0013 的 JWT Bearer profile：自有 IAM 签发、Gateway/服务侧独立 JWKS 验签、刷新轮换、撤销和 Token 不落 URL/日志/业务事件？
-- 是否禁止前端或业务服务自行签发 Token、伪造角色/tenant/owner 头，并区分 401 与 403？
+- 是否遵循 ADR-0012/0013 的 JWT Bearer profile：仅 IAM 接收和校验账号密码并在 Phase 1 签发 RS256 Token，Gateway/服务侧独立 JWKS 验签，刷新轮换、撤销和 Token 不落 URL/日志/业务事件？
+- 是否将 \`/api/v1/auth/register\` 保持为仅面向 18 岁以上成人的公开入口，并禁止领域服务接收、转发或校验密码，禁止客户端保存或代替 IAM 处理密码，禁止领域服务或客户端自行签发 Token、伪造角色/tenant/owner 头，同时区分 401 与 403？
 - 是否通过 AdaptivePerformanceEngine 的四级档位和低配替代路径？
 - AI 是否只在 Phase 2 Gate 后出现；K12 是否只在 Phase 3 Gate 后出现？
 

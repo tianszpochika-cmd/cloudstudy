@@ -11,6 +11,12 @@ import type { B11Conflict, B11ListeningWorkspace, B11MediaManifest, B11OfflineEv
 import { contentVersionOf, createB11ClientEventId } from '../domain/b11'
 
 const STORAGE_KEY = 'yx.b11.mobile.learning.v1'
+const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
+
+function normalizePlaybackRate(value: number): number {
+  if (!Number.isFinite(value)) return 1
+  return PLAYBACK_RATES.reduce((nearest, rate) => Math.abs(rate - value) < Math.abs(nearest - value) ? rate : nearest, 1)
+}
 
 interface PersistedState {
   listening?: B11ListeningWorkspace | null
@@ -118,7 +124,7 @@ export const useB11LearningStore = defineStore('mobile-b11-learning', () => {
         if (saved.listening) listening.value = saved.listening
         if (typeof saved.mediaProgress === 'number') mediaProgress.value = saved.mediaProgress
         if (typeof saved.mediaPositionVersion === 'number') mediaPositionVersion.value = saved.mediaPositionVersion
-        if (typeof saved.playbackRate === 'number') playbackRate.value = Math.min(2, Math.max(.5, saved.playbackRate))
+        if (typeof saved.playbackRate === 'number') playbackRate.value = normalizePlaybackRate(saved.playbackRate)
         if (typeof saved.abStartMs === 'number') abStartMs.value = saved.abStartMs
         if (typeof saved.abEndMs === 'number') abEndMs.value = saved.abEndMs
         if (saved.reading) reading.value = saved.reading
@@ -157,7 +163,7 @@ export const useB11LearningStore = defineStore('mobile-b11-learning', () => {
     } catch (error) { fail(statusForError(error), errorMessage(error, '听力服务暂时不可用；本地进度仍会保留。'), 'listening'); persist() }
   }
 
-  function setPlaybackRate(rate: number): void { playbackRate.value = Math.min(2, Math.max(.5, rate)); persist() }
+  function setPlaybackRate(rate: number): void { playbackRate.value = normalizePlaybackRate(rate); persist() }
   function setPosition(positionMs: number): void {
     mediaPositionMs.value = Math.max(0, Math.round(positionMs))
     const duration = listening.value?.material.durationMs ?? listening.value?.manifest?.durationMs ?? 0

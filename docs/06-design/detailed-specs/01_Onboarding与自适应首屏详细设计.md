@@ -1,5 +1,7 @@
 # 01｜Onboarding 与自适应首屏详细设计 (Onboarding & Adaptive Home)
 
+> **Historical / Superseded（历史 v1 设计包）**：仅用于 v1 迁移与审计追溯，不是当前实现指令。当前业务设计、任务、契约与验收以 [v2-980plus/README.md](../v2-980plus/README.md) 为唯一入口；本文的旧数量、时间、架构、认证、事件、支付、版权和项目结构表述不得覆盖现行基线。
+
 > **文档版本**：v1.0  
 > **基线 PRD**：`requirements/product-requirements.md` (PRD v3.3) §3.1 ~ §3.4、§13.7、§18.3、§18.18  
 > **功能范围**：`requirements/feature-matrix.md` ONB 域全量 22 项功能 (FEAT-ONB-001 ~ FEAT-ONB-022)  

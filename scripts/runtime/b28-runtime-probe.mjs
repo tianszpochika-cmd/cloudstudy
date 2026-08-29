@@ -113,14 +113,14 @@ try {
 
   console.log('B28 runtime probe: dependency health');
   nodeScript('scripts/check-local-infra.mjs', ['--require-healthy']);
-  checks.push(pass('dependency-health', 'command:node scripts/check-local-infra.mjs --require-healthy', { dependencies: ['mysql', 'redis', 'minio', 'kafka', 'rabbitmq', 'iam-service'] }));
+  checks.push(pass('dependency-health', 'command:node scripts/check-local-infra.mjs --require-healthy', { dependencies: ['mysql', 'redis', 'minio', 'kafka', 'iam-service'] }));
 
   console.log('B28 runtime probe: Flyway-compatible root migration and persisted data');
   nodeScript('scripts/database/run-migrations.mjs', ['--apply']);
   nodeScript('scripts/database/check-database.mjs', ['--mode', 'existing']);
   nodeScript('scripts/database/replay-b25-fixture.mjs', ['--apply']);
   nodeScript('scripts/database/validate-b25-data.mjs', ['--mode', 'mysql', '--action', 'summary']);
-  checks.push(pass('flyway-migration-run', 'commands:run-migrations/check-database/replay-b25-fixture', { migrationCount: 23, persistedEntityCount: 20 }));
+  checks.push(pass('flyway-migration-run', 'commands:run-migrations/check-database/replay-b25-fixture', { migrationCount: 24, persistedEntityCount: 20 }));
 
   console.log('B28 runtime probe: owner schema and credential reconciliation');
   const ownerOutput = nodeScript('scripts/database/reconcile-owner-schemas.mjs', ['--apply']);

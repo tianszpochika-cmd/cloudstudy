@@ -1,5 +1,7 @@
 # 产品路线图
 
+> **文档分类：当前执行路线图**。Platform 0、Phase 1 和后续阶段的任务顺序以本路线图为执行索引；业务范围和设计状态仍以 v2-980plus 为准。`V2-980-0001..0980` 固定表示 930 个业务单元 + 50 个跨域扩展登记位，成熟度为 184/486/310，不等于 980 份可实施详细设计或已完成实现。
+
 > 三阶段产品边界以 PRD v3.3 和 v2-980plus 为准。后端技术演进以 [v2 微服务目标架构](../02-architecture/v2-microservices-architecture.md) 和 ADR-0010 为准；平台能力建设不等于提前开放 AI/K12 业务。
 
 > 旧 B0–B6/`DEV-*` 台账仅作 v1 历史追溯。下一轮任务必须按 [ADR-0009](../10-decisions/0009-v2-design-baseline-and-task-rebaseline.md)、[平台能力矩阵](../02-architecture/v2-platform-capability-matrix.md) 和 v2 设计单元重新生成；旧状态不能直接代表 Gateway、RBAC 或微服务迁移完成。
@@ -12,7 +14,7 @@
 
 - Java 25 LTS、Spring Boot 4.1/Spring Cloud 对齐的统一 BOM、服务模板和容器构建矩阵。
 - `api-gateway`：路由、`/api/v1` 版本、限流、CORS、requestId/traceId、JWT 预校验、直连阻断和回滚路由。
-- `iam-service`：自有账号密码认证中心、短时 RS256/ES256 JWT、JWKS、公钥轮换、用户/租户/设备/会话、Refresh Token 撤销/轮换、RBAC + ABAC 策略和审计；生产私钥由 KMS/Vault 或挂载 Secret 注入。
+- `iam-service`：自有账号密码认证中心、Phase 1 固定短时 RS256 JWT、RSA JWKS、公钥轮换、用户/租户/设备/会话、Refresh Token 撤销/轮换、RBAC + ABAC 策略和审计；ES256 仅可在后续 ADR、契约/JWKS key schema、密钥管理和运行实现同步后引入；生产私钥由 KMS/Vault 或挂载 Secret 注入。
 - 服务侧 Spring Security Resource Server/PEP；默认拒绝；正常热路径使用版本化策略包/短时安全缓存，高风险/动态策略才调用 PDP；移除客户端角色头和客户端 owner/tenant 作为权限事实。
 - OpenAPI/AsyncAPI/JSON Schema 生成与兼容门禁；MySQL schema owner、Flyway、Redis namespace、`TenantScope` 查询守卫、Outbox 和 Kafka 兼容集成事实事件总线。
 - OpenTelemetry、SLO/错误预算、健康探针、超时/重试/熔断、DLQ/回放、备份/PITR、RPO/RTO 和 Kubernetes/GitOps 发布基座。
@@ -64,13 +66,16 @@
 - 登录、目标选择、非 AI 水平测评和今日任务。
 - 单词/短语 SRS、词根词缀、语法、句子、听力、阅读、口语自练和写作自练。
 - 原创 CET 风格练习、规则报告、错题复习和基础打卡。
+- 首发 1 款学习游戏：拼句小火车（Sentence Train）；P1 扩展至共 4 款，6–8 款仅为长期目标，不纳入 P1 交付承诺。
 - 免费/VIP、激活码、内容审核后台、隐私与客服基础能力。
-- Web/H5 首发，Android/iOS 包体验证；小程序后置。
+- 四项目按冻结矩阵交付：`apps/mobile`（移动 H5/iOS/Android/iPad，微信小程序由 uni-app 条件编译输出）、`apps/learner-web`（PC/平板浏览器/PWA）、`apps/admin-web`（后台）和 `apps/official-site`（独立官网，不承载登录后业务）。
+- 内容只使用自有、开放许可或合法授权来源；第三方品牌、词书/释义、教材、真题及统计数据必须绑定有效授权凭证后才能发布。
+- P0 只建设 SKU、订单、权益、激活码、provider 适配和沙盒验证；微信、支付宝与 Apple IAP 生产开关默认关闭，资质、审核、验签、退款、对账、回滚和审计证据齐全后才能开启。
 - 首批领域服务按依赖逐步抽取：`learner → content → learning/assessment → media → commerce`；未达到数据、权限、SLO 和回滚证据前保留 `core-api` 兼容路由。
 
 ### P1
 
-- 扩展游戏矩阵、3D Avatar、学习空间、Study Room 低 UGC、离线同步、Language Clips 和家庭共享。
+- 扩展至共 4 款学习游戏；在此之后的 6–8 款仅保留为长期目标。另含 3D Avatar、学习空间、Study Room 低 UGC、离线同步、Language Clips 和家庭共享。
 
 ### 禁止提前交付
 

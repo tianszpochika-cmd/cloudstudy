@@ -1,6 +1,8 @@
 export const B4_PERFORMANCE_LEVELS = ['Ultra', 'High', 'Medium', 'Performance'] as const
+export const B4_GAME_RELEASE_PHASES = ['P0', 'P1', 'LONG_TERM'] as const
 import { createClientId } from '../platform/client-id'
 export type B4PerformanceLevel = (typeof B4_PERFORMANCE_LEVELS)[number]
+export type B4GameReleasePhase = (typeof B4_GAME_RELEASE_PHASES)[number]
 
 export type B4Status = 'idle' | 'loading' | 'ready' | 'offline' | 'error' | 'empty' | 'permission' | 'recovery' | 'processing' | 'success'
 export type B4GameCode =
@@ -87,6 +89,8 @@ export interface B4AvatarResources {
 
 export interface B4GameCatalogItem {
   gameCode: B4GameCode
+  releasePhase: B4GameReleasePhase
+  enabled: boolean
   maxMinutes: number | null
   pauseLimitMinutes: number | null
   passAccuracyPercent: number | null

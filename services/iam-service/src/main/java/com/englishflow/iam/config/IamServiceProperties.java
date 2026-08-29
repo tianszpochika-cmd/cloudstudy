@@ -60,7 +60,7 @@ public class IamServiceProperties {
         @NotBlank
         private String audience = "yuxuexing-api";
         @NotBlank
-        @Pattern(regexp = "RS256|ES256")
+        @Pattern(regexp = "RS256")
         private String algorithm = "RS256";
         @NotBlank
         @Size(max = 128)

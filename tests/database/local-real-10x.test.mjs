@@ -57,6 +57,20 @@ test('local-real-10x SQL is repeatable and stays inside approved owner schemas',
   assert.ok(referencedSchemas.every((schema) => approvedSchemas.has(schema)));
 });
 
+test('local-real-10x SQL uses only frozen Phase 1 quota choices', () => {
+  const sql = buildFixtureSql();
+  for (const table of [
+    'learner_service.b25_learner_goal',
+    'learner_service.b25_learner_daily_task',
+    'learning_service.b25_learning_plan',
+    'learning_service.learning_runtime_plan',
+  ]) {
+    const statement = sql.match(new RegExp(`INSERT INTO ${table}[\\s\\S]*?ON DUPLICATE KEY UPDATE[\\s\\S]*?;`))?.[0];
+    assert.ok(statement, `fixture must seed ${table}`);
+    assert.doesNotMatch(statement, /\b60\b/, `${table} must not emit the retired 60-minute quota`);
+  }
+});
+
 test('each declared check is tied to a local fixture marker', () => {
   for (const [name, table, predicate, minimum] of TABLE_CHECKS) {
     assert.ok(name.length > 0);

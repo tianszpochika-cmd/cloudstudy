@@ -56,6 +56,8 @@ test('B16 IAM signs short-lived JWTs and keeps account/session secrets server-si
   assert.match(sources, /refresh.*replay/i);
   assert.match(sources, /BCrypt|bcrypt/i);
   assert.match(props, /ephemeralKeysAllowed/);
+  assert.match(props, /@Pattern\(regexp = "RS256"\)/);
+  assert.doesNotMatch(props, /RS256\|ES256/);
   assert.match(yaml, /issuer: \$\{IAM_JWT_ISSUER:/);
   assert.match(yaml + controller + security, /jwks|public/i);
 });

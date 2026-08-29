@@ -28,6 +28,12 @@ const expectedDomainCounts = {
   ONB: 32, VOC: 70, GRM: 54, LST: 42, RDG: 38, SPK: 52, WRT: 44, ASM: 80,
   GAM: 92, SOC: 38, USR: 64, INF: 74, COM: 46, ADM: 74, AI2: 68, K12: 62, CROSS: 50,
 };
+const expectedStatusCounts = { explicit: 184, atomic: 486, pending: 310 };
+const expectedBusinessCount = 930;
+const expectedCrossCount = 50;
+const expectedAudioSource = '0.5x~2.0x 连续变速，快捷档 0.5/0.75/1/1.25/1.5/2，保持音高';
+const legacyAudioSourcePattern = /0\.75x\s*\/\s*1\.0x\s*\/\s*1\.25x\s*\/\s*1\.5x/;
+const legacyHardSrsSchedulePattern = /间隔梯度按\s*1天\s*->\s*3天\s*->\s*7天\s*->\s*15天\s*->\s*30天\s*->\s*90天\s*递进排程/;
 
 function unescapeCell(value) {
   return String(value ?? '').replaceAll('\\|', '|').trim();
@@ -104,15 +110,49 @@ function main() {
   if (missingExplicit.length) fail(`explicit FEAT ids missing from v2 register: ${missingExplicit.slice(0, 10).join(', ')}`);
 
   const allText = requiredDocs.map((document) => fs.readFileSync(path.join(outDir, document), 'utf8')).join('\n');
-  for (const marker of ['唯一全量业务设计与需求落地基线', 'Idempotency-Key', 'AdaptivePerformanceEngine', 'apps/mobile', 'apps/learner-web', 'apps/admin-web', 'apps/official-site', 'Phase 1', 'Phase 2', 'Phase 3', 'ST-', 'V2-EXT-', 'PRD-ATOM-', 'FEAT-', 'content-service', 'assessment-service', 'learning-service']) {
+  for (const marker of [
+    '唯一全量业务设计与需求落地基线', 'Idempotency-Key', 'AdaptivePerformanceEngine',
+    'apps/mobile', 'apps/learner-web', 'apps/admin-web', 'apps/official-site',
+    'Phase 1', 'Phase 2', 'Phase 3', 'ST-', 'V2-EXT-', 'PRD-ATOM-', 'FEAT-',
+    'content-service', 'assessment-service', 'learning-service',
+    '930 个业务域设计单元', '50 个跨域扩展登记位',
+    '184 条显式功能包已设计', '486 条 PRD 原子证据已映射', '310 条待细化签收',
+    'P0 仅上线 1 款学习游戏：拼句小火车', 'P1 扩展至总计 4 款', '6~8 款是长期目标',
+    '0.5x~2.0x 连续变速，快捷档 0.5/0.75/1/1.25/1.5/2，保持音高',
+    '艾宾浩斯记忆曲线解释与展示', 'nextReviewAt', 'algorithmVersion',
+    'provider', '沙盒', '生产开关默认关闭', '自有、开放许可或合法授权', '2026-08-29',
+  ]) {
     if (!allText.includes(marker)) fail(`required design marker missing: ${marker}`);
   }
   if (allText.includes('v1 文档继续作为已冻结的领域事实源')) fail('v1 must not remain the v2 design source of truth');
+  if (legacyAudioSourcePattern.test(allText)) fail('legacy audio speed phrase remains in generated v2 design package');
+  if (legacyHardSrsSchedulePattern.test(allText)) fail('legacy hard SRS schedule remains in generated v2 design package');
+  if (allText.includes('六大游戏')) fail('legacy six-game label remains in generated v2 design package');
+  for (const legacyMarker of ['权威官方词库', '柯林斯/牛津']) {
+    if (allText.includes(legacyMarker)) fail(`legacy content wording remains in generated v2 design package: ${legacyMarker}`);
+  }
   const pendingCount = rows.filter((row) => row[16] === refinementStatus).length;
   const explicitCount = rows.filter((row) => row[16] === '显式功能包已设计').length;
   const atomicCount = rows.filter((row) => row[16] === 'PRD 原子证据已映射').length;
-  if (pendingCount < 50 || explicitCount !== explicitIds.length || explicitCount + atomicCount + pendingCount !== 980) {
+  const businessCount = Object.entries(domainCounts)
+    .filter(([domain]) => domain !== 'CROSS')
+    .reduce((total, [, count]) => total + count, 0);
+  if (businessCount !== expectedBusinessCount || domainCounts.CROSS !== expectedCrossCount) {
+    fail(`unexpected business/cross counts: business=${businessCount}, cross=${domainCounts.CROSS ?? 0}`);
+  }
+  if (explicitCount !== expectedStatusCounts.explicit
+    || atomicCount !== expectedStatusCounts.atomic
+    || pendingCount !== expectedStatusCounts.pending
+    || explicitCount !== explicitIds.length
+    || explicitCount + atomicCount + pendingCount !== rows.length) {
     fail(`unexpected status counts: explicit=${explicitCount}, atomic=${atomicCount}, pending=${pendingCount}, matrixExplicit=${explicitIds.length}`);
+  }
+  const audioRows = rows.filter((row) => row[4] === 'PRD-ATOM-0358');
+  if (audioRows.length !== 1) fail(`expected one PRD-ATOM-0358 row, got ${audioRows.length}`);
+  const audioRow = audioRows[0];
+  if (audioRow[3] !== expectedAudioSource) fail(`PRD-ATOM-0358 source mismatch: ${audioRow[3]}`);
+  if (!audioRow[5].includes('PRD §8.1') || /requirements\/product-requirements\.md:\d+/.test(audioRow[5])) {
+    fail(`PRD-ATOM-0358 must use stable PRD §8.1 anchor: ${audioRow[5]}`);
   }
 
   console.log(JSON.stringify({

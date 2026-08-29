@@ -81,6 +81,7 @@ const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const themes = ['LIGHT', 'DARK', 'SYSTEM', 'HIGH_CONTRAST'];
 const motionModes = ['FULL', 'REDUCED', 'OFF'];
 const sourceTypes = ['READING', 'LISTENING', 'SCENARIO', 'VOCAB_EXAMPLE'];
+const PHASE_ONE_DAILY_QUOTA_MINUTES = [5, 15, 30, 45];
 
 export const B3_RESOURCE_TYPES = [
   'GRAMMAR_POINT',
@@ -208,7 +209,7 @@ const learnerProfileRows = each((index) => [
 
 const learnerGoalRows = each((index) => [
   SUBJECTS[index - 1], TENANT_ID, `ENGLISH_${levels[(index - 1) % levels.length]}`,
-  levels[(index - 1) % levels.length], [15, 30, 45, 60, 5][(index - 1) % 5],
+  levels[(index - 1) % levels.length], PHASE_ONE_DAILY_QUOTA_MINUTES[(index - 1) % PHASE_ONE_DAILY_QUOTA_MINUTES.length],
   'ACTIVE', fixtureText('goal-idem', index),
 ]);
 
@@ -220,7 +221,7 @@ const learnerPreferenceRows = each((index) => [
 
 const learnerDailyTaskRows = each((index) => [
   fixtureText('daily-task', index), SUBJECTS[index - 1], TENANT_ID, contentCodes[index - 1],
-  `每日学习任务 ${index}`, 'LESSON', [15, 30, 45, 60, 5][(index - 1) % 5],
+  `每日学习任务 ${index}`, 'LESSON', PHASE_ONE_DAILY_QUOTA_MINUTES[(index - 1) % PHASE_ONE_DAILY_QUOTA_MINUTES.length],
   index % 3 === 0 ? 'COMPLETED' : 'AVAILABLE', index,
   fixtureText('daily-task-idem', index), index % 3 === 0 ? now : null, now,
 ]);
@@ -364,7 +365,7 @@ const b2ChunkRows = each((index) => [
 // Learning owner facts ----------------------------------------------------
 const b25LearningPlanRows = each((index) => [
   stableUuid('b25-learning-plan', index), SUBJECTS[index - 1], TENANT_ID, 'ACTIVE',
-  [15, 30, 45, 60, 5][(index - 1) % 5], 1, now,
+  PHASE_ONE_DAILY_QUOTA_MINUTES[(index - 1) % PHASE_ONE_DAILY_QUOTA_MINUTES.length], 1, now,
 ]);
 
 const b25SrsRows = each((index) => [
@@ -421,7 +422,7 @@ const runtimeItemIds = each((index) => 910000 + index);
 const runtimePlanRows = each((index) => [
   runtimePlanIds[index - 1], TENANT_ID, SUBJECTS[index - 1], runtimeUserIds[index - 1],
   800000 + index, `ENGLISH_${levels[(index - 1) % levels.length]}`, contentVersionIds[index - 1], 1,
-  'Asia/Shanghai', [15, 30, 45, 60, 5][(index - 1) % 5], 'ACTIVE', 1, now, now,
+  'Asia/Shanghai', PHASE_ONE_DAILY_QUOTA_MINUTES[(index - 1) % PHASE_ONE_DAILY_QUOTA_MINUTES.length], 'ACTIVE', 1, now, now,
 ]);
 
 const runtimeTaskRows = each((index) => [

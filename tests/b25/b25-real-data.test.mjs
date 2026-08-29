@@ -87,6 +87,35 @@ test('B25 HTTP seams are durable, JWT-owned and idempotent', () => {
   assert.match(read('services/notification-service/src/main/java/com/englishflow/notification/config/NotificationPersistenceConfiguration.java'), /JdbcNotificationFactStore/);
 });
 
+test('B25 daily quota freeze uses a forward migration and rejects the retired choice', () => {
+  const manifest = json('database/mysql/migrations/migration-manifest.json');
+  const compatibilityEntry = manifest.migrations.find((migration) => migration.version === '0024');
+  const ownerMigration = read('services/learner-service/src/main/resources/db/migration/V8__freeze_b25_daily_quota_minutes.sql');
+  const learningMigration = read('services/learning-service/src/main/resources/db/migration/V7__freeze_phase1_daily_quota_minutes.sql');
+  const compatibilityMigration = read('database/mysql/migrations/V0024__freeze_phase1_daily_quota_minutes.sql');
+  const controller = read('services/learner-service/src/main/java/com/englishflow/learner/web/B25LearnerJdbcController.java');
+  assert.equal(compatibilityEntry?.kind, 'alter');
+  assert.deepEqual(compatibilityEntry?.requiredExistingTables, ['lrn_b9_goal', 'lrn_b25_goal', 'lrn_b25_plan']);
+  assert.equal(compatibilityEntry?.requiredTables, undefined);
+  assert.match(ownerMigration, /UPDATE b25_learner_goal[\s\S]*SET daily_quota_minutes = 45[\s\S]*WHERE daily_quota_minutes = 60/);
+  assert.match(ownerMigration, /DROP CHECK chk_b25_learner_goal_minutes/);
+  assert.match(ownerMigration, /CHECK \(daily_quota_minutes IN \(5, 15, 30, 45\)\)/);
+  assert.match(learningMigration, /UPDATE b25_learning_plan[\s\S]*SET target_minutes = 45[\s\S]*WHERE target_minutes = 60/);
+  assert.match(learningMigration, /ADD CONSTRAINT chk_b25_learning_plan_target_minutes\s+CHECK \(target_minutes IN \(5, 15, 30, 45\)\)/);
+  assert.match(learningMigration, /UPDATE learning_runtime_plan[\s\S]*SET daily_quota_minutes = 45[\s\S]*WHERE daily_quota_minutes = 60/);
+  assert.match(learningMigration, /ADD CONSTRAINT chk_learning_runtime_plan_daily_quota_minutes\s+CHECK \(daily_quota_minutes IN \(5, 15, 30, 45\)\)/);
+  assert.match(compatibilityMigration, /UPDATE lrn_b9_goal[\s\S]*SET daily_quota_minutes = 45[\s\S]*WHERE daily_quota_minutes = 60/);
+  assert.match(compatibilityMigration, /DROP CHECK chk_lrn_b9_goal_minutes/);
+  assert.match(compatibilityMigration, /CHECK \(daily_quota_minutes IN \(5, 15, 30, 45\)\)/);
+  assert.match(compatibilityMigration, /UPDATE lrn_b25_goal[\s\S]*SET daily_quota_minutes = 45[\s\S]*WHERE daily_quota_minutes = 60/);
+  assert.match(compatibilityMigration, /DROP CHECK chk_lrn_b25_goal_minutes/);
+  assert.match(compatibilityMigration, /CHECK \(daily_quota_minutes IN \(5, 15, 30, 45\)\)/);
+  assert.match(compatibilityMigration, /UPDATE lrn_b25_plan[\s\S]*SET target_minutes = 45[\s\S]*WHERE target_minutes = 60/);
+  assert.match(compatibilityMigration, /ADD CONSTRAINT chk_lrn_b25_plan_target_minutes\s+CHECK \(target_minutes IN \(5, 15, 30, 45\)\)/);
+  assert.match(controller, /DAILY_QUOTA_MINUTES = List\.of\(5, 15, 30, 45\)/);
+  assert.match(controller, /dailyQuotaMinutes must be one of 5, 15, 30, or 45/);
+});
+
 test('B25 seeds are replayable and do not perform destructive cleanup', () => {
   for (const seed of [
     'database/mysql/seeds/dev/V0023__b25-phase1.sql',

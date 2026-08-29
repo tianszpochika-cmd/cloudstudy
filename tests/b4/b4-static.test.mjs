@@ -81,3 +81,35 @@ test('B4 contract and event schemas do not expose client-authoritative facts', (
     }
   }
 });
+
+test('B4 game registry keeps all codes while gating availability by release phase', () => {
+  const fragment = readJson('packages/contracts/fragments/b4-gamification-social.openapi.json');
+  const requestSchema = fragment.components.schemas.B4GameSessionRequest;
+  const registry = requestSchema['x-b4-game-registry'];
+  const entries = registry.entries;
+  assert.equal(entries.length, 6);
+  assert.equal(entries.filter((entry) => entry.releasePhase === 'P0').length, 1);
+  assert.equal(entries.filter((entry) => entry.releasePhase !== 'LONG_TERM').length, 4);
+  assert.equal(entries.filter((entry) => entry.releasePhase === 'LONG_TERM').length, 2);
+  assert.deepEqual(entries.filter((entry) => entry.enabled).map((entry) => entry.gameCode), ['SENTENCE_TRAIN']);
+  assert.deepEqual(requestSchema.properties.gameCode.enum, entries.map((entry) => entry.gameCode));
+
+  const catalogItem = fragment.components.schemas.B4GameCatalogItem;
+  assert.deepEqual(catalogItem.required, ['gameCode', 'releasePhase', 'enabled']);
+  assert.equal(fragment.paths['/api/v1/games/sessions'].post.responses['400'].$ref, '#/components/responses/B4GameCodeInvalid');
+  assert.equal(fragment.paths['/api/v1/games/sessions'].post.responses['409'].$ref, '#/components/responses/B4GameNotAvailable');
+  assert.match(fragment.components.responses.B4GameNotAvailable.description, /GAME_NOT_AVAILABLE/);
+
+  const canonical = readJson('packages/contracts/openapi/v1/openapi.json');
+  assert.deepEqual(canonical.paths['/api/v1/games/catalog'].get['x-b4-game-registry'], {
+    owner: 'gamification-service',
+    releasePhase: {
+      P0: ['SENTENCE_TRAIN'],
+      P1: ['WORD_MATCH', 'WORD_DEFENSE', 'WORD_PUZZLE'],
+      LONG_TERM: ['GRAMMAR_BLASTER', 'CATCH_MEANING'],
+    },
+    enabledByDefault: ['SENTENCE_TRAIN'],
+    enumIsRegistryOnly: true,
+    disabledSessionResponse: { status: 409, code: 'GAME_NOT_AVAILABLE' },
+  });
+});

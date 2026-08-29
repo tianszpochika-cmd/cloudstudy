@@ -38,7 +38,7 @@ pnpm test:b31
 | learner profile/target/preferences 写入 | PASS，`b25_learner_profile`、`b25_learner_goal`、`b25_learner_preferences` 各 1 行 |
 | 幂等重放 | PASS，profile、target、preferences 使用同一 Idempotency-Key 重放后仍为单一 owner 行 |
 | API 重新读取 | PASS，profile、target、preferences、first-day 均为 200，locale/goal 与提交值一致 |
-| 重新建立授权码会话后读回 | PASS，新会话重新读取 profile、target、preferences 均为 200，owner 事实没有依赖上一会话内存 |
+| 重新建立 IAM 账号密码会话后读回 | PASS，新会话重新读取 profile、target、preferences 均为 200，owner 事实没有依赖上一会话内存 |
 | 关联与安全 | PASS，`subjectBound=true`、`credentialsPersisted=false`、`tokenValuesEmitted=false` |
 
 ## 本轮修复

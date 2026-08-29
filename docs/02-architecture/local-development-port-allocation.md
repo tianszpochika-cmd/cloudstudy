@@ -18,7 +18,7 @@
 | 服务 | 固定端口 | 启动形态 | 备注 |
 |---|---:|---|---|
 | API Gateway | 18070 | Spring Cloud Gateway | v2 外部 API 统一入口；仅做路由、边界策略、请求上下文和观测，不承载领域写入 |
-| IAM Service | 18087 | Spring Boot | 平台自有账号密码认证中心；签发短时 RS256/ES256 JWT、发布 JWKS，管理 Refresh Token、设备、会话、权限和撤销 |
+| IAM Service | 18087 | Spring Boot | 平台自有账号密码认证中心；Phase 1 签发短时 RS256 JWT、发布 RSA JWKS，管理 Refresh Token、设备、会话、权限和撤销；ES256 需后续 ADR 与契约/JWKS key schema、密钥管理和运行实现同步后才可引入 |
 | Learner Service | 18088 | Spring Boot | v2 学习者档案、目标、偏好和 Onboarding read model；独立 schema |
 | Content Service | 18089 | Spring Boot | v2 内容版本、版权、审核发布和公开读投影；独立 schema |
 | Learning Service | 18090 | Spring Boot | v2 学习计划、SRS、进度、复习队列和掌握度投影；独立 schema |

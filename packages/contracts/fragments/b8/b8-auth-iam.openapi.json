@@ -4,6 +4,11 @@
     "protocol": "platform-json-api",
     "signer": "iam-service",
     "credentialFlow": "account-password",
+    "issuerBoundary": {
+      "tokenIssuer": "iam-service-only",
+      "passwordReceiver": "iam-service-only",
+      "prohibitedTokenIssuers": ["api-gateway", "domain-service", "client-application"]
+    },
     "accessToken": {
       "format": "JWT",
       "tokenType": "Bearer",
@@ -27,8 +32,8 @@
   },
   "x-b8-compatibility": {
     "legacyRoutes": [],
-    "removedFlows": ["external-provider-login", "authorization-callback", "client-side-role-override"],
-    "rule": "No legacy route may mint or relay a token; compatibility, when temporarily required, is historical-only and fail-closed."
+    "removedFlows": ["external-provider-login", "external-browser-handoff", "browser-supplied-role-override"],
+    "rule": "Only iam-service may mint tokens. Compatibility routes are historical-only, cannot mint tokens, and fail closed."
   },
   "tags": [
     { "name": "b8-auth", "description": "Self-owned JWT authentication center and IAM policy boundary" }
@@ -38,9 +43,11 @@
       "post": {
         "tags": ["b8-auth"],
         "operationId": "registerB8Account",
-        "summary": "Create a platform account and establish a JWT session",
+        "summary": "Create an adult Phase 1 account and establish a restricted JWT session",
+        "description": "Unauthenticated public registration for people aged 18 or above. Only iam-service receives the password and issues the session; Phase 1 learning access remains denied until the server-derived adult Gate passes.",
         "security": [],
         "x-contract": { "domain": "iam", "owner": "iam-service", "phase": "P1", "authentication": "self-owned-jwt" },
+        "x-public-entry": { "audience": "adult-18-plus", "adultGate": "server-derived-before-learning-access", "credentialBoundary": "iam-service-only" },
         "x-idempotency": { "required": true, "strategy": "account-registration", "keyHeader": "Idempotency-Key", "replayBehavior": "Return the original account/session result for the same request hash." },
         "parameters": [{ "$ref": "#/components/parameters/B8IdempotencyKey" }],
         "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B8RegisterRequest" } } } },
@@ -249,7 +256,7 @@
       "B8LogoutRequest": { "type": "object", "additionalProperties": false, "properties": { "allDevices": { "type": "boolean", "default": false } } },
       "B8PasswordResetRequest": { "type": "object", "additionalProperties": false, "required": ["identifier"], "properties": { "identifier": { "type": "string", "minLength": 3, "maxLength": 128 } } },
       "B8PasswordResetConfirmRequest": { "type": "object", "additionalProperties": false, "required": ["identifier", "resetToken", "newPassword"], "x-sensitive-fields": ["resetToken", "newPassword"], "properties": { "identifier": { "type": "string", "minLength": 3, "maxLength": 128 }, "resetToken": { "type": "string", "minLength": 32, "maxLength": 512, "writeOnly": true, "description": "TLS only; one-time credential; 禁止日志或明文持久化。" }, "newPassword": { "type": "string", "minLength": 12, "maxLength": 128, "writeOnly": true, "description": "TLS only; never log, persist plaintext, or return." } } },
-      "B8AuthTokenResponse": { "type": "object", "required": ["accessToken", "tokenType", "expiresIn", "refreshExpiresIn", "sessionId", "deviceId"], "x-sensitive-fields": ["accessToken", "refreshToken"], "properties": { "accessToken": { "type": "string", "writeOnly": true, "description": "TLS only; IAM-signed RS256/ES256 JWT; 禁止日志或 Web storage 保存。" }, "refreshToken": { "type": "string", "writeOnly": true, "description": "TLS only; native-only rotated opaque credential; Web receives an HttpOnly cookie; 禁止日志。" }, "tokenType": { "type": "string", "const": "Bearer" }, "expiresIn": { "type": "integer", "minimum": 1 }, "refreshExpiresIn": { "type": "integer", "minimum": 1 }, "sessionId": { "type": "string", "format": "uuid" }, "deviceId": { "type": "string", "format": "uuid" } } },
+      "B8AuthTokenResponse": { "type": "object", "required": ["accessToken", "tokenType", "expiresIn", "refreshExpiresIn", "sessionId", "deviceId"], "x-sensitive-fields": ["accessToken", "refreshToken"], "properties": { "accessToken": { "type": "string", "writeOnly": true, "description": "TLS only; IAM-signed RS256 JWT; 禁止日志或 Web storage 保存。" }, "refreshToken": { "type": "string", "writeOnly": true, "description": "TLS only; native-only rotated opaque credential; Web receives an HttpOnly cookie; 禁止日志。" }, "tokenType": { "type": "string", "const": "Bearer" }, "expiresIn": { "type": "integer", "minimum": 1 }, "refreshExpiresIn": { "type": "integer", "minimum": 1 }, "sessionId": { "type": "string", "format": "uuid" }, "deviceId": { "type": "string", "format": "uuid" } } },
       "B8SessionRevocationResponse": { "type": "object", "required": ["sessionId", "status"], "properties": { "sessionId": { "type": "string", "format": "uuid" }, "status": { "type": "string", "enum": ["REVOKED", "ALREADY_REVOKED"] } } },
       "B8PrincipalResponse": { "type": "object", "required": ["principalId", "tenantId", "sessionId", "deviceId", "roles", "permissions", "authMode"], "x-server-authoritative-fields": ["principalId", "tenantId", "roles", "permissions", "status", "adultGate", "consentState"], "properties": { "principalId": { "type": "string", "format": "uuid" }, "tenantId": { "type": "string" }, "sessionId": { "type": "string", "format": "uuid" }, "deviceId": { "type": "string", "format": "uuid" }, "roles": { "type": "array", "items": { "type": "string" } }, "permissions": { "type": "array", "items": { "type": "string" } }, "authMode": { "type": "string", "const": "self-owned-jwt" }, "status": { "type": "string", "enum": ["ACTIVE", "RESTRICTED"] }, "adultGate": { "$ref": "#/components/schemas/B8AdultGateResponse" }, "consentState": { "$ref": "#/components/schemas/B8ConsentState" }, "policyVersion": { "type": "string" } } },
       "B8PermissionsResponse": { "type": "object", "required": ["permissions", "roles", "policyVersion"], "properties": { "permissions": { "type": "array", "items": { "type": "string" } }, "roles": { "type": "array", "items": { "type": "string" } }, "policyVersion": { "type": "string" } } },
@@ -261,7 +268,7 @@
       "B8Consent": { "type": "object", "required": ["type", "version", "decision", "decidedAt"], "properties": { "type": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] }, "version": { "type": "string" }, "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] }, "decidedAt": { "type": "string", "format": "date-time" } } },
       "B8ConsentUpdateRequest": { "type": "object", "additionalProperties": false, "required": ["type", "version", "decision"], "properties": { "type": { "type": "string", "enum": ["TERMS", "PRIVACY", "ADULT_LEARNING", "PRODUCT_ANALYTICS"] }, "version": { "type": "string", "maxLength": 64 }, "decision": { "type": "string", "enum": ["ACCEPTED", "WITHDRAWN"] } } },
       "B8ConsentListResponse": { "type": "object", "required": ["items"], "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/B8Consent" } } } },
-      "B8JwksResponse": { "type": "object", "required": ["keys"], "x-jwks-boundary": "Public signing keys only; private key material is never exposed.", "properties": { "keys": { "type": "array", "items": { "type": "object", "required": ["kty", "kid", "use", "alg", "n", "e"], "properties": { "kty": { "type": "string", "const": "RSA" }, "kid": { "type": "string" }, "use": { "type": "string", "const": "sig" }, "alg": { "type": "string", "enum": ["RS256", "ES256"] }, "n": { "type": "string" }, "e": { "type": "string" } } } } } },
+      "B8JwksResponse": { "type": "object", "required": ["keys"], "x-jwks-boundary": "Public signing keys only; private key material is never exposed.", "properties": { "keys": { "type": "array", "items": { "type": "object", "required": ["kty", "kid", "use", "alg", "n", "e"], "properties": { "kty": { "type": "string", "const": "RSA" }, "kid": { "type": "string" }, "use": { "type": "string", "const": "sig" }, "alg": { "type": "string", "const": "RS256" }, "n": { "type": "string" }, "e": { "type": "string" } } } } } },
       "B8AuthorizationDecisionRequest": { "type": "object", "additionalProperties": false, "required": ["action", "resourceType", "resourceId", "phase"], "x-server-derived-authorization-facts": ["subject", "tenant", "owner", "role", "permission", "consent", "policyVersion"], "properties": { "action": { "type": "string" }, "resourceType": { "type": "string" }, "resourceId": { "type": "string" }, "phase": { "type": "string", "enum": ["P1", "P2", "P3"] }, "contentRights": { "type": "string" }, "deviceTrust": { "type": "string" }, "consentRequirement": { "type": "string" } } },
       "B8AuthorizationDecisionResponse": { "type": "object", "required": ["decisionId", "decision", "reasonCode", "policyVersion", "evaluatedAt"], "properties": { "decisionId": { "type": "string", "format": "uuid" }, "decision": { "type": "string", "enum": ["ALLOW", "DENY"] }, "reasonCode": { "type": "string", "enum": ["ALLOWED", "POLICY_DENIED", "ADULT_GATE_REQUIRED", "CONSENT_REQUIRED", "SESSION_REVOKED", "CONTEXT_MISSING", "POLICY_UNAVAILABLE"] }, "policyVersion": { "type": "string" }, "evaluatedAt": { "type": "string", "format": "date-time" }, "cacheUntil": { "type": "string", "format": "date-time" } } }
     }

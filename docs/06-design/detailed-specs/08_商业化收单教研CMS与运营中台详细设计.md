@@ -1,5 +1,7 @@
 # 08｜商业化收单、教研 CMS 与运营中台详细设计
 
+> **Historical / Superseded（历史 v1 设计包）**：仅用于 v1 迁移与审计追溯，不是当前实现指令。当前业务设计、任务、契约与验收以 [v2-980plus/README.md](../v2-980plus/README.md) 为唯一入口；本文的旧数量、时间、架构、认证、事件、支付、版权和项目结构表述不得覆盖现行基线。
+
 > 文档版本：v2.0 深度施工版  
 > 基线：requirements/product-requirements.md v3.3、requirements/feature-matrix.md、AGENTS.md  
 > 功能范围：FEAT-COM-001～009、FEAT-ADM-001～010，共 19 项  

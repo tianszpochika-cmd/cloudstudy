@@ -29,10 +29,32 @@ export interface UniLaunchOptions {
 export interface UniAudioContext {
   src: string
   playbackRate?: number
+  /** Optional native capability; playback must remain usable when absent. */
+  preservesPitch?: boolean
   loop?: boolean
   play(): void
   pause(): void
   destroy(): void
+}
+
+/**
+ * Enables pitch preservation only when the native audio adapter exposes the
+ * optional capability. Unsupported platforms keep playback and let the caller
+ * record the visible downgrade; this does not claim cross-platform support.
+ */
+export function enableUniAudioPitchPreservation(audio: UniAudioContext, onUnsupported?: () => void): boolean {
+  try {
+    if (!('preservesPitch' in audio)) {
+      onUnsupported?.()
+      return false
+    }
+    audio.preservesPitch = true
+    if (audio.preservesPitch === true) return true
+  } catch {
+    // A native adapter may expose a read-only or unsupported capability.
+  }
+  onUnsupported?.()
+  return false
 }
 
 export interface UniFileSystemManager {

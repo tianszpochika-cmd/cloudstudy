@@ -162,7 +162,7 @@
       "protocol": "self-owned-JWT",
       "issuerSource": "runtime-env-only",
       "jwksUriSource": "runtime-env-only",
-      "allowedAlgorithms": ["RS256", "ES256"],
+      "allowedAlgorithms": ["RS256"],
       "forbiddenAlgorithms": ["none", "HS256"],
       "issuerAndAudienceValidation": true,
       "clockSkewSecondsMaximum": 60,

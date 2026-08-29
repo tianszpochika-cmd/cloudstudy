@@ -4,11 +4,12 @@
 
 ## 1. 最终技术路线
 
-| 层级 | 最终选择 | 适用范围 |
+| 项目/层级 | 最终选择 | 适用范围与边界 |
 |---|---|---|
-| 学习端 | Vue 3 + TypeScript + uni-app | Web、H5、iOS、Android、iPad、微信小程序 |
-| 管理后台 | Vue 3 + TypeScript + Vite + Element Plus | 教研、内容、运营、客服、权限和数据后台 |
-| 官网 | Nuxt 3 或 uni-app H5 | SEO 官网、品牌内容、测评入口 |
+| `apps/mobile` | Vue 3 + TypeScript + uni-app（唯一移动学习端项目） | 仅承载移动 H5、iOS、Android、iPad；微信小程序只通过本项目条件编译输出，不建立独立业务项目 |
+| `apps/learner-web` | Vue 3 + TypeScript（独立 Web 项目） | 独立承载 PC Web、平板浏览器和 PWA 学习工作区，不重复承载 `apps/mobile` 的移动业务页面 |
+| `apps/admin-web` | Vue 3 + TypeScript + Vite + Element Plus（独立后台项目） | 教研、内容、运营、商业、客服、权限、审计和风控后台，不复用学习者端导航 |
+| `apps/official-site` | Vue 3 + TypeScript + Vite（独立 Vue Web 官网） | 品牌、课程、价格、下载、SEO 和合规公示；不承载登录业务、登录后学习业务或业务会话 |
 | 新业务后端 | **Java 25 LTS + Spring Boot 4.1.x + Spring Framework 7.x** | 微服务目标架构；版本由统一 BOM/Version Catalog 管理 |
 | 迁移兼容后端 | Java 17 + Spring Boot 3 | `services/core-api` 旧模块化单体，只作兼容路由、数据迁移和回滚边界 |
 | API Gateway | Spring Cloud Gateway Server WebFlux 5.x | 外部路由、版本、限流、JWT 预校验、request/trace 上下文；不承载业务写入 |
@@ -23,8 +24,10 @@
 
 ## 2. 跨端原则
 
-- 业务页面、状态、路由、领域模型和埋点尽量由 uni-app 复用。
-- 使用条件编译处理平台差异，不在同一功能上维护多套完全独立 UI。
+- 四个前端项目是冻结的业务项目边界：`apps/mobile`、`apps/learner-web`、`apps/admin-web` 和 `apps/official-site`，平台目标不再拆成第五个业务项目。
+- `apps/mobile` 使用 uni-app 承载移动 H5、iOS、Android 和 iPad；微信小程序只作为条件编译输出，业务路由、状态和 API 事实仍来自 `apps/mobile`。
+- `apps/learner-web` 独立承载 PC Web、平板浏览器和 PWA；`apps/admin-web` 独立承载 Element Plus 后台；`apps/official-site` 独立承载 Vue Web 官网，不承载登录业务或登录后业务。
+- 四项目共享契约、API client、领域规则、design token、i18n 和埋点；UI 组件、DOM 与页面按平台分别实现，不要求跨 Web/uni-app 直接复用页面。
 - H5/App 使用 Three.js、Rive、Wavesurfer 等增强体验；小程序按能力降级到 2D/静态方案。
 - Windows 先使用 Web + PWA；原生壳仅在确有系统能力需求时启用 Tauri 2.0。
 - 必须支持 Ultra / High / Medium / Performance 四级画质降级。

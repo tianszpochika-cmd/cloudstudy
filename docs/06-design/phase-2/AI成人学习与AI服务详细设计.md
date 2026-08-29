@@ -67,7 +67,7 @@ AI 读取已授权的课程上下文与学习事实
 | AI Orchestrator | Python 3.11+ FastAPI + LangGraph/LiteLLM；Schema 校验、promptVersion、模型路由、安全前后置、RAG 编排、成本估算 | 不绕过 IAM/服务侧 PEP 的 subject、权限和权益；不写不可追踪的自由文本结果 |
 | Realtime Voice | 商业 RTC 接入/信令边界；低延迟双向媒体与 Barge-in | 不用 HTTP 轮询模拟实时通话；具体声网/TRTC 选型待 ADR |
 | MySQL/Redis/S3 | MySQL 事实源；Redis 短缓存/锁/队列辅助；S3 音频/媒体/文档对象 | Redis 不作为 AI 审计事实源；S3 URL 不进入普通日志 |
-| Kafka-compatible Event Bus | 异步 AI 评测、记忆合并、RAG 索引、成本汇总和死信 | 不丢失原始学习事件；消费者必须按 eventId 去重；RabbitMQ/Redis Streams 仅为 v1 兼容适配 |
+| Kafka-compatible Event Bus | 异步 AI 评测、记忆合并、RAG 索引、成本汇总和死信 | 不丢失原始学习事件；消费者必须按 eventId 去重；RabbitMQ 仅供 `services/core-api` 的 v1 可选兼容使用，Redis Streams 不得作为 v2 事件事实源 |
 
 ### 1.2 统一请求与响应包络
 

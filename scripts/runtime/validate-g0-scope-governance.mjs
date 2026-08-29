@@ -7,10 +7,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 const manifestRelativePath = 'config/g0-scope-governance.json'
 const runtimeRequestedByProcess = process.argv.includes('--require-runtime') || process.env.G0_REQUIRE_RUNTIME === '1'
 const forbiddenText = [
-  /Bearer\s+[A-Za-z0-9._~-]+/i,
+  // Allow descriptive security prose such as "JWT Bearer Access Token" while
+  // still rejecting a concrete bearer value (including short test secrets).
+  /Bearer\s+(?!(?:Access|Token|JWT)\b)[A-Za-z0-9._~-]+/i,
   /\bsk-[A-Za-z0-9]/i,
   /-----BEGIN [A-Z ]+-----/i,
-  /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\./,
+  /(?:^|\b)eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+(?:\b|$)/i,
   /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i,
   /(?:^|\D)(?:\+?86[- ]?)?1[3-9]\d{9}(?:$|\D)/,
   /https?:\/\//i,

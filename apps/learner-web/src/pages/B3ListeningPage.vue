@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { updateListeningProgress } from '../api/b3'
 import { useB3Store } from '../stores/b3'
 
@@ -8,6 +8,7 @@ const answer = ref('')
 const activeSegment = ref(0)
 const submitted = ref(false)
 const audio = ref<HTMLAudioElement | null>(null)
+const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 const playbackRate = ref(1)
 const blindSubtitle = ref(true)
 const loopEnabled = ref(false)
@@ -17,6 +18,16 @@ const material = computed(() => store.materials[0] ?? null)
 const segment = computed(() => material.value?.segments[activeSegment.value] ?? null)
 const audioSrc = computed(() => material.value?.mediaRef?.availability === 'READY' ? material.value.mediaRef.signedUrl ?? null : null)
 const positionVersion = ref(0)
+
+type PitchAwareAudioElement = HTMLAudioElement & { preservesPitch?: boolean; mozPreservesPitch?: boolean; webkitPreservesPitch?: boolean }
+function preservePitch(element: HTMLAudioElement | null): void {
+  const candidate = element as PitchAwareAudioElement | null
+  if (!candidate) return
+  if ('preservesPitch' in candidate) candidate.preservesPitch = true
+  if ('mozPreservesPitch' in candidate) candidate.mozPreservesPitch = true
+  if ('webkitPreservesPitch' in candidate) candidate.webkitPreservesPitch = true
+}
+watch(audio, (element) => preservePitch(element), { immediate: true })
 
 onMounted(async () => { await store.loadListening(); if (material.value) await store.startListeningSession(material.value.materialId) })
 onUnmounted(() => store.dispose())
@@ -40,7 +51,7 @@ async function savePosition(): Promise<void> { if (!audio.value || !store.listen
       <article class="panel player">
         <div class="waveform" role="img" aria-label="轻量波形降级轨道"><i v-for="n in 36" :key="n" :style="{ height: `${20 + (n % 7) * 9}px` }"></i></div>
         <audio ref="audio" :src="audioSrc || undefined" controls preload="metadata" @timeupdate="onTimeUpdate" @pause="void savePosition"><track kind="captions" /></audio>
-        <div class="player-controls"><label>速度 <select v-model.number="playbackRate" @change="setRate"><option :value="0.5">0.5x</option><option :value="0.7">0.7x</option><option :value="1">1.0x</option><option :value="1.5">1.5x</option><option :value="2">2.0x</option></select></label><button type="button" @click="toggleLoop">{{ loopEnabled ? '关闭循环' : '单段循环' }}</button><button type="button" @click="markA">设 A</button><button type="button" @click="markB">设 B</button><button type="button" @click="blindSubtitle = !blindSubtitle">{{ blindSubtitle ? '揭示字幕' : '隐藏字幕' }}</button></div>
+        <div class="player-controls"><label>速度 <select v-model.number="playbackRate" @change="setRate"><option v-for="rate in PLAYBACK_RATES" :key="rate" :value="rate">{{ rate }}x</option></select></label><button type="button" @click="toggleLoop">{{ loopEnabled ? '关闭循环' : '单段循环' }}</button><button type="button" @click="markA">设 A</button><button type="button" @click="markB">设 B</button><button type="button" @click="blindSubtitle = !blindSubtitle">{{ blindSubtitle ? '揭示字幕' : '隐藏字幕' }}</button></div>
         <p class="media-note">{{ audioSrc ? '已获得授权播放地址，播放位置会在暂停时保存。' : '当前内容版本未返回可播放授权地址；波形、时间轴和听写仍可检查，未伪造播放成功。' }}</p><small class="performance-note">性能档位：{{ store.performanceLevel }} · Performance 模式保留时间轴、字幕和听写</small>
         <div class="player-head"><div><p class="eyebrow">{{ material.cefrLevel }} · {{ material.durationMs }}ms</p><h3>{{ material.title }}</h3></div><span class="rights">{{ material.rightsStatus }}</span></div>
         <div class="segments"><button v-for="(item, index) in material.segments" :key="item.segmentId" type="button" :class="{ active: activeSegment === index }" @click="selectSegment(index)"><span>{{ item.startMs }}–{{ item.endMs }}ms</span>{{ blindSubtitle ? '字幕已隐藏' : item.text }}</button></div>

@@ -137,7 +137,7 @@ if (servicesConfig.policy?.autoIncrement !== false) {
 }
 
 const dependencyNames = Object.keys(servicesConfig.services ?? {});
-const requiredDependencies = servicesConfig.requiredDependencies ?? ["mysql", "redis", "minio", "rabbitmq"];
+const requiredDependencies = servicesConfig.requiredDependencies ?? ["mysql", "redis", "minio", "kafka"];
 for (const dependencyName of requiredDependencies) {
   if (!servicesConfig.services?.[dependencyName]) {
     fail(`missing dependency definition: ${dependencyName}`);

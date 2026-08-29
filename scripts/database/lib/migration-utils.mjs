@@ -104,9 +104,42 @@ export function validateMigrationSet() {
       errors.push(`迁移版本与 manifest 不一致: ${migration.file}`);
     }
 
-    if (!/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS/i.test(migration.sql)) {
-      errors.push(`迁移缺少可重复执行的 CREATE TABLE IF NOT EXISTS: ${migration.file}`);
+    const migrationKind = manifestItem?.kind ?? 'create';
+    if (!['create', 'alter'].includes(migrationKind)) {
+      errors.push(`${migration.file} 的迁移类型必须为 create 或 alter`);
     }
+
+    if (migrationKind === 'create') {
+      if (!/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS/i.test(migration.sql)) {
+        errors.push(`建表迁移缺少可重复执行的 CREATE TABLE IF NOT EXISTS: ${migration.file}`);
+      }
+      for (const table of manifestItem?.requiredTables ?? []) {
+        const tablePattern = new RegExp('CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+`?' + table + '`?', 'i');
+        if (!tablePattern.test(migration.sql)) errors.push(`${migration.file} 未创建清单要求的表 ${table}`);
+      }
+      if ((manifestItem?.requiredExistingTables ?? []).length > 0) {
+        errors.push(`${migration.file} 是 create 迁移，不应声明 requiredExistingTables`);
+      }
+    }
+
+    if (migrationKind === 'alter') {
+      const existingTables = manifestItem?.requiredExistingTables ?? [];
+      if (!Array.isArray(existingTables) || existingTables.length === 0) {
+        errors.push(`${migration.file} 是 alter 迁移，必须声明 requiredExistingTables`);
+      }
+      if ((manifestItem?.requiredTables ?? []).length > 0) {
+        errors.push(`${migration.file} 是 alter 迁移，不应声明 requiredTables`);
+      }
+      if (!/\b(?:ALTER\s+TABLE|UPDATE)\b/i.test(migration.sql)) {
+        errors.push(`变更迁移缺少 ALTER TABLE 或 UPDATE: ${migration.file}`);
+      }
+      for (const table of existingTables) {
+        const escapedTable = table.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const tablePattern = new RegExp('\\b(?:ALTER\\s+TABLE|UPDATE)\\s+`?' + escapedTable + '`?\\b', 'i');
+        if (!tablePattern.test(migration.sql)) errors.push(`${migration.file} 未变更清单要求的既有表 ${table}`);
+      }
+    }
+
     if (/\bDROP\s+(DATABASE|SCHEMA|TABLE|VIEW)\b|\bTRUNCATE\s+TABLE\b|\bCREATE\s+DATABASE\b/i.test(migration.sql)) {
       errors.push(`迁移包含禁止的破坏性语句: ${migration.file}`);
     }
@@ -114,10 +147,6 @@ export function validateMigrationSet() {
       errors.push(`迁移不得混入隐式 down 脚本: ${migration.file}`);
     }
 
-    for (const table of manifestItem?.requiredTables ?? []) {
-      const tablePattern = new RegExp('CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+`?' + table + '`?', 'i');
-      if (!tablePattern.test(migration.sql)) errors.push(`${migration.file} 未创建清单要求的表 ${table}`);
-    }
   }
 
   const manifestFiles = manifestMigrations.map((item) => item.file).sort();

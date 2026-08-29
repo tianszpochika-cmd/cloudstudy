@@ -1,9 +1,9 @@
 # v2 目标技术架构与微服务蓝图
 
-> 版本：v2.2（2026-08-22，架构—设计一致性审核后）  
+> 版本：v2.2（2026-08-29，架构—设计一致性审核后）
 > 适用范围：`docs/06-design/v2-980plus/` 第二版设计包及其后续开发任务  
 > 决策入口：[ADR-0010：Java 25 与微服务/Gateway/IAM 架构](../10-decisions/0010-java25-microservices-gateway-iam.md)  
-> 实施状态：目标架构已确定；B7 已落地 Platform 0 基础，B8 正在切换为自有 IAM JWT、Gateway 安全边界、服务侧 PEP、JWKS 与四端会话实现，尚未以本轮验收证据宣称完整目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
+> 实施状态：目标架构已确定；自有 IAM、RS256/JWKS、Gateway 安全边界与服务侧 PEP 已形成代码和契约基线，但完整运行与发布证据仍未齐，不得宣称目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
 
 ## 1. 这份文档解决什么问题
 
@@ -156,14 +156,14 @@ subjectId + tenantId + roles + permission + action + resourceType + resourceId
 
 ### 5.3 自有认证中心、授权执行与租户隔离
 
-- `iam-service` 是平台自有认证中心：账号密码只在 IAM 的 TLS 认证接口校验，密码以 Argon2id（不可用时 BCrypt cost≥12）哈希保存；IAM 直接签发 RS256/ES256 JWT Bearer Access Token、发布 JWKS，并以服务端会话管理轮换/重放检测/撤销 Refresh Token。Web 使用 HttpOnly/Secure/SameSite Cookie，移动端使用 Keychain/Keystore；官网只跳转到统一登录页。服务工作负载使用独立 workload identity。业务租户、角色、ABAC 元数据、同意和审计仍由 `iam-service` 管理。
+- `iam-service` 是平台自有认证中心：账号密码只在 IAM 的 TLS 认证接口校验，密码以 Argon2id（不可用时 BCrypt cost≥12）哈希保存；IAM 在 Phase 1 直接签发 RS256 JWT Bearer Access Token、发布 RSA JWKS，并以服务端会话管理轮换/重放检测/撤销 Refresh Token。Web 使用 HttpOnly/Secure/SameSite Cookie，移动端使用 Keychain/Keystore；官网只跳转到统一登录页。服务工作负载使用独立 workload identity。业务租户、角色、ABAC 元数据、同意和审计仍由 `iam-service` 管理。
 - 正常请求热路径由服务侧 PEP 验签、资源本地事实和已签名/版本化策略包完成；远程 PDP 仅用于高风险后台操作、动态策略或本地安全缓存未命中。PDP 调用有严格 timeout、熔断、审计和 fail-closed 语义，不能把 IAM 变成所有读请求的单点瓶颈。
 - Phase 1 成人产品使用服务端派生的 `platform` tenant，上游客户端不能选择 tenant。Phase 3 多租户扩展采用“共享 schema + 强制 `tenant_id`”起步：每张租户业务表必须包含 `tenant_id`、关键唯一约束/索引包含 `tenant_id`，数据访问层必须由验证后的 `TenantScope` 自动约束并通过跨租户测试。MySQL 不被描述为自带行级安全；对受监管或超大机构的独立数据库/密钥隔离必须另立 ADR。
 - 平台管理员的跨租户动作必须显式携带受审计的目标租户与理由，不能借由空 tenant 或超级角色绕过 owner、阶段、版权和隐私规则。
 
 ### 5.4 Token 与密钥
 
-- Access Token 必须是短时效、最小 scope 的非对称签名 JWT；Gateway 和每个领域服务均通过 IAM JWKS 验证 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type` 和权限声明。目标有效期为 5–15 分钟；算法只允许登记的 RS256/ES256，拒绝 `none`、未登记算法和 HMAC。
+- Access Token 必须是短时效、最小 scope 的非对称签名 JWT；Gateway 和每个领域服务均通过 IAM JWKS 验证 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type` 和权限声明。目标有效期为 5–15 分钟；Phase 1 算法固定为 RS256，拒绝 ES256、`none`、未登记算法和 HMAC。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。
 - Refresh Token 只由 IAM 管理并轮换，检测重放后撤销会话族；Refresh Token 不进入领域服务、URL、日志、事件或前端 Web storage。
 - 签名密钥必须由 KMS/Vault 管理，支持双钥并行、JWKS 发布、轮换和回滚；密钥不进入 Git、镜像、事件或普通日志。
 - 服务间使用 workload identity 和 mTLS；服务账号、用户身份和后台操作者身份不能混用。

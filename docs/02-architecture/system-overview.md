@@ -6,7 +6,7 @@
 
 - Phase 1 先完成 18+ 成人的规则化学习闭环，不以 AI 或多端数量替代学习质量。
 - 多端共享领域模型、OpenAPI 契约、设计令牌和埋点，不强制共享所有 UI。
-- 核心学习、权益和内容数据进入 MySQL；媒体进入对象存储；Redis 不作为唯一事实源。
+- 核心学习、权益和内容数据进入 MySQL；媒体进入对象存储；Redis 不作为唯一事实源或 v2 事件事实源。
 - 生成式 AI 和实时语音均为 Phase 2 独立能力，不影响 Phase 1 可用性。
 - 异步任务可重试、可观测、可取消，并且具备幂等键、Outbox、DLQ 和回放路径。
 - Gateway、IAM/RBAC、服务侧 PEP、数据 owner、事件和观测是所有业务域共同的 v2 平台边界。
@@ -17,11 +17,11 @@
 
 接入层：CDN/WAF、负载均衡、Kubernetes Gateway API 和 `services/api-gateway`；负责鉴权预校验、API 版本、速率限制和 requestId/traceId。
 
-平台层：`services/iam-service` 是平台自有认证中心，校验账号密码、签发短时非对称 JWT Bearer Access Token、发布 JWKS，并承载用户/租户/会话、Refresh Token 轮换/撤销和 RBAC/ABAC 策略；每个业务服务继续独立验签并执行服务侧 PEP。
+平台层：`services/iam-service` 是平台自有认证中心，校验账号密码、在 Phase 1 签发短时 RS256 JWT Bearer Access Token、发布 RSA JWKS，并承载用户/租户/会话、Refresh Token 轮换/撤销和 RBAC/ABAC 策略；每个业务服务继续独立验签并执行服务侧 PEP。ES256 仅可在后续 ADR、契约、密钥 schema 与实现同步后扩展。
 
 业务层：learner、content、learning、assessment、media、gamification、social、commerce、notification、analytics 和 admin-ops 服务；`core-api` 只作为迁移期兼容路由。
 
-任务层：Kafka 兼容事件总线、Outbox、Workflow/Saga、内容处理、通知、分析和通用异步任务。
+任务层：Kafka 兼容事件总线、transactional Outbox、AsyncAPI、Workflow/Saga、内容处理、通知、分析和通用异步任务；RabbitMQ 只保留 `core-api` v1 兼容，Redis 不承载事件事实。
 
 数据层：MySQL、Redis、对象存储、CDN 和分析仓库。
 

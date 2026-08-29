@@ -6,12 +6,12 @@
 
 - design-system.md：全局品牌、视觉和跨端原则。
 - immersive-frontend-architecture.md：沉浸式前端、动效和性能降级架构。
-- phase-1/：Phase 1 UI/UX 设计包 v1.0，包括信息架构、学习地图、词汇、语法、听力、阅读、口语自练、写作、考试、游戏化、商业化、后台、组件和验收清单。
+- phase-1/：Phase 1 UI/UX 设计包 v1.0（Historical / Superseded，仅迁移参考），包括信息架构、学习地图、词汇、语法、听力、阅读、口语自练、写作、考试、游戏化、商业化、后台、组件和验收清单；当前入口见 `v2-980plus/`。
 - phase-2/AI成人学习与AI服务详细设计.md：Phase 2 成人 AI、语音、数字人、RAG 与 AI 社交能力设计。
 - phase-2/AI成人学习与实时交互UIUX详细设计.md：Phase 2 AI 页面、实时会话、状态、降级和四端 UI/UX 追溯。
 - phase-3/K12未成年人教师机构与合规详细设计.md：Phase 3 K12、未成年人、监护、教师机构和合规设计。
 - phase-3/K12未成年人教师机构UIUX与页面状态详细设计.md：Phase 3 K12/家长/教师/机构路由、Gate、页面状态和跨端 UI/UX 追溯。
-- phase-1/full-coverage/：Phase 1 原子功能与 UI/UX 追溯补充设计。
+- phase-1/full-coverage/：Phase 1 原子功能与 UI/UX 追溯补充设计（Historical / Superseded，仅迁移参考）；当前入口见 `v2-980plus/`。
 - shared/全局横向设计基线.md：跨阶段 API、数据、状态、权限、审计、性能和四项目边界。
 - [v2-980plus/](v2-980plus/README.md)：唯一的 v2 全量设计包，包含统一交互模板、四项目 IA、Phase 1/2/3 域级设计、980 行逐条登记册、追溯矩阵、架构映射和一致性审核；`V2-EXT-*` 属于 v2 范围，但需细化签收后才可实施。
 - traceability/：功能总账、PRD 章节归属、原子需求清单、设计登记册、用户故事和冲突签收。

@@ -1,5 +1,7 @@
 # 语学星 Phase 1 本地 HTML UI/UX 工作记录
 
+> **Historical / Superseded（历史 v1 设计包）**：仅用于 v1 迁移与审计追溯，不是当前实现指令。当前业务设计、任务、契约与验收以 [v2-980plus/README.md](../v2-980plus/README.md) 为唯一入口；本文的旧数量、时间、架构、认证、事件、支付、版权和项目结构表述不得覆盖现行基线。
+
 > 记录日期：2026-08-21
 > 当前工作流：Build Web Apps → 本地 HTML/CSS/JavaScript 高保真 UI 套件
 > 设计事实源：本项目仓库内的设计规范、组件清单、页面状态和可运行 HTML 原型

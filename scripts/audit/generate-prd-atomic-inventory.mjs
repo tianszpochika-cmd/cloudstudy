@@ -377,6 +377,8 @@ const registerRows = sourceItems.map((item) => {
 fs.mkdirSync(traceDir, { recursive: true });
 fs.writeFileSync(path.join(traceDir, '03-PRD原子需求候选清单.md'), `# PRD 原子需求候选清单
 
+> **Frozen traceability snapshot / 非规范**：本文件保留生成时提取的 PRD 源证据，以稳定 PRD-ATOM ID；其中旧音频档位等历史字段可能与后续裁决不同。当前值只以 \`docs/06-design/v2-980plus/\` 为准，不能作为 UI/API 实现规范。输出不改变提取/编号算法。
+
 > 自动生成时间：${new Date().toISOString()}
 > 生成器：scripts/audit/generate-prd-atomic-inventory.mjs
 > 源文件：requirements/product-requirements.md
@@ -399,7 +401,7 @@ fs.writeFileSync(path.join(traceDir, '03-PRD原子需求候选清单.md'), `# PR
 | Phase 3 | ${phaseCounts['Phase 3'] ?? 0} |
 | 跨阶段/治理 | ${phaseCounts['跨阶段/治理'] ?? 0} |
 
-“980+”是功能矩阵顶部的宣称值，不能用本表的证据行数量直接替代。它必须在产品负责人确认“功能包、原子能力、治理约束、页面状态是否计数”的口径后，才能回写为正式统计。当前矩阵表内各域分期数字相加为 930，显式 FEAT 行仅为 ${explicitFeatures.length}，详见 [00-功能总账与统计校准](00-功能总账与统计校准.md)。
+\`V2-980-0001..0980\` 的计数口径已冻结：980 个登记单元 = 930 个业务域单元 + 50 个跨域扩展单元。成熟度口径为显式 \`FEAT-*\` 已设计 184、\`PRD-ATOM-*\` 已映射 486、待细化签收 \`V2-EXT-*\` 310；它们不表示 980 个均已详细设计或可实施。本表的候选证据行数量与 \`PRD 显式 FEAT 记录（功能矩阵）\` 动态统计仅用于来源追溯，不改变上述登记编号、成熟度口径或生成行数，详见 [00-功能总账与统计校准](00-功能总账与统计校准.md)。
 
 ## 2. 阶段/业务域候选数量
 
@@ -423,6 +425,8 @@ ${inventoryRows}
 `);
 
 fs.writeFileSync(path.join(traceDir, '04-原子功能设计登记册.md'), `# 原子功能设计登记册
+
+> **Frozen traceability snapshot / 非规范**：本文件与 03 使用同一批稳定 \`PRD-ATOM-*\` 来源证据，仅用于追溯和设计入口映射；旧口径不得作为当前 UI/API、排期或完成状态。当前定义以 \`docs/06-design/v2-980plus/\` 为准，未经 ID/数量迁移签收不得重生成。
 
 > 自动生成时间：${new Date().toISOString()}
 > 生成器：scripts/audit/generate-prd-atomic-inventory.mjs

@@ -293,7 +293,7 @@ export type B9LearnerProfileUpdated = { tenantId: string; principalId: string; p
 /**
  * Generated from the contract source.
  */
-export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45 | 60; updatedAt: string; };
+export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45; updatedAt: string; };
 
 /**
  * Generated from the contract source.

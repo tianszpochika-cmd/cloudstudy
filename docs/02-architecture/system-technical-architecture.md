@@ -26,8 +26,8 @@ official-site          learner-web             admin-web              mobile (un
                                                     │ HTTPS / WSS
                                                     ▼
                                 ┌────────────────────────────────────────┐
-                                │        统一 API 网关 / 鉴权负载层        │
-                                │   (Nginx / WAF / JWT 统一校验与限流)   │
+                                │        边缘防护 + 统一 API Gateway       │
+                                │ (CDN/WAF + services/api-gateway：JWT 预校验/限流) │
                                 └───────────────────┬────────────────────┘
                                                     │
      ┌──────────────────────────────────────────────┴──────────────────────────────────────────────┐
@@ -38,20 +38,20 @@ official-site          learner-web             admin-web              mobile (un
 │                                                        │       │                                                        │
 │  ┌──────────────────┐ ┌──────────────────┐             │       │  ┌──────────────────────────────────────────────────┐  │
 │  │ 1. auth          │ │ 2. user          │             │       │  │ services/ai-orchestrator (Python 3.11 + FastAPI) │  │
-│  │ 认证、鉴权、设备 │ │ 用户档案、家长锁 │             │       │  │ - 大模型接入 (LiteLLM) / 导师智能体 (LangGraph)  │  │
+│  │ 认证、鉴权、设备 │ │ 用户档案、成人 Gate │           │       │  │ - 大模型接入 (LiteLLM) / 导师智能体 (LangGraph)  │  │
 │  └──────────────────┘ └──────────────────┘             │       │  │ - 实时发音流式评分 / 作文智能批改 / RAG 检索      │  │
 │  ┌──────────────────┐ ┌──────────────────┐             │       │  └──────────────────────────────────────────────────┘  │
 │  │ 3. content       │ │ 4. learning      │             │       │                                                        │
-│  │ 词汇/语法/教材/题│ │ 学习流/SM-2 算法 │             │ REST/ │  ┌──────────────────────────────────────────────────┐  │
+│  │ 词汇/语法/内容/题│ │ 学习流/版本化改进型 SM-2 │       │ REST/ │  ┌──────────────────────────────────────────────────┐  │
 │  └──────────────────┘ └──────────────────┘             │ gRPC  │  │ services/realtime-voice (商业 RTC 信令层)        │  │
 │  ┌──────────────────┐ ┌──────────────────┐             │◄─────►│  │ - 声网 / 腾讯云 TRTC 低延迟双向对讲与打断        │  │
 │  │ 5. assessment    │ │ 6. gamification  │             │       │  └──────────────────────────────────────────────────┘  │
-│  │ 做题判分/考卷引擎│ │ 星球/XP/勋章/装扮│             │       └────────────────────────────────────────────────────────┘
+│  │ 做题判分/考卷引擎│ │ P0 拼句小火车/XP/奖励 │          │       └────────────────────────────────────────────────────────┘
 │  └──────────────────┘ └──────────────────┘             │
 │  ┌──────────────────┐ ┌──────────────────┐             │       ┌────────────────────────────────────────────────────────┐
 │  │ 7. commerce      │ │ 8. social        │             │       │                  专项 Worker 任务集群                   │
-│  │ 订阅/支付/权益拦截│ │ 学习室/排行榜/小组│             │       │ - content-worker: 音频切片、波形提取、3D Draco 压缩     │
-│  └──────────────────┘ └──────────────────┘             │       │ - job-runner: 每日任务重算、复习队列分发、数据归档     │
+│  │ SKU/订单/权益 Gate│ │ 学习室/排行榜/小组│             │       │ - content-worker: 音频切片、波形提取、3D Draco 压缩     │
+│  └──────────────────┘ └──────────────────┘             │       │ - job-runner: 每日任务重算、复习调度、数据归档         │
 │  ┌──────────────────┐                                  │       │ - notification-worker: App Push 推送、短信通知         │
 │  │ 9. admin         │                                  │       └────────────────────────────────────────────────────────┘
 │  │ 运营中台聚合接口 │                                  │
@@ -61,8 +61,8 @@ official-site          learner-web             admin-web              mobile (un
                             ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                     数据持久化与缓存集群                                         │
-│  - MySQL 8.x：核心业务关系型数据库（MyBatis-Plus + Flyway 迁移，表前缀物理隔离）                  │
-│  - Redis 7.x：会话/撤销短期投影、学习状态缓存、实时排行榜 (ZSet)、分布式锁与轻量队列        │
+│  - MySQL 8.x：服务独立 schema、账号和写权限（MyBatis-Plus + Flyway 迁移）                         │
+│  - Redis 7.x：会话/撤销短期投影、学习状态缓存、实时排行榜 (ZSet) 与分布式锁；不是事件事实源     │
 │  - 对象存储 (OSS/S3)：音频语料、长难句切片、3D 资产、用户发音录音                                │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -93,14 +93,14 @@ official-site          learner-web             admin-web              mobile (un
 目标服务按 DDD bounded context 划分。每个服务拥有自己的 API、schema、迁移、缓存命名空间、事件契约和发布责任；低流量服务可以共享部署资源，但不得共享写模型。
 
 - **`services/api-gateway`**：Spring Cloud Gateway Server WebFlux；外部路由、`/api/v1` 版本、限流、request/trace 上下文和 JWT 预校验，不写领域事实。
-- **`services/iam-service`**：自有账号密码认证、RS256/ES256 JWT Bearer 会话、JWKS 公钥发布、用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略、Refresh Token 轮换/重放检测/撤销和密钥轮换。
+- **`services/iam-service`**：自有账号密码认证、Phase 1 固定 RS256 JWT Bearer 会话、RSA JWKS 公钥发布、用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略、Refresh Token 轮换/重放检测/撤销和密钥轮换；ES256 必须在后续 ADR、契约/JWKS key schema、密钥管理和运行实现同步后才可扩展。
 - **`services/learner-service`**：用户学习档案、目标、偏好、Onboarding 和个人学习设置。
 - **`services/content-service`**：课程、词汇、语法、题库、媒体引用、版本、版权、审核和发布。
 - **`services/learning-service`**：每日学习流、SRS、复习调度、进度和学习闭环事实。
 - **`services/assessment-service`**：作答、规则判分、模考、掌握度输入和报告快照。
 - **`services/media-service`**：媒体元数据、授权 URL、处理任务、版本哈希和 CDN 分发。
-- **`services/gamification-service` / `social-service`**：XP、Streak、星球、奖励；自习室、低 UGC、举报和排行榜投影。
-- **`services/commerce-service`**：SKU、订单、支付回调、订阅、权益、退款和对账；真实支付默认关闭直到合规 Gate。
+- **`services/gamification-service` / `social-service`**：P0 仅“拼句小火车”及其服务端结算、XP/奖励；P1 经验收后累计最多四款，其他星球/装扮构想不构成当前承诺；自习室、低 UGC、举报和排行榜投影按范围 Gate 进入。
+- **`services/commerce-service`**：SKU、订单、支付适配/回调验签沙盒、权益、退款和对账；真实支付和自动续费默认关闭，直到合规 Gate。
 - **`services/notification-service` / `analytics-service`**：触达记录与重试；脱敏事件、指标和只读分析模型。
 - **`services/admin-ops-service`**：供 `admin-web` 使用的聚合/BFF、审批编排和操作审计关联，不复制领域事实。
 - **`services/core-api`**：迁移期旧单体；通过 Gateway 兼容路由逐域退出，不能继续作为 v2 新功能的默认 owner。
@@ -113,6 +113,6 @@ official-site          learner-web             admin-web              mobile (un
 2. **禁止跨服务写入**：业务域之间禁止跨服务 SQL join、跨服务直接修改对方数据表或共享 ORM entity；必须通过版本化 API、事件、Saga 和补偿协作。
 3. **数据 owner 明确**：服务使用独立 schema、Flyway migration、Redis namespace 和数据库账号；MySQL 可以先共享集群，但不能共享写权限。
 4. **权限双层执行**：Gateway 预校验 + 领域服务 PEP；RBAC 结合租户、owner、phase、版权和 consent，默认拒绝，不能信任客户端角色头。
-5. **事件可回放**：Outbox 事务内落库，事件携带 eventId/traceId/schemaVersion，消费者必须去重、可重试、可进 DLQ、可回放。
+5. **事件可回放**：v2 只使用 Kafka + transactional Outbox + AsyncAPI；Outbox 事务内落库，事件携带 eventId/traceId/schemaVersion，消费者必须去重、可重试、可进 DLQ、可回放。RabbitMQ 只保留 `core-api` v1 兼容，Redis 不承载事件事实。
 6. **AI 与计算密集型隔离**：大模型调用、语音评测、实时 RTC 信令等由独立服务承载，不能阻塞 Phase 1 规则化学习主链。
 

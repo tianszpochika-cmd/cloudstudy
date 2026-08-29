@@ -1,6 +1,6 @@
 # Phase 1 UI/UX 需求追溯与页面状态补充设计
 
-> **状态：历史 v1 UI/UX 补充。** `P1-BASELINE-20260820` 仅用于旧任务回放；新一轮业务设计、任务与验收以 [`../../v2-980plus/README.md`](../../v2-980plus/README.md) 为唯一基线。  
+> **状态：Historical / Superseded（历史 v1 UI/UX 补充）。** `P1-BASELINE-20260820` 仅用于旧任务回放；新一轮业务设计、任务与验收以 [`../../v2-980plus/README.md`](../../v2-980plus/README.md) 为唯一基线。
 > 唯一事实范围：本文件只补充 UI/UX 可追溯关系、页面状态和验收映射，不改变需求账本、共享 README、功能矩阵、API 契约或代码。  
 > 阅读基线：[AGENTS.md](../../../../AGENTS.md)、[requirements](../../../../requirements/README.md)、[Phase 1 跨文档基线](../../../../requirements/backlog/Phase-1范围冻结与跨文档基线.md)、[feature-matrix.md](../../../../requirements/feature-matrix.md)、[UIUX 00~24](../uiux-specs/00_README_设计文档索引.md)、[detailed-specs 01~08](../../detailed-specs/01_Onboarding与自适应首屏详细设计.md)。
 
@@ -433,7 +433,7 @@
 | 范围 | 无法由 UI 单独完成的事实 | 当前 UI 可做的最小投影 | 交付缺口 |
 |---|---|---|---|
 | 测评/推荐 | 规则测评的自适应难度、CEFR 映射、推荐排序、Daily Stream 组题、计划天数 | 显示题目、计算中、结果证据、推荐失败和重试 | 需要 deterministic engine 的版本、输入输出 schema、idempotency 和审计回放 |
-| SRS/掌握 | lrn_srs_state、SM-2/FSRS/Ebbinghaus 内部计算、review_event、D+1/D+7、REOPENED、逾期平滑 | 显示状态、下次时间、队列、pending sync、解释和恢复 | 需要唯一事实源、canonical object ID、迁移策略、并发/幂等和历史快照；不能由 mobile/Web 各自计算 |
+| SRS/掌握 | lrn_srs_state、版本化改进型 SM-2（Phase 1 唯一算法）、`algorithmVersion`、review_event、D+1/D+7、REOPENED、逾期平滑；FSRS 仅为后续经评审、迁移和效果验证后的候选 | 显示状态、下次时间、队列、pending sync、解释和恢复 | 需要唯一事实源、canonical object ID、迁移策略、并发/幂等和历史快照；不能由 mobile/Web 各自计算 |
 | 题目/模考 | 题目组装、服务端计时、答案保护、批量结算、错误归因、反作弊事件判断、报告百分位样本 | 显示题目状态、计时、提交/待同步、告警、样本不足 | 需要 session state machine、server clock、答案隔离、证据链和申诉路径 |
 | 音频/录音 | 变速保音高、转码、字幕/时间轴、离线包、presigned URL/multipart、录音加密/删除 | 显示播放、波形、降级、权限、上传和同步 | 需要媒体 manifest、版权策略、密钥/设备存储生命周期和上传回执 |
 | 口语 Phase 1 | 48 音标 manifest、固定 roleplay、shadowing 校准；明确无 ASR、LLM、AI 分数、RTC | 示范、录音、自评、固定脚本、权限和 fallback | 需要能力开关和审计保证“无 AI”；否则不得把服务端能力暴露成 UI |

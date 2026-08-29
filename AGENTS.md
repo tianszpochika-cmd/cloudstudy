@@ -41,11 +41,11 @@
 - **新服务主线**：`Java 25 LTS + Spring Boot 4.1.x + Spring Framework 7.x`；Spring Cloud 使用匹配的 release train，并由统一 BOM/Version Catalog 锁定版本。
 - **旧实现兼容**：`services/core-api` 当前仍是 Java 17 + Spring Boot 3 模块化单体，只作为 v1 迁移兼容和回滚边界；不得把它描述为 v2 微服务已经完成。
 - **API Gateway**：必须建设 `services/api-gateway`（Spring Cloud Gateway Server WebFlux），负责外部路由、`/api/v1` 版本、CORS、限流、requestId/traceId、JWT 预校验和边界审计；Gateway 不承载领域业务写入。
-- **IAM/RBAC/ABAC**：必须建设 `services/iam-service` 作为平台自有认证中心，使用账号密码校验并签发短时非对称 JWT Access Token，发布 JWKS，管理 Refresh Token 轮换/重放检测/撤销、principal、用户、租户、设备、会话、角色、权限、策略和撤销事实。RBAC 结合资源所有者、阶段、内容版权、设备和同意状态决策；默认拒绝。禁止引入 OIDC/OAuth、Keycloak 或第三方身份提供方作为正式登录方案。
+- **IAM/RBAC/ABAC**：必须建设 `services/iam-service` 作为平台自有认证中心，使用账号密码校验并在 Phase 1 固定签发短时 RS256 JWT Access Token、发布 RSA JWKS，管理 Refresh Token 轮换/重放检测/撤销、principal、用户、租户、设备、会话、角色、权限、策略和撤销事实。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。Phase 1 的 `/api/v1/auth/register` 是仅面向 18 岁以上成人的公开注册入口，成人 Gate 必须由服务端判定后才能开放学习能力；账号密码只能直接提交至 IAM 的 TLS 认证入口，领域服务不得接收、转发或校验密码，客户端不得保存或代替 IAM 处理密码；`iam-service` 是唯一 Token 签发方，领域服务、Gateway 和客户端均不得自行签发。RBAC 结合资源所有者、阶段、内容版权、设备和同意状态决策；默认拒绝。禁止引入 OIDC/OAuth、Keycloak 或第三方身份提供方作为正式登录方案。
 - **服务侧鉴权**：每个领域服务必须使用 Spring Security Resource Server 验证令牌并执行 PEP；正常热路径使用已验证 JWT、资源本地事实和版本化策略包/短时安全缓存，高风险/动态策略或安全缓存未命中才调用 PDP。PDP、撤销或策略版本异常必须 fail closed。严禁信任 `X-B5-Role`、`X-Role` 或客户端提交的 tenant/owner 字段。Gateway 鉴权不能替代服务侧鉴权。
 - **目标领域服务**：`learner-service`、`content-service`、`learning-service`、`assessment-service`、`media-service`、`gamification-service`、`social-service`、`commerce-service`、`notification-service`、`analytics-service`、`admin-ops-service`，边界和数据 owner 见 v2 微服务架构。
 - **平台服务**：`audit-service`（安全/管理/导出审计）和 `workflow-service`（Saga、定时任务、补偿、DLQ、人工恢复）；初期可由平台模块或 `job-runner` 承载，但不能跨服务直接写领域表。
-- **数据与事件**：MySQL 8.x 按服务独立 schema/写权限，Redis 7.x 不作为唯一事实源；Kafka 兼容事件总线 + Outbox + AsyncAPI 只发布跨服务集成事实，按聚合 ID 分区、至少一次投递、幂等消费、Saga 和补偿。禁止共享表写入、Kafka RPC/事务协调和分布式两阶段提交。
+- **数据与事件**：MySQL 8.x 按服务独立 schema/写权限，Redis 7.x 不作为唯一事实源或事件平台；v2 只使用 Kafka 兼容事件总线 + Outbox + AsyncAPI 发布跨服务集成事实，按聚合 ID 分区、至少一次投递、幂等消费、Saga 和补偿。RabbitMQ 仅保留给 `services/core-api` 的 v1 历史兼容，Redis Streams 不得作为 v2 事件事实源。禁止共享表写入、Kafka RPC/事务协调和分布式两阶段提交。
 - **部署与观测**：目标为 OCI + Kubernetes + Helm/Kustomize + GitOps；服务模板默认包含 OpenTelemetry、健康探针、优雅停机、SBOM、依赖扫描和可回滚发布。共享集群可行；已抽取服务必须独立进程、schema、凭据和发布/回滚责任。
 - **实时语音与媒体通信**：Phase 2 优先商业 RTC（声网/腾讯云 TRTC）和独立 `realtime-voice` 服务，实现低延迟双向对讲与 Barge-in；严禁 HTTP 轮询。自建 LiveKit 需新增 ADR。
 - **AI 智能编排中心**：Phase 2 使用 `Python 3.11+ (FastAPI + LangGraph / LiteLLM)` 独立服务，通过 REST/gRPC/事件与领域服务通信，客户端不得直连模型供应商。
@@ -76,7 +76,7 @@
    - `content-service` 拥有内容/题目/答案规则版本，`assessment-service` 拥有 attempt/checkpoint/判分/报告，`learning-service` 拥有计划/SRS/进度/掌握度投影；BFF、workflow 和 audit 不得跨域双写。
    - `services/core-api` 只作为迁移中的反腐层；新增业务默认不得继续向其中增加跨域功能。
 3. **身份与权限**：
-   - `/api/v1/auth/login`、`/api/v1/auth/token/refresh`、`/api/v1/auth/logout`、`/api/v1/auth/sessions/{sessionId}/revoke`、`/api/v1/auth/password-reset/*` 和 `/api/v1/auth/jwks` 是认证中心的唯一公开/会话入口；默认拒绝；权限判断至少包含 subject、tenant、role、permission、resource、action、owner、phase 和 content rights。
+   - `/api/v1/auth/register`（仅 18 岁以上成人公开注册）、`/api/v1/auth/login`、`/api/v1/auth/token/refresh`、`/api/v1/auth/logout`、`/api/v1/auth/sessions/{sessionId}/revoke`、`/api/v1/auth/password-reset/*` 和 `/api/v1/auth/jwks` 是认证中心的唯一公开/会话入口；只有 IAM 可以签发 Token，默认拒绝；权限判断至少包含 subject、tenant、role、permission、resource、action、owner、phase 和 content rights。
    - Gateway 和领域服务都必须鉴权；401/403 不能伪装为空列表；任何客户端角色头都无效。
    - Phase 1 tenant 由服务端派生；Phase 3 共享 schema 必须强制 `tenant_id`、`TenantScope` 和跨租户测试，MySQL 不得被声称为自动行级隔离。
 4. **可靠性与事件**：

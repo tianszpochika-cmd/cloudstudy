@@ -9,7 +9,7 @@
 
 JWT 是 API Access Token 格式。认证中心校验账号密码并直接签发短时非对称 JWT；所有业务 API 的 `aud` 固定为 `yuxuexing-api`。Gateway 和每个领域服务必须独立通过 IAM JWKS 验证签名、issuer、算法、audience、时间窗口、token type 和 scope/permission，再执行本地 PEP。
 
-Access Token 至少包含：`iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type=access`、`scope`。需要授权时增加由 IAM 事实生成的 `permissions`、`roles`、`tenant_id`、`session_id`；客户端请求头和请求体不能覆盖这些声明。只允许登记的 RS256/ES256，拒绝 `none`、HMAC、错误 key id、错误 issuer/audience 和过期 Token。
+Access Token 至少包含：`iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type=access`、`scope`。需要授权时增加由 IAM 事实生成的 `permissions`、`roles`、`tenant_id`、`session_id`；客户端请求头和请求体不能覆盖这些声明。Phase 1 只允许 RS256，拒绝 ES256、`none`、HMAC、错误 key id、错误 issuer/audience 和过期 Token。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。
 
 Refresh Token 是不可用于业务 API 的高熵不透明会话凭证。每次刷新都轮换并使旧值失效；旧值再次出现即视为重放，撤销整个 token family、设备会话并记录审计事实。登出、设备撤销、密码重置和管理员强制下线都必须立即撤销服务端会话。
 

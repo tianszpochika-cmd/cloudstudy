@@ -26,9 +26,9 @@
 
 | 阶段 | 用户与业务边界 | 核心功能与技术实现 | 阶段合规与准入要求 |
 |---|---|---|---|
-| **Phase 1<br>(基座版)** | **18+ 成人 / 大学生**<br>标准语言学习产品 | 词汇、语法、长难句、听力、阅读、口语自练、写作、模考与 SM-2 复习流；沉浸交互与星球体系。<br>**技术**：Vue 3 四项目 + Java 25 微服务/Gateway/IAM/RBAC + MySQL 8.x + Redis 7.x (无生成式 AI)；现有 Java 17 `core-api` 仅作迁移兼容。 | 企业主体、ICP 备案、网安备案、教育 App 备案、应用商店合规。 |
+| **Phase 1<br>(基座版)** | **18+ 成人 / 大学生**<br>标准语言学习产品 | 词汇、语法、长难句、听力、阅读、口语自练、写作、模考与**版本化改进型 SM-2**复习流；每日计划固定为 5/15/30/45 分钟，音频支持保音高的 0.5x~2.0x。游戏化 P0 仅交付“拼句小火车”，P1 经验收后最多扩展至四款。<br>**技术**：Vue 3 四项目 + Java 25 微服务/Gateway/IAM/RBAC + MySQL 8.x + Redis 7.x (无生成式 AI)；现有 Java 17 `core-api` 仅作迁移兼容。 | 企业主体、ICP 备案、网安备案、教育 App 备案、应用商店合规。 |
 | **Phase 2<br>(AI 增强版)** | **18+ 职场 / 留学 / 出海**<br>AI 导师伴学与实战 | AI 学习导师、流式发音评测、作文智能批改、低延迟 RTC 实时语音对话、数字人伴学、雅思/托福。<br>**技术**：新增 Python 3.11 FastAPI (LiteLLM/LangGraph) + 商业 RTC。 | 生成式 AI 应用登记、深度合成算法备案、AI 内容双审过滤与标识。 |
-| **Phase 3<br>(受监管扩展)** | **未成年人 / K12 中小学**<br>教材同步与家校生态 | 人教/外研/牛津等多版本教材知识图谱同步、音标基础、防沉迷家长锁、班级自习室与联考。<br>**技术**：多教材版本树 RAG + 家长监护鉴权系统。 | 取得出版物经营许可、校外培训专项合规、未成年人保护专项。 |
+| **Phase 3<br>(受监管扩展)** | **未成年人 / K12 中小学**<br>教材同步与家校生态 | 在取得有效授权且处于授权范围内时，接入多版本教材知识图谱同步、音标基础、防沉迷家长锁、班级自习室与联考。<br>**技术**：多教材版本树 RAG + 家长监护鉴权系统。 | 取得出版物经营许可、校外培训专项合规、未成年人保护专项。 |
 
 ---
 
@@ -50,8 +50,8 @@ Phase 1 **有意设计为覆盖面较大的首发基座**，不是只做一条�
 | **B1** | 身份、用户隐私、目标与 Onboarding、首日学习链、内容供应链和种子内容 |
 | **B2** | 词汇与 SRS、做题中心、规则化测评、掌握度、报告和通知基础 |
 | **B3** | 语法、写作、听力、阅读、口语自练、录音自评、离线同步和全模态学习闭环 |
-| **B4** | 游戏化星系、成长与奖励、社群/自习室、用户服务和相关学习事件 |
-| **B5** | 商业化收单与权益、教研 CMS、运营中台、客服、审计和合规运营能力 |
+| **B4** | P0“拼句小火车”、成长与奖励、社群/自习室、用户服务和相关学习事件；P1 经验收后再扩展游戏，累计不超过四款 |
+| **B5** | SKU、订单、权益、激活码、渠道适配/验签沙盒、教研 CMS、运营中台、客服、审计和合规运营能力；真实支付与自动续费默认关闭 |
 | **B6** | 跨端发布、响应式与性能验收、关键路径 E2E、可靠性、观测和发布门禁 |
 
 批次任务数量、负责人、状态、依赖和解除条件的唯一事实源是 [`requirements/backlog/Agent开发状态总报表.md`](requirements/backlog/Agent开发状态总报表.md)，README 不重复维护易变的任务数字。
@@ -87,13 +87,13 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 | 服务目录 | 定位与架构 | 核心职责 |
 |---|---|---|
 | **`services/api-gateway`** | **Java 25 + Spring Cloud Gateway**<br>(v2 外部入口) | 路由、API 版本、CORS、限流、JWT 预校验、requestId/traceId；不写领域事实。 |
-| **`services/iam-service`** | **Java 25 + Spring Boot 4.1**<br>(身份与权限服务) | 自有账号密码登录、短时 RS256/ES256 JWT、JWKS、公钥轮换、用户/租户/设备/会话、RBAC + ABAC 策略和 Token 撤销。 |
+| **`services/iam-service`** | **Java 25 + Spring Boot 4.1**<br>(身份与权限服务) | 自有账号密码登录、Phase 1 短时 RS256 JWT、RSA JWKS、公钥轮换、用户/租户/设备/会话、RBAC + ABAC 策略和 Token 撤销；ES256 仅可在后续 ADR、契约、密钥 schema 与实现同步后扩展。 |
 | **目标领域服务集群** | **Java 25 + Spring Boot 4.1**<br>(目标领域微服务) | 按 learner/content/learning/assessment/media/gamification/social/commerce/notification/analytics/admin-ops 划分事实和数据 owner。 |
 | **`services/core-api`** | **Java 17 + Spring Boot 3**<br>(迁移兼容单体) | v1 旧实现和回滚边界；通过 Gateway 逐域迁移，当前代码存在不代表 v2 微服务/RBAC 已完成。 |
 | **`services/ai-orchestrator`** | **Python 3.11 + FastAPI**<br>(Phase 2 独立 AI 编排) | 大模型统一接入 (LiteLLM)、AI 伴学导师智能体 (LangGraph)、发音/语法流式评测、RAG 向量检索。 |
 | **`services/realtime-voice`** | **RTC 语音信令接入层** (Phase 2) | 商业 RTC (声网/TRTC) 低延迟双向对讲与打断 (Barge-in) 信令处理。 |
 | **`services/content-worker`** | **内容与媒体处理 Worker** | 音频切片、波形特征提取、3D 模型 Draco 压缩、题库批量索引。 |
-| **`services/job-runner`** | **异步调度与任务引擎** | 每日学习流重算、艾宾浩斯复习队列分发、统计数据定期归档。 |
+| **`services/job-runner`** | **异步调度与任务引擎** | 每日学习流重算、版本化改进型 SM-2 复习调度、统计数据定期归档。 |
 | **`services/notification-worker`** | **消息与触达服务** | 学习打卡 Push 推送、短信验证码、站内通知信。 |
 
 ### 3. 共享与基础设施 (`packages/` & `database/`)

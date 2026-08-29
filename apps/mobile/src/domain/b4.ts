@@ -1,6 +1,8 @@
 export const B4_PERFORMANCE_LEVELS = ['Ultra', 'High', 'Medium', 'Performance'] as const
+export const B4_GAME_RELEASE_PHASES = ['P0', 'P1', 'LONG_TERM'] as const
 import { createClientId } from '../platform/client-id'
 export type B4PerformanceLevel = (typeof B4_PERFORMANCE_LEVELS)[number]
+export type B4GameReleasePhase = (typeof B4_GAME_RELEASE_PHASES)[number]
 export type B4Status = 'idle' | 'loading' | 'ready' | 'offline' | 'error' | 'empty' | 'permission' | 'recovery' | 'processing' | 'success'
 export type B4GameCode = 'SENTENCE_TRAIN' | 'WORD_MATCH' | 'WORD_DEFENSE' | 'WORD_PUZZLE' | 'GRAMMAR_BLASTER' | 'CATCH_MEANING'
 export type B4FocusAction = 'PAUSE' | 'RESUME' | 'COMPLETE' | 'AUTO_RELEASE' | 'HEARTBEAT'
@@ -16,7 +18,7 @@ export interface B4AvatarProfile { avatarId: string; resourceVersion: string; re
 export interface B4AvatarItem { itemCode: string; quality: string; slot: string; resourceVersion: string; owned?: boolean }
 export interface B4Loadout { loadoutId: string; name: string; equipped: boolean; items: string[] }
 export interface B4AvatarResources { resourceVersion: string; manifestHash: string | null; fallbackMode: '3D' | '2D_FALLBACK'; performanceTiers: B4PerformanceLevel[] }
-export interface B4GameCatalogItem { gameCode: B4GameCode; maxMinutes: number | null; pauseLimitMinutes: number | null; passAccuracyPercent: number | null; passCompletionPercent: number | null }
+export interface B4GameCatalogItem { gameCode: B4GameCode; releasePhase: B4GameReleasePhase; enabled: boolean; maxMinutes: number | null; pauseLimitMinutes: number | null; passAccuracyPercent: number | null; passCompletionPercent: number | null }
 export interface B4GameChallenge { roundNo: number; itemCode: string; challengeToken: string }
 export interface B4GameSession { sessionId: string; gameCode: B4GameCode; status: string; seq: number; attemptCount: number; createdAt: string | null; maxMinutes: number | null; pauseLimitMinutes: number | null; challenges: B4GameChallenge[] }
 export interface B4GameFinishResult { sessionId: string; status: string; passed: boolean; accuracyPercent: number; completionPercent: number; serverScore: number; rewardEligible: boolean }

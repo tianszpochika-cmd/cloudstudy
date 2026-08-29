@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { PerformanceLevel } from '@englishflow/performance'
 import B11StatusPanel from '../../components/b11/B11StatusPanel.vue'
 import { b11T, b11ThemeMode } from '../../platform/b11-foundation'
-import { getUniRuntime, type UniAudioContext } from '../../platform/uni-runtime'
+import { enableUniAudioPitchPreservation, getUniRuntime, type UniAudioContext } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 import { useB11LearningStore } from '../../stores/b11-learning'
 
@@ -11,6 +11,7 @@ type AudioControl = UniAudioContext & { currentTime?: number; duration?: number;
 
 const session = useSessionStore()
 const store = useB11LearningStore()
+const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 const pageMessage = ref<string | null>(null)
 const audio = ref<AudioControl | null>(null)
 const timer = ref<ReturnType<typeof setInterval> | null>(null)
@@ -44,13 +45,16 @@ function play(): void {
   if (!source.value) { pageMessage.value = b11T('listening.noMedia'); return }
   const context = getUniRuntime().createInnerAudioContext?.()
   if (!context) { pageMessage.value = '当前平台没有音频适配器；字幕与练习仍可继续。'; return }
-  audio.value?.destroy(); audio.value = context as AudioControl; audio.value.src = source.value; audio.value.playbackRate = store.playbackRate; audio.value.play()
+  const control = context as AudioControl
+  audio.value?.destroy(); audio.value = control
+  enableUniAudioPitchPreservation(control, () => { pageMessage.value = '当前平台未声明音高保持能力；速度控制仍可用，已记录降级。' })
+  control.src = source.value; control.playbackRate = store.playbackRate; control.play()
   if (timer.value) clearInterval(timer.value)
   timer.value = setInterval(tick, 500)
 }
 
 function pause(): void { audio.value?.pause(); tick(); void store.saveMediaProgress() }
-function setRate(event: { detail: { value: number } }): void { const values = [.5, .7, 1, 1.5, 2]; store.setPlaybackRate(values[Number(event.detail.value)] ?? 1); if (audio.value) audio.value.playbackRate = store.playbackRate }
+function setRate(event: { detail: { value: number } }): void { store.setPlaybackRate(PLAYBACK_RATES[Number(event.detail.value)] ?? 1); if (audio.value) audio.value.playbackRate = store.playbackRate }
 function setPerformance(level: PerformanceLevel): void { store.setPerformance(level) }
 function sync(): void { void store.syncOffline() }
 function toggleMotion(disabled: boolean): void { store.setMotionDisabled(disabled) }
@@ -72,7 +76,7 @@ onUnmounted(() => { if (timer.value) clearInterval(timer.value); audio.value?.de
     <view v-if="store.listening && segment" class="yx-card listening-card">
       <view class="card-heading"><view><text class="kicker">{{ store.listening.material.title }}</text><text class="subtle">{{ b11T('common.contentVersion') }} {{ store.listening.contentVersion }}</text></view><text class="rights" :class="`rights--${store.mediaRightsState.toLowerCase()}`">{{ store.mediaRightsState }}</text></view>
       <view class="timeline"><view v-if="store.canUseWaveform" class="waveform" aria-label="waveform"><view v-for="bar in 28" :key="bar" class="bar" :style="{ height: `${22 + (bar % 8) * 7}rpx` }"></view></view><view v-else class="static-waveform"><text>2D / static timeline</text><text>{{ b11T('common.noSample') }}</text></view><view class="timeline-track"><view class="timeline-progress" :style="{ width: `${store.mediaProgress}%` }"></view></view><text class="subtle">{{ b11T('listening.position') }} · {{ positionText }} · {{ Math.round(store.mediaProgress) }}%</text></view>
-      <view class="controls"><button class="small-button" type="button" @click="play">{{ b11T('listening.play') }}</button><button class="small-button" type="button" @click="pause">{{ b11T('listening.pause') }}</button><picker mode="selector" :range="[0.5, 0.7, 1, 1.5, 2]" :value="[0.5, 0.7, 1, 1.5, 2].indexOf(store.playbackRate)" @change="setRate"><view class="small-button">{{ store.playbackRate }}x</view></picker><button class="small-button" type="button" @click="setA">{{ b11T('listening.setA') }}</button><button class="small-button" type="button" @click="setB">{{ b11T('listening.setB') }}</button><button v-if="store.abStartMs !== null || store.abEndMs !== null" class="small-button secondary" type="button" @click="store.clearAB">{{ b11T('listening.clearAB') }}</button></view>
+      <view class="controls"><button class="small-button" type="button" @click="play">{{ b11T('listening.play') }}</button><button class="small-button" type="button" @click="pause">{{ b11T('listening.pause') }}</button><picker mode="selector" :range="PLAYBACK_RATES" :value="PLAYBACK_RATES.indexOf(store.playbackRate as (typeof PLAYBACK_RATES)[number])" @change="setRate"><view class="small-button">{{ store.playbackRate }}x</view></picker><button class="small-button" type="button" @click="setA">{{ b11T('listening.setA') }}</button><button class="small-button" type="button" @click="setB">{{ b11T('listening.setB') }}</button><button v-if="store.abStartMs !== null || store.abEndMs !== null" class="small-button secondary" type="button" @click="store.clearAB">{{ b11T('listening.clearAB') }}</button></view>
       <text v-if="store.abStartMs !== null || store.abEndMs !== null" class="subtle">A {{ store.abStartMs === null ? '—' : `${Math.round(store.abStartMs / 1000)}s` }} · B {{ store.abEndMs === null ? '—' : `${Math.round(store.abEndMs / 1000)}s` }} · 仅在 A、B 都有效时循环。</text>
       <text class="subtle">{{ source ? '已获得短时播放地址；过期或撤销后自动停止授权。' : b11T('listening.noMedia') }}</text>
 

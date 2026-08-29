@@ -9,8 +9,8 @@
 - 先判断阶段、年龄/主体、内容版本、权限和可用性，再渲染核心 CTA。
 - 所有学习动作都必须回到“目标 → 练习 → 反馈 → 复习 → 复盘”；社交、游戏和商业模块只能作为辅助出口。
 - 所有写操作具备自动保存、幂等、失败恢复和可回放证据；不让客户端直接修改跨域事实。
-- 所有登录后 API 请求使用 IAM 签发的 JWT Bearer（Access Token）；Refresh Token 轮换、重放检测、撤销和设备下线由 IAM 会话边界统一处理。
-- 登录/注册页面提交密码只能到 IAM；业务客户端不能自行签发或解析 JWT。401、403、过期、撤销和刷新失败必须分别呈现可理解的恢复动作。
+- 所有登录后 API 请求使用平台 IAM 签发的 JWT Bearer（Access Token）；Refresh Token 轮换、重放检测、撤销和设备下线由 IAM 会话边界统一处理。
+- 登录/注册页面可以品牌化，但不得在前端或业务服务签发 JWT；401、403、过期、撤销和刷新失败必须分别呈现可理解的恢复动作。
 - 移动端、iPad、learner-web 的业务状态相同，页面组件按平台分别实现；admin-web 和 official-site 不复用学习者导航。
 
 ## 2. 域级设计
@@ -45,7 +45,7 @@
 **路由宿主**：courses；practice/srs；practice/quick；practice/mastery；vocab/*  
 **终端**：apps/mobile（H5/App/iPad）+ apps/learner-web（PC/PWA）
 
-**交互意图**：把内容浏览、主动回忆、信心度反馈、SRS 排程和 D+1/D+7 验证串成可回放的记忆闭环。
+**交互意图**：把内容浏览、主动回忆、信心度反馈、SRS 排程和 D+1/D+7 验证串成可回放的记忆闭环。内容范围遵循合法来源与可追溯授权边界。
 
 **主流程**：进入词书/生词本 → 查看词条 → 主动回忆/作答 → 选择信心度 → 即时反馈 → 写入 SRS → 到期复习
 
@@ -53,7 +53,7 @@
 
 **状态设计**：ST-D/ST-E/ST-F；NEW/LEARNING/MASTERED/CONSOLIDATED；队列为空、内容版本失效、媒体失败、重复复习和离线恢复。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → content-service + learning-service；vocab_*、chunk、expression、lrn_srs_state、review_event、content_version。已发布内容可读；个人生词、掌握度和复习记录仅本人可读写；内容编辑权限不进入学习端。
+**契约与事实源**：Gateway → content-service + learning-service；vocab_*、chunk、expression、lrn_srs_state、review_event、content_version。内容来源仅限自有、开放许可或合法授权；第三方品牌、教材、词书、释义、例句、音频、题目和统计数据须绑定有效授权凭证及使用范围，缺失或过期不得发布。 已发布内容可读；个人生词、掌握度和复习记录仅本人可读写；内容编辑权限不进入学习端。
 
 **事件**：vocab.item_viewed.v1、srs.review_submitted.v1、srs.schedule_rebuilt.v1、mastery.updated.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
 

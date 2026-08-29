@@ -1,7 +1,7 @@
-# 首 30 天执行清单
+# 首 30 天执行清单（Historical / Superseded）
 
-> 目标：验证 18+ 成人 Phase 1 的规则化学习闭环。v2 目标技术为 Vue 3 四项目 + Java 25/Spring Boot 4.1 微服务 + Gateway/IAM/RBAC + MySQL/Redis；现有 `core-api` 仅是迁移兼容。不引入生成式 AI。
-> 本文是 v1 首 30 天执行清单；在 v2 任务重基线后，需拆成 Platform 0 与 Phase 1 新任务，不能直接沿用旧批次状态。
+> **文档分类：Historical / Superseded（v1 首 30 天计划快照）**。下方周计划和“初始化/上线/实现”等动作只记录当时的计划，不得直接作为当前开发命令或完成证据。当前执行见 [`roadmap.md`](./roadmap.md)、[`../../requirements/mvp-scope.md`](../../requirements/mvp-scope.md) 和 [`../../requirements/backlog/README.md`](../../requirements/backlog/README.md)；其中 9A 冻结的四项目、930+50、184/486/310、游戏、SRS、音频、支付和内容口径优先。
+> 原 v1 计划目标是验证 18+ 成人 Phase 1 规则化学习闭环；它不改变当前 v2 Platform 0 / Phase 1 的任务拆分和 Gate。
 
 ## 第 1 周：冻结基线
 

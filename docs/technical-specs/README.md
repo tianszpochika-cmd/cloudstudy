@@ -1,6 +1,8 @@
 # 技术规格与架构文档索引
 
-> 当前 v2 技术基线：Vue 3 + TypeScript + uni-app 四项目 + Java 25 LTS/Spring Boot 4.1 微服务 + Gateway/IAM/RBAC + MySQL 8.x/Redis 7.x。现有 `core-api` 的 Java 17/Spring Boot 3 仅是迁移兼容实现。
+> 当前 v2 技术基线：四个前端项目分别是 `apps/mobile`（唯一 uni-app 学习端）、`apps/learner-web`（PC/平板/PWA 学习 Web）、`apps/admin-web`（Element Plus 管理后台）和 `apps/official-site`（公开官网）；后端采用 Java 25 LTS/Spring Boot 4.1 微服务 + Gateway/IAM/RBAC + MySQL 8.x/Redis 7.x。现有 `core-api` 的 Java 17/Spring Boot 3 仅是迁移兼容实现。
+
+> `modules/01~08` 是旧详细设计的迁移与审计参考，不是新任务、契约或实现的事实源；与当前基线冲突时，以 `AGENTS.md`、ADR-0007/0008/0010/0013 和 v2 设计包为准。
 
 ## 技术文档入口
 
@@ -23,9 +25,9 @@
 
 ### Phase 1
 
-- Vue 3 + uni-app 学习端和 Vue 3 管理后台。
+- 四个冻结项目：`apps/mobile`、`apps/learner-web`、`apps/admin-web`、`apps/official-site`；小程序仅由 `apps/mobile` 条件编译输出。
 - Java 25 + Spring Boot 4.1 微服务目标、Gateway/IAM/RBAC、MySQL 8.x、Redis 7.x、OSS/CDN；旧 `core-api` 作为迁移兼容后端。
-- 规则化测评、SRS、题目评分、错题复习、报告和游戏化。
+- 规则化测评、版本化改进型 SM-2、题目评分、错题复习、报告；游戏化 P0 仅“拼句小火车”。
 - 不接入生成式 AI、AI 发音评分、AI 数字人、开放式 AI 聊天。
 
 ### Phase 2

@@ -1,23 +1,24 @@
-# 统一跨端与性能自适应架构
+# 统一跨端与性能自适应架构（Historical / Superseded）
 
-> 最终跨端基线：Vue 3 + TypeScript + uni-app。本文不比较已废弃路线；如需改变技术主线，必须先新增 ADR。
+> 状态：Historical / Superseded（历史/已被替代）。本文保留四级性能、自适应降级和平台能力的迁移参考；当前项目归属、路由宿主和发布边界以 [v2-980plus 设计基线](../06-design/v2-980plus/README.md)、[四项目信息架构](../06-design/v2-980plus/02-全端信息架构与交互模式.md) 和 ADR-0008 为准。
+> 当前固定为四个前端项目：`apps/mobile`、`apps/learner-web`、`apps/admin-web`、`apps/official-site`。微信小程序由 `apps/mobile` 的 uni-app 条件编译输出；不得建立 `apps/miniapp-wechat` 独立业务项目；官网不承载登录后的学习业务。
 
-## 1. 端策略与发布优先级
+## 1. v2 当前四项目映射（唯一入口）
 
-| 终端 | 实现方式 | Phase 1 优先级 | 说明 |
+| 前端项目 | 实现方式 | 平台目标 | 说明 |
 |---|---|---|---|
-| Web / H5 | uni-app H5 | P0 | 首发学习主链路和试学入口 |
-| iOS / Android | uni-app 原生渲染编译 | P0 包体验证 | 上架节奏受备案和审核影响 |
-| iPad | uni-app App + 横屏适配 | P1 | 复用学习端，增强阅读和分栏体验 |
-| 微信小程序 | uni-app 条件编译 | P1.5 | 不阻塞 Web/H5 首发 |
-| Windows | Web + PWA | P2 | 仅在系统能力需求明确后评估 Tauri 壳 |
-| 官网 | Nuxt 3 或 uni-app H5 | P0 | SEO、品牌和测评转化 |
-| 管理后台 | Vue 3 + Vite + Element Plus | P0 | 教研、审核、运营、客服 |
+| `apps/mobile` | Vue 3 + TypeScript + uni-app（Vue3） | 移动 H5、iOS、Android、iPad；微信小程序条件编译目标 | 唯一的 uni-app 学习端项目；不复制第二套业务页面或 API 层 |
+| `apps/learner-web` | Vue 3 + TypeScript | PC Web、平板浏览器、PWA、Windows 默认工作区 | 独立学习 Web 项目；不重复承载 `apps/mobile` 的移动 H5 业务页面 |
+| `apps/admin-web` | Vue 3 + TypeScript + Element Plus | 教研、审核、运营、商业化、客服和审计后台 | 不复用学习者端导航和业务页面 |
+| `apps/official-site` | Vue 3 + TypeScript 的独立官网构建 | 品牌、课程介绍、价格、下载、SEO 和合规公示 | 独立官网项目；不承载登录后的学习业务或业务 Token |
+
+小程序是 `apps/mobile` 的平台输出形态，不是第五个前端项目。桌面端默认使用 `apps/learner-web` 的 Web/PWA；如确需原生壳，只能按 ADR 评估 Tauri 2.0。
 
 ## 2. 代码复用原则
 
 - 共享领域模型、OpenAPI 生成类型、设计令牌、埋点和业务规则。
 - 使用 uni-app 条件编译隔离平台 API，不复制核心学习业务。
+- 四个项目分别维护平台 UI 壳；共享的是契约、领域规则、Token、埋点和国际化资源，不要求跨 Web/uni-app 直接复用 DOM 或页面。
 - H5/App 高表现力模块可通过 web-view 承载；小程序必须准备 2D 或静态降级。
 - Phase 1 不开发 AI 数字人和 AI 口腔实验室；相关容器仅允许作为 Phase 2 功能开关预留。
 

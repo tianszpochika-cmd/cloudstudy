@@ -8,10 +8,12 @@ const manifestRelativePath = 'config/g1-contract-data.json'
 const runtimeRequestedByProcess = process.argv.includes('--require-runtime') || process.env.G1_REQUIRE_RUNTIME === '1'
 const httpMethods = new Set(['get', 'post', 'put', 'patch', 'delete', 'options', 'head', 'trace'])
 const forbiddenText = [
-  /Bearer\s+[A-Za-z0-9._~-]+/i,
+  // Allow descriptive security prose such as "JWT Bearer Access Token" while
+  // still rejecting a concrete bearer value (including short test secrets).
+  /Bearer\s+(?!(?:Access|Token|JWT)\b)[A-Za-z0-9._~-]+/i,
   /\bsk-[A-Za-z0-9]/i,
   /-----BEGIN [A-Z ]+-----/i,
-  /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\./,
+  /(?:^|\b)eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+(?:\b|$)/i,
   /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i,
   /(?:^|\D)(?:\+?86[- ]?)?1[3-9]\d{9}(?:$|\D)/,
   /https?:\/\//i,
@@ -220,15 +222,26 @@ function validateMigrationsAndOwners(manifest, errors) {
   const migrationManifest = readJson(migrationPolicy?.canonicalManifestPath, 'migration manifest', errors)
   requireCondition(migrationManifest?.engine === 'mysql-8.0' && migrationManifest?.checksumAlgorithm === 'sha256-normalized-utf8', 'migration manifest engine/checksum policy is invalid', errors)
   const migrations = migrationManifest?.migrations ?? []
-  requireCondition(migrations.length >= 21, 'migration manifest must contain the current 21-version baseline', errors)
+  requireCondition(migrations.length === migrationPolicy?.expectedMigrationCount, `migration manifest count mismatch: expected ${migrationPolicy?.expectedMigrationCount}, got ${migrations.length}`, errors)
   const versions = migrations.map((migration) => migration?.version)
   unique(versions, 'migration versions', errors)
   for (const migration of migrations) {
     requireString(migration?.file, `migration ${migration?.version}.file`, errors)
-    requireArray(migration?.requiredTables, `migration ${migration?.version}.requiredTables`, errors)
+    const migrationKind = migration?.kind ?? 'create'
+    requireCondition(['create', 'alter'].includes(migrationKind), `migration ${migration?.version}.kind must be create or alter`, errors)
+    if (migrationKind === 'create') {
+      requireArray(migration?.requiredTables, `migration ${migration?.version}.requiredTables`, errors)
+      requireCondition((migration?.requiredExistingTables ?? []).length === 0, `create migration ${migration?.version} must not declare requiredExistingTables`, errors)
+    }
+    if (migrationKind === 'alter') {
+      requireArray(migration?.requiredExistingTables, `migration ${migration?.version}.requiredExistingTables`, errors)
+      requireCondition((migration?.requiredTables ?? []).length === 0, `alter migration ${migration?.version} must not declare requiredTables`, errors)
+    }
     const migrationPath = path.join(path.dirname(migrationPolicy?.canonicalManifestPath ?? ''), migration.file ?? '')
     const source = readText(migrationPath, `migration ${migration?.version}`, errors)
     requireCondition(source.length > 0, `migration ${migration?.version} source must be non-empty`, errors)
+    if (migrationKind === 'create') requireCondition(/CREATE\s+TABLE\s+IF\s+NOT\s+EXISTS/i.test(source), `create migration ${migration?.version} must create a table idempotently`, errors)
+    if (migrationKind === 'alter') requireCondition(/\b(?:ALTER\s+TABLE|UPDATE)\b/i.test(source), `alter migration ${migration?.version} must change an existing table`, errors)
   }
   requireCondition(migrationPolicy?.runtimeDiffEvidenceStatus === 'pending' && migrationPolicy?.emptyUpgradeDowngradeFailureRecoveryRequired === true, 'migration runtime evidence must remain pending and require recovery', errors)
   for (const boundary of ['directory-exists', 'static-sql-only', 'synthetic-schema-diff', 'development-http-200']) requireCondition(migrationPolicy?.cannotBeSatisfiedBy?.includes(boundary), `migration fake-pass boundary missing ${boundary}`, errors)

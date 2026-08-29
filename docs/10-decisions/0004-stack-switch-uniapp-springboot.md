@@ -1,19 +1,21 @@
 # ADR-0004：采用 Vue 3 + uni-app + Spring Boot 3 作为产品主线
 
-> **历史决策说明**：前端四项目和跨端边界继续有效；Java 17/Spring Boot 3 的新后端主线已由 ADR-0010 取代，旧版本只作为 `core-api` 迁移兼容运行时。
+> **历史决策说明**：本 ADR 仅保留 Vue 3/uni-app 的选型来源和 `core-api` 迁移背景。当前四前端项目边界以 [ADR-0008](0008-four-frontend-projects-and-platform-targets.md) 为准；Java 25 微服务、Kafka/Outbox/AsyncAPI 事件平台和 `core-api` 的兼容边界以 [ADR-0010](0010-java25-microservices-gateway-iam.md) 为准。
 
 ## 状态
 
-superseded（后端部分由 ADR-0010 取代；前端部分保留）
+superseded（当前前端项目矩阵见 [ADR-0008](0008-four-frontend-projects-and-platform-targets.md)，当前后端与事件平台见 [ADR-0010](0010-java25-microservices-gateway-iam.md)）
 
-## 决策
+## 原始决策记录（历史，非当前规范）
+
+以下内容保留用于审计旧实现来源，不能作为新任务、契约、基础设施或运行时的依据。
 
 项目采用以下主线：
 
 1. 学习端使用 Vue 3 + TypeScript + uni-app，统一输出 Web、H5、iOS、Android、iPad 和后续微信小程序。
 2. 管理后台使用 Vue 3 + Vite + Element Plus。
 3. 核心业务后端使用 Java 17 + Spring Boot 3 模块化单体。
-4. 异步任务使用 RabbitMQ 或 Redis Streams。
+4. 当时的异步任务曾使用 RabbitMQ 或 Redis Streams；这不是 v2 规则。
 5. Windows 使用 Web + PWA；只有确需系统能力时才评估原生壳。
 
 ## 原因

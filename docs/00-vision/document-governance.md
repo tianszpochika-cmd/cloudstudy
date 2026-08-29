@@ -1,12 +1,12 @@
 # 语学星产品与研发文档治理
 
-> 版本：v2.2
+> 版本：v2.3
 >
-> 生效日期：2026-08-22
+> 生效日期：2026-08-29
 >
 > 适用范围：Phase 1 全部产品、设计、前端、后端、数据库、内容、测试、运营与 Agent 交付
 
-本文件是文档治理地图，不替代任务状态报表。B7+ 的负责人、状态、证据和阻塞以 [`requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md`](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 为准；[`Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 只保留 B0–B6 历史状态。本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
+本文件是文档治理地图，不替代任务状态报表。B7–B22 的代码/静态基础以 [`v2-B7plus-代码重塑与交互测试任务基线.md`](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 为准；B23–B27 的真实运行前置以 [`v2-B23plus-Phase1-真实运行与实机测试任务基线.md`](../../requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md) 为准；当前本机验收进度以 [`v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md) 及 [`b36-validation.md`](../07-operations/b36-validation.md) 的 `LOCAL-TEST-NO-PASS` 结论为准。[`Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 只保留 B0–B6 历史状态。本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
 
 v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2-980plus/README.md)，后端技术入口为 [`docs/02-architecture/v2-microservices-architecture.md`](../02-architecture/v2-microservices-architecture.md)；旧 B0–B6 与 `core-api` 记录只保留历史/迁移语义。
 
@@ -18,12 +18,12 @@ v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2
 |---:|---|---|---|
 | 1 | `AGENTS.md` | 技术栈、架构边界、隐私与 DoD 总规则 | 关键技术路线变更必须走 ADR |
 | 2 | `docs/06-design/v2-980plus/` | **新一轮开发唯一的全量业务设计与需求落地基线**：范围、用户交互、四项目宿主、阶段与验收 | `V2-EXT-*` 属于 v2 范围但未细化签收不得进入任务；冲突时以 v2 为准并同步追溯台账 |
-| 3 | `docs/02-architecture/v2-microservices-architecture.md`、`docs/02-architecture/v2-platform-capability-matrix.md`、ADR-0009/0010 | 服务边界、Gateway、IAM/RBAC、数据/事件和平台能力 | `ARCH-*` 不计入业务 Feature；技术冲突必须通过 ADR/v2 变更闭环 |
+| 3 | `docs/02-architecture/v2-microservices-architecture.md`、`docs/02-architecture/v2-platform-capability-matrix.md`、ADR-0009/0010/0012/0013 | 服务边界、Gateway、自有 IAM/JWT、数据/事件和平台能力 | `ARCH-*` 不计入业务 Feature；技术冲突必须通过 ADR/v2 变更闭环 |
 | 4 | `requirements/product-requirements.md`、`requirements/mvp-scope.md`、`requirements/acceptance-criteria.md`、`requirements/feature-matrix.md` | 来源证据、`FEAT-*` 编号、法规/Phase 底线、统计与可测试验收 | 新需求先更新 v2 与本层追溯；本层不能以旧文案推翻 v2 |
 | 5 | `docs/09-roadmap/roadmap.md` | 分期、Platform 0、优先级与全阶段发布 Gate | 不得因单个 Agent 方便而提前跨期 |
 | 6 | `docs/06-design/detailed-specs/01~09`、旧 `phase-*`、B0–B6 | 历史实现、术语和迁移参考 | 不作为新任务需求事实源；发生冲突时以 v2 和目标架构为准 |
 | 7 | `packages/contracts/`、`database/mysql/migrations/`、代码与测试 | 可执行实现与验证证据 | 必须反向链接到需求/设计/任务 |
-| 8 | `requirements/backlog/` | 任务拆分、执行 SOP、证据和状态交接 | B7+ 以 `v2-B7plus-代码重塑与交互测试任务基线.md` 为状态事实；旧台账只作历史；v2 任务必须新增 `Source/Arch/Service/Data Owner` |
+| 8 | `requirements/backlog/` | 任务拆分、执行 SOP、证据和状态交接 | B7、B23、B28 三份 v2 台账按批次递进；当前本机状态以 B28/B36 为准；旧台账只作历史；v2 任务必须新增 `Source/Arch/Service/Data Owner` |
 
 有效 ADR 位于 `docs/10-decisions/`。ADR 记录架构、范围、数据所有权和不可逆约束；普通实现细节留在设计文档或代码中，不能用 ADR 代替 API、DDL 或测试。
 
@@ -35,12 +35,18 @@ Phase 1 的成人、安全和阶段约束仍然必须遵守，但新任务的执
 |---|---|---|
 | 用户 | 18 岁以上成人与大学生；规则化自主学习闭环 | 未成年人注册、K12/教材同步入口 |
 | 学习闭环 | 学习目标 → 练习 → 规则反馈 → 复习 → 掌握/报告 | 用 AI 结论替代可解释规则 |
+| 前端项目 | 只维护 `apps/mobile`、`apps/learner-web`、`apps/admin-web`、`apps/official-site` 四个业务项目；小程序由 mobile 条件编译 | 新建独立 H5、iPad 或小程序业务项目 |
+| 认证 | 平台自有 IAM 账号密码登录；Phase 1 固定 RS256 JWT/RSA JWKS；IAM 是唯一 Token 签发方 | OIDC/OAuth、Keycloak、第三方 IdP、客户端或领域服务自行签 Token |
+| 事件 | Kafka + transactional Outbox + AsyncAPI 是 v2 事件事实源；RabbitMQ 仅作 `core-api` v1 可选兼容 | RabbitMQ/Redis Streams 作为 v2 事件主线或 Kafka RPC |
+| 范围登记 | `V2-980-0001..0980` = 930 个业务单元 + 50 个跨域登记位；成熟度 184/486/310 | 把 980 解释为 980 份可实施设计或已完成功能 |
 | 每日时长 | `5 / 15 / 30 / 45` 分钟 | PRD 旧版 `5 / 10 / 20 / 30` 不得并行实现 |
 | 音标清单 | 唯一 `EN_48_PHASE1` manifest，20 个元音 + 28 个辅音 | 客户端、CMS 各自维护一份 48 项列表 |
 | 音频变速 | `0.5x~2.0x`，音高保持；墙钟时长与内容时间轴分离 | 只实现某个端的局部倍速范围 |
 | 口语 | 跟读、影子跟读、录音回放、音标/口型规则教学；不出 AI 分数 | Phase 1 接入 LLM、ASR、AI 发音评分或 RTC |
-| SRS | `lrn_srs_state` 为唯一 SRS 事实；D+1/D+7 使用 `DELAY_VERIFY_D1` / `DELAY_VERIFY_D7`，最终使用 `MASTERED` | 新建第二套 SM-2、Daily Stream 或掌握事实表 |
-| 商业化 | 权益和激活码模型可开发；微信/支付宝/Apple IAP 支付开关默认关闭 | 用假回调、客户端成功页或未验资质渠道上线 |
+| SRS | `lrn_srs_state` 为唯一 SRS 事实；Phase 1 固定版本化改进型 SM-2，记录 `algorithmVersion`；D+1/D+7 使用 `DELAY_VERIFY_D1` / `DELAY_VERIFY_D7`，最终使用 `MASTERED` | 并行启用 FSRS、新建第二套 SM-2、Daily Stream 或掌握事实表 |
+| 学习游戏 | P0 仅启用 Sentence Train；P1 扩展到总计 4 款；6–8 款仅是长期 registry/路线目标 | 因枚举中存在 6 个 gameCode 就宣称六款均已上线 |
+| 商业化 | SKU、订单、权益、激活码、渠道适配、回调验签与沙盒可开发；微信/支付宝/Apple IAP 支付开关默认关闭，且不得自动续费 | 用假回调、客户端成功页或未验资质渠道上线 |
+| 内容版权 | 仅发布自有、开放许可或已取得有效授权且在范围/期限内的内容与媒体 | 把品牌、词典释义、教材、真题、统计资料或第三方媒体视为默认可用 |
 | 分期隔离 | Phase 2 AI/RTC 和 Phase 3 未成年人/K12 只保留显式预留，不进入 Phase 1 UI、路由、营销和注册 | 用隐藏入口提前交付跨期功能 |
 
 ### 2.1 冻结后的变更规则

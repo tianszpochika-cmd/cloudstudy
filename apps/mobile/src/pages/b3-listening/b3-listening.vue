@@ -4,16 +4,17 @@ import { createAdaptivePerformanceEngine, type PerformanceLevel } from '@english
 import B2StatusPanel from '../../components/b2/B2StatusPanel.vue'
 import { createListeningSession, isB3OfflineError, listListeningMaterials, submitDictation } from '../../api/b3'
 import type { B3Status, DictationResult, ListeningMaterial } from '../../domain/b3'
-import { getUniRuntime, type UniAudioContext } from '../../platform/uni-runtime'
+import { enableUniAudioPitchPreservation, getUniRuntime, type UniAudioContext } from '../../platform/uni-runtime'
 import { useSessionStore } from '../../stores/session'
 
 const session = useSessionStore(); const engine = createAdaptivePerformanceEngine(); const performanceLevel = ref<PerformanceLevel>(engine.level)
 const status = ref<B3Status>('idle'); const message = ref<string | null>(null); const material = ref<ListeningMaterial | null>(null); const sessionId = ref<string | null>(null); const answer = ref(''); const result = ref<DictationResult | null>(null)
+const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const
 const segment = computed(() => material.value?.segments[0] ?? null); const audioSource = computed(() => material.value?.mediaRef?.availability === 'READY' ? material.value.mediaRef.signedUrl ?? null : null); const audio = ref<UniAudioContext | null>(null); const playbackRate = ref(1); const unsubscribe = engine.subscribe((state) => { performanceLevel.value = state.level })
 function setPerformance(level: PerformanceLevel): void { engine.setLevel(level, 'manual'); performanceLevel.value = level }
 async function load(): Promise<void> { status.value = 'loading'; message.value = null; result.value = null; answer.value = ''; try { const materials = await listListeningMaterials(); material.value = materials[0] ?? null; sessionId.value = material.value ? await createListeningSession(material.value.materialId) : null; status.value = material.value ? 'ready' : 'empty'; if (material.value && !sessionId.value) message.value = '听力会话尚未建立，答题不会伪造成功。' } catch (error) { status.value = isB3OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '听力服务暂时不可用，未使用本地音频样例。' } }
 async function submit(): Promise<void> { if (!sessionId.value || !segment.value || !answer.value.trim()) { message.value = '请先读取真实听力会话并填写听写答案。'; return } try { result.value = await submitDictation(sessionId.value, segment.value.segmentId, answer.value); message.value = result.value.correct ? '服务端判定正确。' : '服务端已记录本次错题，可按反馈复习。' } catch (error) { status.value = isB3OfflineError(error) ? 'offline' : 'error'; message.value = error instanceof Error ? error.message : '听写提交失败，答案仍保留在当前页面。' } }
-function playAudio(): void { if (!audioSource.value) { message.value = '当前内容没有授权播放地址；未伪造音频播放。'; return } audio.value?.destroy(); const context = getUniRuntime().createInnerAudioContext?.(); if (!context) { message.value = '当前平台没有音频适配器；未伪造音频播放。'; return } audio.value = context; context.src = audioSource.value; context.playbackRate = playbackRate.value; context.play() }
+function playAudio(): void { if (!audioSource.value) { message.value = '当前内容没有授权播放地址；未伪造音频播放。'; return } audio.value?.destroy(); const context = getUniRuntime().createInnerAudioContext?.(); if (!context) { message.value = '当前平台没有音频适配器；未伪造音频播放。'; return } audio.value = context; enableUniAudioPitchPreservation(context, () => { message.value = '当前平台未声明音高保持能力；速度控制仍可用，已记录降级。' }); context.src = audioSource.value; context.playbackRate = playbackRate.value; context.play() }
 function pauseAudio(): void { audio.value?.pause() }
 function changeRate(): void { if (audio.value) audio.value.playbackRate = playbackRate.value }
 onMounted(async () => { await session.restore(); if (!session.isAuthenticated) { getUniRuntime().navigateTo({ url: '/pages/login/login' }); return } void load() })
@@ -30,7 +31,7 @@ onUnmounted(() => { audio.value?.destroy(); unsubscribe(); engine.dispose() })
       <text class="card-kicker">{{ material.title }} · {{ Math.round(material.durationMs / 1000) }}s</text>
       <view class="waveform"><view v-for="bar in 24" :key="bar" class="bar" :style="{ height: `${24 + (bar % 7) * 7}rpx` }"></view></view>
       <text class="segment-time">{{ segment.startMs }}ms — {{ segment.endMs }}ms</text>
-      <view class="audio-controls"><button class="small-button" type="button" :disabled="!audioSource" @click="playAudio">播放</button><button class="small-button" type="button" :disabled="!audioSource" @click="pauseAudio">暂停</button><picker mode="selector" :range="[0.5, 0.7, 1, 1.5, 2]" @change="playbackRate = Number([0.5, 0.7, 1, 1.5, 2][Number($event.detail.value)]); changeRate()"><view class="small-button">{{ playbackRate }}x</view></picker></view>
+      <view class="audio-controls"><button class="small-button" type="button" :disabled="!audioSource" @click="playAudio">播放</button><button class="small-button" type="button" :disabled="!audioSource" @click="pauseAudio">暂停</button><picker mode="selector" :range="PLAYBACK_RATES" @change="playbackRate = PLAYBACK_RATES[Number($event.detail.value)] ?? 1; changeRate()"><view class="small-button">{{ playbackRate }}x</view></picker></view>
       <text class="hint">{{ audioSource ? '已获得授权播放地址；速度控制使用原生音频适配层。' : '当前内容没有授权播放地址；波形、时间轴和听写可检查，但不会伪造播放。' }}</text>
       <view class="token-list"><view v-for="token in segment.tokens" :key="token.tokenId" class="token"><text>{{ token.text }}</text><text class="token__time">{{ token.startMs }}–{{ token.endMs }}ms</text></view></view>
       <input v-model="answer" class="answer" placeholder="输入你听到的句子" confirm-type="done" />

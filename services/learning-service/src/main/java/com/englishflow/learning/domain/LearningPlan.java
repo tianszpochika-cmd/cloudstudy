@@ -33,9 +33,7 @@ public record LearningPlan(
             throw new IllegalArgumentException("timeZoneId is required");
         }
         ZoneId.of(timeZoneId);
-        if (dailyQuotaMinutes < 5 || dailyQuotaMinutes > 240) {
-            throw new IllegalArgumentException("dailyQuotaMinutes must be between 5 and 240");
-        }
+        DailyQuotaMinutes.require(dailyQuotaMinutes);
         Objects.requireNonNull(status, "status is required");
         if (version < 1) {
             throw new IllegalArgumentException("plan version must be positive");

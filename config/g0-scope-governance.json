@@ -260,7 +260,7 @@
         {"contains": "Phase 2"},
         {"contains": "Phase 3"},
         {"contains": "通过 Gate 后启用"},
-        {"contains": "fail-closed"}
+        {"contains": "fail closed"}
       ]
     },
     {

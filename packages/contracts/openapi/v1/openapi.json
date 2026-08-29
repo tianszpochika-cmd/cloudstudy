@@ -130,7 +130,7 @@
     },
     {
       "name": "b4-games",
-      "description": "六类统一学习游戏会话和服务端判定"
+      "description": "长期游戏 registry、阶段 Gate 和服务端判定"
     },
     {
       "name": "b4-avatar",
@@ -1231,13 +1231,19 @@
           "b8-auth"
         ],
         "operationId": "registerB8Account",
-        "summary": "Create a platform account and establish a JWT session",
+        "summary": "Create an adult Phase 1 account and establish a restricted JWT session",
+        "description": "Unauthenticated public registration for people aged 18 or above. Only iam-service receives the password and issues the session; Phase 1 learning access remains denied until the server-derived adult Gate passes.",
         "security": [],
         "x-contract": {
           "domain": "iam",
           "owner": "iam-service",
           "phase": "P1",
           "authentication": "self-owned-jwt"
+        },
+        "x-public-entry": {
+          "audience": "adult-18-plus",
+          "adultGate": "server-derived-before-learning-access",
+          "credentialBoundary": "iam-service-only"
         },
         "x-idempotency": {
           "required": true,
@@ -5869,6 +5875,31 @@
         "tags": [
           "b4-games"
         ],
+        "x-b4-game-registry": {
+          "owner": "gamification-service",
+          "releasePhase": {
+            "P0": [
+              "SENTENCE_TRAIN"
+            ],
+            "P1": [
+              "WORD_MATCH",
+              "WORD_DEFENSE",
+              "WORD_PUZZLE"
+            ],
+            "LONG_TERM": [
+              "GRAMMAR_BLASTER",
+              "CATCH_MEANING"
+            ]
+          },
+          "enabledByDefault": [
+            "SENTENCE_TRAIN"
+          ],
+          "enumIsRegistryOnly": true,
+          "disabledSessionResponse": {
+            "status": 409,
+            "code": "GAME_NOT_AVAILABLE"
+          }
+        },
         "responses": {
           "200": {
             "$ref": "#/components/responses/B4GenericResponse"
@@ -5907,8 +5938,11 @@
           "201": {
             "$ref": "#/components/responses/B4GenericResponse"
           },
+          "400": {
+            "$ref": "#/components/responses/B4GameCodeInvalid"
+          },
           "409": {
-            "$ref": "#/components/responses/B4Conflict"
+            "$ref": "#/components/responses/B4GameNotAvailable"
           }
         }
       }
@@ -16870,6 +16904,26 @@
             }
           }
         }
+      },
+      "B4GameCodeInvalid": {
+        "description": "HTTP 400：gameCode 缺失或不在长期 registry 中，不能默认选择其他游戏。",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B4ErrorResponse"
+            }
+          }
+        }
+      },
+      "B4GameNotAvailable": {
+        "description": "HTTP 409，错误码 GAME_NOT_AVAILABLE：gameCode 在长期 registry 中但当前 releasePhase 未启用。",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B4ErrorResponse"
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -22918,6 +22972,41 @@
         "required": [
           "gameCode"
         ],
+        "x-b4-game-registry": {
+          "owner": "gamification-service",
+          "entries": [
+            {
+              "gameCode": "SENTENCE_TRAIN",
+              "releasePhase": "P0",
+              "enabled": true
+            },
+            {
+              "gameCode": "WORD_MATCH",
+              "releasePhase": "P1",
+              "enabled": false
+            },
+            {
+              "gameCode": "WORD_DEFENSE",
+              "releasePhase": "P1",
+              "enabled": false
+            },
+            {
+              "gameCode": "WORD_PUZZLE",
+              "releasePhase": "P1",
+              "enabled": false
+            },
+            {
+              "gameCode": "GRAMMAR_BLASTER",
+              "releasePhase": "LONG_TERM",
+              "enabled": false
+            },
+            {
+              "gameCode": "CATCH_MEANING",
+              "releasePhase": "LONG_TERM",
+              "enabled": false
+            }
+          ]
+        },
         "properties": {
           "gameCode": {
             "type": "string",
@@ -24438,10 +24527,7 @@
                 },
                 "alg": {
                   "type": "string",
-                  "enum": [
-                    "RS256",
-                    "ES256"
-                  ]
+                  "const": "RS256"
                 },
                 "n": {
                   "type": "string"
@@ -25838,8 +25924,7 @@
               5,
               15,
               30,
-              45,
-              60
+              45
             ]
           },
           "targetDate": {
@@ -25902,8 +25987,7 @@
               5,
               15,
               30,
-              45,
-              60
+              45
             ]
           },
           "targetDate": {
@@ -31779,7 +31863,7 @@
           "accessToken": {
             "type": "string",
             "writeOnly": true,
-            "description": "TLS only; IAM-signed RS256/ES256 JWT; 禁止日志或 Web storage 保存。"
+            "description": "TLS only; IAM-signed RS256 JWT; 禁止日志或 Web storage 保存。"
           },
           "refreshToken": {
             "type": "string",
@@ -31844,25 +31928,76 @@
             "maxLength": 32
           }
         }
+      },
+      "B4GameCatalogItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gameCode",
+          "releasePhase",
+          "enabled"
+        ],
+        "properties": {
+          "gameCode": {
+            "type": "string",
+            "enum": [
+              "SENTENCE_TRAIN",
+              "WORD_MATCH",
+              "WORD_DEFENSE",
+              "WORD_PUZZLE",
+              "GRAMMAR_BLASTER",
+              "CATCH_MEANING"
+            ]
+          },
+          "releasePhase": {
+            "type": "string",
+            "enum": [
+              "P0",
+              "P1",
+              "LONG_TERM"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "maxMinutes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pauseLimitMinutes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "passAccuracyPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "passCompletionPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
       }
     },
     "requestBodies": {},
     "examples": {}
-  },
-  "x-b8-compatibility": {
-    "legacyRoutes": [],
-    "removedFlows": [
-      "external-provider-login",
-      "authorization-callback",
-      "client-side-role-override"
-    ],
-    "rule": "No legacy route may mint or relay a token; compatibility, when temporarily required, is historical-only and fail-closed."
   },
   "x-b8-authentication": {
     "mode": "self-owned-jwt-authentication-center",
     "protocol": "platform-json-api",
     "signer": "iam-service",
     "credentialFlow": "account-password",
+    "issuerBoundary": {
+      "tokenIssuer": "iam-service-only",
+      "passwordReceiver": "iam-service-only",
+      "prohibitedTokenIssuers": [
+        "api-gateway",
+        "domain-service",
+        "client-application"
+      ]
+    },
     "accessToken": {
       "format": "JWT",
       "tokenType": "Bearer",
@@ -31906,5 +32041,14 @@
       "scope-permission"
     ],
     "productionKeyBoundary": "KMS-or-secret-manager-only; never Git-image-log"
+  },
+  "x-b8-compatibility": {
+    "legacyRoutes": [],
+    "removedFlows": [
+      "external-provider-login",
+      "external-browser-handoff",
+      "browser-supplied-role-override"
+    ],
+    "rule": "Only iam-service may mint tokens. Compatibility routes are historical-only, cannot mint tokens, and fail closed."
   }
 }

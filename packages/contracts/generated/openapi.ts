@@ -1235,7 +1235,7 @@ export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNI
 /**
  * Generated from the contract source.
  */
-export type B8JwksResponse = { keys: ReadonlyArray<{ kty: "RSA"; kid: string; use: "sig"; alg: "RS256" | "ES256"; n: string; e: string; }>; };
+export type B8JwksResponse = { keys: ReadonlyArray<{ kty: "RSA"; kid: string; use: "sig"; alg: "RS256"; n: string; e: string; }>; };
 
 /**
  * Generated from the contract source.
@@ -1425,12 +1425,12 @@ export type B9LearnerProfilePatch = { expectedStateVersion: B9ExpectedStateVersi
 /**
  * Generated from the contract source.
  */
-export type B9LearnerTarget = { targetId: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45 | 60; targetDate?: string; status: "ACTIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
+export type B9LearnerTarget = { targetId: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; targetDate?: string; status: "ACTIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
 
 /**
  * 目标命令不接受 tenantId 或 owner/principal 字段；目标始终绑定到已验证主体。
  */
-export type B9LearnerTargetUpsert = { expectedStateVersion: B9ExpectedStateVersion; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45 | 60; targetDate?: string; status?: "ACTIVE" | "PAUSED"; };
+export type B9LearnerTargetUpsert = { expectedStateVersion: B9ExpectedStateVersion; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; targetDate?: string; status?: "ACTIVE" | "PAUSED"; };
 
 /**
  * Generated from the contract source.
@@ -2401,6 +2401,11 @@ export type B8AuthTokenResponse = { accessToken: string; refreshToken?: string; 
  * Generated from the contract source.
  */
 export type B8DeviceInput = { deviceId?: string; deviceType: "IOS" | "ANDROID" | "WEB" | "H5" | "IPAD"; deviceName?: string; osVersion?: string; clientVersion: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B4GameCatalogItem = { gameCode: "SENTENCE_TRAIN" | "WORD_MATCH" | "WORD_DEFENSE" | "WORD_PUZZLE" | "GRAMMAR_BLASTER" | "CATCH_MEANING"; releasePhase: "P0" | "P1" | "LONG_TERM"; enabled: boolean; maxMinutes?: number; pauseLimitMinutes?: number; passAccuracyPercent?: number; passCompletionPercent?: number; };
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;

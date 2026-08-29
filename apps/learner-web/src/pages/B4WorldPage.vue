@@ -154,9 +154,9 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 
     <template v-else-if="activePanel === 'games'">
       <section class="b4-card">
-        <div class="b4-card__heading"><div><p class="card-kicker">GAME LOBBY</p><h2>六大规则化学习游戏</h2></div><span>Performance 档仍可完成一局</span></div>
+        <div class="b4-card__heading"><div><p class="card-kicker">GAME LOBBY</p><h2>规则化学习游戏</h2></div><span>可用性由服务端阶段 Gate 决定</span></div>
         <p class="b4-muted">游戏题包和 responseToken 必须由服务端会话返回；页面不会用本地答案、分数或奖励替代服务端判定。</p>
-        <div v-if="b4.games.length" class="b4-game-grid"><article v-for="game in b4.games" :key="game.gameCode" class="b4-game"><span class="b4-game__icon" aria-hidden="true">✦</span><strong>{{ gameLabel(game.gameCode) }}</strong><small>{{ game.gameCode }}</small><span>{{ game.maxMinutes ?? '—' }} 分钟上限 · 暂停 {{ game.pauseLimitMinutes ?? '—' }} 分钟</span><button class="button button--primary" type="button" @click="startGame(game.gameCode)">创建服务端会话</button></article></div>
+        <div v-if="b4.games.length" class="b4-game-grid"><article v-for="game in b4.games" :key="game.gameCode" class="b4-game" :class="{ 'b4-game--disabled': !game.enabled }"><span class="b4-game__icon" aria-hidden="true">✦</span><strong>{{ gameLabel(game.gameCode) }}</strong><small>{{ game.gameCode }}</small><span>发布阶段 {{ game.releasePhase }} · {{ game.enabled ? '当前可用' : '尚未开放' }}</span><span>{{ game.maxMinutes ?? '—' }} 分钟上限 · 暂停 {{ game.pauseLimitMinutes ?? '—' }} 分钟</span><button class="button button--primary" type="button" :disabled="!game.enabled" @click="startGame(game.gameCode)">{{ game.enabled ? '创建服务端会话' : '阶段未开放' }}</button></article></div>
         <p v-else class="b4-inline-empty">服务端未返回游戏目录，无法开始游戏。</p>
       </section>
       <section v-if="b4.activeGame" class="b4-card b4-game-session">
@@ -199,4 +199,5 @@ function cleanupOfflineDownload(downloadId: string): void { void b4.cleanupOffli
 @media(max-width:900px){.b4-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.b4-grid--world,.b4-grid--social,.b4-grid--avatar{grid-template-columns:1fr}.b4-map{grid-template-columns:repeat(2,minmax(0,1fr))}.b4-game-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.b4-hero{padding:24px}.b4-hero__orb{width:76px;height:76px;font-size:30px}.b4-status{display:grid}.b4-status__actions{justify-content:flex-start}.b4-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.b4-metric{padding:14px}.b4-metric strong{font-size:24px}.b4-card{padding:18px}.b4-map,.b4-game-grid,.b4-item-grid,.b4-form-grid{grid-template-columns:1fr}.b4-quest,.b4-room,.b4-notification,.b4-package{grid-template-columns:1fr}.b4-room__actions{grid-column:auto}.b4-loadout button{grid-column:auto}.b4-timer{font-size:46px}}
 @media(prefers-reduced-motion:reduce){.b4-hero__orb{animation:none}}
+.b4-game--disabled{background:#f7f8fc}.b4-game--disabled .b4-game__icon{color:#8a91a3;background:#eceef4}.b4-game .button:disabled{cursor:not-allowed;opacity:.55}
 </style>

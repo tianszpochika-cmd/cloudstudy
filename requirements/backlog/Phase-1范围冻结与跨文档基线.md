@@ -1,4 +1,4 @@
-# Phase 1 范围冻结与跨文档基线（v1 历史记录）
+# Phase 1 范围冻结与跨文档基线（v1 Historical / Superseded）
 
 > 基线 ID：`P1-BASELINE-20260820`
 >
@@ -27,15 +27,17 @@
 | P1-11 | 商业化开关 | 权益、SKU、订单和激活码可以先建模；微信/支付宝/Apple IAP 的实际支付默认关闭，只有资质/沙盒/验签/退款/对账/回滚/审计证据齐全后才能打开 | `COM`、`ADM`、发布 Gate |
 | P1-12 | Phase 隔离 | Phase 2 的 AI Tutor、LLM、RAG、ASR、发音评测、RTC、数字人；Phase 3 的未成年人/K12/教材同步/家长模式均不进入 Phase 1 UI、路由、注册、营销和默认数据 | `AI2`、`K12`、全端 |
 
-## 2. 已知冲突与解决
+## 2. 已知冲突与解决（已裁决，不是待冻结事项）
+
+本节的旧值仅作为被拒绝的历史冲突证据；“冻结处理”是当前裁决结果，不能按“待产品决定”或“待再次确认”解释。
 
 | 冲突位置 | 旧/分散描述 | 冻结处理 | 证据 |
 |---|---|---|---|
-| PRD §3.1 | `5/10/20/30` 分钟 | 采用 feature matrix、详细设计和开发总纲的 `5/15/30/45`；旧值保留为历史冲突，不进入新契约 | `requirements/feature-matrix.md`、`requirements/backlog/开发实施总纲与功能链条任务分解.md` |
-| PRD §8.1 | `0.75x/1.0x/1.25x/1.5x` | 采用 feature matrix/详细设计的 `0.5x~2.0x`；旧快捷档可作为兼容 UI 预设 | `requirements/feature-matrix.md`、`docs/06-design/detailed-specs/04_听说读全模态精练系统详细设计.md` |
-| PRD/设计历史别名 | `PENDING_DELAY_VERIFY_D1/D7`、`RESOLVED` | 新 API/表只使用 `DELAY_VERIFY_D1/D7`、`MASTERED`；迁移时记录 `legacy_status` 或映射证据 | `docs/06-design/detailed-specs/05_做题中心模考与掌握闭环详细设计.md` |
-| 多域实现风险 | 词汇、练习、报告都可能自行维护 mastery | VOC/ASM 所有权按 P1-10 执行；跨域只消费版本化事件/查询 | `docs/06-design/detailed-specs/09_全站详细设计一致性审计白皮书.md` |
-| 商业化 | PRD 有会员/订单，但资质和渠道证据尚未完成 | 保留权益/激活码基础能力；支付 flag 默认 `false`，不做假支付成功 | `requirements/acceptance-criteria.md`、详细设计 08 |
+| PRD §3.1 | `5/10/20/30` 分钟 | **已裁决**：采用 `5/15/30/45`；旧值保留为历史冲突，不进入新契约 | `requirements/feature-matrix.md`、`requirements/backlog/开发实施总纲与功能链条任务分解.md` |
+| PRD §8.1 | `0.75x/1.0x/1.25x/1.5x` | **已裁决**：采用 `0.5x~2.0x` 连续变速，固定快捷档为 `0.5/0.75/1/1.25/1.5/2`，音高保持 | `requirements/feature-matrix.md`、`docs/06-design/detailed-specs/04_听说读全模态精练系统详细设计.md` |
+| PRD/设计历史别名 | `PENDING_DELAY_VERIFY_D1/D7`、`RESOLVED` | **已裁决**：新 API/表只使用 `DELAY_VERIFY_D1/D7`、`MASTERED`；迁移时记录 `legacy_status` 或映射证据 | `docs/06-design/detailed-specs/05_做题中心模考与掌握闭环详细设计.md` |
+| 多域实现风险 | 词汇、练习、报告都可能自行维护 mastery | **已裁决**：VOC/ASM 所有权按 P1-10 执行；跨域只消费版本化事件/查询 | `docs/06-design/detailed-specs/09_全站详细设计一致性审计白皮书.md` |
+| 商业化 | PRD 有会员/订单，但资质和渠道证据尚未完成 | **已裁决**：保留权益/激活码基础能力；支付 flag 默认 `false`，不做假支付成功 | `requirements/acceptance-criteria.md`、详细设计 08 |
 
 ## 3. Phase 1 禁止清单
 

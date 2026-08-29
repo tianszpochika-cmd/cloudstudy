@@ -1,11 +1,13 @@
 # B15 Phase 1 运行环境与基础设施验证
 
+> **文档状态：Historical validation snapshot**。下文的 Java 24、5 个依赖、21 个迁移等数字只记录 2026-08-22 当次检查，不代表当前工作站或当前配置；现行依赖为 MySQL、Redis、Kafka、MinIO 四项必需依赖，RabbitMQ 仅作 `core-api` v1 可选兼容。当前状态读取规则见 [`README.md`](README.md)。
+
 > 验证日期：2026-08-22（Asia/Shanghai）
 > 执行范围：`V2-B15-ENV-001`、`INF-002`、`RUN-003`、`DATA-004`、`OBS-005`、`TEST-006`  𑁋 仅覆盖代码层、静态预检和当前工作站环境检查，不代替真实基础设施运行验收。
 
 ## 1. 结论
 
-B15 已完成代码与静态预检基础，但尚未完成真实运行态。当前工作站只有 Java 24，Maven 不可用，Docker 不可用；因此 Java 25 构建、Docker Compose 健康检查、MySQL/Redis/Kafka/MinIO 运行、迁移应用、独立 Java 进程启动和跨服务 trace 均被安全地阻止。
+B15 已完成代码与静态预检基础，但尚未完成真实运行态。2026-08-22 当次工作站只有 Java 24，Maven 与 Docker 不可用；这些环境数字不是当前机器事实，也不影响现行 Java 25 目标基线。
 
 阻止是预期行为：B15 的 bootstrap 默认会先检查工具链，缺少 Java 25/Maven 时立即失败，不会启动容器、不执行数据库破坏性清理，也不会把静态检查结果伪装成运行态通过。
 
@@ -17,7 +19,7 @@ B15 已完成代码与静态预检基础，但尚未完成真实运行态。当�
 - `scripts/runtime/validate-v2-runtime-manifest.mjs`：检查运行清单、项目、主类、配置、端口、Actuator 路径和 loopback 边界。
 - `scripts/runtime/b15-bootstrap.mjs`：提供安全预检、可选 `--start-infra`、可选 `--require-healthy`；不自动启动 Java 服务，不含 `down`、`DROP DATABASE` 或 `TRUNCATE TABLE`。
 - `scripts/runtime/build-v2-services.mjs`、`scripts/runtime/run-v2-services.mjs`：提供显式 Maven 构建和独立 Java 进程运行；启动前强制 Java 25、固定端口和 Actuator readiness，健康失败会停止已启动子进程。
-- `config/local-services.json`、`config/local-ports.json`、`.env.example`、`infra/docker/docker-compose.dev.yml`：登记 Kafka KRaft 单节点开发依赖和固定外部端口 `19092`；RabbitMQ 保持 v1 兼容依赖。
+- `config/local-services.json`、`config/local-ports.json`、`.env.example`、`infra/docker/docker-compose.dev.yml`：现行配置以 MySQL、Redis、Kafka、MinIO 为 4 个 v2 必需依赖；RabbitMQ 仅为 `core-api` v1 可选兼容依赖。
 - v2 服务启动配置：修正 `admin-ops-service`/`analytics-service` 的 18097/18098 端口漂移，补齐 Gateway、Commerce、Notification、Analytics 的 readiness group、优雅停机和 OTel 导出基线；运行清单现在会阻止端口/探针配置不一致。
 - `tests/b15/b15-static.test.mjs`：覆盖运行清单、Phase 1 禁用边界、Kafka/固定端口、Compose 健康标记和 bootstrap 安全开关。
 
@@ -26,12 +28,12 @@ B15 已完成代码与静态预检基础，但尚未完成真实运行态。当�
 | 命令 | 结果 | 说明 |
 |---|---|---|
 | `pnpm test:b15` | PASS，5/5 | B15 静态测试全部通过，包括构建器和独立进程运行器边界 |
-| `pnpm b15:static` | PASS | 14 个服务工具链静态检查、运行清单、固定端口注册、5 个基础依赖/7 个绑定、21 个迁移、合成 fixture 和配置安全开关通过 |
+| `pnpm b15:static` | PASS | 2026-08-29 复验：14 个服务工具链静态检查、运行清单、固定端口注册、4 个 v2 必需依赖/7 个绑定、24 个仓库迁移、合成 fixture 和配置安全开关通过 |
 | `pnpm toolchain:check -- --static-only` | PASS | v2 POM 均为 Java 25、release 25、Spring Boot 4.1.1，并启用 Enforcer |
 | `pnpm toolchain:check` | BLOCKED | Java 24，不满足 Java 25；Maven unavailable |
 | `pnpm b15:bootstrap` | BLOCKED | 在工具链检查处停止；未启动 Docker、Java 服务或数据库迁移 |
 | `node scripts/runtime/validate-v2-runtime-manifest.mjs` | PASS | 14 个服务、loopback、Phase 1 manifest 通过 |
-| `pnpm infra:check` | PASS（静态） | 5 个依赖、7 个固定端口绑定静态通过；Docker 健康态未验证 |
+| `pnpm infra:check` | PASS（静态） | 2026-08-29 复验：4 个 v2 必需依赖、7 个固定端口绑定静态通过；RabbitMQ 为可选兼容，Docker 健康态未验证 |
 | `pnpm db:validate` | PASS（静态） | 21 个迁移和合成 fixture 通过；未连接真实 MySQL |
 | `pnpm config:check` | PASS | 7 个 Phase 1 安全开关通过 |
 | `node --check scripts/runtime/build-v2-services.mjs` | PASS | 构建器语法检查通过 |

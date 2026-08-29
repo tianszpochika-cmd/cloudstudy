@@ -6,7 +6,7 @@
 
 ### 1.1 目标
 
-统一管理单词、短语、句型、语法点和错题的复习状态，支持 SM-2 或 FSRS 可配置实现。
+统一管理单词、短语、句型、语法点和错题的复习状态。Phase 1 固定使用版本化改进型 SM-2，并在每条 SRS 记录保存 `algorithmVersion`；FSRS 只能在单独 ADR、兼容迁移与效果验证后作为未来替代方案评估，不能与当前算法并行启用。
 
 ### 1.2 核心字段
 
@@ -15,7 +15,7 @@
 - repetition_count
 - ease_factor
 - interval_days
-- stability
+- algorithm_version
 - last_reviewed_at
 - next_review_due
 - source_type
@@ -57,9 +57,9 @@ Phase 1 只使用确定性规则：
 
 - v2 服务：`iam-service`、`learner-service`、`content-service`、`learning-service`、`assessment-service`、`commerce-service` 等按 bounded context 各自拥有事实；Gateway 负责外部入口，`core-api` 仅作迁移兼容。
 - MySQL 8.x：唯一关系事实源；Flyway 管理迁移。
-- Redis 7.x：会话、排行榜、分布式锁、短期缓存和队列辅助。
+- Redis 7.x：会话、排行榜、分布式锁和短期缓存；不作为 v2 跨服务事件事实源或队列。
 - OSS/CDN：音频、视频、图片和离线课程包。
-- OpenAPI/AsyncAPI/JSON Schema：前后端和服务间契约单一事实源，生成 Java DTO、TypeScript 类型和事件校验器；跨服务使用 Outbox/幂等消费者，不共享写表。
+- OpenAPI/AsyncAPI/JSON Schema：前后端和服务间契约单一事实源，生成 Java DTO、TypeScript 类型和事件校验器；v2 跨服务只使用 Kafka + transactional Outbox + AsyncAPI 和幂等消费者，不共享写表；RabbitMQ 只保留 `core-api` v1 兼容语义。
 
 ## 5. Phase 2 AI 插槽
 

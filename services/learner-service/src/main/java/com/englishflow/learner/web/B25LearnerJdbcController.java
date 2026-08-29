@@ -33,6 +33,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class B25LearnerJdbcController {
 
     private static final String TENANT = "platform";
+    private static final List<Integer> DAILY_QUOTA_MINUTES = List.of(5, 15, 30, 45);
     private static final Logger LOGGER = LoggerFactory.getLogger(B25LearnerJdbcController.class);
     private final JdbcTemplate jdbc;
 
@@ -92,6 +93,11 @@ public class B25LearnerJdbcController {
         Principal p = principal(authentication);
         String goalCode = required(request, "goalCode");
         String targetLevel = required(request, "targetLevel");
+        int dailyQuotaMinutes = integer(request, "dailyQuotaMinutes", 15);
+        if (!DAILY_QUOTA_MINUTES.contains(dailyQuotaMinutes)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "dailyQuotaMinutes must be one of 5, 15, 30, or 45");
+        }
         jdbc.update("""
                 INSERT INTO b25_learner_goal
                     (principal_id, tenant_id, goal_code, target_level, daily_quota_minutes, status, idempotency_key)
@@ -100,7 +106,7 @@ public class B25LearnerJdbcController {
                     daily_quota_minutes = VALUES(daily_quota_minutes), status = 'ACTIVE',
                     idempotency_key = VALUES(idempotency_key)
                 """, p.subject(), TENANT, goalCode, targetLevel,
-                integer(request, "dailyQuotaMinutes", 15), idempotencyKey);
+                dailyQuotaMinutes, idempotencyKey);
         return target(authentication);
     }
 

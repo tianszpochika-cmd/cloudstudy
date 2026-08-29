@@ -9,20 +9,20 @@
 - 先判断阶段、年龄/主体、内容版本、权限和可用性，再渲染核心 CTA。
 - 所有学习动作都必须回到“目标 → 练习 → 反馈 → 复习 → 复盘”；社交、游戏和商业模块只能作为辅助出口。
 - 所有写操作具备自动保存、幂等、失败恢复和可回放证据；不让客户端直接修改跨域事实。
-- 所有登录后 API 请求使用 IAM 签发的 JWT Bearer（Access Token）；Refresh Token 轮换、重放检测、撤销和设备下线由 IAM 会话边界统一处理。
-- 登录/注册页面提交密码只能到 IAM；业务客户端不能自行签发或解析 JWT。401、403、过期、撤销和刷新失败必须分别呈现可理解的恢复动作。
+- 所有登录后 API 请求使用平台 IAM 签发的 JWT Bearer（Access Token）；Refresh Token 轮换、重放检测、撤销和设备下线由 IAM 会话边界统一处理。
+- 登录/注册页面可以品牌化，但不得在前端或业务服务签发 JWT；401、403、过期、撤销和刷新失败必须分别呈现可理解的恢复动作。
 - 移动端、iPad、learner-web 的业务状态相同，页面组件按平台分别实现；admin-web 和 official-site 不复用学习者导航。
 
 ## 2. 域级设计
 
-### GAM · 游戏化数值、六大游戏、3D 衣柜与奖励箱
+### GAM · 游戏化数值、学习游戏、3D 衣柜与奖励箱
 
 **本版单元**：92；Phase 1 68 / Phase 2 14 / Phase 3 10  
 **设计入口**：[04-Phase1-成长社群商业后台功能设计.md](04-Phase1-成长社群商业后台功能设计.md)  
 **路由宿主**：world；games/*；avatar；reward；collection；streak  
 **终端**：apps/mobile（H5/App/iPad）+ apps/learner-web（PC/PWA）
 
-**交互意图**：把学习结果转成可审计的 XP、星币、连续学习、成长资产和非现金奖励，不破坏学习闭环。
+**交互意图**：P0 仅上线 1 款学习游戏：拼句小火车 (Sentence Train)；P1 扩展至总计 4 款；6~8 款是长期目标，不属于 P0 或 P1 交付承诺。 把学习结果转成可审计的 XP、星币、连续学习、成长资产和非现金奖励，不破坏学习闭环。
 
 **主流程**：进入世界/游戏 → 选择玩法 → 完成学习相关动作 → 结算 → 查看流水 → 领取/装备 → 回到学习任务
 
@@ -30,7 +30,7 @@
 
 **状态设计**：ST-H；结算中、资产缺失、奖励待确认、离线不发奖、性能降级和幂等补偿。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → gamification-service；xp_ledger、coin_ledger、streak、avatar、reward_chest、game_session。学习结果驱动奖励；客户端不能直接记账；奖励概率、兑换和库存均受服务端规则、审计和阶段 Gate 控制。
+**契约与事实源**：Gateway → gamification-service；xp_ledger、coin_ledger、streak、avatar、reward_chest、game_session。P0 仅上线 1 款学习游戏：拼句小火车 (Sentence Train)；P1 扩展至总计 4 款；6~8 款是长期目标，不属于 P0 或 P1 交付承诺。 学习结果驱动奖励；客户端不能直接记账；奖励概率、兑换和库存均受服务端规则、审计和阶段 Gate 控制。
 
 **事件**：gamification.session_started.v1、xp.ledger_posted.v1、reward.granted.v1、avatar.equipped.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
 
@@ -114,7 +114,7 @@
 **路由宿主**：commerce/*；me/membership；orders；official-site/pricing  
 **终端**：apps/mobile + apps/learner-web + apps/official-site；收银和回调由 commerce-service 统一拥有
 
-**交互意图**：把 SKU、订单、支付回调、权益、退款和家庭组放在可审计的商业链路中，避免前端自行判断权益。
+**交互意图**：P0 仅建设微信/支付宝/Apple provider 适配、回调验签、退款/对账与沙盒验证；生产开关默认关闭，只有资质、平台审核、沙盒、验签、退款、对账、回滚和审计 Gate 全部通过后才可开启；首发不启用自动续费。 把 SKU、订单、支付回调、权益、退款和家庭组放在可审计的商业链路中，避免前端自行判断权益。
 
 **主流程**：浏览方案 → 选择 SKU → 创建订单 → 支付/回调 → 权益激活 → 使用 → 到期/退款/降级
 
@@ -122,7 +122,7 @@
 
 **状态设计**：ST-L/ST-J；PENDING/ACTIVE/GRACE/EXPIRED/REVOKED；支付等待、重复回调、退款和权益延迟可追溯。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → commerce-service；sku、order、payment_callback、entitlement、household、refund、audit_log。订单与权益按主体隔离；财务、客服、审计为独立 scope；真实微信/支付宝/Apple 收单在 Phase 1 默认关闭，需资质和沙盒证据。
+**契约与事实源**：Gateway → commerce-service；sku、order、payment_callback、entitlement、household、refund、audit_log。P0 仅建设微信/支付宝/Apple provider 适配、回调验签、退款/对账与沙盒验证；生产开关默认关闭，只有资质、平台审核、沙盒、验签、退款、对账、回滚和审计 Gate 全部通过后才可开启；首发不启用自动续费。 订单与权益按主体隔离；财务、客服、审计为独立 scope。
 
 **事件**：order.created.v1、payment.callback_received.v1、entitlement.activated.v1、refund.completed.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
 
@@ -145,7 +145,7 @@
 
 **状态设计**：ST-M/ST-N；DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；REJECTED、ROLLBACK_PENDING 作为动作结果表达。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → admin-ops-service + content-service + commerce-service + analytics-service；content_version、review_task、audit_log、feature_flag、risk_case、export_job、media_asset。默认拒绝；content-editor、review L1、review L2、finance、auditor、客服等为独立 scope；作者不能审自己的版本。
+**契约与事实源**：Gateway → admin-ops-service + content-service + commerce-service + analytics-service；content_version、review_task、audit_log、feature_flag、risk_case、export_job、media_asset。内容来源仅限自有、开放许可或合法授权；第三方品牌、教材、词书、释义、例句、音频、题目和统计数据须绑定有效授权凭证及使用范围，缺失或过期不得发布。 默认拒绝；content-editor、review L1、review L2、finance、auditor、客服等为独立 scope；作者不能审自己的版本。
 
 **事件**：content.submitted.v1、content.reviewed.v1、content.published.v1、content.rolled_back.v1、audit.exported.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
 

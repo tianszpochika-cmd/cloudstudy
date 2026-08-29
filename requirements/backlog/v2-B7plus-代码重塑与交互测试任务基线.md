@@ -48,7 +48,7 @@
 
 | 旧批次 | 可复用的代码层资产 | v2 使用方式 | 禁止继承 |
 |---|---|---|---|
-| B0/B1 | pnpm monorepo、固定端口、OpenAPI/事件生成、Flyway、Core API 身份/Onboarding、内容种子、learner-web/mobile 壳 | 作为契约命名、测试夹具、页面交互和迁移适配的输入 | Java 17 运行时、自研 Token Server/密码直登协议、`core-api` 作为新领域 owner |
+| B0/B1 | pnpm monorepo、固定端口、OpenAPI/事件生成、Flyway、Core API 身份/Onboarding、内容种子、learner-web/mobile 壳 | 作为契约命名、测试夹具、页面交互和迁移适配的输入 | Java 17 运行时；禁止 legacy `core-api`、领域服务或客户端接收/校验密码、签发 Token；不否定 `iam-service` 作为唯一自有账号密码 + JWT 认证中心；`core-api` 作为新领域 owner |
 | B2 | SRS、练习、判分、掌握度规则与 B2 夹具 | 提取纯规则，分别迁入 `learning-service` 与 `assessment-service`；内容定义迁入 `content-service` | 将题目、attempt、SRS 放入同一 schema 或由前端决定分数 |
 | B3 | 语法/写作、听说读、离线 cursor、媒体 hash、四档性能降级 | 保留交互状态机和安全失败用例，改接 v2 内容、媒体、学习和测评服务 | `core-api` 跨域 JDBC、原始音频/答案进入事件或日志 |
 | B4 | 游戏、社群、低 UGC、离线包与通知状态机 | 迁入 `gamification-service`、`social-service`、`notification-service` 并消费可信事件 | 客户端积分入账、未受控自由 UGC、把 REST ticket 当作真实实时运行证据 |
@@ -387,7 +387,7 @@ flowchart LR
 | 任务 | 本次结果 | 已验证证据 | 未完成边界 |
 |---|---|---|---|
 | `V2-B15-ENV-001` | 代码/静态完成；运行时阻塞 | `config/toolchain-baseline.json`、14 个 v2 POM 的 Java 25/Spring Boot 4.1.1/Enforcer 静态检查通过 | 本机 Java 24、Maven unavailable；Java 25/Maven 构建与 SBOM 未执行 |
-| `V2-B15-INF-002` | 编排与固定端口静态完成 | Kafka KRaft、MySQL、Redis、MinIO、RabbitMQ 兼容依赖；5 个依赖、7 个固定绑定静态检查通过 | Docker 未安装/未启动；健康检查、重启恢复、网络隔离未取得运行证据 |
+| `V2-B15-INF-002` | 编排与固定端口静态完成 | Kafka KRaft、MySQL、Redis、MinIO 为 4 个 v2 必需依赖；RabbitMQ 仅作 `core-api` v1 可选兼容；4 个必需依赖、7 个固定绑定静态检查通过 | Docker 未安装/未启动；健康检查、重启恢复、网络隔离未取得运行证据 |
 | `V2-B15-RUN-003` | 启动清单与独立进程运行器代码完成 | `config/v2-runtime-services.json` 验证 14 个服务；`services:run` 强制 Java 25、固定端口和 health/readiness，并在失败时停止已启动子进程 | Java 服务未启动；端口冲突、优雅停机和跨进程 readiness 未取得运行证据 |
 | `V2-B15-DATA-004` | 迁移/夹具静态完成 | 21 个仓库迁移、合成 fixture、配置和破坏性清理防护检查通过 | 未连接真实 MySQL；每服务 schema/Flyway、迁移锁、失败恢复和回滚影子未验证 |
 | `V2-B15-OBS-005` | 基线代码与静态检查完成 | service-template 已具备 requestId/traceId、OTel、Actuator 探针、优雅停机和 MDC 关联基线 | Collector、跨服务 trace、指标/审计落盘和故障诊断需 B16/B17 运行态验证 |

@@ -10,7 +10,13 @@
     "runtimeCheckCommand": "node scripts/check-local-infra.mjs",
     "strictRuntimeCheckCommand": "node scripts/check-local-infra.mjs --require-healthy"
   },
-  "requiredDependencies": ["mysql", "redis", "minio", "kafka", "rabbitmq"],
+  "requiredDependencies": ["mysql", "redis", "minio", "kafka"],
+  "compatibilityDependencies": {
+    "rabbitmq": {
+      "required": false,
+      "purpose": "services/core-api v1 compatibility only; not a v2 event source"
+    }
+  },
   "services": {
     "mysql": {
       "composeService": "mysql",

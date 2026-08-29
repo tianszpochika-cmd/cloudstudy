@@ -195,7 +195,7 @@
           "goalCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
           "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
           "examCode": { "type": "string", "maxLength": 64 },
-          "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45, 60] },
+          "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45] },
           "targetDate": { "type": "string", "format": "date" },
           "status": { "type": "string", "enum": ["ACTIVE", "PAUSED", "COMPLETED", "ARCHIVED"] },
           "stateVersion": { "$ref": "#/components/schemas/B9StateVersion" },
@@ -212,7 +212,7 @@
           "goalCode": { "type": "string", "pattern": "^[a-z][a-z0-9._:-]{1,95}$" },
           "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
           "examCode": { "type": "string", "maxLength": 64 },
-          "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45, 60] },
+          "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45] },
           "targetDate": { "type": "string", "format": "date" },
           "status": { "type": "string", "enum": ["ACTIVE", "PAUSED"] }
         }

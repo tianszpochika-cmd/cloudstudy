@@ -201,3 +201,23 @@ test('B11 V0019 is additive, manifest-complete and replay-safe', () => {
   assert.match(migration, /CHECK \(`read_only`\s*=\s*1\)/i);
   assert.match(migration, /CHECK \(`domain_facts_untouched`\s*=\s*1\)/i);
 });
+
+test('B3 and B11 listening controls keep six frozen rates and preserve pitch where supported', () => {
+  const pages = [
+    readText('apps/mobile/src/pages/b3-listening/b3-listening.vue'),
+    readText('apps/mobile/src/pages/b11-listening/b11-listening.vue'),
+    readText('apps/learner-web/src/pages/B3ListeningPage.vue'),
+    readText('apps/learner-web/src/pages/B11ListeningPage.vue'),
+  ];
+  const sixRates = /PLAYBACK_RATES\s*=\s*\[0\.5, 0\.75, 1, 1\.25, 1\.5, 2\]/;
+  for (const page of pages) {
+    assert.match(page, sixRates);
+    assert.doesNotMatch(page, /(?<![\d.])0\.7(?![\d.])/);
+  }
+  const webPages = pages.slice(2).join('\n');
+  assert.match(webPages, /preservesPitch\s*=\s*true/);
+  const mobileAdapter = readText('apps/mobile/src/platform/uni-runtime.ts');
+  assert.match(mobileAdapter, /preservesPitch\?: boolean/);
+  assert.match(mobileAdapter, /enableUniAudioPitchPreservation/);
+  assert.match(pages.slice(0, 2).join('\n'), /已记录降级/);
+});

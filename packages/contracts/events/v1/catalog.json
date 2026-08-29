@@ -1,7 +1,23 @@
 {
   "catalogVersion": "1.0.0",
   "schema": "platform.event.catalog.v1",
-  "description": "语学星 Phase 1 领域事件目录。Outbox、RabbitMQ/Redis Streams 和可重放消费者均以本目录为事实源。",
+  "description": "语学星 v2 跨服务集成事实事件目录。事件契约以本目录为唯一事实源；生产者在自身事务中写入 Outbox，由 Kafka 兼容总线按至少一次语义投递。RabbitMQ 仅保留给 core-api 的 v1 历史兼容；Redis 与 Redis Streams 不是 v2 事件事实源。",
+  "x-v2-event-platform": {
+    "transport": "kafka-compatible-only",
+    "publication": "transactional-outbox",
+    "contract": "asyncapi",
+    "scope": "cross-service-integration-facts-only",
+    "delivery": "at-least-once",
+    "partitionKey": "aggregate-id",
+    "consumerRequirements": [
+      "idempotent-deduplication",
+      "retry",
+      "dlq",
+      "replay"
+    ],
+    "redis": "not-an-event-source",
+    "coreApiV1Compatibility": "RabbitMQ-only core-api v1 historical migration compatibility"
+  },
   "envelope": {
     "schema": "platform.event.v1",
     "required": [
@@ -2593,8 +2609,7 @@
             5,
             15,
             30,
-            45,
-            60
+            45
           ]
         },
         "updatedAt": {
@@ -8440,394 +8455,142 @@
     }
   ],
   "asyncapi": {
-    "version": "3.0.0",
+    "asyncapi": "3.0.0",
     "info": {
-      "title": "语学星 IAM and authentication integration events",
+      "title": "语学星 v2 平台集成事件",
       "version": "1.0.0",
-      "description": "B8 认证、principal、会话、设备、成人 Gate、consent 和策略版本事实；事件不携带 Token、refresh credential 或原始隐私。"
+      "description": "语学星 v2 跨服务集成事实的 canonical AsyncAPI 3.0 投影。每个活动事件对应唯一的发送操作与频道；事件通过 Kafka 兼容总线和事务性 Outbox 按至少一次语义发布。"
     },
     "channels": {
-      "authPrincipalMapped": {
-        "address": "auth.principal.mapped.v1",
-        "messages": {
-          "principalMapped": {
-            "$ref": "#/payloadSchemas/AuthPrincipalMapped"
-          }
-        }
-      },
-      "authSessionRotated": {
-        "address": "auth.session.rotated.v1",
-        "messages": {
-          "sessionRotated": {
-            "$ref": "#/payloadSchemas/AuthSessionRotated"
-          }
-        }
-      },
-      "authSessionReplayDetected": {
-        "address": "auth.session.replay_detected.v1",
-        "messages": {
-          "sessionReplayDetected": {
-            "$ref": "#/payloadSchemas/AuthSessionReplayDetected"
-          }
-        }
-      },
-      "authDeviceRevoked": {
-        "address": "auth.device.revoked.v1",
-        "messages": {
-          "deviceRevoked": {
-            "$ref": "#/payloadSchemas/AuthDeviceRevoked"
-          }
-        }
-      },
-      "authConsentUpdated": {
-        "address": "auth.consent.updated.v1",
-        "messages": {
-          "consentUpdated": {
-            "$ref": "#/payloadSchemas/AuthConsentUpdated"
-          }
-        }
-      },
-      "authAdultGateRejected": {
-        "address": "auth.adult_gate.rejected.v1",
-        "messages": {
-          "adultGateRejected": {
-            "$ref": "#/payloadSchemas/AuthAdultGateRejected"
-          }
-        }
-      },
-      "iamPolicyVersionChanged": {
-        "address": "iam.policy.version_changed.v1",
-        "messages": {
-          "policyVersionChanged": {
-            "$ref": "#/payloadSchemas/IamPolicyVersionChanged"
-          }
-        }
-      },
-      "b9LearnerProfileUpdated": {
-        "address": "learner.profile.updated.v1",
-        "messages": {
-          "learnerProfileUpdated": {
-            "$ref": "#/payloadSchemas/B9LearnerProfileUpdated"
-          }
-        }
-      },
-      "b9LearnerTargetUpdated": {
-        "address": "learner.target.updated.v1",
-        "messages": {
-          "learnerTargetUpdated": {
-            "$ref": "#/payloadSchemas/B9LearnerTargetUpdated"
-          }
-        }
-      },
-      "b9LearnerFirstDayProjected": {
-        "address": "learner.first_day.projected.v1",
-        "messages": {
-          "learnerFirstDayProjected": {
-            "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected"
-          }
-        }
-      },
-      "b9ContentVersionSubmitted": {
-        "address": "content.version.submitted.v1",
-        "messages": {
-          "contentVersionSubmitted": {
-            "$ref": "#/payloadSchemas/B9ContentVersionSubmitted"
-          }
-        }
-      },
-      "b9ContentVersionReviewed": {
-        "address": "content.version.reviewed.v1",
-        "messages": {
-          "contentVersionReviewed": {
-            "$ref": "#/payloadSchemas/B9ContentVersionReviewed"
-          }
-        }
-      },
-      "b9ContentVersionPublished": {
-        "address": "content.version.published.v1",
-        "messages": {
-          "contentVersionPublished": {
-            "$ref": "#/payloadSchemas/B9ContentVersionPublished"
-          }
-        }
-      },
-      "b9ContentVersionUnpublished": {
-        "address": "content.version.unpublished.v1",
-        "messages": {
-          "contentVersionUnpublished": {
-            "$ref": "#/payloadSchemas/B9ContentVersionUnpublished"
-          }
-        }
-      },
-      "b9ContentVersionRolledBack": {
-        "address": "content.version.rolled_back.v1",
-        "messages": {
-          "contentVersionRolledBack": {
-            "$ref": "#/payloadSchemas/B9ContentVersionRolledBack"
-          }
-        }
-      },
-      "b9PublicProjectionInvalidated": {
-        "address": "content.public_projection.invalidated.v1",
-        "messages": {
-          "publicProjectionInvalidated": {
-            "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated"
-          }
-        }
-      },
-      "b10AssessmentAttemptSubmitted": {
-        "address": "assessment.attempt.submitted.v1",
-        "messages": {
-          "attemptSubmitted": {
-            "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted"
-          }
-        }
-      },
-      "b10AssessmentAttemptAssessed": {
-        "address": "assessment.attempt.assessed.v1",
-        "messages": {
-          "attemptAssessed": {
-            "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed"
-          }
-        }
-      },
-      "b10LearningMasteryProjected": {
-        "address": "learning.mastery.projected.v1",
-        "messages": {
-          "masteryProjected": {
-            "$ref": "#/payloadSchemas/B10LearningMasteryProjected"
-          }
-        }
-      },
-      "b10LearningReviewScheduled": {
-        "address": "learning.review.scheduled.v1",
-        "messages": {
-          "reviewScheduled": {
-            "$ref": "#/payloadSchemas/B10LearningReviewScheduled"
-          }
-        }
-      },
-      "b10SagaStarted": {
-        "address": "workflow.assessment_learning.saga_started.v1",
-        "messages": {
-          "sagaStarted": {
-            "$ref": "#/payloadSchemas/B10SagaStarted"
-          }
-        }
-      },
-      "b10SagaCompensated": {
-        "address": "workflow.assessment_learning.saga_compensated.v1",
-        "messages": {
-          "sagaCompensated": {
-            "$ref": "#/payloadSchemas/B10SagaCompensated"
-          }
-        }
-      },
-      "b10EventReplayed": {
-        "address": "workflow.event.replayed.v1",
-        "messages": {
-          "eventReplayed": {
-            "$ref": "#/payloadSchemas/B10EventReplayed"
-          }
-        }
-      },
-      "b11MediaStarted": {
-        "address": "media.started.v1",
-        "messages": {
-          "mediaStarted": {
-            "$ref": "#/payloadSchemas/B11MediaStarted"
-          }
-        }
-      },
-      "b11MediaSegmentCompleted": {
-        "address": "media.segment_completed.v1",
-        "messages": {
-          "mediaSegmentCompleted": {
-            "$ref": "#/payloadSchemas/B11MediaSegmentCompleted"
-          }
-        }
-      },
-      "b11MediaDownloaded": {
-        "address": "media.downloaded.v1",
-        "messages": {
-          "mediaDownloaded": {
-            "$ref": "#/payloadSchemas/B11MediaDownloaded"
-          }
-        }
-      },
-      "b11MediaRevoked": {
-        "address": "media.revoked.v1",
-        "messages": {
-          "mediaRevoked": {
-            "$ref": "#/payloadSchemas/B11MediaRevoked"
-          }
-        }
-      },
-      "b11NotificationDelivered": {
-        "address": "notification.delivered.v1",
-        "messages": {
-          "notificationDelivered": {
-            "$ref": "#/payloadSchemas/B11NotificationDelivered"
-          }
-        }
-      },
-      "b11SyncEnqueued": {
-        "address": "sync.enqueued.v1",
-        "messages": {
-          "syncEnqueued": {
-            "$ref": "#/payloadSchemas/B11SyncEnqueued"
-          }
-        }
-      },
-      "b11SyncConflictDetected": {
-        "address": "sync.conflict_detected.v1",
-        "messages": {
-          "syncConflictDetected": {
-            "$ref": "#/payloadSchemas/B11SyncConflictDetected"
-          }
-        }
-      },
-      "b11SyncRecovered": {
-        "address": "sync.recovered.v1",
-        "messages": {
-          "syncRecovered": {
-            "$ref": "#/payloadSchemas/B11SyncRecovered"
-          }
-        }
-      },
-      "b11RecordingSaved": {
-        "address": "recording.saved.v1",
-        "messages": {
-          "recordingSaved": {
-            "$ref": "#/payloadSchemas/B11RecordingSaved"
-          }
-        }
-      },
-      "b11SpeakingPermissionRequested": {
-        "address": "speaking.permission_requested.v1",
-        "messages": {
-          "speakingPermissionRequested": {
-            "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested"
-          }
-        }
-      },
-      "b11ShadowingCompleted": {
-        "address": "shadowing.completed.v1",
-        "messages": {
-          "shadowingCompleted": {
-            "$ref": "#/payloadSchemas/B11ShadowingCompleted"
-          }
-        }
-      },
-      "b12GrowthSessionStarted": {
-        "address": "gamification.session_started.v1",
+      "event_learning_srs_batch_created_v1": {
+        "address": "learning.srs.batch_created.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12GrowthSessionStarted"
+            "name": "learning.srs.batch_created.v1",
+            "x-event-name": "learning.srs.batch_created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/LearningSrsBatchCreated"
+            }
           }
         }
       },
-      "b12GrowthLedgerPosted": {
-        "address": "gamification.xp.ledger_posted.v1",
+      "event_vocabulary_review_accepted_v1": {
+        "address": "vocabulary.review.accepted.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12GrowthLedgerPosted"
+            "name": "vocabulary.review.accepted.v1",
+            "x-event-name": "vocabulary.review.accepted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/VocabularyReviewAccepted"
+            }
           }
         }
       },
-      "b12RewardGranted": {
-        "address": "gamification.reward.granted.v1",
+      "event_vocabulary_srs_state_changed_v1": {
+        "address": "vocabulary.srs.state_changed.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12RewardGranted"
+            "name": "vocabulary.srs.state_changed.v1",
+            "x-event-name": "vocabulary.srs.state_changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/VocabularySrsStateChanged"
+            }
           }
         }
       },
-      "b12AvatarEquipped": {
-        "address": "gamification.avatar.equipped.v1",
+      "event_assessment_answer_scored_v1": {
+        "address": "assessment.answer_scored.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12AvatarEquipped"
+            "name": "assessment.answer_scored.v1",
+            "x-event-name": "assessment.answer_scored.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AssessmentAnswerScored"
+            }
           }
         }
       },
-      "b12StudyRoomJoined": {
-        "address": "study_room.joined.v1",
+      "event_mastery_state_changed_v1": {
+        "address": "mastery.state_changed.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12StudyRoomJoined"
+            "name": "mastery.state_changed.v1",
+            "x-event-name": "mastery.state_changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/MasteryStateChanged"
+            }
           }
         }
       },
-      "b12FocusStarted": {
-        "address": "study_room.focus_started.v1",
+      "event_learning_task_completed_v1": {
+        "address": "learning.task.completed.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12FocusStarted"
+            "name": "learning.task.completed.v1",
+            "x-event-name": "learning.task.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/LearningTaskCompleted"
+            }
           }
         }
       },
-      "b12StudyRoomLeft": {
-        "address": "study_room.left.v1",
+      "event_cms_content_submitted_v1": {
+        "address": "cms.content.submitted.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12StudyRoomLeft"
+            "name": "cms.content.submitted.v1",
+            "x-event-name": "cms.content.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CmsContentSubmitted"
+            }
           }
         }
       },
-      "b12LeaderboardRefreshed": {
-        "address": "leaderboard.refreshed.v1",
+      "event_cms_review_decided_v1": {
+        "address": "cms.review.decided.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12LeaderboardRefreshed"
+            "name": "cms.review.decided.v1",
+            "x-event-name": "cms.review.decided.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CmsReviewDecided"
+            }
           }
         }
       },
-      "b12SocialReportCreated": {
-        "address": "social.report.created.v1",
+      "event_cms_content_published_v1": {
+        "address": "cms.content.published.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12SocialReportCreated"
+            "name": "cms.content.published.v1",
+            "x-event-name": "cms.content.published.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CmsContentPublished"
+            }
           }
         }
       },
-      "b12NotificationRequested": {
-        "address": "notification.requested.v1",
+      "event_cms_content_rolled_back_v1": {
+        "address": "cms.content.rolled_back.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12NotificationRequested"
+            "name": "cms.content.rolled_back.v1",
+            "x-event-name": "cms.content.rolled_back.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CmsContentRolledBack"
+            }
           }
         }
       },
-      "b12NotificationRetryScheduled": {
-        "address": "notification.retry_scheduled.v1",
+      "event_commerce_order_paid_v1": {
+        "address": "commerce.order.paid.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B12NotificationRetryScheduled"
-          }
-        }
-      },
-      "b12NotificationRecoveryCompleted": {
-        "address": "notification.recovery.completed.v1",
-        "messages": {
-          "event": {
-            "$ref": "#/payloadSchemas/B12NotificationRecoveryCompleted"
-          }
-        }
-      },
-      "b13CommerceOrderCreated": {
-        "address": "commerce.order.created.v1",
-        "messages": {
-          "event": {
-            "$ref": "#/payloadSchemas/B13CommerceOrderCreated"
-          }
-        }
-      },
-      "b13CommercePaymentCallback": {
-        "address": "commerce.payment.callback_received.v1",
-        "messages": {
-          "event": {
-            "$ref": "#/payloadSchemas/B13CommercePaymentCallback"
+            "name": "commerce.order.paid.v1",
+            "x-event-name": "commerce.order.paid.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CommerceOrderPaid"
+            }
           }
         }
       },
@@ -8835,7 +8598,791 @@
         "address": "commerce.entitlement.activated.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B13CommerceEntitlementActivated"
+            "name": "commerce.entitlement.activated.v1",
+            "x-event-name": "commerce.entitlement.activated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B13CommerceEntitlementActivated"
+            }
+          }
+        }
+      },
+      "event_commerce_entitlement_revoked_v1": {
+        "address": "commerce.entitlement.revoked.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.entitlement.revoked.v1",
+            "x-event-name": "commerce.entitlement.revoked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CommerceEntitlementRevoked"
+            }
+          }
+        }
+      },
+      "event_commerce_subscription_changed_v1": {
+        "address": "commerce.subscription.changed.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.subscription.changed.v1",
+            "x-event-name": "commerce.subscription.changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/CommerceSubscriptionChanged"
+            }
+          }
+        }
+      },
+      "event_notification_created_v1": {
+        "address": "notification.created.v1",
+        "messages": {
+          "event": {
+            "name": "notification.created.v1",
+            "x-event-name": "notification.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/NotificationCreated"
+            }
+          }
+        }
+      },
+      "b11NotificationDelivered": {
+        "address": "notification.delivered.v1",
+        "messages": {
+          "notificationDelivered": {
+            "name": "notification.delivered.v1",
+            "x-event-name": "notification.delivered.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11NotificationDelivered"
+            }
+          }
+        }
+      },
+      "event_notification_read_v1": {
+        "address": "notification.read.v1",
+        "messages": {
+          "event": {
+            "name": "notification.read.v1",
+            "x-event-name": "notification.read.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/NotificationRead"
+            }
+          }
+        }
+      },
+      "event_sync_learning_checkpoint_saved_v1": {
+        "address": "sync.learning.checkpoint_saved.v1",
+        "messages": {
+          "event": {
+            "name": "sync.learning.checkpoint_saved.v1",
+            "x-event-name": "sync.learning.checkpoint_saved.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/SyncLearningCheckpointSaved"
+            }
+          }
+        }
+      },
+      "event_sync_conflict_detected_v1": {
+        "address": "sync.conflict.detected.v1",
+        "messages": {
+          "event": {
+            "name": "sync.conflict.detected.v1",
+            "x-event-name": "sync.conflict.detected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/SyncConflictDetected"
+            }
+          }
+        }
+      },
+      "event_sync_cursor_advanced_v1": {
+        "address": "sync.cursor.advanced.v1",
+        "messages": {
+          "event": {
+            "name": "sync.cursor.advanced.v1",
+            "x-event-name": "sync.cursor.advanced.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/SyncCursorAdvanced"
+            }
+          }
+        }
+      },
+      "event_auth_session_revoked_v1": {
+        "address": "auth.session.revoked.v1",
+        "messages": {
+          "event": {
+            "name": "auth.session.revoked.v1",
+            "x-event-name": "auth.session.revoked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthSessionRevoked"
+            }
+          }
+        }
+      },
+      "event_assessment_item_submitted_v1": {
+        "address": "assessment.item.submitted.v1",
+        "messages": {
+          "event": {
+            "name": "assessment.item.submitted.v1",
+            "x-event-name": "assessment.item.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AssessmentItemSubmitted"
+            }
+          }
+        }
+      },
+      "event_auth_device_kicked_v1": {
+        "address": "auth.device.kicked.v1",
+        "messages": {
+          "event": {
+            "name": "auth.device.kicked.v1",
+            "x-event-name": "auth.device.kicked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthDeviceKicked"
+            }
+          }
+        }
+      },
+      "event_privacy_export_requested_v1": {
+        "address": "privacy.export.requested.v1",
+        "messages": {
+          "event": {
+            "name": "privacy.export.requested.v1",
+            "x-event-name": "privacy.export.requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/PrivacyExportRequested"
+            }
+          }
+        }
+      },
+      "event_privacy_export_completed_v1": {
+        "address": "privacy.export.completed.v1",
+        "messages": {
+          "event": {
+            "name": "privacy.export.completed.v1",
+            "x-event-name": "privacy.export.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/PrivacyExportCompleted"
+            }
+          }
+        }
+      },
+      "event_assessment_stream_built_v1": {
+        "address": "assessment.stream_built.v1",
+        "messages": {
+          "event": {
+            "name": "assessment.stream_built.v1",
+            "x-event-name": "assessment.stream_built.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AssessmentStreamBuilt"
+            }
+          }
+        }
+      },
+      "event_assessment_answer_submitted_v1": {
+        "address": "assessment.answer_submitted.v1",
+        "messages": {
+          "event": {
+            "name": "assessment.answer_submitted.v1",
+            "x-event-name": "assessment.answer_submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AssessmentAnswerSubmitted"
+            }
+          }
+        }
+      },
+      "event_mastery_verification_state_changed_v1": {
+        "address": "mastery.verification_state_changed.v1",
+        "messages": {
+          "event": {
+            "name": "mastery.verification_state_changed.v1",
+            "x-event-name": "mastery.verification_state_changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/MasteryVerificationStateChanged"
+            }
+          }
+        }
+      },
+      "event_exam_session_state_changed_v1": {
+        "address": "exam.session_state_changed.v1",
+        "messages": {
+          "event": {
+            "name": "exam.session_state_changed.v1",
+            "x-event-name": "exam.session_state_changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ExamSessionStateChanged"
+            }
+          }
+        }
+      },
+      "event_exam_anti_cheat_recorded_v1": {
+        "address": "exam.anti_cheat_recorded.v1",
+        "messages": {
+          "event": {
+            "name": "exam.anti_cheat_recorded.v1",
+            "x-event-name": "exam.anti_cheat_recorded.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ExamAntiCheatRecorded"
+            }
+          }
+        }
+      },
+      "event_report_generated_v1": {
+        "address": "report.generated.v1",
+        "messages": {
+          "event": {
+            "name": "report.generated.v1",
+            "x-event-name": "report.generated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ReportGenerated"
+            }
+          }
+        }
+      },
+      "event_vocabulary_review_filtered_v1": {
+        "address": "vocabulary.review.filtered.v1",
+        "messages": {
+          "event": {
+            "name": "vocabulary.review.filtered.v1",
+            "x-event-name": "vocabulary.review.filtered.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/VocabularyReviewFiltered"
+            }
+          }
+        }
+      },
+      "event_vocabulary_expression_created_v1": {
+        "address": "vocabulary.expression.created.v1",
+        "messages": {
+          "event": {
+            "name": "vocabulary.expression.created.v1",
+            "x-event-name": "vocabulary.expression.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/VocabularyExpressionCreated"
+            }
+          }
+        }
+      },
+      "event_grammar_practice_completed_v1": {
+        "address": "grammar.practice.completed.v1",
+        "messages": {
+          "event": {
+            "name": "grammar.practice.completed.v1",
+            "x-event-name": "grammar.practice.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/GrammarPracticeCompleted"
+            }
+          }
+        }
+      },
+      "event_writing_evaluation_completed_v1": {
+        "address": "writing.evaluation.completed.v1",
+        "messages": {
+          "event": {
+            "name": "writing.evaluation.completed.v1",
+            "x-event-name": "writing.evaluation.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/WritingEvaluationCompleted"
+            }
+          }
+        }
+      },
+      "event_listening_dictation_submitted_v1": {
+        "address": "listening.dictation.submitted.v1",
+        "messages": {
+          "event": {
+            "name": "listening.dictation.submitted.v1",
+            "x-event-name": "listening.dictation.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ListeningDictationSubmitted"
+            }
+          }
+        }
+      },
+      "event_reading_progress_updated_v1": {
+        "address": "reading.progress.updated.v1",
+        "messages": {
+          "event": {
+            "name": "reading.progress.updated.v1",
+            "x-event-name": "reading.progress.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ReadingProgressUpdated"
+            }
+          }
+        }
+      },
+      "event_speaking_self_rating_submitted_v1": {
+        "address": "speaking.self_rating.submitted.v1",
+        "messages": {
+          "event": {
+            "name": "speaking.self_rating.submitted.v1",
+            "x-event-name": "speaking.self_rating.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/SpeakingSelfRatingSubmitted"
+            }
+          }
+        }
+      },
+      "event_offline_sync_applied_v1": {
+        "address": "offline.sync.applied.v1",
+        "messages": {
+          "event": {
+            "name": "offline.sync.applied.v1",
+            "x-event-name": "offline.sync.applied.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/OfflineSyncApplied"
+            }
+          }
+        }
+      },
+      "event_grammar_mastery_updated_v1": {
+        "address": "grammar.mastery.updated.v1",
+        "messages": {
+          "event": {
+            "name": "grammar.mastery.updated.v1",
+            "x-event-name": "grammar.mastery.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/GrammarMasteryUpdated"
+            }
+          }
+        }
+      },
+      "event_listening_progress_saved_v1": {
+        "address": "listening.progress.saved.v1",
+        "messages": {
+          "event": {
+            "name": "listening.progress.saved.v1",
+            "x-event-name": "listening.progress.saved.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ListeningProgressSaved"
+            }
+          }
+        }
+      },
+      "event_speaking_shadowing_progressed_v1": {
+        "address": "speaking.shadowing.progressed.v1",
+        "messages": {
+          "event": {
+            "name": "speaking.shadowing.progressed.v1",
+            "x-event-name": "speaking.shadowing.progressed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/ShadowingProgressed"
+            }
+          }
+        }
+      },
+      "event_media_offline_package_synced_v1": {
+        "address": "media.offline.package.synced.v1",
+        "messages": {
+          "event": {
+            "name": "media.offline.package.synced.v1",
+            "x-event-name": "media.offline.package.synced.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/OfflinePackageSynced"
+            }
+          }
+        }
+      },
+      "event_gamification_profile_updated_v1": {
+        "address": "gamification.profile.updated.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.profile.updated.v1",
+            "x-event-name": "gamification.profile.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_xp_ledger_appended_v1": {
+        "address": "gamification.xp.ledger_appended.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.xp.ledger_appended.v1",
+            "x-event-name": "gamification.xp.ledger_appended.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_currency_ledger_appended_v1": {
+        "address": "gamification.currency.ledger_appended.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.currency.ledger_appended.v1",
+            "x-event-name": "gamification.currency.ledger_appended.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_streak_day_validated_v1": {
+        "address": "gamification.streak.day_validated.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.streak.day_validated.v1",
+            "x-event-name": "gamification.streak.day_validated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_streak_rescue_completed_v1": {
+        "address": "gamification.streak.rescue_completed.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.streak.rescue_completed.v1",
+            "x-event-name": "gamification.streak.rescue_completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_quest_progressed_v1": {
+        "address": "gamification.quest.progressed.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.quest.progressed.v1",
+            "x-event-name": "gamification.quest.progressed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_quest_claimed_v1": {
+        "address": "gamification.quest.claimed.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.quest.claimed.v1",
+            "x-event-name": "gamification.quest.claimed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_achievement_unlocked_v1": {
+        "address": "gamification.achievement.unlocked.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.achievement.unlocked.v1",
+            "x-event-name": "gamification.achievement.unlocked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_chest_granted_v1": {
+        "address": "gamification.chest.granted.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.chest.granted.v1",
+            "x-event-name": "gamification.chest.granted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_chest_opened_v1": {
+        "address": "gamification.chest.opened.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.chest.opened.v1",
+            "x-event-name": "gamification.chest.opened.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_avatar_loadout_equipped_v1": {
+        "address": "gamification.avatar.loadout_equipped.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.avatar.loadout_equipped.v1",
+            "x-event-name": "gamification.avatar.loadout_equipped.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_gamification_season_points_updated_v1": {
+        "address": "gamification.season.points_updated.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.season.points_updated.v1",
+            "x-event-name": "gamification.season.points_updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_games_session_created_v1": {
+        "address": "games.session.created.v1",
+        "messages": {
+          "event": {
+            "name": "games.session.created.v1",
+            "x-event-name": "games.session.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_games_session_event_accepted_v1": {
+        "address": "games.session.event_accepted.v1",
+        "messages": {
+          "event": {
+            "name": "games.session.event_accepted.v1",
+            "x-event-name": "games.session.event_accepted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_games_session_completed_v1": {
+        "address": "games.session.completed.v1",
+        "messages": {
+          "event": {
+            "name": "games.session.completed.v1",
+            "x-event-name": "games.session.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_room_joined_v1": {
+        "address": "social.room.joined.v1",
+        "messages": {
+          "event": {
+            "name": "social.room.joined.v1",
+            "x-event-name": "social.room.joined.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_focus_started_v1": {
+        "address": "social.focus.started.v1",
+        "messages": {
+          "event": {
+            "name": "social.focus.started.v1",
+            "x-event-name": "social.focus.started.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_focus_completed_v1": {
+        "address": "social.focus.completed.v1",
+        "messages": {
+          "event": {
+            "name": "social.focus.completed.v1",
+            "x-event-name": "social.focus.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_interaction_sent_v1": {
+        "address": "social.interaction.sent.v1",
+        "messages": {
+          "event": {
+            "name": "social.interaction.sent.v1",
+            "x-event-name": "social.interaction.sent.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_offline_package_authorized_v1": {
+        "address": "offline.package.authorized.v1",
+        "messages": {
+          "event": {
+            "name": "offline.package.authorized.v1",
+            "x-event-name": "offline.package.authorized.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_offline_b4_sync_applied_v1": {
+        "address": "offline.b4.sync_applied.v1",
+        "messages": {
+          "event": {
+            "name": "offline.b4.sync_applied.v1",
+            "x-event-name": "offline.b4.sync_applied.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_room_left_v1": {
+        "address": "social.room.left.v1",
+        "messages": {
+          "event": {
+            "name": "social.room.left.v1",
+            "x-event-name": "social.room.left.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_focus_updated_v1": {
+        "address": "social.focus.updated.v1",
+        "messages": {
+          "event": {
+            "name": "social.focus.updated.v1",
+            "x-event-name": "social.focus.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_moderation_reported_v1": {
+        "address": "social.moderation.reported.v1",
+        "messages": {
+          "event": {
+            "name": "social.moderation.reported.v1",
+            "x-event-name": "social.moderation.reported.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_moderation_blocked_v1": {
+        "address": "social.moderation.blocked.v1",
+        "messages": {
+          "event": {
+            "name": "social.moderation.blocked.v1",
+            "x-event-name": "social.moderation.blocked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_social_moderation_muted_v1": {
+        "address": "social.moderation.muted.v1",
+        "messages": {
+          "event": {
+            "name": "social.moderation.muted.v1",
+            "x-event-name": "social.moderation.muted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_notifications_message_read_v1": {
+        "address": "notifications.message_read.v1",
+        "messages": {
+          "event": {
+            "name": "notifications.message_read.v1",
+            "x-event-name": "notifications.message_read.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_notifications_preferences_updated_v1": {
+        "address": "notifications.preferences_updated.v1",
+        "messages": {
+          "event": {
+            "name": "notifications.preferences_updated.v1",
+            "x-event-name": "notifications.preferences_updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_offline_package_download_state_updated_v1": {
+        "address": "offline.package.download_state_updated.v1",
+        "messages": {
+          "event": {
+            "name": "offline.package.download_state_updated.v1",
+            "x-event-name": "offline.package.download_state_updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "event_offline_sync_conflict_recorded_v1": {
+        "address": "offline.sync.conflict_recorded.v1",
+        "messages": {
+          "event": {
+            "name": "offline.sync.conflict_recorded.v1",
+            "x-event-name": "offline.sync.conflict_recorded.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B4FactPayload"
+            }
+          }
+        }
+      },
+      "b13CommerceOrderCreated": {
+        "address": "commerce.order.created.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.order.created.v1",
+            "x-event-name": "commerce.order.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_commerce_payment_requested_v1": {
+        "address": "commerce.payment.requested.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.payment.requested.v1",
+            "x-event-name": "commerce.payment.requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "b13CommercePaymentCallback": {
+        "address": "commerce.payment.callback_received.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.payment.callback_received.v1",
+            "x-event-name": "commerce.payment.callback_received.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_commerce_payment_verified_v1": {
+        "address": "commerce.payment.verified.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.payment.verified.v1",
+            "x-event-name": "commerce.payment.verified.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
           }
         }
       },
@@ -8843,15 +9390,95 @@
         "address": "commerce.refund.completed.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B13CommerceRefundCompleted"
+            "name": "commerce.refund.completed.v1",
+            "x-event-name": "commerce.refund.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
           }
         }
       },
-      "b13CommerceOrderReconciled": {
-        "address": "commerce.order.reconciled.v1",
+      "event_commerce_household_changed_v1": {
+        "address": "commerce.household.changed.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B13CommerceOrderReconciled"
+            "name": "commerce.household.changed.v1",
+            "x-event-name": "commerce.household.changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_cms_content_version_saved_v1": {
+        "address": "cms.content.version_saved.v1",
+        "messages": {
+          "event": {
+            "name": "cms.content.version_saved.v1",
+            "x-event-name": "cms.content.version_saved.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_cms_import_completed_v1": {
+        "address": "cms.import.completed.v1",
+        "messages": {
+          "event": {
+            "name": "cms.import.completed.v1",
+            "x-event-name": "cms.import.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_safety_precheck_blocked_v1": {
+        "address": "safety.precheck.blocked.v1",
+        "messages": {
+          "event": {
+            "name": "safety.precheck.blocked.v1",
+            "x-event-name": "safety.precheck.blocked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_risk_decision_created_v1": {
+        "address": "risk.decision.created.v1",
+        "messages": {
+          "event": {
+            "name": "risk.decision.created.v1",
+            "x-event-name": "risk.decision.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_finance_reconciliation_discrepancy_v1": {
+        "address": "finance.reconciliation.discrepancy.v1",
+        "messages": {
+          "event": {
+            "name": "finance.reconciliation.discrepancy.v1",
+            "x-event-name": "finance.reconciliation.discrepancy.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_ops_flag_updated_v1": {
+        "address": "ops.flag.updated.v1",
+        "messages": {
+          "event": {
+            "name": "ops.flag.updated.v1",
+            "x-event-name": "ops.flag.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
           }
         }
       },
@@ -8859,7 +9486,683 @@
         "address": "support.ticket.created.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B13SupportTicketCreated"
+            "name": "support.ticket.created.v1",
+            "x-event-name": "support.ticket.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_support_ticket_resolved_v1": {
+        "address": "support.ticket.resolved.v1",
+        "messages": {
+          "event": {
+            "name": "support.ticket.resolved.v1",
+            "x-event-name": "support.ticket.resolved.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B5FactPayload"
+            }
+          }
+        }
+      },
+      "event_platform_build_registered_v1": {
+        "address": "platform.build.registered.v1",
+        "messages": {
+          "event": {
+            "name": "platform.build.registered.v1",
+            "x-event-name": "platform.build.registered.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_platform_compatibility_checked_v1": {
+        "address": "platform.compatibility.checked.v1",
+        "messages": {
+          "event": {
+            "name": "platform.compatibility.checked.v1",
+            "x-event-name": "platform.compatibility.checked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_platform_performance_degraded_v1": {
+        "address": "platform.performance.degraded.v1",
+        "messages": {
+          "event": {
+            "name": "platform.performance.degraded.v1",
+            "x-event-name": "platform.performance.degraded.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_quality_e2e_completed_v1": {
+        "address": "quality.e2e.completed.v1",
+        "messages": {
+          "event": {
+            "name": "quality.e2e.completed.v1",
+            "x-event-name": "quality.e2e.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_quality_security_scan_completed_v1": {
+        "address": "quality.security.scan_completed.v1",
+        "messages": {
+          "event": {
+            "name": "quality.security.scan_completed.v1",
+            "x-event-name": "quality.security.scan_completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_quality_reliability_completed_v1": {
+        "address": "quality.reliability.completed.v1",
+        "messages": {
+          "event": {
+            "name": "quality.reliability.completed.v1",
+            "x-event-name": "quality.reliability.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_observability_alert_raised_v1": {
+        "address": "observability.alert.raised.v1",
+        "messages": {
+          "event": {
+            "name": "observability.alert.raised.v1",
+            "x-event-name": "observability.alert.raised.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_data_backup_drill_completed_v1": {
+        "address": "data.backup.drill_completed.v1",
+        "messages": {
+          "event": {
+            "name": "data.backup.drill_completed.v1",
+            "x-event-name": "data.backup.drill_completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "event_release_gate_evaluated_v1": {
+        "address": "release.gate.evaluated.v1",
+        "messages": {
+          "event": {
+            "name": "release.gate.evaluated.v1",
+            "x-event-name": "release.gate.evaluated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B6FactPayload"
+            }
+          }
+        }
+      },
+      "authPrincipalMapped": {
+        "address": "auth.principal.mapped.v1",
+        "messages": {
+          "principalMapped": {
+            "name": "auth.principal.mapped.v1",
+            "x-event-name": "auth.principal.mapped.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthPrincipalMapped"
+            }
+          }
+        }
+      },
+      "authSessionRotated": {
+        "address": "auth.session.rotated.v1",
+        "messages": {
+          "sessionRotated": {
+            "name": "auth.session.rotated.v1",
+            "x-event-name": "auth.session.rotated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthSessionRotated"
+            }
+          }
+        }
+      },
+      "authSessionReplayDetected": {
+        "address": "auth.session.replay_detected.v1",
+        "messages": {
+          "sessionReplayDetected": {
+            "name": "auth.session.replay_detected.v1",
+            "x-event-name": "auth.session.replay_detected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthSessionReplayDetected"
+            }
+          }
+        }
+      },
+      "authDeviceRevoked": {
+        "address": "auth.device.revoked.v1",
+        "messages": {
+          "deviceRevoked": {
+            "name": "auth.device.revoked.v1",
+            "x-event-name": "auth.device.revoked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthDeviceRevoked"
+            }
+          }
+        }
+      },
+      "authConsentUpdated": {
+        "address": "auth.consent.updated.v1",
+        "messages": {
+          "consentUpdated": {
+            "name": "auth.consent.updated.v1",
+            "x-event-name": "auth.consent.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthConsentUpdated"
+            }
+          }
+        }
+      },
+      "authAdultGateRejected": {
+        "address": "auth.adult_gate.rejected.v1",
+        "messages": {
+          "adultGateRejected": {
+            "name": "auth.adult_gate.rejected.v1",
+            "x-event-name": "auth.adult_gate.rejected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthAdultGateRejected"
+            }
+          }
+        }
+      },
+      "iamPolicyVersionChanged": {
+        "address": "iam.policy.version_changed.v1",
+        "messages": {
+          "policyVersionChanged": {
+            "name": "iam.policy.version_changed.v1",
+            "x-event-name": "iam.policy.version_changed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/IamPolicyVersionChanged"
+            }
+          }
+        }
+      },
+      "b9LearnerProfileUpdated": {
+        "address": "learner.profile.updated.v1",
+        "messages": {
+          "learnerProfileUpdated": {
+            "name": "learner.profile.updated.v1",
+            "x-event-name": "learner.profile.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9LearnerProfileUpdated"
+            }
+          }
+        }
+      },
+      "b9LearnerTargetUpdated": {
+        "address": "learner.target.updated.v1",
+        "messages": {
+          "learnerTargetUpdated": {
+            "name": "learner.target.updated.v1",
+            "x-event-name": "learner.target.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9LearnerTargetUpdated"
+            }
+          }
+        }
+      },
+      "b9LearnerFirstDayProjected": {
+        "address": "learner.first_day.projected.v1",
+        "messages": {
+          "learnerFirstDayProjected": {
+            "name": "learner.first_day.projected.v1",
+            "x-event-name": "learner.first_day.projected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9LearnerFirstDayProjected"
+            }
+          }
+        }
+      },
+      "b9ContentVersionSubmitted": {
+        "address": "content.version.submitted.v1",
+        "messages": {
+          "contentVersionSubmitted": {
+            "name": "content.version.submitted.v1",
+            "x-event-name": "content.version.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionSubmitted"
+            }
+          }
+        }
+      },
+      "b9ContentVersionReviewed": {
+        "address": "content.version.reviewed.v1",
+        "messages": {
+          "contentVersionReviewed": {
+            "name": "content.version.reviewed.v1",
+            "x-event-name": "content.version.reviewed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionReviewed"
+            }
+          }
+        }
+      },
+      "b9ContentVersionPublished": {
+        "address": "content.version.published.v1",
+        "messages": {
+          "contentVersionPublished": {
+            "name": "content.version.published.v1",
+            "x-event-name": "content.version.published.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionPublished"
+            }
+          }
+        }
+      },
+      "b9ContentVersionUnpublished": {
+        "address": "content.version.unpublished.v1",
+        "messages": {
+          "contentVersionUnpublished": {
+            "name": "content.version.unpublished.v1",
+            "x-event-name": "content.version.unpublished.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionUnpublished"
+            }
+          }
+        }
+      },
+      "b9ContentVersionRolledBack": {
+        "address": "content.version.rolled_back.v1",
+        "messages": {
+          "contentVersionRolledBack": {
+            "name": "content.version.rolled_back.v1",
+            "x-event-name": "content.version.rolled_back.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionRolledBack"
+            }
+          }
+        }
+      },
+      "b9PublicProjectionInvalidated": {
+        "address": "content.public_projection.invalidated.v1",
+        "messages": {
+          "publicProjectionInvalidated": {
+            "name": "content.public_projection.invalidated.v1",
+            "x-event-name": "content.public_projection.invalidated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9PublicProjectionInvalidated"
+            }
+          }
+        }
+      },
+      "b10AssessmentAttemptSubmitted": {
+        "address": "assessment.attempt.submitted.v1",
+        "messages": {
+          "attemptSubmitted": {
+            "name": "assessment.attempt.submitted.v1",
+            "x-event-name": "assessment.attempt.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10AssessmentAttemptSubmitted"
+            }
+          }
+        }
+      },
+      "b10AssessmentAttemptAssessed": {
+        "address": "assessment.attempt.assessed.v1",
+        "messages": {
+          "attemptAssessed": {
+            "name": "assessment.attempt.assessed.v1",
+            "x-event-name": "assessment.attempt.assessed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10AssessmentAttemptAssessed"
+            }
+          }
+        }
+      },
+      "b10LearningMasteryProjected": {
+        "address": "learning.mastery.projected.v1",
+        "messages": {
+          "masteryProjected": {
+            "name": "learning.mastery.projected.v1",
+            "x-event-name": "learning.mastery.projected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10LearningMasteryProjected"
+            }
+          }
+        }
+      },
+      "b10LearningReviewScheduled": {
+        "address": "learning.review.scheduled.v1",
+        "messages": {
+          "reviewScheduled": {
+            "name": "learning.review.scheduled.v1",
+            "x-event-name": "learning.review.scheduled.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10LearningReviewScheduled"
+            }
+          }
+        }
+      },
+      "b10SagaStarted": {
+        "address": "workflow.assessment_learning.saga_started.v1",
+        "messages": {
+          "sagaStarted": {
+            "name": "workflow.assessment_learning.saga_started.v1",
+            "x-event-name": "workflow.assessment_learning.saga_started.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10SagaStarted"
+            }
+          }
+        }
+      },
+      "b10SagaCompensated": {
+        "address": "workflow.assessment_learning.saga_compensated.v1",
+        "messages": {
+          "sagaCompensated": {
+            "name": "workflow.assessment_learning.saga_compensated.v1",
+            "x-event-name": "workflow.assessment_learning.saga_compensated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10SagaCompensated"
+            }
+          }
+        }
+      },
+      "b10EventReplayed": {
+        "address": "workflow.event.replayed.v1",
+        "messages": {
+          "eventReplayed": {
+            "name": "workflow.event.replayed.v1",
+            "x-event-name": "workflow.event.replayed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10EventReplayed"
+            }
+          }
+        }
+      },
+      "b11MediaStarted": {
+        "address": "media.started.v1",
+        "messages": {
+          "mediaStarted": {
+            "name": "media.started.v1",
+            "x-event-name": "media.started.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11MediaStarted"
+            }
+          }
+        }
+      },
+      "b11MediaSegmentCompleted": {
+        "address": "media.segment_completed.v1",
+        "messages": {
+          "mediaSegmentCompleted": {
+            "name": "media.segment_completed.v1",
+            "x-event-name": "media.segment_completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11MediaSegmentCompleted"
+            }
+          }
+        }
+      },
+      "b11MediaDownloaded": {
+        "address": "media.downloaded.v1",
+        "messages": {
+          "mediaDownloaded": {
+            "name": "media.downloaded.v1",
+            "x-event-name": "media.downloaded.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11MediaDownloaded"
+            }
+          }
+        }
+      },
+      "b11MediaRevoked": {
+        "address": "media.revoked.v1",
+        "messages": {
+          "mediaRevoked": {
+            "name": "media.revoked.v1",
+            "x-event-name": "media.revoked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11MediaRevoked"
+            }
+          }
+        }
+      },
+      "b11SyncEnqueued": {
+        "address": "sync.enqueued.v1",
+        "messages": {
+          "syncEnqueued": {
+            "name": "sync.enqueued.v1",
+            "x-event-name": "sync.enqueued.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11SyncEnqueued"
+            }
+          }
+        }
+      },
+      "b11SyncConflictDetected": {
+        "address": "sync.conflict_detected.v1",
+        "messages": {
+          "syncConflictDetected": {
+            "name": "sync.conflict_detected.v1",
+            "x-event-name": "sync.conflict_detected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11SyncConflictDetected"
+            }
+          }
+        }
+      },
+      "b11SyncRecovered": {
+        "address": "sync.recovered.v1",
+        "messages": {
+          "syncRecovered": {
+            "name": "sync.recovered.v1",
+            "x-event-name": "sync.recovered.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11SyncRecovered"
+            }
+          }
+        }
+      },
+      "b11RecordingSaved": {
+        "address": "recording.saved.v1",
+        "messages": {
+          "recordingSaved": {
+            "name": "recording.saved.v1",
+            "x-event-name": "recording.saved.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11RecordingSaved"
+            }
+          }
+        }
+      },
+      "b11SpeakingPermissionRequested": {
+        "address": "speaking.permission_requested.v1",
+        "messages": {
+          "speakingPermissionRequested": {
+            "name": "speaking.permission_requested.v1",
+            "x-event-name": "speaking.permission_requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11SpeakingPermissionRequested"
+            }
+          }
+        }
+      },
+      "b11ShadowingCompleted": {
+        "address": "shadowing.completed.v1",
+        "messages": {
+          "shadowingCompleted": {
+            "name": "shadowing.completed.v1",
+            "x-event-name": "shadowing.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B11ShadowingCompleted"
+            }
+          }
+        }
+      },
+      "b12GrowthSessionStarted": {
+        "address": "gamification.session_started.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.session_started.v1",
+            "x-event-name": "gamification.session_started.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12GrowthSessionStarted"
+            }
+          }
+        }
+      },
+      "b12GrowthLedgerPosted": {
+        "address": "gamification.xp.ledger_posted.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.xp.ledger_posted.v1",
+            "x-event-name": "gamification.xp.ledger_posted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12GrowthLedgerPosted"
+            }
+          }
+        }
+      },
+      "b12RewardGranted": {
+        "address": "gamification.reward.granted.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.reward.granted.v1",
+            "x-event-name": "gamification.reward.granted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12RewardGranted"
+            }
+          }
+        }
+      },
+      "b12AvatarEquipped": {
+        "address": "gamification.avatar.equipped.v1",
+        "messages": {
+          "event": {
+            "name": "gamification.avatar.equipped.v1",
+            "x-event-name": "gamification.avatar.equipped.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12AvatarEquipped"
+            }
+          }
+        }
+      },
+      "b12StudyRoomJoined": {
+        "address": "study_room.joined.v1",
+        "messages": {
+          "event": {
+            "name": "study_room.joined.v1",
+            "x-event-name": "study_room.joined.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12StudyRoomJoined"
+            }
+          }
+        }
+      },
+      "b12FocusStarted": {
+        "address": "study_room.focus_started.v1",
+        "messages": {
+          "event": {
+            "name": "study_room.focus_started.v1",
+            "x-event-name": "study_room.focus_started.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12FocusStarted"
+            }
+          }
+        }
+      },
+      "b12StudyRoomLeft": {
+        "address": "study_room.left.v1",
+        "messages": {
+          "event": {
+            "name": "study_room.left.v1",
+            "x-event-name": "study_room.left.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12StudyRoomLeft"
+            }
+          }
+        }
+      },
+      "b12LeaderboardRefreshed": {
+        "address": "leaderboard.refreshed.v1",
+        "messages": {
+          "event": {
+            "name": "leaderboard.refreshed.v1",
+            "x-event-name": "leaderboard.refreshed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12LeaderboardRefreshed"
+            }
+          }
+        }
+      },
+      "b12SocialReportCreated": {
+        "address": "social.report.created.v1",
+        "messages": {
+          "event": {
+            "name": "social.report.created.v1",
+            "x-event-name": "social.report.created.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12SocialReportCreated"
+            }
+          }
+        }
+      },
+      "b12NotificationRequested": {
+        "address": "notification.requested.v1",
+        "messages": {
+          "event": {
+            "name": "notification.requested.v1",
+            "x-event-name": "notification.requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12NotificationRequested"
+            }
+          }
+        }
+      },
+      "b12NotificationRetryScheduled": {
+        "address": "notification.retry_scheduled.v1",
+        "messages": {
+          "event": {
+            "name": "notification.retry_scheduled.v1",
+            "x-event-name": "notification.retry_scheduled.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12NotificationRetryScheduled"
+            }
+          }
+        }
+      },
+      "b12NotificationRecoveryCompleted": {
+        "address": "notification.recovery.completed.v1",
+        "messages": {
+          "event": {
+            "name": "notification.recovery.completed.v1",
+            "x-event-name": "notification.recovery.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B12NotificationRecoveryCompleted"
+            }
+          }
+        }
+      },
+      "b13CommerceOrderReconciled": {
+        "address": "commerce.order.reconciled.v1",
+        "messages": {
+          "event": {
+            "name": "commerce.order.reconciled.v1",
+            "x-event-name": "commerce.order.reconciled.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B13CommerceOrderReconciled"
+            }
           }
         }
       },
@@ -8867,7 +10170,11 @@
         "address": "analytics.metric.projected.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B13AnalyticsMetricProjected"
+            "name": "analytics.metric.projected.v1",
+            "x-event-name": "analytics.metric.projected.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B13AnalyticsMetricProjected"
+            }
           }
         }
       },
@@ -8875,7 +10182,11 @@
         "address": "analytics.recompute.requested.v1",
         "messages": {
           "event": {
-            "$ref": "#/payloadSchemas/B13AnalyticsRecomputeRequested"
+            "name": "analytics.recompute.requested.v1",
+            "x-event-name": "analytics.recompute.requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B13AnalyticsRecomputeRequested"
+            }
           }
         }
       },
@@ -8883,41 +10194,95 @@
         "address": "iam.session.revoked.v1",
         "messages": {
           "sessionRevoked": {
-            "$ref": "#/payloadSchemas/IamSessionRevoked"
+            "name": "iam.session.revoked.v1",
+            "x-event-name": "iam.session.revoked.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/IamSessionRevoked"
+            }
           }
         }
       },
-      "platformWorkflowEvents": {
+      "event_workflow_outbox_published_v1": {
         "address": "platform.workflow.v1",
         "messages": {
-          "workflowOutboxPublished": {
-            "$ref": "#/payloadSchemas/B26WorkflowOutboxPublished"
-          },
-          "workflowDeliveryFailed": {
-            "$ref": "#/payloadSchemas/B26WorkflowDeliveryFailed"
-          },
-          "workflowDeadLettered": {
-            "$ref": "#/payloadSchemas/B26WorkflowDeadLettered"
-          },
-          "workflowReplayRequested": {
-            "$ref": "#/payloadSchemas/B26WorkflowReplayRequested"
-          },
-          "workflowOrderingDeferred": {
-            "$ref": "#/payloadSchemas/B26WorkflowOrderingDeferred"
-          },
-          "workflowCompensationRequested": {
-            "$ref": "#/payloadSchemas/B26WorkflowCompensationRequested"
-          },
-          "workflowManualRecoveryRequested": {
-            "$ref": "#/payloadSchemas/B26WorkflowManualRecoveryRequested"
+          "event": {
+            "name": "workflow.outbox.published.v1",
+            "x-event-name": "workflow.outbox.published.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowOutboxPublished"
+            }
           }
         }
       },
-      "platformEventsDlq": {
-        "address": "platform.events.dlq.v1",
+      "event_workflow_event_delivery_failed_v1": {
+        "address": "platform.workflow.v1",
         "messages": {
-          "workflowDeadLettered": {
-            "$ref": "#/payloadSchemas/B26WorkflowDeadLettered"
+          "event": {
+            "name": "workflow.event.delivery_failed.v1",
+            "x-event-name": "workflow.event.delivery_failed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowDeliveryFailed"
+            }
+          }
+        }
+      },
+      "event_workflow_event_dead_lettered_v1": {
+        "address": "platform.workflow.v1",
+        "messages": {
+          "event": {
+            "name": "workflow.event.dead_lettered.v1",
+            "x-event-name": "workflow.event.dead_lettered.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowDeadLettered"
+            }
+          }
+        }
+      },
+      "event_workflow_event_replay_requested_v1": {
+        "address": "platform.workflow.v1",
+        "messages": {
+          "event": {
+            "name": "workflow.event.replay_requested.v1",
+            "x-event-name": "workflow.event.replay_requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowReplayRequested"
+            }
+          }
+        }
+      },
+      "event_workflow_event_ordering_deferred_v1": {
+        "address": "platform.workflow.v1",
+        "messages": {
+          "event": {
+            "name": "workflow.event.ordering_deferred.v1",
+            "x-event-name": "workflow.event.ordering_deferred.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowOrderingDeferred"
+            }
+          }
+        }
+      },
+      "event_workflow_saga_compensation_requested_v1": {
+        "address": "platform.workflow.v1",
+        "messages": {
+          "event": {
+            "name": "workflow.saga.compensation_requested.v1",
+            "x-event-name": "workflow.saga.compensation_requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowCompensationRequested"
+            }
+          }
+        }
+      },
+      "event_workflow_saga_manual_recovery_requested_v1": {
+        "address": "platform.workflow.v1",
+        "messages": {
+          "event": {
+            "name": "workflow.saga.manual_recovery_requested.v1",
+            "x-event-name": "workflow.saga.manual_recovery_requested.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B26WorkflowManualRecoveryRequested"
+            }
           }
         }
       },
@@ -8925,7 +10290,11 @@
         "address": "auth.account.registered.v1",
         "messages": {
           "accountRegistered": {
-            "$ref": "#/payloadSchemas/AuthAccountRegistered"
+            "name": "auth.account.registered.v1",
+            "x-event-name": "auth.account.registered.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthAccountRegistered"
+            }
           }
         }
       },
@@ -8933,11 +10302,1710 @@
         "address": "auth.login.succeeded.v1",
         "messages": {
           "loginSucceeded": {
-            "$ref": "#/payloadSchemas/AuthLoginSucceeded"
+            "name": "auth.login.succeeded.v1",
+            "x-event-name": "auth.login.succeeded.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/AuthLoginSucceeded"
+            }
           }
         }
       }
     },
-    "operations": {}
+    "operations": {
+      "publish_learning_srs_batch_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_learning_srs_batch_created_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_learning_srs_batch_created_v1/messages/event"
+          }
+        ]
+      },
+      "publish_vocabulary_review_accepted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_vocabulary_review_accepted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_vocabulary_review_accepted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_vocabulary_srs_state_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_vocabulary_srs_state_changed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_vocabulary_srs_state_changed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_assessment_answer_scored_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_assessment_answer_scored_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_assessment_answer_scored_v1/messages/event"
+          }
+        ]
+      },
+      "publish_mastery_state_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_mastery_state_changed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_mastery_state_changed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_learning_task_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_learning_task_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_learning_task_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_cms_content_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_cms_content_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_cms_content_submitted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_cms_review_decided_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_cms_review_decided_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_cms_review_decided_v1/messages/event"
+          }
+        ]
+      },
+      "publish_cms_content_published_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_cms_content_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_cms_content_published_v1/messages/event"
+          }
+        ]
+      },
+      "publish_cms_content_rolled_back_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_cms_content_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_cms_content_rolled_back_v1/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_order_paid_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_commerce_order_paid_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_commerce_order_paid_v1/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_entitlement_activated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13CommerceEntitlementActivated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13CommerceEntitlementActivated/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_entitlement_revoked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_commerce_entitlement_revoked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_commerce_entitlement_revoked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_subscription_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_commerce_subscription_changed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_commerce_subscription_changed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_notification_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_notification_created_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_notification_created_v1/messages/event"
+          }
+        ]
+      },
+      "publish_notification_delivered_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11NotificationDelivered"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11NotificationDelivered/messages/notificationDelivered"
+          }
+        ]
+      },
+      "publish_notification_read_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_notification_read_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_notification_read_v1/messages/event"
+          }
+        ]
+      },
+      "publish_sync_learning_checkpoint_saved_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_sync_learning_checkpoint_saved_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_sync_learning_checkpoint_saved_v1/messages/event"
+          }
+        ]
+      },
+      "publish_sync_conflict_detected_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_sync_conflict_detected_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_sync_conflict_detected_v1/messages/event"
+          }
+        ]
+      },
+      "publish_sync_cursor_advanced_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_sync_cursor_advanced_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_sync_cursor_advanced_v1/messages/event"
+          }
+        ]
+      },
+      "publish_auth_session_revoked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_auth_session_revoked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_auth_session_revoked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_assessment_item_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_assessment_item_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_assessment_item_submitted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_auth_device_kicked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_auth_device_kicked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_auth_device_kicked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_privacy_export_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_privacy_export_requested_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_privacy_export_requested_v1/messages/event"
+          }
+        ]
+      },
+      "publish_privacy_export_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_privacy_export_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_privacy_export_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_assessment_stream_built_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_assessment_stream_built_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_assessment_stream_built_v1/messages/event"
+          }
+        ]
+      },
+      "publish_assessment_answer_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_assessment_answer_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_assessment_answer_submitted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_mastery_verification_state_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_mastery_verification_state_changed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_mastery_verification_state_changed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_exam_session_state_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_exam_session_state_changed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_exam_session_state_changed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_exam_anti_cheat_recorded_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_exam_anti_cheat_recorded_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_exam_anti_cheat_recorded_v1/messages/event"
+          }
+        ]
+      },
+      "publish_report_generated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_report_generated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_report_generated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_vocabulary_review_filtered_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_vocabulary_review_filtered_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_vocabulary_review_filtered_v1/messages/event"
+          }
+        ]
+      },
+      "publish_vocabulary_expression_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_vocabulary_expression_created_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_vocabulary_expression_created_v1/messages/event"
+          }
+        ]
+      },
+      "publish_grammar_practice_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_grammar_practice_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_grammar_practice_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_writing_evaluation_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_writing_evaluation_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_writing_evaluation_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_listening_dictation_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_listening_dictation_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_listening_dictation_submitted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_reading_progress_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_reading_progress_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_reading_progress_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_speaking_self_rating_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_speaking_self_rating_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_speaking_self_rating_submitted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_offline_sync_applied_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_offline_sync_applied_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_offline_sync_applied_v1/messages/event"
+          }
+        ]
+      },
+      "publish_grammar_mastery_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_grammar_mastery_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_grammar_mastery_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_listening_progress_saved_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_listening_progress_saved_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_listening_progress_saved_v1/messages/event"
+          }
+        ]
+      },
+      "publish_speaking_shadowing_progressed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_speaking_shadowing_progressed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_speaking_shadowing_progressed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_media_offline_package_synced_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_media_offline_package_synced_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_media_offline_package_synced_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_profile_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_profile_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_profile_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_xp_ledger_appended_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_xp_ledger_appended_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_xp_ledger_appended_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_currency_ledger_appended_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_currency_ledger_appended_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_currency_ledger_appended_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_streak_day_validated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_streak_day_validated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_streak_day_validated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_streak_rescue_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_streak_rescue_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_streak_rescue_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_quest_progressed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_quest_progressed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_quest_progressed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_quest_claimed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_quest_claimed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_quest_claimed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_achievement_unlocked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_achievement_unlocked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_achievement_unlocked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_chest_granted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_chest_granted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_chest_granted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_chest_opened_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_chest_opened_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_chest_opened_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_avatar_loadout_equipped_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_avatar_loadout_equipped_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_avatar_loadout_equipped_v1/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_season_points_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_gamification_season_points_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_gamification_season_points_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_games_session_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_games_session_created_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_games_session_created_v1/messages/event"
+          }
+        ]
+      },
+      "publish_games_session_event_accepted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_games_session_event_accepted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_games_session_event_accepted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_games_session_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_games_session_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_games_session_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_room_joined_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_room_joined_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_room_joined_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_focus_started_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_focus_started_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_focus_started_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_focus_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_focus_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_focus_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_interaction_sent_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_interaction_sent_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_interaction_sent_v1/messages/event"
+          }
+        ]
+      },
+      "publish_offline_package_authorized_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_offline_package_authorized_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_offline_package_authorized_v1/messages/event"
+          }
+        ]
+      },
+      "publish_offline_b4_sync_applied_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_offline_b4_sync_applied_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_offline_b4_sync_applied_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_room_left_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_room_left_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_room_left_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_focus_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_focus_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_focus_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_moderation_reported_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_moderation_reported_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_moderation_reported_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_moderation_blocked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_moderation_blocked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_moderation_blocked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_social_moderation_muted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_social_moderation_muted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_social_moderation_muted_v1/messages/event"
+          }
+        ]
+      },
+      "publish_notifications_message_read_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_notifications_message_read_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_notifications_message_read_v1/messages/event"
+          }
+        ]
+      },
+      "publish_notifications_preferences_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_notifications_preferences_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_notifications_preferences_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_offline_package_download_state_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_offline_package_download_state_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_offline_package_download_state_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_offline_sync_conflict_recorded_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_offline_sync_conflict_recorded_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_offline_sync_conflict_recorded_v1/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_order_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13CommerceOrderCreated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13CommerceOrderCreated/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_payment_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_commerce_payment_requested_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_commerce_payment_requested_v1/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_payment_callback_received_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13CommercePaymentCallback"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13CommercePaymentCallback/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_payment_verified_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_commerce_payment_verified_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_commerce_payment_verified_v1/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_refund_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13CommerceRefundCompleted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13CommerceRefundCompleted/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_household_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_commerce_household_changed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_commerce_household_changed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_cms_content_version_saved_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_cms_content_version_saved_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_cms_content_version_saved_v1/messages/event"
+          }
+        ]
+      },
+      "publish_cms_import_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_cms_import_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_cms_import_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_safety_precheck_blocked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_safety_precheck_blocked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_safety_precheck_blocked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_risk_decision_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_risk_decision_created_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_risk_decision_created_v1/messages/event"
+          }
+        ]
+      },
+      "publish_finance_reconciliation_discrepancy_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_finance_reconciliation_discrepancy_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_finance_reconciliation_discrepancy_v1/messages/event"
+          }
+        ]
+      },
+      "publish_ops_flag_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_ops_flag_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_ops_flag_updated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_support_ticket_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13SupportTicketCreated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13SupportTicketCreated/messages/event"
+          }
+        ]
+      },
+      "publish_support_ticket_resolved_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_support_ticket_resolved_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_support_ticket_resolved_v1/messages/event"
+          }
+        ]
+      },
+      "publish_platform_build_registered_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_platform_build_registered_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_platform_build_registered_v1/messages/event"
+          }
+        ]
+      },
+      "publish_platform_compatibility_checked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_platform_compatibility_checked_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_platform_compatibility_checked_v1/messages/event"
+          }
+        ]
+      },
+      "publish_platform_performance_degraded_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_platform_performance_degraded_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_platform_performance_degraded_v1/messages/event"
+          }
+        ]
+      },
+      "publish_quality_e2e_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_quality_e2e_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_quality_e2e_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_quality_security_scan_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_quality_security_scan_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_quality_security_scan_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_quality_reliability_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_quality_reliability_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_quality_reliability_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_observability_alert_raised_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_observability_alert_raised_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_observability_alert_raised_v1/messages/event"
+          }
+        ]
+      },
+      "publish_data_backup_drill_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_data_backup_drill_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_data_backup_drill_completed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_release_gate_evaluated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_release_gate_evaluated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_release_gate_evaluated_v1/messages/event"
+          }
+        ]
+      },
+      "publish_auth_principal_mapped_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authPrincipalMapped"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authPrincipalMapped/messages/principalMapped"
+          }
+        ]
+      },
+      "publish_auth_session_rotated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authSessionRotated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authSessionRotated/messages/sessionRotated"
+          }
+        ]
+      },
+      "publish_auth_session_replay_detected_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authSessionReplayDetected"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authSessionReplayDetected/messages/sessionReplayDetected"
+          }
+        ]
+      },
+      "publish_auth_device_revoked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authDeviceRevoked"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authDeviceRevoked/messages/deviceRevoked"
+          }
+        ]
+      },
+      "publish_auth_consent_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authConsentUpdated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authConsentUpdated/messages/consentUpdated"
+          }
+        ]
+      },
+      "publish_auth_adult_gate_rejected_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authAdultGateRejected"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authAdultGateRejected/messages/adultGateRejected"
+          }
+        ]
+      },
+      "publish_iam_policy_version_changed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iamPolicyVersionChanged"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iamPolicyVersionChanged/messages/policyVersionChanged"
+          }
+        ]
+      },
+      "publish_learner_profile_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9LearnerProfileUpdated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9LearnerProfileUpdated/messages/learnerProfileUpdated"
+          }
+        ]
+      },
+      "publish_learner_target_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9LearnerTargetUpdated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9LearnerTargetUpdated/messages/learnerTargetUpdated"
+          }
+        ]
+      },
+      "publish_learner_first_day_projected_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9LearnerFirstDayProjected"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9LearnerFirstDayProjected/messages/learnerFirstDayProjected"
+          }
+        ]
+      },
+      "publish_content_version_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9ContentVersionSubmitted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9ContentVersionSubmitted/messages/contentVersionSubmitted"
+          }
+        ]
+      },
+      "publish_content_version_reviewed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9ContentVersionReviewed"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9ContentVersionReviewed/messages/contentVersionReviewed"
+          }
+        ]
+      },
+      "publish_content_version_published_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9ContentVersionPublished"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9ContentVersionPublished/messages/contentVersionPublished"
+          }
+        ]
+      },
+      "publish_content_version_unpublished_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9ContentVersionUnpublished"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9ContentVersionUnpublished/messages/contentVersionUnpublished"
+          }
+        ]
+      },
+      "publish_content_version_rolled_back_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9ContentVersionRolledBack"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9ContentVersionRolledBack/messages/contentVersionRolledBack"
+          }
+        ]
+      },
+      "publish_content_public_projection_invalidated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b9PublicProjectionInvalidated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b9PublicProjectionInvalidated/messages/publicProjectionInvalidated"
+          }
+        ]
+      },
+      "publish_assessment_attempt_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10AssessmentAttemptSubmitted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10AssessmentAttemptSubmitted/messages/attemptSubmitted"
+          }
+        ]
+      },
+      "publish_assessment_attempt_assessed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10AssessmentAttemptAssessed"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10AssessmentAttemptAssessed/messages/attemptAssessed"
+          }
+        ]
+      },
+      "publish_learning_mastery_projected_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10LearningMasteryProjected"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10LearningMasteryProjected/messages/masteryProjected"
+          }
+        ]
+      },
+      "publish_learning_review_scheduled_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10LearningReviewScheduled"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10LearningReviewScheduled/messages/reviewScheduled"
+          }
+        ]
+      },
+      "publish_workflow_assessment_learning_saga_started_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10SagaStarted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10SagaStarted/messages/sagaStarted"
+          }
+        ]
+      },
+      "publish_workflow_assessment_learning_saga_compensated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10SagaCompensated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10SagaCompensated/messages/sagaCompensated"
+          }
+        ]
+      },
+      "publish_workflow_event_replayed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b10EventReplayed"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b10EventReplayed/messages/eventReplayed"
+          }
+        ]
+      },
+      "publish_media_started_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11MediaStarted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11MediaStarted/messages/mediaStarted"
+          }
+        ]
+      },
+      "publish_media_segment_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11MediaSegmentCompleted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11MediaSegmentCompleted/messages/mediaSegmentCompleted"
+          }
+        ]
+      },
+      "publish_media_downloaded_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11MediaDownloaded"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11MediaDownloaded/messages/mediaDownloaded"
+          }
+        ]
+      },
+      "publish_media_revoked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11MediaRevoked"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11MediaRevoked/messages/mediaRevoked"
+          }
+        ]
+      },
+      "publish_sync_enqueued_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11SyncEnqueued"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11SyncEnqueued/messages/syncEnqueued"
+          }
+        ]
+      },
+      "publish_sync_conflict_detected_v1_2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11SyncConflictDetected"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11SyncConflictDetected/messages/syncConflictDetected"
+          }
+        ]
+      },
+      "publish_sync_recovered_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11SyncRecovered"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11SyncRecovered/messages/syncRecovered"
+          }
+        ]
+      },
+      "publish_recording_saved_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11RecordingSaved"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11RecordingSaved/messages/recordingSaved"
+          }
+        ]
+      },
+      "publish_speaking_permission_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11SpeakingPermissionRequested"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11SpeakingPermissionRequested/messages/speakingPermissionRequested"
+          }
+        ]
+      },
+      "publish_shadowing_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b11ShadowingCompleted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b11ShadowingCompleted/messages/shadowingCompleted"
+          }
+        ]
+      },
+      "publish_gamification_session_started_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12GrowthSessionStarted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12GrowthSessionStarted/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_xp_ledger_posted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12GrowthLedgerPosted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12GrowthLedgerPosted/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_reward_granted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12RewardGranted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12RewardGranted/messages/event"
+          }
+        ]
+      },
+      "publish_gamification_avatar_equipped_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12AvatarEquipped"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12AvatarEquipped/messages/event"
+          }
+        ]
+      },
+      "publish_study_room_joined_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12StudyRoomJoined"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12StudyRoomJoined/messages/event"
+          }
+        ]
+      },
+      "publish_study_room_focus_started_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12FocusStarted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12FocusStarted/messages/event"
+          }
+        ]
+      },
+      "publish_study_room_left_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12StudyRoomLeft"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12StudyRoomLeft/messages/event"
+          }
+        ]
+      },
+      "publish_leaderboard_refreshed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12LeaderboardRefreshed"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12LeaderboardRefreshed/messages/event"
+          }
+        ]
+      },
+      "publish_social_report_created_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12SocialReportCreated"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12SocialReportCreated/messages/event"
+          }
+        ]
+      },
+      "publish_notification_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12NotificationRequested"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12NotificationRequested/messages/event"
+          }
+        ]
+      },
+      "publish_notification_retry_scheduled_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12NotificationRetryScheduled"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12NotificationRetryScheduled/messages/event"
+          }
+        ]
+      },
+      "publish_notification_recovery_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b12NotificationRecoveryCompleted"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b12NotificationRecoveryCompleted/messages/event"
+          }
+        ]
+      },
+      "publish_commerce_order_reconciled_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13CommerceOrderReconciled"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13CommerceOrderReconciled/messages/event"
+          }
+        ]
+      },
+      "publish_analytics_metric_projected_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13AnalyticsMetricProjected"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13AnalyticsMetricProjected/messages/event"
+          }
+        ]
+      },
+      "publish_analytics_recompute_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/b13AnalyticsRecomputeRequested"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/b13AnalyticsRecomputeRequested/messages/event"
+          }
+        ]
+      },
+      "publish_iam_session_revoked_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iamSessionRevoked"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iamSessionRevoked/messages/sessionRevoked"
+          }
+        ]
+      },
+      "publish_workflow_outbox_published_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_outbox_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_outbox_published_v1/messages/event"
+          }
+        ]
+      },
+      "publish_workflow_event_delivery_failed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_event_delivery_failed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_event_delivery_failed_v1/messages/event"
+          }
+        ]
+      },
+      "publish_workflow_event_dead_lettered_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_event_dead_lettered_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_event_dead_lettered_v1/messages/event"
+          }
+        ]
+      },
+      "publish_workflow_event_replay_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_event_replay_requested_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_event_replay_requested_v1/messages/event"
+          }
+        ]
+      },
+      "publish_workflow_event_ordering_deferred_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_event_ordering_deferred_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_event_ordering_deferred_v1/messages/event"
+          }
+        ]
+      },
+      "publish_workflow_saga_compensation_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_saga_compensation_requested_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_saga_compensation_requested_v1/messages/event"
+          }
+        ]
+      },
+      "publish_workflow_saga_manual_recovery_requested_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/event_workflow_saga_manual_recovery_requested_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/event_workflow_saga_manual_recovery_requested_v1/messages/event"
+          }
+        ]
+      },
+      "publish_auth_account_registered_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authAccountRegistered"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authAccountRegistered/messages/accountRegistered"
+          }
+        ]
+      },
+      "publish_auth_login_succeeded_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/authLoginSucceeded"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/authLoginSucceeded/messages/loginSucceeded"
+          }
+        ]
+      }
+    }
   }
 }

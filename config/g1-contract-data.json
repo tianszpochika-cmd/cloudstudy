@@ -40,8 +40,8 @@
         "packages/api-client/src/generated/index.ts"
       ],
       "sourceMarker": "GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json",
-      "expectedOperationCount": 374,
-      "expectedSchemaCount": 479
+      "expectedOperationCount": 367,
+      "expectedSchemaCount": 481
     },
     "asyncapi": {
       "canonicalPath": "packages/contracts/events/v1/catalog.json",
@@ -175,6 +175,7 @@
   },
   "migrationPolicy": {
     "canonicalManifestPath": "database/mysql/migrations/migration-manifest.json",
+    "expectedMigrationCount": 24,
     "requiredEngine": "mysql-8.0",
     "checksumAlgorithm": "sha256-normalized-utf8",
     "runtimeDiffEvidenceStatus": "pending",

@@ -162,7 +162,7 @@
         "targetVersion": { "type": "integer", "minimum": 1 },
         "goalCode": { "type": "string", "maxLength": 96 },
         "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
-        "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45, 60] },
+        "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45] },
         "updatedAt": { "type": "string", "format": "date-time" }
       }
     },

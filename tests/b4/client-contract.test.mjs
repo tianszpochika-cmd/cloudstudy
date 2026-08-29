@@ -44,3 +44,21 @@ test('B4 client code keeps performance and offline state explicit', () => {
   assert.match(source, /itemCode/);
   assert.match(source, /PART_RECEIVED|downloadState/);
 });
+
+test('B4 game clients render server release metadata and disable unavailable sessions', () => {
+  const web = read('apps/learner-web/src/pages/B4WorldPage.vue');
+  const mobile = read('apps/mobile/src/pages/b4-games/b4-games.vue');
+  const clientSource = [
+    read('apps/learner-web/src/domain/b4.ts'),
+    read('apps/learner-web/src/stores/b4.ts'),
+    read('apps/mobile/src/domain/b4.ts'),
+    read('apps/mobile/src/stores/b4.ts'),
+  ].join('\n');
+  for (const page of [web, mobile]) {
+    assert.doesNotMatch(page, /六大|SIX RULED/);
+    assert.match(page, /releasePhase/);
+    assert.match(page, /disabled.*enabled/);
+  }
+  assert.match(clientSource, /B4_GAME_RELEASE_PHASES/);
+  assert.match(clientSource, /enabled: value\.enabled === true/);
+});

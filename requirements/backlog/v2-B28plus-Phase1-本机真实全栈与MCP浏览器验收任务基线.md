@@ -1,7 +1,7 @@
 # v2 B28–B36 Phase 1 本机真实全栈与 MCP 浏览器验收任务基线
 
 > 基线 ID：V2-PHASE1-LOCAL-REAL-E2E-20260824  
-> 状态：B28、B29 已完成；B30–B33 的自动化运行/构建收口已完成，但自有 JWT 认证后的 Browser MCP 全旅程尚未闭合；B34–B36 处于测试收口中。B28–B36 共 9 章、45 项任务，按章节顺序执行
+> 状态：B28、B29 已完成；B30–B33 的自动化运行/构建收口已完成，但自有 JWT 认证后的 Browser MCP 全旅程尚未闭合；已有注册/登录切片和历史认证证据不等于 ADR-0013 后从干净会话完成当前 Browser MCP 全旅程；B34–B36 处于测试收口中。B28–B36 共 9 章、45 项任务，按章节顺序执行
 > 当前目标：在本机完成“注册/登录 → 前后端真实交互 → MySQL 持久化读写 → Kafka/Redis 联动 → Codex Browser MCP 真浏览器回归 → 缺陷收口”  
 > 非当前目标：iOS/Android 原生包、iPad 原生、微信小程序、远程真机、production-like staging、RC、生产发布、真实支付、Phase 2 AI 和 Phase 3 K12
 
@@ -107,7 +107,7 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|
 | V2-B30-AUTH-001 | 启动并固化平台自有 JWT profile | IAM 账号密码接口、RS256、issuer/audience/JWKS、claims、Refresh Token 轮换和密码策略可运行 | 代码/静态完成，运行待验收 |
-| V2-B30-AUTH-002 | 用 MCP 浏览器完成 JWT Bearer 注册与登录 | 从干净会话打开统一登录页、注册合成账号、账号密码登录、获得 JWT Bearer 会话、returnTo；不注入固定 Token | 新认证旅程待执行 |
+| V2-B30-AUTH-002 | 用 MCP 浏览器完成 JWT Bearer 注册与登录 | 从干净会话打开统一登录页、注册合成账号、账号密码登录、获得 JWT Bearer 会话、returnTo；不注入固定 Token | 新认证旅程待执行；已有注册/登录切片和历史证据不计入，必须在 ADR-0013 后的干净会话重新完成当前 Browser MCP 全旅程 |
 | V2-B30-IAM-003 | 持久化 IAM 本地事实 | principal、tenant、device、session、refresh token 摘要/历史、consent/adult gate、role/policy/audit 写入 IAM owner schema | 代码/迁移完成，运行待验收 |
 | V2-B30-SEC-004 | 验证 Gateway 与服务侧 PEP | issuer/audience/JWKS/过期、RBAC+ABAC、owner/tenant 服务端派生、伪造角色头拒绝、默认拒绝 | 已完成：Gateway/API 负例与服务 PEP 通过；Browser 认证负例转 B35 |
 | V2-B30-LIFE-005 | 验证 JWT 会话生命周期 | refresh rotation、登出、设备撤销、错误密码/锁定、过期 JWT、JWKS/认证中心不可用和重启恢复均有浏览器/API/DB 证据 | 逻辑测试完成，真实 API/Browser 证据待验收 |
@@ -174,7 +174,7 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 
 ## 11. B34 — Codex Browser MCP 真浏览器功能验收（5 项）
 
-**状态：部分完成。MCP-001 已完成；已补齐真实注册/登录和 Web/H5 核心数据旅程，Web `/practice` 旧接口已修复但认证后新入口仍待 MCP 复测，完整页面、退出/重登和 Admin 发布联动仍在进行。详见 `docs/07-operations/b34-validation.md`。**
+**状态：部分完成。MCP-001、代码修复和既有 HTTP/页面运行切片已有证据；但按当前自有 IAM + RS256 JWT 基线，干净会话下的注册、登录、刷新、登出与重登 Browser MCP 旅程尚未执行，历史其他认证流或旧页面会话不得计为当前完成。Web `/practice` 新入口、完整页面、H5 新鲜答题和 Admin 发布联动仍待认证后复测。详见 `docs/07-operations/b34-validation.md`。**
 
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|

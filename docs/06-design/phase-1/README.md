@@ -1,6 +1,6 @@
 # Phase 1 UI/UX 设计文档（v1.0，历史包）
 
-> **状态：历史/迁移参考。** 本目录记录 v1 Phase 1 UI/UX 施工历史和术语；新一轮业务需求、页面宿主、交互和验收以 [`v2-980plus/`](../v2-980plus/README.md) 为唯一基线，不能用本目录覆盖 v2。
+> **状态：Historical / Superseded（历史/迁移参考）。** 本目录记录 v1 Phase 1 UI/UX 施工历史和术语；新一轮业务需求、页面宿主、交互和验收以 [`v2-980plus/`](../v2-980plus/README.md) 为唯一基线，不能用本目录覆盖 v2。
 >
 > 依据 [PRD v3.3](../../../requirements/product-requirements.md) 交付的第一阶段完整 UI/UX 设计包。设计边界：18 岁及以上成人用户、无生成式 AI、Study Room 低 UGC、随机奖励仅学习行为免费获得（不可付费抽取）。
 

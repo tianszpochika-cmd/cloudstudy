@@ -26,7 +26,7 @@
 
 ### 1.1 自有 JWT Bearer 认证边界
 
-- `iam-service` 校验平台账号密码并直接签发短时非对称 JWT Access Token，使用 RS256/ES256，公开只读 JWKS；认证中心不依赖外部身份提供方。
+- `iam-service` 校验平台账号密码并在 Phase 1 直接签发短时 RS256 JWT Access Token，公开只读 RSA JWKS；认证中心不依赖外部身份提供方。ES256 只能在新增 ADR、同步更新契约与 JWKS key schema、密钥管理和运行实现并通过验证后扩展。
 - Gateway 和每个领域服务都必须独立校验 issuer、audience、签名算法、公钥、时间窗口、token type 和必要 scope/permission；JWKS 不可用、密钥轮换不确定或撤销状态不确定时 fail closed。
 - Access Token 只通过 `Authorization: Bearer` 发送；不进入 URL、日志、事件、埋点、错误 envelope 或业务数据库。Refresh Token 是认证中心管理的轮换/撤销会话凭证，Web 仅用 HttpOnly/Secure/SameSite Cookie，移动端仅用 Keychain/Keystore。
 - 登录、刷新、登出、设备撤销和密码重置接口均由 IAM 提供；`iss/sub/aud/exp/iat/nbf/jti/token_type/scope` 为最低声明，业务角色/权限/租户由服务端事实生成。
