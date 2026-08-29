@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-004-GATEWAY-CONTRACT-20260830] 接受 Phase 1 Gateway 边界与浏览器安全 D2 契约：52 条有序 route rule 唯一覆盖 326/326 public operations，51/51 internal operations 外部失败关闭；精确 Origin、credentialed CORS、Cookie CSRF/Origin/Referer、native secure storage、RS256/JWKS、具名限流、429 `Retry-After`、统一错误、requestId/traceId、脱敏审计与 direct-connect deny 均可机器检查。Gateway 变异测试 15/15、P1R 72/72、B7 28/28、B8 29/29、G1 6/6，合并/生成/校验/typecheck 通过且三类兼容 0 breaking；独立 Luna Max 只读终验接受实现源 `e4618b3`。真实 WebFlux 安全、public-path、Redis 限流、持久审计、网络隔离和跨进程 Evidence 仍归 M2-001；完整 G 仍为既有 39/41，M0-006 仍阻塞。
+
 - [P1R-M1-004-START-20260829] 启动 Phase 1 Gateway 边界与浏览器安全 D2 契约任务：以 `dev@e5110f2` 为不可变来源基线，冻结 `/api/v1` route owner、CORS/CSRF/Origin/Referer、Web Cookie 与原生 Bearer 分界、分级限流、RS256/JWKS 预检、requestId/traceId、401/403/429、边界审计和 direct-connect blocking。现有 Java Gateway 仅作为待 M2-001 复用/修正的候选实现，本条不代表运行验收或发布放行。
 
 - [P1R-M1-003-IAM-POLICY-20260829] 接受 Phase 1 IAM 权限与策略 D2 契约：principal/tenant/role/permission 和 resource owner/content rights 均具备服务端权威来源，成人 Gate 与 required consent 按版本、证据、撤回和重验证 fail closed；RBAC+ABAC、默认拒绝、本地 PEP/远程 PDP、可信服务身份，以及 policy draft/submit/独立 approve/activate/revoke、审计、幂等和缓存失效均可机器校验。新增 8 个策略控制操作、1 个严格 PDP 操作、结构化审计和 13 个失败关闭测试；canonical 为 377 operations/536 schemas/154 events，三类 Git baseline 0 breaking，P1R 57/57、B8 29/29、G1 6/6，独立 Luna Max 评审接受最终源 `82b27f4`，并按 Evidence Gate 对 M1-001/002 的共享产物完成 current-source revalidation。Phase 1 角色词汇已移除 `tenant-admin/privacy-operator` 旧别名。完整 G 仍为既有 39/41，IAM/PEP/PDP/Gateway 运行实现与 M0-006 阻塞未被冒充完成。

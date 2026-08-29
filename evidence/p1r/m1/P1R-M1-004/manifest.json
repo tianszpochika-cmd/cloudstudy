@@ -1,0 +1,149 @@
+{
+  "taskId": "P1R-M1-004",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
+  "artifactDigests": [
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "0790ed7e97031cbdebb13d364e7ca3c4777a6aaabdf46cbc545bc6286bd6f0b1"
+    },
+    {
+      "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+      "algorithm": "sha256",
+      "digest": "c87507837bf99074bfa7e4a363b75db3e9e93d66588dc267e5e31590e63b58a6"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "1ab22b4916c2decede6552a69eb32da82c5b3e3bb4340da574a4610f6bd52f24"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "0d1c6fa4bd6b56fab4e78a9fe6c0b5907c711474ef6a8a4bb3c243173ea3dc0c"
+    },
+    {
+      "path": "scripts/audit/p1r-gateway-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "98210c139d1c1e02098451303aa874958d449a0ad693099c2941e48f2898000b"
+    },
+    {
+      "path": "tests/p1r/p1r-gateway-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "f727005d07882112088ce8a369effd03a99feffc2a325e3577903ee8fb400ffc"
+    },
+    {
+      "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+      "algorithm": "sha256",
+      "digest": "f6e191bbf69ea3437c82f0d4fccde364dcc189d525ea3bcd4d4b91695afaa023"
+    },
+    {
+      "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
+      "algorithm": "sha256",
+      "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"
+    },
+    {
+      "path": "docs/02-architecture/security-and-data-boundaries.md",
+      "algorithm": "sha256",
+      "digest": "51d1245d489b6d700a488b60d729156ac26b18fd291fc7e39e804b79cebc231e"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "algorithm": "sha256",
+      "digest": "9c7c92bfe5e262b2fcffd0c8e8f59eb64db30869e809a5218a55bfad43703d62"
+    },
+    {
+      "path": "services/api-gateway/README.md",
+      "algorithm": "sha256",
+      "digest": "e7df7e39fc53f5dcb9c6159d98b45d00e95099c96b8e1cbb4fa015323d4e1a60"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "acceptedContractBaseline": "e5110f29d73724fd518fd6d4a6a7cbcdb08ece28",
+    "executionCheckpoint": "62168eae300e74588e4487a7b54b2a9bc4377bc8"
+  },
+  "startedAt": "2026-08-29T23:52:04+08:00",
+  "finishedAt": "2026-08-30T00:42:00+08:00",
+  "actors": [
+    "m1_003_policy_contract",
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-004",
+    "ARCH-GW-001",
+    "ARCH-IAM-002",
+    "ADR-0010",
+    "ADR-0013"
+  ],
+  "commands": [
+    "pnpm p1r:gateway-contract:check",
+    "node --test tests/p1r/p1r-gateway-contract.test.mjs",
+    "pnpm p1r:auth-contract:check",
+    "pnpm p1r:iam-policy-contract:check",
+    "node scripts/contracts/merge-b1-fragments.mjs",
+    "pnpm contracts:generate -- --check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref e5110f29d73724fd518fd6d4a6a7cbcdb08ece28 --kind all",
+    "pnpm --dir packages/contracts typecheck",
+    "pnpm --dir packages/api-client typecheck",
+    "pnpm test:p1r",
+    "pnpm test:b7",
+    "pnpm test:b8",
+    "node --test tests/g/g1-contract-data.test.mjs",
+    "pnpm test:g",
+    "git diff --check",
+    "independent Luna Max read-only acceptance review"
+  ],
+  "results": [
+    {
+      "check": "route-owner-coverage",
+      "status": "PASS",
+      "details": "Fifty-two ordered route rules uniquely cover 326/326 public operations with zero unmatched or equal-priority conflicts; all 51 internal operations are denied at the external boundary, and the canonical projection exactly matches the Gateway fragment."
+    },
+    {
+      "check": "origin-cookie-native-boundaries",
+      "status": "PASS",
+      "details": "Learner Web, Admin Web, Mobile H5, Official Site and native Bearer profiles have distinct capabilities; credentialed CORS has no wildcard; Web cookie writes require CSRF and trusted Origin/Referer while native transport requires trusted device context and secure storage."
+    },
+    {
+      "check": "jwt-rate-errors-correlation",
+      "status": "PASS",
+      "details": "RS256/JWKS issuer, audience, time, type and scope prechecks are explicit without replacing service PEP; named route classes fail closed on rate-backend uncertainty, 429 carries Retry-After, and canonical errors plus requestId/traceId propagation are frozen."
+    },
+    {
+      "check": "audit-and-direct-connect",
+      "status": "PASS",
+      "details": "Boundary audit fields are allow-listed and sensitive credentials and payloads are redacted; external direct service access and unknown versions or routes default to DENY."
+    },
+    {
+      "check": "merge-generate-validate-types-compatibility",
+      "status": "PASS",
+      "details": "Twenty-one OpenAPI and fourteen event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; OpenAPI, event and JSON Schema comparison against e5110f2 reports zero breaking changes."
+    },
+    {
+      "check": "tests-and-independent-review",
+      "status": "PASS",
+      "details": "Gateway audit passes; 15/15 failure-closed mutations, P1R 72/72, B7 28/28, B8 29/29 and G1 6/6 pass; independent reviewer m1_003_final_review accepted e4618b324e5a93926da0750a8100fc9377ac97ec using gpt-5.6-luna Max for the D2 scope only."
+    }
+  ],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "The Gateway D2 source is isolated in e4618b3 after execution checkpoint 62168ea and immutable baseline e5110f2; reverting e4618b3 restores the start checkpoint, and canonical OpenAPI remains reproducible from fragments through the no-write merge and generation checks."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still blocks M0-complete and release claims.",
+    "P1R-M2-001 must implement and prove real WebFlux CORS, CSRF and Origin enforcement plus public-path parity.",
+    "P1R-M2-001 must implement and prove Redis-backed rate limiting and failure semantics plus durable boundary audit storage.",
+    "P1R-M2-001 must implement and prove network-level direct-connect isolation and real browser, JWKS, cross-process and network evidence.",
+    "The full historical G suite remains 39/41 because G0 and G3 assert the removed exact source marker `Phase 2/3 已移出当前批次`; the task-relevant G1 slice passes 6/6.",
+    "This ACCEPTED decision covers D2 contract governance only and does not claim the existing Gateway Java candidate or any M2 runtime capability is complete."
+  ],
+  "reviewer": "m1_003_final_review",
+  "decision": "ACCEPTED"
+}

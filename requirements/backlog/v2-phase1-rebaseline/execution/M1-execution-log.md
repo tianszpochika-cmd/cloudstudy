@@ -1,13 +1,14 @@
 # M1 统一执行日志
 
-更新时间：2026-08-29（Asia/Shanghai）。本记录随实际状态推进，不继承旧 B/DEV/G Evidence。
+更新时间：2026-08-30（Asia/Shanghai）。本记录随实际状态推进，不继承旧 B/DEV/G Evidence。
 
 ## 当前任务
 
-- `P1R-M1-001`：`ACCEPTED`；原实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`；共享产物在 `82b27f4` 由 Luna Max 完成 current-source revalidation。
-- `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享产物在 `82b27f4` 由 Luna Max 完成 current-source revalidation。
-- `P1R-M1-003`：`ACCEPTED`；最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`，独立评审 `m1_003_final_review`（Luna Max）。
-- `P1R-M1-004`：`IN_PROGRESS`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，正在冻结 Gateway route、浏览器凭据安全、限流、JWT 预检、边界审计和直连阻断 D2 契约。
+- `P1R-M1-001`：`ACCEPTED`；原实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`；其列名制品在 `e4618b3` 保持不变。
+- `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享产物在 `e4618b3` 完成 current-source revalidation。
+- `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`，独立评审 `m1_003_final_review`（Luna Max）；共享产物在 `e4618b3` 完成 current-source revalidation。
+- `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，最终实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`，独立终验 `m1_003_final_review`（Luna Max，仅 D2）。
+- 下一关键任务：`P1R-M1-005`（每服务数据 owner、schema/Flyway/Redis namespace/tenant guard/retention/迁移责任 D2）。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
 ## M1-003 执行轨道
@@ -49,3 +50,14 @@
 - 策略治理：新增 8 个控制面操作和 1 个结构化 PDP 操作，覆盖 draft/submit/独立 approve/activate/revoke、职责分离、审计、幂等和缓存失效。
 - 契约工具：新增 `p1r:iam-policy-contract:check` 与 13 个失败关闭测试；canonical 计数为 377 operations / 536 schemas，Git baseline 0 breaking。
 - 验证：P1R 57/57、B8 29/29、G1 6/6；独立 Luna Max 评审接受最终源。完整 G 仍是既有 39/41，D2 不替代 M2 运行实现。
+
+## M1-004 执行与结果摘要
+
+1. Gateway policy：`root-coordinator` 负责 route/Origin/Cookie/JWT/rate/error/audit/direct-connect 合同源、canonical 合并和设计对齐。
+2. 失败关闭校验：`m1_003_policy_contract`（Terra Ultra）负责专项审计和 15 个变异测试；因根级历史线程占用，未启动模型未知的历史 Agent。
+3. 独立终验：`m1_003_final_review`（Luna Max）只读复核实现源并给出 `ACCEPT`，范围严格限定在 D2。
+
+- 路由所有权：52 条 rule 唯一覆盖 326/326 public operations；0 未匹配、0 等优先级冲突；51/51 internal operations 外部 `DENY`。
+- 安全合同：精确 Origin、credentialed CORS 无 wildcard、Cookie CSRF/Origin/Referer、native secure storage、RS256/JWKS、具名 rate class、429 `Retry-After`、统一错误、关联 ID、脱敏审计和直连阻断均有正反例。
+- 验证：Gateway 15/15、P1R 72/72、B7 28/28、B8 29/29、G1 6/6；merge/generate/validate/typecheck PASS；相对 `e5110f2` 的 OpenAPI/events/schema 兼容均 0 breaking。
+- 未越界：真实 WebFlux 安全、public-path、Redis 限流、持久审计、网络隔离和跨进程 Evidence 仍归 `P1R-M2-001`；完整 G 保持既有 39/41，M0-006 仍 `BLOCKED`。

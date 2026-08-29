@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
+  "sourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -12,7 +12,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "0d922d5d38e9c2871b1b833c2f927ffcc16c0bd1f78b995992e60010f9900521"
+      "digest": "1ab22b4916c2decede6552a69eb32da82c5b3e3bb4340da574a4610f6bd52f24"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -37,12 +37,12 @@
     {
       "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
       "algorithm": "sha256",
-      "digest": "1b9717992284691aab468ed03874b44ec4cd5e590e0e6f8235d51e43fd933ea5"
+      "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"
     },
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "700c679b66f72815aa714e86ac635f4fab15bf27fffd03f9be3b74f2c17fc8b6"
+      "digest": "9c7c92bfe5e262b2fcffd0c8e8f59eb64db30869e809a5218a55bfad43703d62"
     },
     {
       "path": "config/g1-contract-data.json",
@@ -65,10 +65,10 @@
     "originalSourceCommit": "25705c4caab46449cfaa577db08bd13c8ad13fba",
     "originalFinishedAt": "2026-08-29T22:09:32+08:00",
     "originalReviewer": "m1_002_final_review",
-    "currentSourceRevalidationTask": "P1R-M1-003"
+    "currentSourceRevalidationTask": "P1R-M1-004"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
-  "finishedAt": "2026-08-29T23:38:00+08:00",
+  "finishedAt": "2026-08-30T00:42:00+08:00",
   "actors": [
     "m1_002_auth_contract",
     "m1_002_auth_audit",
@@ -96,7 +96,7 @@
     "node --test tests/g/g1-contract-data.test.mjs",
     "git diff --check",
     "independent Terra Ultra read-only acceptance review",
-    "independent Luna Max current-source revalidation review at 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7"
+    "independent Luna Max current-source revalidation review at e4618b324e5a93926da0750a8100fc9377ac97ec"
   ],
   "results": [
     {
@@ -122,12 +122,12 @@
     {
       "check": "merge-generate-validate-types-compatibility",
       "status": "PASS",
-      "details": "20 OpenAPI and 14 event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the M1-002 Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
+      "details": "21 OpenAPI and 14 event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the M1-002 Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
     },
     {
       "check": "tests-and-independent-review",
       "status": "PASS",
-      "details": "P1R 57/57, B8 29/29 and G1 6/6 pass at the current source; the auth audit covers 15/15 paths; independent reviewer m1_003_final_review revalidated the original M1-002 acceptance at 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7."
+      "details": "P1R 72/72, B8 29/29 and G1 6/6 pass at the current source; the auth audit covers 15/15 paths; independent reviewer m1_003_final_review revalidated the original M1-002 acceptance at e4618b324e5a93926da0750a8100fc9377ac97ec."
     },
     {
       "check": "design-consistency",
@@ -138,13 +138,13 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidation at 82b27f4 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
+      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidation at e4618b3 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
     }
   ],
   "knownGaps": [
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still blocks release claims.",
     "IAM runtime transport cross-check, native no-cookie behavior, durable rotation/replay storage and actual cookie expiry clearing remain owned by P1R-M2-002.",
-    "Full CORS, CSRF, Origin/Referer, rate-limit and direct-connect policy remains owned by P1R-M1-004.",
+    "The Gateway D2 policy is accepted by P1R-M1-004; real CORS, CSRF, Origin/Referer, public-path, Redis rate-limit, durable audit and direct-connect runtime enforcement remain owned by P1R-M2-001.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-002-relevant G1 slice passes 6/6 and the independent reviewer confirmed the two failures predate this source commit."
   ],
   "reviewer": "m1_003_final_review",

@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
+  "sourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "e8126440c8ecafa6023c7cf4c27efb6abb4252a5acf08c60f28194146a027a9f"
+      "digest": "0790ed7e97031cbdebb13d364e7ca3c4777a6aaabdf46cbc545bc6286bd6f0b1"
     },
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -17,7 +17,7 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "0d922d5d38e9c2871b1b833c2f927ffcc16c0bd1f78b995992e60010f9900521"
+      "digest": "1ab22b4916c2decede6552a69eb32da82c5b3e3bb4340da574a4610f6bd52f24"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
@@ -47,12 +47,12 @@
     {
       "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
       "algorithm": "sha256",
-      "digest": "8cb26a9e632f7786dea4825e9d9d7b149f58f1c6b9956504bad88fcdbeeb5bf8"
+      "digest": "f6e191bbf69ea3437c82f0d4fccde364dcc189d525ea3bcd4d4b91695afaa023"
     },
     {
       "path": "docs/02-architecture/security-and-data-boundaries.md",
       "algorithm": "sha256",
-      "digest": "bdf2d9df7a0deb70688fe1201413b4bb8f8e195fd5ca2bf022a6bcfcb83d1f2a"
+      "digest": "51d1245d489b6d700a488b60d729156ac26b18fd291fc7e39e804b79cebc231e"
     },
     {
       "path": "docs/02-architecture/v2-microservices-architecture.md",
@@ -72,7 +72,7 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "700c679b66f72815aa714e86ac635f4fab15bf27fffd03f9be3b74f2c17fc8b6"
+      "digest": "9c7c92bfe5e262b2fcffd0c8e8f59eb64db30869e809a5218a55bfad43703d62"
     },
     {
       "path": "config/g1-contract-data.json",
@@ -91,8 +91,14 @@
     "acceptedContractBaseline": "d7bf9ab2472cca36d110720acc135f2115a96fe5",
     "executionCheckpoint": "bcd04d116a2e3024971ce06f6029e4ad12bfc088"
   },
+  "provenance": {
+    "originalSourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
+    "originalFinishedAt": "2026-08-29T23:25:30+08:00",
+    "originalReviewer": "m1_003_final_review",
+    "currentSourceRevalidationTask": "P1R-M1-004"
+  },
   "startedAt": "2026-08-29T22:19:13+08:00",
-  "finishedAt": "2026-08-29T23:25:30+08:00",
+  "finishedAt": "2026-08-30T00:42:00+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -119,7 +125,8 @@
     "pnpm test:b8",
     "node --test tests/g/g1-contract-data.test.mjs",
     "git diff --check",
-    "independent Luna Max read-only acceptance review"
+    "independent Luna Max read-only acceptance review",
+    "independent Luna Max current-source revalidation review at e4618b324e5a93926da0750a8100fc9377ac97ec"
   ],
   "results": [
     {
@@ -145,12 +152,12 @@
     {
       "check": "merge-generate-validate-types-compatibility",
       "status": "PASS",
-      "details": "Twenty OpenAPI and fourteen event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the immutable Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
+      "details": "Twenty-one OpenAPI and fourteen event fragments merge without drift; five generated files are current; 377 operations, 536 schemas and 154 events validate; both TypeScript packages typecheck; the immutable Git baseline reports zero breaking OpenAPI, event and JSON Schema changes."
     },
     {
       "check": "tests-and-independent-review",
       "status": "PASS",
-      "details": "The policy audit covers 8/8 operations and 30 policy schemas; 13/13 failure-closed mutations, P1R 57/57, B8 29/29 and G1 6/6 pass; independent reviewer m1_003_final_review accepted final source 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7 using gpt-5.6-luna Max."
+      "details": "The policy audit covers 8/8 operations and 30 policy schemas; 13/13 failure-closed mutations, P1R 72/72, B8 29/29 and G1 6/6 pass; independent reviewer m1_003_final_review revalidated the original acceptance at e4618b324e5a93926da0750a8100fc9377ac97ec using gpt-5.6-luna Max."
     },
     {
       "check": "design-consistency",
@@ -161,13 +168,13 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "The task source is isolated in d214254, 0fc0309, b61610a, 7bf9803 and 82b27f4 after checkpoint bcd04d1; reverting these source commits in reverse order restores the accepted d7bf9ab contract baseline, and canonical/generated artifacts remain reproducible from fragments."
+      "details": "The original task source is isolated in d214254, 0fc0309, b61610a, 7bf9803 and 82b27f4 after checkpoint bcd04d1; current-source revalidation at e4618b3 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
     }
   ],
   "knownGaps": [
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still blocks M0-complete and release claims.",
     "IAM persistence, adult/consent facts, policy storage and session runtime remain owned by P1R-M2-002; eleven service Resource Server PEPs and PDP failure tests remain owned by P1R-M2-003.",
-    "Gateway routing, CORS/CSRF/Origin/Referer, rate limiting, JWT precheck and direct-connect blocking remain owned by P1R-M1-004 and P1R-M2-001.",
+    "Gateway route, browser credential, rate-limit, JWT precheck, audit and direct-connect D2 policy is accepted by P1R-M1-004; its real runtime enforcement remains owned by P1R-M2-001.",
     "The deprecated authorization decision route keeps its historical response shape for compatibility; runtime integrations must use the strict structured PDP context rather than omit server-authoritative facts.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the M1-003-relevant G1 slice passes 6/6 and these failures predate the task source."
   ],
