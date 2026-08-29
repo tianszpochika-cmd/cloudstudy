@@ -5,6 +5,7 @@
 ## 需求事实源
 
 - `../docs/06-design/v2-980plus/README.md`：第二版全量业务设计、四端边界、状态、契约和阶段 Gate；新任务以此为准，`V2-EXT-*` 需细化签收后实施。
+- `../docs/06-design/v2-980plus/phase1-business-operation/README.md`：Phase 1 角色与业务总图、端到端旅程、逐页功能、学习机制、后台流程、业务联调、异常恢复和 E2E Evidence；运行层 ID 不改变 980 计数，文档存在不等于实现完成。
 - product-requirements.md：完整 PRD，提供产品阶段、边界和功能的来源证据。
 - mvp-scope.md：Phase 1 可执行范围与优先级。
 - user-stories.md：按 Phase 1/2/3 划分的用户故事。
@@ -48,5 +49,5 @@ AI 仅在 Phase 2 通过 Python FastAPI 独立服务启用。历史技术方案�
 
 ## 任务重基线提示
 
-旧 `requirements/backlog/` 中的 B0–B6/`DEV-*` 台账是 v1 历史执行基线。它们保留用于审计和现状回放；下一轮任务必须基于 v2 设计单元 + `ARCH-*` 能力重新拆分，不能把旧任务状态直接等同于 Gateway、RBAC 或微服务迁移完成。当前 B7+ 的代码层任务入口与状态事实为 [`backlog/v2-B7plus-代码重塑与交互测试任务基线.md`](./backlog/v2-B7plus-代码重塑与交互测试任务基线.md)。
+旧 `requirements/backlog/` 中的 B0–B6/`DEV-*` 台账是 v1 历史执行基线。它们保留用于审计和现状回放；下一轮任务必须基于 v2 设计单元 + `ARCH-*` 能力，并绑定 Phase 1 业务运行设计的 `ACT/JNY/PAGE/RULE/INT/E2E` 重新拆分，不能把旧任务状态直接等同于 Gateway、RBAC 或微服务迁移完成。`CONTRACT-GAP/EVENT-GAP/IMPLEMENTATION-GAP/EVIDENCE-GAP` 未关闭时必须进入任务和风险清单。现有 B7+ 的代码状态事实仍见 [`backlog/v2-B7plus-代码重塑与交互测试任务基线.md`](./backlog/v2-B7plus-代码重塑与交互测试任务基线.md)，但它不直接充当下一台电脑的新开发计划。
 

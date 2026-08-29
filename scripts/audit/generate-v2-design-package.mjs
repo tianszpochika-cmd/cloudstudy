@@ -545,8 +545,8 @@ function generateReadme(units, atoms, matrix, warnings) {
   const phaseCounts = countsBy(units, 'phase');
   return `# v2-980 全量设计单元登记基线
 
-> 版本：v2.2 架构绑定与一致性审核版  
-> 生成器：scripts/audit/generate-v2-design-package.mjs  
+> 版本：v2.3 Phase 1 业务运行设计补齐版
+> 生成器：scripts/audit/generate-v2-design-package.mjs
 > 设计状态：v2 全量范围已冻结；其中缺少独立名称/验收的单元须完成细化签收后才能进入实现排期。
 > 计数声明（冻结）：\`V2-980-0001\` 至 \`V2-980-0980\` 是连续的范围登记编号，不代表 980 份已经可实施或已经完成的详细设计。
 
@@ -602,9 +602,16 @@ ${mdTable(phaseOrder.map((phase) => ({ phase, target: phaseTotals[phase], actual
 11. [10-设计评审与未决项](10-设计评审与未决项.md)：必须由产品/架构/合规签收的数量和交互问题。
 12. [11-架构映射与任务重基线](11-架构映射与任务重基线.md)：V2-980 业务单元与 ARCH 平台能力的依赖、任务卡和验收字段。
 13. [12-架构与设计一致性审核](12-架构与设计一致性审核.md)：v2 需求、服务边界、权限、数据、事件和运行模型的审核结论。
-14. [B7+ 代码重塑与交互测试任务基线](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)：从 B7 开始的代码层、逻辑/交互测试任务与阶段 Gate。
+14. [Phase 1 业务运行设计包](phase1-business-operation/README.md)：角色和业务总图、端到端旅程、逐页功能、学习规则、后台流程、业务联调、恢复与 E2E 追溯；它补齐“系统怎样运行”，不改变 980 计数，也不代表实现完成。
+15. [B7+ 代码重塑与交互测试状态台账](../../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md)：保留现有代码、测试和迁移状态；不直接充当下一轮开发计划。
 
-## 3.1 v2 技术架构绑定
+### 3.1 Phase 1 业务运行层
+
+Phase 1 新任务除回指 \`FEAT/PRD-ATOM/V2-980 + ARCH\` 外，还必须在 [业务运行设计包](phase1-business-operation/README.md) 中绑定相应的 \`ACT-P1\` 参与者、\`JNY-P1\` 旅程、\`PAGE-P1\` 页面、\`RULE-P1\` 规则、\`INT-P1\` 联调和 \`E2E-P1\` 验收。运行层 ID 只是追溯索引，不新增业务功能数量。
+
+业务运行设计中的 \`CONTRACT-GAP/EVENT-GAP/IMPLEMENTATION-GAP/EVIDENCE-GAP\` 必须进入后续任务并按 owner 关闭；不能因为流程已经写入文档就把契约、代码或运行状态标为完成。
+
+## 3.2 v2 技术架构绑定
 
 - 新服务目标运行时为 Java 25 LTS + Spring Boot 4.1.x/Spring Framework 7.x；Phase 2 AI 编排仍为 Python 3.11+。
 - 外部调用统一经过 api-gateway；身份、租户、会话、RBAC/ABAC 和策略撤销由 iam-service 负责，领域服务必须再次执行服务侧 PEP 校验。
@@ -1105,12 +1112,13 @@ PRD / feature-matrix
   → PRD-ATOM-* 或 FEAT-*
   → V2-980-* scope registry row
   → 域级设计文档 + 统一交互模板
-  → route/page state + API contract + data owner
-  → event/audit/analytics
-  → acceptance criteria + unit/integration/e2e evidence
+  → ACT-P1 参与者 + JNY-P1 旅程 + PAGE-P1 页面 + RULE-P1 规则
+  → INT-P1 联调 + route/page state + API contract + data owner
+  → event/audit/analytics + failure/recovery
+  → E2E-P1 + acceptance criteria + unit/integration/runtime evidence
 ~~~
 
-登记册中的来源主键必须能回到 requirements/product-requirements.md 或 requirements/feature-matrix.md。设计文档锚点必须回到本目录；契约和数据列必须指向唯一事实源；测试任务以后以 V2 ID 作为关联标签。追溯链完整只证明登记行可定位，不证明该行已完成实现。
+登记册中的来源主键必须能回到 requirements/product-requirements.md 或 requirements/feature-matrix.md。设计文档锚点必须回到本目录；Phase 1 的业务旅程、页面、学习/后台规则、联调和恢复还必须回到 [业务运行设计包](phase1-business-operation/README.md)。契约和数据列必须指向唯一事实源；测试任务以后同时以 V2 ID 和相应运行层 ID 作为关联标签。追溯链完整只证明登记行可定位，不证明该行已完成实现。
 
 ## 4. 每个设计单元的验收门
 

@@ -4,6 +4,8 @@
 
 > 历史条目说明：本文件按时间保留当时的实现与验证快照。ADR-0013 之前记录的外部认证、OIDC、旧授权入口及其运行结果均为 Historical / Superseded，不得作为当前需求、实现命令或验收证据；当前认证基线以 ADR-0013 的平台自有 IAM、账号密码和短时 RS256 JWT 为准。历史事实不删除，仅用于审计与迁移追溯。
 
+- [P1-BUSINESS-OPERATION-DESIGN-20260829] 新增 Phase 1 业务运行设计包，把 v2 范围设计补成可解释的系统运行蓝图：15 条注册到学习、后台、客服和隐私端到端旅程，56 个四端页面/页面族，确定性定级/今日任务/SM-2/错题 D+1/D+7/报告规则，内容双审与发布回滚流程，18 条跨服务联调链，以及统一八态、权限、故障恢复和 16 个 E2E Evidence 场景。新增 ADR-0014，冻结 `admin-ops-service.support` 为客服工单 owner、`learner-service.privacy` 为隐私导出请求/状态/receipt owner、`iam-service` 为账号删除请求与主体最终状态 owner；同步文档治理、架构映射、Agent 规则、生成器和防漂移校验。该包当前成熟度是业务运行设计 D1；列出的 Contract/Event/Implementation/Evidence GAP 仍须进入新计划，不能据此宣称代码或运行验收完成。
+
 - [V2-BASELINE-UNIFICATION-20260829] 按九项已签收决策统一需求、v2 设计、架构、ADR、契约、任务台账与应用说明：自有 IAM/Phase 1 RS256、Kafka+Outbox、游戏 P0/P1/长期 Gate、980=930+50 与 184/486/310、每日 5/15/30/45、音频六档与保音高、版本化改进型 SM-2、支付生产默认关闭、合法内容来源和四前端项目。旧设计、旧运行报告和 PRD 原子清单保留为明确的 Historical/Superseded/Frozen 证据，不再覆盖当前开发；增加 Sentence Train 服务端启用门禁、B9/B25 goal 与 learning plan 的 60→45 前向迁移、服务/测试数据与领域校验冻结为 5/15/30/45、24 个仓库迁移的 create/alter 校验、音频能力降级和防漂移测试。验证：v2 980 登记/全量覆盖、B15/B28 静态、契约 367 operations/481 schemas/154 events、兼容性 0 breaking、G0–G4 静态测试 41/41、B4+B9 14/14、B11/B16/B25 17/17、gamification-service JUnit 3/3、DoD 严格预检均通过；运行交接仍保持 `LOCAL-TEST-NO-PASS`，发布仍为 `NO-GO`。
 
 - [AUTH-JWT-KEY-ROTATION-20260829] IAM JWKS 支持当前签名公钥与上一把公钥的受控双钥重叠窗口：通过 `IAM_JWT_PREVIOUS_PUBLIC_KEYS_JSON` 发布仅公钥 JWK，IAM 自身及各 Resource Server 按 `kid` 验签；新增轮换边界单测。生产私钥仍只能由 KMS/Secret Manager 或受控挂载文件注入。

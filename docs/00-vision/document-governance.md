@@ -8,7 +8,7 @@
 
 本文件是文档治理地图，不替代任务状态报表。B7–B22 的代码/静态基础以 [`v2-B7plus-代码重塑与交互测试任务基线.md`](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 为准；B23–B27 的真实运行前置以 [`v2-B23plus-Phase1-真实运行与实机测试任务基线.md`](../../requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md) 为准；当前本机验收进度以 [`v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md) 及 [`b36-validation.md`](../07-operations/b36-validation.md) 的 `LOCAL-TEST-NO-PASS` 结论为准。[`Agent开发状态总报表.md`](../../requirements/backlog/Agent开发状态总报表.md) 只保留 B0–B6 历史状态。本文件只规定什么可以作为事实、什么必须先冻结，以及 Agent 如何把变更交给统筹验收。
 
-v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2-980plus/README.md)，后端技术入口为 [`docs/02-architecture/v2-microservices-architecture.md`](../02-architecture/v2-microservices-architecture.md)；旧 B0–B6 与 `core-api` 记录只保留历史/迁移语义。
+v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2-980plus/README.md)，Phase 1 的系统运行入口为 [`phase1-business-operation/README.md`](../06-design/v2-980plus/phase1-business-operation/README.md)，后端技术入口为 [`docs/02-architecture/v2-microservices-architecture.md`](../02-architecture/v2-microservices-architecture.md)；旧 B0–B6 与 `core-api` 记录只保留历史/迁移语义。
 
 ## 1. 文档事实源与优先级
 
@@ -17,8 +17,8 @@ v2 业务设计入口为 [`docs/06-design/v2-980plus/README.md`](../06-design/v2
 | 优先级 | 文档/目录 | 作用 | 维护边界 |
 |---:|---|---|---|
 | 1 | `AGENTS.md` | 技术栈、架构边界、隐私与 DoD 总规则 | 关键技术路线变更必须走 ADR |
-| 2 | `docs/06-design/v2-980plus/` | **新一轮开发唯一的全量业务设计与需求落地基线**：范围、用户交互、四项目宿主、阶段与验收 | `V2-EXT-*` 属于 v2 范围但未细化签收不得进入任务；冲突时以 v2 为准并同步追溯台账 |
-| 3 | `docs/02-architecture/v2-microservices-architecture.md`、`docs/02-architecture/v2-platform-capability-matrix.md`、ADR-0009/0010/0012/0013 | 服务边界、Gateway、自有 IAM/JWT、数据/事件和平台能力 | `ARCH-*` 不计入业务 Feature；技术冲突必须通过 ADR/v2 变更闭环 |
+| 2 | `docs/06-design/v2-980plus/`（含 `phase1-business-operation/`） | **新一轮开发唯一的全量业务设计与需求落地基线**：范围、用户交互、四项目宿主、业务旅程、逐页功能、学习/后台规则、联调、恢复、阶段与验收 | `V2-EXT-*` 未细化签收不得进入任务；Phase 1 新任务还须绑定 `ACT/JNY/PAGE/RULE/INT/E2E`，并保留未关闭 GAP；冲突时以 v2 为准并同步追溯台账 |
+| 3 | `docs/02-architecture/v2-microservices-architecture.md`、`docs/02-architecture/v2-platform-capability-matrix.md`、ADR-0009/0010/0012/0013/0014 | 服务边界、Gateway、自有 IAM/JWT、客服/隐私 owner、数据/事件和平台能力 | `ARCH-*` 不计入业务 Feature；技术冲突必须通过 ADR/v2 变更闭环 |
 | 4 | `requirements/product-requirements.md`、`requirements/mvp-scope.md`、`requirements/acceptance-criteria.md`、`requirements/feature-matrix.md` | 来源证据、`FEAT-*` 编号、法规/Phase 底线、统计与可测试验收 | 新需求先更新 v2 与本层追溯；本层不能以旧文案推翻 v2 |
 | 5 | `docs/09-roadmap/roadmap.md` | 分期、Platform 0、优先级与全阶段发布 Gate | 不得因单个 Agent 方便而提前跨期 |
 | 6 | `docs/06-design/detailed-specs/01~09`、旧 `phase-*`、B0–B6 | 历史实现、术语和迁移参考 | 不作为新任务需求事实源；发生冲突时以 v2 和目标架构为准 |
@@ -77,7 +77,7 @@ Phase 1 的成人、安全和阶段约束仍然必须遵守，但新任务的执
 
 任何可交付功能都按以下顺序留痕：
 
-`需求/Feature Ref → 设计与 ADR（如需要）→ OpenAPI/事件 Schema → MySQL migration → 服务与客户端 → 测试/观测 → 证据包 → CHANGELOG → Gate 验收`
+`需求/Feature Ref → V2 设计单元 → 业务运行旅程/页面/规则/联调/E2E → 设计与 ADR（如需要）→ OpenAPI/事件 Schema → MySQL migration → 服务与客户端 → 测试/观测 → 证据包 → CHANGELOG → Gate 验收`
 
 规则如下：
 

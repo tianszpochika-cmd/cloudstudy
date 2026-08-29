@@ -1,8 +1,9 @@
 # v2 目标技术架构与微服务蓝图
 
-> 版本：v2.2（2026-08-29，架构—设计一致性审核后）
+> 版本：v2.3（2026-08-29，Phase 1 业务运行设计补齐后）
 > 适用范围：`docs/06-design/v2-980plus/` 第二版设计包及其后续开发任务  
 > 决策入口：[ADR-0010：Java 25 与微服务/Gateway/IAM 架构](../10-decisions/0010-java25-microservices-gateway-iam.md)  
+> 客服/隐私 owner：[ADR-0014：Phase 1 客服与隐私编排事实所有权](../10-decisions/0014-phase1-support-privacy-ownership.md)
 > 实施状态：目标架构已确定；自有 IAM、RS256/JWKS、Gateway 安全边界与服务侧 PEP 已形成代码和契约基线，但完整运行与发布证据仍未齐，不得宣称目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
 
 ## 1. 这份文档解决什么问题
@@ -56,7 +57,7 @@ services/api-gateway  ───────► 统一路由、版本、限流、
         ├── services/commerce-service ► 商品、订单、支付回调、权益、对账
         ├── services/notification-service ► 站内信、Push、短信、模板
         ├── services/analytics-service ► 埋点接收、指标、只读分析模型
-        └── services/admin-ops-service ► 后台聚合/BFF；不复制领域事实
+        └── services/admin-ops-service ► 后台聚合/BFF + 客服工单子域；不复制其他领域事实
         │
         ├── Kafka 兼容事件总线 + Schema/AsyncAPI + DLQ
         ├── MySQL（每服务独立 schema/迁移）
@@ -95,7 +96,7 @@ Phase 3：guardian、institution、curriculum-rights 等受监管域
 | `commerce-service` | SKU、订单、渠道回调、订阅、权益、退款、对账 | `commerce` 模块 |
 | `notification-service` | 通知模板、发送记录、用户触达偏好、重试 | notification-worker |
 | `analytics-service` | 脱敏事件接收、指标和只读分析模型 | analytics-worker 与 telemetry |
-| `admin-ops-service` | 面向 `admin-web` 的聚合查询、审批编排、任务发起和操作审计关联 | `admin` 模块；只能发命令/读取投影，审核与发布状态仍归内容、商业等领域服务 |
+| `admin-ops-service` | 面向 `admin-web` 的聚合查询、审批编排、任务发起、操作审计关联；其 `support` 子域唯一拥有客服工单、消息、assignment、SLA 和 resolution | `admin` 模块；support 之外只能发命令/读取投影，审核、发布、订单、学习等状态仍归对应领域服务 |
 
 允许共享 Kubernetes 集群、节点池、MySQL 集群实例和公共可观测基础设施；但一旦某领域从 `core-api` 抽出，它必须拥有独立 OCI 镜像/进程、schema、数据库凭据、契约、发布流水线和回滚责任。多个目标服务同 Pod/JVM 或共享运行时不能计为“已拆分”；如确有临时共置需求，必须有 ADR、退出日期、容量/故障隔离测试和独立发布的验收证据。部署渐进不等于恢复跨模块直表访问。
 
@@ -111,7 +112,10 @@ Phase 3：guardian、institution、curriculum-rights 等受监管域
 | 媒体资产、转码、rendition、授权 URL | `media-service` | `content-service` 持有语义关联与版权状态；客户端仅使用短期 URL | 内容服务直接管理对象存储授权，或将原始录音放进事件/日志 |
 | XP/星币/奖励账本 | `gamification-service` | 消费带来源、幂等键和版本的可信学习/测评事件 | 客户端直接记账或其他服务修改奖励流水 |
 | SKU、订单、支付回调、权益、退款、对账 | `commerce-service` | 其他服务通过权益读取契约/缓存投影进行 Gate | 其他服务自行判断或写入付费权益 |
-| 后台聚合、工作流、审计 | `admin-ops-service` / `workflow-service` / `audit-service` | 聚合只读投影、发出领域命令、记录不可变审计 | BFF、工作流或审计服务跨域写领域数据库 |
+| 客服工单、消息、assignment、SLA、resolution | `admin-ops-service.support` | 学习端本人和客服后台通过同一 owner 契约读写；notification 只触达，workflow 只升级/恢复 | learner/admin 两套入口写不同表；客服直接改订单、学习或身份事实 |
+| 隐私导出请求、状态和 receipt | `learner-service.privacy` | workflow 协调各领域 owner 生成片段，audit 留痕 | learner-service 跨库读取/删除所有领域数据，或把导出原文放入事件 |
+| 账号删除请求、冷静期和主体最终状态 | `iam-service` | workflow 编排各领域 owner 匿名化并收集 receipt | IAM 跨库删除领域数据，或只停用登录就宣称删除完成 |
+| 后台聚合、工作流、审计 | `admin-ops-service` / `workflow-service` / `audit-service` | 聚合只读投影、发出领域命令、记录不可变审计 | BFF、工作流或审计服务跨域写领域数据库；support 子域之外复制领域事实 |
 
 ### 4.4 Phase 2/3 服务
 
@@ -250,6 +254,7 @@ services/
 
 ```text
 V2-980 / FEAT / PRD-ATOM
+  → ACT / JNY / PAGE / RULE / INT / E2E（Phase 1 业务运行设计）
   → ARCH 能力
   → 前端项目与路由
   → Gateway operation / service owner
@@ -257,7 +262,8 @@ V2-980 / FEAT / PRD-ATOM
   → 数据 owner + migration
   → RBAC/ABAC + tenant scope + privacy/phase gate
   → success/empty/loading/error/offline/permission/recovery/processing
+  → CONTRACT/EVENT/IMPLEMENTATION/EVIDENCE GAP 关闭条件
   → 单测/契约/集成/E2E/运行与回滚证据
 ```
 
-对应的 `ARCH-*` 清单见 [v2 平台能力矩阵](./v2-platform-capability-matrix.md)。旧的 B0–B6 任务台账保留用于历史追溯，但不再作为 v2 新任务的拆分依据。
+对应的 `ARCH-*` 清单见 [v2 平台能力矩阵](./v2-platform-capability-matrix.md)，Phase 1 运行语义见 [Phase 1 业务运行设计包](../06-design/v2-980plus/phase1-business-operation/README.md)。旧的 B0–B6 任务台账保留用于历史追溯，但不再作为 v2 新任务的拆分依据。

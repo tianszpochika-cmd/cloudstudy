@@ -3,8 +3,10 @@ import path from 'node:path';
 
 const root = process.cwd();
 const outDir = path.join(root, 'docs', '06-design', 'v2-980plus');
+const operationDir = path.join(outDir, 'phase1-business-operation');
 const registerPath = path.join(outDir, '08-980plus-功能点设计登记册.md');
 const matrixPath = path.join(root, 'requirements', 'feature-matrix.md');
+const supportPrivacyAdrPath = path.join(root, 'docs', '10-decisions', '0014-phase1-support-privacy-ownership.md');
 const refinementStatus = '待细化签收';
 
 const requiredDocs = [
@@ -21,6 +23,18 @@ const requiredDocs = [
   '09-追溯与验收矩阵.md',
   '10-设计评审与未决项.md',
   '12-架构与设计一致性审核.md',
+];
+
+const requiredOperationDocs = [
+  'README.md',
+  '01-角色系统边界与业务总图.md',
+  '02-端到端业务旅程台账.md',
+  '03-全端页面功能登记册.md',
+  '04-学习机制与学习引擎规则.md',
+  '05-后台内容运营与客服业务流程.md',
+  '06-业务联调矩阵.md',
+  '07-状态权限异常恢复矩阵.md',
+  '08-验收与追溯规范.md',
 ];
 
 const expectedPhaseCounts = { 'Phase 1': 540, 'Phase 2': 228, 'Phase 3': 212 };
@@ -53,10 +67,26 @@ function countBy(items, index) {
   return counts;
 }
 
+function collectIds(text, pattern) {
+  return [...text.matchAll(pattern)].map((match) => match[1]);
+}
+
+function verifyRegistry(label, ids, expectedCount) {
+  if (ids.length !== expectedCount) fail(`${label} expected ${expectedCount}, got ${ids.length}`);
+  const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+  if (duplicates.length) fail(`${label} has duplicate ids: ${[...new Set(duplicates)].join(', ')}`);
+}
+
 function main() {
   for (const document of requiredDocs) {
     if (!fs.existsSync(path.join(outDir, document))) fail(`missing required document: ${document}`);
   }
+  for (const document of requiredOperationDocs) {
+    if (!fs.existsSync(path.join(operationDir, document))) {
+      fail(`missing Phase 1 business operation document: ${document}`);
+    }
+  }
+  if (!fs.existsSync(supportPrivacyAdrPath)) fail('missing ADR-0014 support/privacy ownership decision');
   const register = fs.readFileSync(registerPath, 'utf8');
   const rows = register.split(/\r?\n/)
     .filter((line) => /^\|\s*V2-980-\d{4}\s*\|/.test(line))
@@ -131,6 +161,59 @@ function main() {
   for (const legacyMarker of ['权威官方词库', '柯林斯/牛津']) {
     if (allText.includes(legacyMarker)) fail(`legacy content wording remains in generated v2 design package: ${legacyMarker}`);
   }
+  const operationText = requiredOperationDocs
+    .map((document) => fs.readFileSync(path.join(operationDir, document), 'utf8'))
+    .join('\n');
+  for (const marker of [
+    'ACT-P1-', 'JNY-P1-', 'PAGE-P1-', 'RULE-P1-', 'INT-P1-', 'E2E-P1-',
+    'CONTRACT-GAP', 'EVENT-GAP', 'IMPLEMENTATION-GAP', 'EVIDENCE-GAP',
+    'SM2_Q03_V1', 'DELAY_VERIFY_D1', 'DELAY_VERIFY_D7',
+    'contentVersionId', 'Idempotency-Key', 'Service Owner', 'Data Owner',
+    'apps/mobile', 'apps/learner-web', 'apps/admin-web', 'apps/official-site',
+    '18 岁以上', 'RS256', 'Kafka', 'P0 仅 Sentence Train', '5/15/30/45',
+    '0.5x~2.0x', '保持音高', '生产支付默认关闭', '合法授权',
+  ]) {
+    if (!operationText.includes(marker)) fail(`required business operation marker missing: ${marker}`);
+  }
+  if (!operationText.includes('不改变 980') && !operationText.includes('不改变 Phase 1/2/3')) {
+    fail('business operation package must state that it does not change the frozen scope/count');
+  }
+  const supportPrivacyAdr = fs.readFileSync(supportPrivacyAdrPath, 'utf8');
+  for (const marker of ['admin-ops-service.support', 'learner-service.privacy', 'iam-service', 'workflow-service']) {
+    if (!supportPrivacyAdr.includes(marker)) fail(`ADR-0014 ownership marker missing: ${marker}`);
+  }
+  const operationRegistries = {
+    actors: collectIds(
+      fs.readFileSync(path.join(operationDir, '01-角色系统边界与业务总图.md'), 'utf8'),
+      /^\|\s*`(ACT-P1-[A-Z0-9-]+)`\s*\|/gm,
+    ),
+    journeys: collectIds(
+      fs.readFileSync(path.join(operationDir, '02-端到端业务旅程台账.md'), 'utf8'),
+      /^###\s+(JNY-P1-\d{2})\b/gm,
+    ),
+    pages: collectIds(
+      fs.readFileSync(path.join(operationDir, '03-全端页面功能登记册.md'), 'utf8'),
+      /^\|\s*(PAGE-P1-[A-Z0-9-]+)\s*\|/gm,
+    ),
+    rules: collectIds(
+      fs.readFileSync(path.join(operationDir, '04-学习机制与学习引擎规则.md'), 'utf8'),
+      /^\|\s*`(RULE-P1-[A-Z0-9-]+)`\s*\|/gm,
+    ),
+    integrations: collectIds(
+      fs.readFileSync(path.join(operationDir, '06-业务联调矩阵.md'), 'utf8'),
+      /^\|\s*`(INT-P1-\d{3})`\s+/gm,
+    ),
+    e2e: collectIds(
+      fs.readFileSync(path.join(operationDir, '08-验收与追溯规范.md'), 'utf8'),
+      /^\|\s*`(E2E-P1-[A-Z0-9-]+)`\s*\|/gm,
+    ),
+  };
+  verifyRegistry('Phase 1 actor registry', operationRegistries.actors, 13);
+  verifyRegistry('Phase 1 journey registry', operationRegistries.journeys, 15);
+  verifyRegistry('Phase 1 page registry', operationRegistries.pages, 56);
+  verifyRegistry('Phase 1 rule registry', operationRegistries.rules, 8);
+  verifyRegistry('Phase 1 integration registry', operationRegistries.integrations, 18);
+  verifyRegistry('Phase 1 E2E registry', operationRegistries.e2e, 16);
   const pendingCount = rows.filter((row) => row[16] === refinementStatus).length;
   const explicitCount = rows.filter((row) => row[16] === '显式功能包已设计').length;
   const atomicCount = rows.filter((row) => row[16] === 'PRD 原子证据已映射').length;
@@ -163,6 +246,11 @@ function main() {
     statusCounts: { explicit: explicitCount, atomic: atomicCount, pending: pendingCount },
     explicitFeatureIds: explicitIds.length,
     requiredDocs: requiredDocs.length,
+    requiredOperationDocs: requiredOperationDocs.length,
+    requiredAdr: 'ADR-0014',
+    operationRegistryCounts: Object.fromEntries(
+      Object.entries(operationRegistries).map(([name, ids]) => [name, ids.length]),
+    ),
   }, null, 2));
 }
 

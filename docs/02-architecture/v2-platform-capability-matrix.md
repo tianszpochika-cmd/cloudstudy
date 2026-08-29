@@ -52,7 +52,7 @@ ARCH-PLAT-001
 | GAM | `gamification-service` | 只消费可信学习事件，不能从客户端积分请求直接入账 |
 | SOC | `social-service` | 低 UGC、举报、可见性和内容安全受权限与审核约束 |
 | COM | `commerce-service` | 订单/支付/权益/对账独立事实，真实渠道默认关闭直至合规 Gate |
-| ADM | `admin-ops-service` + 各领域服务 | Admin 是操作入口和聚合层，不复制内容、用户、订单事实 |
+| ADM | `admin-ops-service` + 各领域服务 | Admin 是操作入口和聚合层；仅 `admin-ops-service.support` 拥有客服工单事实，不复制内容、用户、订单或学习事实 |
 | INF | `notification-service` + `media-service` + `workflow-service` | 按职责拆分，不用一个“杂项服务”承载所有横向状态 |
 | AI2 | `ai-orchestrator` + `content-safety` + `evaluation` | Phase 2 Gate 后才可路由 |
 | K12 | `guardian-service` + `institution-service` + `curriculum-rights-service` | Phase 3 合规 Gate 后才可路由 |
