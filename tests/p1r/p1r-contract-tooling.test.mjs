@@ -4,7 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
-import { findCanonicalMergeDrift } from '../../scripts/contracts/merge-b1-fragments.mjs';
+import { findCanonicalMergeDrift, mergeEvents } from '../../scripts/contracts/merge-b1-fragments.mjs';
 import { buildGeneratedOutputs, findGeneratedOutputDrift } from '../../scripts/contracts/generate-contracts.mjs';
 import { compareContracts, runCompatibilityDiff } from '../../scripts/contracts/compatibility-diff.mjs';
 import { runGitBaselineCompatibility } from '../../scripts/contracts/compatibility-git-baseline.mjs';
@@ -25,6 +25,41 @@ test('no-write merge detects an in-memory canonical artifact drift', () => {
     actualEventCatalog: eventCatalog,
   });
   assert.deepEqual(drift, ['packages/contracts/openapi/v1/openapi.json']);
+});
+
+test('B26 semantic fragments can evolve without taking ownership of status or governance', () => {
+  const governance = { status: 'CANONICAL_D2' };
+  const base = {
+    events: [{
+      eventName: 'workflow.example.v1',
+      status: 'CANONICAL_D2',
+      'x-p1r-governance': governance,
+      version: 1,
+      payloadSchema: { $ref: '#/payloadSchemas/Example' },
+    }],
+    payloadSchemas: { Example: { type: 'object', properties: {} } },
+  };
+  const fragment = {
+    events: [{
+      eventName: 'workflow.example.v1',
+      version: 1,
+      description: 'updated semantic description',
+      payloadSchema: { $ref: '#/payloadSchemas/Example' },
+    }],
+    payloadSchemas: { Example: { type: 'object', properties: { eventId: { type: 'string' } } } },
+  };
+  mergeEvents(base, fragment, 'packages/contracts/events/v1/fragments/b26-reliability.events.json');
+  assert.equal(base.events[0].description, 'updated semantic description');
+  assert.equal(base.events[0].status, 'CANONICAL_D2');
+  assert.deepEqual(base.events[0]['x-p1r-governance'], governance);
+  assert.deepEqual(base.payloadSchemas.Example, fragment.payloadSchemas.Example);
+
+  const forbidden = structuredClone(fragment);
+  forbidden.events[0].status = 'CANONICAL_D2';
+  assert.throws(
+    () => mergeEvents(base, forbidden, 'packages/contracts/events/v1/fragments/b26-reliability.events.json'),
+    /must not define catalog-owned status/,
+  );
 });
 
 test('no-write merge check preserves canonical artifacts whether it passes or reports drift', () => {

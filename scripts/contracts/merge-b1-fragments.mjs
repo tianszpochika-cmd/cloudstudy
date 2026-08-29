@@ -212,11 +212,11 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canon
   }
 }
 
-function mergeEvents(base, fragment, filePath) {
+export function mergeEvents(base, fragment, filePath) {
   if (fragment.asyncapi !== undefined) {
     throw new Error(`${filePath} must not define asyncapi; canonical channels and operations are generated from catalog event governance`);
   }
-  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)-/i.test(filePath);
+  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|26)-/i.test(filePath);
   for (const event of fragment.events ?? []) {
     if (event.status !== undefined || event['x-p1r-governance'] !== undefined) {
       throw new Error(`${filePath} must not define catalog-owned status or x-p1r-governance for ${event.eventName ?? '(missing eventName)'}`);
