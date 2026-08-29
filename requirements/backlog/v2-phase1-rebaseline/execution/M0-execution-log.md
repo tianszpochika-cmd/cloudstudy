@@ -20,7 +20,7 @@
 | Java 25 环境下 `pnpm p1r:toolchain:check` | PASS |
 | `pnpm ports:check` | PASS，42 个端口无自动递增 |
 | `pnpm plan:p1r:check` | PASS，108 项及范围/GAP 覆盖完整 |
-| `pnpm test:p1r` | PASS，8/8（含 CRLF/LF 可移植摘要） |
+| `pnpm test:p1r` | PASS，13/13（含范围依赖、状态轨迹、独立评审、未提交 Evidence 与 CRLF/LF 可移植摘要） |
 | `pnpm p1r:fixtures:validate` / `audit` | PASS，6 类 13 条 |
 | `pnpm typecheck` | PASS，7/7 |
 | `pnpm build` | PASS，admin/learner/official 3/3；mobile 由独立脚本构建 |
@@ -40,6 +40,7 @@
 - 本机系统 PATH 未全局切换到 Java 25；所有 Java 25 证据均使用任务局部环境变量，防止污染用户机器。
 - Maven 测试出现 Mockito 动态 agent 与少量 deprecated/unchecked 编译警告，但没有测试失败；它们进入后续技术债而不是本轮静默删除。
 - 历史 B/DEV/G Evidence 不得用于接受 P1R 任务。
+- M0 状态轨迹是在首次集成时依据执行记录重建；从 M1 起，状态变化必须在发生时写入 `status-trajectories.json` 并随同 ledger/manifest 提交。
 
 ## 恢复与回滚
 

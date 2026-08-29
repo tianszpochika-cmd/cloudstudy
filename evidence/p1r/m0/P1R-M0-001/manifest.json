@@ -1,35 +1,24 @@
 {
   "taskId": "P1R-M0-001",
-  "draftOnly": true,
-  "canonicalTaskStatus": "PLANNED",
-  "sourceCommit": "41f6a43b54bc51187fb71513e80468311cb1e411",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
   "artifactDigests": [
     {"path": "config/p1r-current-asset-inventory.json", "algorithm": "sha256", "digest": "9cbdd360738d5d680071fe9b4e1f014a29c96b7f70f8896fccf5be11529457bc"}
   ],
-  "environment": "local",
-  "executionMode": "read-only discovery",
-  "startedAt": "2026-08-29T09:14:55.6717585Z",
-  "finishedAt": null,
+  "environment": {"kind": "repository-discovery", "branch": "dev"},
+  "startedAt": "2026-08-29T09:14:55.671Z",
+  "finishedAt": "2026-08-29T10:13:18.541Z",
   "actors": ["m0_governance"],
   "sourceIds": ["P1R-M0-001", "ARCH-PLAT-001"],
-  "journeys": [],
-  "pages": [],
-  "rules": [],
-  "integrations": [],
-  "e2eScenarios": [],
-  "serviceOwners": ["api-gateway", "iam-service", "learner-service", "content-service", "learning-service", "assessment-service", "media-service", "gamification-service", "social-service", "commerce-service", "notification-service", "analytics-service", "admin-ops-service.support"],
-  "dataOwners": ["iam-service", "learner-service", "content-service", "learning-service", "assessment-service", "media-service", "gamification-service", "social-service", "commerce-service", "notification-service", "analytics-service", "admin-ops-service.support"],
-  "commands": ["git rev-parse HEAD", "rg --files apps packages services database deploy tests evidence requirements/backlog", "Get-Content/ConvertFrom-Json for route, contract, migration and configuration metadata", "Get-FileHash -Algorithm SHA256 config/p1r-current-asset-inventory.json"],
+  "commands": ["git rev-parse HEAD", "rg --files apps packages services database deploy tests evidence requirements/backlog", "parse inventory JSON and validate required fields"],
   "results": [
-    {"check": "asset-categories-covered", "status": "PASS", "details": "modules, pages, contracts, services, data, tests, deployment and observed historical evidence are present"},
-    {"check": "required-entry-fields", "status": "PASS", "details": "all inventory entries have id, kind, owner, path, version, risk and reuseTag"},
-    {"check": "reuse-tag-policy", "status": "PASS", "details": "all tags are in REUSE-VERIFY, REPAIR, REWRITE, NEW, HISTORICAL or PHASE-GATED"}
+    {"check": "asset-category-coverage", "status": "PASS", "details": "17 modules, 5 page registries, 6 contract groups, 21 services, 14 data groups, 9 test groups, 5 deployment groups and 2 historical evidence candidates"},
+    {"check": "inventory-schema", "status": "PASS", "details": "Every entry has owner, path, version, risk and reuseTag"},
+    {"check": "runtime-claim-boundary", "status": "PASS", "details": "Source presence is not represented as runtime acceptance"}
   ],
-  "requestIds": [],
-  "traceIds": [],
-  "eventIds": [],
-  "rollbackEvidence": [],
-  "knownGaps": ["No toolchain, CI, fixture, contract, data-owner, runtime, browser or release validation is claimed.", "Inventory triage is not a per-task reuse decision.", "Independent review and current evidence are still required before REVIEW or ACCEPTED."],
-  "reviewer": null,
-  "decision": null
+  "rollbackEvidence": [{"status": "PASS", "details": "Inventory is additive and can be removed by reverting its source commit"}],
+  "knownGaps": ["Per-task reuse decisions still require current contract, test and runtime evidence."],
+  "reviewer": "root-coordinator",
+  "decision": "ACCEPTED"
 }

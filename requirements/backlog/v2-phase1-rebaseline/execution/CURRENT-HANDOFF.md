@@ -2,6 +2,8 @@
 
 更新时间：2026-08-29（Asia/Shanghai）。本文件只说明如何恢复当前开发检查点，不替代任务台账或 Evidence manifest。
 
+M0 canonical Evidence 的实现源提交：`0f8b60ae4e83d0f31d891eed8d9383c007485130`。交接提交在其后，只增加任务状态、manifest、Gate 摘要与交接记录。
+
 ## 1. 获取检查点
 
 ```powershell

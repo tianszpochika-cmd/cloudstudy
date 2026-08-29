@@ -1,0 +1,32 @@
+{
+  "taskId": "P1R-M0-006",
+  "draftOnly": false,
+  "canonicalTaskStatus": "BLOCKED",
+  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "artifactDigests": [
+    {"path": "config/p1r-dependency-policy.json", "algorithm": "sha256", "digest": "158a07e10e0e01ffb97801eddb79d98ffb1b2c39c0fd6fb148fe518b90d8de60"},
+    {"path": "pnpm-lock.yaml", "algorithm": "sha256", "digest": "356f62536d809e5f0359354659bab28ecf79d07ce7e9bfe6bd1ac6ce1458ef4e"},
+    {"path": "scripts/audit/p1r-dependency-audit.mjs", "algorithm": "sha256", "digest": "cd5eae682e00d1312595e3f1c38f9508c2e7bebf3ea9983c14fc71a6ee07814b"},
+    {"path": "evidence/p1r/m0/devex/dependency-governance.json", "algorithm": "sha256", "digest": "02c0fb3f368f099a51ceb1037de8abb9b50b33041880014c1273f754eeed9f82"},
+    {"path": "evidence/p1r/m0/devex/sbom-node.cdx.json", "algorithm": "sha256", "digest": "f058aa498e9a799acce08efccd0110197d548bf457f794a7b2025f023374f7f1"},
+    {"path": "evidence/p1r/m0/devex/sbom-maven.cdx.json", "algorithm": "sha256", "digest": "705de944f369c8fd7d84360cbbe26668d0a0ed3c68ff65c29e3d0c8a72c4770f"}
+  ],
+  "environment": {"os": "windows-x64", "registryAccess": true, "java": "25.0.1", "maven": "3.9.12"},
+  "startedAt": "2026-08-29T09:20:00.000Z",
+  "finishedAt": "2026-08-29T10:13:18.541Z",
+  "actors": ["implementation_audit", "m0_security_remediation"],
+  "sourceIds": ["P1R-M0-006", "ARCH-DEP-001", "ARCH-SEC-001"],
+  "commands": ["pnpm install --frozen-lockfile", "pnpm p1r:dependency:check", "pnpm p1r:supply-chain:check", "pnpm p1r:devex:evidence"],
+  "results": [
+    {"check": "version-and-lock-governance", "status": "PASS", "details": "Single catalog, reproducible pnpm lock and 14-service Maven reactor"},
+    {"check": "license-audit", "status": "PASS", "details": "No denied or unknown Node/Maven licenses"},
+    {"check": "cyclonedx-sbom", "status": "PASS", "details": "1,097 locked Node components and 183 resolved Maven components"},
+    {"check": "high-critical-vulnerability-policy", "status": "FAIL", "details": "1 high, 0 critical; GHSA-fx2h-pf6j-xcff remains through mobile Vite 5.4.21"}
+  ],
+  "rollbackEvidence": [{"status": "PASS", "details": "No vulnerability waiver or unsupported Vite 6 mobile override was introduced"}],
+  "knownGaps": ["The supported uni-app Vue3 compiler line still declares an exact Vite 5.2.8 peer dependency."],
+  "blockers": ["GHSA-fx2h-pf6j-xcff requires Vite >=6.4.3, but the current supported DCloud Vue3 compiler family is not compatible with that Vite major."],
+  "nextSteps": ["Monitor an official DCloud compiler release compatible with Vite >=6.4.3, or approve an alternative through ADR and security review.", "After a supported upgrade, rerun frozen install, H5/App/mp-weixin builds, B10/B11/B12, license/SBOM and registry vulnerability gates."],
+  "reviewer": "root-coordinator",
+  "decision": "BLOCKED"
+}

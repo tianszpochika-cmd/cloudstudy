@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "p1r.milestone-gate.v1",
+  "milestone": "M0",
+  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "generatedAt": "2026-08-29T10:14:30.000Z",
+  "decision": "BLOCKED",
+  "taskStatusCounts": {"ACCEPTED": 7, "BLOCKED": 1},
+  "acceptedTasks": ["P1R-M0-001", "P1R-M0-002", "P1R-M0-003", "P1R-M0-004", "P1R-M0-005", "P1R-M0-007", "P1R-M0-008"],
+  "blockedTasks": ["P1R-M0-006"],
+  "blockers": ["Mobile Vite 5.4.21 retains GHSA-fx2h-pf6j-xcff; the supported DCloud Vue3 compiler family does not yet support the patched Vite major."],
+  "allowedContinuation": ["Tasks whose explicit dependency set is fully ACCEPTED, including P1R-M1-001 through the M0-008 edge."],
+  "forbiddenClaims": ["M0 PASS", "green supply-chain CI", "mobile App/mp-weixin acceptance", "release readiness"],
+  "nextReview": "After an official compatible DCloud compiler release or an approved alternative ADR with full mobile regression."
+}

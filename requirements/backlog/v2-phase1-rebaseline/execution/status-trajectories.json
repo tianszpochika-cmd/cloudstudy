@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "p1r.status-trajectories.v1",
+  "historyMode": "m0-integration-reconstruction",
+  "recordedAt": "2026-08-29T10:30:00+08:00",
+  "note": "M0 trajectories were reconstructed during the first integration review from the task execution records and canonical decisions. From M1 onward, every transition must be recorded when it occurs.",
+  "records": [
+    {
+      "taskId": "P1R-M0-001",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-001/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-002",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-002/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-003",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-003/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-004",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-004/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-005",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-005/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-006",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "BLOCKED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record; the unresolved supported-toolchain vulnerability is a canonical blocker.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-006/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-007",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-007/manifest.json"
+    },
+    {
+      "taskId": "P1R-M0-008",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-29T10:30:00+08:00",
+      "actor": "root-coordinator",
+      "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
+      "evidencePath": "evidence/p1r/m0/P1R-M0-008/manifest.json"
+    }
+  ]
+}

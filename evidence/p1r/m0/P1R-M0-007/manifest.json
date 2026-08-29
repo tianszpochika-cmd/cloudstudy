@@ -1,0 +1,28 @@
+{
+  "taskId": "P1R-M0-007",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "artifactDigests": [
+    {"path": "config/p1r-fixtures.v1.json", "algorithm": "sha256", "digest": "1bc01e37625723280f3e5eb6ac44653b79b5970d69426dc73c85a6d436b3fa06"},
+    {"path": "scripts/fixtures/p1r-fixtures.mjs", "algorithm": "sha256", "digest": "6cffb76bc58431a8ffcc5fb8276cc774e279e894233066c2f030dca7630e4248"},
+    {"path": "fixtures/p1r/v1/accounts.json", "algorithm": "sha256", "digest": "3b07edff83ddef7296526a7e68a8e574eccfe7316f1a8c1d7df6f988d305901d"},
+    {"path": "fixtures/p1r/v1/privacy.json", "algorithm": "sha256", "digest": "80414fa2db3d992e910f08feb744602033a59c58c1ea0e812d5dbaf9261e8776"}
+  ],
+  "environment": {"kind": "synthetic-local-fixture", "runtimeDirectory": "ignored-and-owned"},
+  "startedAt": "2026-08-29T09:20:00.000Z",
+  "finishedAt": "2026-08-29T10:13:18.541Z",
+  "actors": ["requirements_audit"],
+  "sourceIds": ["P1R-M0-007", "ARCH-DATA-001"],
+  "commands": ["pnpm p1r:fixtures:validate", "run seed twice and compare digests", "run cleanup twice", "pnpm p1r:fixtures:audit"],
+  "results": [
+    {"check": "fixture-coverage", "status": "PASS", "details": "6 categories and 13 synthetic records"},
+    {"check": "determinism", "status": "PASS", "details": "Repeated seed hashes match and cleanup is idempotent"},
+    {"check": "privacy-and-content-safety", "status": "PASS", "details": "No real PII, secrets, copyrighted body content or raw audio"},
+    {"check": "path-safety", "status": "PASS", "details": "Cleanup is ownership-marker and manifest constrained"}
+  ],
+  "rollbackEvidence": [{"status": "PASS", "details": "Cleanup deletes only the two listed generated files inside the ignored runtime directory"}],
+  "knownGaps": ["Real owner-database seed adapters are deferred to the corresponding D3 tasks."],
+  "reviewer": "root-coordinator",
+  "decision": "ACCEPTED"
+}

@@ -1,0 +1,26 @@
+{
+  "taskId": "P1R-M0-003",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "0f8b60ae4e83d0f31d891eed8d9383c007485130",
+  "artifactDigests": [
+    {"path": "config/toolchain-baseline.json", "algorithm": "sha256", "digest": "e13823344e090259fe19bc9426b7afcdb4f8fa5100c7bbab234eead6fafafc74"},
+    {"path": "pom.xml", "algorithm": "sha256", "digest": "5ce41e82da6cded2e95db59d90e6c173e3ab99330d2bc88985f22448e5fa9197"},
+    {"path": "scripts/dev/p1r-toolchain-check.mjs", "algorithm": "sha256", "digest": "a760283c0a1754d6bbe6b19b54935e43f438f8feac879960b60aa271bba43159"}
+  ],
+  "environment": {"os": "windows-x64", "javaHome": "task-local JDK 25", "globalEnvironmentChanged": false},
+  "startedAt": "2026-08-29T09:20:00.000Z",
+  "finishedAt": "2026-08-29T10:13:18.541Z",
+  "actors": ["implementation_audit"],
+  "sourceIds": ["P1R-M0-003", "ARCH-PLAT-001", "ARCH-DEP-001"],
+  "commands": ["pnpm p1r:toolchain:static", "pnpm p1r:toolchain:check with task-local Java 25", "pnpm ports:check", "mvn --batch-mode --no-transfer-progress -f pom.xml test"],
+  "results": [
+    {"check": "version-baseline", "status": "PASS", "details": "Node 20.19.5, pnpm 10.19.0, Java 25, Maven 3.9.12, Spring Boot 4.1.1 and Spring Cloud 2025.1.3"},
+    {"check": "fixed-ports", "status": "PASS", "details": "42 unique fixed ports; loopback binding and no auto increment"},
+    {"check": "java-reactor", "status": "PASS", "details": "15/15 Maven Reactor modules succeeded under Java 25"}
+  ],
+  "rollbackEvidence": [{"status": "PASS", "details": "No system-level JAVA_HOME or port settings were changed"}],
+  "knownGaps": ["Each workstation must select its installed JDK 25 path and rerun runtime diagnostics."],
+  "reviewer": "root-coordinator",
+  "decision": "ACCEPTED"
+}
