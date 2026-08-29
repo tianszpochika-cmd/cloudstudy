@@ -54,14 +54,14 @@ Official Site 开发服务器出现过 `#app-manifest` pre-transform warning，�
 ## 运行阻断项
 
 1. 当前 Windows 环境没有发现 `adb`、`xcrun`、`idevice_id` 或 `scrcpy`，没有实体/批准远程真机证据。
-2. B23–B26 的真实 OIDC/JWKS、有效 JWT、Gateway→服务→MySQL→API、Redis 重建、服务重启、Kafka/Outbox offset 和 DB/Kafka 对账仍未形成完整运行证据链。
+2. B23–B26 的真实 IAM JWT/JWKS、有效 JWT、Gateway→服务→MySQL→API、Redis 重建、服务重启、Kafka/Outbox offset 和 DB/Kafka 对账仍未形成完整运行证据链。
 3. PWA 的真实安装、更新、缓存失效、离线只读恢复和微信开发者工具中的登录/分享/返回尚未执行。
 4. 尚无 production-like Kubernetes/OCI staging 的 digest、secret 注入、迁移、探针、NetworkPolicy、OTel、SBOM、备份恢复和回滚证据。
 5. 尚无不可变 RC、P0/P1 关闭或批准记录、五角色独立 Go/No-Go、维护 owner 签收和最终测试交接报告。
 
 ## 下一步运行验收顺序
 
-1. 先完成 B23–B26 的标准 OIDC、认证后真实数据和 Kafka/Outbox 运行闭环，生成统一 `runId/traceId` 的 Network、服务日志、MySQL 和 Kafka 对账证据。
+1. 先完成 B23–B26 的自有 IAM JWT、认证后真实数据和 Kafka/Outbox 运行闭环，生成统一 `runId/traceId` 的 Network、服务日志、MySQL 和 Kafka 对账证据。
 2. 在批准的实体或远程真机上执行 DEV-001；在浏览器安装能力和微信开发者工具中执行 DEV-002。
 3. 执行 QUAL-003 的真实安全、性能、弱网、读屏、对比度和隐私检查；修复或批准 P0/P1。
 4. 部署 STG-004，完成迁移、备份恢复、探针、观测和回滚演练；随后生成 RC 并完成 RC-005 五角色独立决策。

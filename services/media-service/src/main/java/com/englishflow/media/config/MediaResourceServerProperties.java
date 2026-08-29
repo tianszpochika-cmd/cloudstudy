@@ -8,6 +8,7 @@ public class MediaResourceServerProperties {
     private boolean enabled;
     private String issuerUri = "";
     private String jwkSetUri = "";
+    private String audience = "yuxuexing-api";
 
     public boolean isEnabled() {
         return enabled;
@@ -31,5 +32,13 @@ public class MediaResourceServerProperties {
 
     public void setJwkSetUri(String jwkSetUri) {
         this.jwkSetUri = jwkSetUri;
+    }
+
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
     }
 }

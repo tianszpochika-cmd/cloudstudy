@@ -17,14 +17,15 @@ test('admin-web uses one Gateway base URL seam and strips client authority heade
   assert.doesNotMatch(`${gateway}\n${client}\n${store}`, /Math\.random/)
 })
 
-test('admin-web validates and recovers safe deep-link returnTo', async () => {
+test('admin-web validates and recovers safe deep-link returnTo before login navigation', async () => {
   const gateway = await read('apps/admin-web/src/platform/gateway.ts')
   const auth = await read('apps/admin-web/src/auth/gateway-auth.ts')
-  const callback = await read('apps/admin-web/src/views/AdminAuthCallbackView.vue')
+  const login = await read('apps/admin-web/src/views/AdminLoginView.vue')
   assert.match(gateway, /safeInternalReturnTo/)
   assert.match(gateway, /%\(\?:2f\|5c\)/)
   assert.match(auth, /safeInternalReturnTo/)
-  assert.match(callback, /returnTo:/)
+  assert.match(login, /identifier|password/)
+  assert.doesNotMatch(`${auth}\n${login}`, /auth\/callback|authorizationCode|codeVerifier|codeChallenge|nonce/i)
 })
 
 test('admin-web exposes canonical eight states, closed gates, and preference restore', async () => {

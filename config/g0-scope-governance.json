@@ -254,7 +254,7 @@
       "sourcePaths": [
         "docs/06-design/v2-980plus/README.md",
         "docs/10-decisions/0007-phase1-scope-and-development-governance.md",
-        "docs/10-decisions/0011-oidc-idp-selection-gate.md"
+        "docs/10-decisions/0013-self-owned-jwt-authentication-center.md"
       ],
       "assertions": [
         {"contains": "Phase 2"},

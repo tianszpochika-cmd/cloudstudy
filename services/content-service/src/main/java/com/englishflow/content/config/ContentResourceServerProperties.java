@@ -5,7 +5,7 @@ import jakarta.validation.constraints.AssertTrue;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/** Explicit OIDC Resource Server seam. It cannot silently fall back to a local decoder. */
+/** Explicit self-owned JWT Resource Server seam; it cannot silently fall back to a local decoder. */
 @Validated
 @ConfigurationProperties(
         prefix = "security.resource-server",
@@ -16,6 +16,7 @@ public class ContentResourceServerProperties {
     private boolean enabled;
     private String issuerUri;
     private String jwkSetUri;
+    private String audience = "yuxuexing-api";
 
     public boolean isEnabled() {
         return enabled;
@@ -41,10 +42,17 @@ public class ContentResourceServerProperties {
         this.jwkSetUri = jwkSetUri;
     }
 
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
+    }
+
     @AssertTrue(message = "issuer-uri and jwk-set-uri are required when the resource server is enabled")
     public boolean isVerificationConfigurationComplete() {
-        return !enabled && isBlank(issuerUri) && isBlank(jwkSetUri)
-                || enabled && !isBlank(issuerUri) && !isBlank(jwkSetUri);
+        return !enabled || !isBlank(issuerUri) && !isBlank(jwkSetUri) && !isBlank(audience);
     }
 
     private static boolean isBlank(String value) {

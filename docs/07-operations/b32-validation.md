@@ -1,26 +1,26 @@
 # B32 学习、评测、通知、Kafka 与 Redis 运行验证
 
 > 日期：2026-08-25  
-> 模式：`local-real`，真实 Keycloak JWT、Gateway、服务 owner MySQL、Kafka 19092、Redis 16379  
+> 模式：`local-real`，真实 IAM JWT、Gateway、服务 owner MySQL、Kafka 19092、Redis 16379
 > 结论：B32 的本机运行切片已通过；Kafka/Redis 证据是本地运行验证，尚不等同于生产多 broker/真实异步 worker 的发布承诺。
 
 ## 运行命令
 
-领域链路要求 B 组服务以真实 OIDC 启动：
+领域链路要求 B 组服务以真实 IAM JWT 启动：
 
 ```powershell
-$env:B30_REAL_OIDC = 'true'
+$env:B30_REAL_JWT = 'true'
 pnpm b32:domain-runtime
 pnpm b32:kafka-runtime
 pnpm b32:redis-runtime
 pnpm redis:validate
 ```
 
-脚本只输出状态、计数、哈希或 opaque ID；不会输出密码、JWT、refresh token、authorization code 或浏览器存储内容。
+脚本只输出状态、计数、哈希或 opaque ID；不会输出密码、JWT、Refresh Token 或浏览器存储内容。
 
 ## 领域链路证据
 
-`b32-domain-runtime.mjs` 使用本地 Keycloak 动态创建一次性测试 principal，并经 Gateway 调用：
+`b32-domain-runtime.mjs` 使用平台 IAM 动态创建一次性测试 principal 并签发 JWT，经 Gateway 调用：
 
 - assessment placement 创建、重复 start 幂等、题目提交、规则化服务端判分和 report 读取；
 - learning plan、SRS review、重复 review、overview 和 daily summary；
@@ -37,7 +37,7 @@ pnpm redis:validate
 | notification preference/message/outbox | `1/1/1` |
 | subject/credential safety | `subjectBound=true`，`credentialsPersisted=false`，`tokenValuesEmitted=false` |
 
-本轮修复了两个真实缺口：本地 Keycloak User Profile 注册了服务端派生的 `tenant_id/device_id/permissions` 属性；notification JDBC message 查询补齐了 `channel` 列。服务端仍只接受已验证 JWT，客户端不能通过 body 或头部提交这些事实。
+本轮修复了两个真实缺口：IAM 登录响应统一携带服务端派生的 `tenant_id/device_id/permissions` 事实；notification JDBC message 查询补齐了 `channel` 列。服务端仍只接受已验证 JWT，客户端不能通过 body 或头部提交这些事实。
 
 ## Kafka/Outbox 证据
 

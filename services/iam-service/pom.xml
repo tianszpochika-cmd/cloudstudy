@@ -4,10 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!--
-      IAM is an independently deployable v2 service. It does not inherit from
-      services/core-api and it does not provide an OAuth/OIDC token server.
-    -->
+    <!-- IAM is an independently deployable v2 self-owned JWT authentication center. -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -19,7 +16,7 @@
     <artifactId>iam-service</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <name>englishflow-iam-service</name>
-    <description>EnglishFlow v2 provider-neutral IAM and adult-gate boundary</description>
+    <description>EnglishFlow v2 self-owned JWT IAM and adult-gate boundary</description>
 
     <properties>
         <java.version>25</java.version>
@@ -68,7 +65,7 @@
             <artifactId>spring-boot-starter-opentelemetry</artifactId>
         </dependency>
 
-        <!-- Explicit outbound OIDC/JDBC adapter dependencies. No OAuth/OIDC server dependency is used. -->
+        <!-- Flyway owns the IAM account, session, device and audit schema. -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>

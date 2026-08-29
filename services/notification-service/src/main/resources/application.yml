@@ -12,8 +12,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:}
-          jwk-set-uri: ${NOTIFICATION_SECURITY_JWK_SET_URI:}
+          issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+          jwk-set-uri: ${NOTIFICATION_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+          audiences: ${NOTIFICATION_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}
 
 server:
   address: ${NOTIFICATION_SERVICE_SERVER_ADDRESS:127.0.0.1}
@@ -84,6 +85,7 @@ notification:
     password: ${NOTIFICATION_JDBC_PASSWORD:${MYSQL_PASSWORD:}}
     schema: ${NOTIFICATION_SCHEMA:notification_service}
   security:
-    resource-server-enabled: ${NOTIFICATION_RESOURCE_SERVER_ENABLED:false}
-    issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:}
-    jwk-set-uri: ${NOTIFICATION_SECURITY_JWK_SET_URI:}
+    resource-server-enabled: ${NOTIFICATION_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${NOTIFICATION_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${NOTIFICATION_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${NOTIFICATION_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}

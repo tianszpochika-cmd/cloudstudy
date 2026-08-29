@@ -8,16 +8,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.jwt.JwtValidationException;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.time.Instant;
 import java.util.List;
 
@@ -29,14 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GatewayJwtValidatorsTest {
 
-    private static final String ISSUER = "https://idp.example.test/issuer";
+    private static final String ISSUER = "https://iam.example.test";
+    private static final String AUDIENCE = "yuxuexing-api";
 
     @Test
     void acceptsOnlyCurrentIssuerAndApiAudience() {
         var validator = GatewayJwtValidators.forSecurity(security());
 
-        assertFalse(validator.validate(jwt(ISSUER, "englishflow-api")).hasErrors());
-        assertTrue(validator.validate(jwt("https://other.example.test", "englishflow-api")).hasErrors());
+        assertFalse(validator.validate(jwt(ISSUER, AUDIENCE)).hasErrors());
+        assertTrue(validator.validate(jwt("https://other.example.test", AUDIENCE)).hasErrors());
         assertTrue(validator.validate(jwt(ISSUER, "another-api")).hasErrors());
     }
 
@@ -47,9 +44,11 @@ class GatewayJwtValidatorsTest {
         Jwt expired = Jwt.withTokenValue("expired")
                 .header("alg", "RS256")
                 .issuer(ISSUER)
-                .audience(List.of("englishflow-api"))
+                .audience(List.of(AUDIENCE))
                 .issuedAt(now.minusSeconds(600))
                 .expiresAt(now.minusSeconds(300))
+                .claim("token_type", "access")
+                .claim("scope", "learner.profile.read")
                 .build();
 
         assertTrue(validator.validate(expired).hasErrors());
@@ -60,45 +59,54 @@ class GatewayJwtValidatorsTest {
         var missingAudience = new GatewayProperties.Security(
                 false, true, true, ISSUER, " ");
         var unbackedPrevalidation = new GatewayProperties.Security(
-                true, false, true, ISSUER, "englishflow-api");
+                true, false, true, ISSUER, AUDIENCE);
 
         assertFalse(missingAudience.isAudienceConfiguredWhenEnabled());
         assertFalse(unbackedPrevalidation.isPrevalidationBackedByResourceServer());
     }
 
     @Test
-    void discoversIssuerAndVerifiesAccessTokenWithRotatableJwks() throws Exception {
+    void configuresIamJwksAndVerifiesAnRs256AccessToken() throws Exception {
         RSAKey signingKey = new RSAKeyGenerator(2048).keyID("gateway-test-key").generate();
-        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        String issuer = "http://127.0.0.1:" + server.getAddress().getPort();
-        server.createContext("/.well-known/openid-configuration", exchange -> json(exchange,
-                "{\"issuer\":\"" + issuer + "\",\"jwks_uri\":\"" + issuer + "/jwks\"}"));
-        server.createContext("/jwks", exchange -> json(exchange,
-                "{\"keys\":[" + signingKey.toPublicJWK().toJSONString() + "]}"));
-        server.start();
-        try {
-            GatewayProperties.Security security = new GatewayProperties.Security(
-                    false, true, true, issuer, "englishflow-api");
-            GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
-            org.mockito.Mockito.when(properties.security()).thenReturn(security);
-            ReactiveJwtDecoder decoder = new GatewayConfiguration().gatewayJwtDecoder(properties);
+        GatewayProperties.Security security = new GatewayProperties.Security(
+                false, true, true, "http://iam.example.test", AUDIENCE);
+        assertEquals("http://iam.example.test/api/v1/auth/jwks", security.jwkSetUri());
 
-            Jwt decoded = decoder.decode(signedToken(signingKey, issuer, "englishflow-api")).block();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(signingKey.toRSAPublicKey()).build();
+        decoder.setJwtValidator(GatewayJwtValidators.forSecurity(security));
 
-            assertNotNull(decoded);
-            assertEquals("subject-1", decoded.getSubject());
-            assertEquals(issuer, decoded.getIssuer().toString());
-            assertThrows(JwtValidationException.class,
-                    () -> decoder.decode(signedToken(signingKey, issuer, "wrong-audience")).block());
-        } finally {
-            server.stop(0);
-        }
+        Jwt decoded = decoder.decode(signedToken(signingKey, security.issuerUri(), AUDIENCE));
+
+        assertNotNull(decoded);
+        assertEquals("subject-1", decoded.getSubject());
+        assertEquals(security.issuerUri(), decoded.getIssuer().toString());
+        assertThrows(JwtValidationException.class,
+                () -> decoder.decode(signedToken(signingKey, security.issuerUri(), "wrong-audience")));
+    }
+
+    @Test
+    void rejectsInvalidSignatureAndAlgorithm() throws Exception {
+        RSAKey signingKey = new RSAKeyGenerator(2048).keyID("gateway-test-key").generate();
+        RSAKey differentKey = new RSAKeyGenerator(2048).keyID("different-key").generate();
+        GatewayProperties.Security security = security();
+
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(signingKey.toRSAPublicKey()).build();
+        decoder.setJwtValidator(GatewayJwtValidators.forSecurity(security));
+
+        assertThrows(JwtException.class,
+                () -> decoder.decode(signedToken(differentKey, ISSUER, AUDIENCE)));
+        assertThrows(JwtException.class,
+                () -> decoder.decode(signedToken(signingKey, ISSUER, AUDIENCE, JWSAlgorithm.RS512)));
     }
 
     private static String signedToken(RSAKey signingKey, String issuer, String audience) throws Exception {
+        return signedToken(signingKey, issuer, audience, JWSAlgorithm.RS256);
+    }
+
+    private static String signedToken(RSAKey signingKey, String issuer, String audience, JWSAlgorithm algorithm) throws Exception {
         Instant now = Instant.now();
         SignedJWT token = new SignedJWT(
-                new JWSHeader.Builder(JWSAlgorithm.RS256)
+                new JWSHeader.Builder(algorithm)
                         .keyID(signingKey.getKeyID())
                         .type(JOSEObjectType.JWT)
                         .build(),
@@ -108,23 +116,16 @@ class GatewayJwtValidatorsTest {
                         .audience(audience)
                         .issueTime(java.util.Date.from(now.minusSeconds(5)))
                         .expirationTime(java.util.Date.from(now.plusSeconds(300)))
-                        .build());
+                         .claim("token_type", "access")
+                         .claim("scope", "learner.profile.read")
+                         .build());
         token.sign(new RSASSASigner(signingKey.toPrivateKey()));
         return token.serialize();
     }
 
-    private static void json(HttpExchange exchange, String value) throws IOException {
-        byte[] bytes = value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-        exchange.sendResponseHeaders(200, bytes.length);
-        try (OutputStream output = exchange.getResponseBody()) {
-            output.write(bytes);
-        }
-    }
-
     private static GatewayProperties.Security security() {
         return new GatewayProperties.Security(
-                false, true, true, ISSUER, "englishflow-api");
+                false, true, true, ISSUER, AUDIENCE);
     }
 
     private static Jwt jwt(String issuer, String audience) {
@@ -133,8 +134,12 @@ class GatewayJwtValidatorsTest {
                 .header("alg", "RS256")
                 .issuer(issuer)
                 .audience(List.of(audience))
+                .subject("subject-1")
                 .issuedAt(now.minusSeconds(5))
+                .notBefore(now.minusSeconds(5))
                 .expiresAt(now.plusSeconds(60))
+                .claim("token_type", "access")
+                .claim("scope", "learner.profile.read")
                 .build();
     }
 }

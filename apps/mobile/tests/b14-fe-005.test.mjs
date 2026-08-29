@@ -20,11 +20,11 @@ test('mobile validates and recovers safe deep-link returnTo', async () => {
   const gateway = await read('apps/mobile/src/platform/gateway.ts')
   const auth = await read('apps/mobile/src/auth/gateway-auth.ts')
   const login = await read('apps/mobile/src/pages/login/login.vue')
-  const callback = await read('apps/mobile/src/pages/auth-callback/auth-callback.vue')
   assert.match(gateway, /safeInternalReturnTo/)
   assert.match(gateway, /%\(\?:2f\|5c\)/)
   assert.match(auth, /safeInternalReturnTo/)
-  assert.match(`${login}\n${callback}`, /returnTo/)
+  assert.match(`${login}\n${auth}`, /returnTo/)
+  assert.doesNotMatch(`${login}\n${auth}`, /auth\/callback|authorizationCode|codeVerifier|codeChallenge|nonce/i)
 })
 
 test('mobile exposes canonical eight states, closed gates, and preference restore', async () => {
@@ -60,11 +60,10 @@ test('mobile deep-link pages use the shared auth gate before reading protected d
   assert.equal((pages.match(/ensureMobilePageAccess\('/g) ?? []).length, 6)
 })
 
-test('mobile logout schedules navigation back to the login page', async () => {
+test('mobile logout clears the session and returns to the login page', async () => {
   const auth = await read('apps/mobile/src/auth/gateway-auth.ts')
-    assert.match(auth, /function scheduleMobileLogoutRedirect\(\)/)
-    assert.match(auth, /mobileApiClient\.request\('\/iam\/session\/logout'[\s\S]*?scheduleMobileLogoutRedirect\(\)/)
-    assert.match(auth, /window\.location\.assign\(`\$\{window\.location\.origin\}\/\#\/pages\/login\/login`\)/)
-    assert.match(auth, /runtime\.reLaunch\(\{ url: '\/pages\/login\/login' \}\)/)
-    assert.match(auth, /openUniPage\('\/pages\/login\/login'\)/)
+    const session = await read('apps/mobile/src/stores/session.ts')
+    assert.match(auth, /\/auth\/logout/)
+    assert.match(session, /clear\(\)/)
+    assert.match(session, /pages\/login\/login/)
 })

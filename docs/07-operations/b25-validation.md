@@ -7,7 +7,7 @@
 
 B25 的代码层和本地数据基础已完成：合成 fixture、root migration/seed、服务级迁移、JDBC 读写 seam、Gateway 内部路由、JWT/tenant/owner 边界、幂等写入契约和五个服务的测试均已落地。
 
-本轮不能关闭 B25 的运行 Gate，也不能宣告正式进入 B26 测试。原因是当前本机没有可用的标准 OIDC/JWKS 测试 IdP 和有效 JWT，尚未完成 Gateway → 服务 → MySQL → API 的认证后真实回放；Redis 重建、服务重启读回、Flyway 空库/重复迁移和正式 owner grant 对账也没有形成完整证据链。
+本轮不能关闭 B25 的运行 Gate，也不能宣告正式进入 B26 测试。原因是当前本机尚未取得可用的自有 IAM JWT/JWKS 运行环境和有效 JWT，尚未完成 Gateway → 服务 → MySQL → API 的认证后真实回放；Redis 重建、服务重启读回、Flyway 空库/重复迁移和正式 owner grant 对账也没有形成完整证据链。
 
 ## 交付状态
 
@@ -71,7 +71,7 @@ B25 的代码层和本地数据基础已完成：合成 fixture、root migration
 
 ## 未关闭项与下一步
 
-1. 启动批准的标准 OIDC 测试 IdP，完成注册、授权码 + PKCE、JWKS、有效 JWT 和 IAM session 回放。
+1. 启动平台自有 IAM JWT/JWKS，完成账号密码注册、登录、有效 JWT 和 IAM session 回放。
 2. 以真实 JWT 通过 Gateway 回放 onboarding、内容读取、练习/测评/SRS/报告/通知写链，并用 DB 查询核对 owner 表。
 3. 从 MySQL owner rows 重建 Redis，停止并重启相关服务，再次读取并核对结果。
 4. 使用 Flyway 在空 schema 和已执行 schema 上分别进行一次 migration/repeat 验证，补充 owner grant 与 schema ledger 证据。

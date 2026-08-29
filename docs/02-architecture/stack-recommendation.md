@@ -12,7 +12,7 @@
 | 新业务后端 | **Java 25 LTS + Spring Boot 4.1.x + Spring Framework 7.x** | 微服务目标架构；版本由统一 BOM/Version Catalog 管理 |
 | 迁移兼容后端 | Java 17 + Spring Boot 3 | `services/core-api` 旧模块化单体，只作兼容路由、数据迁移和回滚边界 |
 | API Gateway | Spring Cloud Gateway Server WebFlux 5.x | 外部路由、版本、限流、JWT 预校验、request/trace 上下文；不承载业务写入 |
-| IAM/RBAC | Spring Security Resource Server + OIDC/OAuth 2.1 + `iam-service` | 用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略和撤销 |
+| IAM/RBAC | `iam-service` 账号密码认证中心 + Spring Security Resource Server JWT Bearer | IAM 签发短时 RS256 JWT Access Token、发布 JWKS；用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略和撤销 |
 | ORM 与迁移 | MyBatis-Plus + Flyway | MySQL 数据访问与版本迁移 |
 | 主数据库 | MySQL 8.x | 关系数据、课程、学习记录、订单、权限 |
 | 缓存 | Redis 7.x | 会话、排行榜、锁、打卡、短期任务缓存 |
@@ -49,8 +49,8 @@
 
 - 生产目标为 OCI + Kubernetes + Helm/Kustomize + GitOps；服务模板默认包含 OpenTelemetry、健康探针、优雅停机、SBOM、依赖扫描、限流、超时、重试预算、熔断和可回滚发布。
 - 目标消息链路必须支持 Outbox、幂等消费者、顺序/乱序处理、DLQ、重放和人工补偿；事件 schema 只允许兼容演进，破坏性变更新增版本。
-- Access Token 短时效并通过 JWKS 验签；Refresh Token 只由 IAM 管理并轮换；密钥由 KMS/Vault 管理，不得进入 Git、镜像、日志或事件。
-- Java/Spring/基础设施按统一版本清单升级，先兼容、再切换、后删除；引入新消息总线、服务网格、身份提供方或 RTC 方案必须新增 ADR。
+- Access Token 使用 IAM 签发的短时非对称 JWT，并由 Gateway 与每个领域服务通过 JWKS 独立验签；Refresh Token 只由 IAM 管理并轮换；密钥由 KMS/Vault 管理，不得进入 Git、镜像、日志或事件。
+- Java/Spring/基础设施按统一版本清单升级，先兼容、再切换、后删除；引入新消息总线、服务网格或 RTC 方案必须新增 ADR。
 
 ## 6. 选型禁止项
 

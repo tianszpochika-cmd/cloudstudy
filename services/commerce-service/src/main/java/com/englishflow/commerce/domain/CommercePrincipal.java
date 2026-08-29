@@ -2,7 +2,7 @@ package com.englishflow.commerce.domain;
 
 import java.util.Set;
 
-/** Facts derived from a verified OIDC token or a trusted provider boundary. */
+/** Facts derived from a verified IAM JWT or a trusted workload boundary. */
 public record CommercePrincipal(String tenantId, String subjectId, Set<String> permissions,
         boolean authenticated, boolean verified, boolean servicePrincipal) {
     public CommercePrincipal {

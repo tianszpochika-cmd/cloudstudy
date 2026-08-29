@@ -5,30 +5,6 @@
     { "name": "B1 User", "description": "Self-scoped profile, privacy and device APIs" }
   ],
   "paths": {
-    "/api/v1/auth/sms/send-code": {
-      "post": {
-        "tags": ["B1 Auth"], "operationId": "sendB1SmsCode",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-challenge" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1SmsCodeRequest" } } } },
-        "responses": { "200": { "description": "SMS challenge created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AnyData" } } } }, "400": { "description": "Invalid request" } }
-      }
-    },
-    "/api/v1/auth/login/phone": {
-      "post": {
-        "tags": ["B1 Auth"], "operationId": "loginB1Phone",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-session" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1PhoneLoginRequest" } } } },
-        "responses": { "200": { "description": "Token pair issued", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AuthTokenResponse" } } } }, "401": { "description": "OTP or consent rejected" } }
-      }
-    },
-    "/api/v1/auth/register": {
-      "post": {
-        "tags": ["B1 Auth"], "operationId": "registerB1Phone",
-        "x-idempotency": { "strategy": "request-key", "replayBehavior": "return-original-session" },
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1PhoneLoginRequest" } } } },
-        "responses": { "200": { "description": "Account and token pair created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B1AuthTokenResponse" } } } }, "409": { "description": "Identity exists" } }
-      }
-    },
     "/api/v1/auth/logout": {
       "post": {
         "tags": ["B1 Auth"], "operationId": "logoutB1Session",
@@ -145,11 +121,7 @@
   "components": {
     "schemas": {
       "B1AnyData": { "type": "object", "additionalProperties": true },
-      "B1SmsCodeRequest": { "type": "object", "additionalProperties": false, "required": ["phone"], "x-sensitive-fields": ["phone", "code"], "properties": { "phone": { "type": "string", "description": "手机号仅允许经 TLS 传输，服务端只保存 lookup hash，禁止日志原文。", "pattern": "^\\+?[0-9]{6,20}$" }, "code": { "type": "string", "description": "验证码只允许经 TLS 短时传输，禁止落库和日志。", "pattern": "^[0-9]{6}$" }, "adultConfirmed": { "type": "boolean" }, "privacyConsent": { "type": "boolean" }, "scene": { "type": "string" } } },
-      "B1PhoneLoginRequest": { "type": "object", "additionalProperties": false, "required": ["phone", "code", "adultConfirmed", "privacyConsent", "privacyPolicyVersion", "device"], "x-sensitive-fields": ["phone", "code"], "properties": { "phone": { "type": "string", "description": "手机号仅允许经 TLS 传输，服务端只保存 lookup hash，禁止日志原文。", "pattern": "^\\+?[0-9]{6,20}$" }, "code": { "type": "string", "description": "验证码只允许经 TLS 短时传输，禁止落库和日志。", "pattern": "^[0-9]{6}$" }, "adultConfirmed": { "type": "boolean" }, "privacyConsent": { "type": "boolean" }, "privacyPolicyVersion": { "type": "string", "minLength": 1 }, "device": { "$ref": "#/components/schemas/B1DeviceInput" } } },
       "B1DeviceInput": { "type": "object", "additionalProperties": false, "required": ["deviceId", "deviceType", "clientVersion"], "x-sensitive-fields": ["deviceId"], "properties": { "deviceId": { "type": "string", "description": "设备公开 ID 不得为硬件指纹原文；仅允许 hash/不可逆公开标识进入日志。" }, "deviceType": { "type": "string" }, "deviceName": { "type": "string" }, "clientVersion": { "type": "string" }, "regionCode": { "type": "string" } } },
-      "B1AuthTokenResponse": { "type": "object", "additionalProperties": false, "required": ["accessToken", "refreshToken", "expiresIn", "refreshExpiresIn", "deviceId", "sessionId"], "x-sensitive-fields": ["accessToken", "refreshToken"], "properties": { "accessToken": { "type": "string", "description": "Access Token 仅经 TLS 返回并放入受控存储，禁止日志、错误详情和持久化明文。" }, "refreshToken": { "type": "string", "description": "Refresh Token 仅经 TLS 返回；服务端只保存 hash，禁止日志和数据库明文。" }, "expiresIn": { "type": "integer" }, "refreshExpiresIn": { "type": "integer" }, "userId": { "type": "integer", "format": "int64" }, "deviceId": { "type": "string" }, "sessionId": { "$ref": "#/components/schemas/SessionId" } } },
-      "B1RefreshRequest": { "type": "object", "additionalProperties": false, "required": ["refreshToken"], "x-sensitive-fields": ["refreshToken"], "properties": { "refreshToken": { "type": "string", "description": "Refresh Token 只允许经 TLS 传输，服务端按 hash 比对，禁止原文日志。" }, "deviceId": { "type": "string" } } },
       "B1LogoutRequest": { "type": "object", "additionalProperties": false, "properties": { "allDevices": { "type": "boolean" } } },
       "B1OnboardingProfileRequest": { "type": "object", "additionalProperties": false, "required": ["targetGoal", "dailyQuotaMinutes"], "properties": { "language": { "type": "string" }, "targetGoal": { "type": "string" }, "examType": { "type": "string" }, "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45] }, "preferenceTags": { "type": "array", "maxItems": 3, "items": { "type": "string" } }, "accentPreference": { "type": "string" }, "customHomeLayout": { "type": "boolean" }, "customHomeLayoutOrder": { "type": "array", "items": { "type": "string" } }, "expectedVersion": { "type": "integer", "format": "int64" } } },
       "B1PlacementSkipRequest": { "type": "object", "additionalProperties": false, "properties": { "fastTrackLevel": { "type": "string", "enum": ["ZERO_A1", "CET4_B1", "CET6_B2", "POSTGRAD_B2_PLUS"] } } }

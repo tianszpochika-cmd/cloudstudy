@@ -1570,3 +1570,93 @@ button:disabled,
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Aurora Star Map refresh: public pages share the same semantic surface,
+   focus treatment and tactile controls as the authenticated products. */
+:root {
+  --ef-color-text-tertiary: var(--ef-color-text-muted, #8a92a8);
+  --ef-color-surface-raised: var(--ef-color-background-raised, #ffffff);
+}
+
+html[data-theme="dark"] { color-scheme: dark; }
+html[data-theme="high-contrast"] { color-scheme: dark; }
+
+body {
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--ef-color-brand-primary) 8%, transparent), transparent 34rem),
+    var(--ef-color-surface-page);
+}
+
+.site-header {
+  border-bottom-color: color-mix(in srgb, var(--ef-color-line) 68%, transparent);
+  background: color-mix(in srgb, var(--ef-color-surface-page) 84%, transparent);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--ef-color-text-primary) 4%, transparent);
+}
+.header-inner { min-height: 80px; }
+.brand { gap: 11px; }
+.brand-mark { width: 40px; height: 40px; border-radius: 14px; box-shadow: 0 10px 24px color-mix(in srgb, var(--ef-color-brand-primary) 25%, transparent); }
+.brand-copy strong { letter-spacing: -.02em; }
+.site-nav { gap: 8px; }
+.nav-link { padding-inline: 13px; border-radius: 12px; }
+.nav-link:hover, .nav-link.is-active { background: color-mix(in srgb, var(--ef-color-brand-primary) 10%, transparent); }
+.header-control {
+  display: inline-flex;
+  min-height: var(--ef-touch-target);
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid var(--ef-color-line);
+  border-radius: 12px;
+  color: var(--ef-color-text-secondary);
+  background: var(--ef-color-surface-card);
+  font-size: 12px;
+  font-weight: 700;
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+.header-control:hover { border-color: color-mix(in srgb, var(--ef-color-brand-primary) 40%, var(--ef-color-line)); color: var(--ef-color-brand-primary); background: color-mix(in srgb, var(--ef-color-brand-primary) 8%, var(--ef-color-surface-card)); transform: translateY(-1px); }
+.header-control:active { transform: scale(.97); }
+.header-control__icon { display: grid; width: 18px; height: 18px; place-items: center; color: var(--ef-color-brand-primary); font-size: 15px; line-height: 1; }
+
+.button { min-height: 46px; border-radius: 14px; transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease, opacity 160ms ease; }
+.button:hover { transform: translateY(-2px); }
+.button:active { transform: translateY(0) scale(.98); box-shadow: none; }
+.button:focus-visible, .header-control:focus-visible, .mobile-nav-toggle:focus-visible { outline: 3px solid var(--ef-color-focus); outline-offset: 3px; }
+.button-primary { background: linear-gradient(135deg, var(--ef-color-brand-primary), var(--ef-color-brand-secondary)); box-shadow: 0 12px 24px color-mix(in srgb, var(--ef-color-brand-primary) 22%, transparent); }
+.button-primary:hover { box-shadow: 0 16px 30px color-mix(in srgb, var(--ef-color-brand-primary) 27%, transparent); }
+.button-secondary:hover, .button-muted:hover { background: color-mix(in srgb, var(--ef-color-brand-primary) 7%, var(--ef-color-surface-card)); }
+.button[aria-disabled="true"] { opacity: .58; transform: none; box-shadow: none; }
+
+.hero { padding-top: 104px; }
+.hero h1, .page-hero h1 { letter-spacing: -.065em; }
+.hero-visual { filter: saturate(1.04); }
+.learning-preview, .feature-card, .course-card, .pricing-card, .notice-card, .download-card, .campaign-card, .sku-card, .card, .card-lift {
+  border-color: var(--ef-color-line);
+  background: var(--ef-color-surface-card);
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--ef-color-text-primary) 6%, transparent);
+}
+.feature-card, .course-card, .pricing-card, .notice-card, .download-card, .campaign-card, .sku-card, .card-lift { transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+.feature-card:hover, .course-card:hover, .pricing-card:hover, .notice-card:hover, .download-card:hover, .campaign-card:hover, .sku-card:hover, .card-lift:hover { border-color: color-mix(in srgb, var(--ef-color-brand-primary) 30%, var(--ef-color-line)); box-shadow: 0 14px 34px color-mix(in srgb, var(--ef-color-brand-primary) 11%, transparent); transform: translateY(-3px); }
+.section-heading h2, .section-heading h3, .page-heading h1 { letter-spacing: -.045em; }
+.eyebrow { color: var(--ef-color-brand-primary); letter-spacing: .15em; }
+.tag, .availability-badge, .pricing-badge { border-radius: 999px; }
+.filter-button { border-radius: 999px; transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, transform 160ms ease; }
+.filter-button:hover { transform: translateY(-1px); }
+.public-status { border-radius: 16px; background: var(--ef-color-surface-card); }
+.public-status .status-icon { border-radius: 13px; }
+.cta-banner { border-radius: 24px; box-shadow: 0 18px 42px color-mix(in srgb, var(--ef-color-brand-primary) 13%, transparent); }
+.site-footer { background: color-mix(in srgb, var(--ef-color-surface-card) 92%, var(--ef-color-surface-page)); }
+
+@media (max-width: 720px) {
+  .header-inner { min-height: 70px; }
+  .mobile-nav-toggle { border-color: var(--ef-color-line); background: var(--ef-color-surface-card); }
+  .site-nav { gap: 5px; }
+  .header-control { width: 100%; justify-content: flex-start; }
+  .header-control__icon { width: 20px; }
+  .nav-cta { width: 100%; }
+  .hero { padding-top: 70px; }
+  .hero-visual { filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card, .course-card, .pricing-card, .notice-card, .download-card, .campaign-card, .sku-card, .card-lift, .button, .header-control, .filter-button { transition-duration: .01ms !important; }
+}

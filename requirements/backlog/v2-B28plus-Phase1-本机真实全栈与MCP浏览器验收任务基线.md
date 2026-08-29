@@ -1,7 +1,7 @@
 # v2 B28–B36 Phase 1 本机真实全栈与 MCP 浏览器验收任务基线
 
 > 基线 ID：V2-PHASE1-LOCAL-REAL-E2E-20260824  
-> 状态：B28、B29 已完成；B30–B33 的自动化运行/构建收口已完成，但认证后的 Browser MCP 全旅程尚未闭合；B34–B36 处于测试收口中。B28–B36 共 9 章、45 项任务，按章节顺序执行  
+> 状态：B28、B29 已完成；B30–B33 的自动化运行/构建收口已完成，但自有 JWT 认证后的 Browser MCP 全旅程尚未闭合；B34–B36 处于测试收口中。B28–B36 共 9 章、45 项任务，按章节顺序执行
 > 当前目标：在本机完成“注册/登录 → 前后端真实交互 → MySQL 持久化读写 → Kafka/Redis 联动 → Codex Browser MCP 真浏览器回归 → 缺陷收口”  
 > 非当前目标：iOS/Android 原生包、iPad 原生、微信小程序、远程真机、production-like staging、RC、生产发布、真实支付、Phase 2 AI 和 Phase 3 K12
 
@@ -36,7 +36,7 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 
 ### 3.2 本地基础设施
 
-必须真实运行 MySQL、Redis、Kafka、MinIO 和标准 OIDC 测试 IdP。RabbitMQ 只为旧兼容路由需要时运行，不得替代 Kafka 主线。所有服务使用固定端口、loopback 绑定和本地专用凭据。
+必须真实运行 MySQL、Redis、Kafka、MinIO 和平台自有 IAM JWT issuer/JWKS。RabbitMQ 只为旧兼容路由需要时运行，不得替代 Kafka 主线。所有服务使用固定端口、loopback 绑定和本地专用凭据。
 
 ### 3.3 前端范围
 
@@ -52,7 +52,7 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 |---|---|---|---|---|
 | B28 | 开发/环境 | 本地工具链、基础设施、迁移和一键启动 | B27 静态基础 | B29 |
 | B29 | 开发/运行 | 14 个后端进程真实启动、持久化和观测 | B28 | B30 |
-| B30 | 开发/联调 | 标准 OIDC 注册登录、JWT/JWKS、IAM/RBAC 闭环 | B29 | B31（认证后的 MCP 旅程仍需收口） |
+| B30 | 开发/联调 | 自有账号密码 JWT Bearer、JWT/JWKS、IAM/RBAC 闭环 | B29 | B31（认证后的 MCP 旅程仍需收口） |
 | B31 | 开发/数据 | 本地 MySQL 内容与用户事实、API→DB→API | B30 | B32（认证后的用户写链仍需浏览器核对） |
 | B32 | 开发/业务 | 学习、练习、测评、SRS、报告、Kafka/Redis 闭环 | B31 | B33（领域 API/DB 已通过，页面旅程待回归） |
 | B33 | 开发/前端 | 四个前端与真实 API 接通并修复交互 | B32 | B34 正式本地测试（运行切片已通过） |
@@ -69,9 +69,9 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|
 | V2-B28-ENV-001 | 固化本地工具链 | Java 25、Maven、Node/pnpm、Docker/Compose 的版本检查和缺失即失败；不再以 Java 17/24 构建 v2 主线 | 已完成 |
-| V2-B28-INF-002 | 启动真实基础设施 | MySQL/Redis/Kafka/MinIO/Keycloak 在固定端口 healthy；RabbitMQ 仅按兼容需要启用 | 已完成 |
+| V2-B28-INF-002 | 启动真实基础设施 | MySQL/Redis/Kafka/MinIO/IAM JWT 在固定端口 healthy；RabbitMQ 仅按兼容需要启用 | 已完成 |
 | V2-B28-DB-003 | 验证空库迁移与 owner | 各服务 schema、Flyway 顺序、独立账号/写权限、重复迁移、失败恢复和禁止跨服务写表 | 已完成 |
-| V2-B28-CFG-004 | 建立 `local-real` 运行配置 | OIDC、数据库、Redis、Kafka、MinIO、CORS、Gateway 路由和前端 origin 一致；secret 不进仓库；禁止 mock/fallback 开关 | 已完成 |
+| V2-B28-CFG-004 | 建立 `local-real` 运行配置 | 自有 JWT issuer/JWKS profile、数据库、Redis、Kafka、MinIO、CORS、Gateway 路由和前端 origin 一致；secret 不进仓库；禁止 mock/fallback 开关 | 已完成 |
 | V2-B28-RUN-005 | 提供可重复启停入口 | 新增/修复一键 preflight、启动、readiness、停止和证据摘要；连续两次冷启动结果一致 | 已完成 |
 
 ### B28 完成 Gate
@@ -100,17 +100,17 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 
 本章运行收口证据包含：14 个独立 Java 25 PID、14 个固定 loopback 端口、readiness/liveness、Gateway 未认证 401 与 requestId/traceId、11 个 owner schema 读回、core-api 兼容边界，以及六个当前非业务事实服务的 fail-closed 运行标记。`local-real` 的 fail-closed 进程只能保持健康和不被前端路由，不能被解释为这些领域功能已经完成；它们的业务实现仍由后续 B31–B33 按真实数据目标逐项关闭。
 
-## 7. B30 — 标准 OIDC 注册登录与权限真实闭环（5 项）
+## 7. B30 — 自有账号密码 JWT Bearer 登录与权限真实闭环（5 项）
 
-**状态：自动化/服务运行收口已完成；Browser MCP 已补齐本地注册、登录和核心回调，退出/清会话重登仍需独立复测。** 运行证据：`b30-lifecycle-20260825021018`、`b36-browser-2026082516`。
+**状态：自有 IAM 自动化/服务逻辑收口已完成；新的 Browser MCP 认证旅程尚未重新取得运行证据。历史外部登录证据不计入当前验收。**
 
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|
-| V2-B30-AUTH-001 | 启动并固化本地标准 IdP | Keycloak realm、Web/H5/Admin client、PKCE S256、redirect allowlist、注册策略和 JWKS 可运行 | 已完成 |
-| V2-B30-AUTH-002 | 用 MCP 浏览器完成注册与登录 | 从干净会话打开登录页、注册合成账号、登录、授权回调和 returnTo；不注入固定 Token | 核心已完成：`b36-browser-2026082516`；退出/清会话重登待复测 |
-| V2-B30-IAM-003 | 持久化 IAM 本地事实 | principal、provider subject、device、session、consent/adult gate、role/policy/audit 写入 iam owner schema | 已完成：API/DB 生命周期与审计对账通过 |
+| V2-B30-AUTH-001 | 启动并固化平台自有 JWT profile | IAM 账号密码接口、RS256、issuer/audience/JWKS、claims、Refresh Token 轮换和密码策略可运行 | 代码/静态完成，运行待验收 |
+| V2-B30-AUTH-002 | 用 MCP 浏览器完成 JWT Bearer 注册与登录 | 从干净会话打开统一登录页、注册合成账号、账号密码登录、获得 JWT Bearer 会话、returnTo；不注入固定 Token | 新认证旅程待执行 |
+| V2-B30-IAM-003 | 持久化 IAM 本地事实 | principal、tenant、device、session、refresh token 摘要/历史、consent/adult gate、role/policy/audit 写入 IAM owner schema | 代码/迁移完成，运行待验收 |
 | V2-B30-SEC-004 | 验证 Gateway 与服务侧 PEP | issuer/audience/JWKS/过期、RBAC+ABAC、owner/tenant 服务端派生、伪造角色头拒绝、默认拒绝 | 已完成：Gateway/API 负例与服务 PEP 通过；Browser 认证负例转 B35 |
-| V2-B30-LIFE-005 | 验证会话生命周期 | 刷新、登出、撤销、错误密码、重复回调、过期 Token、JWKS/IdP 不可用和重启恢复均有浏览器/API/DB 证据 | 已完成：API/DB/IdP 故障与重启运行证据通过；Browser 全旅程待回归 |
+| V2-B30-LIFE-005 | 验证 JWT 会话生命周期 | refresh rotation、登出、设备撤销、错误密码/锁定、过期 JWT、JWKS/认证中心不可用和重启恢复均有浏览器/API/DB 证据 | 逻辑测试完成，真实 API/Browser 证据待验收 |
 
 ### B30 完成 Gate
 
@@ -179,7 +179,7 @@ B23–B27 已建立认证、前端登录门禁、本地数据、Kafka/Outbox、�
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|
 | V2-B34-MCP-001 | 建立 MCP 用例与证据协议 | 使用 Codex Browser MCP 实际导航、点击、输入、提交、等待和截图；禁止用静态测试或单纯 HTTP 调用冒充 UI 通过 | 已完成 |
-| V2-B34-MCP-002 | 验收干净会话与认证 | 新标签/干净会话打开 Web/H5、注册、登录、回跳、刷新、登出、重新登录和受保护深链 | 部分完成：注册/登录/回调/会话恢复通过；退出/清会话重登待复测 |
+| V2-B34-MCP-002 | 验收干净会话与认证 | 新标签/干净会话打开 Web/H5、注册、账号密码登录、回跳、刷新、登出、重新登录和受保护深链 | 自有 JWT 旅程待执行；历史其他认证流证据不计入 |
 | V2-B34-MCP-003 | 验收 learner-web 完整旅程 | 成人 Gate、目标、课程、练习、判分、SRS、报告、通知和个人设置逐项操作并核对数据库 | 部分完成：成人 Gate→测评报告→任务→课程→断点/完成通过；`/practice` 新 B25 入口已完成代码/构建切换，认证后题目/报告需复测；SRS/通知/设置待逐项验收 |
 | V2-B34-MCP-004 | 验收 Mobile H5 完整旅程 | 移动 viewport 下完成同一真实数据旅程，验证触摸导航、返回、刷新、权限和异常恢复 | 部分完成：登录/目标/同意/练习报告/真实课程通过；H5 新鲜答题、报告刷新和触摸回归待执行 |
 | V2-B34-MCP-005 | 验收跨前端联动 | Admin 发布内容→Web/H5 可见，官网→登录深链，四端共享版本/locale/theme 边界；形成完整 MCP 证据索引 | 部分完成：官网投影、登录深链和 Web/H5 B31 内容通过；Admin 发布可见性待执行 |
@@ -197,7 +197,7 @@ CLI/API/SQL 可以用于准备环境和核对事实，但不能替代 Browser MC
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|
 | V2-B35-REG-001 | 认证与权限负例 | 401/403、过期、撤销、跨用户 owner、伪造角色/tenant 和未登录深链由 MCP 浏览器验证 | 部分完成：API 与未登录深链、Gateway 故障恢复通过；退出/撤销、跨用户页面隔离的 Browser 负例待执行 |
-| V2-B35-REG-002 | 基础设施异常恢复 | Gateway、IdP、MySQL、Redis、Kafka 或领域服务短暂不可用时页面状态正确，恢复后可继续 | 已完成：服务停止/恢复与页面错误态 MCP 证据通过；基础设施探针通过 |
+| V2-B35-REG-002 | 基础设施异常恢复 | Gateway、IAM JWT、MySQL、Redis、Kafka 或领域服务短暂不可用时页面状态正确，恢复后可继续 | 部分完成：服务停止/恢复与页面错误态证据通过；IAM JWT 新链路待复测 |
 | V2-B35-REG-003 | 重启与数据持久化 | 前端、服务、消费者和容器重启后账号、目标、进度、attempt、SRS、报告和通知仍一致 | 已完成：完整 Java 服务重启后 owner facts 读回通过 |
 | V2-B35-REG-004 | 幂等、重复和重建 | 重复提交不产生重复事实；Kafka 重投/DLQ、Redis 清空重建和乱序场景完成对账 | 已完成：B32 Kafka/Redis runtime 对账通过 |
 | V2-B35-FIX-005 | 缺陷修复与全量复测 | 所有浏览器发现的问题进入台账；P0/P1 清零，P2 有 owner/期限；修复后重跑关联链路和核心旅程 | 部分完成：IAM consent、学习断点、Web/H5 内容/任务路由已修复并回归；H5 全量旅程和剩余页面待执行 |
@@ -209,7 +209,7 @@ CLI/API/SQL 可以用于准备环境和核对事实，但不能替代 Browser MC
 | 任务 ID | 目标 | 必须交付/验证 | 状态 |
 |---|---|---|---|
 | V2-B36-GATE-001 | 干净启动终验 | 依据 Runbook 从停止状态启动基础设施、14 后端和四前端，连续两轮 readiness 与 smoke 通过 | 已完成：`b36-2026082515` |
-| V2-B36-GATE-002 | 双端完整旅程终验 | learner-web 和 Mobile H5 分别由 MCP 浏览器完成一轮注册到报告的真实数据旅程 | 部分完成：Web 到报告/任务完成，`/practice` 新 B25 入口已完成代码/构建切换但认证后题目/报告待复测；H5 报告读取→今日任务→真实课程内容通过；H5 新鲜任务答题到报告和退出/重登待执行 |
+| V2-B36-GATE-002 | 双端完整旅程终验 | learner-web 和 Mobile H5 分别由 MCP 浏览器完成一轮自有 JWT 注册/登录到报告的真实数据旅程 | 部分完成：业务页面证据保留，但自有 JWT 认证后题目/报告、退出/重登待复测 |
 | V2-B36-GATE-003 | 数据与事件终验 | IAM、领域 MySQL、Redis、Kafka、MinIO、API 和页面证据完整对账，无静态/Mock/内存事实混入 | 部分完成：Web 核心页面与 MySQL、H5 B31 投影已对账；H5 完整测评事件和 Admin 发布联动待补 |
 | V2-B36-GATE-004 | 质量与缺陷终验 | 四前端构建、核心后端测试、契约/迁移/端口/安全回归通过；P0/P1 为零 | 已完成：构建、契约、迁移、Redis、配置、端口、B35 有效会话权限回归和 B14 安全扫描通过 |
 | V2-B36-HANDOFF-005 | 本机测试交接结论 | 输出 `LOCAL-TEST-PASS` 或 `LOCAL-TEST-NO-PASS`、证据索引、已知问题、启动/恢复 Runbook 和下一阶段建议 | 已完成：当前结论为 `LOCAL-TEST-NO-PASS`；认证阻断已解除，但剩余全量页面/双端旅程仍阻断正式交接 |

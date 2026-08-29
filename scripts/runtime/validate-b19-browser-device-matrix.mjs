@@ -55,7 +55,7 @@ for (const app of apps) {
   if (!baseline) fail(`${app.id} is not present in B18 four-app baseline`)
   else for (const route of baseline.routes) if (!app.routes.includes(route)) fail(`${app.id} is missing B18 route ${route}`)
   if (app.id === 'official-site' && JSON.stringify(app.auth) !== JSON.stringify(['public-only'])) fail('official-site must remain public-only')
-  if (app.id !== 'official-site' && !has(app.auth, 'oidc-test-idp')) fail(`${app.id} must use the approved OIDC test IdP seam`)
+  if (app.id !== 'official-site' && !has(app.auth, 'self-owned-jwt')) fail(`${app.id} must use the platform-owned JWT login seam`)
   const registeredKey = app.id === 'mobile' ? 'mobile-h5-dev' : `${app.id}-dev`
   const registeredPort = ports.services?.[registeredKey]?.port
   if (registeredPort && !app.origin.endsWith(`:${registeredPort}`)) fail(`${app.id} origin is not on its fixed local port`)

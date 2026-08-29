@@ -32,15 +32,14 @@ if (!staticOnly || requireRuntime) {
   nodeScript('toolchain', 'scripts/toolchain/check-toolchain.mjs');
   nodeScript('infra-runtime', 'scripts/check-local-infra.mjs', '--require-healthy');
   const required = [
-    'B16_TEST_IDP_ISSUER_URI',
-    'B16_TEST_IDP_JWKS_URI',
-    'B16_TEST_IDP_AUTHORIZATION_ENDPOINT',
-    'B16_TEST_IDP_TOKEN_ENDPOINT'
+    'B16_JWT_ISSUER_URI',
+    'B16_JWT_JWKS_URI',
+    'B16_JWT_AUDIENCE'
   ];
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length > 0) {
-    console.error(`B16 runtime blocked: missing synthetic/external test IdP variables: ${missing.join(', ')}`);
-    failures.push('test-idp-config');
+    console.error(`B16 runtime blocked: missing IAM JWT variables: ${missing.join(', ')}`);
+    failures.push('jwt-runtime-config');
   }
 }
 

@@ -36,4 +36,4 @@ node --test tests/b10-boundaries.test.mjs
 
 - 登录、回调、刷新、登出、成人 Gate、权限快照和深链恢复通过 Gateway/IAM 适配器处理。
 - 浏览器只把短时访问凭证放在受控会话上下文；Refresh credential 不写入普通 Web storage，权限和角色由服务端快照驱动。
-- B8 当前是 provider-neutral 代码与测试替身，真实 OIDC/JWKS 和浏览器运行态须通过 G-IDP/测试 Gate 后接入。
+- B8 使用平台 IAM 的账号密码登录和自有 RS256 JWT；Web Access Token 只在内存中存活，Refresh Token 只由 HttpOnly Cookie 承载，JWKS 由 IAM 发布。

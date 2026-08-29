@@ -19,31 +19,22 @@
       "X-Owner-Id"
     ]
   },
-  "oidc": {
-    "protocol": "OIDC/OAuth2.1",
-    "providerMode": "external-approved-idp",
-    "gIdpGate": "closed",
-    "issuerEnv": "OIDC_ISSUER_URI",
-    "jwksEnv": "OIDC_JWK_SET_URI",
-    "authorizationCodeFlow": true,
-    "pkceMethod": "S256",
-    "stateRequired": true,
-    "nonceRequired": true,
+  "jwt": {
+    "mode": "self-owned-jwt",
+    "issuerEnv": "IAM_JWT_ISSUER",
+    "jwksEnv": "IAM_JWT_JWKS_URI",
+    "audienceEnv": "IAM_JWT_AUDIENCE",
+    "issuer": "http://127.0.0.1:18087",
+    "jwksUri": "http://127.0.0.1:18087/api/v1/auth/jwks",
+    "audience": "yuxuexing-api",
+    "algorithm": "RS256",
+    "tokenType": "access",
+    "requiredClaims": ["iss", "sub", "aud", "exp", "iat", "nbf", "jti", "token_type", "scope", "roles", "permissions", "tenant_id", "session_id"],
     "refreshRotationRequired": true,
     "keyRotationRequired": true,
     "sessionRevocationRequired": true,
-    "failClosedOnProviderUnavailable": true,
-    "tokenServerInRepository": false,
-    "testIdp": {
-      "mode": "external-or-ephemeral-fixture",
-      "issuerEnv": "B16_TEST_IDP_ISSUER_URI",
-      "jwksEnv": "B16_TEST_IDP_JWKS_URI",
-      "authorizationEndpointEnv": "B16_TEST_IDP_AUTHORIZATION_ENDPOINT",
-      "tokenEndpointEnv": "B16_TEST_IDP_TOKEN_ENDPOINT",
-      "requiresSyntheticKeys": true,
-      "forbidProductionCredentials": true,
-      "forbidInRepositoryTokenServer": true
-    }
+    "failClosedOnJwksUnavailable": true,
+    "privateKeyOutsideRepository": true
   },
   "iam": {
     "serviceId": "iam-service",
@@ -112,18 +103,18 @@
     ],
     "runtime": [
       "gateway-to-iam-login",
-      "pkce-refresh-logout",
+      "jwt-login-refresh-logout",
       "gateway-to-domain-pep",
       "cross-tenant-deny",
       "revocation",
-      "provider-fault-fail-closed",
+      "jwks-fault-fail-closed",
       "direct-connect-deny"
     ],
     "runtimePrerequisites": [
       "java-25",
       "maven-3.9.9-or-newer",
       "docker-or-equivalent",
-      "approved-test-idp-or-ephemeral-fixture"
+      "iam-jwt-jwks-and-test-account-fixture"
     ]
   }
 }

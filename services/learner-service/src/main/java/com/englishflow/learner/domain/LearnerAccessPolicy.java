@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * Pure service-side RBAC + ABAC guard. It is deliberately independent of Spring, HTTP and the
- * database so the deny matrix can be tested before an IdP or PDP is available.
+ * database so the deny matrix can be tested before IAM JWT or PDP runtime facts are available.
  */
 public final class LearnerAccessPolicy {
 

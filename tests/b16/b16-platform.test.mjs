@@ -7,13 +7,15 @@ import test from 'node:test';
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..');
 const read = (relative) => readFileSync(join(root, relative), 'utf8');
 
-test('B16 security manifest keeps Phase 1 default-deny and the G-IDP gate closed', () => {
+test('B16 security manifest keeps Phase 1 default-deny and self-owned JWT signing', () => {
   const manifest = JSON.parse(read('config/b16-security-runtime.json'));
   assert.equal(manifest.phase, 'phase-1');
   assert.equal(manifest.defaultDecision, 'deny');
   assert.equal(manifest.gateway.directConnectAllowed, false);
-  assert.equal(manifest.oidc.gIdpGate, 'closed');
-  assert.equal(manifest.oidc.tokenServerInRepository, false);
+  assert.equal(manifest.jwt.mode, 'self-owned-jwt');
+  assert.equal(manifest.jwt.algorithm, 'RS256');
+  assert.equal(manifest.jwt.audience, 'yuxuexing-api');
+  assert.equal(manifest.jwt.privateKeyOutsideRepository, true);
   assert.equal(manifest.iam.adultMinimumAge, 18);
   assert.equal(manifest.iam.minorDomainEnabled, false);
 });
@@ -39,19 +41,23 @@ test('B16 Gateway has fixed loopback boundary, CORS, rate-limit and security fac
   }
 });
 
-test('B16 IAM keeps OIDC protocol checks server-side and does not mint tokens', () => {
-  const client = read('services/iam-service/src/main/java/com/englishflow/iam/oidc/ProviderNeutralOidcClient.java');
+test('B16 IAM signs short-lived JWTs and keeps account/session secrets server-side', () => {
+  const sources = read('services/iam-service/src/main/java/com/englishflow/iam/auth/JwtTokenService.java')
+    + read('services/iam-service/src/main/java/com/englishflow/iam/auth/JwtSigningKeyProvider.java')
+    + read('services/iam-service/src/main/java/com/englishflow/iam/domain/PasswordAccountService.java')
+    + read('services/iam-service/src/main/java/com/englishflow/iam/domain/SessionService.java')
+    + read('services/iam-service/src/main/java/com/englishflow/iam/config/IamRuntimeConfiguration.java');
   const props = read('services/iam-service/src/main/java/com/englishflow/iam/config/IamServiceProperties.java');
   const yaml = read('services/iam-service/src/main/resources/application.yaml');
-  assert.match(client, /state/);
-  assert.match(client, /nonce/);
-  assert.match(client, /PkceSupport\.s256Challenge/);
-  assert.match(client, /OIDC_CALLBACK_REPLAY/);
-  assert.match(read('services/iam-service/src/main/java/com/englishflow/iam/oidc/JwksKeySetValidator.java'), /fetchedAt/);
-  assert.match(read('services/iam-service/src/main/java/com/englishflow/iam/oidc/InMemoryAuthorizationTransactionStore.java'), /putIfAbsent/);
-  assert.match(props, /realProviderEnabled/);
-  assert.match(yaml, /real-provider-enabled: \$\{IAM_REAL_PROVIDER_ENABLED:false\}/);
-  assert.doesNotMatch(client, /JwtEncoder|NimbusJwtEncoder/);
+  const controller = read('services/iam-service/src/main/java/com/englishflow/iam/web/IamProviderBoundaryController.java');
+  const security = read('services/iam-service/src/main/java/com/englishflow/iam/config/IamSecurityConfiguration.java');
+  assert.match(sources, /JwtEncoder/);
+  assert.match(sources, /token_type/);
+  assert.match(sources, /refresh.*replay/i);
+  assert.match(sources, /BCrypt|bcrypt/i);
+  assert.match(props, /ephemeralKeysAllowed/);
+  assert.match(yaml, /issuer: \$\{IAM_JWT_ISSUER:/);
+  assert.match(yaml + controller + security, /jwks|public/i);
 });
 
 test('B16 all Phase 1 domain services retain Resource Server and service-side security seams', () => {
@@ -94,7 +100,7 @@ test('B16 runtime evidence explicitly separates static pass from real environmen
   assert.ok(manifest.runtimeEvidence.static.length >= 4);
   assert.ok(manifest.runtimeEvidence.runtime.includes('gateway-to-domain-pep'));
   assert.ok(manifest.runtimeEvidence.runtimePrerequisites.includes('java-25'));
-  assert.ok(manifest.runtimeEvidence.runtimePrerequisites.includes('approved-test-idp-or-ephemeral-fixture'));
+  assert.ok(manifest.runtimeEvidence.runtimePrerequisites.includes('iam-jwt-jwks-and-test-account-fixture'));
 });
 
 test('B16 service template includes mTLS/workload identity and bound PDP decisions', () => {

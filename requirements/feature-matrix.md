@@ -245,10 +245,10 @@
 
 | 功能编号 | 功能大类 | 功能名称 | 细分功能与验收要点 | 适用终端 | 阶段/优先级 | 关联 PRD |
 | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
-| **FEAT-USR-001** | 认证登录 | 手机验证码快捷登录 (SMS) | 11 位大陆手机号 + 6 位短信验证码快速注册/登录，未注册自动建档 | App/Web/H5 | Phase 1 (P0) | PRD §17.2 |
-| **FEAT-USR-002** | 认证登录 | 微信开放平台 / 小程序授权 | 微信一键授权绑定，自动同步昵称与头像 | App/H5/MP | Phase 1 (P0) | PRD §17.2 |
-| **FEAT-USR-003** | 认证登录 | Apple ID 原生快捷登录 | iOS 端支持 Sign in with Apple 授权登录与双向密钥校验 | iOS App | Phase 1 (P0) | PRD §17.2 |
-| **FEAT-USR-004** | 会话管理 | JWT 双 Token 无感刷新 | AccessToken (2h) + RefreshToken (30d)，静默刷新不中断做题 | All | Phase 1 (P0) | PRD §17.2 |
+| **FEAT-USR-001** | 认证登录 | 自有账号密码注册与登录 | learner-web、admin-web、mobile 使用统一自有登录页；IAM 校验哈希密码并签发短时非对称 JWT Access Token；客户端不提交任何角色、租户或 owner 权限事实 | App/Web/H5 | Phase 1 (P0) | PRD §17.2 |
+| **FEAT-USR-002** | 认证登录 | 密码重置与账号安全 | 一次性短时重置令牌、限流、失败锁定、注销和审计；手机号/第三方身份连接不作为 Phase 1 正式登录入口 | App/Web/H5 | Phase 1 (P0) | PRD §17.2 |
+| **FEAT-USR-003** | 公开登录入口 | 官网受控登录跳转 | official-site 只跳转到统一 learner-web 登录页，使用 allow-list returnTo，不建立会话、不保存业务 Token | Web | Phase 1 (P0) | PRD §17.2 |
+| **FEAT-USR-004** | 会话管理 | JWT Bearer 双令牌无感刷新 | Access Token 目标 5–15 分钟、统一 audience `yuxuexing-api`、RS256/ES256；Refresh Token 轮换、重放检测、撤销、设备管理和登出由 IAM 负责 | All | Phase 1 (P0) | PRD §17.2 |
 | **FEAT-USR-005** | 设备管理 | 多设备在线列表与顶号互踢 | 记录登录设备型号与最后活跃时间，支持在个人中心一键踢出其他设备 | App/Web/H5 | Phase 1 (P0) | PRD §17.2 |
 | **FEAT-USR-006** | 用户档案 | 学员个人资料修改 | 昵称、头像上传裁剪、发音偏好 (美音/英音)、每日学习目标修改 | App/Web/H5 | Phase 1 (P0) | PRD §17.3, §18.1 |
 | **FEAT-USR-007** | 合规注销 | 账号注销与数据脱敏 | 提供 7 天注销冷静期，确认注销后彻底匿名化脱敏所有历史个人信息 | App/Web/H5 | Phase 1 (P0) | PRD §17.4, §18.15 |

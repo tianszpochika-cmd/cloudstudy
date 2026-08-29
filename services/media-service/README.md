@@ -11,7 +11,7 @@
 - signed URL：短时 opaque grant 绑定 `assetId + assetVersion + tenant + subject + channel + Range`；内存适配器只保留 token digest，生产适配器替换为 CDN/KMS signer。
 - Range：支持单一 `bytes=start-end` 或开放尾部 `bytes=start-`；不支持多段、suffix 或越界请求时返回明确拒绝。Range 校验只操作 size metadata，不读取对象 bytes。
 - 撤销：资产撤销同时清除内存授权 grant，后续读取再次校验资产状态、版权窗口、租户、owner/content-right、同意和设备权限。
-- 安全：Resource Server 默认关闭时除 `/actuator/**` 外全部拒绝；启用后只接受已验证 OIDC JWT。tenant、owner、phase、consent、role、permission 来自认证上下文，客户端请求体/authority header 不能覆盖。
+- 安全：Resource Server 默认关闭时除 `/actuator/**` 外全部拒绝；启用后只接受已验证 JWT JWT。tenant、owner、phase、consent、role、permission 来自认证上下文，客户端请求体/authority header 不能覆盖。
 - 幂等：注册 metadata 必须带 `Idempotency-Key`，按已验证 tenant + subject + key 做 metadata fingerprint replay；重复 key 的不同 payload 会拒绝。
 - 事件：内存 outbox 只接收 checksum、size、版本和状态等安全 metadata，禁止原始媒体或音频内容进入事件。
 
@@ -23,8 +23,8 @@
 MEDIA_SERVICE_PORT=18092
 MEDIA_SERVICE_SERVER_ADDRESS=127.0.0.1
 MEDIA_SERVICE_RESOURCE_SERVER_ENABLED=false
-MEDIA_SERVICE_SECURITY_ISSUER_URI=https://idp.example/realms/yuxuexing
-MEDIA_SERVICE_SECURITY_JWK_SET_URI=https://idp.example/realms/yuxuexing/protocol/openid-connect/certs
+MEDIA_SERVICE_SECURITY_ISSUER_URI=http://127.0.0.1:18087
+MEDIA_SERVICE_SECURITY_JWK_SET_URI=http://127.0.0.1:18087/api/v1/auth/jwks
 MEDIA_SERVICE_SIGNED_URL_BASE_URL=https://cdn.example.invalid/media
 MEDIA_SERVICE_SIGNED_URL_TTL=PT5M
 MEDIA_SERVICE_MAX_SIGNED_URL_TTL=PT15M
@@ -84,4 +84,4 @@ java -cp $out com.englishflow.media.MediaDomainSmoke
 
 ## 未完成项
 
-本切片不声称 Java 25/Maven/Spring 运行、OIDC/JWKS、Gateway、MySQL/Flyway、Kafka/Outbox worker、S3/MinIO Range、CDN/KMS 签名或跨进程部署已经通过运行态验收。生产适配必须实现 `MediaRepository`/`SignedUrlPort` 的持久化与对象存储版本，同时保持默认拒绝和不记录原始媒体的边界。
+本切片不声称 Java 25/Maven/Spring 运行、JWT/JWKS、Gateway、MySQL/Flyway、Kafka/Outbox worker、S3/MinIO Range、CDN/KMS 签名或跨进程部署已经通过运行态验收。生产适配必须实现 `MediaRepository`/`SignedUrlPort` 的持久化与对象存储版本，同时保持默认拒绝和不记录原始媒体的边界。

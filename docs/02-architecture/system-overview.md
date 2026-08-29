@@ -17,7 +17,7 @@
 
 接入层：CDN/WAF、负载均衡、Kubernetes Gateway API 和 `services/api-gateway`；负责鉴权预校验、API 版本、速率限制和 requestId/traceId。
 
-平台层：`services/iam-service` 负责 OIDC/OAuth 2.1、用户/租户/会话和 RBAC/ABAC 策略；每个业务服务继续执行服务侧 PEP。
+平台层：`services/iam-service` 是平台自有认证中心，校验账号密码、签发短时非对称 JWT Bearer Access Token、发布 JWKS，并承载用户/租户/会话、Refresh Token 轮换/撤销和 RBAC/ABAC 策略；每个业务服务继续独立验签并执行服务侧 PEP。
 
 业务层：learner、content、learning、assessment、media、gamification、social、commerce、notification、analytics 和 admin-ops 服务；`core-api` 只作为迁移期兼容路由。
 

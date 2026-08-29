@@ -47,7 +47,7 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <!-- Kept as a fail-closed seam until the G-IDP gate supplies issuer/JWKS values. -->
+        <!-- Kept as a fail-closed JWT resource-server seam until IAM issuer/JWKS values are supplied. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>

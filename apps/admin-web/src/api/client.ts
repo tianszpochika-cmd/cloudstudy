@@ -18,6 +18,7 @@ export class AdminApiError extends Error {
 }
 
 import { getGatewayBaseUrl, safeInternalReturnTo } from '../platform/gateway'
+import { getInMemoryAccessToken } from '../auth/access-token'
 
 function joinUrl(baseUrl: string, path: string): string { const base = baseUrl.replace(/\/$/, ''); return path.startsWith('/') ? `${base}${path}` : `${base}/${path}` }
 
@@ -56,7 +57,7 @@ export function createAdminClient(baseUrl: string): AdminApiClient {
       const [{ pinia, useAdminStore }, { router }] = await Promise.all([import('../stores/admin'), import('../router')])
       const session = useAdminStore(pinia)
       const current = router.currentRoute.value
-      if (current.name === 'admin-login' || current.name === 'admin-auth-callback') return
+      if (current.name === 'admin-login') return
       const returnTo = safeInternalReturnTo(current.fullPath, '/dashboard')
       session.markSessionExpired(returnTo)
       await router.replace({ name: 'admin-login', query: { redirect: returnTo, reason: 'expired' } })
@@ -82,7 +83,7 @@ export function createAdminClient(baseUrl: string): AdminApiClient {
     headers.set('Accept', 'application/json')
     for (const name of forbiddenHeaderNames) headers.delete(name)
     headers.delete('authorization')
-    const token = typeof window === 'undefined' ? null : window.sessionStorage.getItem('englishflow.admin.access-token')
+    const token = getInMemoryAccessToken()
     if (token && token.trim()) headers.set('Authorization', `Bearer ${token.trim()}`)
     let body: BodyInit | undefined
     if (options.body !== undefined) { body = JSON.stringify(options.body); headers.set('Content-Type', 'application/json') }

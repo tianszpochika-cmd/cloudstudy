@@ -48,7 +48,7 @@
 
 | 旧批次 | 可复用的代码层资产 | v2 使用方式 | 禁止继承 |
 |---|---|---|---|
-| B0/B1 | pnpm monorepo、固定端口、OpenAPI/事件生成、Flyway、Core API 身份/Onboarding、内容种子、learner-web/mobile 壳 | 作为契约命名、测试夹具、页面交互和迁移适配的输入 | Java 17 运行时、双 Token 自研协议、`core-api` 作为新领域 owner |
+| B0/B1 | pnpm monorepo、固定端口、OpenAPI/事件生成、Flyway、Core API 身份/Onboarding、内容种子、learner-web/mobile 壳 | 作为契约命名、测试夹具、页面交互和迁移适配的输入 | Java 17 运行时、自研 Token Server/密码直登协议、`core-api` 作为新领域 owner |
 | B2 | SRS、练习、判分、掌握度规则与 B2 夹具 | 提取纯规则，分别迁入 `learning-service` 与 `assessment-service`；内容定义迁入 `content-service` | 将题目、attempt、SRS 放入同一 schema 或由前端决定分数 |
 | B3 | 语法/写作、听说读、离线 cursor、媒体 hash、四档性能降级 | 保留交互状态机和安全失败用例，改接 v2 内容、媒体、学习和测评服务 | `core-api` 跨域 JDBC、原始音频/答案进入事件或日志 |
 | B4 | 游戏、社群、低 UGC、离线包与通知状态机 | 迁入 `gamification-service`、`social-service`、`notification-service` 并消费可信事件 | 客户端积分入账、未受控自由 UGC、把 REST ticket 当作真实实时运行证据 |
@@ -106,7 +106,7 @@ flowchart LR
 | V2-B7-OFS-006 | 从空壳构建官网 Nuxt 源码：首页、课程、价格、下载、关于、合规页、SEO/robots/sitemap/结构化数据、公开状态组件 | `apps/official-site` | SSR/SSG 构建、元数据、断链、移动/桌面导航、加载/空/错误/下载禁用交互测试；不接入登录学习业务 | 002/007 | 待开始 |
 | V2-B7-FE-007 | 建立 `packages/i18n` 与扩展 `packages/design-tokens`：UI locale 与 `contentLocale` 分离、`zh-CN` 默认/受控 fallback/格式化/伪本地化检查；原子与语义 Token、亮色/暗色/跟随系统/高对比主题，以及 Nuxt SSR、Vue Web、uni-app、Element Plus 适配层 | `packages/i18n`、`packages/design-tokens`、四前端 | locale key 缺失、插值/日期数字格式、UI 与内容语言分离、主题切换与持久化、Nuxt 无闪烁 hydration、色彩对比/非颜色状态、四端适配编译与交互测试 | 001 | 待开始 |
 
-**批次退出条件**：四前端都能通过生成客户端访问 Gateway 测试替身和共享国际化/主题适配层；官网有可构建的源页面而非 `.nuxt/.output` 产物；不要求真实 IdP、Kubernetes 或生产 CDN。
+**批次退出条件**：四前端都能通过生成客户端访问 Gateway 测试替身和共享国际化/主题适配层；官网有可构建的源页面而非 `.nuxt/.output` 产物；不要求真实 IAM、Kubernetes 或生产 CDN。
 
 ### B7 执行记录（2026-08-22）
 
@@ -116,7 +116,7 @@ flowchart LR
 |---|---|---|---|
 | `V2-B7-PLAT-001` | 代码完成 | `services/service-template/`、`services/api-gateway/pom.xml`、`config/local-ports.json` | 当前环境 Java 24、无 Maven，Java 25 构建待专用工具链 |
 | `V2-B7-API-002` | 代码完成 | `packages/contracts/schemas/v1/`、`scripts/contracts/compatibility-diff.mjs`、`packages/api-client/src/gateway-test-double.ts`、`tests/b7/gateway-client.test.mjs` | 真实四端 Gateway 运行态待测试 |
-| `V2-B7-GW-003` | 代码完成 | `services/api-gateway/src/`、`tests/b7/gateway-platform.test.mjs`；legacy 兼容仅 GET/HEAD，默认 deny，local profile 只读放行 | OIDC/JWKS、服务侧 PEP/RBAC 属于 B8；真实 Gateway 运行态待测试 |
+| `V2-B7-GW-003` | 代码完成 | `services/api-gateway/src/`、`tests/b7/gateway-platform.test.mjs`；legacy 兼容仅 GET/HEAD，默认 deny，local profile 只读放行 | JWT/JWKS、服务侧 PEP/RBAC 属于 B8；真实 Gateway 运行态待测试 |
 | `V2-B7-DATA-004` | 代码完成 | `database/mysql/migrations/V0001–V0004`、Redis keyspace、`tests/b7/data-observability.test.mjs` | 真实 MySQL/Redis/Kafka 故障注入待测试 |
 | `V2-B7-OBS-005` | 代码完成 | `packages/telemetry/`、服务模板 OTel 配置、数据观测测试 | OTel collector/跨进程 trace 运行态待测试 |
 | `V2-B7-OFS-006` | 代码完成 | `apps/official-site/`、`tests/b7/official-site.test.mjs` | 真实 CDN/公开数据投影由 B9/部署阶段完成 |
@@ -128,35 +128,35 @@ flowchart LR
 
 ## 5. B8 — Gateway、IAM 与成人安全入口（7 项）
 
-**批次目标**：将所有登录后业务调用收敛到 Gateway + 标准 IdP + 服务侧 PEP，不重建自研 Token 服务。  
+**批次目标**：将所有登录后业务调用收敛到 Gateway + 平台 IAM 签发的 JWT Bearer + 服务侧 PEP；账号密码认证和 Token 签发只由 iam-service 负责。
 **主要引用**：ONB/USR/INF 的已细化单元；`ARCH-GW-001`、`ARCH-IAM-001/002`、`ARCH-SEC-001`、`ARCH-OBS-001`。  
-**前置 Gate**：`G-IDP`（标准 OIDC IdP 的 ADR、PKCE/移动端/workload identity/迁移回滚方案）必须先通过；未通过时仅可完成接口和测试替身，不能接入真实身份供应商。
+**前置 Gate**：`G-IAM-JWT`（自有 JWT profile、JWKS、公钥轮换、移动端安全存储、workload identity 和迁移回滚方案）必须先通过；未通过时仅可完成接口和测试替身，不能宣告真实认证链路完成。
 
 | 任务 ID | 代码目标 | 服务/前端宿主 | 逻辑与交互测试 | 依赖 | 初始状态 |
 |---|---|---|---|---|---|
-| V2-B8-IAM-001 | 接入获准的标准 OIDC/OAuth 2.1 IdP，实施授权码+PKCE、JWKS、刷新/撤销、工作负载身份适配 | `iam-service`、Gateway | 登录回调、PKCE 失败、JWKS 轮换、撤销、重放与失效会话测试 | G-IDP、B7 | 待开始（G-IDP） |
+| V2-B8-IAM-001 | 建设平台自有账号密码 JWT 认证中心，实施 RS256 Access Token/JWKS、刷新/撤销、工作负载身份适配 | `iam-service`、Gateway | 登录、密码错误/锁定、JWT issuer/audience/算法/过期、JWKS 轮换、刷新重放、撤销与失效会话测试 | G-IAM-JWT、B7 | 待开始（G-IAM-JWT） |
 | V2-B8-IAM-002 | 建立不可变 principal 映射、服务端派生 `platform` tenant、设备、会话、同意和审计事实 | `iam-service` | tenant/subject 不可由客户端覆盖、会话隔离、同意版本和设备踢出测试 | 001/004 | 待开始 |
 | V2-B8-IAM-003 | 实施 RBAC+ABAC、资源 owner/phase/rights/consent 判定、服务侧 PEP 与本地策略包/短期缓存 | IAM SDK、各服务模板 | allow/deny 矩阵、客户端角色头拒绝、PDP/撤销/策略版本故障 fail-closed 测试 | 001/002 | 待开始 |
 | V2-B8-GW-004 | 将 Gateway 路由升级为认证、限流、审计边界，并将旧 `core-api` 入口包入反腐适配 | Gateway、`core-api` adapter | 未认证、过期、403、租户错配、原端口直连拒绝与回滚路由测试 | 001/003 | 待开始 |
 | V2-B8-USR-005 | 实施 Phase 1 成人年龄 Gate、注册/恢复/隐私最小化和明确拒绝语义；不创建儿童、家长、监护或未成年人支付事实 | IAM、learner 适配层 | 年龄拒绝、伪造字段、重复注册、恢复页、审计留痕和无客户端绕过测试 | 002/003 | 待开始 |
 | V2-B8-FE-006 | mobile、learner-web、admin-web 的登录、刷新、登出、权限页和会话恢复接入 Gateway；官网仅提供公开登录入口跳转，并复用 B7 的 locale/theme 适配 | 四前端 | 路由守卫、401/403、撤销后回到登录、深链恢复、无权后台菜单、官网不持有业务会话、不同 locale/theme 下权限文案测试 | 001–005/B7-FE-007 | 待开始 |
-| V2-B8-TEST-007 | 建立认证安全旅程测试包与行为兼容夹具转换 | 服务/四前端测试 | 浏览器模拟：登录→成人 Gate→授权访问→撤销→恢复；契约/组件/逻辑集成全链路 | 001–006 | 待开始 |
+| V2-B8-TEST-007 | 建立认证安全旅程测试包与行为兼容夹具转换 | 服务/四前端测试 | 浏览器模拟：账号密码登录→成人 Gate→授权访问→刷新/登出→恢复；契约/组件/逻辑集成全链路 | 001–006 | 待开始 |
 
 ### B8 执行记录（2026-08-22，代码层）
 
-本轮按“代码开发完成后进入测试阶段”的目标执行。7 项任务均已落地代码/契约/静态逻辑测试切片，但不把 G-IDP、真实 OIDC/JWKS、Java 25/Maven 运行态、跨进程安全旅程或真机验收误报为完成。
+本轮按“代码开发完成后进入测试阶段”的目标执行。7 项任务均已落地代码/契约/静态逻辑测试切片，但不把 G-IAM-JWT、自有 JWT/JWKS、Java 25/Maven 运行态、跨进程安全旅程或真机验收误报为完成。
 
 | 任务 | 代码层证据 | 本轮结果 | 后续 Gate |
 |---|---|---|---|
-| `V2-B8-IAM-001` | `services/iam-service`、B8 OIDC contract、`tests/b8/iam-service.test.mjs` | provider-neutral authorization-code + PKCE、state/nonce/verifier、JWKS/refresh/revoke/workload seam | G-IDP、真实 provider/JWKS rotation、Java 25/Maven |
+| `V2-B8-IAM-001` | `services/iam-service`、B8 JWT contract、`tests/b8/iam-service.test.mjs` | account/password login、RS256 Access Token/JWKS、refresh/revoke/replay、workload seam | G-IAM-JWT、真实 JWKS rotation、Java 25/Maven |
 | `V2-B8-IAM-002` | V0016、principal/device/session/consent/adult/audit domain | platform tenant、immutable mapping、hash-only session secret、成人拒绝边界 | durable adapter、审计回放、删除/恢复运行态 |
 | `V2-B8-IAM-003` | `services/service-template`、PEP/PolicyCache/LocalPolicyEvaluator、`tests/b8/service-template-security.test.mjs` | RBAC+ABAC、owner/phase/rights/consent、撤销/策略/PDP 异常 fail-closed | 复制到领域服务、PDP/跨租户故障注入 |
-| `V2-B8-GW-004` | `services/api-gateway`、18087 端口登记、Gateway B8 tests | IAM canonical/legacy route、Resource Server Gate、伪造头清理、401/403 审计 | G-IDP 后启用、真实限流/直连/回滚 |
+| `V2-B8-GW-004` | `services/api-gateway`、18087 端口登记、Gateway B8 tests | IAM canonical/legacy route、Resource Server Gate、伪造头清理、401/403 审计 | G-IAM-JWT 后启用、真实限流/直连/回滚 |
 | `V2-B8-USR-005` | IAM adult Gate domain、V0016、B8 contracts | 成人 Gate 和 child/guardian/K12/minor-payment 禁止事实边界 | 注册/恢复/隐私 HTTP 与真实年龄证明 |
 | `V2-B8-FE-006` | 四端 session/auth 适配器、路由守卫、B8 frontend test、四端 build | Gateway 登录/刷新/登出/权限/恢复代码切片；官网只做公开入口 | 浏览器/App/iPad/小程序/弱网 |
 | `V2-B8-TEST-007` | `tests/b8/*.test.mjs` | 28/28 B8 静态契约、迁移、Gateway、IAM、PEP、前端 canonical 路径边界测试 | 完整浏览器/跨进程/真机旅程 |
 
-交接文档：[B8 验证交接](../../docs/07-operations/b8-validation.md)；身份提供方 Gate：[ADR-0011](../../docs/10-decisions/0011-oidc-idp-selection-gate.md)。
+交接文档：[B8 验证交接](../../docs/07-operations/b8-validation.md)；认证中心决策：[ADR-0013](../../docs/10-decisions/0013-self-owned-jwt-authentication-center.md)。
 
 ---
 
@@ -177,7 +177,7 @@ flowchart LR
 
 ### B9 执行记录（2026-08-22，代码层）
 
-本轮按“代码层完成后进入测试阶段”执行。7 项任务均已落地代码/契约/前端接入/逻辑测试切片；初始状态列保留为计划快照，以下记录是本轮实际交付，不把 Java 25/Maven、真实 Gateway、MySQL/Kafka/IdP、浏览器或真机运行态误报为完成。
+本轮按“代码层完成后进入测试阶段”执行。7 项任务均已落地代码/契约/前端接入/逻辑测试切片；初始状态列保留为计划快照，以下记录是本轮实际交付，不把 Java 25/Maven、真实 Gateway、MySQL/Kafka/IAM JWT、浏览器或真机运行态误报为完成。
 
 | 任务 | 代码层证据 | 本轮结果 | 测试阶段后续 |
 |---|---|---|---|
@@ -211,7 +211,7 @@ flowchart LR
 
 ### B10 执行记录（2026-08-22，代码层）
 
-本轮按“代码层完成后进入测试阶段”执行。8 项任务均已形成代码、契约、迁移、兼容适配或学习端交互测试切片；初始状态列保留为计划快照。当前机器使用 Java 24 且无 Maven，以下记录不把 Java 25/Spring Boot 运行态、真实 Gateway、MySQL/Kafka/IdP、浏览器或设备验收误报为完成。
+本轮按“代码层完成后进入测试阶段”执行。8 项任务均已形成代码、契约、迁移、兼容适配或学习端交互测试切片；初始状态列保留为计划快照。当前机器使用 Java 24 且无 Maven，以下记录不把 Java 25/Spring Boot 运行态、真实 Gateway、MySQL/Kafka/IAM JWT、浏览器或设备验收误报为完成。
 
 | 任务 | 代码层证据 | 本轮结果 | 测试阶段后续 |
 |---|---|---|---|
@@ -222,7 +222,7 @@ flowchart LR
 | `V2-B10-FE-005` | learner-web/mobile B10 API、store、词汇/SRS/阅读/练习/错题/报告页面 | Gateway 相对路径、幂等写、离线队列、空/失效/无权/恢复、UI locale/contentLocale 和主题/性能边界 | 浏览器/App/iPad/小程序交互、弱网、无障碍和真实会话恢复 |
 | `V2-B10-FE-006` | learner-web/mobile grammar/X-ray/paraphrase/error-correction/rule-writing 组件与页面 | 键盘/拖拽、草稿/断点、规则化反馈、答案保护和四级 Performance 降级入口 | 浏览器组件回放、触控/键盘可达性、真实内容版本和设备画质验收 |
 | `V2-B10-MIG-007` | `core-api` B10 compatibility adapter、B10 compatibility OpenAPI、V0018 `cmp_b10_*` ledger、fixture | B2/B3 只读 shadow、对账状态、配置版本、渐进 route、回滚状态机；回滚明确不改领域事实 | Java 17/Maven 集成、legacy/target 双读源、真实对账、Gateway 切换和故障回退 |
-| `V2-B10-TEST-008` | `tests/b10/*.test.mjs`、两端 B10 静态测试、两个服务 smoke、兼容 adapter smoke | 目标→练习→反馈→复习→报告的代码级边界、事件安全、迁移可重放和交互恢复证据已建立 | 浏览器/跨进程/数据库/Kafka/IdP/设备全链路测试 |
+| `V2-B10-TEST-008` | `tests/b10/*.test.mjs`、两端 B10 静态测试、两个服务 smoke、兼容 adapter smoke | 目标→练习→反馈→复习→报告的代码级边界、事件安全、迁移可重放和交互恢复证据已建立 | 浏览器/跨进程/数据库/Kafka/IAM JWT/设备全链路测试 |
 
 交接文档：[B10 验证交接](../../docs/07-operations/b10-validation.md)。
 
@@ -245,7 +245,7 @@ flowchart LR
 
 ### B11 执行记录（2026-08-22，代码层）
 
-本节追加本轮执行结果，不改写上表的“初始状态”事实。7 项任务均已完成代码层切片并具备逻辑/静态/构建证据，可进入测试阶段；Java 25/Spring Boot 运行态、真实 Gateway/IdP、MySQL/Kafka、对象存储、浏览器和真机联调仍按测试阶段处理。
+本节追加本轮执行结果，不改写上表的“初始状态”事实。7 项任务均已完成代码层切片并具备逻辑/静态/构建证据，可进入测试阶段；Java 25/Spring Boot 运行态、真实 Gateway/IAM JWT、MySQL/Kafka、对象存储、浏览器和真机联调仍按测试阶段处理。
 
 | 任务 | 代码层证据 | 本轮结果 | 测试阶段后续 |
 |---|---|---|---|
@@ -312,16 +312,16 @@ flowchart LR
 
 ### B13 执行记录（2026-08-22，代码层）
 
-本轮按“契约/迁移 → 服务边界 → Gateway → 四端交互 → 逻辑验证”完成 B13 代码层切片。支付真实渠道保持 Gate 关闭；官网只消费公开投影并安全跳转；admin-ops 只读聚合并转发命令，不复制 commerce、content 或 learner 领域事实。以下为本轮执行结果，不把 Java 25/Maven、真实支付、OIDC、Kafka、MySQL、浏览器或设备运行态误报为已验收。
+本轮按“契约/迁移 → 服务边界 → Gateway → 四端交互 → 逻辑验证”完成 B13 代码层切片。支付真实渠道保持 Gate 关闭；官网只消费公开投影并安全跳转；admin-ops 只读聚合并转发命令，不复制 commerce、content 或 learner 领域事实。以下为本轮执行结果，不把 Java 25/Maven、真实支付、自有 JWT、Kafka、MySQL、浏览器或设备运行态误报为已验收。
 
 | 任务 | 代码层证据 | 当前验收结论 |
 |---|---|---|
 | `V2-B13-COM-001` | `services/commerce-service`：SKU 版本、价格快照、订单、权益、激活码、退款、对账、tenant/owner PEP、Audit/Outbox seam；V0021 `com_b13_*` | 纯 Java smoke 通过；持久化 adapter、真实 HTTP/数据库留待测试阶段 |
 | `V2-B13-COM-002` | Provider port、sandbox HMAC 验签、金额/币种/订单绑定、重复回调、恢复/取消和 `PaymentGate` 默认关闭；服务侧 JWT/workload callback 边界 | 纯 Java smoke 通过；真实微信/支付宝/Apple provider 不在本轮启用 |
-| `V2-B13-ADM-003` | `services/admin-ops-service`：投影查询、权限/租户隔离、作者与操作者分离、审批二次确认、命令幂等、不可变审计；admin-web B13 订单/工单/指标页 | Pure Java smoke 通过；真实 OIDC、领域命令 adapter 和持久化留待测试阶段 |
+| `V2-B13-ADM-003` | `services/admin-ops-service`：投影查询、权限/租户隔离、作者与操作者分离、审批二次确认、命令幂等、不可变审计；admin-web B13 订单/工单/指标页 | Pure Java smoke 通过；真实 JWT、领域命令 adapter 和持久化留待测试阶段 |
 | `V2-B13-ANL-004` | `services/analytics-service`：B10/B12/B13 显式事件 allowlist、PII/支付/音频/答案字段拒绝、dedupe、指标投影、回放重算和写入幂等键 | B13 analytics smoke 通过；Kafka/worker durable 运行态留待测试阶段 |
 | `V2-B13-SUP-005` | admin-ops 支持工单、SLA、脱敏视图、MediaObjectRef 附件引用权限和通知命令 seam | admin-ops smoke 覆盖附件、SLA、越权、恢复和审计；真实 media/notification 联调留待测试阶段 |
-| `V2-B13-OFS-006` | `apps/official-site` 价格/权益/活动公开投影、状态降级、UTM 保留、OIDC/结算受控跳转；不创建订单、不调用支付写接口 | 官网子进程报告 5/5 B13、8/8 B7，Nuxt SSR build 通过；真实 Gateway/CDN/OIDC 留待测试阶段 |
+| `V2-B13-OFS-006` | `apps/official-site` 价格/权益/活动公开投影、状态降级、UTM 保留、自有登录/结算受控跳转；不创建订单、不调用支付写接口 | 官网子进程报告 5/5 B13、8/8 B7，Nuxt SSR build 通过；真实 Gateway/CDN/JWT 登录留待测试阶段 |
 | `V2-B13-FE-007` | learner-web/mobile 迁移 `/commerce` Gateway canonical 路径和 `payment-intents`；admin-web 接入订单/工单/指标只读投影和审批命令；继续共享 i18n/design-token | learner-web、admin-web build 与 mobile H5 build 通过；浏览器、App/小程序/真机矩阵留待测试阶段 |
 | `V2-B13-TEST-008` | `tests/b13` 契约、事件、V0021、三端 commerce 边界、官网只读、安全、服务幂等/脱敏/默认拒绝测试 | 12/12 通过；不替代跨进程、基础设施、支付和浏览器验收 |
 
@@ -397,28 +397,28 @@ flowchart LR
 
 ---
 
-## 13. B16 — Phase 1 Gateway、OIDC 与 IAM/RBAC 运行态（6 项）
+## 13. B16 — Phase 1 Gateway、自有 JWT Bearer 与 IAM/RBAC 运行态（6 项）
 
-**批次目标**：把 B8 的权限代码切片接入真实测试 IdP 和跨进程链路；Phase 1 只允许 18+ 成人与大学生，默认拒绝，不能创建 K12 主体事实。
+**批次目标**：把 B8 的权限代码切片接入平台自有 IAM JWT 和跨进程链路；Phase 1 只允许 18+ 成人与大学生，默认拒绝，不能创建 K12 主体事实。
 **主要引用**：`ARCH-GW-001`、`ARCH-IAM-001`、`ARCH-IAM-002`、`ARCH-SEC-001`。
 
 | 任务 ID | 代码/运行目标 | 服务/基础设施宿主 | 逻辑与运行态测试 | 依赖 | 初始状态 |
 |---|---|---|---|---|---|
 | V2-B16-GW-001 | 启动真实 Gateway `/api/v1` 路由、CORS、限流、requestId/traceId、错误 envelope 和直连阻断 | `services/api-gateway` | 路由、限流、Origin、超时、错误映射、直连拒绝和兼容回退测试 | B15 | 待开始 |
-| V2-B16-IDP-002 | 接入标准 OIDC/OAuth 2.1 测试 IdP：PKCE、JWKS、refresh rotation、会话撤销和密钥轮换 | `services/iam-service`、测试 IdP | 授权码、nonce/state、JWKS 缓存、重放、撤销、轮换和 IdP 不可用 fail-closed 测试 | 001 | 待开始 |
+| V2-B16-AUTH-002 | 建设平台自有账号密码 JWT：JWT/JWKS、refresh rotation、会话撤销和密钥轮换 | `services/iam-service`、IAM JWT | 账号密码、JWT issuer/audience/算法/过期、JWKS 缓存、刷新重放、撤销、轮换和认证中心不可用 fail-closed 测试 | 001 | 待开始 |
 | V2-B16-IAM-003 | 建立 principal、platform tenant、设备、会话、成人年龄 Gate、同意和审计事实的真实持久化 | `iam-service`、IAM schema | 重复登录、设备撤销、年龄缺失/未满 18、租户派生、注销和审计回放测试 | 002/B15-DATA-004 | 待开始 |
 | V2-B16-PEP-004 | 在 Gateway 与所有领域服务启用 Resource Server、RBAC+ABAC PEP、策略版本和安全缓存 | Gateway、服务模板、目标服务 | owner/phase/tenant/content-rights、401/403、过期策略和 PDP 不确定时拒绝测试 | 003 | 待开始 |
 | V2-B16-MTL-005 | 建立服务间 workload identity、mTLS/凭证边界、密钥轮换和伪造 authority 清理 | 服务间网络、Vault/KMS 测试替身 | 客户端角色头、tenant/owner 伪造、服务账号混用、证书过期和最小权限测试 | 004 | 待开始 |
-| V2-B16-TEST-006 | 建立 Gateway→IAM→PEP 的端到端权限回归包和 G-IDP 运行证据 | `tests/b16`、四端 auth seam | 登录/刷新/登出、权限拒绝、深链、跨租户、撤销和故障恢复浏览器/API 测试 | 001–005 | 待开始 |
+| V2-B16-TEST-006 | 建立 Gateway→IAM→PEP 的端到端权限回归包和 G-IAM-JWT 运行证据 | `tests/b16`、四端 auth seam | 登录/刷新/登出、权限拒绝、深链、跨租户、撤销和故障恢复浏览器/API 测试 | 001–005 | 待开始 |
 
 ### B16 执行记录（2026-08-23）
 
-本节记录本次实际开发，不覆盖上表的“初始状态”设计快照。B16 的 Gateway、OIDC/IAM、服务侧 PEP、workload identity 边界和静态回归入口已经整合完成；真实跨进程登录、刷新、注销、撤销、跨租户拒绝和故障恢复仍必须在 Java 25、Docker/等价基础设施以及合成/获批测试 IdP 就绪后取得运行证据，不能用静态通过替代。
+本节记录本次实际开发，不覆盖上表的“初始状态”设计快照。B16 的 Gateway、自有 JWT Bearer/IAM、服务侧 PEP、workload identity 边界和静态回归入口已经整合完成；真实跨进程登录、刷新、注销、撤销、跨租户拒绝和故障恢复仍必须在 Java 25、Docker/等价基础设施以及 IAM 测试账号就绪后取得运行证据，不能用静态通过替代。
 
 | 任务 | 当前状态 | 已交付 | 尚未取得的证据 |
 |---|---|---|---|
 | `V2-B16-GW-001` | 代码/静态完成；运行阻塞 | B16 Gateway 安全清单、固定端口、CORS/真实固定窗口限流/关联 ID/错误 envelope/伪造 authority 清理 | 真实 Gateway 路由、限流窗口、Origin、超时、直连阻断和兼容回退运行结果 |
-| `V2-B16-IDP-002` | 代码/逻辑测试完成；真实 IdP 阻塞 | OIDC/OAuth2.1 provider-neutral 边界、PKCE/state/nonce、JWKS 时效与轮换、refresh/session/revocation 测试替身 | 合成/获批测试 IdP 授权码、JWKS 缓存/轮换、刷新重放、IdP 故障 fail-closed 运行结果 |
+| `V2-B16-AUTH-002` | 代码/逻辑测试完成；IAM 运行阻塞 | 自有账号密码、RS256 JWT profile、JWKS 时效与轮换、refresh/session/revocation 测试替身 | IAM 测试账号登录、JWT/JWKS 缓存/轮换、刷新重放、认证中心故障 fail-closed 运行结果 |
 | `V2-B16-IAM-003` | 领域端口/逻辑完成；持久化运行阻塞 | principal/tenant/device/session/adult Gate/consent/audit 的服务边界与 Phase 1 18+ 约束 | 真实 IAM schema 持久化、重复登录、设备撤销、注销和审计回放结果 |
 | `V2-B16-PEP-004` | 代码/静态完成；运行阻塞 | Gateway 与 11 个领域服务 Resource Server/PEP、RBAC+ABAC、策略版本和默认拒绝边界 | 所有领域服务的 401/403、owner/phase/tenant/content-rights、过期策略和 PDP 不确定拒绝运行结果 |
 | `V2-B16-MTL-005` | 代码/静态完成；平台证书阻塞 | workload identity、mTLS/凭证边界、伪造 authority 清理和最小权限安全约束 | 证书过期、凭证轮换、服务账号混用和跨进程最小权限运行结果 |
@@ -442,7 +442,7 @@ flowchart LR
 
 ### B17 执行记录（2026-08-23）
 
-本节记录本次实际开发，不覆盖上表的“初始状态”设计快照。B17 已完成独立服务清单与 schema/凭据/端口边界、跨服务读写链路端口、平台投影边界、Outbox/事件去重重试/DLQ/replay/Saga 代码切片和合成旅程回归。真实 11 个 Java 25 服务、Gateway、MySQL、Kafka、IdP 和跨进程 E2E 仍受本机 Java 24、Maven/Docker 不可用及测试 IdP 未注入阻塞，不能以静态或 pure-Java smoke 代替运行证据。
+本节记录本次实际开发，不覆盖上表的“初始状态”设计快照。B17 已完成独立服务清单与 schema/凭据/端口边界、跨服务读写链路端口、平台投影边界、Outbox/事件去重重试/DLQ/replay/Saga 代码切片和合成旅程回归。真实 11 个 Java 25 服务、Gateway、MySQL、Kafka、IAM JWT 和跨进程 E2E 仍受本机 Java 24、Maven/Docker 不可用及测试账号未注入阻塞，不能以静态或 pure-Java smoke 代替运行证据。
 
 | 任务 ID | 当前状态 | 已交付证据 | 运行态剩余 |
 |---|---|---|---|
@@ -459,9 +459,9 @@ B18 已完成四端代码层联调骨架、真实 Gateway 客户端边界、恢�
 
 | 任务 ID | 当前状态 | 已取得证据 | 尚未取得的运行态证据 |
 |---|---|---|---|
-| `V2-B18-LRN-001` | 代码/静态完成；真实 API/浏览器阻塞 | 学习闭环页、课程页、路由守卫沿用、contentLocale、幂等复习/任务命令、恢复/权限/离线状态；learner-web typecheck/build 通过 | Gateway + OIDC 测试账号、真实 learner/content/learning/assessment、浏览器深链/登出/八态 |
+| `V2-B18-LRN-001` | 代码/静态完成；真实 API/浏览器阻塞 | 学习闭环页、课程页、路由守卫沿用、contentLocale、幂等复习/任务命令、恢复/权限/离线状态；learner-web typecheck/build 通过 | Gateway + IAM JWT 测试账号、真实 learner/content/learning/assessment、浏览器深链/登出/八态 |
 | `V2-B18-MOB-002` | 代码/静态完成；App/小程序/设备阻塞 | uni-app H5 build、secure storage 既有边界、移动复习队列/幂等命令、离线错误状态 | App/微信条件编译、真机媒体权限、后台恢复、四级画质和弱网 |
-| `V2-B18-ADM-003` | 代码/静态完成；真实 admin-ops 阻塞 | /support 权限守卫、最小权限、二次确认、脱敏字段、幂等命令、admin-web build | OIDC 最小权限账号、审批/重复命令/审计落盘和真实恢复任务 |
+| `V2-B18-ADM-003` | 代码/静态完成；真实 admin-ops 阻塞 | /support 权限守卫、最小权限、二次确认、脱敏字段、幂等命令、admin-web build | IAM JWT 最小权限账号、审批/重复命令/审计落盘和真实恢复任务 |
 | `V2-B18-OFS-004` | 代码/静态完成；公开投影运行阻塞 | 公告页、课程/价格/下载/合规公开投影、受控深链、SSR/预渲染 9 个页面入口 | Gateway public projection、断链/下载禁用/缓存恢复的浏览器证据 |
 | `V2-B18-DSN-005` | 代码/静态完成；视觉/设备阻塞 | 四端 i18n/theme 静态门禁、亮暗/系统/高对比、fallback/伪本地化、Token 适配；四端构建通过 | hydration 无闪烁、实际对比度、低配降级、浏览器/真机视觉检查 |
 | `V2-B18-TEST-006` | 合成矩阵/静态回归完成；真实联调阻塞 | tests/b18 7/7、四端固定 origin/合成账号矩阵、无凭证/无客户端权限事实、B18 bootstrap 静态门禁 | Playwright/浏览器、真实 API 账号矩阵、H5/App/小程序和恢复交互证据 |
@@ -502,12 +502,12 @@ B18 已完成四端代码层联调骨架、真实 Gateway 客户端边界、恢�
 
 ### B19 执行记录（2026-08-23）
 
-B19 已完成代码层系统测试基础：契约/生成客户端回归、合成学习闭环、浏览器与设备矩阵、弱网/性能/无障碍/i18n/theme 质量门禁、缺陷分级/回归选择/证据索引和报告 Schema。三组协作子进程均按要求使用 `gpt-5.6-luna / max`，主线已审查并整合；真实 Gateway、OIDC、Kafka、MySQL、浏览器、真机、读屏和性能工具仍保持 runtime blocked，不以静态 fixture 冒充运行通过。
+B19 已完成代码层系统测试基础：契约/生成客户端回归、合成学习闭环、浏览器与设备矩阵、弱网/性能/无障碍/i18n/theme 质量门禁、缺陷分级/回归选择/证据索引和报告 Schema。三组协作子进程均按要求使用 `gpt-5.6-luna / max`，主线已审查并整合；真实 Gateway、IAM JWT、Kafka、MySQL、浏览器、真机、读屏和性能工具仍保持 runtime blocked，不以静态 fixture 冒充运行通过。
 
 | 任务 ID | 当前状态 | 已取得证据 | 尚未取得的运行态证据 |
 |---|---|---|---|
 | `V2-B19-API-001` | 代码/静态完成；真实契约运行阻塞 | `b19-api-contract.test.mjs`、402 operations、476 schemas、144 events、5 generated files、0 breaking、错误 envelope、幂等键和 trace/schema 校验 | Gateway/真实服务契约请求、跨版本兼容和真实 trace |
-| `V2-B19-E2E-002` | 合成 E2E 完成；跨服务运行阻塞 | 登录→目标→学习→提交→判分→复习→报告→通知、幂等重放、失败补偿、事件回放、对账和客户端 authority 拒绝 | OIDC/Gateway/MySQL/Kafka/11 服务真实链路、Outbox/DLQ/回放 |
+| `V2-B19-E2E-002` | 合成 E2E 完成；跨服务运行阻塞 | 登录→目标→学习→提交→判分→复习→报告→通知、幂等重放、失败补偿、事件回放、对账和客户端 authority 拒绝 | IAM JWT/Gateway/MySQL/Kafka/11 服务真实链路、Outbox/DLQ/回放 |
 | `V2-B19-BRW-003` | 代码/静态矩阵完成；浏览器运行阻塞 | 4 应用、4 browser runtime、8 状态、18 场景、固定 origin、权限/键盘/响应式和 no-fake-pass evidence contract；浏览器矩阵 validator 通过 | Playwright Chromium/Edge/WebKit、原生 Safari、Console/页面错误和深链证据 |
 | `V2-B19-DEV-004` | 代码/静态矩阵完成；设备运行阻塞 | 9 device profiles 覆盖 H5/iOS/Android/iPad/PWA/微信小程序、secure storage、媒体权限、横竖屏、后台恢复、返回键 | 真机/模拟器/设备云安装升级、媒体权限和后台恢复 |
 | `V2-B19-QA-005` | 代码/静态质量门禁完成；专项运行阻塞 | 10 quality gates、24 evidence index、11 runtime pending；弱网、离线、LCP/INP、四级画质、读屏、对比度、i18n/theme、状态 fallback | 网络代理、Lighthouse/性能、真机画质、读屏/对比度和视觉证据 |
@@ -608,7 +608,7 @@ B22 已完成代码与静态上线/观察期 Gate 基础，三个协作子进程
 
 ### B23+ 后续 Phase 1 真实运行与实机测试
 
-B23–B27 共 32 项后续任务已单独建立并重新按用户目标排序：B23 负责标准 OIDC/IAM 注册登录与服务侧权限，B24 负责 H5/Web 全局登录门禁和登录后交互，B25 负责本地 MySQL 真实数据与学习闭环，B26 负责 Kafka/Outbox、跨服务和浏览器/H5 正式测试，B27 负责真机、专项质量、staging/RC/Go-No-Go/测试交接。B23–B25 是正式测试前的开发前置，B26 是正式测试主体，B27 是测试收口与上线门禁；它们是 B15–B22 运行态验收的延续，不改变 B0–B22 的历史执行记录。
+B23–B27 共 32 项后续任务已单独建立并重新按用户目标排序：B23 负责平台自有 IAM 账号密码登录、JWT Bearer/JWKS 与服务侧权限，B24 负责 H5/Web 全局登录门禁和登录后交互，B25 负责本地 MySQL 真实数据与学习闭环，B26 负责 Kafka/Outbox、跨服务和浏览器/H5 正式测试，B27 负责真机、专项质量、staging/RC/Go-No-Go/测试交接。B23–B25 是正式测试前的开发前置，B26 是正式测试主体，B27 是测试收口与上线门禁；它们是 B15–B22 运行态验收的延续，不改变 B0–B22 的历史执行记录。
 
 ---
 
@@ -681,8 +681,8 @@ B23–B27 共 32 项后续任务已单独建立并重新按用户目标排序：
 | B1–B6 | 代码/逻辑层通过 | B1 7/7、B2 14 pass + 3 TODO、B3 17/17、B4 6/6、B5 4/4、B6 4/4；外部服务、浏览器扩展、真机和弱网仍待测试 |
 | B7–B14 | 代码/逻辑层通过 | B7 28/28、B8 28/28、B9 6/6、B10 7/7、B11 4/4、B12 7/7、B13 12/12、B14 6/6；契约重新生成且兼容性 0 breaking |
 | B15 | 代码与静态预检完成，真实运行态阻塞 | `test:b15` 5/5、`b15:static` 通过；Java 25/Maven 已配置，Docker Desktop 后端未就绪，真实基础设施和 Java 服务尚未启动；详见 `b15-validation.md` |
-| B16 | 代码与静态回归完成，真实运行态阻塞 | `test:b16` 6/6、`b16:static` 通过；Java 25/Maven 已配置，真实 IdP、Docker、IAM 持久化、mTLS 和跨进程权限 evidence 未取得；详见 `b16-validation.md` |
-| B17 | 代码、静态门禁与合成回归完成，真实运行态阻塞 | `test:b17` 17/17、`b17:static`、11 服务 runtime manifest、读写链和事件可靠性边界通过；Docker/Kafka/IdP/跨进程 evidence 未取得，详见 `b17-validation.md` |
+| B16 | 代码与静态回归完成，真实运行态阻塞 | `test:b16` 6/6、`b16:static` 通过；Java 25/Maven 已配置，自有 IAM JWT、Docker、IAM 持久化、mTLS 和跨进程权限 evidence 未取得；详见 `b16-validation.md` |
+| B17 | 代码、静态门禁与合成回归完成，真实运行态阻塞 | `test:b17` 17/17、`b17:static`、11 服务 runtime manifest、读写链和事件可靠性边界通过；Docker/Kafka/IAM JWT/跨进程 evidence 未取得，详见 `b17-validation.md` |
 | B18 | 代码/静态联调完成，真实运行态阻塞 | `test:b18` 7/7、`b18:static`、四端构建和固定 origin/账号矩阵通过；详见 `b18-validation.md` |
 | B19 | 代码/静态系统测试基础完成，真实运行态阻塞 | `test:b19` 23/23、`b19:static`、契约生成/兼容、浏览器设备矩阵和质量门禁通过；详见 `b19-validation.md` |
 | B20 | 代码与静态 Gate 基础完成，真实运行态阻塞 | `test:b20` 22/22、`b20:static`、安全/隐私/内容/支付/灾备 validator 通过；运行 evidence、支付资质和恢复演练仍待取得，详见 `b20-validation.md` |
@@ -690,7 +690,7 @@ B23–B27 共 32 项后续任务已单独建立并重新按用户目标排序：
 | B22 | 代码与静态上线 Gate 基础完成，真实运行态阻塞 | `test:b22` 35/35、`b22:static`；REL 8/8、DATA 9/9、OPS/TEST 6/6 静态，生产切换/迁移/观察期/验收 evidence 未取得，详见 `b22-validation.md` |
 | 四个前端 | 已构建并完成开发服务烟测 | learner-web 18180、admin-web 18181、official-site 18182、mobile H5 18183 均 HTTP 200；页面浏览器烟测通过，移动 H5 空白页已修复 |
 | B23–B27 | 任务重设完成，尚未执行真实验收 | 共 32 项后续任务；B23 认证、B24 H5/Web 登录门禁、B25 本地真实数据、B26 Kafka/Outbox 与浏览器/H5 正式测试、B27 真机/专项质量/RC/交接均待开始；详见 B23+ 基线 |
-| 后端与基础设施 | 已取得本地运行 smoke，认证后闭环未完成 | Docker、MySQL、Redis、Kafka、MinIO 和后端服务 readiness 已有本地证据；真实 OIDC/JWKS、认证后 MySQL 业务写链、Kafka 业务 Topic/消费者和跨服务对账仍待 B23–B26 |
+| 后端与基础设施 | 已取得本地运行 smoke，认证后闭环未完成 | Docker、MySQL、Redis、Kafka、MinIO 和后端服务 readiness 已有本地证据；自有 IAM JWT/JWKS、认证后 MySQL 业务写链、Kafka 业务 Topic/消费者和跨服务对账仍待 B23–B26 |
 | Phase 1 当前结论 | B15–B22 代码/静态基础已完成，B23–B27 已规划；真实运行态与发布 Gate 阻塞，尚未上线 | 不能宣称全系统后端、真实基础设施、浏览器实机、真机、支付 sandbox、媒体、灾备、staging、RC、Go/No-Go、生产切换、迁移对账、观察期或 Phase 1 验收已完成 |
 
 ---
@@ -705,7 +705,7 @@ B23–B27 共 32 项后续任务已单独建立并重新按用户目标排序：
 
 1. **B15–B18 全部完成**：Java 25/Maven/Docker 或等价 CI 运行环境、Gateway/IAM/RBAC、目标服务独立进程、MySQL/Redis/Kafka/对象存储、Outbox、关键读写链路和四端真实 API 联调均有证据。
 2. **B19–B22 运行 Gate 全部完成**：契约/集成/E2E 基础、安全/隐私/内容/支付 sandbox、备份恢复、staging、不可变 RC、SLO/告警、回滚、迁移对账和上线方案均有真实证据；支付默认开关只有在资质批准后才能打开。
-3. **B23–B25 全部完成**：真实 OIDC 注册登录、H5/Web 全局登录门禁、成人 Gate、本地 MySQL 内容/学习/练习/测评/SRS/报告真实读写和刷新/重启/幂等证据齐全。
+3. **B23–B25 全部完成**：自有 IAM JWT Bearer 账号密码注册登录、H5/Web 全局登录门禁、成人 Gate、本地 MySQL 内容/学习/练习/测评/SRS/报告真实读写和刷新/重启/幂等证据齐全。
 4. **B26–B27 全部完成**：Kafka/Outbox 跨服务闭环、浏览器/H5 正式测试、缺陷回归、iOS/Android/iPad/PWA/小程序真机、专项质量、RC、Go/No-Go、测试报告和维护交接齐全。
 
 Phase 2/3 的 `G-P2`、`G-P3` 不属于 Phase 1 上线 Gate，也不能用 Phase 1 的完成替代。

@@ -37,12 +37,12 @@ runMysql({
   input: migration,
 });
 
-const oidcTransactionMigrationPath = path.join(root, 'services', 'iam-service', 'src', 'main', 'resources', 'db', 'migration', 'V2__create_oidc_authorization_transaction.sql');
+const jwtRuntimeMigrationPath = path.join(root, 'services', 'iam-service', 'src', 'main', 'resources', 'db', 'migration', 'V5__create_self_owned_jwt_auth_schema.sql');
 runMysql({
   mysqlArgs: ['--host', process.env.MYSQL_HOST ?? '127.0.0.1', '--port', process.env.MYSQL_PORT ?? '13306', '--user', user, '--database', schema, '--batch'],
   password: ownerPassword,
   cwd: root,
-  input: `SET collation_connection = 'utf8mb4_unicode_ci';\n${fs.readFileSync(oidcTransactionMigrationPath, 'utf8')}`,
+  input: `SET collation_connection = 'utf8mb4_unicode_ci';\n${fs.readFileSync(jwtRuntimeMigrationPath, 'utf8')}`,
 });
 
 const policyVersionMigrationPath = path.join(root, 'services', 'iam-service', 'src', 'main', 'resources', 'db', 'migration', 'V3__seed_b30_policy_version.sql');
@@ -60,19 +60,6 @@ runMysql({
   cwd: root,
   input: `SET collation_connection = 'utf8mb4_unicode_ci';\n${fs.readFileSync(consentHistoryMigrationPath, 'utf8')}`,
 });
-
-const hasProviderClientId = runMysql({
-  mysqlArgs: mysqlArgs(user, schema, "SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = 'iam_session' AND column_name = 'provider_client_id'"),
-  password: ownerPassword,
-  cwd: root,
-});
-if (Number(hasProviderClientId) === 0) {
-  runMysql({
-    mysqlArgs: mysqlArgs(user, schema, "ALTER TABLE iam_session ADD provider_client_id VARCHAR(128) NOT NULL DEFAULT 'default' AFTER provider_issuer"),
-    password: ownerPassword,
-    cwd: root,
-  });
-}
 
 const count = runMysql({ mysqlArgs: mysqlArgs(user, schema, 'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()'), password: ownerPassword, cwd: root });
 console.log(JSON.stringify({ status: 'PASS', schema, user, tableCount: Number(count) || 0, runtimeMode: process.env.MYSQL_RUNTIME_MODE ?? 'auto' }, null, 2));

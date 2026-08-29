@@ -377,8 +377,8 @@ const registerRows = sourceItems.map((item) => {
 fs.mkdirSync(traceDir, { recursive: true });
 fs.writeFileSync(path.join(traceDir, '03-PRD原子需求候选清单.md'), `# PRD 原子需求候选清单
 
-> 自动生成时间：${new Date().toISOString()}  
-> 生成器：scripts/audit/generate-prd-atomic-inventory.mjs  
+> 自动生成时间：${new Date().toISOString()}
+> 生成器：scripts/audit/generate-prd-atomic-inventory.mjs
 > 源文件：requirements/product-requirements.md
 
 ## 1. 统计口径
@@ -424,8 +424,8 @@ ${inventoryRows}
 
 fs.writeFileSync(path.join(traceDir, '04-原子功能设计登记册.md'), `# 原子功能设计登记册
 
-> 自动生成时间：${new Date().toISOString()}  
-> 生成器：scripts/audit/generate-prd-atomic-inventory.mjs  
+> 自动生成时间：${new Date().toISOString()}
+> 生成器：scripts/audit/generate-prd-atomic-inventory.mjs
 > 说明：本登记册将每条 PRD 原子候选证据绑定到 v2 设计包和统一设计维度；“已绑定”不等于代码已实现，必须继续通过 contracts、migration、测试和跨端 DoD。历史 Core API/v1 设计字段只表示迁移期兼容或术语参考；v2 任务必须填写目标服务 owner 和 ARCH-* 能力。
 
 ## 1. 设计签收字段

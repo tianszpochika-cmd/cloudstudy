@@ -70,7 +70,8 @@ public class AssessmentPersistenceConfiguration {
     AssessmentStatePort assessmentStatePort(JdbcTemplate jdbcTemplate,
                                             tools.jackson.databind.ObjectMapper objectMapper,
                                             AssessmentPersistenceProperties properties) {
-        return new JdbcAssessmentStatePort(jdbcTemplate, objectMapper, properties.getSchema());
+        return new JdbcAssessmentStatePort(jdbcTemplate, objectMapper, properties.getSchema(),
+                properties.isTolerateCorruptLegacyRows());
     }
 
     @Bean

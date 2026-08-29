@@ -1175,72 +1175,47 @@ export type B6ReleaseGateRequest = { releaseVersion: string; candidateBuildIds: 
 /**
  * Generated from the contract source.
  */
-export type B8ErrorEnvelope = { requestId: string; traceId: string; error: B8Error; };
+export type B8ErrorEnvelope = { requestId: string; error: B8Error; };
 
 /**
  * Generated from the contract source.
  */
-export type B8Error = { code: "invalid_request" | "unauthorized" | "forbidden" | "adult_gate_required" | "consent_required" | "session_revoked" | "policy_denied" | "idp_unavailable" | "conflict" | "not_found" | "rate_limited"; message: string; retryable: boolean; policyVersion?: string; details?: { [key: string]: unknown; }; };
+export type B8Error = { code: "invalid_request" | "unauthorized" | "forbidden" | "adult_gate_required" | "consent_required" | "session_revoked" | "policy_denied" | "account_locked" | "password_reset_invalid" | "rate_limited" | "conflict"; message: string; retryable: boolean; policyVersion?: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8AuthorizationStartResponse = { authorizationUrl: string; transactionId: string; provider: string; expiresAt: string; intent?: "login" | "register"; };
+export type B8SessionRevocationResponse = { sessionId: string; status: "REVOKED" | "ALREADY_REVOKED"; };
 
 /**
  * Generated from the contract source.
  */
-export type B8OidcCallbackRequest = { code?: string; state: string; redirectUri: string; error?: "access_denied" | "account_selection_required" | "consent_required" | "interaction_required" | "invalid_request" | "invalid_scope" | "login_required" | "server_error" | "temporarily_unavailable" | "unauthorized_client" | "unsupported_response_type"; errorDescription?: string; errorUri?: string; };
+export type B8PrincipalResponse = { principalId: string; tenantId: string; sessionId: string; deviceId: string; roles: ReadonlyArray<string>; permissions: ReadonlyArray<string>; authMode: "self-owned-jwt"; status?: "ACTIVE" | "RESTRICTED"; adultGate?: B8AdultGateResponse; consentState?: B8ConsentState; policyVersion?: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8OidcCallbackResponse = { session: B8SessionEstablishedResponse; principal: B8PrincipalResponse; adultGate: B8AdultGateResponse; consentState: B8ConsentState; };
+export type B8Device = { deviceId: string; deviceType: string; status: "ACTIVE" | "REVOKED"; lastActiveAt: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8SessionRefreshRequest = { refreshToken: string; };
+export type B8DeviceListResponse = { devices: ReadonlyArray<B8Device>; };
 
 /**
  * Generated from the contract source.
  */
-export type B8SessionTokenResponse = { accessToken: string; refreshToken: string; expiresIn: number; refreshExpiresIn: number; deviceId?: B8DeviceId; sessionId: B8SessionId; tokenType?: "Bearer"; issuer?: string; };
+export type B8AdultGateRequest = { confirmed: true; birthYear: number; policyVersion: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8SessionRevocationResponse = { sessionId: B8SessionId; status: "REVOKED"; revokedAt: string; };
+export type B8AdultGateResponse = { status: "PASSED" | "REJECTED"; effectiveAt: string; policyVersion?: string; retryAllowed?: boolean; };
 
 /**
  * Generated from the contract source.
  */
-export type B8PrincipalResponse = { principalId: string; subjectType: "ADULT_LEARNER"; provider: string; status: "ACTIVE" | "RESTRICTED" | "REVOKED"; adultGate: B8AdultGateResponse; consentState: B8ConsentState; policyVersion?: string; };
-
-/**
- * Generated from the contract source.
- */
-export type B8Device = { deviceId: B8DeviceId; sessionId: B8SessionId; platform: "ANDROID" | "IOS" | "WEB" | "PWA" | "MINIAPP"; status: "ACTIVE" | "REVOKED" | "RISK_REVIEW"; lastActiveAt: string; current: boolean; };
-
-/**
- * Generated from the contract source.
- */
-export type B8DeviceListResponse = { items: ReadonlyArray<B8Device>; total: number; };
-
-/**
- * Generated from the contract source.
- */
-export type B8AdultGateRequest = { birthYear: number; policyVersion: string; adultDeclaration: true; };
-
-/**
- * Generated from the contract source.
- */
-export type B8AdultGateResponse = { status: "PENDING" | "APPROVED" | "REJECTED"; policyVersion: string; evaluatedAt: string; retryAllowed?: boolean; };
-
-/**
- * Generated from the contract source.
- */
-export type B8Consent = { consentType: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; consentVersion: string; decision: "ACCEPTED" | "WITHDRAWN"; updatedAt: string; };
+export type B8Consent = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; decidedAt: string; };
 
 /**
  * Generated from the contract source.
@@ -1255,22 +1230,17 @@ export type B8ConsentListResponse = { items: ReadonlyArray<B8Consent>; };
 /**
  * Generated from the contract source.
  */
-export type B8ConsentUpdateRequest = { consentType: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; consentVersion: string; decision: "ACCEPTED" | "WITHDRAWN"; };
+export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; };
 
 /**
  * Generated from the contract source.
  */
-export type B8OidcProviderMetadata = { issuer: string; authorizationEndpoint: string; tokenEndpoint?: string; jwksUri: string; userinfoEndpoint?: string; codeChallengeMethods: ReadonlyArray<"S256">; codeChallengeMethodsSupported?: ReadonlyArray<"S256">; responseTypesSupported?: ReadonlyArray<"code">; grantTypesSupported?: ReadonlyArray<"authorization_code" | "refresh_token">; scopes?: ReadonlyArray<string>; scopesSupported?: ReadonlyArray<string>; subjectTypesSupported?: ReadonlyArray<"public">; idTokenSigningAlgValuesSupported?: ReadonlyArray<"RS256" | "RS384" | "RS512">; };
+export type B8JwksResponse = { keys: ReadonlyArray<{ kty: "RSA"; kid: string; use: "sig"; alg: "RS256" | "ES256"; n: string; e: string; }>; };
 
 /**
  * Generated from the contract source.
  */
-export type B8JwksResponse = { keys: ReadonlyArray<{ kid: string; kty: "RSA"; use: "sig"; alg: "RS256" | "RS384" | "RS512"; n: string; e: string; }>; };
-
-/**
- * 只提交待判定的动作和资源上下文；subject、tenant、owner、role、permission 和 consent 事实由验证后的 workload/principal 与服务端事实派生。
- */
-export type B8AuthorizationDecisionRequest = { action: string; resourceType: string; resourceId: string; phase: "P1" | "P2" | "P3"; contentRights?: "PUBLISHED" | "LICENSED" | "INTERNAL" | "UNKNOWN"; deviceTrust?: "TRUSTED" | "STANDARD" | "RISK_REVIEW" | "UNKNOWN"; consentRequirement?: "NONE" | "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; };
+export type B8AuthorizationDecisionRequest = { action: string; resourceType: string; resourceId: string; phase: "P1" | "P2" | "P3"; contentRights?: string; deviceTrust?: string; consentRequirement?: string; };
 
 /**
  * Generated from the contract source.
@@ -1290,7 +1260,7 @@ export type B8DeviceId = string;
 /**
  * Generated from the contract source.
  */
-export type B8PermissionsResponse = { principalId: string; roles: ReadonlyArray<string>; permissions: ReadonlyArray<string>; adultGate: B8AdultGateResponse; policyVersion?: string; };
+export type B8PermissionsResponse = { permissions: ReadonlyArray<string>; roles: ReadonlyArray<string>; policyVersion: string; };
 
 /**
  * Generated from the contract source.
@@ -2333,11 +2303,6 @@ export type B13RecomputeRequest = { metricCode: string; metricVersion: string; w
 export type B13RecomputeJob = { jobId: string; metricCode: string; state: "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED"; replayed: boolean; requestedAt: string; };
 
 /**
- * Product session fact created after the external IdP verifies the authorization code and ID token. Any credential fields are provider-issued relay values, never IAM-minted values; they are not persisted or logged by IAM.
- */
-export type B8SessionEstablishedResponse = { sessionId: B8SessionId; deviceId: B8DeviceId; provider: string; status: "ACTIVE"; establishedAt: string; expiresAt?: string; accessToken?: string; refreshToken?: string; accessTokenExpiresAt?: string; tokenType?: "Bearer"; issuer?: string; };
-
-/**
  * Generated from the contract source.
  */
 export type B25DataEnvelope = { source?: "mysql"; data?: unknown; [key: string]: unknown; };
@@ -2397,6 +2362,46 @@ export type B11ShadowingCompletionReceipt = { recordingId?: string | null; sourc
  */
 export type B25EnsureDailyTaskRequest = { contentCode: string; title: string; minutes?: number; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B8RegisterRequest = { identifier: string; password: string; device: B8DeviceInput; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8LoginRequest = { identifier: string; password: string; device: B8DeviceInput; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8RefreshRequest = { refreshToken?: string; deviceId?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8LogoutRequest = { allDevices?: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PasswordResetRequest = { identifier: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8PasswordResetConfirmRequest = { identifier: string; resetToken: string; newPassword: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8AuthTokenResponse = { accessToken: string; refreshToken?: string; tokenType: "Bearer"; expiresIn: number; refreshExpiresIn: number; sessionId: string; deviceId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B8DeviceInput = { deviceId?: string; deviceType: "IOS" | "ANDROID" | "WEB" | "H5" | "IPAD"; deviceName?: string; osVersion?: string; clientVersion: string; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -2417,7 +2422,6 @@ export interface CanonicalIdRegistry {
 
 export interface ApiOperationRegistry {
   getHealth: { method: "GET"; path: "/api/v1/health"; request: never; response: HealthResponse; idempotent: false };
-  refreshAuthSession: { method: "POST"; path: "/api/v1/auth/refresh"; request: AuthRefreshRequest; response: AuthRefreshResponse; idempotent: true };
   createContentEntity: { method: "POST"; path: "/api/v1/content"; request: B1CreateContentRequest; response: unknown; idempotent: true };
   createContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions"; request: B1CreateVersionRequest; response: unknown; idempotent: true };
   previewContentVersion: { method: "GET"; path: "/api/v1/content/{contentId}/versions/{versionId}/preview"; request: never; response: unknown; idempotent: false };
@@ -2437,12 +2441,9 @@ export interface ApiOperationRegistry {
   startPlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/start"; request: never; response: B1AssessmentStartResponse; idempotent: true };
   submitPlacementStep: { method: "POST"; path: "/api/v1/assessment/placement/submit-step"; request: B1AssessmentStepRequest; response: B1AssessmentStepResponse; idempotent: true };
   createPrivacyExport: { method: "POST"; path: "/api/v1/privacy/export"; request: B1PrivacyExportRequest; response: B1PrivacyExportResponse; idempotent: true };
-  sendB1SmsCode: { method: "POST"; path: "/api/v1/auth/sms/send-code"; request: B1SmsCodeRequest; response: B1AnyData; idempotent: true };
-  loginB1Phone: { method: "POST"; path: "/api/v1/auth/login/phone"; request: B1PhoneLoginRequest; response: B1AuthTokenResponse; idempotent: true };
-  registerB1Phone: { method: "POST"; path: "/api/v1/auth/register"; request: B1PhoneLoginRequest; response: B1AuthTokenResponse; idempotent: true };
-  logoutB1Session: { method: "POST"; path: "/api/v1/auth/logout"; request: B1LogoutRequest; response: B1AnyData; idempotent: true };
-  listB1AuthSessions: { method: "GET"; path: "/api/v1/auth/sessions"; request: never; response: B1AnyData; idempotent: false };
-  revokeB1AuthSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; request: never; response: B1AnyData; idempotent: true };
+  registerB8Account: { method: "POST"; path: "/api/v1/auth/register"; request: B8RegisterRequest; response: unknown; idempotent: true };
+  logoutB8JwtSession: { method: "POST"; path: "/api/v1/auth/logout"; request: B8LogoutRequest; response: unknown; idempotent: true };
+  revokeB8JwtSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; request: never; response: unknown; idempotent: true };
   getB1OnboardingOptions: { method: "GET"; path: "/api/v1/onboarding/options"; request: never; response: B1AnyData; idempotent: false };
   getB1OnboardingProfile: { method: "GET"; path: "/api/v1/onboarding/profile"; request: never; response: B1AnyData; idempotent: false };
   saveB1OnboardingProfile: { method: "POST"; path: "/api/v1/onboarding/profile"; request: B1OnboardingProfileRequest; response: B1AnyData; idempotent: true };
@@ -2654,22 +2655,14 @@ export interface ApiOperationRegistry {
   getB6DataReliabilityDrill: { method: "GET"; path: "/api/v1/data-reliability/drills/{drillId}"; request: never; response: unknown; idempotent: false };
   evaluateB6ReleaseGate: { method: "POST"; path: "/api/v1/release/gates/evaluate"; request: B6ReleaseGateRequest; response: unknown; idempotent: true };
   getB6ReleaseGate: { method: "GET"; path: "/api/v1/release/gates/{gateId}"; request: never; response: unknown; idempotent: false };
-  startB8OidcAuthorization: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/authorization/start"; request: never; response: B8AuthorizationStartResponse; idempotent: false };
-  completeB8OidcBrowserCallback: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/callback"; request: never; response: unknown; idempotent: false };
-  exchangeB8OidcCallback: { method: "POST"; path: "/api/v1/auth/oidc/{provider}/callback"; request: B8OidcCallbackRequest; response: B8OidcCallbackResponse; idempotent: true };
-  refreshB8IamSession: { method: "POST"; path: "/api/v1/iam/session/refresh"; request: B8SessionRefreshRequest; response: B8SessionTokenResponse; idempotent: true };
-  logoutB8IamSession: { method: "POST"; path: "/api/v1/iam/session/logout"; request: never; response: B8SessionRevocationResponse; idempotent: true };
-  revokeB8IamSession: { method: "POST"; path: "/api/v1/iam/sessions/{sessionId}/revoke"; request: never; response: B8SessionRevocationResponse; idempotent: true };
-  getB8CurrentPrincipal: { method: "GET"; path: "/api/v1/iam/principal/me"; request: never; response: B8PrincipalResponse; idempotent: false };
-  listB8IamDevices: { method: "GET"; path: "/api/v1/iam/devices"; request: never; response: B8DeviceListResponse; idempotent: false };
-  kickoutB8IamDevice: { method: "POST"; path: "/api/v1/iam/devices/{deviceId}/kickout"; request: never; response: B8SessionRevocationResponse; idempotent: true };
+  getB8Principal: { method: "GET"; path: "/api/v1/iam/principal/me"; request: never; response: B8PrincipalResponse; idempotent: false };
+  listB8Devices: { method: "GET"; path: "/api/v1/iam/devices"; request: never; response: B8DeviceListResponse; idempotent: false };
+  kickoutB8Device: { method: "POST"; path: "/api/v1/iam/devices/{deviceId}/kickout"; request: never; response: unknown; idempotent: true };
   evaluateB8AdultGate: { method: "POST"; path: "/api/v1/iam/adult-gate"; request: B8AdultGateRequest; response: B8AdultGateResponse; idempotent: true };
-  listB8IamConsents: { method: "GET"; path: "/api/v1/iam/consents"; request: never; response: B8ConsentListResponse; idempotent: false };
-  updateB8IamConsent: { method: "PUT"; path: "/api/v1/iam/consents"; request: B8ConsentUpdateRequest; response: B8Consent; idempotent: true };
-  getB8OidcProviderMetadata: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/metadata"; request: never; response: B8OidcProviderMetadata; idempotent: false };
-  getB8OidcProviderJwks: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/jwks"; request: never; response: B8JwksResponse; idempotent: false };
+  listB8Consents: { method: "GET"; path: "/api/v1/iam/consents"; request: never; response: B8ConsentListResponse; idempotent: false };
+  updateB8Consent: { method: "PUT"; path: "/api/v1/iam/consents"; request: B8ConsentUpdateRequest; response: B8Consent; idempotent: true };
   decideB8Authorization: { method: "POST"; path: "/internal/v1/iam/authorization/decisions"; request: B8AuthorizationDecisionRequest; response: B8AuthorizationDecisionResponse; idempotent: true };
-  getB8IamPermissions: { method: "GET"; path: "/api/v1/iam/permissions"; request: never; response: B8PermissionsResponse; idempotent: false };
+  getB8Permissions: { method: "GET"; path: "/api/v1/iam/permissions"; request: never; response: B8PermissionsResponse; idempotent: false };
   listB9PublicContentCatalog: { method: "GET"; path: "/api/v1/public/content/catalog"; request: never; response: B9PublicContentCatalogResponse; idempotent: false };
   getB9PublicContentProjection: { method: "GET"; path: "/api/v1/public/content/{contentCode}"; request: never; response: B9PublicContentProjectionResponse; idempotent: false };
   getB9OfficialSiteProjection: { method: "GET"; path: "/api/v1/public/site/projection"; request: never; response: B9PublicSiteProjectionResponse; idempotent: false };
@@ -2790,6 +2783,11 @@ export interface ApiOperationRegistry {
   updateB11MediaProgress: { method: "PUT"; path: "/api/v1/learning/media-progress"; request: B11MediaProgressRequest; response: B11MediaProgressReceipt; idempotent: true };
   updateB11ShadowingCompletion: { method: "POST"; path: "/api/v1/speaking/shadowing/completions"; request: B11ShadowingCompletionRequest; response: B11ShadowingCompletionReceipt; idempotent: true };
   b25EnsureDailyTaskPublic: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: unknown; idempotent: true };
+  loginB8Account: { method: "POST"; path: "/api/v1/auth/login"; request: B8LoginRequest; response: unknown; idempotent: true };
+  refreshB8JwtSession: { method: "POST"; path: "/api/v1/auth/token/refresh"; request: B8RefreshRequest; response: unknown; idempotent: true };
+  getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; request: never; response: unknown; idempotent: false };
+  requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; request: B8PasswordResetRequest; response: unknown; idempotent: true };
+  confirmB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/confirm"; request: B8PasswordResetConfirmRequest; response: unknown; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

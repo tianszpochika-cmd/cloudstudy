@@ -13,7 +13,7 @@
 
 ## 第 2 周：可运行骨架
 
-- 初始化四个前端项目、Java 25 服务模板、`api-gateway`、接入经 ADR 选择的标准 OIDC IdP 的 `iam-service`、MySQL/Redis 本地环境；旧 `core-api` 只作为兼容入口。
+- 初始化四个前端项目、Java 25 服务模板、`api-gateway`、提供账号密码登录和自有 JWT/JWKS 的 `iam-service`、MySQL/Redis 本地环境；旧 `core-api` 只作为兼容入口。
 - 跑通账号、目标选择、非 AI 测评、今日任务、词汇学习和练习提交。
 - 接入 Flyway 迁移、OpenAPI 生成、内容种子和基础鉴权。
 - 用合成数据完成：选目标 -> 背词 -> 提交 -> 复习入队 -> 报告。

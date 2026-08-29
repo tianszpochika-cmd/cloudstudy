@@ -45,7 +45,7 @@
 `pnpm b20:bootstrap --require-runtime` 按设计退出 1，没有把阻塞当作通过。当前阻塞包括：
 
 - 本机 Java 24，不满足 v2 Java 25；Maven 不可用；Docker 不可用；因此 B15/B17 的真实服务和基础设施前置不能通过。
-- B16 测试 IdP/JWKS/授权端点、B17 Kafka、B19 Gateway/账号矩阵/MySQL/浏览器/设备 evidence 变量尚未注入。
+- B16 测试 IAM JWT 认证中心/JWKS/授权端点、B17 Kafka、B19 Gateway/账号矩阵/MySQL/浏览器/设备 evidence 变量尚未注入。
 - B20 需要外部批准证据：`B20_RUNTIME_PRIVACY_EVIDENCE_REF`、`B20_RUNTIME_AUDIT_REPLAY_EVIDENCE_REF`、`B20_RUNTIME_CONTENT_EVIDENCE_REF`、`B20_RUNTIME_OFFICIAL_PROJECTION_EVIDENCE_REF`、`B20_RUNTIME_PAYMENT_SANDBOX`、`B20_RUNTIME_PAYMENT_QUALIFICATION`、`B20_RUNTIME_BACKUP_EVIDENCE_DIR`、`B20_RUNTIME_RESTORE_EVIDENCE_DIR`、`B20_RUNTIME_OBSERVABILITY_EVIDENCE`、`B20_RUNTIME_EVIDENCE_INDEX`。
 - 本轮没有执行真实支付、破坏性删除、生产备份恢复或生产故障注入；没有取得真实安全扫描、KMS/Vault、镜像签名、双人复核或风险接受记录。
 

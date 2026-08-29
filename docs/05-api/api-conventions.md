@@ -14,13 +14,27 @@
 
 ## 领域边界
 
-- iam-service：标准 OIDC IdP 集成、principal 映射、用户/租户/会话/设备、RBAC/ABAC 策略；不自研协议/Token 服务器。
+- iam-service：自有账号密码登录、JWT Bearer 签发、JWKS、公钥轮换、Refresh Token 会话边界、principal 映射、用户/租户/会话/设备、RBAC/ABAC 策略和撤销事实。
 - learner-service：目标、学习档案、偏好和 Onboarding。
 - content-service：已发布课程、版权、内容版本、题目/练习定义和答案规则版本；media-service：媒体元数据、转码和短期授权 URL。
 - learning-service：学习计划、SRS、复习队列、进度和 mastery_projection。
 - assessment-service：测评会话、练习提交、草稿/checkpoint、规则判分和报告快照；使用 content 的版本化题目快照。
 - commerce-service：订阅、订单、权益、支付回调和对账。
 - admin-ops-service：运营后台聚合、审批编排和审计关联，不复制领域事实。
+
+## 认证接口
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| POST | `/api/v1/auth/register` | 创建平台账号；角色、租户、owner、permission 由服务端生成 |
+| POST | `/api/v1/auth/login` | 账号密码校验并签发短时 JWT Access Token；Web 设置 HttpOnly Refresh Cookie |
+| POST | `/api/v1/auth/token/refresh` | 轮换 Refresh Token，检测重放并返回新的 Access Token |
+| POST | `/api/v1/auth/logout` | 撤销当前设备会话并清除 Cookie |
+| POST | `/api/v1/auth/sessions/{sessionId}/revoke` | 撤销经授权的设备会话 |
+| GET | `/api/v1/auth/jwks` | 发布当前 JWT 验签公钥；不需要登录 |
+| POST | `/api/v1/auth/password-reset/request` / `confirm` | 限流的一次性密码重置流程 |
+
+Access Token 的 `aud` 固定为 `yuxuexing-api`，最低声明为 `iss/sub/aud/exp/iat/nbf/jti/token_type/scope`；认证失败返回 401，身份有效但无资源权限返回 403。认证接口使用 TLS、幂等键（适用时）和稳定错误码，绝不在响应、日志或 URL 中回显密码或 Refresh Token。
 
 ## 事件
 

@@ -69,7 +69,8 @@ media:
 
 security:
   resource-server:
-    # G-IDP is a prerequisite. Disabled means every non-actuator request is denied.
-    enabled: ${MEDIA_SERVICE_RESOURCE_SERVER_ENABLED:false}
-    issuer-uri: ${MEDIA_SERVICE_SECURITY_ISSUER_URI:}
-    jwk-set-uri: ${MEDIA_SERVICE_SECURITY_JWK_SET_URI:}
+    # Every service independently verifies the IAM-owned JWT through JWKS.
+    enabled: ${MEDIA_SERVICE_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${MEDIA_SERVICE_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${MEDIA_SERVICE_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${MEDIA_SERVICE_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}

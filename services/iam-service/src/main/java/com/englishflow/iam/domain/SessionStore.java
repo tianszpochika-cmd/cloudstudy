@@ -27,4 +27,6 @@ public interface SessionStore {
     Optional<SessionRecord> revoke(SessionId sessionId, Instant at, String reason);
 
     List<SessionRecord> findByDevice(PrincipalId principalId, DeviceId deviceId);
+
+    List<SessionRecord> findByPrincipal(PrincipalId principalId);
 }

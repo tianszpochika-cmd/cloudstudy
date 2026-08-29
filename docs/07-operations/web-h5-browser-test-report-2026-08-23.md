@@ -8,7 +8,7 @@
 
 本轮 Web、官网、管理后台和 Mobile H5 已完成一轮真实浏览器测试，并对测试途中发现的问题直接修复后回归。公开页面、未登录边界、移动端主导航、目标设置、错误态、深链保护和构建均有证据。
 
-不能宣告“全系统浏览器测试通过”或“可以生产上线”：真实 OIDC 身份服务尚未获批，无法创建真实测试账户或取得有效 Token；Gateway 下游领域服务、MySQL/Kafka/Redis 等完整运行链路未启动。因此，登录后学习闭环、管理命令、跨服务写入、真实数据提交和权限矩阵仍属于阻塞/未覆盖，而不是用合成登录结果代替。
+不能宣告“全系统浏览器测试通过”或“可以生产上线”：真实 自有 JWT 登录 身份服务尚未获批，无法创建真实测试账户或取得有效 Token；Gateway 下游领域服务、MySQL/Kafka/Redis 等完整运行链路未启动。因此，登录后学习闭环、管理命令、跨服务写入、真实数据提交和权限矩阵仍属于阻塞/未覆盖，而不是用合成登录结果代替。
 
 ## 2. 运行环境与证据边界
 
@@ -28,7 +28,7 @@
 - `GET /actuator/health`（IAM）：HTTP `200`，状态 `UP`。
 - `GET /actuator/health`（Gateway）：HTTP `503`，状态 `DOWN`，原因是领域目标服务未全部运行。
 - `GET /api/v1/iam/principal/me`（Gateway）：HTTP `401`，返回结构化 `unauthorized`、`requestId` 和 `traceId`，默认拒绝生效。
-- 标准 OIDC authorization start 当前返回 HTTP `404`；浏览器点击 Gateway 深链还受到内置浏览器本地端口导航策略限制。没有绕过该限制，也没有伪造登录成功。
+- 标准 自有 JWT 登录 authorization start 当前返回 HTTP `404`；浏览器点击 Gateway 深链还受到内置浏览器本地端口导航策略限制。没有绕过该限制，也没有伪造登录成功。
 
 ## 3. 合成测试输入
 
@@ -39,7 +39,7 @@
 - 每日投入：`30 分钟`。
 - UI locale：`zh-CN`；content locale：`en-US`。
 
-由于测试 IdP 未获批，本轮没有注册真实账户、写入真实用户资料或制造 JWT/refresh token。目标表单提交只验证了本地草稿保留和服务端 `401` 的可解释处理。
+由于测试 IAM JWT 认证中心 未获批，本轮没有注册真实账户、写入真实用户资料或制造 JWT/refresh token。目标表单提交只验证了本地草稿保留和服务端 `401` 的可解释处理。
 
 ## 4. 浏览器测试结果
 
@@ -50,7 +50,7 @@
 | `OFS-001` | 打开首页，检查品牌、主导航、Hero、公开内容降级提示和 footer | PASS | 首页结构完整，Console error/warning 为 `[]` |
 | `OFS-002` | 依次打开 `/courses`、`/pricing`、`/download`、`/announcements`、`/about`、`/compliance` | PASS | 每页均有正确标题和 `main`，Console error/warning 为 `[]` |
 | `OFS-003` | 在课程页点击“入门阶段”筛选 | PASS | 筛选按钮进入 active 状态；公开数据不可用时保留明确 alert |
-| `OFS-004` | 检查“进入学习”及 CTA 的受控登录深链 | PARTIAL/BLOCKED | href 正确且带 `redirectUri`、`returnTo`、`uiLocale`、`theme`；真实 IdP/Gateway auth route 未就绪 |
+| `OFS-004` | 检查“进入学习”及 CTA 的受控登录深链 | PARTIAL/BLOCKED | href 正确且带 `returnTo`、`returnTo`、`uiLocale`、`theme`；真实 IAM JWT 认证中心/Gateway auth route 未就绪 |
 
 官网公开页没有读取登录后的学习数据，也没有把公开投影不可用伪装成课程内容。此前发现的 SSR hydration theme 不确定性已修复，重新打开的官网页面 Console 已清零。
 
@@ -60,7 +60,7 @@
 |---|---|---|---|
 | `LWR-001` | 直达 `/home`，观察冷启动、未登录保护和登录页 | PASS | 先显示安全启动状态，随后稳定进入登录边界，无空白页；Console `[]` |
 | `LWR-002` | 首页“开始学习” → 登录页 → “返回登录” | PASS | 两次导航均可完成，未产生客户端异常 |
-| `LWR-003` | 检查登录页的 Gateway 深链和“恢复已有会话” | PARTIAL/BLOCKED | 深链结构正确；OIDC 未配置，无法完成真实 callback/session restore |
+| `LWR-003` | 检查登录页的 Gateway 深链和“恢复已有会话” | PARTIAL/BLOCKED | 深链结构正确；自有 JWT 登录 未配置，无法完成真实 session restore |
 | `LWR-004` | 验证已登录 AppShell 页面内容渲染 | BLOCKED | 没有有效测试 Token，不能用假 Token 代替；AppShell 嵌套 RouterView 已改为外层 RouterView slot，并由 typecheck/build 验证 |
 
 学习 Web 的启动空白问题已修复：应用先挂载并显示短暂的安全恢复状态，路由恢复失败时进入明确的登录/错误边界。AppShell 不再嵌套一个会吞掉页面内容的 RouterView。
@@ -71,7 +71,7 @@
 |---|---|---|---|
 | `ADM-001` | 直达 `/dashboard`，检查启动和未登录路由守卫 | PASS | 显示“正在恢复管理员会话并检查权限”，随后进入登录页；Console `[]` |
 | `ADM-002` | 登录页“返回登录” | PASS | 回到后台登录边界，未出现空白或 Console error |
-| `ADM-003` | 检查 Gateway 登录链接 | PARTIAL/BLOCKED | href 和回跳参数存在；真实 IdP 未就绪，未执行伪造登录 |
+| `ADM-003` | 检查 Gateway 登录链接 | PARTIAL/BLOCKED | href 和回跳参数存在；真实 IAM JWT 认证中心 未就绪，未执行伪造登录 |
 | `ADM-004` | 进入登录后的教研/运营命令页面 | BLOCKED | 需要真实管理员 principal、RBAC/ABAC 决策和领域服务运行态 |
 
 ### 4.4 Mobile H5
@@ -96,7 +96,7 @@ H5 的深链修复通过两层完成：移动 API 客户端增加 Promise 级超
 4. Mobile H5 增加 `switchTab`/`navigateTo` 路由分流，修复 TabBar 页面跳转失败。
 5. Mobile H5 等待会话恢复后再加载受保护页面，消除冷启动竞态。
 6. Mobile Vite 增加 vue-router public entry 解析兼容，移除浏览器 Console 的 deprecated import warning。
-7. 移动 API 客户端增加默认 8 秒超时、Promise 级兜底和重复回调保护。
+7. 移动 API 客户端增加默认 8 秒超时、Promise 级兜底和重复请求保护。
 8. 401 学习请求统一转为登录语义；目标保存失败显示中文、可解释提示，不把 `Authentication is required.` 当作服务不可用或成功。
 9. B2 练习页增加直达深链的 mounted 会话守卫和登录回跳边界。
 
@@ -120,7 +120,7 @@ H5 的深链修复通过两层完成：移动 API 客户端增加 Promise 级超
 
 ## 7. 未覆盖、阻塞与下一步
 
-- **真实身份链路**：需要批准的 OIDC IdP、测试账号、JWKS、redirect URI 和可回收 session；完成后再测登录、登出、refresh、撤销、成人 Gate、RBAC/ABAC 和管理员权限矩阵。
+- **真实身份链路**：需要批准的 自有 JWT 登录 IAM JWT 认证中心、测试账号、JWKS、redirect URI 和可回收 session；完成后再测登录、登出、refresh、撤销、成人 Gate、RBAC/ABAC 和管理员权限矩阵。
 - **完整后端链路**：Gateway 当前能启动并正确返回 401，但健康检查因领域目标服务未全启动而为 `503 DOWN`；需要 Java 25/Maven、MySQL、Redis、Kafka 及各服务独立进程后，才能测真实读写、Outbox、事件、幂等、补偿和报告闭环。
 - **已认证页面**：learner-web 的学习首页/课程/练习/报告、admin-web 的教研/运营/客服命令尚未以真实 principal 验收；本轮没有用假 Token 取得“通过”。
 - **设备和响应式**：需要真实 Chrome/Firefox/Safari 矩阵、Android/iOS/iPad、微信小程序条件编译和真机触控/麦克风/弱网；当前内置 Browser 没有 viewport capability，不能替代设备验收。
@@ -138,7 +138,7 @@ H5 的深链修复通过两层完成：移动 API 客户端增加 Promise 级超
 | `H5-R2-002` | 精确点击“工作沟通”、`30 分钟`和 18+ 同意 | PASS | DOM 选中态同时显示 `工作沟通优先解决邮件、会议和日常表达。`、`30 分钟`；各交互后 Console 为 `[]` |
 | `H5-R2-003` | 提交目标，进入测评，再重新打开 onboarding | PASS（未登录降级） | 进入 `#/pages/assessment/assessment`；显示“请先登录后再保存学习目标”；重新打开后草稿仍恢复为工作沟通/30 分钟，未显示服务端成功假数据 |
 | `H5-R2-004` | 打开世界页，检查成长、奖励和社交 401 | PASS（修复后） | 将 B4/B12 的 HTTP 401 统一映射为权限态，显示中文登录引导和“去登录”，不再展示原始“请求失败（HTTP 401）” |
-| `H5-R2-005` | 点击“去登录”，再点击“返回学习首页” | PASS | 正确进入登录页，再返回首页；真实 IdP 未配置时明确显示不可伪造登录成功；Console 为 `[]` |
+| `H5-R2-005` | 点击“去登录”，再点击“返回学习首页” | PASS | 正确进入登录页，再返回首页；真实 IAM JWT 认证中心 未配置时明确显示不可伪造登录成功；Console 为 `[]` |
 | `H5-R2-006` | 直接打开 `#/pages/b2-practice/b2-practice` | PASS | 约 9 秒内进入登录页，不再无限停留在加载状态；Console 为 `[]` |
 
 本轮代码修复：
@@ -146,7 +146,7 @@ H5 的深链修复通过两层完成：移动 API 客户端增加 Promise 级超
 1. `B12RewardsCard` 和 `B12SocialExtensions` 将 401 与 403 统一纳入 permission 状态，提供登录入口并隐藏原始 HTTP 错误。
 2. 延续 B4 成长页的 401 权限态处理，保证成长/奖励/社交模块的错误语义一致。
 
-本轮能够证明的是：H5 页面交互、客户端本地草稿持久化、Gateway 401 到权限态的错误处理和登录边界可用；不能证明真实用户资料、目标、奖励或社交记录已经写入后端。真实 OIDC、领域服务 Controller/运行进程及 MySQL/Redis/Kafka 未就绪，因此本轮没有以本地假数据冒充服务端数据往返。
+本轮能够证明的是：H5 页面交互、客户端本地草稿持久化、Gateway 401 到权限态的错误处理和登录边界可用；不能证明真实用户资料、目标、奖励或社交记录已经写入后端。真实 自有 JWT 登录、领域服务 Controller/运行进程及 MySQL/Redis/Kafka 未就绪，因此本轮没有以本地假数据冒充服务端数据往返。
 
 ## 9. 第二轮构建与测试证据
 

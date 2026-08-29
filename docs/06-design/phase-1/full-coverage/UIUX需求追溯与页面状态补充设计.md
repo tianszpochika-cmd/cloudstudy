@@ -341,9 +341,9 @@
 
 | FEAT | 功能 | M | L | A | O | 入口 / 页面路由 | 状态 | Deep Link | 埋点 | 验收 |
 |---|---|---:|---:|---:|---:|---|---|---|---|---|
-| FEAT-USR-001 | SMS OTP | ✓ | ✓ | — | — | onboarding/welcome 登录面板（具体 auth 子路由未冻结） | ST-A | onboarding/welcome?auth=sms | auth_sms_send、auth_phone_login、auth_account_auto_created | A8：验证码限流、过期、错误、合并账号和回到原目标可验证 |
-| FEAT-USR-002 | 微信开放平台/小程序授权 | ✓ | — | — | — | onboarding/welcome 登录面板；M 统一条件编译 | ST-A | onboarding/welcome?auth=wechat&return=... | auth_oauth_start、wechat_verify、identity_bind | A8：M 的 H5/App/MP 入口统一，绑定冲突和取消授权可恢复 |
-| FEAT-USR-003 | Apple 登录 | ✓ | — | — | — | onboarding/welcome 登录面板 | ST-A | onboarding/welcome?auth=apple&return=... | auth_apple_verify、apple_login、jwk_refresh | A8：Apple identity 校验、重复绑定、取消和目标恢复可验证 |
+| FEAT-USR-001 | 自有账号密码注册与登录 | ✓ | ✓ | — | — | login 登录面板（具体 auth 子路由由契约冻结） | ST-A | login?return=... | auth_register、auth_login、auth_password_error、auth_account_locked | A8：账号/IP/设备限流、密码错误、锁定、注册和回到原目标可验证 |
+| FEAT-USR-002 | 小程序平台能力边界 | ✓ | — | — | — | login 登录面板；M 统一条件编译 | ST-A | login?return=... | auth_login、platform_capability_denied | A8：平台能力不替换自有 IAM，未通过 Gate 时保持拒绝且可恢复 |
+| FEAT-USR-003 | 移动端安全登录边界 | ✓ | — | — | — | login 登录面板 | ST-A | login?return=... | auth_login、secure_storage_unavailable、session_restore | A8：Keychain/Keystore 不可用时拒绝保存 Refresh Token，登录和目标恢复可验证 |
 | FEAT-USR-004 | JWT refresh | ✓ | ✓ | — | — | 所有受保护页面的全局会话层 | ST-J/N | 任一受保护 Deep Link；原目标保留 | auth_refresh_attempt/success/failure/reuse_detected | A8：刷新/复用检测失败不丢当前目标，不把服务端失败显示为学习完成 |
 | FEAT-USR-005 | 设备列表与踢出 | ✓ | ✓ | A（风险处置） | — | me/settings | ST-J | me/settings?panel=devices&deviceId=... | auth_device_list、kick_submit/result、logout_others | A8：设备、最近活动、踢出/全端退出和再次认证可验证 |
 | FEAT-USR-006 | 资料编辑 | ✓ | ✓ | — | — | me/home、me/settings | ST-A/J | me/home?panel=profile | user_profile_view/update/conflict | A8：资料校验、冲突、离线草稿和成功回读一致 |
@@ -439,7 +439,7 @@
 | 口语 Phase 1 | 48 音标 manifest、固定 roleplay、shadowing 校准；明确无 ASR、LLM、AI 分数、RTC | 示范、录音、自评、固定脚本、权限和 fallback | 需要能力开关和审计保证“无 AI”；否则不得把服务端能力暴露成 UI |
 | 社群实时 | WebSocket snapshot、座位 lease、心跳、在线状态、断线重连、异常排行榜 | 显示 stale、重连、自动释放和最后快照 | 需要实时协议、版本/游标、租约和异常策略；UI 不能判定在线或占座 |
 | 同步/离线 | cursor、push/pull、冲突解决、事件重放、重置游标、包校验 | 显示队列、冲突、重试、恢复和只读缓存 | 需要冲突模型、优先级、数据保留、幂等键和最终回执 |
-| 认证/隐私 | OTP、OAuth/Apple JWK、JWT refresh reuse、设备踢出、删除/匿名化执行 | 显示权限、重新认证、冷静期、取消和结果 | 需要 token/设备/身份绑定协议、删除任务和审计/保留边界；UI 不能自己“删除成功” |
+| 认证/隐私 | 账号密码哈希、JWT refresh reuse、JWKS、设备踢出、删除/匿名化执行 | 显示权限、重新认证、冷静期、取消和结果 | 需要 Token/设备绑定协议、密码重置、删除任务和审计/保留边界；UI 不能自己“删除成功” |
 | 商业化 | 渠道资质、支付 callback/JWS、订单状态机、退款、恢复购买、对账、家庭权益 | 显示资格、价格、pending、失败、订单查询和关闭原因 | P1 支付默认 OFF；需 sandbox、资质、退款、对账、回滚、审计全部通过后才能打开 CTA |
 | 奖励安全 | seedCommit/HMAC、概率版本、免费箱确定性结果、重复转碎片、禁止现金交易 | 显示来源、概率/历史、动画 fallback、结果和补偿 | 需要服务端随机/审计证明和不可篡改事件；UI 不得实现开奖或发奖励 |
 | 安全合规 | 前置敏感拦截、后置核验、版权/来源、审计、隐私字段最小化 | 显示 blocked、review、permission denied、下线和人工入口 | 需要规则版本、双审角色、覆盖关系和证据包；没有后端决定时不能提供“已发布/已合规” |

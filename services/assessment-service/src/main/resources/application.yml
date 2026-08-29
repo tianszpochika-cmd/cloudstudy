@@ -60,6 +60,7 @@ assessment:
     username: ${ASSESSMENT_DB_USERNAME:}
     password: ${ASSESSMENT_DB_PASSWORD:}
     driver-class-name: ${ASSESSMENT_DB_DRIVER:com.mysql.cj.jdbc.Driver}
+    tolerate-corrupt-legacy-rows: ${ASSESSMENT_TOLERATE_CORRUPT_LEGACY_ROWS:false}
   security:
     default-deny: ${ASSESSMENT_DEFAULT_DENY:true}
   scoring:
@@ -67,7 +68,8 @@ assessment:
 
 security:
   resource-server:
-    # The real IdP/JWKS gate is a later runtime step; absence of it never creates a local bypass.
-    enabled: ${ASSESSMENT_RESOURCE_SERVER_ENABLED:false}
-    issuer-uri: ${ASSESSMENT_SECURITY_ISSUER_URI:}
-    jwk-set-uri: ${ASSESSMENT_SECURITY_JWK_SET_URI:}
+    # Every service independently verifies the IAM-owned JWT through JWKS.
+    enabled: ${ASSESSMENT_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${ASSESSMENT_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${ASSESSMENT_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${ASSESSMENT_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}

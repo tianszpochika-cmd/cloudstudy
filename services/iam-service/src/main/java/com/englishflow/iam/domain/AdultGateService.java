@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Phase 1 adult-only gate. It accepts only trusted server/verified IdP evidence plus explicit
+ * Phase 1 adult-only gate. It accepts only trusted server-side evidence plus explicit
  * adult confirmation. It has no child, guardian, K12 or payment repository by design.
  */
 public final class AdultGateService {

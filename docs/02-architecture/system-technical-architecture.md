@@ -62,7 +62,7 @@ official-site          learner-web             admin-web              mobile (un
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                     数据持久化与缓存集群                                         │
 │  - MySQL 8.x：核心业务关系型数据库（MyBatis-Plus + Flyway 迁移，表前缀物理隔离）                  │
-│  - Redis 7.x：用户 Token、学习状态缓存、实时排行榜 (ZSet)、分布式锁与轻量队列                    │
+│  - Redis 7.x：会话/撤销短期投影、学习状态缓存、实时排行榜 (ZSet)、分布式锁与轻量队列        │
 │  - 对象存储 (OSS/S3)：音频语料、长难句切片、3D 资产、用户发音录音                                │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -83,7 +83,7 @@ official-site          learner-web             admin-web              mobile (un
    - 选型：`Vue 3 + Vite + Element Plus`。
 4. **`apps/mobile` (统一 uni-app 学习端)**：
    - 目标：移动端核心体验载体，输出移动 H5、iOS App、Android App 和 iPad；微信小程序作为 P1.5 条件编译目标。
-   - 核心优势：原生音频后台连续播放、锁屏控制台、系统级日历/打卡推送、微信一键登录与微信/Apple 支付。
+   - 核心优势：原生音频后台连续播放、锁屏控制台、系统级日历/打卡推送，以及通过平台自有认证中心建立安全会话。
    - 选型：`Vue 3 + TypeScript + uni-app`。
 
 ---
@@ -93,7 +93,7 @@ official-site          learner-web             admin-web              mobile (un
 目标服务按 DDD bounded context 划分。每个服务拥有自己的 API、schema、迁移、缓存命名空间、事件契约和发布责任；低流量服务可以共享部署资源，但不得共享写模型。
 
 - **`services/api-gateway`**：Spring Cloud Gateway Server WebFlux；外部路由、`/api/v1` 版本、限流、request/trace 上下文和 JWT 预校验，不写领域事实。
-- **`services/iam-service`**：OIDC/OAuth 2.1、用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略、撤销和密钥轮换。
+- **`services/iam-service`**：自有账号密码认证、RS256/ES256 JWT Bearer 会话、JWKS 公钥发布、用户、租户、设备、会话、角色、权限、RBAC/ABAC 策略、Refresh Token 轮换/重放检测/撤销和密钥轮换。
 - **`services/learner-service`**：用户学习档案、目标、偏好、Onboarding 和个人学习设置。
 - **`services/content-service`**：课程、词汇、语法、题库、媒体引用、版本、版权、审核和发布。
 - **`services/learning-service`**：每日学习流、SRS、复习调度、进度和学习闭环事实。

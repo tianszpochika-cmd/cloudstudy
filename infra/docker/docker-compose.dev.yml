@@ -103,53 +103,6 @@ services:
     networks:
       - yuxuexing-local
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.7.1
-    restart: unless-stopped
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${OIDC_BOOTSTRAP_ADMIN_USERNAME:-local-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${OIDC_BOOTSTRAP_ADMIN_PASSWORD:-change-me-local-only}
-      KC_HEALTH_ENABLED: "true"
-      KC_HTTP_MANAGEMENT_HEALTH_ENABLED: "true"
-      KC_HTTP_MANAGEMENT_PORT: 9000
-      KC_HTTP_PORT: 8080
-      KC_HOSTNAME: ${OIDC_IDP_HOSTNAME:-http://127.0.0.1:18099}
-      KC_HOSTNAME_STRICT: "false"
-      OIDC_REALM_NAME: ${OIDC_REALM:-yuxuexing-local}
-      OIDC_AUDIENCE: ${OIDC_API_AUDIENCE:-yuxuexing-api}
-      OIDC_LEARNER_WEB_CLIENT_ID: ${B23_OIDC_LEARNER_WEB_CLIENT_ID:-yuxuexing-learner-web}
-      OIDC_ADMIN_WEB_CLIENT_ID: ${B23_OIDC_ADMIN_WEB_CLIENT_ID:-yuxuexing-admin-web}
-      OIDC_MOBILE_H5_CLIENT_ID: ${B23_OIDC_MOBILE_H5_CLIENT_ID:-yuxuexing-mobile-h5}
-      OIDC_MOBILE_APP_CLIENT_ID: ${OIDC_MOBILE_APP_CLIENT_ID:-yuxuexing-mobile-app}
-      OIDC_LEARNER_WEB_REDIRECT_URI: ${B23_OIDC_LEARNER_WEB_REDIRECT_URIS:-http://127.0.0.1:18180/auth/callback}
-      OIDC_ADMIN_WEB_REDIRECT_URI: ${B23_OIDC_ADMIN_WEB_REDIRECT_URIS:-http://127.0.0.1:18181/auth/callback}
-      OIDC_MOBILE_H5_REDIRECT_URI: ${B23_OIDC_MOBILE_H5_REDIRECT_URIS:-http://127.0.0.1:18183/auth/callback}
-      OIDC_MOBILE_APP_REDIRECT_URI: ${OIDC_REDIRECT_URI_MOBILE_APP:-englishflow://auth/callback}
-      OIDC_LEARNER_WEB_ORIGIN: ${B18_LEARNER_TEST_ORIGIN:-http://127.0.0.1:18180}
-      OIDC_ADMIN_WEB_ORIGIN: ${B18_ADMIN_TEST_ORIGIN:-http://127.0.0.1:18181}
-      OIDC_MOBILE_H5_ORIGIN: ${B18_MOBILE_TEST_ORIGIN:-http://127.0.0.1:18183}
-    command:
-      - start-dev
-      - --import-realm
-    ports:
-      - "127.0.0.1:${OIDC_IDP_HOST_PORT:-18099}:8080"
-    volumes:
-      - yuxuexing-keycloak:/opt/keycloak/data
-      - ./keycloak/realm:/opt/keycloak/data/import:ro
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - >-
-          exec 3<>/dev/tcp/127.0.0.1/9000;
-          printf 'HEAD /health/ready HTTP/1.0\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3;
-          grep -q 'HTTP/1.0 200' <&3
-      interval: 10s
-      timeout: 5s
-      retries: 30
-      start_period: 45s
-    networks:
-      - yuxuexing-local
-
   kafka:
     image: apache/kafka:3.9.2
     restart: unless-stopped
@@ -219,7 +172,6 @@ volumes:
   yuxuexing-mysql:
   yuxuexing-redis:
   yuxuexing-minio:
-  yuxuexing-keycloak:
   yuxuexing-kafka:
   yuxuexing-rabbitmq:
 

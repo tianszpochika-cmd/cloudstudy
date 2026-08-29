@@ -107,7 +107,7 @@ function infrastructure() {
   const names = docker('ps', ['--format', '{{.Names}}']).split(/\r?\n/).filter(Boolean)
   const expected = [
     'yuxuexing-local-mysql-1', 'yuxuexing-local-redis-1', 'yuxuexing-local-kafka-1',
-    'yuxuexing-local-minio-1', 'yuxuexing-local-keycloak-1',
+    'yuxuexing-local-minio-1',
   ]
   for (const name of expected) assert(names.includes(name), `required local container is not running: ${name}`, names)
   const redis = spawnSync('docker', ['exec', 'yuxuexing-local-redis-1', 'redis-cli', '-p', '6379', 'PING'], { encoding: 'utf8', windowsHide: true })

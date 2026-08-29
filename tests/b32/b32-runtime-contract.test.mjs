@@ -31,24 +31,24 @@ test('B32 Redis registry declares a rebuildable SRS projection', () => {
   assert.equal(entry.ttl.seconds, 86400);
 });
 
-test('B32 local OIDC registration cannot edit authority-bearing attributes', () => {
-  const realm = JSON.parse(readFileSync('infra/docker/keycloak/realm/yuxuexing-local-realm.json', 'utf8'));
-  assert.equal(realm.userProfile?.unmanagedAttributePolicy, 'ADMIN_EDIT');
-  for (const attribute of realm.userProfile?.attributes ?? []) {
-    if (!['tenant_id', 'device_id', 'permissions'].includes(attribute.name)) continue;
-    assert.deepEqual(attribute.permissions, { view: ['admin'], edit: ['admin'] });
-  }
+test('B32 self-owned registration cannot edit authority-bearing attributes', () => {
+  const contract = JSON.parse(readFileSync('packages/contracts/fragments/b8/b8-auth-iam.openapi.json', 'utf8'));
+  const registration = contract.components.schemas.B8RegisterRequest;
+  assert.deepEqual(registration['x-client-authority-fields'], []);
+  assert.equal(registration.additionalProperties, false);
+  const runtime = JSON.parse(readFileSync('config/local-jwt-auth.json', 'utf8'));
+  assert.deepEqual(runtime.security.serverDerives, ['subject', 'tenant', 'owner', 'role', 'permission']);
 });
 
-test('B32 local OIDC claims match service-side canonical security facts', () => {
-  const oidc = readFileSync('scripts/runtime/ensure-local-oidc-test-user.mjs', 'utf8');
+test('B32 JWT claims match service-side canonical security facts', () => {
+  const auth = readFileSync('scripts/runtime/lib/self-owned-jwt-auth.mjs', 'utf8');
   const social = readFileSync('services/social-service/src/main/java/com/englishflow/social/security/SocialJwtAuthenticationConverter.java', 'utf8');
   const learnerScope = readFileSync('services/learner-service/src/main/java/com/englishflow/learner/domain/LearnerTenantScope.java', 'utf8');
   const learnerFactory = readFileSync('services/learner-service/src/main/java/com/englishflow/learner/web/VerifiedLearnerPrincipalFactory.java', 'utf8');
-  assert.match(oidc, /local-account-status/);
-  assert.match(oidc, /account_status: \['ACTIVE'\]/);
+  assert.match(auth, /decodeJwtPayload/);
+  assert.match(auth, /token_type/);
   assert.match(social, /consent_state/);
   assert.match(social, /account_status/);
-  assert.match(learnerScope, /VERIFIED_OIDC_SUBJECT/);
-  assert.match(learnerFactory, /validExternalSubject/);
+  assert.match(learnerScope, /VERIFIED_JWT_SUBJECT/);
+  assert.match(learnerFactory, /validJwtSubject/);
 });

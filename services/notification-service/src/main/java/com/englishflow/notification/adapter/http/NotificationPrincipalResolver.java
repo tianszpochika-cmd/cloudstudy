@@ -35,7 +35,7 @@ public final class NotificationPrincipalResolver {
                         ? value.substring(value.indexOf('_') + 1) : value)
                 .collect(Collectors.toCollection(HashSet::new));
         // Permissions are accepted only from provider-signed JWT claims.  The default
-        // Spring converter exposes scope/role authorities, but a local/enterprise IdP may
+        // Spring converter exposes scope/role authorities, but the IAM JWT may
         // publish an explicit permissions array instead; clients cannot submit this claim.
         permissions.addAll(claimValues(jwt, "permissions"));
         return new NotificationPrincipalContext(tenantId, principalId, deviceId, authorities, permissions);

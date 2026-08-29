@@ -50,7 +50,7 @@
 
         <!--
           Resource Server is deliberately present as a replaceable seam only. The
-          template keeps it disabled until the G-IDP gate passes and issuer/JWKS
+          template keeps it disabled until the JWT runtime Gate passes and issuer/JWKS
           configuration is supplied; it never treats client headers as identity.
         -->
         <dependency>

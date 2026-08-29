@@ -1,182 +1,29 @@
 import crypto from 'node:crypto'
-import { spawnSync } from 'node:child_process'
-import path from 'node:path'
+import { decodeJwtPayload, gatewayRequest as jwtGatewayRequest, fail } from './lib/self-owned-jwt-auth.mjs'
 
 // This probe exercises the same public Gateway paths used by the learner Web
 // and Mobile H5 API wrappers. It keeps all credentials and token material in
 // memory and only prints boolean/status evidence.
 const gateway = process.env.B36_GATEWAY ?? 'http://127.0.0.1:18070'
-const issuer = process.env.OIDC_ISSUER_URI ?? 'http://127.0.0.1:18099/realms/yuxuexing-local'
-const realm = process.env.OIDC_REALM ?? 'yuxuexing-local'
-const adminUsername = process.env.OIDC_BOOTSTRAP_ADMIN_USERNAME ?? 'local-admin'
-const adminPassword = process.env.OIDC_BOOTSTRAP_ADMIN_PASSWORD ?? 'change-me-local-only'
 const runId = process.env.B36_FRONTEND_READ_RUN_ID ?? `b36-frontend-read-${new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14)}`
 
-function fail(message, details = undefined) {
-  const error = new Error(message)
-  error.details = details
-  throw error
-}
-
-async function bodyOf(response) {
-  const text = await response.text()
-  if (!text) return null
-  try { return JSON.parse(text) } catch { return text.slice(0, 200) }
-}
-
-async function request(url, options = {}) {
-  const response = await fetch(url, options)
-  const body = await bodyOf(response)
-  if (!response.ok) fail(`HTTP ${response.status} ${url}`, { status: response.status, body })
-  return { status: response.status, body, headers: response.headers }
-}
-
-async function adminToken() {
-  const form = new URLSearchParams({ username: adminUsername, password: adminPassword, grant_type: 'password', client_id: 'admin-cli' })
-  const result = await request('http://127.0.0.1:18099/realms/master/protocol/openid-connect/token', {
-    method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: form,
-  })
-  if (!result.body?.access_token) fail('local OIDC admin token was not issued')
-  return result.body.access_token
-}
-
-function adminHeaders(token) { return { authorization: `Bearer ${token}`, 'content-type': 'application/json' } }
-
-async function ensureUser(token) {
-  const username = `${runId}-learner`
-  const password = `${crypto.randomBytes(18).toString('base64url')}Aa9!`
-  await request(`http://127.0.0.1:18099/admin/realms/${realm}/users`, {
-    method: 'POST', headers: adminHeaders(token),
-    body: JSON.stringify({ username, enabled: true, email: `${username}@local.invalid`, emailVerified: true,
-      firstName: 'B36', lastName: 'FrontendReadRuntime', credentials: [{ type: 'password', value: password, temporary: false }] }),
-  })
-  const found = await request(`http://127.0.0.1:18099/admin/realms/${realm}/users?username=${encodeURIComponent(username)}&exact=true`, { headers: adminHeaders(token) })
-  const user = Array.isArray(found.body) ? found.body[0] : null
-  if (!user?.id) fail('B36 disposable learner was not created')
-  return { username, password }
-}
-
-function runNode(script, env = {}) {
-  return spawnSync(process.execPath, [path.join(process.cwd(), script)], {
-    cwd: process.cwd(),
-    env: { ...process.env, ...env },
-    encoding: 'utf8',
-    windowsHide: true,
-  })
-}
-
-function lastJsonLine(stdout) {
-  const line = String(stdout ?? '').trim().split(/\r?\n/).filter(Boolean).at(-1)
-  if (!line) return null
-  try { return JSON.parse(line) } catch { return null }
-}
-
-function provisionLocalUser(user) {
-  const claims = runNode('scripts/runtime/ensure-local-oidc-test-user.mjs', {
-    OIDC_TEST_USERNAME: user.username,
-    OIDC_TEST_DEVICE_ID: 'local-browser',
-  })
-  if (claims.status !== 0) fail(`local claims provisioning failed for ${user.username}`, String(claims.stderr ?? '').slice(-1000))
-  const ready = lastJsonLine(claims.stdout)
-  if (!ready?.subject) fail(`local claims provisioning returned no subject for ${user.username}`)
-
-  const fixture = runNode('scripts/database/seed-local-real-all.mjs', { LOCAL_TEST_SUBJECT: ready.subject })
-  if (fixture.status !== 0) fail(`local fixture provisioning failed for ${user.username}`, String(fixture.stderr ?? '').slice(-1000))
-  return { ...ready, fixture: lastJsonLine(fixture.stdout) }
-}
-
-class CookieJar {
-  #cookies = new Map()
-  accept(headers) {
-    const values = typeof headers.getSetCookie === 'function' ? headers.getSetCookie() : (headers.get('set-cookie') ? [headers.get('set-cookie')] : [])
-    for (const value of values) {
-      const first = value.split(';', 1)[0]
-      const index = first.indexOf('=')
-      if (index > 0) this.#cookies.set(first.slice(0, index), first.slice(index + 1))
-    }
-  }
-  header() { return [...this.#cookies.entries()].map(([name, value]) => `${name}=${value}`).join('; ') }
-}
-
-function htmlAttribute(tag, name) { return tag.match(new RegExp(`${name}\\s*=\\s*["']([^"']*)["']`, 'i'))?.[1] ?? null }
-function htmlDecode(value) { return value.replaceAll('&amp;', '&').replaceAll('&quot;', '"').replaceAll('&#x27;', "'").replaceAll('&#39;', "'") }
-
-function loginForm(html) {
-  const match = html.match(/<form\b[^>]*id=["']kc-form-login["'][^>]*>[\s\S]*?<\/form>/i)
-    ?? html.match(/<form\b[^>]*>[\s\S]*?<input[^>]+name=["']username["'][\s\S]*?<\/form>/i)
-  if (!match) return null
-  const formTag = match[0].match(/<form\b[^>]*>/i)?.[0]
-  const action = formTag ? htmlDecode(htmlAttribute(formTag, 'action') ?? '') : ''
-  if (!action) return null
-  const fields = new URLSearchParams()
-  for (const input of match[0].matchAll(/<input\b[^>]*>/gi)) {
-    const tag = input[0]
-    const name = htmlAttribute(tag, 'name')
-    if (!name) continue
-    const type = (htmlAttribute(tag, 'type') ?? 'text').toLowerCase()
-    if (type === 'submit' || type === 'button') continue
-    fields.set(name, htmlDecode(htmlAttribute(tag, 'value') ?? ''))
-  }
-  return { action, fields }
-}
-
 async function gatewayRequest(token, path, options = {}) {
-  const headers = { ...(token ? { authorization: `Bearer ${token}` } : {}), accept: 'application/json',
-    'x-request-id': `${runId}-${options.operation ?? 'read'}`.slice(0, 120),
-    'x-trace-id': crypto.createHash('sha256').update(`${runId}:trace`).digest('hex').slice(0, 32),
-    ...(options.body === undefined ? {} : { 'content-type': 'application/json' }),
-    ...(options.idempotencyKey ? { 'idempotency-key': options.idempotencyKey } : {}) }
-  const response = await fetch(`${gateway}${path}`, { method: options.method ?? 'GET', headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body) })
-  return { status: response.status, body: await bodyOf(response), requestId: response.headers.get('x-request-id'), traceId: response.headers.get('x-trace-id') }
+  return jwtGatewayRequest(token, path, { ...options, origin: gateway, runId,
+    traceId: crypto.createHash('sha256').update(`${runId}:trace`).digest('hex').slice(0, 32) })
 }
 
-async function startAuthorization() {
-  const redirectUri = 'http://127.0.0.1:18180/auth/callback'
-  const query = new URLSearchParams({ intent: 'login', redirectUri, returnTo: '/home', uiLocale: 'zh-CN', theme: 'system' })
-  const result = await gatewayRequest(null, `/api/v1/auth/oidc/standard-oidc/authorization/start?${query}`, { operation: 'authorization-start' })
-  if (result.status !== 200 || typeof result.body?.authorizationUrl !== 'string') fail('authorization start did not return a local URL')
-  return { authUrl: result.body.authorizationUrl, state: new URL(result.body.authorizationUrl).searchParams.get('state'), redirectUri }
-}
-
-async function authorizationCode(authUrl, user) {
-  const jar = new CookieJar()
-  let url = authUrl
-  let method = 'GET'
-  let body
-  let submitted = false
-  for (let attempt = 0; attempt < 10; attempt += 1) {
-    const headers = { accept: 'text/html,application/xhtml+xml' }
-    const cookie = jar.header()
-    if (cookie) headers.cookie = cookie
-    const response = await fetch(url, { method, headers, body, redirect: 'manual' })
-    jar.accept(response.headers)
-    if (response.status >= 300 && response.status < 400) {
-      const location = response.headers.get('location')
-      if (!location) fail('OIDC login redirect omitted location')
-      const next = new URL(location, url)
-      if (next.origin === 'http://127.0.0.1:18180' && next.pathname === '/auth/callback') return new URL(next)
-      url = next.toString(); method = 'GET'; body = undefined; continue
-    }
-    const html = await response.text()
-    if (response.status !== 200) fail(`OIDC login form failed: HTTP ${response.status}`)
-    const form = loginForm(html)
-    if (!form || submitted) fail('OIDC login form was not accepted')
-    form.fields.set('username', user.username); form.fields.set('password', user.password)
-    url = new URL(form.action, url).toString(); method = 'POST'; body = form.fields; submitted = true
-  }
-  fail('OIDC authorization flow exceeded redirect limit')
-}
-
-async function establishSession(user) {
-  const start = await startAuthorization()
-  const callback = await authorizationCode(start.authUrl, user)
-  const result = await gatewayRequest(null, '/api/v1/auth/oidc/standard-oidc/callback', {
-    method: 'POST', operation: 'authorization-callback', idempotencyKey: `${runId}-callback`,
-    body: { code: callback.searchParams.get('code'), state: start.state, redirectUri: start.redirectUri },
+async function establishSession() {
+  const identifier = `${runId}-learner@example.invalid`
+  const password = `${crypto.randomBytes(18).toString('base64url')}Aa9!`
+  const response = await jwtGatewayRequest(null, '/api/v1/auth/register', {
+    origin: gateway, method: 'POST', platform: 'ANDROID', runId, operation: 'account-register',
+    idempotencyKey: `${runId}-register`,
+    body: { identifier, password, device: { deviceId: crypto.randomUUID(), deviceType: 'ANDROID', deviceName: 'b36-read', osVersion: 'test', clientVersion: 'local' } },
   })
-  if (result.status !== 200 || !result.body?.session?.accessToken) fail('OIDC callback did not return a session')
-  return result.body.session.accessToken
+  if (response.status !== 201 || !response.body?.accessToken) fail('IAM account registration did not return a JWT session')
+  const claims = decodeJwtPayload(response.body.accessToken)
+  if (claims.aud !== 'yuxuexing-api' || claims.token_type !== 'access') fail('IAM JWT claims did not satisfy the access-token contract')
+  return { token: response.body.accessToken, subject: claims.sub }
 }
 
 function unwrap(value) {
@@ -209,10 +56,8 @@ async function probe(token, name, path, options = {}, expected = [200]) {
   return result
 }
 
-const admin = await adminToken()
-const user = await ensureUser(admin)
-const localAuthority = provisionLocalUser(user)
-const token = await establishSession(user)
+const localAuthority = await establishSession()
+const token = localAuthority.token
 const query = (path, values) => `${path}?${new URLSearchParams(values).toString()}`
 
 // Auth, learner read models and published course/content projections.

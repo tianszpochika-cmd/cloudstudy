@@ -28,4 +28,4 @@ javac --release 24 -encoding UTF-8 -d $out $files
 java -cp $out com.englishflow.learning.LearningDomainSmoke
 ```
 
-验证结果应为 `learning-service B10-LRN-001 smoke: PASS`。工作站当前使用 Java 24 且没有 Maven，因此本轮不声称 Spring、MySQL、Kafka、Gateway、OIDC 或生产部署运行态已经完成；Java 25 编译和真实持久化适配仍需目标工具链/运行环境验收。
+验证结果应为 `learning-service B10-LRN-001 smoke: PASS`。工作站当前使用 Java 24 且没有 Maven，因此本轮不声称 Spring、MySQL、Kafka、Gateway、JWT 或生产部署运行态已经完成；Java 25 编译和真实持久化适配仍需目标工具链/运行环境验收。

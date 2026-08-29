@@ -19,7 +19,7 @@ import java.time.ZoneOffset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Dependency-free B12-GAM-001 smoke; no Spring, database, Kafka or IdP. */
+/** Dependency-free B12-GAM-001 smoke; no Spring, database, Kafka or login provider. */
 public final class GamificationServiceSmoke {
 
     private static final Instant NOW = Instant.parse("2026-08-22T12:00:00Z");

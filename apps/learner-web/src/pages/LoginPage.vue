@@ -1,51 +1,45 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { authT } from '../auth/i18n'
 import { safeReturnTo } from '../auth/gateway-auth'
 import { useSessionStore } from '../stores/session'
 
 const route = useRoute()
+const router = useRouter()
 const session = useSessionStore()
-const redirectTarget = computed(() => safeReturnTo(route.query.redirect ?? session.peekReturnTo()))
-const loginUrl = ref('')
+const identifier = ref('')
+const password = ref('')
+const submitting = ref(false)
 const loginError = ref<string | null>(null)
-const preparing = ref(false)
-const callbackError = computed(() => {
-  if (typeof route.query.error === 'string') {
-    return route.query.error === 'access_denied' ? authT('login.cancelled') : authT('login.failed')
-  }
-  return session.authErrorCode === 'SESSION_EXPIRED' ? authT('session.expired') : null
-})
-const statusTitle = computed(() => {
-  if (loginError.value) return authT('login.unavailable')
-  if (loginUrl.value) return authT('login.ready')
-  return authT('login.pending')
-})
+const redirectTarget = computed(() => safeReturnTo(route.query.redirect ?? session.peekReturnTo()))
+
 const statusDescription = computed(() => {
-  if (loginError.value) return authT('login.retryHint')
-  if (loginUrl.value) return authT('login.readyDescription')
-  return authT('login.preparingDescription')
+  if (loginError.value) return loginError.value
+  if (submitting.value) return authT('login.submitting')
+  return authT('login.formHint')
 })
 
-async function prepareLogin(): Promise<void> {
-  if (preparing.value) return
-  preparing.value = true
+async function submit(): Promise<void> {
+  if (submitting.value) return
   loginError.value = null
-  loginUrl.value = ''
+  if (!identifier.value.trim() || !password.value) {
+    loginError.value = authT('login.required')
+    return
+  }
+  submitting.value = true
   session.setReturnTo(redirectTarget.value)
   try {
-    loginUrl.value = await session.prepareLogin(redirectTarget.value)
-  } catch (error) {
-    loginError.value = error instanceof Error && /cancel|denied/i.test(error.message)
-      ? authT('login.cancelled')
-      : authT('error.network')
+    const ok = await session.login(identifier.value, password.value)
+    if (!ok) {
+      loginError.value = session.lastError || authT('login.failed')
+      return
+    }
+    await router.replace(session.adultGate === 'REQUIRED' ? { name: 'onboarding' } : session.consumeReturnTo())
   } finally {
-    preparing.value = false
+    submitting.value = false
   }
 }
-
-onMounted(() => { void prepareLogin() })
 </script>
 
 <template>
@@ -57,20 +51,41 @@ onMounted(() => { void prepareLogin() })
       </div>
       <h1 id="login-title">{{ authT('login.title') }}</h1>
       <p class="lead">{{ authT('login.description') }}</p>
-      <div class="login-status" :class="{ 'login-status--error': loginError }" :role="loginError ? 'alert' : 'status'" aria-live="polite" :aria-busy="preparing">
-        <span class="login-status__mark" aria-hidden="true">{{ loginError ? '!' : '✦' }}</span>
-        <div>
-          <strong>{{ statusTitle }}</strong>
-          <p>{{ statusDescription }}</p>
+      <form class="login-form" novalidate @submit.prevent="submit">
+        <label class="field">
+          <span>{{ authT('login.identifier') }}</span>
+          <input
+            v-model="identifier"
+            name="identifier"
+            type="text"
+            autocomplete="username"
+            inputmode="email"
+            :placeholder="authT('login.identifierPlaceholder')"
+            :disabled="submitting"
+          >
+        </label>
+        <label class="field">
+          <span>{{ authT('login.password') }}</span>
+          <input
+            v-model="password"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            :placeholder="authT('login.passwordPlaceholder')"
+            :disabled="submitting"
+          >
+        </label>
+        <div class="login-status" :class="{ 'login-status--error': loginError }" :role="loginError ? 'alert' : 'status'" aria-live="polite" :aria-busy="submitting">
+          <span class="login-status__mark" aria-hidden="true">{{ loginError ? '!' : '✦' }}</span>
+          <div>
+            <strong>{{ loginError ? authT('login.unavailable') : authT('login.ready') }}</strong>
+            <p>{{ statusDescription }}</p>
+          </div>
         </div>
-      </div>
-      <p v-if="callbackError" class="error-text" role="alert">{{ callbackError }}</p>
-      <div class="login-card__actions">
-        <a v-if="loginUrl" class="button button--primary" :href="loginUrl">{{ authT('login.start') }}</a>
-        <button v-else class="button button--primary" type="button" :disabled="preparing" @click="prepareLogin">
-          {{ preparing ? authT('login.preparing') : authT('login.retry') }}
+        <button class="button button--primary" type="submit" :disabled="submitting">
+          {{ submitting ? authT('login.submitting') : authT('login.start') }}
         </button>
-      </div>
+      </form>
       <p class="micro-copy">{{ authT('login.afterLogin') }}</p>
     </section>
   </main>

@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "mode": "self-owned-jwt",
+  "issuer": "http://127.0.0.1:18087",
+  "audience": "yuxuexing-api",
+  "algorithm": "RS256",
+  "jwksUri": "http://127.0.0.1:18087/api/v1/auth/jwks",
+  "tokenEndpoint": "/api/v1/auth/login",
+  "refreshEndpoint": "/api/v1/auth/token/refresh",
+  "logoutEndpoint": "/api/v1/auth/logout",
+  "revokeEndpoint": "/api/v1/auth/sessions/{sessionId}/revoke",
+  "passwordResetEndpoints": {
+    "request": "/api/v1/auth/password-reset/request",
+    "confirm": "/api/v1/auth/password-reset/confirm"
+  },
+  "accessToken": {
+    "tokenType": "access",
+    "requiredClaims": ["iss", "sub", "aud", "exp", "iat", "nbf", "jti", "token_type", "scope", "roles", "permissions", "tenant_id", "session_id"],
+    "maxLifetime": "15m"
+  },
+  "refreshToken": {
+    "type": "opaque",
+    "rotation": "every-use",
+    "storage": "sha256-digest-only",
+    "replay": "revoke-token-family-and-device-session",
+    "webTransport": "HttpOnly-Secure-SameSite-cookie",
+    "nativeTransport": "Keychain-or-Keystore-only"
+  },
+  "clients": {
+    "learner-web": { "mode": "account-password", "accessTokenStorage": "memory" },
+    "admin-web": { "mode": "account-password", "accessTokenStorage": "memory" },
+    "mobile": { "mode": "account-password", "accessTokenStorage": "memory", "refreshTokenStorage": "Keychain-or-Keystore" },
+    "official-site": { "mode": "public-login-link-only", "storesBusinessToken": false }
+  },
+  "security": {
+    "passwordHash": "bcrypt-cost-12-or-stronger",
+    "loginRateLimit": "per-identifier-and-client-ip",
+    "failedLoginLockout": "5-failures-15-minutes",
+    "resetToken": "one-time-opaque-short-lived-digest-only",
+    "serverDerives": ["subject", "tenant", "owner", "role", "permission"],
+    "productionPrivateKey": "secret-manager-or-mounted-secret-only"
+  }
+}

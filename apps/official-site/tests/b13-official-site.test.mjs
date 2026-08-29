@@ -6,7 +6,7 @@ import test from 'node:test'
 
 import {
   appendCampaignParams,
-  buildGatewayAuthLink,
+  buildLearnerLoginLink,
   buildLearnerLink,
   preserveCampaignParams,
   safePublicHref,
@@ -43,14 +43,12 @@ test('B13 公开链接只允许受控 origin，并保留 UTM 而不接受 open r
   })
   assert.equal(appendCampaignParams('/pricing?intent=review', { utm_medium: 'email' }), '/pricing?intent=review&utm_medium=email')
   assert.match(buildLearnerLink('https://study.example.test', '/pricing', { skuId: 'sku-pro', utm_source: 'site' }), /skuId=sku-pro/)
-  assert.match(buildGatewayAuthLink('https://api.example.test/api/v1', {
+  assert.match(buildLearnerLoginLink('https://study.example.test', {
     returnTo: 'https://evil.example/checkout',
-    redirectUri: 'https://study.example.test/auth/callback',
     campaignParams: { utm_source: 'official' },
   }), /returnTo=%2Fhome/)
-  assert.match(buildGatewayAuthLink('https://api.example.test/api/v1', {
+  assert.match(buildLearnerLoginLink('https://study.example.test', {
     returnTo: '/pricing?intent=review',
-    redirectUri: 'https://study.example.test/auth/callback',
     campaignParams: { utm_source: 'official' },
   }), /utm_source=official/)
 })

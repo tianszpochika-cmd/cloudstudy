@@ -64,8 +64,12 @@ function validateOpenApi(document) {
   let operationCount = 0;
   const securitySchemes = document.components.securitySchemes ?? {};
   assert(isRecord(securitySchemes.bearerAuth), 'OpenAPI bearerAuth security scheme is required');
-  assert(isRecord(securitySchemes.B8WorkloadIdentity), 'OpenAPI B8WorkloadIdentity security scheme is required');
+  assert(isRecord(securitySchemes.B8ServiceIdentity), 'OpenAPI B8ServiceIdentity security scheme is required');
+  assert(document['x-b8-authentication']?.mode === 'self-owned-jwt-authentication-center', 'self-owned JWT authentication metadata is required');
+  assert(document['x-b8-authentication']?.accessToken?.audience === 'yuxuexing-api', 'JWT audience must be yuxuexing-api');
+  assert(document['x-b8-authentication']?.accessToken?.algorithm === 'RS256' || document['x-b8-authentication']?.accessToken?.algorithm === 'ES256', 'JWT algorithm must be RS256 or ES256');
   for (const [route, pathItem] of Object.entries(document.paths)) {
+    assert(!/\/auth\/oidc\b/i.test(route), `retired external authentication route must not exist: ${route}`);
     assert(route.startsWith('/api/v1/') || route.startsWith('/internal/v1/'), `route must use /api/v1 or /internal/v1 prefix: ${route}`);
     assert(isRecord(pathItem), `path item must be an object: ${route}`);
     for (const [method, operation] of Object.entries(pathItem)) {
@@ -77,7 +81,7 @@ function validateOpenApi(document) {
       operationIds.set(operation.operationId, `${method.toUpperCase()} ${route}`);
       assertRefsResolve(document, operation, `${method.toUpperCase()} ${route}`);
       if (route.startsWith('/internal/v1/')) {
-        assert(Array.isArray(operation.security) && operation.security.length > 0, `${method.toUpperCase()} ${route} must require workload identity`);
+        assert(Array.isArray(operation.security) && operation.security.length > 0, `${method.toUpperCase()} ${route} must require service identity`);
       }
       if ((operation.tags ?? []).some((tag) => String(tag).toLowerCase().startsWith('b8-'))) {
         assert(Array.isArray(operation.security), `${method.toUpperCase()} ${route} needs an explicit security declaration`);

@@ -17,8 +17,8 @@
 ## 已验证范围
 
 - `pnpm b36:gate-runtime`：最新 `b36-20260825154433` 两轮均检查 14 个后端 readiness、四个前端固定端口和官网 Gateway 真实投影，结果 PASS；脚本自身的认证旅程字段仍按 fail-closed 规则为 `WAITING_USER_CONFIRMATION`，认证后页面证据由 `b36-browser-2026082516` 单独记录。
-- `pnpm b35:regression-runtime`：未认证 401、伪造角色/租户/所有者头拒绝、Gateway→content-service MySQL 投影、MySQL/Redis/Kafka/MinIO/Keycloak 运行状态通过；
-- `pnpm b31:learner-runtime`：`b31-learner-2026082513`；真实授权码会话下成人 Gate、同意、目标、偏好写入/重放/读回、重新建立会话读回和 IAM/learner MySQL 对账通过；
+- `pnpm b35:regression-runtime`：未认证 401、伪造角色/租户/所有者头拒绝、Gateway→content-service MySQL 投影、MySQL/Redis/Kafka/MinIO 运行状态通过；新的 IAM JWT 认证后回归待复测；
+- `pnpm b31:learner-runtime`：历史会话结果不计入当前验收；需用 IAM 账号密码登录重新验证成人 Gate、同意、目标、偏好写入/重放/读回和 IAM/learner MySQL 对账；
 - `pnpm b35:persistence-runtime`：`b35-persistence-2026082513`；完整 Java 服务重启后 IAM、内容、SRS、assessment report 和 notification owner facts 仍可读；
 - `pnpm test:b35`：4/4 通过；`pnpm b35:authz-runtime`：`b35-authz-2026082514b`，有效会话 403、跨用户 owner 隔离和伪造 authority 头回归通过；`pnpm contracts:validate`、`pnpm db:validate`、`pnpm redis:validate`、`pnpm config:check`、`pnpm security:b14`、`pnpm ports:check -- --registry-only` 和 `pnpm dod:check` 通过；
 - learner-web、admin-web、official-site 和 Mobile H5 构建通过；Mobile H5 在 `390x844` 下的登录入口、Gateway 中断错误态和恢复态已有 Browser MCP 截图/DOM 证据。
@@ -29,10 +29,10 @@
 
 ## 本轮已完成的真实浏览器步骤
 
-用户已确认允许输入本地测试密码。密码只在 Browser MCP 当前 Keycloak 表单中即时使用，没有写入仓库、日志、证据或浏览器存储读取结果。
+当前没有可用于重新完成认证后浏览器验收的测试凭据；密码不得由 Agent 读取或代填。手动提供合成账号后，密码只应在 Browser MCP 的自有登录表单中即时使用，不写入仓库、日志、证据或浏览器存储读取结果。
 
-1. learner-web：注册/登录、OIDC callback、会话恢复、成人 Gate、同意、目标/时长、规则测评答题与服务端报告、今日任务、课程详情、断点保存和任务完成；`/practice` 旧接口切换已完成代码/构建验证，认证后新入口待 Browser MCP 复测；
-2. Mobile H5：登录/回调、目标与成人同意、真实练习报告读取、报告→今日任务、真实首页任务和 B31 MySQL 课程详情；
+1. learner-web：新的账号密码注册/登录、会话恢复、成人 Gate、同意、目标/时长、规则测评答题与服务端报告、今日任务、课程详情、断点保存和任务完成待 Browser MCP 重新执行；`/practice` 旧接口切换已完成代码/构建验证；
+2. Mobile H5：新的账号密码登录、目标与成人同意、真实练习报告读取、报告→今日任务、真实首页任务和 B31 MySQL 课程详情待重新执行；
 3. 数据证据：Web 页面结果与 learner/learning MySQL 事实一致，H5 读取同一内容投影；
 4. 尚未关闭：H5 新鲜任务从答题到报告的完整链路、退出/清会话后重新登录、Admin 发布后 Web/H5 可见性、SRS/通知/个人设置/听力等剩余页面逐项 MCP 验收。
 
@@ -43,10 +43,10 @@
 ```powershell
 pnpm ports:check
 pnpm infra:up
-$env:B30_REAL_OIDC = 'true'
+$env:B30_REAL_JWT = 'true'
 pnpm services:run -- --all --timeout-ms 90000
 pnpm frontend:run -- --all
 pnpm b36:gate-runtime
 ```
 
-测试期间只使用本地合成账号和内容。不要将 Keycloak 密码、JWT、refresh token、authorization code 或真实个人数据写入仓库。
+测试期间只使用本地合成账号和内容。不要将密码、JWT、Refresh Token、Cookie、重置凭证或真实个人数据写入仓库。

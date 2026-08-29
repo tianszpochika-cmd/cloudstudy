@@ -18,6 +18,8 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.nio.charset.StandardCharsets;
@@ -43,15 +45,23 @@ import java.util.UUID;
 public final class JdbcAssessmentStatePort implements AssessmentStatePort {
     private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() { };
     private static final TypeReference<List<Map<String, Object>>> MAP_LIST_TYPE = new TypeReference<>() { };
+    private static final Logger log = LoggerFactory.getLogger(JdbcAssessmentStatePort.class);
 
     private final JdbcTemplate jdbc;
     private final ObjectMapper objectMapper;
     private final String schema;
+    private final boolean tolerateCorruptLegacyRows;
 
     public JdbcAssessmentStatePort(JdbcTemplate jdbc, ObjectMapper objectMapper, String schema) {
+        this(jdbc, objectMapper, schema, false);
+    }
+
+    public JdbcAssessmentStatePort(JdbcTemplate jdbc, ObjectMapper objectMapper, String schema,
+                                   boolean tolerateCorruptLegacyRows) {
         this.jdbc = Objects.requireNonNull(jdbc, "jdbc is required");
         this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper is required");
         this.schema = identifier(schema, "schema");
+        this.tolerateCorruptLegacyRows = tolerateCorruptLegacyRows;
     }
 
     @Override
@@ -59,75 +69,115 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
         Map<String, SessionBuilder> builders = new LinkedHashMap<>();
         jdbc.query("SELECT session_id, subject_id, tenant_id, session_type, session_status, created_at, "
                         + "deadline_at, started_at, closed_at FROM " + table("assessment_session"),
-                (org.springframework.jdbc.core.RowCallbackHandler) rs -> builders.put(rs.getString("session_id"), new SessionBuilder(rs)));
+                (org.springframework.jdbc.core.RowCallbackHandler) rs -> {
+                    try {
+                        SessionBuilder builder = new SessionBuilder(rs);
+                        builders.put(builder.sessionId, builder);
+                    } catch (RuntimeException exception) {
+                        skipCorruptLegacyRow("session", exception);
+                    }
+                });
         jdbc.query("SELECT session_id, exercise_id, position_no, source_bucket, verification_stage, snapshot_json "
                         + "FROM " + table("assessment_session_exercise"), rs -> {
-                    SessionBuilder builder = requiredBuilder(builders, rs.getString("session_id"));
-                    builder.exercises.add(new AssessmentSession.Exercise(rs.getLong("exercise_id"),
-                            readSnapshot(rs.getString("snapshot_json")), rs.getInt("position_no"),
-                            rs.getString("source_bucket"), rs.getString("verification_stage")));
+                    try {
+                        SessionBuilder builder = requiredBuilder(builders, rs.getString("session_id"));
+                        if (builder == null) return;
+                        builder.exercises.add(new AssessmentSession.Exercise(rs.getLong("exercise_id"),
+                                readSnapshot(rs.getString("snapshot_json")), rs.getInt("position_no"),
+                                rs.getString("source_bucket"), rs.getString("verification_stage")));
+                    } catch (RuntimeException exception) {
+                        skipCorruptLegacyRow("exercise", exception);
+                    }
                 });
         jdbc.query("SELECT af.session_id, af.exercise_id, af.submission_id, af.client_submission_id, af.revision, "
                         + "af.submitted_at, a.answer_json, sf.scoring_status, sf.earned_score, sf.max_score, "
                         + "sf.correct, sf.error_causes_json, sf.rule_version, sf.score_breakdown_json "
                         + "FROM " + table("assessment_attempt_fact") + " af "
                         + "JOIN " + table("assessment_answer") + " a ON a.attempt_id = af.attempt_id "
-                        + "LEFT JOIN " + table("assessment_score_fact") + " sf ON sf.attempt_id = af.attempt_id",
+                + "LEFT JOIN " + table("assessment_score_fact") + " sf ON sf.attempt_id = af.attempt_id",
                 rs -> {
-                    SessionBuilder builder = requiredBuilder(builders, rs.getString("session_id"));
-                    ScoringResult result = rs.getString("scoring_status") == null ? null : new ScoringResult(
-                            rs.getBigDecimal("earned_score").doubleValue(),
-                            rs.getBigDecimal("max_score").doubleValue(),
-                            nullableBoolean(rs, "correct"),
-                            ScoringStatus.valueOf(rs.getString("scoring_status")),
-                            com.englishflow.assessment.domain.SafePayloads.digest(readMap(rs.getString("answer_json"))),
-                            readStringList(rs.getString("error_causes_json")),
-                            rs.getString("rule_version"), readMap(rs.getString("score_breakdown_json")));
-                    builder.attempts.add(AssessmentAttempt.restore(rs.getLong("submission_id"),
-                            rs.getLong("exercise_id"), rs.getString("client_submission_id"), rs.getInt("revision"),
-                            readMap(rs.getString("answer_json")), instant(rs, "submitted_at"), result));
+                    try {
+                        SessionBuilder builder = requiredBuilder(builders, rs.getString("session_id"));
+                        if (builder == null) return;
+                        ScoringResult result = rs.getString("scoring_status") == null ? null : new ScoringResult(
+                                rs.getBigDecimal("earned_score").doubleValue(),
+                                rs.getBigDecimal("max_score").doubleValue(),
+                                nullableBoolean(rs, "correct"),
+                                ScoringStatus.valueOf(rs.getString("scoring_status")),
+                                com.englishflow.assessment.domain.SafePayloads.digest(readMap(rs.getString("answer_json"))),
+                                readStringList(rs.getString("error_causes_json")),
+                                rs.getString("rule_version"), readMap(rs.getString("score_breakdown_json")));
+                        builder.attempts.add(AssessmentAttempt.restore(rs.getLong("submission_id"),
+                                rs.getLong("exercise_id"), rs.getString("client_submission_id"), rs.getInt("revision"),
+                                readMap(rs.getString("answer_json")), instant(rs, "submitted_at"), result));
+                    } catch (RuntimeException exception) {
+                        skipCorruptLegacyRow("attempt", exception);
+                    }
                 });
         jdbc.query("SELECT session_id, checkpoint_seq, current_exercise_id, client_state_hash, "
                         + "monotonic_elapsed_ms, saved_at FROM " + table("assessment_checkpoint_fact"), rs -> {
-                    SessionBuilder builder = requiredBuilder(builders, rs.getString("session_id"));
-                    AssessmentCheckpoint checkpoint = new AssessmentCheckpoint(rs.getLong("checkpoint_seq"),
-                            nullableLong(rs, "current_exercise_id"), rs.getString("client_state_hash"),
-                            rs.getLong("monotonic_elapsed_ms"), instant(rs, "saved_at"));
-                    if (builder.checkpoint == null || checkpoint.sequence() > builder.checkpoint.sequence()) {
-                        builder.checkpoint = checkpoint;
+                    try {
+                        SessionBuilder builder = requiredBuilder(builders, rs.getString("session_id"));
+                        if (builder == null) return;
+                        AssessmentCheckpoint checkpoint = new AssessmentCheckpoint(rs.getLong("checkpoint_seq"),
+                                nullableLong(rs, "current_exercise_id"), rs.getString("client_state_hash"),
+                                rs.getLong("monotonic_elapsed_ms"), instant(rs, "saved_at"));
+                        if (builder.checkpoint == null || checkpoint.sequence() > builder.checkpoint.sequence()) {
+                            builder.checkpoint = checkpoint;
+                        }
+                    } catch (RuntimeException exception) {
+                        skipCorruptLegacyRow("checkpoint", exception);
                     }
                 });
 
         List<AssessmentSession> sessions = new ArrayList<>();
         for (SessionBuilder builder : builders.values()) {
-            builder.exercises.sort(Comparator.comparingInt(AssessmentSession.Exercise::position));
-            sessions.add(AssessmentSession.restore(builder.sessionId, builder.owner, builder.type,
-                    builder.createdAt, builder.deadlineAt, builder.status, builder.startedAt, builder.closedAt,
-                    builder.exercises, builder.attempts, builder.checkpoint));
+            try {
+                builder.exercises.sort(Comparator.comparingInt(AssessmentSession.Exercise::position));
+                sessions.add(AssessmentSession.restore(builder.sessionId, builder.owner, builder.type,
+                        builder.createdAt, builder.deadlineAt, builder.status, builder.startedAt, builder.closedAt,
+                        builder.exercises, builder.attempts, builder.checkpoint));
+            } catch (RuntimeException exception) {
+                skipCorruptLegacyRow("session aggregate", exception);
+            }
         }
 
-        List<AssessmentReport> reports = jdbc.query("SELECT report_id, session_id, tenant_id, subject_id, report_type, "
+        List<AssessmentReport> reports = new ArrayList<>();
+        jdbc.query("SELECT report_id, session_id, tenant_id, subject_id, report_type, "
                         + "report_status, score, max_score, completed_count, total_count, calculation_version, "
                         + "score_policy_version, generated_at, metrics_json, evidence_json, mistakes_json FROM "
-                        + table("assessment_report"), (rs, rowNum) -> new AssessmentReport(rs.getLong("report_id"),
-                        rs.getString("session_id"), rs.getString("tenant_id"), rs.getString("subject_id"),
-                        rs.getString("report_type"), rs.getString("report_status"), rs.getBigDecimal("score").doubleValue(),
-                        rs.getBigDecimal("max_score").doubleValue(), rs.getInt("completed_count"), rs.getInt("total_count"),
-                        rs.getString("calculation_version"), rs.getString("score_policy_version"), instant(rs, "generated_at"),
-                        readMap(rs.getString("metrics_json")), readMapList(rs.getString("evidence_json")),
-                        readMapList(rs.getString("mistakes_json"))));
+                        + table("assessment_report"), rs -> {
+                    try {
+                        reports.add(new AssessmentReport(rs.getLong("report_id"),
+                                rs.getString("session_id"), rs.getString("tenant_id"), rs.getString("subject_id"),
+                                rs.getString("report_type"), rs.getString("report_status"), rs.getBigDecimal("score").doubleValue(),
+                                rs.getBigDecimal("max_score").doubleValue(), rs.getInt("completed_count"), rs.getInt("total_count"),
+                                rs.getString("calculation_version"), rs.getString("score_policy_version"), instant(rs, "generated_at"),
+                                readMap(rs.getString("metrics_json")), readMapList(rs.getString("evidence_json")),
+                                readMapList(rs.getString("mistakes_json"))));
+                    } catch (RuntimeException exception) {
+                        skipCorruptLegacyRow("report", exception);
+                    }
+                });
 
-        List<AssessmentMistake> mistakes = jdbc.query("SELECT mistake_id, tenant_id, subject_id, item_id, question_id, "
+        List<AssessmentMistake> mistakes = new ArrayList<>();
+        jdbc.query("SELECT mistake_id, tenant_id, subject_id, item_id, question_id, "
                         + "error_category, rule_version, answer_hash, wrong_count, mistake_status, mastery_status, "
                         + "first_error_at, last_error_at, next_action_at, reason_trace_json FROM "
-                        + table("assessment_mistake"), (rs, rowNum) -> AssessmentMistake.restore(rs.getLong("mistake_id"),
-                        AssessmentPrincipal.authenticated(rs.getString("subject_id"), rs.getString("tenant_id")),
-                        rs.getLong("item_id"), rs.getLong("question_id"), rs.getString("error_category"),
-                        rs.getString("rule_version"), rs.getString("answer_hash"), rs.getInt("wrong_count"),
-                        AssessmentMistake.MistakeStatus.valueOf(rs.getString("mistake_status")),
-                        AssessmentMistake.MasteryStatus.valueOf(rs.getString("mastery_status")),
-                        instant(rs, "first_error_at"), instant(rs, "last_error_at"), instant(rs, "next_action_at"),
-                        readMapList(rs.getString("reason_trace_json"))));
+                        + table("assessment_mistake"), rs -> {
+                    try {
+                        mistakes.add(AssessmentMistake.restore(rs.getLong("mistake_id"),
+                                AssessmentPrincipal.authenticated(rs.getString("subject_id"), rs.getString("tenant_id")),
+                                rs.getLong("item_id"), rs.getLong("question_id"), rs.getString("error_category"),
+                                rs.getString("rule_version"), rs.getString("answer_hash"), rs.getInt("wrong_count"),
+                                AssessmentMistake.MistakeStatus.valueOf(rs.getString("mistake_status")),
+                                AssessmentMistake.MasteryStatus.valueOf(rs.getString("mastery_status")),
+                                instant(rs, "first_error_at"), instant(rs, "last_error_at"), instant(rs, "next_action_at"),
+                                readMapList(rs.getString("reason_trace_json"))));
+                    } catch (RuntimeException exception) {
+                        skipCorruptLegacyRow("mistake", exception);
+                    }
+                });
         return new RestoredState(sessions, reports, mistakes);
     }
 
@@ -350,8 +400,16 @@ public final class JdbcAssessmentStatePort implements AssessmentStatePort {
 
     private static SessionBuilder requiredBuilder(Map<String, SessionBuilder> builders, String sessionId) {
         SessionBuilder builder = builders.get(sessionId);
-        if (builder == null) throw AssessmentDomainException.retryable("ASM_PERSISTENCE_CORRUPT", "fact references an unknown session");
+        if (builder == null) {
+            throw AssessmentDomainException.retryable("ASM_PERSISTENCE_CORRUPT", "fact references an unknown session");
+        }
         return builder;
+    }
+
+    private void skipCorruptLegacyRow(String entity, RuntimeException exception) {
+        if (!tolerateCorruptLegacyRows) throw exception;
+        log.warn("Skipping corrupt persisted assessment {} row in local compatibility mode: {}",
+                entity, exception.getMessage());
     }
 
     private static final class SessionBuilder {

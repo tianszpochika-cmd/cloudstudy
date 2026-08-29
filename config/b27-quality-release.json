@@ -27,7 +27,7 @@
         "authorization-boundary-and-tenant-isolation",
         "cors-and-preflight-boundary",
         "rate-limit-and-abuse-controls",
-        "oidc-jwks-rotation-and-fail-closed",
+        "jwt-jwks-rotation-and-fail-closed",
         "web-vitals-and-api-latency",
         "adaptive-performance-low-device-fallback",
         "keyboard-and-screen-reader-navigation",
@@ -159,7 +159,7 @@
       "sensitiveRouteOverrides": ["auth", "registration", "assessment-submit", "admin-export"]
     },
     "jwks": {
-      "protocol": "OIDC-OAuth2.1",
+      "protocol": "self-owned-JWT",
       "issuerSource": "runtime-env-only",
       "jwksUriSource": "runtime-env-only",
       "allowedAlgorithms": ["RS256", "ES256"],

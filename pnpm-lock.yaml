@@ -109,6 +109,9 @@ importers:
       '@englishflow/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@englishflow/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@englishflow/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens

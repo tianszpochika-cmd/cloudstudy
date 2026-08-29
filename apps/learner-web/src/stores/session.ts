@@ -1,35 +1,17 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { createGatewayAuthAdapter, safeReturnTo, type AdultGateStatus, type AuthSessionSnapshot, type AuthStatus, type AuthTokenPair, type LoginCallbackInput, type ProviderNeutralAuthAdapter, type PrincipalSnapshot } from '../auth/gateway-auth'
-import { ApiError, apiClient } from '../api/client'
+import { createGatewayAuthAdapter, safeReturnTo, type AdultGateStatus, type AuthSessionSnapshot, type AuthStatus, type AuthTokenPair, type JwtAuthAdapter, type PrincipalSnapshot } from '../auth/gateway-auth'
+import { getInMemoryAccessToken, setInMemoryAccessToken } from '../auth/access-token'
+import { ApiError } from '../api/client'
 import { getGatewayBaseUrl } from '../platform/gateway'
-import { learnerI18nAdapter, learnerThemeController } from '../platform/v2-foundation'
 
-export type AuthErrorCode = 'OIDC_CANCELLED' | 'OIDC_CALLBACK_INVALID' | 'AUTH_FAILED' | 'SESSION_EXPIRED' | 'LOGOUT_FAILED' | 'REVOKE_FAILED'
+export type AuthErrorCode = 'AUTH_FAILED' | 'SESSION_EXPIRED' | 'LOGOUT_FAILED' | 'REVOKE_FAILED'
 
-const ACCESS_TOKEN_KEY = 'yx.session.access-token'
 const RETURN_TO_KEY = 'yx.auth.return-to'
-const DEVICE_ID_KEY = 'yx.auth.device-id'
-const SESSION_ID_KEY = 'yx.auth.session-id'
-
-function readStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  const token = window.sessionStorage.getItem(ACCESS_TOKEN_KEY)
-  return token && token.trim().length > 0 ? token : null
-}
-
-function readStoredValue(key: string): string | null {
-  if (typeof window === 'undefined') return null
-  const value = window.sessionStorage.getItem(key)
-  return value && value.trim() ? value : null
-}
+let memoryDeviceId: string | null = null
 
 export const useSessionStore = defineStore('session', () => {
   const accessToken = ref<string | null>(null)
-  const refreshToken = ref<string | null>(null)
   const deviceId = ref<string | null>(null)
   const sessionId = ref<string | null>(null)
   const userId = ref<string | null>(null)
@@ -42,7 +24,7 @@ export const useSessionStore = defineStore('session', () => {
   const forbiddenReason = ref<string | null>(null)
   const restored = ref(false)
   const isAuthenticated = computed(() => Boolean(accessToken.value))
-  let activeAdapter: ProviderNeutralAuthAdapter | null = null
+  let activeAdapter: JwtAuthAdapter | null = null
   let restorePromise: Promise<void> | null = null
   let refreshPromise: Promise<boolean> | null = null
 
@@ -68,7 +50,7 @@ export const useSessionStore = defineStore('session', () => {
     await router.replace({ name: 'login', query: { redirect: safeReturnTo(returnTo) } })
   }
 
-  function adapter(): ProviderNeutralAuthAdapter {
+  function adapter(): JwtAuthAdapter {
     if (!activeAdapter) {
       activeAdapter = createGatewayAuthAdapter({
         baseUrl: getGatewayBaseUrl(),
@@ -90,8 +72,8 @@ export const useSessionStore = defineStore('session', () => {
     const access = tokens.accessToken.trim()
     if (!access) throw new Error('认证服务没有返回访问凭证。')
     accessToken.value = access
-    refreshToken.value = tokens.refreshToken?.trim() || null
     deviceId.value = tokens.deviceId?.trim() || deviceId.value
+    memoryDeviceId = deviceId.value
     sessionId.value = tokens.sessionId?.trim() || sessionId.value
     userId.value = tokens.userId?.trim() || userId.value
     adultGate.value = tokens.adultGate ?? adultGate.value
@@ -99,13 +81,7 @@ export const useSessionStore = defineStore('session', () => {
     authErrorCode.value = null
     forbiddenReason.value = null
     lastError.value = null
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem(ACCESS_TOKEN_KEY, access)
-      if (deviceId.value) window.sessionStorage.setItem(DEVICE_ID_KEY, deviceId.value)
-      if (sessionId.value) window.sessionStorage.setItem(SESSION_ID_KEY, sessionId.value)
-      window.sessionStorage.removeItem('yx.session.refresh-token')
-      window.sessionStorage.removeItem('yx.session.user-id')
-    }
+    setInMemoryAccessToken(access)
   }
 
   async function restore(): Promise<void> {
@@ -113,20 +89,17 @@ export const useSessionStore = defineStore('session', () => {
     if (restorePromise) return restorePromise
     restorePromise = (async () => {
       status.value = 'restoring'
-      accessToken.value = readStoredToken()
-      deviceId.value = readStoredValue(DEVICE_ID_KEY)
-      sessionId.value = readStoredValue(SESSION_ID_KEY)
       try {
+        if (!accessToken.value) {
+          setTokenPair(await adapter().refresh())
+        }
         const snapshot = await adapter().restoreSession()
-        if (!snapshot && accessToken.value) {
+        if (!snapshot) {
           clear()
           status.value = 'unauthenticated'
-          authErrorCode.value = 'SESSION_EXPIRED'
-          lastError.value = 'SESSION_EXPIRED'
           return
         }
         applySnapshot(snapshot)
-        if (snapshot?.tokenPair) setTokenPair(snapshot.tokenPair)
         if (accessToken.value) {
           const permissionSnapshot = await adapter().getPermissions()
           applySnapshot(permissionSnapshot)
@@ -136,6 +109,7 @@ export const useSessionStore = defineStore('session', () => {
       } catch (error) {
         clear()
         status.value = 'unauthenticated'
+        if (error instanceof ApiError && (error.status === 401 || error.status === 404)) return
         lastError.value = error instanceof Error ? error.message : 'RESTORE_FAILED'
       } finally {
         restored.value = true
@@ -148,34 +122,19 @@ export const useSessionStore = defineStore('session', () => {
   async function prepareLogin(returnTo: unknown): Promise<string> {
     const safe = safeReturnTo(returnTo)
     setReturnTo(safe)
-    return adapter().startLogin({
-      returnTo: safe,
-      locale: learnerI18nAdapter.state.locale,
-      theme: learnerThemeController.resolvedTheme,
-    })
+    return safe
   }
 
-  async function completeLogin(input: LoginCallbackInput): Promise<boolean> {
-    if (input.returnTo) setReturnTo(input.returnTo)
+  async function login(identifier: string, password: string): Promise<boolean> {
     status.value = 'restoring'
     authErrorCode.value = null
     lastError.value = null
-    if (input.error) {
-      clear()
-      status.value = 'error'
-      authErrorCode.value = input.error === 'access_denied' ? 'OIDC_CANCELLED' : 'AUTH_FAILED'
-      lastError.value = input.errorDescription || input.error
-      return false
-    }
-    if (!input.code || !input.state) {
-      clear()
-      status.value = 'error'
-      authErrorCode.value = 'OIDC_CALLBACK_INVALID'
-      lastError.value = '认证回调缺少 code 或 state，未建立会话。'
-      return false
-    }
     try {
-      const pair = await adapter().completeLogin(input)
+      const pair = await adapter().login({
+        identifier: identifier.trim(),
+        password,
+        device: { deviceType: 'WEB', clientVersion: 'local-dev', deviceName: '浏览器' },
+      })
       setTokenPair(pair)
       applySnapshot(await adapter().getPermissions())
       return true
@@ -191,16 +150,9 @@ export const useSessionStore = defineStore('session', () => {
   async function refreshSilently(): Promise<boolean> {
     if (refreshPromise) return refreshPromise
     refreshPromise = (async () => {
-      if (!refreshToken.value) {
-        clear()
-        status.value = 'unauthenticated'
-        authErrorCode.value = 'SESSION_EXPIRED'
-        lastError.value = 'SESSION_EXPIRED'
-        return false
-      }
       status.value = 'refreshing'
       try {
-        setTokenPair(await adapter().refresh({ refreshToken: refreshToken.value }))
+        setTokenPair(await adapter().refresh())
         applySnapshot(await adapter().getPermissions())
         return true
       } catch (error) {
@@ -249,7 +201,7 @@ export const useSessionStore = defineStore('session', () => {
 
   async function confirmAdultGate(birthYear: number, policyVersion = 'v2-phase1'): Promise<boolean> {
     try {
-      const snapshot = await adapter().confirmAdultGate({ birthYear, policyVersion, adultDeclaration: true })
+      const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion })
       applySnapshot(snapshot)
       adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'
       return adultGate.value === 'PASSED'
@@ -278,7 +230,7 @@ export const useSessionStore = defineStore('session', () => {
 
   async function handleUnauthorized(): Promise<void> {
     const current = currentInternalPath()
-    const returnTo = current === '/login' || current === '/auth/callback' || current === '/forbidden' ? '/home' : current
+    const returnTo = current === '/login' || current === '/forbidden' ? '/home' : current
     setReturnTo(returnTo)
     clear()
     status.value = 'unauthenticated'
@@ -296,14 +248,14 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
-  function setAuthAdapter(next: ProviderNeutralAuthAdapter): void {
+  function setAuthAdapter(next: JwtAuthAdapter): void {
     activeAdapter = next
   }
 
   function clear(): void {
     accessToken.value = null
-    refreshToken.value = null
     deviceId.value = null
+    memoryDeviceId = null
     sessionId.value = null
     userId.value = null
     principal.value = null
@@ -313,13 +265,7 @@ export const useSessionStore = defineStore('session', () => {
     lastError.value = null
     authErrorCode.value = null
     forbiddenReason.value = null
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.removeItem(ACCESS_TOKEN_KEY)
-      window.sessionStorage.removeItem(DEVICE_ID_KEY)
-      window.sessionStorage.removeItem(SESSION_ID_KEY)
-      window.sessionStorage.removeItem('yx.session.refresh-token')
-      window.sessionStorage.removeItem('yx.session.user-id')
-    }
+    setInMemoryAccessToken(null)
   }
 
   return {
@@ -338,7 +284,7 @@ export const useSessionStore = defineStore('session', () => {
     isAuthenticated,
     restore,
     prepareLogin,
-    completeLogin,
+    login,
     setTokenPair,
     refreshSilently,
     logout,
@@ -355,9 +301,9 @@ export const useSessionStore = defineStore('session', () => {
 })
 
 export function readAccessToken(): string | null {
-  return readStoredToken()
+  return getInMemoryAccessToken()
 }
 
 export function readDeviceId(): string | null {
-  return readStoredValue(DEVICE_ID_KEY)
+  return memoryDeviceId
 }

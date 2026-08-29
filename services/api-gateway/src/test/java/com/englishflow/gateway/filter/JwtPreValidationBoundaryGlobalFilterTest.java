@@ -15,7 +15,7 @@ class JwtPreValidationBoundaryGlobalFilterTest {
     void doesNotTreatBearerPresenceAsAuthenticationWhenVerifierIsUnavailable() {
         GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
         org.mockito.Mockito.when(properties.security()).thenReturn(
-                new GatewayProperties.Security(true, false, true, "https://idp.example.test", "englishflow-api"));
+                new GatewayProperties.Security(true, false, true, "http://127.0.0.1:18087", "yuxuexing-api"));
         org.mockito.Mockito.when(properties.requestContext()).thenReturn(new GatewayProperties.RequestContext(128));
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/api/v1/learner/profile")
                 .header("Authorization", "Bearer not-a-jwt")
@@ -38,12 +38,31 @@ class JwtPreValidationBoundaryGlobalFilterTest {
     }
 
     @Test
-    void allowsOidcStartAndCallbackToReachIamWithoutAResourceServerToken() {
+    void allowsPasswordLoginToReachIamWithoutAResourceServerToken() {
         GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
         org.mockito.Mockito.when(properties.security()).thenReturn(
-                new GatewayProperties.Security(true, false, true, "https://idp.example.test", "englishflow-api"));
+                new GatewayProperties.Security(true, false, true, "https://iam.example.test", "yuxuexing-api"));
+        var exchange = MockServerWebExchange.from(MockServerHttpRequest.post(
+                "/api/v1/auth/login").build());
+        var reached = new boolean[1];
+
+        new JwtPreValidationBoundaryGlobalFilter(properties)
+                .filter(exchange, ignored -> {
+                    reached[0] = true;
+                    return Mono.empty();
+                })
+                .block();
+
+        assertEquals(true, reached[0]);
+    }
+
+    @Test
+    void allowsPublicJwksToReachIamWithoutAResourceServerToken() {
+        GatewayProperties properties = org.mockito.Mockito.mock(GatewayProperties.class);
+        org.mockito.Mockito.when(properties.security()).thenReturn(
+                new GatewayProperties.Security(true, false, true, "https://iam.example.test", "yuxuexing-api"));
         var exchange = MockServerWebExchange.from(MockServerHttpRequest.get(
-                "/api/v1/auth/oidc/standard-oidc/authorization/start").build());
+                "/api/v1/auth/jwks").build());
         var reached = new boolean[1];
 
         new JwtPreValidationBoundaryGlobalFilter(properties)

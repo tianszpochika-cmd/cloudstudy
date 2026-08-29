@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 /**
  * Structured, replayable security decision. Only safe dimensions are accepted; token material,
- * authorization codes, code verifiers and secrets are rejected from the audit attribute map.
+ * temporary authentication material, code verifiers and secrets are rejected from the audit attribute map.
  */
 public record AuditDecision(
         UUID decisionId,

@@ -1,5 +1,5 @@
--- B8: IAM control-plane facts. This schema is owned by iam-service.
--- No raw access/refresh token, provider secret, client role or client tenant is stored.
+-- B8: IAM-owned account, authority, session, policy and audit facts.
+-- The authentication center is the only writer of these tables.
 CREATE TABLE IF NOT EXISTS iam_principal (
   principal_id CHAR(36) NOT NULL,
   tenant_id VARCHAR(64) NOT NULL DEFAULT 'platform',
@@ -13,22 +13,26 @@ CREATE TABLE IF NOT EXISTS iam_principal (
   UNIQUE KEY uk_iam_principal_tenant (tenant_id, principal_id),
   CONSTRAINT chk_iam_principal_tenant CHECK (tenant_id = 'platform'),
   CONSTRAINT chk_iam_principal_status CHECK (status IN ('ACTIVE', 'FROZEN', 'REVOKED', 'DELETION_PENDING', 'ANONYMIZED')),
-  CONSTRAINT chk_iam_adult_gate CHECK (adult_gate_status IN ('PENDING', 'VERIFIED', 'REJECTED'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='v2 IAM principal and server-derived Phase 1 platform tenant';
+  CONSTRAINT chk_iam_adult_gate CHECK (adult_gate_status IN ('PENDING', 'APPROVED', 'VERIFIED', 'REJECTED'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='IAM principal and server-derived Phase 1 platform tenant';
 
-CREATE TABLE IF NOT EXISTS iam_external_identity (
-  external_identity_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS iam_account (
   principal_id CHAR(36) NOT NULL,
-  issuer VARCHAR(255) NOT NULL,
-  subject_hash BINARY(32) NOT NULL,
-  provider_key_id VARCHAR(128) NULL,
-  first_seen_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  last_seen_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (external_identity_id),
-  UNIQUE KEY uk_iam_external_identity (issuer, subject_hash),
-  UNIQUE KEY uk_iam_principal_issuer (principal_id, issuer),
-  KEY idx_iam_external_principal (principal_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='immutable OIDC issuer/subject mapping using a non-reversible subject hash';
+  identifier VARCHAR(128) NOT NULL,
+  password_hash VARCHAR(512) NOT NULL,
+  roles TEXT NOT NULL,
+  permissions TEXT NOT NULL,
+  status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
+  failed_attempts INT NOT NULL DEFAULT 0,
+  locked_until DATETIME(6) NULL,
+  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (principal_id),
+  UNIQUE KEY uk_iam_account_identifier (identifier),
+  KEY idx_iam_account_status (status, locked_until)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='hashed account credentials and IAM-owned authority facts';
 
 CREATE TABLE IF NOT EXISTS iam_device (
   device_id CHAR(36) NOT NULL,
@@ -46,7 +50,8 @@ CREATE TABLE IF NOT EXISTS iam_device (
   UNIQUE KEY uk_iam_device_principal_hash (principal_id, device_id_hash),
   KEY idx_iam_device_principal_status (principal_id, status, last_seen_at),
   CONSTRAINT chk_iam_device_status CHECK (status IN ('ACTIVE', 'REVOKED'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='IAM device trust and server-side kickout state';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='device registration and server-side revocation facts';
 
 CREATE TABLE IF NOT EXISTS iam_session (
   session_id CHAR(36) NOT NULL,
@@ -60,13 +65,27 @@ CREATE TABLE IF NOT EXISTS iam_session (
   rotated_at DATETIME(6) NULL,
   revoked_at DATETIME(6) NULL,
   revoke_reason VARCHAR(64) NULL,
+  rotation BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (session_id),
   UNIQUE KEY uk_iam_session_refresh_hash (refresh_token_hash),
   UNIQUE KEY uk_iam_session_family (token_family_id),
   KEY idx_iam_session_principal_status (principal_id, status, expires_at),
   CONSTRAINT chk_iam_session_status CHECK (status IN ('ACTIVE', 'ROTATED', 'REVOKED', 'REPLAY_DETECTED', 'EXPIRED')),
   CONSTRAINT chk_iam_session_window CHECK (expires_at > issued_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='refresh rotation/replay/revocation facts; never stores token plaintext';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='rotating opaque refresh session; plaintext credentials are never stored';
+
+CREATE TABLE IF NOT EXISTS iam_refresh_token_history (
+  session_id CHAR(36) NOT NULL,
+  token_family_id CHAR(36) NOT NULL,
+  refresh_token_hash BINARY(32) NOT NULL,
+  rotation BIGINT NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  PRIMARY KEY (session_id, rotation),
+  UNIQUE KEY uk_iam_refresh_history_hash (refresh_token_hash),
+  KEY idx_iam_refresh_history_family (token_family_id, rotation)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='replay detection history containing digests only';
 
 CREATE TABLE IF NOT EXISTS iam_consent (
   consent_id CHAR(36) NOT NULL,
@@ -80,7 +99,8 @@ CREATE TABLE IF NOT EXISTS iam_consent (
   UNIQUE KEY uk_iam_consent_version (principal_id, consent_type, policy_version),
   KEY idx_iam_consent_current (principal_id, consent_type, status),
   CONSTRAINT chk_iam_consent_status CHECK (status IN ('GRANTED', 'REVOKED', 'EXPIRED'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='versioned privacy/product consent facts';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='versioned consent facts';
 
 CREATE TABLE IF NOT EXISTS iam_policy_version (
   policy_version VARCHAR(64) NOT NULL,
@@ -91,7 +111,8 @@ CREATE TABLE IF NOT EXISTS iam_policy_version (
   retired_at DATETIME(6) NULL,
   PRIMARY KEY (policy_version, policy_type),
   CONSTRAINT chk_iam_policy_status CHECK (status IN ('DRAFT', 'ACTIVE', 'RETIRED'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='versioned policy package metadata; policy documents remain managed by IAM deployment';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='versioned IAM policy package metadata';
 
 CREATE TABLE IF NOT EXISTS iam_decision_audit (
   decision_id CHAR(36) NOT NULL,
@@ -111,4 +132,5 @@ CREATE TABLE IF NOT EXISTS iam_decision_audit (
   KEY idx_iam_decision_request (request_id, trace_id),
   CONSTRAINT chk_iam_decision_tenant CHECK (tenant_id = 'platform'),
   CONSTRAINT chk_iam_decision_value CHECK (decision IN ('ALLOW', 'DENY'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='replayable authorization and adult-gate decision audit';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='replayable authorization and adult-gate decision audit';

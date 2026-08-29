@@ -23,10 +23,9 @@ public final class VerifiedContentPrincipalFactory {
                     "CONTENT_PRINCIPAL_REQUIRED", "a verified JWT principal is required");
         }
         String subject = token.getToken().getSubject();
-        // The subject is an opaque provider identifier.  Local Keycloak uses UUID-shaped
-        // values while the platform's internal principal mapper may use the historical
-        // prn_ prefix.  Both are safe, verified JWT subjects; rejecting the provider's
-        // opaque subject here would make real OIDC users unable to reach content-service.
+        // The subject is the opaque principal identifier issued by the platform IAM.
+        // Both generated identifiers and the historical prn_ form are accepted only
+        // after this service's resource-server decoder has verified the JWT.
         if (subject == null || !subject.matches("[A-Za-z0-9][A-Za-z0-9._:-]{1,127}")) {
             throw ContentOperationException.forbidden(
                     "CONTENT_PRINCIPAL_INVALID", "verified principal id is missing or invalid");
@@ -50,11 +49,6 @@ public final class VerifiedContentPrincipalFactory {
         }
         addClaimValues(token.getToken().getClaims().get("roles"), roles);
         addClaimValues(token.getToken().getClaims().get("permissions"), permissions);
-        // Keycloak's standard roles client scope emits realm_access/resource_access.
-        // These are still provider-signed JWT facts; accepting them here avoids requiring
-        // a custom mapper just to make a local OIDC admin role visible to the PEP.
-        addNestedClaimValues(token.getToken().getClaims().get("realm_access"), "roles", roles);
-        addNestedClaimValues(token.getToken().getClaims().get("resource_access"), "roles", roles);
         return new ContentActor(subject, PLATFORM_TENANT, roles, permissions, false);
     }
 
@@ -70,16 +64,4 @@ public final class VerifiedContentPrincipalFactory {
         }
     }
 
-    private static void addNestedClaimValues(Object value, String key, Set<String> target) {
-        if (!(value instanceof java.util.Map<?, ?> map)) {
-            return;
-        }
-        Object direct = map.get(key);
-        addClaimValues(direct, target);
-        for (Object nested : map.values()) {
-            if (nested instanceof java.util.Map<?, ?> nestedMap) {
-                addClaimValues(nestedMap.get(key), target);
-            }
-        }
-    }
 }

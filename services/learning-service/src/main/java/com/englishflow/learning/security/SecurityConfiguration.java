@@ -1,6 +1,7 @@
 package com.englishflow.learning.security;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import tools.jackson.databind.ObjectMapper;
 
@@ -13,7 +14,15 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtAudienceValidator;
+import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -23,7 +32,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-/** Service-side Resource Server and default-deny PEP boundary for learning APIs. */
+/** Service-side self-owned JWT Resource Server and default-deny PEP boundary for learning APIs. */
 @Configuration(proxyBeanMethods = false)
 @EnableMethodSecurity
 @EnableConfigurationProperties(ResourceServerSecurityProperties.class)
@@ -36,7 +45,8 @@ public class SecurityConfiguration {
     @ConditionalOnProperty(prefix = "security.resource-server", name = "enabled", havingValue = "true")
     JwtDecoder verifiedJwtDecoder(ResourceServerSecurityProperties properties) {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(properties.getJwkSetUri()).build();
-        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(properties.getIssuerUri()));
+        OAuth2TokenValidator<Jwt> validator = jwtValidator(properties.getIssuerUri(), properties.getAudience());
+        decoder.setJwtValidator(validator);
         return decoder;
     }
 
@@ -68,6 +78,29 @@ public class SecurityConfiguration {
                     .accessDeniedHandler(deniedHandler).jwt(jwt -> jwt.decoder(decoder)));
         }
         return http.build();
+    }
+
+    private static OAuth2TokenValidator<Jwt> jwtValidator(String issuer, String audience) {
+        OAuth2TokenValidator<Jwt> algorithm = jwt -> "RS256".equals(jwt.getHeaders().get("alg"))
+                ? OAuth2TokenValidatorResult.success()
+                : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "JWT algorithm is not allowed", null));
+        OAuth2TokenValidator<Jwt> authorityClaims = jwt -> hasValues(jwt.getClaim("permissions"))
+                || hasValues(jwt.getClaim("roles"))
+                ? OAuth2TokenValidatorResult.success()
+                : OAuth2TokenValidatorResult.failure(new OAuth2Error("invalid_token", "JWT authority claims are missing", null));
+        return new DelegatingOAuth2TokenValidator<>(
+                JwtValidators.createDefaultWithIssuer(issuer),
+                new JwtAudienceValidator(audience),
+                new JwtTimestampValidator(Duration.ofSeconds(60)),
+                algorithm,
+                new JwtClaimValidator<String>("token_type", "access"::equals),
+                new JwtClaimValidator<String>("scope", value -> value != null && !value.isBlank()),
+                authorityClaims);
+    }
+
+    private static boolean hasValues(Object value) {
+        return value instanceof java.util.Collection<?> collection && !collection.isEmpty()
+                || value instanceof String text && !text.isBlank();
     }
 
     private static void write(ObjectMapper objectMapper, HttpServletResponse response, int status,

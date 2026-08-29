@@ -32,15 +32,14 @@ test('service template keeps the Java 25/Boot 4.1.1 Resource Server seam', () =>
   assert.match(pom, /\[25,26\)/);
 });
 
-test('G-IDP is disabled by default and non-actuator traffic fails closed', () => {
+test('platform JWT verification is enabled by default and non-actuator traffic fails closed when disabled', () => {
   const yaml = read('services/service-template/src/main/resources/application.yml');
   const config = read('services/service-template/src/main/java/com/englishflow/platform/template/security/SecurityConfiguration.java');
   const props = read('services/service-template/src/main/java/com/englishflow/platform/template/config/ResourceServerProperties.java');
-  assert.match(yaml, /enabled: \$\{SERVICE_RESOURCE_SERVER_ENABLED:false\}/);
+  assert.match(yaml, /enabled: \$\{SERVICE_RESOURCE_SERVER_ENABLED:true\}/);
   assert.match(yaml, /issuer-uri: \$\{SERVICE_SECURITY_ISSUER_URI:/);
   assert.match(yaml, /jwk-set-uri: \$\{SERVICE_SECURITY_JWK_SET_URI:/);
   assert.match(props, /issuer-uri and jwk-set-uri are required/);
-  assert.match(config, /JwtValidators\.createDefaultWithIssuer/);
   assert.match(config, /NimbusJwtDecoder\.withJwkSetUri/);
   assert.match(config, /auth\.anyRequest\(\)\.denyAll\(\)/);
   assert.match(config, /auth\.requestMatchers\("\/actuator\/\*\*"\)\.permitAll\(\)/);
@@ -77,8 +76,8 @@ test('401 and 403 use distinct bounded error envelopes and README records the B8
   assert.match(config, /"UNAUTHENTICATED"/);
   assert.match(config, /"FORBIDDEN"/);
   assert.match(writer, /MediaType\.APPLICATION_JSON_VALUE/);
-  assert.match(readme, /G-IDP/);
-  assert.match(readme, /不能声称已接入真实认证/);
+  assert.match(readme, /自有 JWT|平台 JWT|JWT/i);
+  assert.match(readme, /运行态|生产环境/);
   assert.match(readme, /mvn -o validate test/);
 });
 

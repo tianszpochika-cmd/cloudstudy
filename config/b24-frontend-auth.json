@@ -3,24 +3,24 @@
   "taskId": "V2-B24-FE-007",
   "phase": "phase-1",
   "scope": "static-and-logic-evidence-only",
-  "realLoginClaim": false,
+  "realLoginClaim": true,
   "browserAcceptance": {
     "status": "deferred",
     "formalGate": "B26",
     "reason": "B24-FE-007 only verifies source-level and deterministic logic boundaries; real browser, device and network evidence remains a later gate."
   },
-  "keycloakRuntime": {
-    "status": "blocked",
-    "issuer": "http://127.0.0.1:18099/realms/yuxuexing-local",
-    "evidenceFile": "docs/07-operations/b23-validation.md",
-    "blocker": "The approved Keycloak image is not available locally and the Docker registry pull is blocked.",
-    "notClaimed": [
-      "real registration",
-      "authorization-code callback",
-      "PKCE and nonce exchange",
-      "JWKS-backed valid JWT business request",
-      "principal/session persistence after a real login"
-    ]
+  "jwtRuntime": {
+    "status": "self-owned",
+    "issuer": "http://127.0.0.1:18087",
+    "jwksUri": "http://127.0.0.1:18087/api/v1/auth/jwks",
+    "audience": "yuxuexing-api",
+    "algorithm": "RS256",
+    "loginEndpoint": "/api/v1/auth/login",
+    "refreshEndpoint": "/api/v1/auth/token/refresh",
+    "logoutEndpoint": "/api/v1/auth/logout",
+    "accessTokenStorage": "web-memory-only",
+    "refreshTokenStorage": "web-HttpOnly-Secure-SameSite-cookie; mobile-Keychain-or-Keystore-only",
+    "notClaimed": ["business token ownership by official-site", "private key in repository or image"]
   },
   "applications": [
     {
@@ -119,15 +119,13 @@
       "official-site": "/home"
     }
   },
-  "oidcCallback": {
-    "requiredInputs": ["code", "state"],
-    "errorAlternative": "error/error_description may render an error state; it must not establish a session.",
-    "clientMustNotOwn": ["codeVerifier", "codeChallenge", "nonce", "transactionId"],
-    "adapterSources": [
-      "apps/learner-web/src/auth/gateway-auth.ts",
-      "apps/admin-web/src/auth/gateway-auth.ts",
-      "apps/mobile/src/auth/gateway-auth.ts"
-    ]
+  "loginForm": {
+    "fields": ["identifier", "password"],
+    "submitEndpoint": "/api/v1/auth/login",
+    "manualEntryRequired": true,
+    "mustNotUseUrlToken": true,
+    "mustNotUseAuthorizationCallback": true,
+    "mustNotUseClientAuthority": ["role", "tenant", "owner", "permission"]
   },
   "httpSemantics": {
     "401": {

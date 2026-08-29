@@ -32,10 +32,10 @@ mvn spring-boot:run
 
 默认监听 `127.0.0.1:18094`。健康检查为
 `GET /actuator/health`、`/actuator/health/liveness` 和 `/actuator/health/readiness`。
-业务路径要求真实 OIDC/OAuth 2.1 Resource Server 配置；resource server 未启用时没有本地
+业务路径要求真实 IAM JWT Resource Server 配置；resource server 未启用时没有本地
 登录、静态 token 或测试管理员绕过。
 
-纯 Java smoke（不需要 Spring、数据库、Kafka 或 IdP）可在当前 Java 24 工作站运行：
+纯 Java smoke（不需要 Spring、数据库、Kafka 或 IAM 运行态）可在当前 Java 24 工作站运行：
 
 ```powershell
 $out = 'services/gamification-service/.compile-check'

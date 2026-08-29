@@ -11,7 +11,7 @@
 │  └─ admin-web/                 运营/教研/客服后台
 ├─ services/                     后端运行时
 │  ├─ api-gateway/               Java 25 Spring Cloud Gateway（v2 目标）
-│  ├─ iam-service/               标准 OIDC IdP 集成、租户、RBAC/ABAC（v2 目标）
+│  ├─ iam-service/               自有账号密码 JWT/JWKS、租户、RBAC/ABAC（v2 目标）
 │  ├─ audit-service/             安全/管理/导出审计（v2 平台能力）
 │  ├─ workflow-service/          Saga/任务/补偿/DLQ（v2 平台能力）
 │  ├─ learner-service/           学习者档案与目标（v2 目标）

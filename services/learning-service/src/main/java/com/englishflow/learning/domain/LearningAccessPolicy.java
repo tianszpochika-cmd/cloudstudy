@@ -3,7 +3,7 @@ package com.englishflow.learning.domain;
 import java.time.Clock;
 import java.util.Objects;
 
-/** Pure service-side RBAC + ABAC guard; default deny is tested without Spring or an IdP. */
+/** Pure service-side RBAC + ABAC guard; default deny is tested without Spring or IAM runtime. */
 public final class LearningAccessPolicy {
 
     private final Clock clock;

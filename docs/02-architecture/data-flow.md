@@ -4,7 +4,7 @@
 
 ## 用户身份
 
-平台登录凭证只在 `iam-service` 和 Gateway/IAM 边界处理。业务服务使用已验证的 subject/tenant 上下文，不在日志中打印手机号、邮箱、第三方 token 或设备敏感标识。每个领域服务仍需验签并执行 PEP。
+平台登录凭证只在 `iam-service` 与 Gateway/IAM 边界处理；IAM 校验账号密码、签发自有 JWT Bearer Access Token 并发布 JWKS。API 只接收认证中心签发、audience 为 `yuxuexing-api` 的 Access Token。业务服务使用已验证的 subject/tenant 上下文，不在日志中打印手机号、邮箱、Refresh Token 或设备敏感标识。每个领域服务仍需独立验签并执行 PEP。
 
 ## 学习记录
 

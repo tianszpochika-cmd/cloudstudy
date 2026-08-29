@@ -62,8 +62,9 @@ test('B15 provides explicit build and independent-process runners', () => {
   assert.match(runner, /assertJava25/);
   assert.match(runner, /assertPortFree/);
   assert.match(runner, /healthPath/);
-  assert.match(runner, /--real-oidc/);
-  assert.match(runner, /B30_REAL_OIDC/);
+  assert.match(runner, /IAM_JWT_ISSUER/);
+  assert.match(runner, /IAM_JWT_JWKS_URI/);
+  assert.doesNotMatch(runner, /real-oidc|B30_REAL_OIDC|OIDC_/i);
   assert.match(runner, /spawn\(['"]java['"]/);
   assert.doesNotMatch(build, /\bclean\b|DROP DATABASE|TRUNCATE TABLE/i);
   assert.doesNotMatch(runner, /docker\s+compose[\s\S]+\bdown\b|DROP DATABASE|TRUNCATE TABLE/i);

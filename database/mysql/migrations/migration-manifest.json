@@ -97,7 +97,7 @@
       "version": "0016",
       "file": "V0016__create_iam_control_plane_b8.sql",
       "description": "create B8 IAM principal device session consent policy and decision audit facts",
-      "requiredTables": ["iam_principal", "iam_external_identity", "iam_device", "iam_session", "iam_consent", "iam_policy_version", "iam_decision_audit"]
+      "requiredTables": ["iam_principal", "iam_account", "iam_device", "iam_session", "iam_refresh_token_history", "iam_consent", "iam_policy_version", "iam_decision_audit"]
     },
     {
       "version": "0017",
@@ -131,9 +131,9 @@
     },
     {
       "version": "0022",
-      "file": "V0022__create_iam_oidc_runtime_b23.sql",
-      "description": "create B23 durable OIDC authorization transactions and provider-backed IAM session fields",
-      "requiredTables": ["iam_oidc_authorization_transaction"]
+      "file": "V0022__create_iam_jwt_runtime_b23.sql",
+      "description": "create B23 durable JWT refresh rotation and IAM session runtime facts",
+        "requiredTables": ["iam_refresh_token_history"]
     },
     {
       "version": "0023",

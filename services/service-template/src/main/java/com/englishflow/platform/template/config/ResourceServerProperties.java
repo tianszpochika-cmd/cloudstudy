@@ -9,11 +9,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Explicit seam for the approved OIDC/OAuth 2.1 identity provider.
+ * Explicit seam for independently verified platform JWTs.
  *
- * <p>The seam is disabled by default because G-IDP has to pass before a copied service may
- * connect to a real issuer. When enabled, both the issuer and the explicit JWKS endpoint are
- * required so that a service never silently falls back to an unverified or local token source.</p>
+ * <p>The seam requires the IAM issuer, audience and explicit JWKS endpoint. A copied service
+ * never silently falls back to an unverified token source or trusts client authority headers.</p>
  */
 @Validated
 @ConfigurationProperties(
@@ -27,6 +26,8 @@ public class ResourceServerProperties {
     private String issuerUri;
 
     private String jwkSetUri;
+
+    private String audience = "yuxuexing-api";
 
     @NotNull
     private Duration policyCacheTtl = Duration.ofSeconds(30);
@@ -58,6 +59,14 @@ public class ResourceServerProperties {
         this.jwkSetUri = jwkSetUri;
     }
 
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
+    }
+
     public Duration getPolicyCacheTtl() {
         return policyCacheTtl;
     }
@@ -86,8 +95,7 @@ public class ResourceServerProperties {
 
     @AssertTrue(message = "issuer-uri and jwk-set-uri are required when the resource server is enabled")
     public boolean isVerificationConfigurationComplete() {
-        return !enabled && isBlank(issuerUri) && isBlank(jwkSetUri)
-                || enabled && !isBlank(issuerUri) && !isBlank(jwkSetUri);
+        return !enabled || !isBlank(issuerUri) && !isBlank(jwkSetUri) && !isBlank(audience);
     }
 
     private static boolean isBlank(String value) {

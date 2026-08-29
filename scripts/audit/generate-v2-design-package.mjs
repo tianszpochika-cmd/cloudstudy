@@ -572,6 +572,8 @@ ${mdTable(phaseOrder.map((phase) => ({ phase, target: phaseTotals[phase], actual
 
 - 新服务目标运行时为 Java 25 LTS + Spring Boot 4.1.x/Spring Framework 7.x；Phase 2 AI 编排仍为 Python 3.11+。
 - 外部调用统一经过 api-gateway；身份、租户、会话、RBAC/ABAC 和策略撤销由 iam-service 负责，领域服务必须再次执行服务侧 PEP 校验。
+- 认证统一采用平台自有 IAM 账号密码登录；iam-service 直接签发短时 RS256/ES256 JWT Bearer Access Token，并通过 JWKS 发布公钥。Refresh Token 由 IAM 会话边界轮换、检测重放并撤销；JWT profile、存储和异常交互以 [ADR-0013](../../10-decisions/0013-self-owned-jwt-authentication-center.md) 为准。
+- 四端只能通过 Authorization: Bearer 发送 Access Token；Token 不得进入 URL、localStorage、日志、事件、埋点或错误响应；Gateway 与每个领域服务必须独立通过 JWKS 验签并执行 PEP。
 - packages/contracts/ 是 OpenAPI、AsyncAPI 和 JSON Schema 的事实源；领域服务各自拥有数据、迁移、Redis 命名空间、Outbox 和审计边界。
 - 现有 services/core-api（Java 17/Spring Boot 3）仅作为 v1 兼容单体和 Strangler Fig 迁移边界，不代表 v2 微服务已实现完成；任何迁移都必须有契约、数据、权限、观测、回滚和 SLO 证据。
 - V2-980-* 只描述业务/跨域设计单元；ARCH-* 平台能力必须按 [平台能力矩阵](../../02-architecture/v2-platform-capability-matrix.md) 单独建任务，不计入 980。
@@ -727,6 +729,13 @@ function generateInteraction() {
 
 Phase 2 才启用 AI 流式 Token 或 RTC。前置安全、连接状态、打断、重连、后置核验和降级路径必须可见；用户看到的是结构化结果，不是未经校验的原始模型输出。
 
+## 5.6 JWT Bearer 认证与会话
+
+- 登录使用统一的 IAM 账号密码 JSON API；四端品牌化登录页把凭据仅提交给 Gateway→iam-service，认证中心直接签发短时非对称 JWT Access Token。
+- Access Token 通过 Authorization: Bearer 发送；Web Refresh Token 使用 HttpOnly/Secure/SameSite Cookie，移动端使用 Keychain/Keystore。Refresh Token 由 IAM 会话边界轮换、检测重放并撤销，不进入领域服务。
+- Gateway 与每个领域服务独立校验 issuer、audience、签名、算法、时间窗口、token type 和必要 scope；验证失败返回 401，身份有效但无权限返回 403。
+- Access Token 不进入 URL、localStorage、日志、埋点、事件和错误详情。Web/H5 使用内存 token manager，原生端使用 Keychain/Keystore 等安全存储；刷新失败只允许一次静默重试后回到登录页。
+
 ## 6. 四项目与响应式
 
 | 项目 | 负责范围 | 主要交互 | 不允许 |
@@ -796,6 +805,18 @@ function generateIA() {
 
 深链必须携带 resourceId、contentVersionId（如适用）、来源页面和安全过期策略；不能把 token、个人隐私或可写权限放进 URL。未登录时先回到统一认证，Gate 不通过时回到解释页而不是 404。
 
+## 3.1 认证与会话交互
+
+~~~text
+点击登录/注册 → 统一账号密码页面提交到 IAM
+   → IAM 校验密码并签发 JWT Access Token + rotated Refresh Token 会话
+   → API 使用 Bearer（JWT） → Gateway 验签 → 服务侧再次验签与 PEP
+~~~
+
+- 深链和 returnTo 必须经过 allow-list 校验；URL 中不得出现 Access/Refresh Token。
+- Access Token 过期时 token manager 只做一次并发合并的静默 refresh；refresh 失败、重放或会话撤销后清理本地状态并回到登录入口。
+- official-site 只产生公开登录 deep link，不保存登录后业务 Token；admin-web 使用独立登录页面和前端会话边界，业务 API audience 统一为 yuxuexing-api，scope/permission 由服务侧 PEP 决定且不共享 Refresh Token。
+
 ## 4. 交互模式注册表
 
 | 模式 | 适用功能 | 移动端 | Web/后台 | 统一状态要求 |
@@ -861,6 +882,8 @@ ${intro}
 - 先判断阶段、年龄/主体、内容版本、权限和可用性，再渲染核心 CTA。
 - 所有学习动作都必须回到“目标 → 练习 → 反馈 → 复习 → 复盘”；社交、游戏和商业模块只能作为辅助出口。
 - 所有写操作具备自动保存、幂等、失败恢复和可回放证据；不让客户端直接修改跨域事实。
+- 所有登录后 API 请求使用平台 IAM 签发的 JWT Bearer（Access Token）；Refresh Token 轮换、重放检测、撤销和设备下线由 IAM 会话边界统一处理。
+- 登录/注册页面可以品牌化，但不得在前端或业务服务签发 JWT；401、403、过期、撤销和刷新失败必须分别呈现可理解的恢复动作。
 - 移动端、iPad、learner-web 的业务状态相同，页面组件按平台分别实现；admin-web 和 official-site 不复用学习者导航。
 
 ## 2. 域级设计
@@ -912,6 +935,7 @@ function generateCrossDoc(units) {
 | 幂等 | 所有有副作用写操作带 Idempotency-Key；网络超时先查幂等结果，不盲目重做 |
 | 离线 | clientEventId + clientSeq + baseCursor/baseStateVersion + contentVersionId + payload hash；服务端有序去重 |
 | 事件 | 只发布跨服务集成事实，不把 UI 点击、日志或指标放入总线；采用至少一次投递，按聚合 ID 分区，eventId 去重，outbox 保证事实落库后再发布；Kafka 不充当 RPC 或分布式事务协调器 |
+| 认证 | 自有 IAM 账号密码登录并签发 JWT Bearer（Access Token）；Gateway 与每个领域服务独立 JWKS 验签；Refresh Token 轮换/撤销不进入领域事件或业务事实 |
 | 权限 | 认证、角色、tenant、资源 owner、阶段、内容权利同时校验；403 不能伪装空数据 |
 | 状态 | 使用 canonical 状态；域内别名只能在兼容 mapper 中出现；UI 文案不覆盖后端事实 |
 | 观测 | requestId → traceId → eventId/clientEventId → 领域事实 → audit_log 可回放 |
@@ -946,6 +970,8 @@ function generateRegister(units) {
 ## 1. 行级设计字段
 
 每行都回答：来源是什么、用户在哪里操作、核心交互是什么、正常流程是什么、页面有哪些状态、哪个契约/数据事实源负责、权限/隐私怎么做、埋点如何回放、怎样验收、当前是否允许排期。
+
+认证相关设计单元还必须明确：自有 IAM 签发的 JWT Bearer（Access Token）、统一 API audience、Refresh Token 轮换/撤销、Token 存储边界、401/403 语义、JWKS 轮换，以及四端登录/会话隔离；不得把前端 Token 解析或客户端权限覆盖写成产品方案。
 
 ## 2. 逐条登记
 
@@ -1071,6 +1097,8 @@ ${mdTable(pending.map((unit, index) => ({ ...unit, number: index + 1 })), [
 - 是否有自动保存、幂等键、checkpoint、重试预算和恢复入口？
 - 是否使用唯一领域事实源，没有在前端或跨域复制掌握度、权益、奖励、审核和 K12 主体？
 - 是否有真实数据版本、权限、隐私、审计和埋点证据？
+- 是否遵循 ADR-0013 的 JWT Bearer profile：自有 IAM 签发、Gateway/服务侧独立 JWKS 验签、刷新轮换、撤销和 Token 不落 URL/日志/业务事件？
+- 是否禁止前端或业务服务自行签发 Token、伪造角色/tenant/owner 头，并区分 401 与 403？
 - 是否通过 AdaptivePerformanceEngine 的四级档位和低配替代路径？
 - AI 是否只在 Phase 2 Gate 后出现；K12 是否只在 Phase 3 Gate 后出现？
 

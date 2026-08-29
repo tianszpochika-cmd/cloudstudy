@@ -25,6 +25,7 @@ export function readB28Inputs(root = repositoryRoot) {
     root,
     config,
     packageJson: readJson(root, 'package.json'),
+    jwtAuth: readJson(root, 'config/local-jwt-auth.json'),
     toolchainBaseline: readJson(root, config.sourceOfTruth.toolchain),
     runtimeManifest: readJson(root, config.sourceOfTruth.runtimeServices),
     localServices: readJson(root, config.sourceOfTruth.localServices),
@@ -227,7 +228,7 @@ function validateDockerRuntime(inputs, config, commandRunner, errors, runtimeChe
 }
 
 export function validateB28LocalRuntime(inputs = readB28Inputs(), options = {}) {
-  const { config, packageJson, toolchainBaseline, runtimeManifest, localServices, localPorts, ownerManifest, migrationTexts, composeText } = inputs;
+  const { config, packageJson, jwtAuth, toolchainBaseline, runtimeManifest, localServices, localPorts, ownerManifest, migrationTexts, composeText } = inputs;
   const runtimeRequested = options.runtimeRequested === true;
   const errors = [];
   const staticErrors = [];
@@ -304,9 +305,11 @@ export function validateB28LocalRuntime(inputs = readB28Inputs(), options = {}) 
       && minioInitBlock.includes('mc mb --ignore-existing')
       && minioInitBlock.includes('mc anonymous set none')
   ));
-  staticCheck('Keycloak is declared as a standard OIDC provider', Boolean(
-    config.dependencies.find((dependency) => dependency.id === 'keycloak')?.factRole === 'standard-oidc-test-provider'
-      && localServices.services?.['oidc-idp']?.purpose?.includes('no application token server')
+  staticCheck('self-owned JWT auth center is the local authentication source', Boolean(
+    jwtAuth?.mode === 'self-owned-jwt'
+      && jwtAuth?.audience === 'yuxuexing-api'
+      && jwtAuth?.algorithm === 'RS256'
+      && jwtAuth?.jwksUri === 'http://127.0.0.1:18087/api/v1/auth/jwks'
   ));
   staticCheck('Kafka auto topic creation is disabled', Boolean(serviceBlock(composeText, 'kafka')?.includes('KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"')));
 

@@ -22,7 +22,7 @@ B13-ANL-004 的独立分析 worker 边界。服务只消费 B10/B12 已定义的
 
 - `AnalyticsWorkerService`：严格校验、去重、脱敏 journal 和指标增量投影。
 - `AnalyticsQueryPort` / `AnalyticsReplayPort`：为 HTTP、Kafka worker 和后续持久化适配器提供查询与重算 seam。
-- `AnalyticsController`：提供受保护的 `/internal/v1/analytics/events`、`/metrics`、`/recompute` 和 `/replay` 边界；JWT 开关默认关闭，接入 IdP 时要求 issuer/JWK 配置。
+- `AnalyticsController`：提供受保护的 `/internal/v1/analytics/events`、`/metrics`、`/recompute` 和 `/replay` 边界；JWT 开关默认关闭，接入 IAM JWT 时要求 issuer/JWK 配置。
 - `InMemoryAnalyticsProjectionStore`：纯 Java smoke 使用的内存 adapter；生产实现应只替换该 port，不改变领域规则。
 - `V1__create_analytics_projection_schema.sql`：仅创建 analytics-owned 表，禁止跨服务 join 或写领域表。
 
@@ -40,4 +40,4 @@ javac --release 24 -encoding UTF-8 -d $out $files
 java -cp $out com.englishflow.analytics.B13AnalyticsSmoke
 ```
 
-Kafka consumer、真实 MySQL adapter、OIDC/JWK、Gateway 路由、OTel exporter 和浏览器/端到端运行验证不在本次代码层 smoke 范围内；它们应在后续集成测试 Gate 中接入，且不得放宽本服务的 allowlist 与隐私边界。
+Kafka consumer、真实 MySQL adapter、JWT/JWK、Gateway 路由、OTel exporter 和浏览器/端到端运行验证不在本次代码层 smoke 范围内；它们应在后续集成测试 Gate 中接入，且不得放宽本服务的 allowlist 与隐私边界。

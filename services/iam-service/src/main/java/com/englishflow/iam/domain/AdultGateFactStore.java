@@ -2,7 +2,7 @@ package com.englishflow.iam.domain;
 
 import java.time.Instant;
 
-/** Persistence port for mutable adult Gate status; identity mapping remains immutable. */
+/** Persistence port for mutable adult-gate status owned by IAM. */
 public interface AdultGateFactStore {
 
     AdultGateFact find(PrincipalId principalId, Instant fallbackEvaluatedAt);

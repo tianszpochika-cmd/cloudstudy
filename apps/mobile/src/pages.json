@@ -155,13 +155,6 @@
       }
     },
     {
-      "path": "pages/auth-callback/auth-callback",
-      "style": {
-        "navigationStyle": "custom",
-        "navigationBarTitleText": "会话恢复"
-      }
-    },
-    {
       "path": "pages/forbidden/forbidden",
       "style": {
         "navigationStyle": "custom",
@@ -190,10 +183,10 @@
     }
   ],
   "tabBar": {
-    "color": "#969CAF",
+    "color": "#8A92A8",
     "selectedColor": "#596BFF",
     "backgroundColor": "#FFFFFF",
-    "borderStyle": "white",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/home/home",
@@ -220,8 +213,8 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "语学星",
-    "navigationBarBackgroundColor": "#F7F8FC",
-    "backgroundColor": "#F7F8FC",
+    "navigationBarBackgroundColor": "#F5F7FF",
+    "backgroundColor": "#F5F7FF",
     "backgroundTextStyle": "light"
   }
 }

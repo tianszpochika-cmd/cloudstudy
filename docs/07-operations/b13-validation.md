@@ -6,17 +6,17 @@
 
 B13 的 8 项代码目标已形成可进入第一轮测试的切片。`commerce-service` 拥有订单/权益/支付回调事实；`admin-ops-service` 只读聚合并转发经过权限、审批、幂等和审计的命令；`analytics-service` 只消费显式 allowlist 的脱敏事件并提供版本化投影/重算；官网不持有业务会话，也不写订单、支付或权益。
 
-支付 Gate、真实 OIDC、Kafka、MySQL、外部 provider、浏览器和真机仍是测试阶段工作，不在本轮代码完成结论内。
+支付 Gate、真实 自有 JWT 登录、Kafka、MySQL、外部 provider、浏览器和真机仍是测试阶段工作，不在本轮代码完成结论内。
 
 ## 任务交付
 
 | 任务 | 代码层交付 | 测试阶段剩余 |
 |---|---|---|
 | `V2-B13-COM-001/002` | SKU/价格快照/订单/权益/激活码/退款/对账；Provider port、签名/金额/币种/订单绑定、回放去重、恢复/取消和默认关闭 Gate | Java 25/Maven/Spring HTTP、MySQL/Flyway、真实支付 provider、Kafka Outbox 和并发压测 |
-| `V2-B13-ADM-003` | 只读投影、权限/租户 PEP、作者与操作者分离、审批二次确认、命令幂等和 append-only 审计 | OIDC/JWKS、领域命令真实 adapter、持久化、跨服务审计查询 |
+| `V2-B13-ADM-003` | 只读投影、权限/租户 PEP、作者与操作者分离、审批二次确认、命令幂等和 append-only 审计 | 自有 JWT 登录/JWKS、领域命令真实 adapter、持久化、跨服务审计查询 |
 | `V2-B13-ANL-004` | B10/B12/B13 事件 allowlist、隐私字段拒绝、dedupe、指标投影、空/错误态、回放重算、`Idempotency-Key` | Kafka consumer、durable journal、worker 调度、指标时区/规模压测 |
 | `V2-B13-SUP-005` | 工单/SLA/脱敏视图、MediaObjectRef 引用权限、通知命令 seam、恢复和审计 | media/notification 真实联调、附件授权、SLA 时钟和通知供应商 |
-| `V2-B13-OFS-006` | 公开价格/权益/活动投影、SSR fallback、UTM 保留、allowlist 回跳、登录/结算安全跳转 | Gateway 公开投影、OIDC、CDN 缓存、搜索抓取和真实应用商店链接 |
+| `V2-B13-OFS-006` | 公开价格/权益/活动投影、SSR fallback、UTM 保留、allowlist 回跳、登录/结算安全跳转 | Gateway 公开投影、自有 JWT 登录、CDN 缓存、搜索抓取和真实应用商店链接 |
 | `V2-B13-FE-007` | learner-web/mobile 使用 Gateway `/commerce` 与 `/payment-intents`；admin-web 使用 `/admin/ops` 脱敏投影和命令；loading/empty/error/权限状态保留 | 浏览器键盘/触控、App/小程序/Windows/PWA、主题/locale/响应式和无障碍矩阵 |
 | `V2-B13-TEST-008` | `tests/b13` 12 项契约、迁移、服务安全、四端边界逻辑测试 | 跨进程旅程：官网 → 登录 → 结算意图 → 权益投影 → 后台审计；不触发真实支付 |
 
@@ -47,10 +47,10 @@ B13 的 8 项代码目标已形成可进入第一轮测试的切片。`commerce-
 
 ## 测试阶段入口
 
-1. 使用 JDK 25、Maven、测试 IdP/JWKS、MySQL/Redis/Kafka/Workflow 和支付 provider 替身，先执行 `pnpm ports:check`。
+1. 使用 JDK 25、Maven、测试 IAM JWT 认证中心/JWKS、MySQL/Redis/Kafka/Workflow 和支付 provider 替身，先执行 `pnpm ports:check`。
 2. 通过 Gateway 验证公开目录、学习端订单/权益、payment-intent、回调 workload、管理员投影和 analytics ingest 的 401/403、tenant/owner、trace/requestId、幂等和审计。
 3. 验证价格快照不可变、支付 Gate 关闭、签名/金额/币种/订单绑定、重复回调、失败恢复、退款补偿和对账只读重放；确认不触发真实渠道。
 4. 验证 admin 审批二次确认、作者不能审自己、工单附件引用权限、SLA/恢复、脱敏导出和通知命令；确认 admin-ops 不写领域事实表。
 5. 执行官网 → 登录 → 结算意图 → 权益投影 → 后台审计模拟旅程，以及 learner-web、Mobile H5/App/微信小程序、PWA/Windows 的加载/空/错误/权限/主题/locale/响应式/无障碍矩阵。
 
-当前工作站只有 Java 24 且没有 Maven；因此主 Agent 只执行依赖无关 Java smoke、Node 契约/迁移/边界测试和前端构建。Java 25/Spring Boot 4.1 运行态、真实 Gateway/IdP、数据库/事件平台、支付、浏览器和设备验收留待测试阶段。
+当前工作站只有 Java 24 且没有 Maven；因此主 Agent 只执行依赖无关 Java smoke、Node 契约/迁移/边界测试和前端构建。Java 25/Spring Boot 4.1 运行态、真实 Gateway/IAM JWT 认证中心、数据库/事件平台、支付、浏览器和设备验收留待测试阶段。

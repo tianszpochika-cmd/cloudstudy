@@ -623,7 +623,7 @@ if (localTestSubject) {
   });
   const subjectLast = subjectOutput.split(/\r?\n/).filter(Boolean).at(-1)?.split('\t').map(Number) ?? [];
   if (subjectLast.length !== 9 || subjectLast.some(value => !Number.isFinite(value) || value < 1)) {
-    throw new Error(`local OIDC subject fixture was not persisted for ${localTestSubject}: ${subjectLast.join(',')}`);
+    throw new Error(`local IAM JWT subject fixture was not persisted for ${localTestSubject}: ${subjectLast.join(',')}`);
   }
-  console.log(`local OIDC subject fixture ready: ${subjectLast[0]} learner profile, ${subjectLast[1]} learning plan, ${subjectLast[2]} review fact(s), ${subjectLast[3]} assessment session, ${subjectLast[4]} feature-state row(s), ${subjectLast[5]} notification(s), ${subjectLast[6]} leaderboard row(s), ${subjectLast[7]} learning interaction(s), ${subjectLast[8]} expression(s)`);
+  console.log(`local IAM JWT subject fixture ready: ${subjectLast[0]} learner profile, ${subjectLast[1]} learning plan, ${subjectLast[2]} review fact(s), ${subjectLast[3]} assessment session, ${subjectLast[4]} feature-state row(s), ${subjectLast[5]} notification(s), ${subjectLast[6]} leaderboard row(s), ${subjectLast[7]} learning interaction(s), ${subjectLast[8]} expression(s)`);
 }

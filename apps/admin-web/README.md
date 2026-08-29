@@ -14,4 +14,4 @@
 
 - 后台登录、会话恢复、刷新、登出和 403 页面经 Gateway/IAM 适配器完成。
 - 菜单与操作权限只消费服务端权限快照；客户端角色头、tenant/owner 字段和本地角色事实不参与授权。
-- 真实 OIDC/JWKS、工作负载身份和生产 RBAC/ABAC 运行态仍受 G-IDP/后续测试 Gate 约束。
+- 使用平台 IAM 的账号密码登录和 RS256 JWT/JWKS；Web Access Token 只保存在内存，Refresh Token 由 HttpOnly Cookie 承载，管理员权限只取自服务端 claims 与策略。

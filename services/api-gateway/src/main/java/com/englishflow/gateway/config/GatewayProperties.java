@@ -221,15 +221,28 @@ public record GatewayProperties(
         @NotNull Boolean resourceServerEnabled,
         @NotNull Boolean auditEnabled,
         String issuerUri,
-        String audience
+        String audience,
+        String jwkSetUri
     ) {
-        @AssertTrue(message = "OIDC issuer-uri is required when JWT prevalidation is enabled")
+        public Security(Boolean jwtPrevalidationEnabled, Boolean resourceServerEnabled, Boolean auditEnabled,
+                        String issuerUri, String audience) {
+            this(jwtPrevalidationEnabled, resourceServerEnabled, auditEnabled, issuerUri, audience,
+                    issuerUri == null ? null : issuerUri.replaceAll("/$", "") + "/api/v1/auth/jwks");
+        }
+
+        @AssertTrue(message = "JWT issuer is required when verification is enabled")
         public boolean isIssuerConfiguredWhenEnabled() {
             return (!Boolean.TRUE.equals(jwtPrevalidationEnabled) && !Boolean.TRUE.equals(resourceServerEnabled))
                     || issuerUri != null && !issuerUri.isBlank();
         }
 
-        @AssertTrue(message = "OIDC audience is required when the resource server is enabled")
+        @AssertTrue(message = "JWT JWKS endpoint is required when verification is enabled")
+        public boolean isJwksConfiguredWhenEnabled() {
+            return (!Boolean.TRUE.equals(jwtPrevalidationEnabled) && !Boolean.TRUE.equals(resourceServerEnabled))
+                    || jwkSetUri != null && !jwkSetUri.isBlank();
+        }
+
+        @AssertTrue(message = "JWT audience is required when the resource server is enabled")
         public boolean isAudienceConfiguredWhenEnabled() {
             return !Boolean.TRUE.equals(resourceServerEnabled)
                     || audience != null && !audience.isBlank();

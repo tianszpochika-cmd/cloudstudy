@@ -107,7 +107,7 @@
 | 第一阶段主语言 | 英语 |
 | 架构目标 | 多语种资源包模型，后续可扩展日语、韩语、西班牙语等 |
 | 前端主线 | Vue 3 + uni-app |
-| 后端主线 | Java 25 LTS + Spring Boot 4.1 微服务；`api-gateway` + `iam-service`（OIDC/RBAC/ABAC）+ 领域服务；现有 Spring Boot 3 `core-api` 仅作迁移兼容 |
+| 后端主线 | Java 25 LTS + Spring Boot 4.1 微服务；`api-gateway` + `iam-service`（自有账号密码 JWT/JWKS、RBAC/ABAC）+ 领域服务；现有 Spring Boot 3 `core-api` 仅作迁移兼容 |
 | Phase 2 AI编排 | Python FastAPI |
 | 数据 | MySQL + Redis |
 | 静态资源 | OSS / CDN |
@@ -2178,13 +2178,14 @@ Phase 3再加入完整未成年人体系。
 
 ## 17.2 登录
 
-- 手机号验证码
-- 微信授权
-- Apple登录（iOS按平台要求）
-- 多端登录
-- Token刷新
-- 设备管理
-- 强制下线
+- 自有 IAM 账号密码注册与登录；应用经 TLS 将密码提交给 IAM，服务端只保存慢哈希
+- 手机号或邮箱作为平台账号登录标识，由 IAM 直接校验
+- learner-web、admin-web、mobile 使用统一自有登录页；official-site 只生成受控公开入口，不持有业务 Token
+- 多端登录与客户端隔离
+- IAM 签发短时 RS256 JWT Access Token，audience 固定为 `yuxuexing-api`，通过 JWKS 发布公钥
+- Refresh Token 为不透明随机凭证，必须轮换、检测重放、支持撤销和设备会话管理
+- 设备管理、强制下线与会话撤销
+- 密码错误限流与失败锁定、一次性短时密码重置、审计和退出登录
 
 ---
 

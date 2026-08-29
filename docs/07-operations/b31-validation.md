@@ -1,19 +1,19 @@
 # B31 内容发布、学习端读取与 MySQL 真实数据验证
 
 > 日期：2026-08-25  
-> 模式：`local-real`，真实 Keycloak、Gateway、content-service owner MySQL、公开投影  
+> 模式：`local-real`，平台自有 IAM JWT、Gateway、content-service owner MySQL、公开投影
 > 结论：B31 本机运行切片已通过；未宣称四端浏览器或生产发布完成。
 
 ## 运行命令
 
 ```powershell
-$env:B30_REAL_OIDC = 'true'
+$env:B30_REAL_JWT = 'true'
 pnpm b31:static
 pnpm b31:content-runtime
 pnpm test:b31
 ```
 
-`b31-content-runtime.mjs` 通过本地 Keycloak 临时内容角色建立真实 JWT，经 Gateway 调用 content-service 的创建、两级审核、发布、目录/详情读取和取消发布；`b31-learner-runtime.mjs` 使用真实授权码 + PKCE 会话，经 Gateway 完成成人 Gate、同意、目标、偏好写入和读回；脚本只输出状态、版本号、计数和安全标记，不输出密码或 token。
+`b31-content-runtime.mjs` 通过平台 IAM 签发的测试 JWT，经 Gateway 调用 content-service 的创建、两级审核、发布、目录/详情读取和取消发布；`b31-learner-runtime.mjs` 使用账号密码登录建立的 IAM 会话，经 Gateway 完成成人 Gate、同意、目标、偏好写入和读回；脚本只输出状态、版本号、计数和安全标记，不输出密码或 token。
 
 ## 最近一次运行证据
 
@@ -32,7 +32,7 @@ pnpm test:b31
 
 | 验证 | 结果 |
 |---|---|
-| 授权码 + PKCE / IAM principal bootstrap | PASS，Gateway 返回 200；没有使用固定 Token |
+| 账号密码登录 / IAM principal bootstrap | PASS，Gateway 返回 200；没有使用固定 Token |
 | 成人 Gate | PASS，IAM principal 的 `adult_gate_status=APPROVED` |
 | 隐私/条款同意 | PASS，IAM owner `iam_consent` 两行 `GRANTED/b30-consent-v1` |
 | learner profile/target/preferences 写入 | PASS，`b25_learner_profile`、`b25_learner_goal`、`b25_learner_preferences` 各 1 行 |
@@ -43,7 +43,7 @@ pnpm test:b31
 
 ## 本轮修复
 
-- `content-service` 从 provider-signed Keycloak `realm_access/resource_access` 角色映射权限，不信任客户端角色头；
+- `content-service` 从 IAM 签发且经本地 JWKS 验证的 `roles/permissions` 映射权限，不信任客户端角色头；
 - 跨内容版本 ID 改为 owner repository 的全局递增分配，避免不同内容的 `content_version_id` 主键冲突；
 - 公开投影查询补齐 `audience` 参数，真实发布后的学习端读取不再错误返回 `503`；
 - 目录合并旧 B25 fixture 时按内容 code 去重，未发布内容不会被静态 fixture 绕过取消发布门禁；

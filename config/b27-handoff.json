@@ -291,7 +291,7 @@
       "status": "open",
       "blocksRelease": true,
       "ownerRole": "architecture",
-      "disposition": "完成有效 OIDC/JWT、Gateway 到 MySQL 的 API 闭环，以及 Kafka Outbox/消费者和浏览器真实旅程对账后复核",
+      "disposition": "完成有效自有 JWT、Gateway 到 MySQL 的 API 闭环，以及 Kafka Outbox/消费者和浏览器真实旅程对账后复核",
       "evidenceRef": "B27-E-RUNTIME-B23-B26"
     },
     {
@@ -524,7 +524,7 @@
         "runtimeRequired": false,
         "evidenceId": "B27-E-STATIC-UPSTREAM",
         "sourcePaths": ["docs/07-operations/b26-validation.md"],
-        "assertions": [{ "contains": "真实运行和正式测试验收待完成" }, { "contains": "当前仍缺少标准 OIDC/JWKS 和有效 JWT" }]
+        "assertions": [{ "contains": "真实运行和正式测试验收待完成" }, { "contains": "自有 IAM JWT/JWKS" }]
       },
       {
         "id": "B27-HANDOFF-STATIC-003",
@@ -575,7 +575,7 @@
         "evidenceClass": "runtime",
         "runtimeRequired": true,
         "evidenceId": "B27-E-RUNTIME-B23-B26",
-        "evidenceRequired": ["B23 registration and OIDC/JWKS", "B24 authenticated four-client boundary", "B25 API-DB-API owner reconciliation", "B26 Kafka/browser journey and defect evidence"],
+        "evidenceRequired": ["B23 registration and IAM JWT/JWKS", "B24 authenticated four-client boundary", "B25 API-DB-API owner reconciliation", "B26 Kafka/browser journey and defect evidence"],
         "cannotBeSatisfiedBy": ["static-manifest-only", "synthetic-fixture-only", "development-http-200", "unauthenticated-page-check"]
       },
       {

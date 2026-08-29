@@ -19,9 +19,10 @@ function requireText(relative, patterns, label = relative) {
 if (manifest.phase !== 'phase-1') errors.push('B16 安全清单必须属于 Phase 1');
 if (manifest.defaultDecision !== 'deny') errors.push('B16 默认决策必须是 deny');
 if (manifest.gateway.directConnectAllowed !== false) errors.push('Gateway 直连必须明确禁止');
-if (manifest.oidc.gIdpGate !== 'closed') errors.push('G-IDP 未批准前必须保持 closed');
-if (manifest.oidc.tokenServerInRepository !== false) errors.push('仓库内不得实现 Token Server');
-if (manifest.oidc.pkceMethod !== 'S256') errors.push('OIDC 必须使用 S256 PKCE');
+if (manifest.jwt.mode !== 'self-owned-jwt') errors.push('认证模式必须是 self-owned-jwt');
+if (manifest.jwt.algorithm !== 'RS256') errors.push('本地 JWT 必须使用 RS256');
+if (manifest.jwt.audience !== 'yuxuexing-api') errors.push('业务 API audience 必须是 yuxuexing-api');
+if (manifest.jwt.privateKeyOutsideRepository !== true) errors.push('JWT 私钥必须在仓库外');
 if (manifest.iam.adultMinimumAge !== 18 || manifest.iam.minorDomainEnabled !== false) {
   errors.push('Phase 1 成人 Gate 必须为 18+ 且关闭未成年人域');
 }
@@ -40,40 +41,29 @@ const gatewayYaml = requireText('services/api-gateway/src/main/resources/applica
   /port:\s*\$\{API_GATEWAY_PORT:18070\}/,
   /shutdown:\s*graceful/,
   /resource-server-enabled:\s*\$\{GATEWAY_RESOURCE_SERVER_ENABLED:false\}/,
-  /issuer-uri:\s*\$\{OIDC_ISSUER_URI:/
+  /issuer-uri:\s*\$\{IAM_JWT_ISSUER:/
 ], 'Gateway application.yaml');
 const gatewaySanitizer = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java');
 requireText('services/iam-service/src/main/resources/application.yaml', [
   /address:\s*\$\{IAM_SERVER_ADDRESS:127\.0\.0\.1\}/,
   /port:\s*\$\{IAM_SERVICE_PORT:18087\}/,
   /shutdown:\s*graceful/,
-  /provider-mode:\s*provider-neutral/,
-  /real-provider-enabled:\s*false/
+  /local-adult-gate-enabled:/,
+  /issuer:\s*\$\{IAM_JWT_ISSUER:/,
+  /audience:\s*\$\{IAM_JWT_AUDIENCE:/
 ], 'IAM application.yaml');
 requireText('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java', [
   /oauth2ResourceServer/,
   /anyExchange\(\)\.authenticated\(\)/,
   /anyExchange\(\)\.denyAll\(\)/,
-  /ReactiveJwtDecoders\.fromIssuerLocation/
+  /withJwkSetUri/
 ], 'Gateway security configuration');
-requireText('services/iam-service/src/main/java/com/englishflow/iam/oidc/ProviderNeutralOidcClient.java', [
-  /PkceSupport\.s256Challenge/,
-  /transactions\.consume\(callback\.state\(\)\)/,
-  /OIDC_CALLBACK_REPLAY/
-], 'IAM OIDC protocol seam');
-
-const forbiddenTokenServer = [
-  /JwtEncoder/,
-  /NimbusJwtEncoder/,
-  /AuthorizationServerConfiguration/,
-  /@EnableAuthorizationServer/
-];
 const iamSources = fs.readdirSync(path.join(root, 'services/iam-service/src/main/java'), { recursive: true })
   .filter((file) => String(file).endsWith('.java'))
   .map((file) => read(path.join('services/iam-service/src/main/java', file)))
   .join('\n');
-for (const pattern of forbiddenTokenServer) {
-  if (pattern.test(iamSources)) errors.push(`IAM 不得包含自建 Token Server 标记 ${pattern}`);
+for (const pattern of [/JwtEncoder/, /JwtSigningKeyProvider/, /PasswordAccountService/, /SessionService/]) {
+  if (!pattern.test(iamSources)) errors.push(`IAM 缺少自有 JWT 登录中心能力 ${pattern}`);
 }
 
 const runtimeById = new Map(runtime.services.map((service) => [service.id, service]));
@@ -124,5 +114,5 @@ if (errors.length > 0) {
   for (const error of errors) console.error(`ERROR ${error}`);
   process.exitCode = 1;
 } else {
-  console.log(`B16 security manifest passed: Gateway/IAM/PEP ${manifest.pep.domainServices.length} services, G-IDP gate closed, default deny`);
+  console.log(`B16 security manifest passed: self-owned JWT Gateway/IAM/PEP ${manifest.pep.domainServices.length} services, default deny`);
 }

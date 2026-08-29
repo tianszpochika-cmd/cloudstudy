@@ -9,6 +9,7 @@ export interface UniRequestOptions {
   header?: Record<string, string>
   data?: unknown
   timeout?: number
+  withCredentials?: boolean
   success?: (response: UniRequestResponse) => void
   fail?: (error: unknown) => void
 }
@@ -57,12 +58,25 @@ export interface UniRuntime {
   showToast(options: { title: string; icon?: 'none' | 'success' | 'error' }): void
   addInterceptor?(method: string, interceptor: { invoke?: (options: { url?: string; delta?: number }) => false | { url?: string; delta?: number } | void }): void
   getSecureStorage?: () => UniSecureStorage | undefined
+  getSystemInfoSync?: () => { uniPlatform?: string; platform?: string; osName?: string }
   getLaunchOptionsSync?: () => UniLaunchOptions
   getEnterOptionsSync?: () => UniLaunchOptions
   openURL?: (url: string) => void
   createInnerAudioContext?: () => UniAudioContext
   getFileSystemManager?: () => UniFileSystemManager
   getSecureRecordingVault?: () => UniSecureRecordingVault
+}
+
+/** Native app builds must use the Keychain/Keystore bridge for Refresh Tokens. */
+export function isNativeAppRuntime(runtime?: UniRuntime): boolean {
+  try {
+    const current = runtime ?? getUniRuntime()
+    const info = current.getSystemInfoSync?.()
+    const platform = String(info?.uniPlatform ?? info?.platform ?? info?.osName ?? '').toLowerCase()
+    return platform === 'app' || platform === 'app-plus' || platform === 'ios' || platform === 'android'
+  } catch {
+    return false
+  }
 }
 
 const TAB_BAR_PATHS = new Set([

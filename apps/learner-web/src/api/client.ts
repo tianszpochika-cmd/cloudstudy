@@ -130,16 +130,12 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
 }
 
 import { getGatewayBaseUrl } from '../platform/gateway'
+import { getInMemoryAccessToken } from '../auth/access-token'
 
 export const apiClient = createApiClient({
   baseUrl: getGatewayBaseUrl(),
   credentials: 'include',
-  getAccessToken: () => {
-    if (typeof window === 'undefined') {
-      return null
-    }
-    return window.sessionStorage.getItem('yx.session.access-token')
-  },
+  getAccessToken: getInMemoryAccessToken,
   onUnauthorized: async () => {
     const [{ pinia }, { useSessionStore }] = await Promise.all([import('../stores/pinia'), import('../stores/session')])
     const session = useSessionStore(pinia)

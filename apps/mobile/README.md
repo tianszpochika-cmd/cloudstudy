@@ -11,11 +11,12 @@
 - `src/uni_modules/`: uni-app 跨端插件（原生播放器、支付模块、离线存储）
 - `src/stores/`: 移动端本地持久化与学习状态
 
-## B8 认证边界
+## 自有 JWT 认证边界
 
-- uni-app 的登录回调、会话恢复、刷新、登出、设备撤销和成人 Gate 统一经 Gateway/IAM 适配器。
-- Access Token 仅作受控会话使用；Refresh credential 优先写入平台 secure storage，缺少 secure storage 时只保留在内存，不写入普通 storage。
-- 真实 OIDC provider、移动系统回调、JWKS 和真机/小程序交互仍待 G-IDP 与测试阶段验收。
+- uni-app 的账号密码登录、会话恢复、刷新、登出、设备撤销和成人 Gate 统一经 Gateway/IAM 适配器；不存在浏览器认证回调。
+- Access Token 只保存在进程内存；iOS/Android/iPad 原生端的 Refresh Token 只能写入 Keychain/Keystore 等平台安全存储，安全存储不可用或写入失败时拒绝建立可刷新会话，不降级到普通 storage。
+- H5 通过 HttpOnly、Secure、SameSite Refresh Cookie 恢复会话；H5 不读取或持久化 Refresh Token。
+- JWKS、issuer、audience、RS256、token type 和权限声明由 IAM 签发、Gateway 与每个领域服务独立验证；真机/小程序仍需按设备矩阵取得运行证据。
 - `android/` & `ios/`: 原生打包配置与证书工程
 
 ## B0 本地验证

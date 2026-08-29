@@ -18,8 +18,7 @@
 | 服务 | 固定端口 | 启动形态 | 备注 |
 |---|---:|---|---|
 | API Gateway | 18070 | Spring Cloud Gateway | v2 外部 API 统一入口；仅做路由、边界策略、请求上下文和观测，不承载领域写入 |
-| Local OIDC test IdP | 18099 | Docker Keycloak | loopback-only `yuxuexing-local` realm；标准 OIDC/OAuth 2.1 测试提供方，不是仓库内 Token Server |
-| IAM Service | 18087 | Spring Boot | v2 provider-neutral IAM/OIDC adapter；G-IDP 通过前仅运行测试替身/本地配置 |
+| IAM Service | 18087 | Spring Boot | 平台自有账号密码认证中心；签发短时 RS256/ES256 JWT、发布 JWKS，管理 Refresh Token、设备、会话、权限和撤销 |
 | Learner Service | 18088 | Spring Boot | v2 学习者档案、目标、偏好和 Onboarding read model；独立 schema |
 | Content Service | 18089 | Spring Boot | v2 内容版本、版权、审核发布和公开读投影；独立 schema |
 | Learning Service | 18090 | Spring Boot | v2 学习计划、SRS、进度、复习队列和掌握度投影；独立 schema |

@@ -7,7 +7,7 @@
 
 B12 的 7 项任务已经形成可进入第一轮测试的代码层切片。成长服务只接受可信学习事件并由服务端维护账本、等级、Streak、奖励和赛季事实；社群服务维护自习室席位租约、可见性、排行榜和受控举报；通知服务维护模板化通知、偏好过滤、重试、DLQ、人工恢复和审计。前端不提交 XP、积分、余额、租约事实或自由文本，管理员命令经过权限、幂等和审计边界。
 
-不能据此宣称 Java 25/Spring Boot 完整构建、真实 Gateway→服务链路、OIDC/JWKS、RBAC/ABAC 运行态、MySQL/Kafka/Workflow/推送供应商、浏览器/小程序/原生设备交互或生产迁移已经完成。
+不能据此宣称 Java 25/Spring Boot 完整构建、真实 Gateway→服务链路、自有 JWT 登录/JWKS、RBAC/ABAC 运行态、MySQL/Kafka/Workflow/推送供应商、浏览器/小程序/原生设备交互或生产迁移已经完成。
 
 ## 任务交付
 
@@ -48,10 +48,10 @@ B12 的 7 项任务已经形成可进入第一轮测试的代码层切片。成�
 
 ## 测试阶段入口
 
-1. 准备 JDK 25、Maven、测试 IdP/JWKS、MySQL/Redis/Kafka/Workflow 和通知 provider 替身；先执行 `pnpm ports:check`。
+1. 准备 JDK 25、Maven、测试 IAM JWT 认证中心/JWKS、MySQL/Redis/Kafka/Workflow 和通知 provider 替身；先执行 `pnpm ports:check`。
 2. 通过 Gateway 验证学习完成事件的可信来源、成长服务去重/账本守恒、通知模板/偏好/重试/DLQ 和社群可见性；验证服务侧 PEP、tenant/owner、401/403、trace/requestId 和审计事实。
 3. 对房间执行入房、断线、租约到期、恢复、并发续租、空房和举报幂等；对通知执行延迟、重复、乱序、退订、重试预算、DLQ replay 和人工恢复。
 4. 执行 learner-web、Mobile H5/App/微信小程序条件编译、admin-web 浏览器矩阵，覆盖 loading/empty/error/permission/offline/recovery、主题、国际化、键盘/触控、响应式和四级性能降级。
 5. 执行 B4→B12 shadow read、hash 对账、可信事件 replay、TARGET/FALLBACK 切换和 rollback 演练，确认旧领域事实没有被修改。
 
-当前工作站只有 Java 24 且没有 Maven；因此主 Agent 只执行了依赖无关 Java smoke、Node 契约/迁移/逻辑测试和前端静态边界检查。Java 25/Maven、真实 Gateway/IdP、数据库/事件平台、浏览器和设备验收留待测试阶段，不把 B12 代码层交付误报为生产运行态完成。
+当前工作站只有 Java 24 且没有 Maven；因此主 Agent 只执行了依赖无关 Java smoke、Node 契约/迁移/逻辑测试和前端静态边界检查。Java 25/Maven、真实 Gateway/IAM JWT 认证中心、数据库/事件平台、浏览器和设备验收留待测试阶段，不把 B12 代码层交付误报为生产运行态完成。

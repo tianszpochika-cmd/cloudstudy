@@ -14,7 +14,6 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -68,11 +67,13 @@ public class GatewayConfiguration {
                     exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/public/content/*").permitAll();
                     exchanges.pathMatchers(HttpMethod.GET, "/api/v1/public/site/projection").permitAll();
                     exchanges.pathMatchers(HttpMethod.HEAD, "/api/v1/public/site/projection").permitAll();
-                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/auth/oidc/**").permitAll();
-                    exchanges.pathMatchers(HttpMethod.POST, "/api/v1/auth/oidc/**").permitAll();
                     exchanges.pathMatchers(HttpMethod.POST,
-                            "/api/v1/iam/session/refresh",
-                            "/api/v1/auth/refresh").permitAll();
+                            "/api/v1/auth/register",
+                            "/api/v1/auth/login",
+                            "/api/v1/auth/token/refresh",
+                            "/api/v1/auth/password-reset/request",
+                            "/api/v1/auth/password-reset/confirm").permitAll();
+                    exchanges.pathMatchers(HttpMethod.GET, "/api/v1/auth/jwks").permitAll();
                     if (resourceServerEnabled) {
                         exchanges.anyExchange().authenticated();
                     } else {
@@ -96,10 +97,11 @@ public class GatewayConfiguration {
     @Bean
     @ConditionalOnProperty(prefix = "gateway.security", name = "resource-server-enabled", havingValue = "true")
     ReactiveJwtDecoder gatewayJwtDecoder(GatewayProperties properties) {
-        ReactiveJwtDecoder decoder = ReactiveJwtDecoders.fromIssuerLocation(properties.security().issuerUri());
-        if (!(decoder instanceof NimbusReactiveJwtDecoder nimbus)) {
-            throw new IllegalStateException("OIDC issuer must provide a Nimbus JWKS decoder");
+        if (properties.security().issuerUri() == null || properties.security().issuerUri().isBlank()
+                || properties.security().jwkSetUri() == null || properties.security().jwkSetUri().isBlank()) {
+            throw new IllegalStateException("Gateway JWT verifier requires issuer and explicit JWKS URI");
         }
+        NimbusReactiveJwtDecoder nimbus = NimbusReactiveJwtDecoder.withJwkSetUri(properties.security().jwkSetUri()).build();
         nimbus.setJwtValidator(GatewayJwtValidators.forSecurity(properties.security()));
         return nimbus;
     }
@@ -128,54 +130,6 @@ public class GatewayConfiguration {
     RouteLocator gatewayRoutes(RouteLocatorBuilder routes, GatewayProperties properties) {
         var builder = routes.routes();
         if (Boolean.TRUE.equals(properties.identity().enabled())) {
-            builder.route("iam-oidc-authorization-start", route -> route
-                    .path("/api/v1/auth/oidc/{provider}/authorization/start")
-                    .and()
-                    .method(HttpMethod.GET)
-                    .filters(filters -> identityFilters(filters, "iam-oidc-authorization-start"))
-                    .uri(properties.identity().iamUri().toString()));
-            builder.route("iam-oidc-callback", route -> route
-                    .path("/api/v1/auth/oidc/{provider}/callback")
-                    .and()
-                    .method(HttpMethod.POST)
-                    .filters(filters -> identityFilters(filters, "iam-oidc-callback"))
-                    .uri(properties.identity().iamUri().toString()));
-            builder.route("iam-oidc-metadata", route -> route
-                    .path("/api/v1/auth/oidc/{provider}/metadata")
-                    .and()
-                    .method(HttpMethod.GET)
-                    .filters(filters -> identityFilters(filters, "iam-oidc-metadata"))
-                    .uri(properties.identity().iamUri().toString()));
-            builder.route("iam-oidc-jwks", route -> route
-                    .path("/api/v1/auth/oidc/{provider}/jwks")
-                    .and()
-                    .method(HttpMethod.GET)
-                    .filters(filters -> identityFilters(filters, "iam-oidc-jwks"))
-                    .uri(properties.identity().iamUri().toString()));
-            builder.route("iam-legacy-refresh", route -> route
-                        .path("/api/v1/auth/refresh")
-                        .and()
-                        .method(HttpMethod.POST)
-                        .filters(filters -> identityFilters(
-                                filters.rewritePath("/api/v1/auth/refresh", "/api/v1/iam/session/refresh"),
-                                "iam-v1-legacy-refresh"))
-                        .uri(properties.identity().iamUri().toString()));
-            builder.route("iam-legacy-logout", route -> route
-                        .path("/api/v1/auth/logout")
-                        .and()
-                        .method(HttpMethod.POST)
-                        .filters(filters -> identityFilters(
-                                filters.rewritePath("/api/v1/auth/logout", "/api/v1/iam/session/logout"),
-                                "iam-v1-legacy-logout"))
-                        .uri(properties.identity().iamUri().toString()));
-            builder.route("iam-legacy-session-revoke", route -> route
-                        .path("/api/v1/auth/sessions/{sessionId}/revoke")
-                        .and()
-                        .method(HttpMethod.POST)
-                        .filters(filters -> identityFilters(
-                                filters.rewritePath("/api/v1/auth/sessions/(?<sessionId>[^/]+)/revoke", "/api/v1/iam/sessions/${sessionId}/revoke"),
-                                "iam-v1-legacy-session-revoke"))
-                        .uri(properties.identity().iamUri().toString()));
             builder.route("iam-auth", route -> route
                         .path("/api/v1/auth/**", "/api/v1/iam/**")
                         .filters(filters -> identityFilters(filters, "iam-v1"))

@@ -11,7 +11,7 @@ B14 的目标是让 Phase 1 v2 代码具备逐域切换、只读影子、对账�
 | 任务 | 代码层交付 | 逻辑证据 | 测试阶段剩余 |
 |---|---|---|---|
 | `V2-B14-MIG-001` | Java 17 `core-api` 的逐域迁移批次、版本/摘要对账、只读 shadow、重复幂等、失败补偿和 fallback read 适配器；覆盖 learner/content/learning/assessment/media/gamification/social/commerce | `B14MigrationCompatibilityAdapterSmoke`；不写目标域事实 | MySQL 实迁、断点续传、备份恢复、双读性能和生产回退演练 |
-| `V2-B14-GW-002` | Gateway B14 route matrix、目标服务路由、兼容 GET/HEAD 窗口、`Deprecation`/`Sunset`、可配置 route mode 和伪造 authority 清理 | `tests/b14/b14-strangler-security.test.mjs` | Java 25/Maven、真实 Gateway/IdP、跨进程路由、直连网络策略 |
+| `V2-B14-GW-002` | Gateway B14 route matrix、目标服务路由、兼容 GET/HEAD 窗口、`Deprecation`/`Sunset`、可配置 route mode 和伪造 authority 清理 | `tests/b14/b14-strangler-security.test.mjs` | Java 25/Maven、真实 Gateway/IAM JWT 认证中心、跨进程路由、直连网络策略 |
 | `V2-B14-SEC-003` | 服务 owner/PEP/TenantScope/秘密/事件 payload/跨服务 SQL 的静态扫描；默认拒绝检查 | `scripts/security/verify-b14-boundaries.mjs` | CI 运行镜像、真实 JWKS、数据库权限、KMS/secret manager |
 | `V2-B14-CROSS-004` | 可复用可靠性账本：eventId/schemaVersion/partition、consumer dedupe、乱序游标、有限重试、DLQ、replay、Saga compensation/manual recovery | `B14ReliabilityLedgerSmoke` | Kafka/Outbox durable adapter、worker、DLQ 运维和真实人工恢复 |
 | `V2-B14-FE-005` | 四端统一 Gateway base URL、深链安全回跳、八态、Feature/Phase Gate、locale/theme 恢复和官网公开只读边界 | `tests/b14/b14-phase1-regression.test.mjs` 与四端构建 | 浏览器、PWA/Windows、App/小程序/iPad、无障碍/弱网/主题 locale 矩阵 |
@@ -52,4 +52,4 @@ pnpm db:validate
 pnpm tasks:v2:check
 ```
 
-当前工作站的 Java/Maven 限制、OIDC/JWKS、Kafka/MySQL、真实 Gateway、支付、媒体/RTC、浏览器和设备测试仍属于下一阶段，不在 B14 代码层完成定义内。
+当前工作站的 Java/Maven 限制、自有 JWT 登录/JWKS、Kafka/MySQL、真实 Gateway、支付、媒体/RTC、浏览器和设备测试仍属于下一阶段，不在 B14 代码层完成定义内。

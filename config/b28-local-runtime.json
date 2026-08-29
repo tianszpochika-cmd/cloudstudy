@@ -115,20 +115,6 @@
         "protocol": "http",
         "hostPortEnv": "MINIO_CONSOLE_HOST_PORT"
       }
-    },
-    {
-      "id": "keycloak",
-      "localServiceId": "oidc-idp",
-      "composeService": "keycloak",
-      "portKey": "oidc-idp",
-      "hostPort": 18099,
-      "containerPort": 8080,
-      "hostPortEnv": "OIDC_IDP_HOST_PORT",
-      "protocol": "http",
-      "image": "quay.io/keycloak/keycloak:26.7.1",
-      "healthcheckMarker": "health/ready",
-      "required": true,
-      "factRole": "standard-oidc-test-provider"
     }
   ],
   "compatibilityDependencies": [

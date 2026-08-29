@@ -13,7 +13,7 @@
 ```text
 services/
 ├── api-gateway/              # v2 外部入口，Spring Cloud Gateway
-├── iam-service/              # OIDC/OAuth、租户、RBAC/ABAC
+├── iam-service/              # 自有账号密码 JWT/JWKS、租户、RBAC/ABAC
 ├── audit-service/            # 安全/管理/导出审计（初期可为平台模块）
 ├── workflow-service/         # Saga、定时任务、补偿、DLQ（初期可由 job-runner 承载）
 ├── learner-service/          # 目标、档案、Onboarding

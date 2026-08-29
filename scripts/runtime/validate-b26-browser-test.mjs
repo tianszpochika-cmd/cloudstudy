@@ -37,7 +37,7 @@ for (const app of apps) {
   if (!Array.isArray(app.requiredStates) || JSON.stringify(app.requiredStates) !== JSON.stringify(requiredStates)) fail(`${app.id} must cover the eight interaction states`)
   if (!Array.isArray(app.runtimeAssertions) || app.runtimeAssertions.length === 0) fail(`${app.id} needs runtime assertions`)
   if (app.id === 'official-site' && app.auth !== 'public-only') fail('official-site must remain public-only')
-  if (app.id !== 'official-site' && app.auth !== 'oidc-test-idp') fail(`${app.id} must use the approved OIDC test IdP`) 
+  if (app.id !== 'official-site' && app.auth !== 'self-owned-jwt') fail(`${app.id} must use the platform-owned JWT login`)
   const portKey = app.id === 'mobile' ? 'mobile-h5-dev' : `${app.id}-dev`
   if (ports.services?.[portKey]?.port && !app.origin.endsWith(`:${ports.services[portKey].port}`)) fail(`${app.id} is not on its registered port`)
 }

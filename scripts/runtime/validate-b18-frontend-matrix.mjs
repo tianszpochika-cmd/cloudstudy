@@ -25,7 +25,7 @@ if (new Set(apps.map((app) => app.origin)).size !== apps.length) fail('B18 front
 for (const app of apps) {
   if (app.origin !== expectedOrigins[app.id]) fail(`${app.id} origin does not match fixed port allocation`)
   if (app.auth === 'public-only' && app.id !== 'official-site') fail('only official-site may be public-only')
-  if (app.id !== 'official-site' && app.auth !== 'oidc-test-idp') fail(`${app.id} must use the approved OIDC test IdP seam`)
+  if (app.id !== 'official-site' && app.auth !== 'self-owned-jwt') fail(`${app.id} must use the platform-owned JWT login seam`)
   if (!Array.isArray(app.routes) || app.routes.length === 0) fail(`${app.id} must declare routes`)
   if (app.id === 'admin-web' && (!Array.isArray(app.requiredPermissions) || app.requiredPermissions.length < 4)) fail('admin-web must declare minimum permission matrix')
   if (app.id !== 'admin-web' && (!Array.isArray(app.requiredStates) || app.requiredStates.length !== 8)) fail(`${app.id} must declare the eight-state matrix`)

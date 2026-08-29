@@ -169,9 +169,9 @@ class LearnerDomainTest {
     }
 
     @Test
-    void verifiedLocalOidcUuidCanBeUsedUntilIamPrincipalMappingIsAvailable() {
-        String externalSubject = "550e8400-e29b-41d4-a716-446655440000";
-        assertEquals(externalSubject, LearnerTenantScope.forPhaseOne(externalSubject).subjectId());
+    void verifiedLocalJwtUuidCanBeUsedUntilIamPrincipalMappingIsAvailable() {
+        String jwtSubject = "550e8400-e29b-41d4-a716-446655440000";
+        assertEquals(jwtSubject, LearnerTenantScope.forPhaseOne(jwtSubject).subjectId());
     }
 
     @Test

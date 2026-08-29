@@ -33,15 +33,15 @@
     "runtimeEvidence": null,
     "blockers": [
       "B25 API-to-DB-to-API runtime Gate is still pending",
-      "External OIDC issuer, JWKS and a real authenticated test account are required",
+      "IAM JWT/JWKS, a real authenticated test account and the fixed local ports are required",
       "Kafka topic, producer outbox and consumer offset reconciliation are not attached",
       "Browser/device evidence and restart read-back are not produced by a static preview"
     ]
   },
   "authBoundary": {
-    "protocol": "OIDC/OAuth2.1",
-    "issuerSource": "external-runtime-only",
-    "tokenSource": "external-idp-issued-access-token",
+    "protocol": "self-owned-jwt",
+    "issuerSource": "iam-service-runtime",
+    "tokenSource": "iam-service-issued-access-token",
     "tokenValue": null,
     "syntheticJwt": false,
     "clientMayMintJwt": false,
@@ -74,9 +74,9 @@
         "service": "iam-service",
         "schema": "iam_service",
         "tables": [
-          "iam_oidc_authorization_transaction",
+          "iam_account",
           "iam_principal",
-          "iam_external_identity",
+          "iam_refresh_token_history",
           "iam_session",
           "iam_consent",
           "iam_decision_audit"
@@ -161,47 +161,44 @@
       "index": 1,
       "id": "register",
       "label": "注册",
-      "kind": "external-oidc-registration",
-      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_oidc_authorization_transaction", "iam_principal", "iam_external_identity"]},
+      "kind": "account-password-registration",
+      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_account", "iam_principal"]},
       "api": {
-        "gateway": [{"method": "GET", "path": "/api/v1/auth/oidc/standard-oidc/authorization/start", "auth": "public-oidc-entry"}],
-        "owner": [{"method": "GET", "path": "/internal/v1/iam/oidc/authorization/start", "auth": "server-owned-transaction"}],
-        "external": "registration-at-approved-oidc-provider",
-        "idempotencyHeader": null
+        "gateway": [{"method": "POST", "path": "/api/v1/auth/register", "auth": "public-account-password"}],
+        "owner": [{"method": "POST", "path": "/internal/v1/iam/account/register", "auth": "server-owned-account-fact"}],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
       },
-      "writeSet": ["iam_oidc_authorization_transaction", "iam_principal", "iam_external_identity"],
+      "writeSet": ["iam_account", "iam_principal"],
       "readSet": [],
       "event": {"required": false, "name": null, "address": null, "producerService": "iam-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
       "reconciliation": {
-        "api": {"status": "pending", "checks": ["external registration redirect", "server-owned state and PKCE", "no credential in route or log"]},
-        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_oidc_authorization_transaction", "iam_principal", "iam_external_identity"], "checks": ["principal identity mapping", "issuer-subject hash binding", "no token plaintext"]},
+        "api": {"status": "pending", "checks": ["account and password are submitted only over TLS", "BCrypt password hash only", "no password or token in route or log"]},
+        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_account", "iam_principal"], "checks": ["principal and account binding", "server-derived platform tenant", "no password plaintext"]},
         "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
-        "blockers": ["external IdP registration and callback evidence is runtime-only"]
+        "blockers": ["registration requires a running IAM/MySQL fixture"]
       }
     },
     {
       "index": 2,
       "id": "login",
       "label": "登录",
-      "kind": "oidc-login-callback",
-      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_oidc_authorization_transaction", "iam_external_identity", "iam_session", "iam_principal"]},
+      "kind": "account-password-login-and-jwt-issue",
+      "owner": {"service": "iam-service", "schema": "iam_service", "tables": ["iam_account", "iam_session", "iam_principal"]},
       "api": {
-        "gateway": [
-          {"method": "GET", "path": "/api/v1/auth/oidc/standard-oidc/authorization/start", "auth": "public-oidc-entry"},
-          {"method": "GET", "path": "/api/v1/auth/oidc/standard-oidc/callback", "auth": "public-callback-state-code"}
-        ],
-        "owner": [{"method": "POST", "path": "/internal/v1/iam/oidc/callback", "auth": "server-verifies-provider-token"}],
-        "external": "authorization-code-plus-pkce-at-approved-oidc-provider",
-        "idempotencyHeader": null
+        "gateway": [{"method": "POST", "path": "/api/v1/auth/login", "auth": "public-account-password"}],
+        "owner": [{"method": "POST", "path": "/internal/v1/iam/account/login", "auth": "server-password-verification"}],
+        "external": null,
+        "idempotencyHeader": "Idempotency-Key"
       },
-      "writeSet": ["iam_external_identity", "iam_session", "iam_principal"],
-      "readSet": ["iam_oidc_authorization_transaction"],
+      "writeSet": ["iam_session", "iam_principal"],
+      "readSet": ["iam_account"],
       "event": {"required": false, "name": null, "address": null, "producerService": "iam-service", "consumerServices": [], "outboxTable": null, "emissionStatus": "not-applicable", "eventId": null, "rpc": false},
       "reconciliation": {
-        "api": {"status": "pending", "checks": ["code and state accepted once", "JWKS issuer audience and expiry verified", "protected API returns authenticated response"]},
-        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_session", "iam_external_identity", "iam_principal"], "checks": ["refresh token digest only", "server-derived platform tenant", "session read-back after restart"]},
+        "api": {"status": "pending", "checks": ["password is verified by IAM", "RS256 JWT has issuer audience and time claims", "protected API returns authenticated response"]},
+        "db": {"status": "pending", "schema": "iam_service", "tables": ["iam_session", "iam_account", "iam_principal"], "checks": ["refresh token digest only", "server-derived platform tenant", "session read-back after restart"]},
         "kafka": {"status": "not-applicable", "topic": null, "checks": [], "rpc": false},
-        "blockers": ["no valid runtime access token or JWKS evidence is supplied to static preview"]
+        "blockers": ["no live IAM access token or JWKS response is supplied to static preview"]
       }
     },
     {

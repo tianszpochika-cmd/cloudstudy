@@ -117,7 +117,7 @@ class ServiceTemplateSecurityTest {
             ConsentState consent,
             RevocationStatus revocationStatus) {
         VerifiedClaims claims = new VerifiedClaims(
-                "usr_b8_001", "https://idp.example.test", NOW.minusSeconds(10), NOW.plusSeconds(300),
+                "usr_b8_001", "http://127.0.0.1:18087", NOW.minusSeconds(10), NOW.plusSeconds(300),
                 "jti_b8_001", Set.of("learner"), Set.of(), phase, rights, consent, revocationStatus);
         return new VerifiedPrincipal("usr_b8_001",
                 com.englishflow.platform.template.data.TenantScope.platform("usr_b8_001"), claims);

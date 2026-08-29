@@ -1,6 +1,6 @@
 # 设计文档总索引
 
-> **设计基线**：`v2-980plus/` 是下一轮开发唯一的全量业务设计与需求落地基线；`requirements/` 提供来源证据、编号和法规边界。既有 v1 设计包/B0–B6 只作历史与迁移参考，不能覆盖 v2。当前设计面向 Phase 1 18+ 成人/大学生，无生成式 AI；Phase 2/3 设计在对应阶段启动并满足前置条件后新增。后端技术绑定 Java 25 微服务、Gateway、IAM/RBAC，见 [v2 微服务架构](../02-architecture/v2-microservices-architecture.md)。
+> **设计基线**：`v2-980plus/` 是下一轮开发唯一的全量业务设计与需求落地基线；`requirements/` 提供来源证据、编号和法规边界。既有 v1 设计包/B0–B6 只作历史与迁移参考，不能覆盖 v2。当前设计面向 Phase 1 18+ 成人/大学生，无生成式 AI；Phase 2/3 设计在对应阶段启动并满足前置条件后新增。后端技术绑定 Java 25 微服务、Gateway、IAM/RBAC，认证会话以 [ADR-0012](../10-decisions/0012-jwt-bearer-access-token-and-session.md) 与 [ADR-0013](../10-decisions/0013-self-owned-jwt-authentication-center.md) 为准，见 [v2 微服务架构](../02-architecture/v2-microservices-architecture.md)。
 
 ## 当前可用文档
 
@@ -20,7 +20,7 @@
 
 - 业务设计单元与实现范围：`v2-980plus/`（优先于 v1 设计包）。
 - 后端服务/权限/数据/事件：`../02-architecture/v2-microservices-architecture.md` 与 `v2-platform-capability-matrix.md`。
-- 任务重基线：`v2-980plus/11-架构映射与任务重基线.md`、ADR-0009/0010。
+- 任务重基线：`v2-980plus/11-架构映射与任务重基线.md`、ADR-0009/0010/0011/0012。
 
 ## 设计阶段边界
 

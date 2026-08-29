@@ -7,7 +7,7 @@
 
 B11 的 7 项任务已经形成可测试的代码层切片，可以进入第一轮测试阶段。媒体和通知已从 `core-api` 的目标边界中拆出独立 Java 25 服务；学习端已覆盖听力、阅读、音标、跟读、Shadowing、录音自评和离线恢复；B3 兼容层只记录 hash、版本、授权、对账和路由事实，不写回旧领域事实。Phase 1 不启用 AI/ASR/数字人评分。
 
-不能据此宣称 Java 25/Maven/Spring Boot 完整构建、真实 Gateway→服务链路、OIDC/JWKS、RBAC/ABAC 运行态、MySQL/Kafka/Workflow、S3/CDN/KMS、浏览器麦克风、真机或生产迁移已经完成。
+不能据此宣称 Java 25/Maven/Spring Boot 完整构建、真实 Gateway→服务链路、自有 JWT 登录/JWKS、RBAC/ABAC 运行态、MySQL/Kafka/Workflow、S3/CDN/KMS、浏览器麦克风、真机或生产迁移已经完成。
 
 ## 任务交付
 
@@ -54,7 +54,7 @@ B11 的 7 项任务已经形成可测试的代码层切片，可以进入第一�
 
 ## 测试阶段入口
 
-1. 准备 JDK 25、Maven、测试 IdP/JWKS 和本地 MySQL/Redis/Kafka/Workflow；先执行 `pnpm ports:check`。
+1. 准备 JDK 25、Maven、测试 IAM JWT 认证中心/JWKS 和本地 MySQL/Redis/Kafka/Workflow；先执行 `pnpm ports:check`。
 2. 以独立 schema/凭据启动 Gateway、media、notification、learning/assessment 和兼容适配边界，验证服务侧 PEP、tenant/owner、版权/同意、trace 和错误 envelope。
 3. 对媒体授权执行 Range、过期、撤回、checksum、转码失败和 CDN 回退；对离线执行重复、乱序、断网、空间不足、冲突、DLQ replay 和人工恢复。
 4. 执行 learner-web、Mobile H5、iPad/小程序条件编译和浏览器交互矩阵，覆盖键盘/触控、弱网、主题、国际化、录音权限和四级性能降级。

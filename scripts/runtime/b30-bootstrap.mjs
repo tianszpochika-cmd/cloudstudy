@@ -9,8 +9,8 @@ const unknown = [...args].filter((arg) => !allowed.has(arg));
 
 function usage() {
   console.error('Usage: node scripts/runtime/b30-bootstrap.mjs [--static-only | --require-runtime]');
-  console.error('  --static-only     validate the local OIDC/Keycloak contract without network calls');
-  console.error('  --require-runtime run the static contract and the real public-endpoint Keycloak probe');
+  console.error('  --static-only     validate the self-owned JWT contract without network calls');
+  console.error('  --require-runtime run the static contract and the IAM/Gateway JWT lifecycle probe');
 }
 
 function run(script, scriptArgs = []) {

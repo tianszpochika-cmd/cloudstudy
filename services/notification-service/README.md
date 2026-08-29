@@ -10,7 +10,7 @@
 - `OutboxEventPort`：当前为内存 outbox；事件只携带 ID、版本、状态和安全引用，不携带原始音频、答案、token、媒体包或任意 payload。
 - `InMemoryOfflineSyncStore`：带 `STORAGE_FULL`、`PERMISSION_DENIED`、`NETWORK_UNAVAILABLE` 故障注入，验证恢复路径；生产实现应使用本服务独立 schema + Outbox + Kafka/Workflow。
 
-HTTP 入口位于 `/internal/v1/notifications/**` 和 `/internal/v1/sync/**`。业务请求要求已验证 JWT；tenant、principal、device 和权限从 JWT 解析，客户端提交的 owner 字段不被信任。资源服务器开关默认关闭时，业务请求仍不会匿名放行；生产环境必须由 IAM/OIDC 部署门禁启用 issuer/JWKS。
+HTTP 入口位于 `/internal/v1/notifications/**` 和 `/internal/v1/sync/**`。业务请求要求已验证 JWT；tenant、principal、device 和权限从 JWT 解析，客户端提交的 owner 字段不被信任。资源服务器开关默认关闭时，业务请求仍不会匿名放行；生产环境必须由 IAM/JWT 部署门禁启用 issuer/JWKS。
 
 ## 纯 Java smoke
 
@@ -25,4 +25,4 @@ javac --release 24 -encoding UTF-8 -d $out $files
 java -cp $out com.englishflow.notification.NotificationServiceSmoke
 ```
 
-预期输出：`notification-service B11-INF-002 smoke: PASS`。这项验证不等同于 Java 25/Maven、MySQL、Kafka、推送供应商、Gateway、OIDC 或真实设备运行态验收。
+预期输出：`notification-service B11-INF-002 smoke: PASS`。这项验证不等同于 Java 25/Maven、MySQL、Kafka、推送供应商、Gateway、JWT 或真实设备运行态验收。

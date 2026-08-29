@@ -2,13 +2,14 @@ package com.englishflow.social.security;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-/** OIDC resource-server seam; disabled by default until the IdP gate is supplied. */
+/** JWT resource-server seam; fail closed unless IAM issuer and JWKS settings are supplied. */
 @ConfigurationProperties(prefix = "security.resource-server")
 public class SocialResourceServerProperties {
 
     private boolean enabled;
     private String issuerUri;
     private String jwkSetUri;
+    private String audience = "yuxuexing-api";
 
     public boolean isEnabled() {
         return enabled;
@@ -32,5 +33,13 @@ public class SocialResourceServerProperties {
 
     public void setJwkSetUri(String jwkSetUri) {
         this.jwkSetUri = jwkSetUri;
+    }
+
+    public String getAudience() {
+        return audience;
+    }
+
+    public void setAudience(String audience) {
+        this.audience = audience;
     }
 }

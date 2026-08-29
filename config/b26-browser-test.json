@@ -15,14 +15,14 @@
     "allowUnverifiedPass": false,
     "requiredEnvironment": [
       "B26_GATEWAY_ORIGIN",
-      "B26_TEST_IDP_ISSUER",
+      "B26_JWT_ISSUER",
       "B26_TEST_ACCESS_TOKEN",
       "B26_BROWSER_EVIDENCE_DIR",
       "B26_DB_RECONCILIATION_FILE",
       "B26_KAFKA_EVIDENCE_FILE"
     ],
     "blockedReasons": [
-      "B25 valid OIDC/JWT and API-to-DB-to-API runtime evidence is not closed",
+      "B25 valid JWT and API-to-DB-to-API runtime evidence is not closed",
       "browser evidence runner and authenticated synthetic account are not attached",
       "Kafka topic/outbox/consumer evidence must be produced before a full journey pass"
     ],
@@ -32,7 +32,7 @@
     {
       "id": "learner-web",
       "origin": "http://127.0.0.1:18180",
-      "auth": "oidc-test-idp",
+      "auth": "self-owned-jwt",
       "protectedRoutes": [
         "/onboarding",
         "/assessment",
@@ -63,7 +63,7 @@
     {
       "id": "mobile",
       "origin": "http://127.0.0.1:18183",
-      "auth": "oidc-test-idp",
+      "auth": "self-owned-jwt",
       "protectedRoutes": [
         "pages/onboarding/onboarding",
         "pages/assessment/assessment",
@@ -93,7 +93,7 @@
     {
       "id": "admin-web",
       "origin": "http://127.0.0.1:18181",
-      "auth": "oidc-test-idp",
+      "auth": "self-owned-jwt",
       "protectedRoutes": [
         "/dashboard",
         "/content",

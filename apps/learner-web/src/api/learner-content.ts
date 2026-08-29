@@ -446,12 +446,12 @@ export const learnerContentPort: LearnerContentPort = {
     await Promise.all([
       request<unknown>('/iam/consents', {
         method: 'PUT',
-        body: { consentType: 'PRIVACY', consentVersion: 'b30-consent-v1', decision: 'ACCEPTED' },
+        body: { type: 'PRIVACY', version: 'b30-consent-v1', decision: 'ACCEPTED' },
         ...withIdempotency(`${input.clientEventId}-privacy`),
       }),
       request<unknown>('/iam/consents', {
         method: 'PUT',
-        body: { consentType: 'TERMS', consentVersion: 'b30-consent-v1', decision: 'ACCEPTED' },
+        body: { type: 'TERMS', version: 'b30-consent-v1', decision: 'ACCEPTED' },
         ...withIdempotency(`${input.clientEventId}-terms`),
       }),
       request<unknown>(READ_MODEL_PATHS.profile, {

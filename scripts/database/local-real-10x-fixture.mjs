@@ -46,6 +46,27 @@ export function sha256(value) {
   return createHash('sha256').update(String(value)).digest('hex');
 }
 
+function canonicalPayload(value) {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return `[${value.map((item) => `${canonicalPayload(item)};`).join('')}]`;
+  if (typeof value === 'object') {
+    return `{${Object.entries(value)
+      .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
+      .map(([key, nested]) => `${quotePayload(key)}:${canonicalPayload(nested)};`)
+      .join('')}}`;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return quotePayload(value);
+}
+
+function quotePayload(value) {
+  return `"${String(value).replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;
+}
+
+export function contentPayloadHash(value) {
+  return sha256(canonicalPayload(value));
+}
+
 export function stableUuid(namespace, index) {
   const hex = sha256(`${FIXTURE_ID}:${namespace}:${index}`).slice(0, 32);
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20)}`;
@@ -142,14 +163,12 @@ const iamPrincipalRows = each((index) => [
   now, now, now,
 ]);
 
-const iamExternalIdentityRows = each((index) => [
-  910000 + index,
-  SUBJECTS[index - 1],
-  'http://localhost:18099/realms/yuxuexing',
-  raw(`UNHEX('${sha256(`${FIXTURE_ID}:oidc:${index}`)}')`),
-  'local-fixture-key-v1',
-  now,
-  now,
+const fixturePasswordHash = '$2a$12$C6UzMDM.H6dfI/f/IKcEe.Vn2xL1Xg9sN8m5p4wJ7w7j9y9e3dF6';
+const iamAccountRows = each((index) => [
+  SUBJECTS[index - 1], fixtureText('account', index) + '@example.invalid', fixturePasswordHash,
+  'learner',
+  'learner.profile.read,learner.profile.write,learning.plan.read,learning.plan.write,assessment.session.read,assessment.session.write,content.read,iam.self.read,iam.self.write',
+  'ACTIVE', 0, null, now, now,
 ]);
 
 const iamDeviceRows = each((index) => [
@@ -163,8 +182,7 @@ const iamSessionRows = each((index) => [
   stableUuid('token-family', index),
   raw(`UNHEX('${sha256(`${FIXTURE_ID}:refresh:${index}`)}')`),
   'ACTIVE', now, raw('DATE_ADD(UTC_TIMESTAMP(6), INTERVAL 30 DAY)'), null, null,
-  null, 'http://localhost:18099/realms/yuxuexing', 'local-web',
-  fixtureText('oidc-session', index), 0,
+  null, 0,
 ]);
 
 const iamConsentRows = each((index) => [
@@ -228,14 +246,16 @@ const contentDefinitionRows = each((index) => [
   'local-fixture', now, contentVersionIds[index - 1], 1, 1,
 ]);
 
-const contentVersionRows = each((index) => [
-  contentVersionIds[index - 1], contentIds[index - 1], 1, 'PUBLISHED', 'AUTHORIZED',
-  sha256(`${FIXTURE_ID}:content-version:${index}`), now, now, 'COURSE',
-  jsonValue({ fixtureId: FIXTURE_ID, contentCode: contentCodes[index - 1], unitCount: 1 }),
-  'LOCAL_FIXTURE', 'LOCAL_FIXTURE', true, jsonValue(['STREAM', 'DOWNLOAD', 'OFFLINE']),
-  now, null, fixtureText('authorization', index), 'local-editor', 'local fixture release',
-  'local-reviewer-1', 'local-reviewer-2', 'local-publisher', null, null, 1, 1, 1,
-]);
+const contentVersionRows = each((index) => {
+  const payload = { fixtureId: FIXTURE_ID, contentCode: contentCodes[index - 1], unitCount: 1 };
+  return [
+    contentVersionIds[index - 1], contentIds[index - 1], 1, 'PUBLISHED', 'ACTIVE',
+    contentPayloadHash(payload), now, now, 'COURSE', jsonValue(payload),
+    'LOCAL_FIXTURE', 'LOCAL_FIXTURE', true, jsonValue(['STREAM', 'DOWNLOAD', 'OFFLINE']),
+    now, null, fixtureText('authorization', index), 'local-editor', 'local fixture release',
+    'local-reviewer-1', 'local-reviewer-2', 'local-publisher', null, null, 1, 1, 1,
+  ];
+});
 
 const contentProjectionRows = each((index) => [
   contentIds[index - 1], contentVersionIds[index - 1], 'LEARNER', 'COURSE',
@@ -840,15 +860,15 @@ function buildStatements() {
   statements.push(insert('iam_service', 'iam_principal',
     ['principal_id', 'tenant_id', 'status', 'adult_gate_status', 'adult_gate_version', 'adult_verified_at', 'created_at', 'updated_at'],
     iamPrincipalRows, ['status', 'adult_gate_status', 'adult_gate_version', 'adult_verified_at', 'updated_at']));
-  statements.push(insert('iam_service', 'iam_external_identity',
-    ['external_identity_id', 'principal_id', 'issuer', 'subject_hash', 'provider_key_id', 'first_seen_at', 'last_seen_at'],
-    iamExternalIdentityRows, ['principal_id', 'issuer', 'subject_hash', 'provider_key_id', 'last_seen_at']));
+  statements.push(insert('iam_service', 'iam_account',
+    ['principal_id', 'identifier', 'password_hash', 'roles', 'permissions', 'status', 'failed_attempts', 'locked_until', 'created_at', 'updated_at'],
+    iamAccountRows, ['identifier', 'password_hash', 'roles', 'permissions', 'status', 'failed_attempts', 'locked_until', 'updated_at']));
   statements.push(insert('iam_service', 'iam_device',
     ['device_id', 'principal_id', 'device_public_id', 'device_id_hash', 'device_type', 'status', 'last_seen_at', 'revoked_at', 'revoke_reason', 'created_at'],
     iamDeviceRows, ['principal_id', 'device_public_id', 'device_id_hash', 'device_type', 'status', 'last_seen_at', 'revoked_at', 'revoke_reason']));
   statements.push(insert('iam_service', 'iam_session',
-    ['session_id', 'principal_id', 'device_id', 'token_family_id', 'refresh_token_hash', 'status', 'issued_at', 'expires_at', 'rotated_at', 'revoked_at', 'revoke_reason', 'provider_issuer', 'provider_client_id', 'provider_session_reference', 'rotation'],
-    iamSessionRows, ['principal_id', 'device_id', 'status', 'issued_at', 'expires_at', 'provider_issuer', 'provider_client_id', 'provider_session_reference', 'rotation']));
+    ['session_id', 'principal_id', 'device_id', 'token_family_id', 'refresh_token_hash', 'status', 'issued_at', 'expires_at', 'rotated_at', 'revoked_at', 'revoke_reason', 'rotation'],
+    iamSessionRows, ['principal_id', 'device_id', 'status', 'issued_at', 'expires_at', 'rotation']));
   statements.push(insert('iam_service', 'iam_consent',
     ['consent_id', 'principal_id', 'consent_type', 'policy_version', 'status', 'granted_at', 'revoked_at'],
     iamConsentRows, ['principal_id', 'consent_type', 'policy_version', 'status', 'granted_at', 'revoked_at']));
@@ -1086,7 +1106,7 @@ const prefixPredicate = (column) => `${column} LIKE '${FIXTURE_PREFIX}-%'`;
 
 export const TABLE_CHECKS = [
   ['iam.principal', 'iam_service.iam_principal', ownerPredicate('principal_id'), 10],
-  ['iam.external-identity', 'iam_service.iam_external_identity', ownerPredicate('principal_id'), 10],
+  ['iam.account', 'iam_service.iam_account', ownerPredicate('principal_id'), 10],
   ['iam.device', 'iam_service.iam_device', ownerPredicate('principal_id'), 10],
   ['iam.session', 'iam_service.iam_session', ownerPredicate('principal_id'), 10],
   ['iam.consent', 'iam_service.iam_consent', ownerPredicate('principal_id'), 10],

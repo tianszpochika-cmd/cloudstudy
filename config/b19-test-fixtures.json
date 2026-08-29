@@ -9,12 +9,12 @@
     "requiredEnv": [
       "B19_RUNTIME_ORIGIN",
       "B19_RUNTIME_ACCOUNT_MATRIX",
-      "B19_RUNTIME_IDP_ISSUER",
+      "B19_RUNTIME_JWT_ISSUER",
       "B19_RUNTIME_KAFKA_BOOTSTRAP",
       "B19_RUNTIME_MYSQL_DSN"
     ],
     "requiredEvidence": [
-      "oidc-authenticated-account",
+      "jwt-authenticated-account",
       "gateway-api-response",
       "mysql-fact-and-projection-reconciliation",
       "kafka-outbox-consumer-dlq-replay"
@@ -108,13 +108,13 @@
       "id": "learner-adult",
       "subject": "synthetic-b19-learner",
       "persona": "adult-learner",
-      "identityProvider": "external-test-idp"
+      "authenticationCenter": "iam-service"
     },
     {
       "id": "admin-operator",
       "subject": "synthetic-b19-admin",
       "persona": "admin-operator",
-      "identityProvider": "external-test-idp"
+      "authenticationCenter": "iam-service"
     }
   ]
 }

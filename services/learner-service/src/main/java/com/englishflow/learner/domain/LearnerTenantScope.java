@@ -13,20 +13,15 @@ public record LearnerTenantScope(String tenantId, String subjectId) {
     public static final String PLATFORM_TENANT = "platform";
     private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
     private static final Pattern PRINCIPAL_ID = Pattern.compile("prn_[A-Za-z0-9._:-]{15,127}");
-    /**
-     * Local OIDC migration boundary. Keycloak emits a UUID subject until IAM's
-     * internal principal mapper is enabled; this is still accepted only after
-     * Spring Security has verified the JWT. It is deliberately narrower than
-     * SAFE_ID so arbitrary request-shaped owner values cannot enter the domain.
-     */
-    private static final Pattern VERIFIED_OIDC_SUBJECT = Pattern.compile(
+    /** A UUID subject is accepted only after the IAM JWT has been verified. */
+    private static final Pattern VERIFIED_JWT_SUBJECT = Pattern.compile(
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
 
     public LearnerTenantScope {
         requireId(tenantId, "tenantId");
         requireId(subjectId, "subjectId");
-        if (!PRINCIPAL_ID.matcher(subjectId).matches() && !VERIFIED_OIDC_SUBJECT.matcher(subjectId).matches()) {
-            throw new IllegalArgumentException("subjectId must be an IAM principal id or verified OIDC subject");
+        if (!PRINCIPAL_ID.matcher(subjectId).matches() && !VERIFIED_JWT_SUBJECT.matcher(subjectId).matches()) {
+            throw new IllegalArgumentException("subjectId must be an IAM principal id or verified JWT subject");
         }
     }
 

@@ -14,6 +14,8 @@
 | ADR-0008 | 四个前端项目与平台目标归属 | accepted |
 | ADR-0009 | v2-980plus 设计与开发任务重基线 | accepted |
 | ADR-0010 | Java 25 LTS + 微服务 + Gateway + IAM/RBAC | accepted |
-| ADR-0011 | 标准 OIDC IdP 接入与 G-IDP 发布 Gate | proposed / G-IDP 未通过 |
+| ADR-0011 | 外部身份提供方方案废止 | superseded / 仅保留迁移审计线索 |
+| ADR-0012 | JWT Bearer（Access Token）与四端会话基线 | accepted / 由 ADR-0013 补充签发边界 |
+| ADR-0013 | 自有 JWT 认证中心 | accepted / 当前正式登录基线 |
 
 ADR-0001 与 ADR-0004 不删除，保留用于解释 `core-api` 的迁移来源。Git 历史仅用于审计，不作为当前开发依据。

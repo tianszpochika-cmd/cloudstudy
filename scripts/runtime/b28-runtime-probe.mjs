@@ -113,7 +113,7 @@ try {
 
   console.log('B28 runtime probe: dependency health');
   nodeScript('scripts/check-local-infra.mjs', ['--require-healthy']);
-  checks.push(pass('dependency-health', 'command:node scripts/check-local-infra.mjs --require-healthy', { dependencies: ['mysql', 'redis', 'minio', 'kafka', 'rabbitmq', 'oidc-idp'] }));
+  checks.push(pass('dependency-health', 'command:node scripts/check-local-infra.mjs --require-healthy', { dependencies: ['mysql', 'redis', 'minio', 'kafka', 'rabbitmq', 'iam-service'] }));
 
   console.log('B28 runtime probe: Flyway-compatible root migration and persisted data');
   nodeScript('scripts/database/run-migrations.mjs', ['--apply']);

@@ -7,7 +7,7 @@
 
 B10 的 8 项任务已经形成可测试的代码层切片，可以进入测试阶段：`learning-service` 和 `assessment-service` 已按独立数据 owner 建立，内容快照通过只读端口进入判分，`attempt.submitted → assessed → mastery.projected` 的事件和可靠性边界已经进入契约/迁移/内存测试夹具，learner-web/mobile 已接入词汇、SRS、阅读、基础练习、错题、报告、语法树、长难句/X-ray、仿写、病句改错和规则写作反馈。
 
-不能据此宣称 Java 25/Maven/Spring Boot 完整构建、真实 Gateway→服务链路、MySQL/Kafka/IdP、浏览器/真机/小程序、生产迁移或 Phase 1 运行态已经完成。
+不能据此宣称 Java 25/Maven/Spring Boot 完整构建、真实 Gateway→服务链路、MySQL/Kafka/IAM JWT 认证中心、浏览器/真机/小程序、生产迁移或 Phase 1 运行态已经完成。
 
 ## 任务交付
 
@@ -20,7 +20,7 @@ B10 的 8 项任务已经形成可测试的代码层切片，可以进入测试�
 | `V2-B10-FE-005` | learner-web/mobile 词汇/SRS、阅读、练习、错题、报告，含幂等、离线和恢复状态 | 浏览器/App/iPad/小程序、弱网、无障碍和会话恢复 |
 | `V2-B10-FE-006` | learner-web/mobile 语法树、X-ray、仿写、病句改错、规则写作反馈，含键盘/拖拽和 Performance 降级 | 浏览器组件回放、触控/键盘和真实内容版本验收 |
 | `V2-B10-MIG-007` | `core-api` B10 compatibility adapter、只读 shadow/对账/route/rollback 状态机、`cmp_b10_*` adapter ledger | legacy/target 双读源、真实对账、Gateway 渐进切换和故障回退 |
-| `V2-B10-TEST-008` | root B10 静态边界、两端 B10 测试、两个领域 smoke、兼容 adapter smoke 和 fixture | 浏览器/跨进程/数据库/Kafka/IdP/设备全链路 |
+| `V2-B10-TEST-008` | root B10 静态边界、两端 B10 测试、两个领域 smoke、兼容 adapter smoke 和 fixture | 浏览器/跨进程/数据库/Kafka/IAM JWT 认证中心/设备全链路 |
 
 ## 关键边界
 
@@ -55,7 +55,7 @@ B10 的 8 项任务已经形成可测试的代码层切片，可以进入测试�
 
 ## 测试阶段入口
 
-1. 准备 JDK 25、Maven、测试 IdP/JWKS 和本地数据库/事件基础设施；先执行 `pnpm ports:check`。
+1. 准备 JDK 25、Maven、测试 IAM JWT 认证中心/JWKS 和本地数据库/事件基础设施；先执行 `pnpm ports:check`。
 2. 以独立 schema/凭据启动 Gateway、learner/content/learning/assessment 和兼容适配边界，验证服务侧 PEP、tenant/owner、版本 pin 和 trace 关联。
 3. 对事件执行至少一次、重复、乱序、DLQ replay、Saga compensation 和 target 不可用回退；确认不产生跨服务直表写入。
 4. 执行 learner-web、Mobile H5、iPad/小程序条件编译和浏览器交互矩阵，覆盖键盘/触控、弱网、离线、主题、国际化和四级性能降级。

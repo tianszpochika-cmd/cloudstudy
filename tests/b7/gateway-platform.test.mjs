@@ -44,7 +44,7 @@ test('Gateway uses a required registered port and exposes health/readiness confi
   assert.match(application, /allowed-origins:/);
   assert.match(application, /rate-limit:/);
   assert.match(application, /anonymous-read-enabled: false/);
-  assert.match(application, /jwt-prevalidation-enabled: \$\{GATEWAY_JWT_PREVALIDATION_ENABLED:false\}/);
+  assert.match(application, /jwt-prevalidation-enabled: \$\{GATEWAY_JWT_PREVALIDATION_ENABLED:true\}/);
   assert.match(read('services/api-gateway/src/main/resources/application-local.yaml'), /on-profile: local/);
   assert.match(read('services/api-gateway/src/main/resources/application-local.yaml'), /anonymous-read-enabled: true/);
 });

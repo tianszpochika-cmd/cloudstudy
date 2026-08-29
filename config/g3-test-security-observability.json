@@ -476,7 +476,7 @@
           "evidenceClass": "runtime",
           "runtimeRequired": true,
           "evidenceId": "G3-E-RUNTIME-TEST",
-          "tools": ["approved authorization runner", "OIDC test identity provider", "audit query"],
+          "tools": ["self-owned JWT login runner", "IAM JWKS endpoint", "audit query"],
           "targets": ["anonymous request", "expired identity", "wrong owner", "wrong tenant", "forged authority header"],
           "scenarios": ["missing-identity-deny", "unknown-permission-deny", "forged-role-deny", "cross-tenant-deny", "pdp-unavailable-deny"],
           "evidenceRequired": ["decision-id", "requestId", "traceId", "http-status", "audit-reference"],

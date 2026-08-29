@@ -240,8 +240,8 @@ export const mobileLearnerContentApi = {
       // Onboarding remains authoritative even when the optional content projection is temporarily unavailable.
     }
     await Promise.all([
-      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { consentType: 'PRIVACY', consentVersion: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-privacy` } }),
-      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { consentType: 'TERMS', consentVersion: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-terms` } }),
+      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'PRIVACY', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-privacy` } }),
+      mobileApiClient.request('/iam/consents', { method: 'PUT', data: { type: 'TERMS', version: 'b30-consent-v1', decision: 'ACCEPTED' }, header: { 'Idempotency-Key': `${input.clientEventId}-terms` } }),
       mobileApiClient.request('/learner/profile', { method: 'PATCH', data: { expectedStateVersion: 0, status: 'ACTIVE', ...(input.birthYear ? { birthYear: input.birthYear, ageConfirmed: input.ageConfirmed ?? true, privacyConsent: input.privacyConsent ?? true, termsConsent: input.termsConsent ?? true } : {}), uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai' }, header: { 'Idempotency-Key': `${input.clientEventId}-profile` } }),
       mobileApiClient.request('/learner/targets', { method: 'PUT', data: { expectedStateVersion: 0, goalCode: input.goal, targetLevel, dailyQuotaMinutes: input.quota, status: 'ACTIVE' }, header: { 'Idempotency-Key': `${input.clientEventId}-target` } }),
       mobileApiClient.request('/learner/preferences', { method: 'PATCH', data: { expectedStateVersion: 0, uiLocale: 'zh-CN', contentLocale: 'en-US', timezone: 'Asia/Shanghai', themeMode: 'SYSTEM', highContrast: false, motionMode: 'FULL' }, header: { 'Idempotency-Key': `${input.clientEventId}-preferences` } }),

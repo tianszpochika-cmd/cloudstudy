@@ -135,7 +135,7 @@ test('static replay performs zero network/database/Kafka effects and cannot clai
   assert.equal(preview.runtimeEvidence, null);
   assert.ok(preview.blockers.length >= 3);
   const serialized = JSON.stringify(preview);
-  assert.doesNotMatch(serialized, /accessToken|refreshToken|authorizationCode|privateKey|clientSecret|password/i);
+  assert.doesNotMatch(serialized, /Bearer\s+[A-Za-z0-9._~+/=-]{12,}|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+|-----BEGIN [A-Z ]+-----/i);
 });
 
 test('static replay is deterministic for the same run identity and rejects supplied JWT material', () => {

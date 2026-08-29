@@ -1,5 +1,5 @@
+import { getInMemoryAccessToken } from '../auth/access-token'
 import { getUniRuntime, type UniRequestOptions } from '../platform/uni-runtime'
-import { readAccessToken } from '../stores/session'
 import { getGatewayBaseUrl } from '../platform/gateway'
 
 const DEFAULT_MOBILE_REQUEST_TIMEOUT_MS = 8000
@@ -58,7 +58,7 @@ export function createMobileApiClient(baseUrl: string, onUnauthorized?: () => Pr
         reject(error)
       }
       const headers = { ...(requestOptions.header ?? {}) }
-      const accessToken = readAccessToken()
+      const accessToken = getInMemoryAccessToken()
       if (accessToken) headers.Authorization = `Bearer ${accessToken}`
 
       const uniRequest: UniRequestOptions = {
@@ -66,6 +66,7 @@ export function createMobileApiClient(baseUrl: string, onUnauthorized?: () => Pr
         url: joinUrl(baseUrl, path),
         header: headers,
         timeout: timeoutMs,
+        withCredentials: true,
         success: async (response) => {
           try {
             let authRetryAttempted = false

@@ -1,93 +1,79 @@
 {
-  "version": 1,
+  "version": 2,
   "batch": "B23",
   "phase": "phase-1",
   "defaultDecision": "deny",
-  "goal": "local-standard-oidc-registration-login-and-service-side-authorization",
-  "idp": {
-    "mode": "external-standard-oidc-local-runtime",
-    "provider": "keycloak",
-    "protocol": "OIDC/OAuth2.1",
-    "issuerEnv": "B23_TEST_IDP_ISSUER_URI",
-    "issuer": "http://127.0.0.1:18099/realms/yuxuexing-local",
-    "authorizationEndpoint": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/auth",
-    "tokenEndpoint": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/token",
-    "jwksUri": "http://127.0.0.1:18099/realms/yuxuexing-local/protocol/openid-connect/certs",
+  "authentication": {
+    "mode": "self-owned-jwt",
+    "login": "POST /api/v1/auth/login",
+    "registration": "POST /api/v1/auth/register",
+    "issuer": "http://127.0.0.1:18087",
+    "issuerEnv": "B23_JWT_ISSUER_URI",
+    "jwksUri": "http://127.0.0.1:18087/api/v1/auth/jwks",
+    "jwksEnv": "B23_JWT_JWKS_URI",
+    "algorithm": "RS256",
     "audience": "yuxuexing-api",
-    "registrationEnabled": true,
-    "pkceMethod": "S256",
-    "clientSecretInRepository": false,
-    "platformTokenServer": false
+    "audienceEnv": "B23_JWT_AUDIENCE",
+    "tokenType": "access",
+    "requiredClaims": ["iss", "sub", "aud", "exp", "iat", "nbf", "jti", "token_type", "scope", "roles", "permissions", "tenant_id", "session_id"],
+    "noBrowserCallback": true,
+    "noExternalIdentityProvider": true
   },
-  "clients": {
-    "learnerWeb": {
-      "clientIdEnv": "B23_OIDC_LEARNER_WEB_CLIENT_ID",
-      "redirectUrisEnv": "B23_OIDC_LEARNER_WEB_REDIRECT_URIS"
-    },
-    "mobileH5": {
-      "clientIdEnv": "B23_OIDC_MOBILE_H5_CLIENT_ID",
-      "redirectUrisEnv": "B23_OIDC_MOBILE_H5_REDIRECT_URIS"
-    },
-    "adminWeb": {
-      "clientIdEnv": "B23_OIDC_ADMIN_WEB_CLIENT_ID",
-      "redirectUrisEnv": "B23_OIDC_ADMIN_WEB_REDIRECT_URIS"
-    }
+  "sessions": {
+    "refreshEndpoint": "POST /api/v1/auth/token/refresh",
+    "logoutEndpoint": "POST /api/v1/auth/logout",
+    "revokeEndpoint": "POST /api/v1/auth/sessions/{sessionId}/revoke",
+    "refreshToken": "opaque",
+    "refreshCredentialStorage": "sha256-digest-only",
+    "rotation": "every-use",
+    "replay": "revoke-token-family-and-device-session",
+    "webStorage": "HttpOnly-Secure-SameSite-cookie",
+    "nativeStorage": "Keychain-or-Keystore-only",
+    "deviceManagement": true,
+    "revocationDecision": "fail-closed"
+  },
+  "passwordSecurity": {
+    "hash": "bcrypt-cost-12-or-stronger",
+    "minimumLength": 12,
+    "loginRateLimit": "per-identifier-and-client-ip",
+    "failedLoginLockout": "5-failures-15-minutes",
+    "resetRequestEndpoint": "POST /api/v1/auth/password-reset/request",
+    "resetConfirmEndpoint": "POST /api/v1/auth/password-reset/confirm",
+    "resetToken": "one-time-opaque-short-lived-digest-only",
+    "resetRequestNonEnumerating": true
   },
   "iam": {
     "serviceId": "iam-service",
     "portKey": "iam-service",
     "principalPersistence": "mysql-iam-owner",
     "sessionPersistence": "mysql-iam-owner",
-    "refreshCredentialStorage": "sha256-digest-only",
     "tenantDerivation": "server-owned-principal",
     "adultMinimumAge": 18,
-    "adultGateDecision": "fail-closed",
-    "revocationDecision": "fail-closed"
+    "adultGateDecision": "fail-closed"
   },
   "gateway": {
     "serviceId": "api-gateway",
     "portKey": "api-gateway",
     "resourceServerEnabledEnv": "GATEWAY_RESOURCE_SERVER_ENABLED",
-    "issuerEnv": "OIDC_ISSUER_URI",
+    "issuerEnv": "IAM_JWT_ISSUER",
+    "jwksEnv": "IAM_JWT_JWKS_URI",
+    "audienceEnv": "IAM_JWT_AUDIENCE",
     "protectedApiDefault": "authenticated",
     "publicPaths": [
       "/actuator/health/**",
       "/api/v1/health",
       "/api/v1/public/commerce/catalog",
-      "/api/v1/auth/oidc/**"
+      "/api/v1/auth/register",
+      "/api/v1/auth/login",
+      "/api/v1/auth/token/refresh",
+      "/api/v1/auth/jwks",
+      "/api/v1/auth/password-reset/**"
     ],
-    "forbiddenClientAuthorityHeaders": [
-      "X-Role",
-      "X-B5-Role",
-      "X-Tenant-Id",
-      "X-Owner-Id"
-    ]
+    "forbiddenClientAuthorityHeaders": ["X-Role", "X-B5-Role", "X-Tenant-Id", "X-Owner-Id", "X-Permission"]
   },
   "runtimeEvidence": {
-    "static": [
-      "oidc-contract",
-      "local-idp-config",
-      "pkce-state-nonce",
-      "jwks-issuer-audience",
-      "principal-session-migration",
-      "gateway-default-deny"
-    ],
-    "runtime": [
-      "registration",
-      "authorization-code-callback",
-      "principal-me",
-      "valid-jwt-to-protected-api",
-      "invalid-jwt-401",
-      "revoked-jwt-401",
-      "client-authority-header-rejected",
-      "provider-unavailable-fail-closed"
-    ],
-    "requiredPrerequisites": [
-      "java-25",
-      "maven-3.9.9-or-newer",
-      "docker-or-equivalent",
-      "mysql-8",
-      "redis-7"
-    ]
+    "static": ["jwt-contract", "jwks-publisher", "issuer-audience-algorithm", "refresh-replay-policy", "gateway-default-deny", "client-authority-rejection"],
+    "runtime": ["registration", "password-login", "principal-me", "valid-jwt-to-protected-api", "invalid-jwt-401", "expired-token-refresh", "refresh-rotation", "refresh-replay-401", "logout-revocation", "device-revocation", "client-authority-header-rejected", "wrong-issuer-audience-signature-algorithm-rejected", "password-lockout", "password-reset"],
+    "requiredPrerequisites": ["java-25", "maven-3.9.9-or-newer", "mysql-8", "iam-service-18087", "gateway-18070"]
   }
 }

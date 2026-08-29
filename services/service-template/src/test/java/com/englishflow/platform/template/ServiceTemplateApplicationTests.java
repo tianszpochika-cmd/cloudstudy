@@ -16,7 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
             "service.schema=service_template_test",
             "service.redis-namespace=service-template-test",
             "service.port=18099",
-            "management.tracing.export.enabled=false"
+            "management.tracing.export.enabled=false",
+            "management.otlp.metrics.export.enabled=false"
         })
 class ServiceTemplateApplicationTests {
 

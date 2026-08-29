@@ -20,7 +20,7 @@
     "runtimeRequired": true,
     "blockedReasons": [
       "approved iOS, Android and iPad physical or remote-device evidence is not attached",
-      "authenticated Phase 1 OIDC, Gateway and database-backed journey evidence is not attached",
+      "authenticated Phase 1 JWT, Gateway and database-backed journey evidence is not attached",
       "PWA install, update and cache-invalidation evidence is not attached",
       "微信开发者工具或批准设备的条件编译产物与返回/分享证据 is not attached"
     ],
@@ -386,8 +386,8 @@
       "task": "V2-B27-DEV-001",
       "kind": "login-boundary",
       "targetIds": ["h5-android", "h5-ios", "android", "ios", "ipad", "windows-pwa", "wechat-miniapp"],
-      "assertions": ["anonymous-opens-login", "oidc-return-to-is-bounded", "authenticated-data-is-server-backed", "expired-or-revoked-session-returns-to-login", "no-token-in-url-or-logs"],
-      "evidenceRequired": ["oidc-trace", "screen-capture", "api-response", "database-reconciliation"],
+      "assertions": ["anonymous-opens-login", "login-return-to-is-bounded", "authenticated-data-is-server-backed", "expired-or-revoked-session-returns-to-login", "no-token-in-url-or-logs"],
+      "evidenceRequired": ["jwt-auth-trace", "screen-capture", "api-response", "database-reconciliation"],
       "status": "runtimeBlocked",
       "runtimeEvidence": null
     },

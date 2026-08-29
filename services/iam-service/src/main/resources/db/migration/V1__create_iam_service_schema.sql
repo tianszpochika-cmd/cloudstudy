@@ -1,4 +1,4 @@
--- B29/B30 local-real IAM owner schema. The IdP remains the only token issuer.
+-- Self-owned IAM schema: account credentials, server-derived authority and JWT session facts.
 CREATE TABLE IF NOT EXISTS iam_principal (
   principal_id CHAR(36) NOT NULL,
   tenant_id VARCHAR(64) NOT NULL DEFAULT 'platform',
@@ -9,21 +9,24 @@ CREATE TABLE IF NOT EXISTS iam_principal (
   created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (principal_id),
-  UNIQUE KEY uk_iam_principal_tenant (tenant_id, principal_id)
+  UNIQUE KEY uk_iam_principal_tenant (tenant_id, principal_id),
+  CONSTRAINT chk_iam_principal_adult_gate CHECK (adult_gate_status IN ('PENDING', 'APPROVED', 'VERIFIED', 'REJECTED'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS iam_external_identity (
-  external_identity_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS iam_account (
   principal_id CHAR(36) NOT NULL,
-  issuer VARCHAR(255) NOT NULL,
-  subject_hash BINARY(32) NOT NULL,
-  provider_key_id VARCHAR(128) NULL,
-  first_seen_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  last_seen_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  PRIMARY KEY (external_identity_id),
-  UNIQUE KEY uk_iam_external_identity (issuer, subject_hash),
-  UNIQUE KEY uk_iam_principal_issuer (principal_id, issuer),
-  KEY idx_iam_external_principal (principal_id)
+  identifier VARCHAR(128) NOT NULL,
+  password_hash VARCHAR(512) NOT NULL,
+  roles TEXT NOT NULL,
+  permissions TEXT NOT NULL,
+  status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
+  failed_attempts INT NOT NULL DEFAULT 0,
+  locked_until DATETIME(6) NULL,
+  created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (principal_id),
+  UNIQUE KEY uk_iam_account_identifier (identifier),
+  KEY idx_iam_account_status (status, locked_until)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS iam_device (
@@ -55,14 +58,22 @@ CREATE TABLE IF NOT EXISTS iam_session (
   rotated_at DATETIME(6) NULL,
   revoked_at DATETIME(6) NULL,
   revoke_reason VARCHAR(64) NULL,
-  provider_issuer VARCHAR(512) NULL,
-  provider_client_id VARCHAR(128) NOT NULL DEFAULT 'default',
-  provider_session_reference VARCHAR(256) NULL,
   rotation BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (session_id),
   UNIQUE KEY uk_iam_session_refresh_hash (refresh_token_hash),
   UNIQUE KEY uk_iam_session_family (token_family_id),
   KEY idx_iam_session_principal_status (principal_id, status, expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS iam_refresh_token_history (
+  session_id CHAR(36) NOT NULL,
+  token_family_id CHAR(36) NOT NULL,
+  refresh_token_hash BINARY(32) NOT NULL,
+  rotation BIGINT NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  PRIMARY KEY (session_id, rotation),
+  UNIQUE KEY uk_iam_refresh_history_hash (refresh_token_hash),
+  KEY idx_iam_refresh_history_family (token_family_id, rotation)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS iam_consent (

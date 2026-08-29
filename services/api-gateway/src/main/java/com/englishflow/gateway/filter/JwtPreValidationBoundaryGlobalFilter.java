@@ -59,14 +59,15 @@ public class JwtPreValidationBoundaryGlobalFilter implements GlobalFilter, Order
         if (HttpMethod.OPTIONS.equals(method) && path.startsWith("/api/")) {
             return true;
         }
-        if ((HttpMethod.GET.equals(method) || HttpMethod.POST.equals(method))
-                && path.startsWith("/api/v1/auth/oidc/")) {
-            return true;
-        }
         if (HttpMethod.POST.equals(method)
-                && ("/api/v1/iam/session/refresh".equals(path) || "/api/v1/auth/refresh".equals(path))) {
+                && ("/api/v1/auth/register".equals(path)
+                || "/api/v1/auth/login".equals(path)
+                || "/api/v1/auth/token/refresh".equals(path)
+                || "/api/v1/auth/password-reset/request".equals(path)
+                || "/api/v1/auth/password-reset/confirm".equals(path))) {
             return true;
         }
+        if (HttpMethod.GET.equals(method) && "/api/v1/auth/jwks".equals(path)) return true;
         return (HttpMethod.GET.equals(method) || HttpMethod.HEAD.equals(method))
                 && "/api/v1/health".equals(path);
     }

@@ -12,7 +12,7 @@
 
 - Java 25 LTS、Spring Boot 4.1/Spring Cloud 对齐的统一 BOM、服务模板和容器构建矩阵。
 - `api-gateway`：路由、`/api/v1` 版本、限流、CORS、requestId/traceId、JWT 预校验、直连阻断和回滚路由。
-- `iam-service`：通过 ADR 选择的标准 OIDC/OAuth 2.1 IdP 集成、用户/租户/设备/会话、Token 撤销、密钥轮换、RBAC + ABAC 策略和审计；不自研 Token 服务器。
+- `iam-service`：自有账号密码认证中心、短时 RS256/ES256 JWT、JWKS、公钥轮换、用户/租户/设备/会话、Refresh Token 撤销/轮换、RBAC + ABAC 策略和审计；生产私钥由 KMS/Vault 或挂载 Secret 注入。
 - 服务侧 Spring Security Resource Server/PEP；默认拒绝；正常热路径使用版本化策略包/短时安全缓存，高风险/动态策略才调用 PDP；移除客户端角色头和客户端 owner/tenant 作为权限事实。
 - OpenAPI/AsyncAPI/JSON Schema 生成与兼容门禁；MySQL schema owner、Flyway、Redis namespace、`TenantScope` 查询守卫、Outbox 和 Kafka 兼容集成事实事件总线。
 - OpenTelemetry、SLO/错误预算、健康探针、超时/重试/熔断、DLQ/回放、备份/PITR、RPO/RTO 和 Kubernetes/GitOps 发布基座。
@@ -20,7 +20,7 @@
 
 ### P0 进入下一阶段的 Gate
 
-- Gateway/IAM/RBAC 的契约、标准 IdP 集成、运行、拒绝、撤销、密钥轮换、PDP fail-closed、跨租户隔离、观测和回滚证据齐全。
+- Gateway/IAM/RBAC 的契约、自有 JWT 集成、运行、拒绝、撤销、密钥轮换、PDP fail-closed、跨租户隔离、观测和回滚证据齐全。
 - 至少一个学习读链路和一个关键写链路完成“Gateway → 服务侧 PEP → 领域事实 → Outbox → Trace/Audit”回放，且内容/题目、attempt/判分、掌握度/复习分别由唯一 owner 管理。
 - 新服务模板能在本地固定端口和 CI 中启动；跨服务直写、共享 ORM entity、客户端角色头扫描为 0。
 
@@ -28,30 +28,30 @@
 
 [v2 B7+ 代码重塑与交互测试任务基线](../../requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 是代码重塑和 B15–B22 静态运行/发布基础的任务入口；[B23+ Phase 1 登录、真实数据与测试任务基线](../../requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md) 是认证、真实数据和原真机/发布门禁入口；[B28+ 本机真实全栈与 MCP 浏览器验收基线](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md) 是当前本机 Web/H5 收口入口。当前 Phase 1 共规划 180 项 B7+ 编号任务：原 B7–B27 为 135 项，新增 B28–B36 本机专项 45 项：
 
-- B7–B8：服务模板、契约、共享国际化/主题 Token、Gateway、标准 OIDC IdP/IAM、服务侧 PEP 与成人 Gate；
+- B7–B8：服务模板、契约、共享国际化/主题 Token、Gateway、自有 JWT/IAM、服务侧 PEP 与成人 Gate；
 - B9–B13：learner/content、learning/assessment、media/离线、游戏/社群、商业化/Admin/官网公开数据；
 - B14：Phase 1 Strangler 收敛、兼容路由与代码级全链路回归；
 - B15：Java 25/Maven/Docker、本地基础设施、独立进程、迁移和观测运行态；
-- B16：真实 Gateway、OIDC、IAM/RBAC/ABAC、服务侧 PEP 和权限回归；
+- B16：真实 Gateway、自有 JWT、IAM/RBAC/ABAC、服务侧 PEP 和权限回归；
 - B17：领域服务、数据库、Outbox/Kafka、关键读写链路和 Saga 运行态；
 - B18：四端真实 API 联调、国际化/主题、官网公开边界和核心交互闭环；
 - B19：契约、集成、E2E、浏览器、真机、弱网、性能和无障碍测试；
 - B20：安全、隐私、版权、支付 sandbox、备份恢复和灾备 Gate；
 - B21：staging、不可变 RC、SLO/告警、回滚和 Go/No-Go；
 - B22：生产小流量上线、迁移对账、观察期和 Phase 1 收口。
-- B23：标准 OIDC 测试 IdP、注册/登录、JWKS、IAM 本地事实、Gateway 和服务侧 RBAC/ABAC/PEP。
-- B24：Mobile H5/Web 全局登录门禁、OIDC 回调、成人 Gate、onboarding、401/403、国际化/主题和交互边界。
+- B23：自有 IAM 账号密码注册/登录、JWT/JWKS、会话事实、Gateway 和服务侧 RBAC/ABAC/PEP。
+- B24：Mobile H5/Web 全局登录门禁、JWT 会话恢复/刷新、成人 Gate、onboarding、401/403、国际化/主题和交互边界。
 - B25：本地 MySQL 数据 owner、Phase 1 合成 fixture、内容/课程、学习/练习/测评/SRS/报告真实读写。
 - B26：Kafka/Outbox/消费者可靠性、跨服务学习闭环、浏览器/H5 真实数据测试、缺陷修复和回归。
 - B27：iOS/Android/iPad/PWA/微信小程序真机、专项质量、production-like staging、不可变 RC、回滚、Go/No-Go 和测试交接。
 - B28–B29：本机 Java 25/Docker/基础设施、迁移、14 个后端进程、持久化和观测真实运行。
-- B30–B32：标准 OIDC 注册登录、IAM/RBAC、MySQL API 读写、完整学习链和 Kafka/Redis 联动。
+- B30–B32：自有 JWT 注册登录、IAM/RBAC、MySQL API 读写、完整学习链和 Kafka/Redis 联动。
 - B33：learner-web、Mobile H5、admin-web、official-site 与真实 Gateway/API 联调和交互修复。
 - B34–B35：Codex Browser MCP 真浏览器功能测试、异常恢复、数据一致性和缺陷回归。
 - B36：本机连续冷启动、双端完整旅程、数据/事件对账和 `LOCAL-TEST-PASS/NO-PASS` 交接。
 - G0–G4：横切 DoD 治理门禁代码化，覆盖范围、契约数据、实现交互、测试安全观测和发布回滚；它们不替代 B15–B27 的真实运行态 Gate。
 
-截至 2026-08-25，B18–B27 已完成相应代码与静态 Gate 基础，B28–B29 已通过本机基础设施、14 个后端进程、固定端口、Gateway 受保护边界、owner schema、观测和 fail-closed 运行门禁；B30–B33 的自动化/API/DB/Kafka/Redis/四端构建运行切片也已通过。Browser MCP 已验证真实页面、未登录门禁、公开投影、Mobile H5 390x844 登录入口和异常恢复，并进入 Keycloak 登录/注册页，但认证后注册、登录、学习旅程尚未提交，故 B34–B36 当前仍为收口中，交接保持 `LOCAL-TEST-NO-PASS`。原 B27 的 iOS/Android/iPad、微信、远程真机、staging、RC 和生产交接运行 Gate 暂缓，发布结论继续保持 `NO-GO`。
+截至 2026-08-25，B18–B27 已完成相应代码与静态 Gate 基础，B28–B29 已通过本机基础设施、14 个后端进程、固定端口、Gateway 受保护边界、owner schema、观测和 fail-closed 运行门禁；B30–B33 的自动化/API/DB/Kafka/Redis/四端构建运行切片也已通过。Browser MCP 已验证真实页面、未登录门禁、公开投影、Mobile H5 390x844 登录入口和异常恢复；当前认证后注册、登录、学习旅程尚未提交，故 B34–B36 当前仍为收口中，交接保持 `LOCAL-TEST-NO-PASS`。原 B27 的 iOS/Android/iPad、微信、远程真机、staging、RC 和生产交接运行 Gate 暂缓，发布结论继续保持 `NO-GO`。
 
 此处 B7–B27 的“代码/静态完成”不代表真实运行完成。当前本机专项在 B28–B33 完成后进入 B34 MCP 浏览器正式测试，B34–B36 通过后只能宣告本机 Web/H5 真实数据功能测试完成。Phase 1 生产上线仍须恢复并通过原 B27 以及 B15–B22 的发布、回滚和观察期 Gate。F2/F3 保留在未来路线图中，不计入当前 Phase 1。
 
@@ -80,11 +80,11 @@
 ### Phase 1 从代码基线到上线的 Gate 顺序
 
 1. **B15 运行环境 Gate**：Java 25/Maven、基础设施、独立服务、迁移、观测和一键 smoke 可重复。
-2. **B16 权限运行 Gate**：真实测试 IdP、Gateway、OIDC、RBAC/ABAC、撤销、密钥轮换和默认拒绝可回放。
+2. **B16 权限运行 Gate**：自有 JWT/JWKS、Gateway、RBAC/ABAC、撤销、公钥轮换和默认拒绝可回放。
 3. **B17 领域运行 Gate**：关键读写链路、数据库 owner、Outbox/Kafka、幂等、DLQ、补偿和回滚证据齐全。
 4. **B18–B22 运行/发布基础 Gate**：四端 API 联调、系统测试矩阵、安全/隐私/灾备、staging/RC 和上线方案具备可执行证据。
-5. **B23 认证运行 Gate**：标准 OIDC 注册/登录、JWKS、IAM 本地事实、Gateway/服务侧 PEP、撤销和默认拒绝通过。
-6. **B24 前端登录门禁 Gate**：H5/Web 未登录强制登录、回调回跳、成人 Gate、真实 401/403、国际化/主题和交互状态通过。
+5. **B23 认证运行 Gate**：自有账号密码注册/登录、JWT/JWKS、IAM 本地事实、Gateway/服务侧 PEP、撤销和默认拒绝通过。
+6. **B24 前端登录门禁 Gate**：H5/Web 未登录强制登录、JWT 会话恢复/刷新、成人 Gate、真实 401/403、国际化/主题和交互状态通过。
 7. **B25 本地真实数据 Gate**：内容/课程/学习/练习/测评/SRS/报告从本地 MySQL 真实读写，刷新/重启/幂等和 owner 对账通过。
 8. **B26 正式测试 Gate**：Kafka/Outbox 跨服务闭环、浏览器/H5 真实数据旅程、弱网/响应式/权限回归和缺陷证据通过。
 9. **B27 真机与交接 Gate**：iOS/Android/iPad/PWA/小程序、专项质量、staging/RC、回滚、Go/No-Go 和 Phase 1 测试交接完成。

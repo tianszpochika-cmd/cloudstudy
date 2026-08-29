@@ -46,7 +46,7 @@ export function validateB31Static(root = repositoryRoot) {
   required(gateway.includes('b31-content-admin-commands'), 'Gateway must expose the B31 admin command route', errors);
   required(gateway.includes('/internal/v1/content/admin-commands'), 'Gateway must rewrite admin commands to content-service internal boundary', errors);
   required(learnerStore.includes('LOCAL_REAL_RUNTIME') && learnerStore.includes('submitAnswerAgainstServer') && learnerStore.includes('completeTaskAgainstServer'), 'learner local-real mode must fail closed on assessment/task writes', errors);
-  required(mobileApi.includes("'/iam/consents'") && mobileApi.includes("consentType: 'PRIVACY'") && mobileApi.includes("consentType: 'TERMS'"), 'Mobile onboarding must persist IAM consent facts', errors);
+  required(mobileApi.includes("'/iam/consents'") && mobileApi.includes("type: 'PRIVACY'") && mobileApi.includes("type: 'TERMS'"), 'Mobile onboarding must persist IAM consent facts', errors);
   required(adminApi.includes("'/admin/content-commands"), 'admin frontend must use the Gateway content command contract', errors);
   required(typeof officialPackage.scripts?.dev === 'string' && officialPackage.scripts.dev.includes('--strictPort'), 'official site must enforce its fixed port', errors);
   return { result: errors.length ? 'FAIL' : 'PASS', errors, summary: { fixtureEntities: fixture.entities.length, commandBoundary: true, localRealFailClosed: true } };

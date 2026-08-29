@@ -8,8 +8,8 @@
 | 能力 ID | 能力 | 主要 owner | 目标阶段 | 依赖 | 最低交付证据 |
 |---|---|---|---|---|---|
 | ARCH-PLAT-001 | v2 设计、ADR、契约、任务和验收追溯基线 | 架构治理 | Platform 0 | v2-980plus、ADR-0009/0010 | 文档链接、ID 追溯检查、未决项清单 |
-| ARCH-GW-001 | API Gateway、外部路由与 `/api/v1` 版本治理 | `api-gateway` | Platform 0 | OIDC/JWT、端口/部署基线 | 路由测试、直连阻断、限流、requestId/traceId、回滚 |
-| ARCH-IAM-001 | 标准 OIDC/OAuth 2.1 IdP 集成、用户/租户/设备/会话/同意 | `iam-service` | Platform 0 | IdP 选型 ADR、密钥管理、契约 | 授权码+PKCE、刷新/撤销/密钥轮换/重放测试、principal 映射和审计；无自研 Token 服务器 |
+| ARCH-GW-001 | API Gateway、外部路由与 `/api/v1` 版本治理 | `api-gateway` | Platform 0 | 自有 JWT/JWKS、端口/部署基线 | 路由测试、直连阻断、限流、requestId/traceId、回滚 |
+| ARCH-IAM-001 | 自有账号密码 JWT 认证中心、用户/租户/设备/会话/同意 | `iam-service` | Platform 0 | 自有 JWT ADR、密钥管理、契约 | 登录/刷新/登出/撤销、密码策略、JWKS 密钥轮换/重放测试、principal 映射和审计 |
 | ARCH-IAM-002 | RBAC + ABAC、资源 owner、阶段、版权与授权执行 | `iam-service` + 服务 PEP/PDP | Platform 0 | IAM、资源策略模型 | allow/deny 矩阵、服务侧 PEP、本地策略/短时安全缓存、PDP 故障 fail-closed、403 语义、无客户端角色头 |
 | ARCH-DATA-001 | 服务数据库/schema owner、Flyway、Redis namespace、tenant 查询守卫 | 各领域服务 | Platform 0/1 | 服务边界、IAM | 跨服务写入扫描、迁移演练、数据库权限账号验证、跨租户拒绝/复合索引测试 |
 | ARCH-EVT-001 | Kafka 事件总线、Outbox、AsyncAPI、DLQ 和回放 | 平台/Workflow | Platform 0/1 | 数据 owner、Trace | 集成事实筛查、断电重试、聚合键分区、消费者去重、旧 schema、DLQ 回放；不以 Kafka 代替 RPC/事务 |
@@ -38,7 +38,7 @@ ARCH-PLAT-001
   └─ ARCH-SVC-001 → 按领域拆分新的业务任务
 ```
 
-`ARCH-IAM-001` 已有 B8 provider-neutral OIDC/PKCE、principal/session/adult-Gate 代码与契约静态证据，但 G-IDP/真实 JWKS/运行态仍未通过；`ARCH-IAM-002` 已有服务模板 PEP、RBAC+ABAC 规则和 fail-closed 静态证据，但尚未覆盖每个领域服务。`ARCH-GW-001`、`ARCH-API-001`、`ARCH-OBS-001` 已有 B7/B8 代码/静态证据，但在 Java 25 运行态、跨进程回放和安全 Gate 通过前，任何标注“已完成 RBAC/微服务迁移”的任务都必须退回待验收。
+`ARCH-IAM-001` 已有自有账号密码 JWT、RS256/JWKS、principal/session/adult-Gate 代码与契约静态证据，但真实 IAM HTTP、持久化和 JWKS 运行态仍未通过；`ARCH-IAM-002` 已有服务模板 PEP、RBAC+ABAC 规则和 fail-closed 静态证据，但尚未覆盖每个领域服务。`ARCH-GW-001`、`ARCH-API-001`、`ARCH-OBS-001` 已有 B7/B8 代码/静态证据，但在 Java 25 运行态、跨进程回放和安全 Gate 通过前，任何标注“已完成 RBAC/微服务迁移”的任务都必须退回待验收。
 
 ## 3. 业务域映射原则
 

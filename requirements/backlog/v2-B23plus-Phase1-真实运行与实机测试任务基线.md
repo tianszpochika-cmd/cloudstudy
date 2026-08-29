@@ -1,7 +1,7 @@
 # v2 B23–B27 Phase 1 登录、真实数据与测试任务基线
 
 > 基线 ID：V2-PHASE1-AUTH-DATA-20260823
-> 状态：B23/B24 代码与静态验证已完成，真实 OIDC 运行 Gate 待验收；B25 代码、契约、fixture 和本地 MySQL 回放已完成，API/JWT/Redis/重启证据待补；B26 代码与静态验证已完成，Kafka/Outbox、认证后数据和正式浏览器运行证据待验收；B27 代码与静态验证已完成，真机/发布/交接运行证据待验收。
+> 状态：B23/B24 代码与静态验证已完成，平台自有 JWT 登录运行 Gate 待验收；B25 代码、契约、fixture 和本地 MySQL 回放已完成，API/JWT/Redis/重启证据待补；B26 代码与静态验证已完成，Kafka/Outbox、认证后数据和正式浏览器运行证据待验收；B27 代码与静态验证已完成，真机/发布/交接运行证据待验收。
 > 范围：只覆盖 Phase 1 18+ 成人产品从“打开即登录”到“注册、登录、真实本地数据闭环、浏览器/真机验收和测试交接”。不新增 Phase 2 AI、Phase 3 K12 或新的默认业务入口。
 > 上游：v2 B7+ 代码重塑与交互测试任务基线、G0–G4 治理门禁任务基线、v2 微服务目标架构、v2-980plus 设计包。
 > 2026-08-24 本机专项调整：B27 的 iOS/Android/iPad、微信小程序、远程真机、staging、RC 和生产交接运行项暂缓，不再阻塞当前“本机 Web/H5 + 真实数据库”目标；接续执行以 [`v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](./v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md) 为准。
@@ -10,15 +10,15 @@
 
 原 B23–B27 直接从浏览器实机、移动真机和上线验收开始，遗漏了用户目标的两个前置条件：
 
-1. 没有真实 OIDC/IAM，就不能完成注册、登录、会话和受保护业务访问；
+1. 没有可运行的自有 IAM、JWT Bearer 和会话，就不能完成注册、登录、会话和受保护业务访问；
 2. 没有本地内容/学习数据 fixture、持久化写链和 Kafka 事件，就不能验证真实学习功能。
 
 因此本基线把任务依赖调整为：
 
 | 批次 | 类型 | 目标 | 是否属于正式测试 |
 |---|---|---|---|
-| B23 | 认证基础开发 | 本地测试 IdP、注册、OIDC/JWKS、IAM 会话、Gateway/服务侧权限 | 否，开发前置 |
-| B24 | 前端登录与交互开发 | H5/Web 全局登录门禁、回调、成人 Gate、401/403 和登录后交互 | 否，开发前置 |
+| B23 | 认证基础开发 | 自有 IAM 账号密码登录、JWT/JWKS、Refresh Token 会话、Gateway/服务侧权限 | 否，开发前置 |
+| B24 | 前端登录与交互开发 | H5/Web 全局登录门禁、统一登录页、成人 Gate、401/403 和登录后交互 | 否，开发前置 |
 | B25 | 真实本地数据开发 | MySQL 数据 owner、fixture、内容、学习、练习、测评、SRS 和报告写链 | 否，开发前置 |
 | B26 | 真实运行测试 | Kafka/Outbox 跨服务闭环、浏览器/H5 真实数据测试、缺陷修复和回归 | 是，正式测试主体 |
 | B27 | 真机与发布验收 | iOS/Android/iPad/PWA/小程序、专项质量、staging、RC 和测试交接 | 是，测试收口与发布门禁 |
@@ -30,15 +30,15 @@
 必须能够从干净浏览器完整复现以下旅程：
 
 1. 打开 Mobile H5 或 learner-web，未登录用户首先看到登录页，不能直接使用受保护学习功能；
-2. 通过标准 OIDC 测试 IdP 完成注册和登录；不使用假 Token、客户端角色头或固定验证码冒充成功；
-3. OIDC 回调后，Gateway 和服务侧验证 JWT/JWKS，iam-service 在本地 MySQL 建立 principal、设备、会话、成人同意和权限事实；
+2. 通过统一自有登录页提交账号密码到 IAM；不使用假 Token、客户端角色头或固定验证码冒充成功；
+3. IAM 校验密码并签发短时 RS256 JWT，Gateway 和每个领域服务独立通过 JWKS 验证，iam-service 在本地 MySQL 建立 principal、设备、会话、成人同意和权限事实；
 4. 完成成人 Gate、学习目标和 onboarding，写入 learner-service 所有者的本地 schema；
 5. 从本地 content-service 读取已发布课程、单词、练习和测评版本；
 6. 完成练习和测评，assessment-service、learning-service 写入 attempt、判分、掌握度、SRS、报告等真实事实；
 7. Outbox/Kafka 传播跨服务集成事件，重复提交、刷新、重启后结果仍一致；
 8. 退出、Token 过期或撤销后，受保护页面回到登录/权限状态，不能退化为空列表或匿名成功。
 
-本地真实数据的定义：身份凭证由批准的标准 OIDC IdP 管理；用户主体、同意、会话和全部 Phase 1 领域事实由本地服务 schema 管理。Redis 只做缓存/锁/投影，Kafka 只传递集成事实，不能以 localStorage、内存 Map、假数据或页面 fallback 替代数据库事实。
+本地真实数据的定义：账号凭证、密码哈希、用户主体、同意、会话和全部 Phase 1 领域事实由平台自有服务 schema 管理。Redis 只做缓存/锁/投影，Kafka 只传递集成事实，不能以 localStorage、内存 Map、假数据或页面 fallback 替代数据库事实。
 
 ## 3. 依赖与执行顺序
 
@@ -52,25 +52,25 @@
 - 测试主体、课程、媒体和支付数据必须合成或脱敏；
 - Phase 1 不启用 LLM、ASR、AI 发音评分、RTC、数字人、K12 和真实支付；
 - 页面打开、HTTP 200、静态目录、Mock 或同 JVM 调用不能关闭运行态任务；
-- 标准 OIDC IdP 必须通过 ADR 选择；iam-service 不能变成自研 Token Server。
+- 自有 JWT profile 必须通过 ADR、OpenAPI 和运行配置锁定；iam-service 是账号密码认证中心，负责签发 JWT、发布 JWKS 和管理会话，不接受客户端权限覆盖。
 
-## 4. B23 — 认证基础与本地 OIDC 运行链（7 项）
+## 4. B23 — 自有 JWT Bearer / IAM 运行链（7 项）
 
-**批次目标**：让系统具备真实注册、登录、回调、JWKS 验证、principal 映射、会话撤销和服务侧默认拒绝能力。B23 通过后才允许修复登录后的业务旅程。
+**批次目标**：让系统具备真实注册、账号密码登录、JWT 签发与 JWKS 验证、principal、Refresh Token 轮换、会话撤销和服务侧默认拒绝能力。B23 通过后才允许修复登录后的业务旅程。
 
 | 任务 ID | 目标 | 主要宿主 | 必须交付/验证 | 依赖 | 当前状态 |
 |---|---|---|---|---|---|
-| V2-B23-AUTH-001 | 确认 Phase 1 测试 IdP 方案 | ADR、iam-service、部署配置 | 选择标准 OIDC/OAuth 2.1 测试 IdP；确认注册入口、issuer、client、redirect allowlist、PKCE S256；禁止自研 Token Server | B8、ADR-0011 | 已落地，G-IDP 运行 Gate 待验收 |
-| V2-B23-AUTH-002 | 建立本地 IdP 和注册配置 | Docker/本地配置、四端 | 本地 realm/tenant、Web/H5/Admin client、测试用户注册、密码/身份策略、回调地址和合成账号清理 | B23-001 | 配置完成，Keycloak 运行待验收 |
-| V2-B23-AUTH-003 | 实现 OIDC 授权码回调 | iam-service、Gateway、契约 | discovery、authorization、state、nonce、code exchange、PKCE、错误回调和安全 redirect；生成/校验 OpenAPI | B23-001/002 | 代码/契约完成，真实回调待验收 |
-| V2-B23-AUTH-004 | 落地 IAM 本地事实 | iam-service、MySQL、Redis | principal/subject 不可变映射、设备、会话、刷新/撤销、成人同意、策略版本和审计事实持久化；Redis 不作为唯一事实 | B23-003 | 代码/迁移完成，真实回调写入待验收 |
-| V2-B23-AUTH-005 | 接通 Gateway 与服务侧 PEP | api-gateway、领域服务 | JWKS 验证、issuer/audience/过期校验、401/403、RBAC+ABAC、owner/tenant 服务端派生、客户端角色头拒绝、fail closed | B23-003/004 | Gateway/IAM 边界完成，真实 JWT 待验收 |
-| V2-B23-AUTH-006 | 验证认证异常和生命周期 | tests、Gateway、IAM | 注册、登录、错误密码、过期、撤销、重复回调、重复请求、登出、JWKS 轮换、服务不可用和 CORS 负例 | B23-005 | fail-closed/静态烟测完成，生命周期待验收 |
+| V2-B23-AUTH-001 | 固化自有 JWT profile | ADR、iam-service、部署配置 | 确认 issuer、audience=`yuxuexing-api`、RS256、JWKS、必需 claims、Access Token TTL、Refresh Token TTL 和私钥注入；禁止外部登录协议 | B8、ADR-0012/0013 | 已落地，JWT 运行 Gate 待验收 |
+| V2-B23-AUTH-002 | 建立账号密码和设备配置 | Docker/本地配置、四端 | 注册/登录字段、BCrypt 参数、失败锁定、设备登记、密码重置、合成账号清理和统一登录入口；不得保存明文密码 | B23-001 | 配置完成，IAM 运行待验收 |
+| V2-B23-AUTH-003 | 实现登录、刷新和 JWKS | iam-service、Gateway、契约 | `POST /auth/login` 签发 JWT；`POST /auth/token/refresh` 轮换不透明 Refresh Token；`GET /auth/jwks` 发布公钥；生成/校验 OpenAPI | B23-001/002 | 代码/契约完成，真实 HTTP 待验收 |
+| V2-B23-AUTH-004 | 落地 IAM 本地事实 | iam-service、MySQL、Redis | principal/subject、tenant、设备、会话、Refresh Token 摘要/历史、撤销、成人同意、策略版本和审计事实持久化；Redis 不作为唯一事实 | B23-003 | 代码/迁移完成，真实写入待验收 |
+| V2-B23-AUTH-005 | 接通 Gateway 与服务侧 PEP | api-gateway、领域服务 | JWT/JWKS 验证、issuer/audience/算法/过期校验、Bearer 约束、401/403、RBAC+ABAC、owner/tenant 服务端派生、客户端角色头拒绝、fail closed | B23-003/004 | Gateway/IAM 边界完成，真实 JWT 待验收 |
+| V2-B23-AUTH-006 | 验证认证异常和生命周期 | tests、Gateway、IAM | 注册、登录、错误密码、账号锁定、Access Token 过期刷新、Refresh Token 轮换/重放拒绝、登出、设备撤销、JWKS 轮换、服务不可用和 CORS 负例 | B23-005 | fail-closed/静态烟测完成，生命周期待验收 |
 | V2-B23-AUTH-007 | 认证契约与证据交接 | packages/contracts、生成客户端、evidence | 重新生成契约/客户端；提交 issuer/JWKS/配置摘要、脱敏日志、数据库记录、401/403 回放和回滚说明 | B23-001–006 | 契约/静态证据完成，运行证据待补齐 |
 
 ### B23 完成门槛
 
-- 新浏览器可打开注册/登录入口并完成标准 OIDC 回调；
+- 新浏览器可打开统一账号密码登录入口并获得有效 JWT Bearer 会话；
 - /api/v1/iam/principal/me 在有效会话下返回真实 principal，在无效会话下返回 401；
 - MySQL 有对应 principal、session、consent/adult-gate 事实；
 - Gateway 和至少一个领域服务独立完成 JWT/JWKS/PEP 验证；
@@ -83,7 +83,7 @@
 | 任务 ID | 目标 | 主要宿主 | 必须交付/验证 | 依赖 | 初始状态 |
 |---|---|---|---|---|---|
 | V2-B24-FE-001 | Mobile H5 全局登录门禁 | apps/mobile、App shell/router | 未登录打开根路径即进入登录页；首页、onboarding、今日任务、课程、测评、练习、词汇、报告、我的等受保护路由统一拦截 | B23-003/005 | 代码完成，运行待验收 |
-| V2-B24-FE-002 | 注册/登录/回调和 returnTo | apps/mobile、共享 auth client | 登录、注册、OIDC callback、state 恢复、原始路径回跳、刷新恢复、登出和 Token 过期处理 | B23-003/004 | 前端代码完成，IAM 运行闭环待补 |
+| V2-B24-FE-002 | 注册/登录和 returnTo | apps/mobile、共享 auth client | 统一账号密码登录、JWT token manager、原始路径回跳、刷新恢复、登出和 Token 过期处理；不从 URL 读取凭证 | B23-003/004 | 前端代码完成，IAM 运行闭环待补 |
 | V2-B24-FE-003 | learner-web/admin-web 权限边界 | apps/learner-web、apps/admin-web | Web 工作区和后台路由守卫；官网保持公开只读；管理员菜单、角色、403 和客服/教研权限不能由客户端决定 | B23-005 | 代码完成，运行待验收 |
 | V2-B24-FE-004 | 成人 Gate 与 onboarding 写入 | mobile、learner-web、learner-service | 注册后完成 18+、隐私/服务同意、学习目标和偏好；取消或拒绝时不创建可学习状态 | B23-004、B24-001/002 | 前端代码完成，服务端写入待验收 |
 | V2-B24-FE-005 | 401/403 和八态交互 | 四端共享 API/页面 | 401 跳登录、403 显示权限原因、loading/empty/error/offline/retry 可恢复；禁止把未授权误显示为“暂无数据” | B23-005 | 代码完成，运行待验收 |
@@ -186,10 +186,10 @@
 | 范围 | 当前状态 | 说明 |
 |---|---|---|
 | B0–B6 | 历史代码/逻辑基线完成 | B2 的 3 个外部集成 TODO 仍需运行验证 |
-| B7–B14 | v2 代码层、契约、逻辑/交互测试切片完成 | 真实 IdP、持久化、Kafka、跨进程和设备证据不等同于完成 |
+| B7–B14 | v2 代码层、契约、逻辑/交互测试切片完成 | 自有 JWT 真实持久化、Kafka、跨进程和设备证据不等同于完成 |
 | B15–B22 | 代码与静态 Gate 基础完成；部分本地运行 smoke 已取得 | 认证后业务闭环、跨服务事件、生产等价 staging、回滚和观察期仍未完成 |
-| B23 | 代码/契约/迁移与 fail-closed 烟测完成，真实 OIDC 运行待验收 | Keycloak、注册、授权码、JWKS、有效 JWT 和 IAM session 仍待运行证据 |
-| B24 | 四端登录门禁、成人 Gate、401/403、i18n/theme 代码和静态验证完成，运行待验收 | 真实 OIDC 回调和浏览器正式回归仍未关闭 |
+| B23 | 代码/契约/迁移与 fail-closed 烟测完成，自有 JWT Bearer 运行待验收 | 注册、账号密码登录、JWKS、有效 JWT、Refresh Token 轮换和 IAM session 仍待运行证据 |
+| B24 | 四端登录门禁、成人 Gate、JWT token manager、401/403、i18n/theme 代码和静态验证完成，运行待验收 | 真实登录/刷新和浏览器正式回归仍未关闭 |
 | B25 | 代码、契约、fixture、迁移和本地 MySQL 静态/回放基础完成，运行闭环待验收 | API→DB→API、有效 JWT、Redis 重建、服务重启和 owner 对账仍未关闭 |
 | B26 | 代码与静态验证完成，运行/正式浏览器证据待验收 | Kafka/Outbox、有效 JWT、API→DB→API、事件对账和缺陷闭环仍未关闭；详见 `docs/07-operations/b26-validation.md` |
 | B27 | 代码与静态验证完成；外部设备/发布运行项暂缓 | Mobile H5/Web 子集转入 B28–B36 本机计划；iOS/Android/iPad、微信、staging、RC、回滚和生产交接未来恢复；详见 `docs/07-operations/b27-validation.md` |

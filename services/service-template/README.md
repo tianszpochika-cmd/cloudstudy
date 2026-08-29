@@ -13,10 +13,10 @@
 
 ## B8 服务侧安全骨架
 
-模板包含可复制到 `learner-service`、`content-service` 等 v2 服务的 Resource Server/PEP 基础，但不包含真实身份供应商接入：
+模板包含可复制到 `learner-service`、`content-service` 等 v2 服务的 Resource Server/PEP 基础；它们独立验证 IAM 签发的 JWT，不承载登录页或账号密码：
 
-- `security.resource-server.enabled` 默认是 `false`。关闭时 `/actuator/**` 仅用于探针，其他请求由 Spring Security 默认拒绝；模板没有测试替身、静态 token 或“本地管理员”认证成功路径。
-- G-IDP 通过后，复制服务必须显式提供 `SERVICE_SECURITY_ISSUER_URI` 与 `SERVICE_SECURITY_JWK_SET_URI`，两者缺一都会阻止启动。Spring Resource Server 负责签名、issuer、过期等 JWT 验证；`VerifiedPrincipal` 只从已验证的 `Jwt` 构建，不能从请求头或请求体构建。
+- `security.resource-server.enabled` 默认是 `true`。关闭时 `/actuator/**` 仅用于探针，其他请求由 Spring Security 默认拒绝；模板没有测试替身、静态 token 或“本地管理员”认证成功路径。
+- 复制服务必须显式提供 `SERVICE_SECURITY_ISSUER_URI`、`SERVICE_SECURITY_JWK_SET_URI` 和 `SERVICE_SECURITY_AUDIENCE`，两者缺一都会阻止启动。Spring Resource Server 负责签名、issuer、audience、算法、过期和 token type 等 JWT 验证；`VerifiedPrincipal` 只从已验证的 `Jwt` 构建，不能从请求头或请求体构建。
 - `TenantScope.platform(subject)` 是服务端派生的唯一 Phase 1 tenant。`X-Role`、`X-B5-Role`、`X-Tenant-Id`、`X-Owner-Id` 以及 `tenantId`/`ownerId` 请求参数会被边界过滤器拒绝，PEP 也会拒绝显式传入的客户端安全事实。
 - `PolicyCache` 只接受已验证的策略快照并按短 TTL 与 `PolicyVersion` 过期时间判断新鲜度。新鲜本地策略走 `LocalPolicyEvaluator`；缓存缺失/过期或动态高风险请求转入 `PdpPort`。PDP 超时、异常、撤销不确定、策略版本过期或任何 tenant/owner/phase/content-rights/consent 缺失都 deny。
 - `Decision` 的 ID 由已验证 subject、token `jti`/摘要、资源事实、策略版本、结果和评估时间做 SHA-256 派生；调用方不能提交或覆盖 decision ID。401 只表示没有可验证身份，403/error envelope 表示身份已建立但授权被拒绝。
@@ -25,7 +25,7 @@
 
 ## B8 Gate 与运行态边界
 
-本骨架对应 `V2-B8-IAM-003` 的代码与纯规则测试证据。`G-IDP`（标准 OIDC/OAuth 2.1 IdP 的选型、PKCE、移动端/workload identity、JWKS 轮换、撤销和回滚）未通过前，只能保留上述 issuer/JWKS seam 与测试替身，不能声称已接入真实认证。真实 IdP、JWKS 轮换/撤销、Gateway→PEP→领域事实→Outbox→审计全链路、跨租户运行态、PDP 故障注入和生产密钥/容量验证仍待运行 Gate；Java 25/Maven 不可用时不能把静态测试结果描述成构建成功。
+本骨架对应 `V2-B8-IAM-003` 的代码与纯规则测试证据。自有 JWT 认证中心、JWKS 轮换/撤销、Gateway→PEP→领域事实→Outbox→审计全链路、跨租户运行态、PDP 故障注入和生产密钥/容量验证仍需在运行 Gate 中取得证据；Java 25/Maven 不可用时不能把静态测试结果描述成构建成功。
 
 ## 必填配置
 

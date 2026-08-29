@@ -30,32 +30,26 @@ export interface AuthSessionSnapshot {
   readonly tokenPair?: AuthTokenPair | null
 }
 
-export interface LoginStartOptions {
-  readonly returnTo: string
-  readonly locale: string
-  readonly theme: string
+export interface LoginCredentials {
+  readonly identifier: string
+  readonly password: string
+  readonly device: {
+    readonly deviceType: 'WEB'
+    readonly clientVersion: string
+    readonly deviceId?: string
+    readonly deviceName?: string
+  }
 }
 
-export interface LoginCallbackInput {
-  readonly code?: string
-  readonly state?: string
-  readonly returnTo?: string
-  readonly error?: string
-  readonly errorDescription?: string
-}
-
-export interface ProviderNeutralAuthAdapter {
-  startLogin(options: LoginStartOptions): Promise<string>
-  completeLogin(input: LoginCallbackInput): Promise<AuthTokenPair & { adultGate?: AdultGateStatus }>
+export interface JwtAuthAdapter {
+  login(input: LoginCredentials): Promise<AuthTokenPair>
   restoreSession(): Promise<AuthSessionSnapshot | null>
-  refresh(input: { refreshToken: string }): Promise<AuthTokenPair>
+  refresh(input?: { refreshToken?: string }): Promise<AuthTokenPair>
   getPermissions(): Promise<AuthSessionSnapshot | null>
-  confirmAdultGate(input: { birthYear: number; policyVersion: string; adultDeclaration: true }): Promise<AuthSessionSnapshot | null>
+  confirmAdultGate(input: { confirmed: true; birthYear: number; policyVersion: string }): Promise<AuthSessionSnapshot | null>
   logout(input: { allDevices?: boolean }): Promise<void>
   revoke(sessionId: string): Promise<void>
 }
-
-const OIDC_PROVIDER = 'standard-oidc'
 
 export function safeReturnTo(value: unknown, fallback = '/home'): string {
   return safeInternalReturnTo(value, fallback)
@@ -70,7 +64,20 @@ function stringValue(value: unknown): string | null {
 }
 
 function stringList(value: unknown): readonly string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim())).map((item) => item.trim()) : []
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string' && Boolean(item.trim())).map((item) => item.trim())
+    : typeof value === 'string'
+      ? value.split(/\s+/).filter(Boolean)
+      : []
+}
+
+let loginSequence = 0
+
+function authIdempotencyKey(prefix: string): string {
+  const uuid = typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID() : null
+  if (uuid) return `${prefix}-${uuid}`
+  loginSequence += 1
+  return `${prefix}-${Date.now()}-${loginSequence}`
 }
 
 function unwrap(value: unknown): unknown {
@@ -83,8 +90,8 @@ function unwrap(value: unknown): unknown {
 function parseAdultGate(value: unknown): AdultGateStatus {
   if (value === 'PASSED' || value === 'REQUIRED' || value === 'REJECTED') return value
   if (!isRecord(value)) return 'UNKNOWN'
-  if (value.status === 'APPROVED') return 'PASSED'
-  if (value.status === 'PENDING') return 'REQUIRED'
+  if (value.status === 'APPROVED' || value.status === 'PASSED') return 'PASSED'
+  if (value.status === 'PENDING' || value.status === 'REQUIRED') return 'REQUIRED'
   if (value.status === 'REJECTED') return 'REJECTED'
   return 'UNKNOWN'
 }
@@ -92,18 +99,17 @@ function parseAdultGate(value: unknown): AdultGateStatus {
 function parseTokenPair(value: unknown): AuthTokenPair {
   const source = unwrap(value)
   if (!isRecord(source)) throw new Error('认证服务没有返回有效会话。')
-  const session = isRecord(source.session) ? source.session : source
-  const accessToken = stringValue(session.accessToken)
+  const accessToken = stringValue(source.accessToken)
   if (!accessToken) throw new Error('认证服务没有返回有效访问凭证。')
   return {
     accessToken,
-    refreshToken: stringValue(session.refreshToken),
-    deviceId: stringValue(session.deviceId),
-    sessionId: stringValue(session.sessionId),
-    userId: session.userId === undefined || session.userId === null ? null : String(session.userId),
-    accessTokenExpiresAt: stringValue(session.accessTokenExpiresAt),
-    refreshTokenExpiresAt: stringValue(session.refreshTokenExpiresAt),
-    adultGate: parseAdultGate(source.adultGate ?? source.adultGateStatus ?? session.adultGate),
+    refreshToken: stringValue(source.refreshToken),
+    deviceId: stringValue(source.deviceId),
+    sessionId: stringValue(source.sessionId),
+    userId: stringValue(source.userId),
+    accessTokenExpiresAt: stringValue(source.accessTokenExpiresAt),
+    refreshTokenExpiresAt: stringValue(source.refreshTokenExpiresAt),
+    adultGate: parseAdultGate(source.adultGate ?? source.adultGateStatus),
   }
 }
 
@@ -114,43 +120,13 @@ function parseSnapshot(value: unknown): AuthSessionSnapshot | null {
   const permissions = stringList(source.permissions ?? principalSource.permissions)
   const roles = stringList(source.roles ?? principalSource.roles)
   const subject = stringValue(principalSource.subject ?? principalSource.sub ?? principalSource.userId ?? principalSource.principalId)
-  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? source)
-  const principal = subject ? { subject, roles, permissions, adultGate } : null
+  const adultGate = parseAdultGate(source.adultGate ?? source.adultGateStatus ?? principalSource.adultGate ?? principalSource.adultGateStatus)
   return {
-    principal,
+    principal: subject ? { subject, roles, permissions, adultGate } : null,
     permissions,
     roles,
     adultGate,
-    tokenPair: source.accessToken || isRecord(source.session) ? parseTokenPair(source) : null,
-  }
-}
-
-function joinUrl(baseUrl: string, path: string): string {
-  const base = baseUrl.replace(/\/$/, '')
-  return path.startsWith('/') ? `${base}${path}` : `${base}/${path}`
-}
-
-function scheduleWebLogoutRedirect(): void {
-  if (typeof window === 'undefined') return
-  window.setTimeout(() => {
-    if (window.location.pathname !== '/login') window.location.assign('/login')
-  }, 0)
-}
-
-interface AuthorizationStartResponse {
-  authorizationUrl?: string
-}
-
-function validAuthorizationUrl(value: unknown): string {
-  const candidate = stringValue(value)
-  if (!candidate) throw new Error('认证服务没有返回授权地址。')
-  try {
-    const url = new URL(candidate)
-    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash) throw new Error('认证服务返回了不安全的授权地址。')
-    return url.toString()
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('不安全')) throw error
-    throw new Error('认证服务返回了无效的授权地址。')
+    tokenPair: source.accessToken ? parseTokenPair(source) : null,
   }
 }
 
@@ -158,37 +134,23 @@ export interface GatewayAuthAdapterOptions {
   readonly baseUrl: string
   readonly getAccessToken?: () => string | null
   readonly fetchImpl?: typeof fetch
-  readonly clientId?: string
-  readonly redirectUri?: string
 }
 
-export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): ProviderNeutralAuthAdapter {
+export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): JwtAuthAdapter {
   const client: ApiClient = createApiClient({
     baseUrl: options.baseUrl,
     getAccessToken: options.getAccessToken,
     fetchImpl: options.fetchImpl,
     credentials: 'include',
   })
+  const webHeaders = { 'X-Client-Platform': 'web' }
 
   return {
-    async startLogin(input) {
-      const url = new URL(joinUrl(options.baseUrl, `/auth/oidc/${OIDC_PROVIDER}/authorization/start`))
-      url.searchParams.set('redirectUri', options.redirectUri ?? `${window.location.origin}/auth/callback`)
-      url.searchParams.set('returnTo', safeReturnTo(input.returnTo))
-      url.searchParams.set('uiLocale', input.locale)
-      url.searchParams.set('theme', input.theme)
-      const response = await client.get<AuthorizationStartResponse>(`/auth/oidc/${OIDC_PROVIDER}/authorization/start${url.search}`, { skipAuthRetry: true })
-      const source = unwrap(response)
-      return validAuthorizationUrl(isRecord(source) ? source.authorizationUrl : undefined)
-    },
-    async completeLogin(input) {
-      if (input.error) throw new Error(input.errorDescription || input.error)
-      if (!input.code || !input.state) throw new Error('认证回调缺少 code 或 state，未建立会话。')
-      return parseTokenPair(await client.post(`/auth/oidc/${OIDC_PROVIDER}/callback`, {
-        code: input.code,
-        state: input.state,
-        redirectUri: options.redirectUri ?? `${window.location.origin}/auth/callback`,
-      }, { skipAuthRetry: true }))
+    async login(input) {
+      return parseTokenPair(await client.post('/auth/login', input, {
+        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('login') },
+        skipAuthRetry: true,
+      }))
     },
     async restoreSession() {
       try {
@@ -199,7 +161,11 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Pr
       }
     },
     async refresh(input) {
-      return parseTokenPair(await client.post('/iam/session/refresh', input, { skipAuthRetry: true }))
+      const body = input?.refreshToken ? { refreshToken: input.refreshToken } : undefined
+      return parseTokenPair(await client.post('/auth/token/refresh', body, {
+        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('refresh') },
+        skipAuthRetry: true,
+      }))
     },
     async getPermissions() {
       try {
@@ -210,14 +176,22 @@ export function createGatewayAuthAdapter(options: GatewayAuthAdapterOptions): Pr
       }
     },
     async confirmAdultGate(input) {
-      return parseSnapshot(await client.post('/iam/adult-gate', input, { skipAuthRetry: true }))
+      return parseSnapshot(await client.post('/iam/adult-gate', input, {
+        headers: { 'Idempotency-Key': authIdempotencyKey('adult-gate') },
+        skipAuthRetry: true,
+      }))
     },
     async logout(input) {
-      await client.post('/iam/session/logout', input, { skipAuthRetry: true })
-      scheduleWebLogoutRedirect()
+      await client.post('/auth/logout', input, {
+        headers: { ...webHeaders, 'Idempotency-Key': authIdempotencyKey('logout') },
+        skipAuthRetry: true,
+      })
     },
     async revoke(sessionId) {
-      await client.post(`/iam/sessions/${encodeURIComponent(sessionId)}/revoke`, {}, { skipAuthRetry: true })
+      await client.post(`/auth/sessions/${encodeURIComponent(sessionId)}/revoke`, {}, {
+        headers: { 'Idempotency-Key': authIdempotencyKey('revoke') },
+        skipAuthRetry: true,
+      })
     },
   }
 }

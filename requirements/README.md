@@ -30,6 +30,8 @@
 数据：MySQL 8.x + Redis 7.x + S3 兼容对象存储 + Kafka 兼容事件总线。  
 迁移兼容：现有 `services/core-api` 暂时保持 Java 17 + Spring Boot 3，不代表 v2 目标已落地。
 
+认证：四端使用 IAM 自有账号密码登录，由 `iam-service` 直接签发短时 RS256 JWT Bearer Access Token，并通过 JWKS 发布公钥；Refresh Token 为轮换、可撤销的服务端会话凭证。Gateway 与每个领域服务独立验证 issuer、签名、算法、audience、时间窗口、token type 和 scope/permission。Web 端 Access Token 只在内存，Refresh Token 使用 HttpOnly/Secure/SameSite Cookie；移动端使用 Keychain/Keystore；官网不保存业务 Token。禁止 OIDC/OAuth、Keycloak、第三方 IdP、URL Token 和客户端角色/tenant/owner 权限覆盖。详细决策见 [ADR-0013](../docs/10-decisions/0013-self-owned-jwt-authentication-center.md)。
+
 AI 仅在 Phase 2 通过 Python FastAPI 独立服务启用。历史技术方案、历史 PDF 和被标记为 superseded 的 ADR 不属于当前实现依据。
 
 ## 任务重基线提示

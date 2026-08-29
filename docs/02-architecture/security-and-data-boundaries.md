@@ -1,7 +1,7 @@
 # v2 安全、数据边界与埋点底座
 
 > 状态：继承 B0 的机器可读策略，并绑定 v2 的 Gateway/IAM/RBAC/ABAC 目标架构。`packages/telemetry/` 和 B0 harness 是静态策略证据，不代表 `iam-service`、Gateway 或服务侧 PEP 已经完成。
-> 权威架构：[v2 微服务目标架构](./v2-microservices-architecture.md)、[平台能力矩阵](./v2-platform-capability-matrix.md)、ADR-0010。
+> 权威架构：[v2 微服务目标架构](./v2-microservices-architecture.md)、[平台能力矩阵](./v2-platform-capability-matrix.md)、ADR-0010、[ADR-0013](../10-decisions/0013-self-owned-jwt-authentication-center.md)。
 
 ## 1. 默认拒绝与最小角色
 
@@ -23,6 +23,13 @@
 2. 租户角色只能访问 `resource.tenantId === actor.tenantId` 的资源；没有全局角色。
 3. `learner` 还必须在 `ownerId/subjectId/userId/actorId` 中命中本人 ID；同租户的其他学习者也拒绝。
 4. 不允许通过客户端提交的角色、租户或资源归属字段扩大权限；服务端应从已验证会话和持久化资源加载这些字段。
+
+### 1.1 自有 JWT Bearer 认证边界
+
+- `iam-service` 校验平台账号密码并直接签发短时非对称 JWT Access Token，使用 RS256/ES256，公开只读 JWKS；认证中心不依赖外部身份提供方。
+- Gateway 和每个领域服务都必须独立校验 issuer、audience、签名算法、公钥、时间窗口、token type 和必要 scope/permission；JWKS 不可用、密钥轮换不确定或撤销状态不确定时 fail closed。
+- Access Token 只通过 `Authorization: Bearer` 发送；不进入 URL、日志、事件、埋点、错误 envelope 或业务数据库。Refresh Token 是认证中心管理的轮换/撤销会话凭证，Web 仅用 HttpOnly/Secure/SameSite Cookie，移动端仅用 Keychain/Keystore。
+- 登录、刷新、登出、设备撤销和密码重置接口均由 IAM 提供；`iss/sub/aud/exp/iat/nbf/jti/token_type/scope` 为最低声明，业务角色/权限/租户由服务端事实生成。
 
 ## 2. 导出字段策略
 

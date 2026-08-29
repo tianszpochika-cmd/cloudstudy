@@ -1,32 +1,46 @@
 <script setup lang="ts">
 import { onLaunch } from '@dcloudio/uni-app'
-import { ref } from 'vue'
-import { bootstrapMobileAuth, bridgeMobileH5OidcCallback, currentMobilePagePath, installMobileNavigationGuard, normalizeMobilePagePath } from './auth/navigation'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { bootstrapMobileAuth, currentMobilePagePath, installMobileNavigationGuard, normalizeMobilePagePath } from './auth/navigation'
 import { useSessionStore } from './stores/session'
+import { mobileThemeController } from './platform/v2-foundation'
 
 const session = useSessionStore()
 const bootstrapReady = ref(false)
+const resolvedTheme = ref(mobileThemeController.resolvedTheme)
+const themeVariables = ref<Record<string, string>>({ ...mobileThemeController.getVariables() })
+const themeClass = computed(() => `b10-theme--${resolvedTheme.value}`)
+function syncTheme(state = mobileThemeController.state): void {
+  resolvedTheme.value = state.resolvedTheme
+  themeVariables.value = { ...state.variables }
+  if (typeof document !== 'undefined') {
+    document.documentElement.dataset.theme = state.resolvedTheme
+    for (const [name, value] of Object.entries(state.variables)) document.documentElement.style.setProperty(name, value)
+  }
+}
+syncTheme()
+const unsubscribeTheme = mobileThemeController.subscribe(syncTheme)
 
 onLaunch((options) => {
   installMobileNavigationGuard()
-  if (bridgeMobileH5OidcCallback()) {
-    bootstrapReady.value = true
-    return
-  }
   const launchPath = normalizeMobilePagePath(options?.path, '/pages/home/home')
   const initialPath = currentMobilePagePath(launchPath)
   void bootstrapMobileAuth(initialPath).finally(() => {
     bootstrapReady.value = true
   })
 })
+
+onBeforeUnmount(unsubscribeTheme)
 </script>
 
 <template>
-  <view v-if="!bootstrapReady" class="yx-app-bootstrap" aria-live="polite">
+  <view v-if="!bootstrapReady" class="yx-app-bootstrap" :class="themeClass" :style="themeVariables" aria-live="polite">
     <text class="yx-app-bootstrap__title">{{ session.status === 'restoring' ? '正在恢复安全会话…' : '正在准备学习空间…' }}</text>
     <text class="yx-app-bootstrap__description">未完成身份校验前不会渲染受保护学习内容。</text>
   </view>
-  <slot v-else />
+  <view v-else class="yx-app" :class="themeClass" :style="themeVariables">
+    <slot />
+  </view>
 </template>
 
 <style scoped>
@@ -37,6 +51,11 @@ onLaunch((options) => {
   flex-direction: column;
   justify-content: center;
   padding: calc(48rpx + env(safe-area-inset-top)) 48rpx calc(48rpx + env(safe-area-inset-bottom));
+  color: var(--yx-text-primary, #202332);
+  background: var(--yx-surface-page, #f7f8fc);
+}
+.yx-app {
+  min-height: 100vh;
   color: var(--yx-text-primary, #202332);
   background: var(--yx-surface-page, #f7f8fc);
 }

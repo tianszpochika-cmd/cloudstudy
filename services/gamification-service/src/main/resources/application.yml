@@ -12,8 +12,9 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:}
-          jwk-set-uri: ${GAMIFICATION_SECURITY_JWK_SET_URI:}
+          issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+          jwk-set-uri: ${GAMIFICATION_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+          audiences: ${GAMIFICATION_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}
 
 server:
   address: ${GAMIFICATION_SERVER_ADDRESS:127.0.0.1}
@@ -62,6 +63,7 @@ gamification:
   default-time-zone: ${GAMIFICATION_DEFAULT_TIME_ZONE:Asia/Shanghai}
   local-feature-state-enabled: ${GAMIFICATION_LOCAL_FEATURE_STATE_ENABLED:true}
   security:
-    resource-server-enabled: ${GAMIFICATION_RESOURCE_SERVER_ENABLED:false}
-    issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:}
-    jwk-set-uri: ${GAMIFICATION_SECURITY_JWK_SET_URI:}
+    resource-server-enabled: ${GAMIFICATION_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${GAMIFICATION_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${GAMIFICATION_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${GAMIFICATION_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}

@@ -1,20 +1,21 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getUniRuntime, type UniSecureStorage, type UniRuntime } from '../platform/uni-runtime'
-import { createGatewayMobileAuthAdapter, safeMobileReturnTo, type MobileAdultGateStatus, type MobileAuthAdapter, type MobileAuthSnapshot, type MobileCallbackInput, type MobileTokenPair } from '../auth/gateway-auth'
-import { mobileI18nAdapter, mobileThemeController } from '../platform/v2-foundation'
+import { getInMemoryAccessToken, setInMemoryAccessToken } from '../auth/access-token'
+import { createGatewayMobileAuthAdapter, safeMobileReturnTo, type MobileAdultGateStatus, type MobileAuthAdapter, type MobileAuthSnapshot, type MobileLoginCredentials, type MobileTokenPair } from '../auth/gateway-auth'
+import { getUniRuntime, isNativeAppRuntime, type UniSecureStorage, type UniRuntime } from '../platform/uni-runtime'
 
-const ACCESS_TOKEN_KEY = 'yx.auth.mobile.access-token'
 const REFRESH_TOKEN_KEY = 'yx.auth.mobile.refresh-token'
-const DEVICE_ID_KEY = 'yx.auth.mobile.device-id'
-const SESSION_ID_KEY = 'yx.auth.mobile.session-id'
 const RETURN_TO_KEY = 'yx.auth.mobile.return-to'
-const OIDC_STATE_KEY = 'yx.auth.mobile.oidc-state'
 
 function runtimeOrNull(): UniRuntime | null { try { return getUniRuntime() } catch { return null } }
-function ordinaryValue(key: string): string | null { const value = runtimeOrNull()?.getStorageSync(key); return typeof value === 'string' && value.trim() ? value.trim() : null }
 function secureStorage(): UniSecureStorage | undefined { return runtimeOrNull()?.getSecureStorage?.() }
-function secureValue(key: string): string | null { try { return secureStorage()?.getItem(key) ?? null } catch { return null } }
+function secureValue(key: string): string | null { try { const value = secureStorage()?.getItem(key); return typeof value === 'string' && value.trim() ? value.trim() : null } catch { return null } }
+function deviceType(): MobileLoginCredentials['device']['deviceType'] {
+  const platform = String(runtimeOrNull()?.getSystemInfoSync?.().osName ?? runtimeOrNull()?.getSystemInfoSync?.().platform ?? '').toLowerCase()
+  if (platform === 'ios') return 'IOS'
+  if (platform === 'android') return 'ANDROID'
+  return isNativeAppRuntime() ? 'IPAD' : 'H5'
+}
 
 export const useSessionStore = defineStore('session', () => {
   const accessToken = ref<string | null>(null)
@@ -36,72 +37,104 @@ export const useSessionStore = defineStore('session', () => {
   function applySnapshot(snapshot: MobileAuthSnapshot | null): void { if (!snapshot) return; if (snapshot.tokenPair) setTokenPair(snapshot.tokenPair); permissions.value = snapshot.permissions ?? permissions.value; adultGate.value = snapshot.adultGate ?? adultGate.value }
   function setTokenPair(pair: MobileTokenPair): void {
     if (!pair.accessToken.trim()) throw new Error('认证服务没有返回访问凭证。')
-    accessToken.value = pair.accessToken.trim(); refreshToken.value = pair.refreshToken?.trim() || null; deviceId.value = pair.deviceId?.trim() || deviceId.value; sessionId.value = pair.sessionId?.trim() || sessionId.value; adultGate.value = pair.adultGate ?? adultGate.value; status.value = 'authenticated'; lastError.value = null
-    const runtime = runtimeOrNull()
-    runtime?.setStorageSync(ACCESS_TOKEN_KEY, accessToken.value)
-    if (deviceId.value) runtime?.setStorageSync(DEVICE_ID_KEY, deviceId.value)
-    if (sessionId.value) runtime?.setStorageSync(SESSION_ID_KEY, sessionId.value)
-    const secure = secureStorage()
-    if (secure && refreshToken.value) { try { secure.setItem(REFRESH_TOKEN_KEY, refreshToken.value) } catch { /* keep the token in memory only */ } }
-    runtime?.removeStorageSync('yx.session.refresh-token')
+    const native = isNativeAppRuntime()
+    const nextRefresh = pair.refreshToken?.trim() || null
+    if (native) {
+      const secure = secureStorage()
+      if (!secure) throw new Error('移动端安全存储不可用，未建立可恢复会话。')
+      if (!nextRefresh) throw new Error('认证服务没有返回移动端 Refresh Token。')
+      try { secure.setItem(REFRESH_TOKEN_KEY, nextRefresh) } catch { throw new Error('移动端安全存储写入失败，未建立可恢复会话。') }
+    }
+    accessToken.value = pair.accessToken.trim()
+    refreshToken.value = native ? nextRefresh : null
+    deviceId.value = pair.deviceId?.trim() || deviceId.value
+    sessionId.value = pair.sessionId?.trim() || sessionId.value
+    adultGate.value = pair.adultGate ?? adultGate.value
+    setInMemoryAccessToken(accessToken.value)
+    status.value = 'authenticated'
+    lastError.value = null
   }
   async function restore(): Promise<void> {
     if (restored.value) return
     if (restorePromise) return restorePromise
     restorePromise = (async () => {
-      status.value = 'restoring'; accessToken.value = ordinaryValue(ACCESS_TOKEN_KEY); refreshToken.value = secureValue(REFRESH_TOKEN_KEY); deviceId.value = ordinaryValue(DEVICE_ID_KEY); sessionId.value = ordinaryValue(SESSION_ID_KEY)
+      status.value = 'restoring'
+      accessToken.value = getInMemoryAccessToken()
+      refreshToken.value = isNativeAppRuntime() ? secureValue(REFRESH_TOKEN_KEY) : null
       try {
-        const snapshot = await adapter().restoreSession()
-        if (snapshot) applySnapshot(snapshot)
-        else if (refreshToken.value) await refreshSilently()
-        else clear()
+        let restoredSession = false
+        if (accessToken.value) {
+          const snapshot = await adapter().restoreSession()
+          if (snapshot) { applySnapshot(snapshot); restoredSession = true }
+        }
+        if (!restoredSession && (isNativeAppRuntime() ? Boolean(refreshToken.value) : true)) restoredSession = await refreshSilently()
+        if (!restoredSession) clear()
         if (accessToken.value) applySnapshot(await adapter().getPermissions())
         status.value = accessToken.value ? 'authenticated' : 'unauthenticated'
       } catch (error) { clear(); lastError.value = error instanceof Error ? error.message : 'SESSION_RESTORE_FAILED' } finally { restored.value = true; restorePromise = null }
     })()
     return restorePromise
   }
-  async function prepareLogin(returnTo: unknown): Promise<string> {
-    const safe = safeMobileReturnTo(returnTo); setReturnTo(safe)
-    const loginUrl = await adapter().startLogin({ returnTo: safe, locale: mobileI18nAdapter.state.locale, theme: mobileThemeController.resolvedTheme })
-    try {
-      const state = new URL(loginUrl).searchParams.get('state')
-      if (!state?.trim()) throw new Error('认证服务没有返回 state，未建立登录流程。')
-      runtimeOrNull()?.setStorageSync(OIDC_STATE_KEY, state.trim())
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('未建立登录流程')) throw error
-      throw new Error('认证服务返回了无效的登录流程。')
-    }
-    return loginUrl
-  }
-  async function completeLogin(input: MobileCallbackInput): Promise<boolean> {
-    if (input.returnTo) setReturnTo(input.returnTo)
+  async function login(identifier: string, password: string): Promise<boolean> {
     status.value = 'restoring'
+    lastError.value = null
     try {
-      const expectedState = ordinaryValue(OIDC_STATE_KEY)
-      if (!input.state || !expectedState || input.state !== expectedState) throw new Error('认证回调 state 校验失败，未建立移动会话。')
-      runtimeOrNull()?.removeStorageSync(OIDC_STATE_KEY)
-      setTokenPair(await adapter().completeLogin(input)); applySnapshot(await adapter().getPermissions()); return true
-    } catch (error) { clear(); status.value = 'error'; lastError.value = error instanceof Error ? error.message : 'LOGIN_FAILED'; return false }
+      setTokenPair(await adapter().login({
+        identifier: identifier.trim(),
+        password,
+        device: { deviceType: deviceType(), clientVersion: 'local-dev', deviceName: '语学星移动端' },
+      }))
+      applySnapshot(await adapter().getPermissions())
+      status.value = 'authenticated'
+      restored.value = true
+      return true
+    } catch (error) {
+      clear()
+      status.value = 'error'
+      lastError.value = error instanceof Error ? error.message : 'LOGIN_FAILED'
+      return false
+    }
   }
   async function refreshSilently(): Promise<boolean> {
     if (refreshPromise) return refreshPromise
-    refreshPromise = (async () => { if (!refreshToken.value) { clear(); return false } status.value = 'refreshing'; try { setTokenPair(await adapter().refresh({ refreshToken: refreshToken.value })); applySnapshot(await adapter().getPermissions()); return true } catch (error) { clear(); lastError.value = error instanceof Error ? error.message : 'SESSION_EXPIRED'; return false } finally { refreshPromise = null } })()
+    refreshPromise = (async () => {
+      const native = isNativeAppRuntime()
+      if (native && !refreshToken.value) { clear(); return false }
+      status.value = 'refreshing'
+      try {
+        setTokenPair(await adapter().refresh(native ? { refreshToken: refreshToken.value ?? undefined } : undefined))
+        applySnapshot(await adapter().getPermissions())
+        return true
+      } catch (error) {
+        clear()
+        lastError.value = error instanceof Error ? error.message : 'SESSION_EXPIRED'
+        return false
+      } finally { refreshPromise = null }
+    })()
     return refreshPromise
   }
   async function logout(): Promise<boolean> { status.value = 'revoking'; try { await adapter().logout(); clear(); return true } catch (error) { clear(); lastError.value = error instanceof Error ? error.message : 'LOGOUT_FAILED'; return false } }
   async function revokeCurrentSession(): Promise<boolean> { if (!sessionId.value) { clear(); return false } status.value = 'revoking'; try { await adapter().revoke(sessionId.value); clear(); return true } catch (error) { clear(); lastError.value = error instanceof Error ? error.message : 'REVOKE_FAILED'; return false } }
-  async function confirmAdultGate(birthYear: number, policyVersion = 'v2-phase1'): Promise<boolean> { try { const snapshot = await adapter().confirmAdultGate({ birthYear, policyVersion, adultDeclaration: true }); applySnapshot(snapshot); adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'; return adultGate.value === 'PASSED' } catch (error) { adultGate.value = 'REJECTED'; lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'; return false } }
+  async function confirmAdultGate(birthYear: number, policyVersion = 'v2-phase1'): Promise<boolean> { try { const snapshot = await adapter().confirmAdultGate({ confirmed: true, birthYear, policyVersion }); applySnapshot(snapshot); adultGate.value = snapshot?.adultGate === 'PASSED' ? 'PASSED' : 'REJECTED'; return adultGate.value === 'PASSED' } catch (error) { adultGate.value = 'REJECTED'; lastError.value = error instanceof Error ? error.message : 'ADULT_GATE_FAILED'; return false } }
   function setReturnTo(value: unknown): void { runtimeOrNull()?.setStorageSync(RETURN_TO_KEY, safeMobileReturnTo(value)) }
-  function peekReturnTo(): string { return safeMobileReturnTo(ordinaryValue(RETURN_TO_KEY)) }
-  function consumeReturnTo(): string { const value = safeMobileReturnTo(ordinaryValue(RETURN_TO_KEY)); runtimeOrNull()?.removeStorageSync(RETURN_TO_KEY); return value }
+  function peekReturnTo(): string { const value = runtimeOrNull()?.getStorageSync(RETURN_TO_KEY); return safeMobileReturnTo(typeof value === 'string' ? value : null) }
+  function consumeReturnTo(): string { const value = peekReturnTo(); runtimeOrNull()?.removeStorageSync(RETURN_TO_KEY); return value }
   function setAuthAdapter(next: MobileAuthAdapter): void { activeAdapter = next }
-  function readLaunchCallback(): MobileCallbackInput | null { const runtime = runtimeOrNull(); const options = runtime?.getEnterOptionsSync?.() ?? runtime?.getLaunchOptionsSync?.(); const query = options?.query; if (!query || (!query.code && !query.error)) return null; return { code: query.code, state: query.state, error: query.error, errorDescription: query.error_description, errorUri: query.error_uri } }
-  function clear(): void { accessToken.value = null; refreshToken.value = null; deviceId.value = null; sessionId.value = null; permissions.value = []; adultGate.value = 'UNKNOWN'; status.value = 'unauthenticated'; const runtime = runtimeOrNull(); runtime?.removeStorageSync(ACCESS_TOKEN_KEY); runtime?.removeStorageSync(DEVICE_ID_KEY); runtime?.removeStorageSync(SESSION_ID_KEY); runtime?.removeStorageSync(OIDC_STATE_KEY); runtime?.removeStorageSync('yx.session.refresh-token'); try { secureStorage()?.removeItem(REFRESH_TOKEN_KEY) } catch { /* best effort */ } }
+  function clear(): void {
+    accessToken.value = null
+    refreshToken.value = null
+    deviceId.value = null
+    sessionId.value = null
+    permissions.value = []
+    adultGate.value = 'UNKNOWN'
+    status.value = 'unauthenticated'
+    setInMemoryAccessToken(null)
+    try { secureStorage()?.removeItem(REFRESH_TOKEN_KEY) } catch { /* best effort */ }
+  }
 
-  return { accessToken, deviceId, sessionId, permissions, status, adultGate, lastError, restored, isAuthenticated, isLearningReady, restore, prepareLogin, completeLogin, refreshSilently, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, readLaunchCallback, clear }
+  return { accessToken, deviceId, sessionId, permissions, status, adultGate, lastError, restored, isAuthenticated, isLearningReady, restore, login, refreshSilently, logout, revokeCurrentSession, confirmAdultGate, setReturnTo, peekReturnTo, consumeReturnTo, setAuthAdapter, clear }
 })
 
-export function readAccessToken(): string | null { return ordinaryValue(ACCESS_TOKEN_KEY) }
+export function readAccessToken(): string | null { return getInMemoryAccessToken() }
 export function hasSecureSessionStorage(): boolean { return Boolean(secureStorage()) }
 export function readSecureRefreshToken(): string | null { return secureValue(REFRESH_TOKEN_KEY) }

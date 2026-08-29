@@ -33,13 +33,13 @@
 
 以下内容没有被本轮静态或构建结果冒充为完成：
 
-- Gateway、OIDC 测试 IdP、learner/content/learning/assessment/admin-ops 的真实跨进程 API 联调；
+- Gateway、自有 JWT 登录 测试 IAM JWT 认证中心、learner/content/learning/assessment/admin-ops 的真实跨进程 API 联调；
 - Playwright/Chromium 浏览器深链、登录/刷新/登出、八态、键盘/响应式和 Console 证据；
 - iOS/Android/iPad/App/微信小程序条件编译、secure storage、媒体权限、后台恢复和四级画质真机证据；
 - admin 最小权限审批、重复命令、审计落盘和真实恢复任务；
 - 官网 public projection 断链、下载禁用、缓存恢复和真实 SEO/浏览器检查。
 
-pnpm b18:bootstrap --require-runtime 必须在 B17 runtime preflight、Java 25/Maven/Docker 或等价 CI、测试 IdP、Kafka/数据库和 B18 origin/账号矩阵变量就绪后执行。当前环境沿用 B17 阻塞：Java 24 而非 Java 25、Maven/Docker 不可用，且真实测试 IdP/Kafka 与 B18 runtime 变量未注入；因此 runtime bootstrap 应明确失败，不能宣告全系统联调已通过。
+pnpm b18:bootstrap --require-runtime 必须在 B17 runtime preflight、Java 25/Maven/Docker 或等价 CI、测试 IAM JWT 认证中心、Kafka/数据库和 B18 origin/账号矩阵变量就绪后执行。当前环境沿用 B17 阻塞：Java 24 而非 Java 25、Maven/Docker 不可用，且真实测试 IAM JWT 认证中心/Kafka 与 B18 runtime 变量未注入；因此 runtime bootstrap 应明确失败，不能宣告全系统联调已通过。
 
 ## 4. 交接结论
 

@@ -7,7 +7,7 @@ v2 采用 Java 25 + Spring Boot 4.1 的微服务目标架构，统一入口为 `
 目标服务：
 
 - `api-gateway`：Spring Cloud Gateway；路由、版本、限流、JWT 预校验和请求上下文，不写领域事实。
-- `iam-service`：provider-neutral OIDC/OAuth 2.1 适配端口、principal/tenant/设备/会话/同意/成人 Gate/审计；RBAC + ABAC 通过服务模板 PEP 约束。真实 IdP、生产 token/JWKS 和运行态 RBAC 仍受 ADR-0011/G-IDP Gate 约束。
+- `iam-service`：IAM 自有账号密码 JWT 认证中心、principal/tenant/设备/会话/同意/成人 Gate/审计；RBAC + ABAC 通过服务模板 PEP 约束。真实 IAM JWT、生产密钥/JWKS 和运行态 RBAC 仍受 ADR-0013/JWT runtime Gate 约束。
 - `audit-service`、`workflow-service`：安全/管理审计、Saga/定时任务/补偿/死信和人工恢复；初期可由平台模块或 `job-runner` 承载，但不能跨服务直接写领域表。
 - `learner-service`、`content-service`、`learning-service`、`assessment-service`、`media-service`：学习者、内容、学习流、判分和媒体事实。
 - `gamification-service`、`social-service`、`commerce-service`：成长、社群、订单/权益/对账事实。

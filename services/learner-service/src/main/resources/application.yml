@@ -74,9 +74,10 @@ learner:
 
 security:
   resource-server:
-    # No bearer token is treated as authentication while the G-IDP gate is closed.
-    enabled: ${LEARNER_RESOURCE_SERVER_ENABLED:false}
-    issuer-uri: ${LEARNER_SECURITY_ISSUER_URI:}
-    jwk-set-uri: ${LEARNER_SECURITY_JWK_SET_URI:}
+    # Every service independently verifies the IAM-owned JWT through JWKS.
+    enabled: ${LEARNER_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${LEARNER_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${LEARNER_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${LEARNER_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}
     policy-cache-ttl: ${LEARNER_POLICY_CACHE_TTL:30s}
     pdp-timeout: ${LEARNER_PDP_TIMEOUT:250ms}

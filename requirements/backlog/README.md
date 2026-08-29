@@ -11,9 +11,9 @@
 ## 当前 v2 执行基线
 
 - [v2 B7+ 代码重塑与交互测试任务基线](./v2-B7plus-代码重塑与交互测试任务基线.md)：B7–B22 共 103 项任务；B7–B14 是代码层重塑，B15–B22 是 Phase 1 运行态、测试、发布与上线的静态基础。
-- [v2 B23+ Phase 1 登录、真实数据与测试任务基线](./v2-B23plus-Phase1-真实运行与实机测试任务基线.md)：重新设计 B23–B27 共 32 项任务，先完成标准 OIDC/IAM 注册登录、H5/Web 全局登录门禁和本地 MySQL 真实学习数据，再执行 Kafka/Outbox、浏览器/H5 正式测试、真机、RC 和测试交接；B23–B27 不新增 Phase 2/3 业务。
-- [v2 B28+ Phase 1 本机真实全栈与 MCP 浏览器验收任务基线](./v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md)：B28–B36 共 45 项新增任务，只收口本机 Web/H5 目标；依次完成基础设施、14 后端进程、真实 OIDC、MySQL/API、Kafka/Redis、四前端联调、Codex Browser MCP 真浏览器测试、异常回归和本机交接。
-- 当前执行快照（2026-08-25）：B15–B27 已完成相关代码/静态基础，B28–B29 的本机基础设施、14 个后端进程、固定端口、Gateway 401/trace、owner schema 和 fail-closed 运行门禁通过；B30–B33 的自动化/API/DB/Kafka/Redis/四端构建运行切片已通过，B34–B36 正在收口。Browser MCP 已实际进入本地 Keycloak 登录/注册页，但尚未在未获确认时输入测试密码，因此认证后完整旅程暂不计为完成，当前交接为 `LOCAL-TEST-NO-PASS`。iOS/Android/iPad、微信小程序、远程真机、staging、RC 和生产发布暂缓，不阻塞本机里程碑。
+- [v2 B23+ Phase 1 登录、真实数据与测试任务基线](./v2-B23plus-Phase1-真实运行与实机测试任务基线.md)：重新设计 B23–B27 共 32 项任务，先完成“自有 IAM 账号密码 + JWT Bearer Access Token + JWKS + IAM 会话”的认证闭环、H5/Web 全局登录门禁和本地 MySQL 真实学习数据，再执行 Kafka/Outbox、浏览器/H5 正式测试、真机、RC 和测试交接；B23–B27 不新增 Phase 2/3 业务。
+- [v2 B28+ Phase 1 本机真实全栈与 MCP 浏览器验收任务基线](./v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md)：B28–B36 共 45 项新增任务，只收口本机 Web/H5 目标；依次完成基础设施、14 后端进程、自有 JWT/JWKS、MySQL/API、Kafka/Redis、四前端联调、Codex Browser MCP 真浏览器测试、异常回归和本机交接。
+- 当前执行快照（2026-08-28）：B15–B27 已完成相关代码/静态基础，B28–B29 的本机基础设施、14 个后端进程、固定端口、Gateway 401/trace、owner schema 和 fail-closed 运行门禁通过；B30–B33 的自有 JWT 自动化/API/DB/Kafka/Redis/四端构建运行切片已通过，B34–B36 正在收口。新的 Browser MCP 认证旅程尚未取得完整运行证据，不能把历史其他认证页或旧证据计为完成，当前交接为 `LOCAL-TEST-NO-PASS`。iOS/Android/iPad、微信小程序、远程真机、staging、RC 和生产发布暂缓，不阻塞本机里程碑。
 - G0–G4 已单独建立为横切 DoD 治理门禁实现基线，覆盖范围、契约数据、实现交互、测试安全观测和发布回滚；详见 [`G0-G4-治理门禁任务基线.md`](./G0-G4-治理门禁任务基线.md)。G Gate 的静态通过不替代 B15–B22 的真实运行态验收。
 
 ## 旧 B0–B6 历史基线

@@ -41,10 +41,9 @@ if (!staticOnly || requireRuntime) {
   nodeScript('toolchain', 'scripts/toolchain/check-toolchain.mjs');
   nodeScript('infra-runtime', 'scripts/check-local-infra.mjs', '--require-healthy');
   const required = [
-    'B16_TEST_IDP_ISSUER_URI',
-    'B16_TEST_IDP_JWKS_URI',
-    'B16_TEST_IDP_AUTHORIZATION_ENDPOINT',
-    'B16_TEST_IDP_TOKEN_ENDPOINT',
+    'B16_JWT_ISSUER_URI',
+    'B16_JWT_JWKS_URI',
+    'B16_JWT_AUDIENCE',
     'B17_KAFKA_BOOTSTRAP_SERVERS'
   ];
   const missing = required.filter((key) => !process.env[key]);

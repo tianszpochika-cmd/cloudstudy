@@ -4,7 +4,7 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: ${IAM_SHUTDOWN_TIMEOUT:20s}
   flyway:
-    enabled: ${IAM_FLYWAY_ENABLED:false}
+    enabled: ${IAM_FLYWAY_ENABLED:${IAM_PERSISTENCE_ENABLED:false}}
 
 server:
   # The IAM process is a local development boundary until deployment identity is approved.
@@ -57,39 +57,33 @@ logging:
 iam:
   phase: phase-1
   platform-tenant: platform
-  provider-mode: ${IAM_PROVIDER_MODE:standard-oidc}
-  # The external provider must be explicitly enabled. With the default off, all login and
-  # principal creation paths fail closed; IAM never becomes a token server.
-  real-provider-enabled: ${IAM_REAL_PROVIDER_ENABLED:false}
-  # Only the disposable local Keycloak test profile may enable this. Production uses verified
-  # IdP age evidence or a separately authenticated age service.
-  local-adult-gate-enabled: false
-  oidc:
-    enabled: false
-    provider-id: standard-oidc
-    discovery-uri: http://127.0.0.1:18099/realms/yuxuexing-local/.well-known/openid-configuration
-    expected-issuer:
-    client-id: yuxuexing-learner-web
-    learner-client-id: yuxuexing-learner-web
-    admin-client-id: yuxuexing-admin-web
-    mobile-h5-client-id: yuxuexing-mobile-h5
-    mobile-app-client-id: yuxuexing-mobile-app
-    client-authentication-method: none
-    audience: yuxuexing-api
-    redirect-uris:
-      - http://127.0.0.1:18180/auth/callback
-    scopes:
-      - openid
-      - profile
-      - email
-    age-claim: age
-    request-timeout: 5s
-    discovery-cache-ttl: 5m
-    jwks-max-age: 15m
-    transaction-ttl: 5m
+  local-adult-gate-enabled: ${IAM_LOCAL_ADULT_GATE_ENABLED:false}
+  jwt:
+    issuer: ${IAM_JWT_ISSUER:http://127.0.0.1:18087}
+    audience: ${IAM_JWT_AUDIENCE:yuxuexing-api}
+    algorithm: ${IAM_JWT_ALGORITHM:RS256}
+    key-id: ${IAM_JWT_KEY_ID:iam-local-2026-08}
+    private-key-pem: ${IAM_JWT_PRIVATE_KEY_PEM:}
+    private-key-file: ${IAM_JWT_PRIVATE_KEY_FILE:}
+    # Public JWK JSON for the previous signer during a controlled overlap window.
+    previous-public-keys-json: ${IAM_JWT_PREVIOUS_PUBLIC_KEYS_JSON:}
+    # Local-only default. Production must set false and mount a KMS/secret-manager key.
+    ephemeral-keys-allowed: ${IAM_JWT_EPHEMERAL_KEYS_ALLOWED:true}
+    access-token-ttl: ${IAM_ACCESS_TOKEN_TTL:15m}
+    refresh-token-ttl: ${IAM_REFRESH_TOKEN_TTL:30d}
+    clock-skew: ${IAM_JWT_CLOCK_SKEW:60s}
+    refresh-cookie-name: ${IAM_REFRESH_COOKIE_NAME:yuxuexing_refresh}
+    refresh-cookie-secure: ${IAM_REFRESH_COOKIE_SECURE:false}
+  account:
+    password-min-length: ${IAM_PASSWORD_MIN_LENGTH:12}
+    max-failed-attempts: ${IAM_MAX_FAILED_ATTEMPTS:5}
+    lock-duration: ${IAM_ACCOUNT_LOCK_DURATION:15m}
+    reset-token-ttl: ${IAM_RESET_TOKEN_TTL:15m}
+    login-requests-per-minute: ${IAM_LOGIN_RATE_LIMIT:20}
+    reset-requests-per-minute: ${IAM_RESET_RATE_LIMIT:5}
   persistence:
-    enabled: false
-    jdbc-url: jdbc:mysql://127.0.0.1:13306/yuxuexing?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
-    username: yuxuexing
-    password: yuxuexing
+    enabled: ${IAM_PERSISTENCE_ENABLED:false}
+    jdbc-url: ${IAM_JDBC_URL:jdbc:mysql://127.0.0.1:13306/yuxuexing?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC}
+    username: ${IAM_JDBC_USERNAME:yuxuexing}
+    password: ${IAM_JDBC_PASSWORD:yuxuexing}
     schema: iam_service

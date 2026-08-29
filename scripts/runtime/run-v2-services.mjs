@@ -8,8 +8,6 @@ const manifest = JSON.parse(readFileSync(path.join(root, 'config', 'v2-runtime-s
 const ports = JSON.parse(readFileSync(path.join(root, 'config', 'local-ports.json'), 'utf8'));
 const ownerManifest = JSON.parse(readFileSync(path.join(root, 'config', 'b17-runtime-services.json'), 'utf8'));
 const args = process.argv.slice(2);
-const realOidcFlag = args.includes('--real-oidc');
-if (realOidcFlag) process.env.B30_REAL_OIDC = 'true';
 const timeoutArg = args.indexOf('--timeout-ms');
 const parsedTimeout = timeoutArg >= 0 ? Number(args[timeoutArg + 1]) : 45000;
 const timeoutMs = Number.isFinite(parsedTimeout) && parsedTimeout > 0 ? parsedTimeout : 45000;
@@ -44,8 +42,8 @@ function values(name) {
 const requested = values('--service').flatMap((value) => value.split(/[\s,]+/)).filter(Boolean);
 const selectAll = args.includes('--all');
 if (!selectAll && requested.length === 0) {
-  console.error('Usage: pnpm services:run -- --all [--real-oidc] [--skip-health]');
-  console.error('   or: pnpm services:run -- --service api-gateway,iam-service [--real-oidc]');
+  console.error('Usage: pnpm services:run -- --all [--skip-health]');
+  console.error('   or: pnpm services:run -- --service api-gateway,iam-service');
   process.exit(2);
 }
 if (selectAll && requested.length > 0) {
@@ -106,11 +104,9 @@ function mysqlUrl(schema) {
 }
 
 function runtimeEnvironment(service, port) {
-  const oidcIssuer = process.env.OIDC_ISSUER_URI ?? 'http://127.0.0.1:18099/realms/yuxuexing-local';
-  const oidcDiscovery = process.env.OIDC_DISCOVERY_URI ?? `${oidcIssuer}/.well-known/openid-configuration`;
-  const oidcJwks = process.env.OIDC_JWKS_URI ?? `${oidcIssuer}/protocol/openid-connect/certs`;
-  const realOidcEnabled = process.env.B30_REAL_OIDC === 'true'
-    || process.env.IAM_REAL_PROVIDER_ENABLED === 'true';
+  const jwtIssuer = process.env.IAM_JWT_ISSUER ?? 'http://127.0.0.1:18087';
+  const jwtJwks = process.env.IAM_JWT_JWKS_URI ?? `${jwtIssuer.replace(/\/$/, '')}/api/v1/auth/jwks`;
+  const jwtAudience = process.env.IAM_JWT_AUDIENCE ?? 'yuxuexing-api';
   const environment = {
     ...process.env,
     PORT: String(port),
@@ -135,47 +131,23 @@ function runtimeEnvironment(service, port) {
     environment.IAM_PERSISTENCE_JDBCURL = mysqlUrl('iam_service');
     environment.IAM_PERSISTENCE_USERNAME = 'svc_iam';
     environment.IAM_PERSISTENCE_PASSWORD = environment.MYSQL_OWNER_PASSWORD;
-    environment.IAM_REALPROVIDERENABLED = process.env.IAM_REAL_PROVIDER_ENABLED ?? String(realOidcEnabled);
-    environment.IAM_OIDC_ENABLED = process.env.IAM_OIDC_ENABLED ?? String(realOidcEnabled);
-    environment.IAM_LOCALADULTGATEENABLED = process.env.IAM_LOCAL_ADULT_GATE_ENABLED ?? String(realOidcEnabled);
-    environment.IAM_PROVIDERMODE = process.env.IAM_PROVIDER_MODE ?? 'standard-oidc';
-    environment.IAM_OIDC_PROVIDERID = process.env.IAM_OIDC_PROVIDER_ID ?? 'standard-oidc';
-    environment.IAM_OIDC_DISCOVERYURI = oidcDiscovery;
-    environment.IAM_OIDC_EXPECTEDISSUER = oidcIssuer;
-    environment.IAM_OIDC_CLIENTID = process.env.OIDC_CLIENT_ID ?? 'yuxuexing-learner-web';
-    environment.IAM_OIDC_LEARNERCLIENTID = process.env.OIDC_LEARNER_WEB_CLIENT_ID ?? 'yuxuexing-learner-web';
-    environment.IAM_OIDC_ADMINCLIENTID = process.env.OIDC_ADMIN_WEB_CLIENT_ID ?? 'yuxuexing-admin-web';
-    environment.IAM_OIDC_MOBILEH5CLIENTID = process.env.OIDC_MOBILE_H5_CLIENT_ID ?? 'yuxuexing-mobile-h5';
-    environment.IAM_OIDC_MOBILEAPPCLIENTID = process.env.OIDC_MOBILE_APP_CLIENT_ID ?? 'yuxuexing-mobile-app';
-    environment.IAM_OIDC_AUDIENCE = process.env.OIDC_AUDIENCE ?? 'yuxuexing-api';
-    // Request the API audience scope explicitly. Keycloak keeps default client
-    // scopes server-side, but an explicit scope makes the access-token audience
-    // contract observable and prevents a valid login from becoming a Gateway 401.
-    environment.IAM_OIDC_SCOPES = process.env.OIDC_SCOPES ?? 'openid,yuxuexing-identity,yuxuexing-api';
-    environment.IAM_OIDC_REQUESTTIMEOUT = process.env.IAM_OIDC_REQUEST_TIMEOUT ?? '5s';
-    environment.IAM_OIDC_DISCOVERYCACHETTL = process.env.IAM_OIDC_DISCOVERY_CACHE_TTL ?? '5m';
-    environment.IAM_OIDC_JWKS_MAXAGE = process.env.IAM_OIDC_JWKS_MAX_AGE ?? '15m';
-    environment.IAM_OIDC_TRANSACTIONTTL = process.env.IAM_OIDC_TRANSACTION_TTL ?? '5m';
-    environment.IAM_OIDC_REDIRECTURIS = process.env.OIDC_REDIRECT_URIS
-      ?? 'http://127.0.0.1:18180/auth/callback,http://127.0.0.1:18181/auth/callback,http://127.0.0.1:18183/auth/callback';
-    // Preserve the legacy OIDC names for Gateway and diagnostics; IAM binds the explicit
-    // iam.oidc.* environment names above so values cannot remain unresolved placeholders.
-    environment.OIDC_ISSUER_URI = oidcIssuer;
-    environment.OIDC_DISCOVERY_URI = oidcDiscovery;
-    environment.OIDC_JWKS_URI = oidcJwks;
+    environment.IAM_JWT_ISSUER = jwtIssuer;
+    environment.IAM_JWT_JWKS_URI = jwtJwks;
+    environment.IAM_JWT_AUDIENCE = jwtAudience;
+    environment.IAM_JWT_ALGORITHM = process.env.IAM_JWT_ALGORITHM ?? 'RS256';
+    environment.IAM_LOCAL_ADULT_GATE_ENABLED = process.env.IAM_LOCAL_ADULT_GATE_ENABLED ?? 'true';
   }
-  if (service.id === 'api-gateway' && realOidcEnabled) {
+  if (service.id === 'api-gateway') {
     environment.GATEWAY_RESOURCE_SERVER_ENABLED = 'true';
     environment.GATEWAY_JWT_PREVALIDATION_ENABLED = 'true';
-    environment.OIDC_ISSUER_URI = oidcIssuer;
-    environment.OIDC_AUDIENCE = process.env.OIDC_AUDIENCE ?? 'yuxuexing-api';
+    environment.GATEWAY_SECURITY_ISSUER_URI = jwtIssuer;
+    environment.GATEWAY_SECURITY_JWK_SET_URI = jwtJwks;
+    environment.GATEWAY_SECURITY_AUDIENCE = jwtAudience;
   }
-  if (service.id === 'commerce-service' && realOidcEnabled) {
-    // Commerce binds the standard Spring Resource Server decoder from the
-    // service-specific issuer property.  The other domain services use their
-    // bounded security properties, so leaving this mapping implicit makes the
-    // real local profile fail at startup with a missing JwtDecoder.
-    environment.COMMERCE_OIDC_ISSUER_URI = oidcIssuer;
+  if (service.id === 'commerce-service') {
+    environment.COMMERCE_SECURITY_ISSUER_URI = jwtIssuer;
+    environment.COMMERCE_SECURITY_JWK_SET_URI = jwtJwks;
+    environment.COMMERCE_SECURITY_AUDIENCE = jwtAudience;
   }
   const owner = ownerManifest.services.find((item) => item.id === service.id);
   const ownerUser = owner?.dbCredential;
@@ -211,6 +183,11 @@ function runtimeEnvironment(service, port) {
       case 'assessment-service':
         environment.ASSESSMENT_PERSISTENCE_ENABLED = 'true';
         environment.ASSESSMENT_FLYWAY_ENABLED = 'true';
+        // The local MySQL volume can retain pre-v2 synthetic rows in the legacy
+        // assessment tables. Keep the production default fail-fast, while the
+        // local-real runner skips only rows that cannot be rehydrated by the v2
+        // aggregate so the service can start without deleting the volume.
+        environment.ASSESSMENT_TOLERATE_CORRUPT_LEGACY_ROWS = 'true';
         environment.ASSESSMENT_DB_URL = jdbc.url;
         environment.ASSESSMENT_DB_USERNAME = jdbc.user;
         environment.ASSESSMENT_DB_PASSWORD = jdbc.password;
@@ -272,7 +249,7 @@ function runtimeEnvironment(service, port) {
       default:
         break;
     }
-    if (realOidcEnabled && service.id !== 'api-gateway' && service.id !== 'iam-service' && service.id !== 'core-api') {
+    if (service.id !== 'api-gateway' && service.id !== 'iam-service' && service.id !== 'core-api') {
       const envPrefix = {
         'learner-service': 'LEARNER',
         'content-service': 'CONTENT_SERVICE',
@@ -288,8 +265,9 @@ function runtimeEnvironment(service, port) {
       }[service.id];
       if (envPrefix) {
         environment[`${envPrefix}_RESOURCE_SERVER_ENABLED`] = 'true';
-        environment[`${envPrefix}_SECURITY_ISSUER_URI`] = oidcIssuer;
-        environment[`${envPrefix}_SECURITY_JWK_SET_URI`] = oidcJwks;
+        environment[`${envPrefix}_SECURITY_ISSUER_URI`] = jwtIssuer;
+        environment[`${envPrefix}_SECURITY_JWK_SET_URI`] = jwtJwks;
+        environment[`${envPrefix}_SECURITY_AUDIENCE`] = jwtAudience;
       }
     }
   }

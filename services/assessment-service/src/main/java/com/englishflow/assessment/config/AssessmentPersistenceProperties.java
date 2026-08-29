@@ -11,6 +11,7 @@ public class AssessmentPersistenceProperties {
     private String username;
     private String password;
     private String driverClassName = "com.mysql.cj.jdbc.Driver";
+    private boolean tolerateCorruptLegacyRows;
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
@@ -24,4 +25,6 @@ public class AssessmentPersistenceProperties {
     public void setPassword(String password) { this.password = password; }
     public String getDriverClassName() { return driverClassName; }
     public void setDriverClassName(String driverClassName) { this.driverClassName = driverClassName; }
+    public boolean isTolerateCorruptLegacyRows() { return tolerateCorruptLegacyRows; }
+    public void setTolerateCorruptLegacyRows(boolean tolerateCorruptLegacyRows) { this.tolerateCorruptLegacyRows = tolerateCorruptLegacyRows; }
 }

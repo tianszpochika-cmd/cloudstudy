@@ -6,7 +6,6 @@ declare module 'vue-router' { interface RouteMeta { requiresAuth?: boolean; perm
 
 const routes: RouteRecordRaw[] = [
   { path: '/login', name: 'admin-login', component: () => import('../views/AdminLoginView.vue') },
-  { path: '/auth/callback', name: 'admin-auth-callback', component: () => import('../views/AdminAuthCallbackView.vue') },
   { path: '/forbidden', name: 'admin-forbidden', component: () => import('../views/AdminForbiddenView.vue'), meta: { requiresAuth: true } },
   { path: '/', redirect: '/dashboard' },
   { path: '/dashboard', name: 'admin-dashboard', component: () => import('../views/AdminDashboardView.vue'), meta: { requiresAuth: true, permission: 'admin.dashboard.read' } },

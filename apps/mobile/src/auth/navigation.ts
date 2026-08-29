@@ -5,13 +5,11 @@ import { pinia } from '../stores/pinia'
 import { useSessionStore } from '../stores/session'
 
 const LOGIN_PATH = '/pages/login/login'
-const CALLBACK_PATH = '/pages/auth-callback/auth-callback'
 const FORBIDDEN_PATH = '/pages/forbidden/forbidden'
 const ONBOARDING_PATH = '/pages/onboarding/onboarding'
 const HOME_PATH = '/pages/home/home'
-const H5_OIDC_CALLBACK_PATH = '/auth/callback'
 
-const PUBLIC_PATHS = new Set([LOGIN_PATH, CALLBACK_PATH, FORBIDDEN_PATH])
+const PUBLIC_PATHS = new Set([LOGIN_PATH, FORBIDDEN_PATH])
 
 type RouteOptions = { url?: string; delta?: number }
 
@@ -32,33 +30,6 @@ export function currentMobilePagePath(fallback = HOME_PATH): string {
   const getPages = (globalThis as typeof globalThis & { getCurrentPages?: () => Array<{ route?: string }> }).getCurrentPages
   const pages = getPages?.() ?? []
   return normalizeMobilePagePath(pages.at(-1)?.route, fallback)
-}
-
-/**
- * H5 cannot use a hash fragment as an OIDC redirect URI. The IdP therefore
- * returns to /auth/callback, and this bridge forwards only the callback
- * parameters into the real uni-app callback page.
- */
-export function bridgeMobileH5OidcCallback(): boolean {
-  if (typeof window === 'undefined' || !window.location) return false
-  if (normalizeMobilePagePath(window.location.pathname, '') !== H5_OIDC_CALLBACK_PATH) return false
-  const hashPath = normalizeMobilePagePath(window.location.hash.replace(/^#/, ''), '')
-  if (hashPath === CALLBACK_PATH) return false
-  const input = new URLSearchParams(window.location.search)
-  if (!input.has('code') && !input.has('state') && !input.has('error')) return false
-
-  const output = new URLSearchParams()
-  for (const key of ['code', 'state', 'error', 'error_description', 'error_uri', 'returnTo']) {
-    const value = input.get(key)
-    if (value) output.set(key, value)
-  }
-  const target = `${CALLBACK_PATH}${output.toString() ? `?${output.toString()}` : ''}`
-  try {
-    relaunchOrNavigate(target)
-    return true
-  } catch {
-    return false
-  }
 }
 
 export function isMobilePublicPath(path: unknown): boolean { return PUBLIC_PATHS.has(normalizeMobilePagePath(path)) }
@@ -91,7 +62,7 @@ function showOnboarding(returnTo: string): void {
   relaunchOrNavigate(ONBOARDING_PATH)
 }
 
-/** Continue from the OIDC handoff without making the navigation guard flash. */
+/** Continue from the account-password login without making the navigation guard flash. */
 export function continueAfterLogin(returnTo: string): void {
   const session = useSessionStore(pinia)
   const safe = safeMobileReturnTo(returnTo)
@@ -167,4 +138,4 @@ export function handleMobileApiError(status: 401 | 403): void {
   relaunchOrNavigate(`${FORBIDDEN_PATH}?returnTo=${encodeURIComponent(safeMobileReturnTo(current))}`)
 }
 
-export { CALLBACK_PATH, FORBIDDEN_PATH, H5_OIDC_CALLBACK_PATH, HOME_PATH, LOGIN_PATH, ONBOARDING_PATH }
+export { FORBIDDEN_PATH, HOME_PATH, LOGIN_PATH, ONBOARDING_PATH }

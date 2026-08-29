@@ -22,7 +22,7 @@ test('B28 local-real scope requires Web/H5 and defers native/WeChat targets', ()
   assert.equal(config.scope.android, 'deferred');
   assert.equal(config.scope.wechatMiniProgram, 'deferred');
   assert.deepEqual(config.dependencies.filter((item) => item.required).map((item) => item.id), [
-    'mysql', 'redis', 'kafka', 'minio', 'keycloak'
+    'mysql', 'redis', 'kafka', 'minio'
   ]);
   assert.equal(config.compatibilityDependencies[0].id, 'rabbitmq');
   assert.equal(config.compatibilityDependencies[0].required, false);
@@ -35,9 +35,9 @@ test('B28 static validator passes fixed ports, real dependencies and owner/schem
   assert.equal(result.runtimeStatus, 'not-requested');
   assert.equal(result.runtimeGate, 'static-only');
   assert.equal(result.runtimeProcessCount, 14);
-  assert.equal(result.requiredDependencyCount, 5);
+  assert.equal(result.requiredDependencyCount, 4);
   assert.equal(result.ownerSchemaCount, 11);
-  assert.equal(result.fixedPortCount, 6);
+  assert.equal(result.fixedPortCount, 5);
 });
 
 test('B28 runtime validation fails closed when no external runtime evidence exists', () => {

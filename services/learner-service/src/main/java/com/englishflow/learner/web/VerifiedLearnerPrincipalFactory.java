@@ -40,11 +40,11 @@ public final class VerifiedLearnerPrincipalFactory {
         String principalId = mappedPrincipalId != null ? mappedPrincipalId : firstText(jwt, "sub");
         boolean validMappedPrincipal = mappedPrincipalId != null
                 && mappedPrincipalId.matches("prn_[A-Za-z0-9._:-]{15,127}");
-        boolean validExternalSubject = mappedPrincipalId == null && principalId != null
+        boolean validJwtSubject = mappedPrincipalId == null && principalId != null
                 && principalId.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}");
-        if (principalId == null || (!validMappedPrincipal && !validExternalSubject)) {
+        if (principalId == null || (!validMappedPrincipal && !validJwtSubject)) {
             throw new LearnerDomainException(LearnerDecisionCode.MISSING_PRINCIPAL,
-                    "verified JWT is missing an IAM principal id or approved OIDC subject");
+                    "verified JWT is missing an IAM principal id");
         }
 
         Set<String> roles = new LinkedHashSet<>();

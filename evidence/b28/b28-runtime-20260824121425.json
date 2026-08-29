@@ -11,8 +11,9 @@
   },
   "capturedAt": "2026-08-24T12:14:58.656Z",
   "mode": "local-real",
-  "status": "PASS",
-  "evidenceClass": "runtime-external",
+  "status": "SUPERSEDED",
+  "evidenceClass": "historical-not-acceptance",
+  "supersededBy": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
   "provenance": {
     "producer": "b28-runtime-probe",
     "source": "executed-local-runtime"
@@ -40,8 +41,7 @@
           "redis",
           "minio",
           "kafka",
-          "rabbitmq",
-          "oidc-idp"
+          "rabbitmq"
         ]
       }
     },

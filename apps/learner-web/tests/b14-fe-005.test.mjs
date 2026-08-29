@@ -17,14 +17,15 @@ test('learner-web uses one Gateway base URL seam and no insecure random fallback
   assert.doesNotMatch(`${gateway}\n${client}\n${session}`, /Math\.random/)
 })
 
-test('learner-web validates and recovers internal returnTo before callback navigation', async () => {
+test('learner-web validates and recovers internal returnTo before login navigation', async () => {
   const gateway = await read('apps/learner-web/src/platform/gateway.ts')
   const auth = await read('apps/learner-web/src/auth/gateway-auth.ts')
-  const callback = await read('apps/learner-web/src/pages/AuthCallbackPage.vue')
+  const login = await read('apps/learner-web/src/pages/LoginPage.vue')
   assert.match(gateway, /safeInternalReturnTo/)
   assert.match(gateway, /%\(\?:2f\|5c\)/)
   assert.match(auth, /safeInternalReturnTo/)
-  assert.match(callback, /returnTo:/)
+  assert.match(login, /identifier|password/)
+  assert.doesNotMatch(`${auth}\n${login}`, /auth\/callback|authorizationCode|codeVerifier|codeChallenge|nonce/i)
 })
 
 test('learner-web exposes canonical eight states, closed gates, and preference restore', async () => {

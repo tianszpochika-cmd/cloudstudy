@@ -71,9 +71,9 @@ test('B26 frontend writes preserve explicit idempotency semantics', () => {
   assert.match(mobileApi, /contentCatalog|readHome|readOnboarding/)
 })
 
-test('B26 official site remains public-only while learner/mobile require session boundary', () => {
+test('B26 official site remains public-only while learner/mobile require self-owned JWT session boundary', () => {
   const matrix = json('config/b26-browser-test.json')
   assert.equal(matrix.applications.find((app) => app.id === 'official-site').auth, 'public-only')
-  for (const id of ['learner-web', 'mobile', 'admin-web']) assert.equal(matrix.applications.find((app) => app.id === id).auth, 'oidc-test-idp')
+  for (const id of ['learner-web', 'mobile', 'admin-web']) assert.equal(matrix.applications.find((app) => app.id === id).auth, 'self-owned-jwt')
   assert.doesNotMatch(read('apps/official-site/utils/public-links.mjs'), /accessToken|refreshToken|Authorization\s*:/i)
 })

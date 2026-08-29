@@ -12,7 +12,7 @@ const session = useSessionStore()
       <p class="lead">{{ authT('forbidden.description') }}</p>
       <p class="muted" role="alert">{{ session.forbiddenReason ?? authT('forbidden.description') }}</p>
       <div class="login-card__actions">
-        <RouterLink class="button button--secondary" to="/home">{{ authT('callback.returning') }}</RouterLink>
+        <RouterLink class="button button--secondary" to="/home">{{ authT('session.restored') }}</RouterLink>
         <RouterLink class="button button--ghost" to="/login">{{ authT('forbidden.login') }}</RouterLink>
       </div>
     </section>

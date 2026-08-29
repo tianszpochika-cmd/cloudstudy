@@ -48,4 +48,4 @@ javac --release 24 -encoding UTF-8 -d $out $main (rg --files src/test/java)
 java -cp $out com.englishflow.commerce.CommerceServiceSmoke
 ```
 
-预期输出：`commerce-service B13-COM-001/002 smoke: PASS`。本机没有 Maven/JDK 25 时，不得声称 Maven/Java 25 构建通过；真实 OIDC/JWKS、MySQL、Kafka、KMS、provider sandbox/资质和浏览器/HTTP 运行态仍需测试环境验收。
+预期输出：`commerce-service B13-COM-001/002 smoke: PASS`。本机没有 Maven/JDK 25 时，不得声称 Maven/Java 25 构建通过；真实 JWT/JWKS、MySQL、Kafka、KMS、provider sandbox/资质和浏览器/HTTP 运行态仍需测试环境验收。

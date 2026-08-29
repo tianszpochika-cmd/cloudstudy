@@ -84,7 +84,7 @@ export function validateB19Fixtures({ rootDirectory = repoRoot } = {}) {
   assert(Array.isArray(fixture.syntheticAccounts) && fixture.syntheticAccounts.length >= 2, 'synthetic accounts are incomplete');
   for (const account of fixture.syntheticAccounts) {
     assert(typeof account.id === 'string' && typeof account.subject === 'string', 'synthetic account identity is incomplete');
-    assert(account.identityProvider === 'external-test-idp', 'synthetic account must use external test IdP');
+    assert(account.authenticationCenter === 'iam-service', 'synthetic account must use the platform IAM authentication center');
   }
   validateNoFixtureSecrets(fixture);
   return { fixture, rootDirectory, fixturePath: path.join(rootDirectory, 'config', 'b19-test-fixtures.json') };

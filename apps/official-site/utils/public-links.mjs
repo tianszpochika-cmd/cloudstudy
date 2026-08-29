@@ -1,6 +1,8 @@
 const SAFE_PROTOCOLS = new Set(['http:', 'https:'])
 const CAMPAIGN_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']
 
+// The official site creates a public login link only; it never owns business tokens.
+
 function normalizePath(path = '/') {
   const value = String(path || '/')
   if (value.includes('\\') || value.startsWith('//')) return '/'
@@ -19,11 +21,9 @@ export function safePublicReturnTo(value, fallback = '/home') {
   }
 }
 
-export function buildGatewayAuthLink(base, { returnTo = '/home', locale = 'zh-CN', theme = 'system', redirectUri, campaignParams = {} } = {}) {
-  const path = '/auth/oidc/standard-oidc/authorization/start'
-  if (typeof redirectUri !== 'string' || !/^https?:\/\//i.test(redirectUri)) throw new Error('A controlled absolute learner callback is required')
+export function buildLearnerLoginLink(base, { returnTo = '/home', locale = 'zh-CN', theme = 'system', campaignParams = {} } = {}) {
+  const path = '/login'
   const entries = [
-    ['redirectUri', redirectUri],
     ['returnTo', safePublicReturnTo(returnTo)],
     ['uiLocale', String(locale)],
     ['theme', String(theme)],

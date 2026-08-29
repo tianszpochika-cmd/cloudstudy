@@ -23,7 +23,7 @@
 
 ## 3. B0–B22 当前状态
 
-“代码层通过”不等于真实数据库、消息总线、IdP、跨进程服务、设备或生产迁移已经验收；初始状态列仍保留在任务基线中用于审计。
+“代码层通过”不等于真实数据库、消息总线、IAM JWT 认证中心、跨进程服务、设备或生产迁移已经验收；初始状态列仍保留在任务基线中用于审计。
 
 | 批次 | 当前代码/逻辑状态 | 本轮证据 | 测试阶段剩余 |
 |---|---|---|---|
@@ -35,19 +35,19 @@
 | B5 | 代码层通过；契约归属已澄清 | 4/4 | 支付 sandbox、SSO/RBAC、真实持久化和端到端 |
 | B6 | 代码层通过 | 4/4，平台矩阵通过 | 真机、无障碍、弱网、备份恢复和发布签字 |
 | B7 | 代码层通过 | 28/28 | Java 25/Maven Gateway、真实限流和浏览器/设备 |
-| B8 | 代码层通过；G-IDP 默认 Gate 仍关闭 | 28/28 | 真实 OIDC/JWKS、PDP/撤销和设备 |
+| B8 | 代码层通过；JWT runtime Gate 默认 Gate 仍关闭 | 28/28 | 真实 自有 JWT 登录/JWKS、PDP/撤销和设备 |
 | B9 | 代码层通过 | 6/6 | Java 25 服务、数据库/Kafka、浏览器和设备 |
 | B10 | 代码层通过 | 7/7 | 目标服务运行态、数据库/Kafka、浏览器和设备 |
 | B11 | 代码层通过 | 4/4 | 媒体/对象存储、录音权限、浏览器麦克风和设备 |
 | B12 | 代码层通过 | 7/7 | Gateway/Workflow/数据库、浏览器和设备 |
-| B13 | 代码层通过 | 12/12 | Kafka/worker、支付 Gate、Gateway/OIDC、浏览器和设备 |
+| B13 | 代码层通过 | 12/12 | Kafka/worker、支付 Gate、Gateway/自有 JWT 登录、浏览器和设备 |
 | B14 | 代码层通过 | 6/6 + 安全扫描 | Java 25 Gateway、真实迁移/回滚、容器化跨进程和设备 |
 | B15 | 代码与静态预检完成，运行态阻塞 | 5/5、`b15:static` | Java 25/Maven/Docker、独立服务、迁移和基础设施健康 |
-| B16 | 代码与静态回归完成，运行态阻塞 | 6/6、`b16:static`；真实测试 IdP 未接入 | Gateway→IAM→PEP 跨进程授权、持久化、mTLS、撤销和 E2E |
-| B17 | 代码、静态与合成回归完成，运行态阻塞 | 17/17、`b17:static`；11 服务清单、读写链、Outbox/Saga 边界通过 | Java 25/Maven/Docker、MySQL/Kafka、真实 Gateway/IdP、跨进程链路和回滚 |
-| B18 | 代码、静态联调与四端构建完成，真实 API/浏览器/设备阻塞 | `tests/b18` 7/7、`b18:static`；learner/mobile/admin/official 构建与固定 origin/账号矩阵通过 | Gateway/IdP/领域 API、Playwright、App/小程序/真机、公开投影运行证据 |
-| B19 | 代码、静态系统测试基础完成，真实运行态阻塞 | `tests/b19` 23/23、`b19:static`；契约生成/兼容、4 browser runtimes、9 device profiles、10 quality gates 通过 | Gateway/IdP/Kafka/MySQL、Playwright/原生 Safari、真机、弱网/性能/读屏/对比度和真实缺陷报告 |
-| B20 | 代码与静态 Gate 基础完成，真实安全/隐私/内容/支付/灾备运行态阻塞 | `tests/b20` 22/22、`b20:static`；安全 10/10 静态、隐私/内容 7/7 静态、商业/灾备 evidence index 22、运行证据全部 pending | Java 25/Maven/Docker、CI/KMS/Vault/镜像扫描、隐私请求/审计回放、版权双审、支付 sandbox 资质/回调、备份恢复/RPO/RTO、双人发布复核 |
+| B16 | 代码与静态回归完成，运行态阻塞 | 6/6、`b16:static`；真实测试 IAM JWT 认证中心 未接入 | Gateway→IAM→PEP 跨进程授权、持久化、mTLS、撤销和 E2E |
+| B17 | 代码、静态与合成回归完成，运行态阻塞 | 17/17、`b17:static`；11 服务清单、读写链、Outbox/Saga 边界通过 | Java 25/Maven/Docker、MySQL/Kafka、真实 Gateway/IAM JWT 认证中心、跨进程链路和回滚 |
+| B18 | 代码、静态联调与四端构建完成，真实 API/浏览器/设备阻塞 | `tests/b18` 7/7、`b18:static`；learner/mobile/admin/official 构建与固定 origin/账号矩阵通过 | Gateway/IAM JWT 认证中心/领域 API、Playwright、App/小程序/真机、公开投影运行证据 |
+| B19 | 代码、静态系统测试基础完成，真实运行态阻塞 | `tests/b19` 23/23、`b19:static`；契约生成/兼容、4 browser runtimes、9 device profiles、10 quality gates 通过 | Gateway/IAM JWT 认证中心/Kafka/MySQL、Playwright/原生 Safari、真机、弱网/性能/读屏/对比度和真实缺陷报告 |
+| B20 | 代码与静态 Gate 基础完成，真实安全/隐私/内容/支付/灾备运行态阻塞 | `tests/b20` 22/22、`b20:static`；安全 10/10 静态、隐私/内容 7/7 静态、商业/灾备 evidence index 22、运行证据全部 pending | Java 25/Maven/Docker、CI/KMS/Vault/镜像扫描、隐私请求/审计回放、版权双审、支付 sandbox 资质/登录后会话恢复、备份恢复/RPO/RTO、双人发布复核 |
 | B21 | 代码与静态发布 Gate 基础完成，真实 staging/RC/Go-No-Go 阻塞 | `tests/b21` 26/26、`b21:static`；DEP/STG 13/13 静态、OBS/RC 6/6 静态、GATE/TEST 9/9 静态；runtime 全部 pending/blocked、release decision=NO-GO | B20 runtime acceptance、Java 25/Maven/Docker、真实 Kubernetes/registry/secret、OTel/SLO/告警、固定 RC 回归、回滚演练和五角色独立签字 |
 | B22 | 代码与静态上线 Gate 基础完成，真实生产/观察期阻塞 | `tests/b22` 35/35、`b22:static`；REL 8/8 静态、DATA 9/9 静态、OPS/TEST 6/6 静态；runtime 全部 pending/blocked、release decision=NO-GO | B21 runtime acceptance、生产小流量、四端版本/签名、MySQL/Kafka 迁移对账、真实 SLO/告警/客服观察、Phase 1 报告和维护交接 |
 | G0–G4 | 横切 DoD 门禁代码与静态基础完成，真实 Gate 证据阻塞 | `test:g` 41/41、`g:static`；G0 5/3、G1 6/6、G2 10/8、G3 12/12、G4 10/12 静态/运行检查通过；runtime 证据保持 pending/blocked | 范围签收、真实契约/迁移 diff、四端浏览器/设备回放、安全扫描/观测、发布审批/恢复/回滚和维护签字 |
@@ -132,9 +132,9 @@ B2 的 3 个 TODO 是原测试明确标记的外部集成项：Core API + MySQL/
 - `java -version`：Java 24（`24+36-3646`）；v2 `api-gateway`、`iam-service` 和目标服务 POM 要求 Java 25。
 - `Get-Command mvn`：未找到 Maven；仓库也没有 `mvnw`。
 - `docker --version` / `docker compose version`：未找到 Docker。
-- `pnpm b16:bootstrap`：静态门禁通过，但因 Java 24、Maven/Docker 不可用和 B16 测试 IdP 环境变量缺失而按设计失败；G-IDP 保持关闭。
-- `pnpm b17:bootstrap`：静态门禁通过；真实模式按设计因 Java 24、Maven/Docker 不可用、B16 测试 IdP 未注入和 Kafka 前置变量缺失而失败，未伪造 11 个服务、数据库、Kafka 或跨进程 E2E 已启动。
-- `pnpm b19:bootstrap --require-runtime`：B18/B19 静态门禁、契约、任务基线和 B17 前置检查均执行；按设计因 Java 24、Maven/Docker、B16 IdP/Kafka 以及 B19 Gateway/账号/数据库/浏览器/设备 evidence 变量缺失而失败，未伪造真实系统测试通过。
+- `pnpm b16:bootstrap`：静态门禁通过，但因 Java 24、Maven/Docker 不可用和 B16 测试 IAM JWT 认证中心 环境变量缺失而按设计失败；JWT runtime Gate 保持关闭。
+- `pnpm b17:bootstrap`：静态门禁通过；真实模式按设计因 Java 24、Maven/Docker 不可用、B16 测试 IAM JWT 认证中心 未注入和 Kafka 前置变量缺失而失败，未伪造 11 个服务、数据库、Kafka 或跨进程 E2E 已启动。
+- `pnpm b19:bootstrap --require-runtime`：B18/B19 静态门禁、契约、任务基线和 B17 前置检查均执行；按设计因 Java 24、Maven/Docker、B16 IAM JWT 认证中心/Kafka 以及 B19 Gateway/账号/数据库/浏览器/设备 evidence 变量缺失而失败，未伪造真实系统测试通过。
 - `pnpm b20:bootstrap --require-runtime`：B19 前置静态门禁和 B20 测试/validator 均通过；按设计因 Java 24、Maven/Docker、B16/B19 运行依赖以及 B20 隐私/审计/内容/支付/灾备 evidence 变量缺失而失败，未伪造安全、支付或灾备运行态通过。
 - `pnpm b21:static`：B20 静态前置、B21 三组测试/validator、契约、生成、兼容、固定端口、运行配置和任务基线均通过；部署/staging 13 个静态检查、观测/RC 6 个静态检查、Go/No-Go/RC evidence 9 个静态检查通过，运行检查全部保持 pending/blocked。
 - `pnpm b21:bootstrap --require-runtime`：按设计先要求 B20 runtime Gate 被接受；当前因 Java 24、Maven/Docker、B16–B20 运行前置和外部 evidence 变量缺失而失败，未创建 staging 集群、未发布镜像、未切换流量、未批准 Go。
@@ -151,7 +151,7 @@ B2 的 3 个 TODO 是原测试明确标记的外部集成项：Core API + MySQL/
 
 1. 官网公开页、服务 readiness、CORS、401/403/fail-closed 和未登录边界的 smoke；
 2. 在具备 Java 25/Maven/Docker 后准备 Gateway、IAM、目标服务和基础设施运行态；
-3. 先执行重新设计后的 B23–B25：真实 OIDC/IAM、H5/Web 全局登录门禁和本地 MySQL 真实数据；
+3. 先执行重新设计后的 B23–B25：真实 自有 JWT 登录/IAM、H5/Web 全局登录门禁和本地 MySQL 真实数据；
 4. B23–B25 的注册登录、登录门禁和 MySQL 真实读写 smoke 通过后，才进入 B26 的正式浏览器/H5 全链路测试。
 
 现在还不能宣告：全系统后端已完成认证后业务闭环、真实微服务已完成独立部署、生产迁移完成、真实支付/RTC/媒体已上线，或可以直接进行完整发布验收。B23–B27 的最新依赖和状态以 requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md 为准。
@@ -178,8 +178,8 @@ B2 的 3 个 TODO 是原测试明确标记的外部集成项：Core API + MySQL/
 | 批次 | 目标 | 当前状态 |
 |---|---|---|
 | B15 | Java 25/Maven、基础设施、独立进程、迁移、观测和运行态 smoke | 代码与静态预检完成；Java 25/Maven/Docker 运行态阻塞，详见 [`b15-validation.md`](b15-validation.md) |
-| B16 | Gateway、OIDC、IAM/RBAC/ABAC、PEP、撤销和权限回归 | 代码与静态回归入口完成；真实 Gateway/IAM/测试 IdP、持久化、mTLS 和跨进程权限运行态阻塞，详见 [`b16-validation.md`](b16-validation.md) |
-| B17 | 领域服务、数据库、Outbox/Kafka、关键读写链路和 Saga | 代码、静态门禁与合成回归完成；真实 Java 25/数据库/Kafka/Gateway/IdP/跨进程运行态阻塞，详见 [`b17-validation.md`](b17-validation.md) |
+| B16 | Gateway、自有 JWT 登录、IAM/RBAC/ABAC、PEP、撤销和权限回归 | 代码与静态回归入口完成；真实 Gateway/IAM/测试 IAM JWT 认证中心、持久化、mTLS 和跨进程权限运行态阻塞，详见 [`b16-validation.md`](b16-validation.md) |
+| B17 | 领域服务、数据库、Outbox/Kafka、关键读写链路和 Saga | 代码、静态门禁与合成回归完成；真实 Java 25/数据库/Kafka/Gateway/IAM JWT 认证中心/跨进程运行态阻塞，详见 [`b17-validation.md`](b17-validation.md) |
 | B18 | 四端真实 API 联调、i18n/theme、官网公开边界和核心交互 | 代码/静态联调完成；真实 API/浏览器/设备阻塞，详见 [`b18-validation.md`](b18-validation.md) |
 | B19 | 契约、集成、E2E、浏览器、真机、弱网、性能和无障碍 | 代码/静态系统测试基础完成；真实 API/E2E/浏览器/设备/专项 QA 阻塞，详见 [`b19-validation.md`](b19-validation.md) |
 | B20 | 安全、隐私、版权、支付 sandbox、备份恢复和灾备 Gate | 代码/静态 Gate 基础完成；真实安全/隐私/内容/支付/灾备证据阻塞，详见 [`b20-validation.md`](b20-validation.md) |
@@ -193,18 +193,18 @@ B15 本次已建立 Kafka KRaft 本地编排、Java 25 工具链拒绝策略、1
 
 ## 10. 2026-08-24 B23–B27 任务重设与 B27 验证补充
 
-根据真实运行复现，Mobile H5 未登录时仍能进入首页、测评和词汇入口，而受保护 API 返回 401；真实 OIDC 入口返回 idp_unavailable，公共商品目录没有业务 fixture，Kafka 尚无业务 Topic。因此原先“先做浏览器/真机，再补认证和数据”的顺序不适合作为用户目标的交付顺序。
+根据真实运行复现，Mobile H5 未登录时仍能进入首页、测评和词汇入口，而受保护 API 返回 401；真实 自有 JWT 登录 入口返回 auth_service_unavailable，公共商品目录没有业务 fixture，Kafka 尚无业务 Topic。因此原先“先做浏览器/真机，再补认证和数据”的顺序不适合作为用户目标的交付顺序。
 
 新的执行顺序是：
 
 | 批次 | 任务 | 状态 |
 |---|---|---|
-| B23 | 标准 OIDC/IAM 注册登录、JWKS、会话、撤销和服务侧权限 | 代码/静态完成；真实 IdP/JWT/会话运行待验收 |
-| B24 | H5/Web 全局登录门禁、回调、成人 Gate、401/403 和登录后交互 | 代码/静态完成；真实 OIDC 回调和正式浏览器待验收 |
+| B23 | 标准 自有 JWT 登录/IAM 注册登录、JWKS、会话、撤销和服务侧权限 | 代码/静态完成；真实 IAM JWT 认证中心/JWT/会话运行待验收 |
+| B24 | H5/Web 全局登录门禁、登录后会话恢复、成人 Gate、401/403 和登录后交互 | 代码/静态完成；真实 自有 JWT 登录后的会话恢复和正式浏览器待验收 |
 | B25 | 本地 MySQL schema/fixture、内容、学习、练习、测评、SRS 和报告真实读写 | 代码/fixture/本地 MySQL 基础完成；API→DB→API、JWT、Redis/重启对账待验收 |
 | B26 | Kafka/Outbox、跨服务学习闭环、浏览器/H5 真实数据测试和缺陷回归 | 代码/静态完成；真实 Kafka、认证后数据旅程、浏览器证据和缺陷闭环待验收 |
 | B27 | iOS/Android/iPad/PWA/小程序真机、专项质量、RC、回滚和测试交接 | 代码/静态完成；真机、发布、回滚和交接运行待验收 |
 
 B23–B25 完成并通过注册登录、登录门禁和 MySQL 真实读写 smoke 后，进入 B26 正式测试；B27 是原真机和上线交接 Gate，不是正式测试入口。B27 的代码/静态套件已通过 `pnpm test:b27` 24/24 与 `pnpm b27:static`，但运行校验仍 fail-closed，当前 `status=BLOCKED`、`releaseDecision=NO-GO`。完整证据见 [`b27-validation.md`](b27-validation.md)。
 
-2026-08-24 起，当前里程碑聚焦本机 Web/H5、14 后端进程、标准 OIDC、本地 MySQL/Kafka/Redis 和 Codex Browser MCP 真浏览器测试。接续执行 B28–B36；iOS/Android/iPad、微信小程序、远程真机、staging、RC 和生产发布暂缓。只有 B28–B36 全部通过才能给出本机 `LOCAL-TEST-PASS`，该结论不等于生产 Go。任务定义见 [`v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md)。
+2026-08-24 起，当前里程碑聚焦本机 Web/H5、14 后端进程、标准 自有 JWT 登录、本地 MySQL/Kafka/Redis 和 Codex Browser MCP 真浏览器测试。接续执行 B28–B36；iOS/Android/iPad、微信小程序、远程真机、staging、RC 和生产发布暂缓。只有 B28–B36 全部通过才能给出本机 `LOCAL-TEST-PASS`，该结论不等于生产 Go。任务定义见 [`v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md`](../../requirements/backlog/v2-B28plus-Phase1-本机真实全栈与MCP浏览器验收任务基线.md)。

@@ -70,7 +70,7 @@
     }
   },
   "components": {
-    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }, "B8WorkloadIdentity": { "type": "http", "scheme": "bearer", "bearerFormat": "OIDC workload identity" } },
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }, "B8WorkloadIdentity": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT workload identity" } },
     "parameters": {
       "B11AssetId": { "name": "assetId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^med_[A-Za-z0-9._:-]{8,127}$" } },
       "B11MessageId": { "name": "messageId", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^msg_[A-Za-z0-9._:-]{8,127}$" } },

@@ -107,7 +107,7 @@
 | 第一阶段主语言 | 英语 |
 | 架构目标 | 多语种资源包模型，后续可扩展日语、韩语、西班牙语等 |
 | 前端主线 | Vue 3 + uni-app |
-| 后端主线 | Java 25 LTS + Spring Boot 4.1 微服务；`api-gateway` + `iam-service`（OIDC/RBAC/ABAC）+ 领域服务；现有 Spring Boot 3 `core-api` 仅作迁移兼容 |
+| 后端主线 | Java 25 LTS + Spring Boot 4.1 微服务；`api-gateway` + 自有 JWT `iam-service`（账号密码、RS256/ES256、JWKS、RBAC/ABAC、会话撤销）+ 领域服务；现有 Spring Boot 3 `core-api` 仅作迁移兼容 |
 | Phase 2 AI编排 | Python FastAPI |
 | 数据 | MySQL + Redis |
 | 静态资源 | OSS / CDN |
@@ -2178,13 +2178,13 @@ Phase 3再加入完整未成年人体系。
 
 ## 17.2 登录
 
-- 手机号验证码
-- 微信授权
-- Apple登录（iOS按平台要求）
-- 多端登录
-- Token刷新
-- 设备管理
-- 强制下线
+- learner-web、admin-web、mobile 使用统一品牌的账号密码登录页；official-site 只提供受控跳转入口，不建立业务会话
+- `iam-service` 校验 Argon2id/BCrypt 密码哈希并签发短时 RS256/ES256 JWT Access Token，统一 audience 为 `yuxuexing-api`
+- `GET /api/v1/auth/jwks` 发布当前公钥；Gateway 与每个领域服务独立校验 issuer、签名、算法、audience、时间窗口、token type 和 scope/permission
+- `POST /api/v1/auth/token/refresh` 使用轮换 Refresh Token；重放、过期、撤销或设备失效时拒绝并撤销会话族
+- `POST /api/v1/auth/logout`、`POST /api/v1/auth/sessions/{sessionId}/revoke` 支持当前设备、单设备和全局退出；所有安全事件可审计
+- `POST /api/v1/auth/password-reset/request` 与 `/confirm` 实现限流、一次性短时重置令牌和密码历史策略
+- Phase 1 不使用 OIDC/OAuth、Keycloak、第三方身份提供方或前端回调码流程；手机号/微信/Apple 仅可作为未来独立需求，不得进入默认登录链路
 
 ---
 

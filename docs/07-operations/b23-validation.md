@@ -1,114 +1,59 @@
-# B23 本地标准 OIDC IdP 最小运行验证
+# B23 平台自有 JWT 登录与 IAM 运行验证
 
-本记录覆盖 B23 的代码、契约、数据库、Gateway/IAM fail-closed 运行烟测和本地测试 IdP 配置。B23 的真实 OIDC 注册、授权码回调、JWKS、principal/session 写入和有效 JWT 业务访问仍未通过运行 Gate，因此本记录不把 B23 标记为已完成。
+> 基线：V2-PHASE1-AUTH-DATA-20260828
+> 状态：代码、契约、迁移和 fail-closed 逻辑测试已完成；真实 IAM HTTP、MySQL、Gateway、领域服务和浏览器运行证据待验收。
+> 认证边界：平台自有账号密码认证中心；不使用外部登录协议或第三方身份提供方。
 
-## 固定配置
+## 1. 目标
 
-- IdP：官方 Keycloak 容器 `quay.io/keycloak/keycloak:26.7.1`。
-- 宿主机绑定：`127.0.0.1:18099 -> keycloak:8080`；`18099` 已登记在 `config/local-ports.json`，不得改为默认 `8080`、随机端口或自动递增端口。
-- Realm：`yuxuexing-local`。
-- Issuer：`http://127.0.0.1:18099/realms/yuxuexing-local`。
-- 客户端：learner-web、admin-web、Mobile H5、`englishflow://` 原生回调，全部是 public client + authorization code + PKCE S256。
-- 自助注册：开启；邮件验证关闭，仅为本地合成账号测试。成人 Gate、principal/session 持久化和产品权限仍由后续 IAM 任务负责。
+B23 验证 `iam-service` 是否能够在 TLS 边界校验账号密码，创建服务端 principal、tenant、device 和 session 事实，签发短时 RS256 JWT Access Token，并通过 JWKS 为 Gateway 与每个领域服务提供独立验签所需的公钥。
 
-## 代码交付范围（2026-08-24）
+## 2. 规范化接口
 
-- `iam-service`：标准 OIDC discovery、authorization code + PKCE S256、state/nonce、JWKS 签名/issuer/audience/过期校验、refresh rotation、RFC7009 revoke 适配端口；JDBC principal/session/authorization transaction/audit adapter；未配置 provider 或 persistence 时 fail closed。
-- `api-gateway`：Resource Server/JWKS 验证开关、issuer/audience 校验、受保护路由默认拒绝、CORS、401/403、request/trace ID 和客户端 authority header 清理。
-- 契约：重新合并并生成 OpenAPI、AsyncAPI 与 TypeScript 客户端；契约验证通过。
-- 数据库：新增 `V0022__create_iam_oidc_runtime_b23.sql`，包括 OIDC authorization transaction 和 IAM session provider reference/rotation 字段。
-- 本地 IdP：Keycloak realm 导入文件使用固定的 loopback realm/client/redirect/audience 值，避免 Keycloak 不会替换 realm JSON 环境变量导致的启动后配置失效。
+| 方法 | 路径 | 作用 | 认证 |
+|---|---|---|---|
+| POST | `/api/v1/auth/register` | 创建账号、设备会话并签发 JWT | 公开，限流/幂等 |
+| POST | `/api/v1/auth/login` | 校验账号密码并签发 JWT | 公开，限流/失败锁定 |
+| POST | `/api/v1/auth/token/refresh` | 轮换不透明 Refresh Token | Cookie 或原生安全存储凭证 |
+| POST | `/api/v1/auth/logout` | 撤销当前或全部设备会话 | Bearer JWT |
+| POST | `/api/v1/auth/sessions/{sessionId}/revoke` | 撤销指定设备会话 | Bearer JWT |
+| GET | `/api/v1/auth/jwks` | 发布当前签名公钥 | 公开，只读 |
+| POST | `/api/v1/auth/password-reset/request` | 创建一次性短时重置挑战 | 公开，非枚举/限流 |
+| POST | `/api/v1/auth/password-reset/confirm` | 消费重置挑战并更新密码 | 公开，凭证一次性 |
+| GET | `/api/v1/iam/principal/me` | 返回服务端主体与会话事实 | Bearer JWT |
 
-## 已取得的验证证据
+Access Token 的 `aud` 固定为 `yuxuexing-api`，至少包含 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type=access` 和非空 `scope`，并可包含服务端生成的 `roles`、`permissions`、`tenant_id`、`session_id`。Refresh Token 是随机不透明凭证，只保存摘要和历史摘要。
 
-在仓库根目录执行，结果如下：
+## 3. 验证矩阵
 
-| 验证 | 结果 |
+| 场景 | 预期 |
 |---|---|
-| `pnpm test:b23` | 4/4 通过 |
-| `pnpm contracts:generate` | 5 个生成文件完成 |
-| `pnpm contracts:validate` | 403 operations、477 schemas、147 events 通过 |
-| `pnpm db:validate` | 22 个迁移与合成 fixture 通过 |
-| `node scripts/check-local-infra.mjs --static-only` | 6 个依赖、8 个固定绑定通过 |
-| `mvn -q test`（`services/iam-service`） | 通过 |
-| `mvn -q test`（`services/api-gateway`） | 通过 |
-| IAM `/actuator/health` | HTTP 200，`UP` |
-| Gateway `/actuator/health` | HTTP 200，`UP` |
-| Gateway 未认证 `/api/v1/iam/principal/me` | HTTP 401，结构化 unauthorized |
-| IAM 未认证 `/api/v1/iam/principal/me` | HTTP 403，默认拒绝 |
-| IAM 未配置 provider 的授权入口 | HTTP 503，`oidc_provider_not_configured` |
-| `docker compose ... config --quiet` | 通过 |
+| 正确账号密码 | `200`，Bearer Access Token、过期时间、session/device 标识返回；Web 设置 HttpOnly Cookie |
+| 错误密码 | `401`，通用错误，不泄漏账号存在性；失败计数增加 |
+| 连续失败达到阈值 | `423` 或契约定义的锁定错误，等待或密码重置后恢复 |
+| Access Token 过期 | 业务 API `401`；客户端最多尝试一次 Refresh，失败回到登录页 |
+| Refresh Token 首次使用 | `200`，旧凭证失效，新凭证可用 |
+| 旧 Refresh Token 重放 | `401`，整 token family 和关联 session 撤销 |
+| 登出/设备撤销 | 当前或指定 session 失效，Cookie 清除，后续访问 `401` |
+| 错误 issuer、audience、签名、算法、时间窗口、token type 或 scope | Gateway 与领域服务均 `401` |
+| 身份有效但缺少 permission | `403`，不得返回空列表或匿名成功 |
+| 客户端提交 role/tenant/owner/permission 头或字段 | 忽略客户端事实，按已验证 JWT 与服务端 owner/tenant 派生 |
 
-## 当前阻塞与未完成 Gate
+## 4. 运行命令
 
-`node scripts/runtime/local-oidc-idp.mjs check` 的静态检查通过，但运行检查因 `127.0.0.1:18099` 没有 Keycloak 容器而失败。此前执行 `node scripts/runtime/local-oidc-idp.mjs up` 时，Docker 无法从 `quay.io/keycloak/keycloak:26.7.1` 拉取镜像；本机镜像缓存中没有 Keycloak。该外部网络/镜像前置阻塞了以下证据：
-
-1. 注册页面和真实用户注册；
-2. authorization code 回调、PKCE、nonce 和真实 token exchange；
-3. 真实 JWKS 签名验证、有效 JWT 访问 `/api/v1/iam/principal/me`；
-4. MySQL principal/session/consent 真实写入后的回放；
-5. refresh rotation、撤销、过期、JWKS rotation 和完整 CORS 负例。
-
-因此当前结论是：B23 代码层和 fail-closed 边界已完成，B23 运行验收仍为“待验收”；不能据此进入 B24，也不能宣告进入正式浏览器/H5 测试。恢复 Docker registry 访问或提供已批准的等价标准 OIDC IdP 后，重新执行本文件“最小验证”和 B23 完成门槛即可继续。
-
-## 最小验证
-
-在仓库根目录执行：
-
-```powershell
-Copy-Item .env.example .env
-# 编辑未提交的 .env，至少替换 OIDC_BOOTSTRAP_ADMIN_PASSWORD
-node scripts/check-fixed-ports.mjs --registry-only
-node scripts/check-local-infra.mjs --static-only
-node scripts/runtime/local-oidc-idp.mjs up
-node scripts/runtime/local-oidc-idp.mjs check
-```
-
-`check` 必须验证 discovery issuer、authorization endpoint、token endpoint、userinfo、logout 和 JWKS；JWKS 至少包含一个带 `kid` 的签名密钥。浏览器访问以下地址可确认本地 realm 登录/注册入口：
+在固定端口配置和测试账号准备后执行：
 
 ```text
-http://127.0.0.1:18099/realms/yuxuexing-local/account
+pnpm ports:check
+pnpm contracts:merge
+pnpm contracts:generate -- --contracts-only
+pnpm contracts:validate
+pnpm auth:local:check
+node scripts/runtime/b30-runtime-probe.mjs
 ```
 
-Keycloak 通过 `check` 后，才在启动 IAM/Gateway 的同一 PowerShell 会话中显式打开真实验证开关；默认值必须保持 `false`，不能用“有 Bearer 头”代替验证：
+运行证据必须包含脱敏的 status、requestId/traceId、JWKS `kid`/算法摘要、session 状态和数据库摘要，不得包含密码、Access Token、Refresh Token、重置凭证或私钥。
 
-```powershell
-$env:IAM_REAL_PROVIDER_ENABLED = 'true'
-$env:IAM_OIDC_ENABLED = 'true'
-$env:IAM_PERSISTENCE_ENABLED = 'true'
-$env:GATEWAY_RESOURCE_SERVER_ENABLED = 'true'
-$env:GATEWAY_JWT_PREVALIDATION_ENABLED = 'true'
-$env:OIDC_ISSUER_URI = 'http://127.0.0.1:18099/realms/yuxuexing-local'
-$env:OIDC_AUDIENCE = 'yuxuexing-api'
-```
+## 5. 当前结论
 
-启用真实模式后必须重启 IAM 和 Gateway，并重新执行健康、注册、回调、有效 JWT、撤销和 401/403 回放；不能只修改正在运行进程外的 `.env` 就把 B23 标记为通过。
-
-在登录页选择注册，使用一次性合成账号完成注册，然后使用对应 client 的精确回调地址验证 redirect allowlist。不要把注册密码、管理员密码、authorization code、token 或 JWKS 私钥写入 Git、日志或截图。
-
-停止并保留本地 IdP 数据：
-
-```powershell
-node scripts/runtime/local-oidc-idp.mjs status
-node scripts/runtime/local-oidc-idp.mjs down
-```
-
-查看启动失败原因：
-
-```powershell
-node scripts/runtime/local-oidc-idp.mjs logs
-```
-
-只有明确需要重新导入 realm 配置时，才在确认不会删除其他本地事实后执行：
-
-```powershell
-docker compose -f infra/docker/docker-compose.dev.yml stop keycloak
-docker volume rm yuxuexing-keycloak
-node scripts/runtime/local-oidc-idp.mjs up
-```
-
-该清理会删除本地 Keycloak 测试用户和会话，不会删除 MySQL、Redis、Kafka、MinIO 或 RabbitMQ 卷。
-
-## B23 边界与阻塞
-
-本地 IdP 只承载标准 OIDC 协议层：注册、授权码、PKCE、JWKS、refresh rotation 和回调 client allowlist；仓库没有新增 Token Server、JWT 签发器或 JWKS 服务。Gateway → IAM 回调交换、服务侧 JWT/JWKS/PEP、MySQL IAM 事实和撤销/轮换已具备代码与 fail-closed 验证，但必须在 Keycloak 可运行后补齐真实运行证据。
+本机已具备自有 JWT 代码、契约、迁移和逻辑测试证据；完整运行证据仍须在 IAM、Gateway、MySQL、领域服务和前端按固定端口启动后取得。没有真实运行证据前，B23 不能标记为正式运行完成，也不能把静态 PASS 当作认证后业务闭环。

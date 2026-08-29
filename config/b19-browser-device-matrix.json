@@ -10,12 +10,12 @@
     "allowUnverifiedPass": false,
     "blockedReasons": [
       "approved Playwright browser binaries and native Safari evidence are not attached",
-      "Gateway, OIDC test IdP and authenticated synthetic accounts are not running",
+      "Gateway, IAM JWT auth center and authenticated synthetic accounts are not running",
       "iOS/Android/iPad/WeChat device or simulator evidence providers are not attached"
     ],
     "requiredRuntimeEnvironment": [
       "B19_GATEWAY_TEST_ORIGIN",
-      "B19_TEST_IDP_ISSUER_URI",
+      "B19_TEST_JWT_ISSUER_URI",
       "B19_TEST_ACCOUNT_MATRIX",
       "B19_BROWSER_EVIDENCE_DIR",
       "B19_DEVICE_EVIDENCE_DIR"
@@ -81,7 +81,7 @@
       "id": "learner-web",
       "projectPath": "apps/learner-web",
       "origin": "http://127.0.0.1:18180",
-      "auth": ["public-redirect", "oidc-test-idp", "authenticated"],
+      "auth": ["public-login", "self-owned-jwt", "authenticated"],
       "browserIds": ["playwright-chromium", "playwright-edge", "playwright-safari-webkit", "safari-native"],
       "deviceIds": ["desktop-web", "tablet-browser", "windows-pwa"],
       "routes": [
@@ -105,7 +105,7 @@
       "id": "mobile",
       "projectPath": "apps/mobile",
       "origin": "http://127.0.0.1:18183",
-      "auth": ["public-redirect", "oidc-test-idp", "authenticated"],
+      "auth": ["public-login", "self-owned-jwt", "authenticated"],
       "browserIds": ["playwright-chromium", "playwright-edge", "playwright-safari-webkit", "safari-native"],
       "deviceIds": ["h5-android", "h5-ios", "app-android", "app-ios", "app-ipad", "wechat-miniapp"],
       "routes": [
@@ -127,7 +127,7 @@
       "id": "admin-web",
       "projectPath": "apps/admin-web",
       "origin": "http://127.0.0.1:18181",
-      "auth": ["public-redirect", "oidc-test-idp", "authenticated"],
+      "auth": ["public-login", "self-owned-jwt", "authenticated"],
       "browserIds": ["playwright-chromium", "playwright-edge", "playwright-safari-webkit", "safari-native"],
       "deviceIds": ["desktop-web"],
       "routes": ["/login", "/dashboard", "/content", "/commerce", "/audit", "/governance", "/support"],
@@ -357,7 +357,7 @@
       "authMode": "anonymous",
       "browserIds": ["playwright-chromium", "playwright-edge", "playwright-safari-webkit", "safari-native"],
       "deviceIds": ["desktop-web"],
-      "assertions": ["oidc-login-entry-renders", "return-url-is-bounded", "credentials-are-not-logged"],
+      "assertions": ["self-owned-login-entry-renders", "return-url-is-bounded", "credentials-are-not-logged"],
       "status": "runtimeBlocked",
       "runtimeEvidence": null
     },
@@ -383,7 +383,7 @@
       "authMode": "anonymous",
       "browserIds": ["playwright-chromium", "playwright-edge", "playwright-safari-webkit", "safari-native"],
       "deviceIds": ["desktop-web", "tablet-browser", "windows-pwa"],
-      "assertions": ["oidc-login-entry-renders", "deep-link-return-is-bounded", "credentials-are-not-logged"],
+      "assertions": ["self-owned-login-entry-renders", "deep-link-return-is-bounded", "credentials-are-not-logged"],
       "status": "runtimeBlocked",
       "runtimeEvidence": null
     },

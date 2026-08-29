@@ -80,5 +80,5 @@ mvn -f services/social-service/pom.xml spring-boot:run
 ```
 
 With the resource server disabled, `/health` and `/actuator/health` are public and every social
-route fails closed. Production must enable the verified OIDC/JWKS resource server; no local token
+route fails closed. Production must enable the verified JWT/JWKS resource server; no local token
 or client-header authentication path is provided.

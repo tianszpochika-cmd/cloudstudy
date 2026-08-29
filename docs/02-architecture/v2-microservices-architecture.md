@@ -3,7 +3,7 @@
 > 版本：v2.2（2026-08-22，架构—设计一致性审核后）  
 > 适用范围：`docs/06-design/v2-980plus/` 第二版设计包及其后续开发任务  
 > 决策入口：[ADR-0010：Java 25 与微服务/Gateway/IAM 架构](../10-decisions/0010-java25-microservices-gateway-iam.md)  
-> 实施状态：目标架构已确定；B7 已落地 Platform 0 基础，B8 已落地 provider-neutral IAM、Gateway 安全边界、服务侧 PEP 骨架、V0016 迁移、B8 契约和四端会话代码/静态证据，但尚未通过 G-IDP，也尚未形成 Java 25 运行态或完整目标服务集群。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
+> 实施状态：目标架构已确定；B7 已落地 Platform 0 基础，B8 正在切换为自有 IAM JWT、Gateway 安全边界、服务侧 PEP、JWKS 与四端会话实现，尚未以本轮验收证据宣称完整目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
 
 ## 1. 这份文档解决什么问题
 
@@ -23,8 +23,8 @@
 | Java 运行时 | **Java 25 LTS** | 新服务统一 Java 25；Java 17 只作为现有 `core-api` 的迁移兼容运行时。升级通过统一 toolchain、容器基础镜像和 CI 矩阵完成。 |
 | Java Web | **Spring Boot 4.1.x + Spring Framework 7.x** | 版本由公司级 BOM/Version Catalog 管理；安全补丁和小版本升级不得由单个服务自行漂移。 |
 | Gateway | **Spring Cloud Gateway Server WebFlux 5.x** | 通过与 Spring Boot 4.1 匹配的 Spring Cloud release train/BOM 锁定当前受支持 patch；只负责路由、TLS 后的边界策略、JWT 预校验、限流、请求上下文和观测，不承载领域写入和业务规则。 |
-| 服务安全 | Spring Security Resource Server + OAuth 2.1/OIDC | 每个服务都验证访问令牌并执行本地 PEP；Gateway 校验不能替代领域服务校验。 |
-| IAM/RBAC | `iam-service` + 标准 OIDC IdP + 版本化策略决策接口 | IAM 是产品 IAM 控制面，接入经 ADR 选择的成熟 OIDC 身份提供方，不自行实现协议/Token 服务器；它拥有用户映射、租户、角色、权限、设备、会话、同意和策略元数据。RBAC 结合租户、资源所有者、阶段、内容版权和设备状态进行 ABAC 决策。 |
+| 服务安全 | Spring Security Resource Server + 自有 JWT Bearer | 每个服务都独立通过 IAM JWKS 验证签名 JWT 的 issuer、algorithm、audience、时间窗口、token type 和权限，并执行本地 PEP；Gateway 校验不能替代领域服务校验。 |
+| IAM/RBAC | `iam-service` + 账号密码认证 + JWT/JWKS + 版本化策略决策接口 | IAM 校验平台账号密码，直接签发 JWT Access Token，发布公钥并管理 Refresh Token、设备、会话、撤销、用户、租户、角色、权限、同意和策略元数据。RBAC 结合租户、资源所有者、阶段、内容版权和设备状态进行 ABAC 决策。 |
 | 服务通信 | 外部 REST/OpenAPI；内部 REST 或 gRPC；异步事件 | 同步调用必须有 timeout、重试预算和熔断；跨域最终一致性优先使用事件，不做共享表联查。 |
 | 事件平台 | Kafka 兼容事件总线 + Outbox + AsyncAPI | 只承载跨服务集成事实，不承载 UI 点击、日志、指标或同步 RPC；至少一次投递，按聚合 ID 分区，事件必须有 `eventId`、`traceId`、`schemaVersion`、幂等键和兼容策略；消费者支持重放和死信恢复。 |
 | 关系数据 | MySQL 8.x 集群，服务独立 schema/owner | 每个服务只写自己的 schema；跨服务数据通过 API、事件或只读投影获得。Flyway 按服务管理迁移。 |
@@ -45,7 +45,7 @@ CDN + WAF + 负载均衡 / Kubernetes Gateway API（仅边缘 Ingress/TLS，不�
         ▼
 services/api-gateway  ───────► 统一路由、版本、限流、上下文、JWT 预校验
         │
-        ├── services/iam-service ─────► OIDC、用户、租户、会话、RBAC/ABAC、策略决策
+        ├── services/iam-service ─────► 账号密码、JWT/JWKS、Refresh 会话、用户、租户、RBAC/ABAC、策略决策
         ├── services/learner-service ─► 目标、档案、Onboarding、学习设置
         ├── services/content-service ─► 内容、版本、版权、审核发布
         ├── services/learning-service ► 课程、SRS、学习进度、复习闭环
@@ -77,7 +77,7 @@ Phase 3：guardian、institution、curriculum-rights 等受监管域
 | 服务 | 主要职责 | 不能做什么 | 首次建设阶段 |
 |---|---|---|---|
 | `api-gateway` | 外部入口、路由、API 版本、CORS、限流、请求/Trace 上下文、JWT 预校验、黑名单和边界审计 | 不写学习、订单、内容或权限业务事实；不接受客户端角色头 | Platform 0 |
-| `iam-service` | 标准 OIDC/OAuth 2.1 IdP 集成、不可变 principal 映射、用户/租户/组织、设备、会话、同意、角色、权限、策略版本、撤销和密钥轮换 | 不自行实现 OIDC 协议/Token 服务器；不拥有课程、订单、学习记录等领域事实 | Platform 0 |
+| `iam-service` | 账号密码校验、JWT 签发、JWKS 公钥发布与轮换、不可变 principal、用户/租户/组织、设备、Refresh 会话、同意、角色、权限、策略版本、撤销和审计 | 不拥有课程、订单、学习记录等领域事实；不能接受客户端权限覆盖 | Platform 0 |
 | `audit-service`（可先作为平台模块） | 安全审计、管理操作审计、数据导出审计、合规留痕 | 不代替领域事件或业务数据库 | Platform 0/1 |
 | `workflow-service`（可先由 job-runner 承载） | Saga、定时任务、补偿、重试、死信和人工恢复 | 不直接改写其他服务数据库 | Platform 0/1 |
 
@@ -103,7 +103,7 @@ Phase 3：guardian、institution、curriculum-rights 等受监管域
 
 | 事实/决策 | 唯一 owner | 其他服务的使用方式 | 明确禁止 |
 |---|---|---|---|
-| 登录主体、会话、同意、角色、策略版本 | `iam-service`（协议由标准 OIDC IdP 承载） | 已验证 JWT、JWKS、版本化策略包或受控 PDP 决策 | 领域服务自行发 Token、前端声称角色/租户 |
+| 登录主体、会话、同意、角色、策略版本 | `iam-service`（账号密码校验、JWT 签发和 JWKS 由认证中心承载） | 已验证 JWT、JWKS、版本化策略包或受控 PDP 决策 | 领域服务自行发 Token、前端声称角色/租户 |
 | 学习目标、偏好、用户学习档案 | `learner-service` | 通过 API/事件读取必要投影 | IAM 或 admin 直接改学习画像表 |
 | 内容、`content_version`、题目/练习定义、答案规则版本、版权 | `content-service` | `assessment-service` 以版本化内部契约取得可审计题目快照；学习端只读已发布版本 | `assessment-service` 维护题库主表，或前端持有答案规则 |
 | 测评会话、attempt、草稿/checkpoint、规则评分、报告快照 | `assessment-service` | `learning-service` 消费已提交/已评分事实，`gamification-service` 仅消费可信完成事件 | content/learning/前端改 attempt、重复评分或伪造分数 |
@@ -154,16 +154,17 @@ subjectId + tenantId + roles + permission + action + resourceType + resourceId
 
 建议的初始角色集合：`learner`、`tenant-admin`、`content-editor`、`reviewer-l1`、`reviewer-l2`、`finance`、`support`、`auditor`、`privacy-operator`、`release-operator`、`platform-admin`。角色只是权限集合，不替代资源所有权、租户和阶段条件。
 
-### 5.3 身份提供方、授权执行与租户隔离
+### 5.3 自有认证中心、授权执行与租户隔离
 
-- `iam-service` 是产品 IAM 控制面，不是自研 OAuth/OIDC 协议服务器。Platform 0 必须通过 ADR 选择并集成成熟、标准兼容的 OIDC IdP；Web/移动端使用授权码 + PKCE，服务工作负载使用独立 workload identity。IdP subject 映射为不可变的产品 principal，业务租户、角色、ABAC 元数据、同意和审计仍由 `iam-service` 管理。
+- `iam-service` 是平台自有认证中心：账号密码只在 IAM 的 TLS 认证接口校验，密码以 Argon2id（不可用时 BCrypt cost≥12）哈希保存；IAM 直接签发 RS256/ES256 JWT Bearer Access Token、发布 JWKS，并以服务端会话管理轮换/重放检测/撤销 Refresh Token。Web 使用 HttpOnly/Secure/SameSite Cookie，移动端使用 Keychain/Keystore；官网只跳转到统一登录页。服务工作负载使用独立 workload identity。业务租户、角色、ABAC 元数据、同意和审计仍由 `iam-service` 管理。
 - 正常请求热路径由服务侧 PEP 验签、资源本地事实和已签名/版本化策略包完成；远程 PDP 仅用于高风险后台操作、动态策略或本地安全缓存未命中。PDP 调用有严格 timeout、熔断、审计和 fail-closed 语义，不能把 IAM 变成所有读请求的单点瓶颈。
 - Phase 1 成人产品使用服务端派生的 `platform` tenant，上游客户端不能选择 tenant。Phase 3 多租户扩展采用“共享 schema + 强制 `tenant_id`”起步：每张租户业务表必须包含 `tenant_id`、关键唯一约束/索引包含 `tenant_id`，数据访问层必须由验证后的 `TenantScope` 自动约束并通过跨租户测试。MySQL 不被描述为自带行级安全；对受监管或超大机构的独立数据库/密钥隔离必须另立 ADR。
 - 平台管理员的跨租户动作必须显式携带受审计的目标租户与理由，不能借由空 tenant 或超级角色绕过 owner、阶段、版权和隐私规则。
 
 ### 5.4 Token 与密钥
 
-- Access Token 短时效、最小 scope，服务通过 JWKS 验签；Refresh Token 只由 IAM 管理并轮换，检测重放后撤销会话。
+- Access Token 必须是短时效、最小 scope 的非对称签名 JWT；Gateway 和每个领域服务均通过 IAM JWKS 验证 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type` 和权限声明。目标有效期为 5–15 分钟；算法只允许登记的 RS256/ES256，拒绝 `none`、未登记算法和 HMAC。
+- Refresh Token 只由 IAM 管理并轮换，检测重放后撤销会话族；Refresh Token 不进入领域服务、URL、日志、事件或前端 Web storage。
 - 签名密钥必须由 KMS/Vault 管理，支持双钥并行、JWKS 发布、轮换和回滚；密钥不进入 Git、镜像、事件或普通日志。
 - 服务间使用 workload identity 和 mTLS；服务账号、用户身份和后台操作者身份不能混用。
 
@@ -228,7 +229,7 @@ services/
 
 迁移采用四步：
 
-1. **M0 基线**：接受本 ADR 和 ARCH 能力矩阵；选择标准 OIDC IdP 的 ADR；补齐服务模板、版本 BOM、契约、观测、权限决策接口、tenant 查询守卫、端口登记和本地网关入口。
+1. **M0 基线**：接受 ADR-0010、ADR-0012、ADR-0013 和 ARCH 能力矩阵；锁定自有 JWT profile、密码/会话安全策略、契约、观测、权限决策接口、tenant 查询守卫、端口登记和本地网关入口。
 2. **M1 入口先行**：Gateway + IAM/RBAC 先接入旧 `core-api`；前端只改为访问 Gateway，旧直接端口仅保留本地兼容和回滚用途。至少跑通一个拒绝/撤销/跨租户链路，验证 Gateway 不会替代服务侧 PEP。
 3. **M2 逐域抽取**：按 `learner → content → learning/assessment → media → commerce → social/gamification` 的依赖顺序抽取。新服务先以只读投影/事件旁路验证，再切换写入，保留回滚窗口；每个被宣称“已抽取”的领域都必须具有独立 OCI 进程、schema、凭据和发布/回滚证据。
 4. **M3 退出单体**：达到契约、数据一致性、SLO、权限、回放和回滚证据后，关闭对应 `core-api` 路由；禁止以“服务目录已创建”作为拆分完成标志。

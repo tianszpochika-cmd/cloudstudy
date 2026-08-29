@@ -60,6 +60,7 @@ analytics:
   feature-enabled: ${ANALYTICS_FEATURE_ENABLED:true}
   metric-version: ${ANALYTICS_METRIC_VERSION:analytics.v1}
   security:
-    resource-server-enabled: ${ANALYTICS_RESOURCE_SERVER_ENABLED:false}
-    issuer-uri: ${ANALYTICS_SECURITY_ISSUER_URI:}
-    jwk-set-uri: ${ANALYTICS_SECURITY_JWK_SET_URI:}
+    resource-server-enabled: ${ANALYTICS_RESOURCE_SERVER_ENABLED:true}
+    issuer-uri: ${ANALYTICS_SECURITY_ISSUER_URI:${IAM_JWT_ISSUER:http://127.0.0.1:18087}}
+    jwk-set-uri: ${ANALYTICS_SECURITY_JWK_SET_URI:${IAM_JWT_JWKS_URI:http://127.0.0.1:18087/api/v1/auth/jwks}}
+    audience: ${ANALYTICS_SECURITY_AUDIENCE:${IAM_JWT_AUDIENCE:yuxuexing-api}}

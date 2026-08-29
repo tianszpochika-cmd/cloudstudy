@@ -6,7 +6,7 @@ B28 已于 2026-08-24 完成。运行证据为 `evidence/b28/b28-runtime-2026082
 
 本章实际完成了：
 
-- Docker Compose 的 MySQL、Redis、Kafka、MinIO、Keycloak 和兼容 RabbitMQ 健康检查；
+- Docker Compose 的 MySQL、Redis、Kafka、MinIO、IAM JWT 和兼容 RabbitMQ 健康检查；
 - 23 个根迁移的真实 MySQL checksum/账本校验及 Phase 1 持久化数据写入校验；
 - 11 个 owner schema、独立数据库账号和各自迁移表的真实对账；
 - 从 MySQL owner row 重建 3 个 Redis 投影，并执行 TTL 与读回校验；

@@ -1,7 +1,7 @@
 # PRD 原子需求候选清单
 
-> 自动生成时间：2026-08-22T03:53:09.837Z  
-> 生成器：scripts/audit/generate-prd-atomic-inventory.mjs  
+> 自动生成时间：2026-08-27T14:55:09.338Z
+> 生成器：scripts/audit/generate-prd-atomic-inventory.mjs
 > 源文件：requirements/product-requirements.md
 
 ## 1. 统计口径
@@ -12,7 +12,7 @@
 |---|---:|
 | PRD 显式 FEAT 记录（功能矩阵） | 184 |
 | PRD 原子候选证据行（去除组标题/纯总结） | 2342 |
-| 去重后的语义候选行 | 2115 |
+| 去重后的语义候选行 | 2116 |
 | functional | 1877 |
 | dimension | 17 |
 | governance | 429 |
@@ -116,7 +116,7 @@
 | PRD-ATOM-0043 | 107 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 第一阶段主语言 / 英语 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0044 | 108 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 架构目标 / 多语种资源包模型，后续可扩展日语、韩语、西班牙语等 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0045 | 109 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 前端主线 / Vue 3 + uni-app | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-0046 | 110 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 后端主线 / Java 25 LTS + Spring Boot 4.1 微服务；api-gateway + iam-service（OIDC/RBAC/ABAC）+ 领域服务；现有 Spring Boot 3 core-api 仅作迁移兼容 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-0046 | 110 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 后端主线 / Java 25 LTS + Spring Boot 4.1 微服务；api-gateway + iam-service（自有账号密码 JWT/JWKS、RBAC/ABAC）+ 领域服务；现有 Spring Boot 3 core-api 仅作迁移兼容 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0047 | 111 | Phase 2 | AI2 | table-fact | 1. 产品基础信息与技术主线 / 1.1 产品信息 | Phase 2 AI编排 / Python FastAPI | FEAT-AI2-*；需按本条证据拆分 SUBFEAT | docs/06-design/v2-980plus/05-Phase2-AI成人高级能力功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0048 | 112 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 数据 / MySQL + Redis | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-0049 | 113 | 跨阶段/治理 | CROSS | governance | 1. 产品基础信息与技术主线 / 1.1 产品信息 | 静态资源 / OSS / CDN | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
@@ -1114,13 +1114,13 @@
 | PRD-ATOM-1041 | 2171 | Phase 1 | USR | governance | 17. Phase 1 用户与账号 / 17.1 年龄策略 | 监护人绑定（Phase 1 禁止建立；仅 Phase 3 Gate 后另行设计） | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1042 | 2172 | Phase 1 | USR | governance | 17. Phase 1 用户与账号 / 17.1 年龄策略 | 未成年人支付（Phase 1 禁止；仅 Phase 3 Gate 后另行设计） | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1043 | 2173 | Phase 1 | USR | governance | 17. Phase 1 用户与账号 / 17.1 年龄策略 | K12 学习目标（Phase 1 禁止；仅 Phase 3 Gate 后另行设计） | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-1044 | 2181 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 手机号验证码 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-1045 | 2182 | Phase 1 | USR | governance | 17. Phase 1 用户与账号 / 17.2 登录 | 微信授权 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-1046 | 2183 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | Apple登录（iOS按平台要求） | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-1047 | 2184 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 多端登录 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-1048 | 2185 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | Token刷新 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
-| PRD-ATOM-1049 | 2186 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 设备管理 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | PRD-ATOM-1049（重复证据 2 条） |
-| PRD-ATOM-1050 | 2187 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 强制下线 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1044 | 2181 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 自有 IAM 账号密码注册与登录（密码仅经 TLS 提交给认证中心并只保存哈希） | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1045 | 2182 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 账号标识支持手机号/邮箱等由 IAM 直接校验的登录标识 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1046 | 2183 | Phase 1 | USR | governance | 17. Phase 1 用户与账号 / 17.2 登录 | 移动端可在后续合规 Gate 后增加平台能力，但不得改变自有 IAM 默认登录链路 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1047 | 2184 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 移动端统一登录页与安全设备存储（iOS/Android 按平台安全能力实现） | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1048 | 2185 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 多端登录与客户端隔离 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1049 | 2186 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | JWT Access Token + Refresh Token 轮换 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
+| PRD-ATOM-1050 | 2187 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.2 登录 | 设备管理、强制下线与会话撤销 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1051 | 2195 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.3 用户资料 | 昵称 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | PRD-ATOM-0977（重复证据 3 条） |
 | PRD-ATOM-1052 | 2196 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.3 用户资料 | 系统头像 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1053 | 2197 | Phase 1 | USR | functional | 17. Phase 1 用户与账号 / 17.3 用户资料 | 学习目标 | FEAT-USR-001, FEAT-USR-002, FEAT-USR-003, FEAT-USR-004, FEAT-USR-005, FEAT-USR-006, FEAT-USR-007 | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | PRD-ATOM-1053（重复证据 2 条） |
@@ -1762,7 +1762,7 @@
 | PRD-ATOM-1689 | 3407 | Phase 1 | USR | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 通知偏好 | FEAT-USR-*；需按本条证据拆分 SUBFEAT | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1690 | 3408 | Phase 1 | USR | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 设置中心 | FEAT-USR-*；需按本条证据拆分 SUBFEAT | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1691 | 3409 | Phase 1 | USR | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 账号与安全 | FEAT-USR-*；需按本条证据拆分 SUBFEAT | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | PRD-ATOM-1111（重复证据 2 条） |
-| PRD-ATOM-1692 | 3410 | Phase 1 | CROSS | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 设备管理 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | PRD-ATOM-1049（重复证据 2 条） |
+| PRD-ATOM-1692 | 3410 | Phase 1 | CROSS | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 设备管理 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1693 | 3411 | Phase 1 | CROSS | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 统一权益中心 | 共享治理主题；必要时新增 SUBFEAT | docs/06-design/v2-980plus/07-跨域契约数据事件与验收设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1694 | 3412 | Phase 1 | COM | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 订单与交易中心 | FEAT-COM-*；需按本条证据拆分 SUBFEAT | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |
 | PRD-ATOM-1695 | 3413 | Phase 1 | USR | functional | 23. Phase 1 市场开拓版本优先级 / P0 —— 上线必须 | 客服/FAQ/工单 | FEAT-USR-*；需按本条证据拆分 SUBFEAT | docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md；docs/06-design/v2-980plus/01-统一交互与页面状态设计.md | — |

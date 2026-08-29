@@ -87,7 +87,7 @@ Phase 1 不启用生成式 AI；AI 导师、生成式评测、RTC AI 对话和�
 | 服务目录 | 定位与架构 | 核心职责 |
 |---|---|---|
 | **`services/api-gateway`** | **Java 25 + Spring Cloud Gateway**<br>(v2 外部入口) | 路由、API 版本、CORS、限流、JWT 预校验、requestId/traceId；不写领域事实。 |
-| **`services/iam-service`** | **Java 25 + Spring Boot 4.1**<br>(身份与权限服务) | OIDC/OAuth 2.1、用户/租户/设备/会话、RBAC + ABAC 策略、Token 撤销和密钥轮换。 |
+| **`services/iam-service`** | **Java 25 + Spring Boot 4.1**<br>(身份与权限服务) | 自有账号密码登录、短时 RS256/ES256 JWT、JWKS、公钥轮换、用户/租户/设备/会话、RBAC + ABAC 策略和 Token 撤销。 |
 | **目标领域服务集群** | **Java 25 + Spring Boot 4.1**<br>(目标领域微服务) | 按 learner/content/learning/assessment/media/gamification/social/commerce/notification/analytics/admin-ops 划分事实和数据 owner。 |
 | **`services/core-api`** | **Java 17 + Spring Boot 3**<br>(迁移兼容单体) | v1 旧实现和回滚边界；通过 Gateway 逐域迁移，当前代码存在不代表 v2 微服务/RBAC 已完成。 |
 | **`services/ai-orchestrator`** | **Python 3.11 + FastAPI**<br>(Phase 2 独立 AI 编排) | 大模型统一接入 (LiteLLM)、AI 伴学导师智能体 (LangGraph)、发音/语法流式评测、RAG 向量检索。 |

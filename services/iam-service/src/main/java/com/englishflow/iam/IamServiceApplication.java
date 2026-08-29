@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 /**
  * Independently deployable IAM boundary for the v2 service line.
  *
- * <p>This process owns IAM facts and provider ports. It is not an OAuth/OIDC token server and
- * never accepts or mints access/refresh tokens. While the approved external IdP adapter is
- * disabled, the HTTP provider boundary returns a structured fail-closed response.</p>
+ * <p>This process is the platform-owned account/password authentication center. It signs short-
+ * lived RS256 access JWTs, publishes the public JWKS and owns opaque refresh-token rotation,
+ * replay detection, device sessions and revocation.</p>
  */
 @SpringBootApplication
 @ConfigurationPropertiesScan

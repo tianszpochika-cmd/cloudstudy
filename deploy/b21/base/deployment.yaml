@@ -54,11 +54,6 @@ spec:
                 secretKeyRef:
                   name: englishflow-runtime-secrets
                   key: database-password
-            - name: OIDC_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: englishflow-runtime-secrets
-                  key: oidc-client-secret
           startupProbe:
             httpGet:
               path: /actuator/health/startup

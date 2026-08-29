@@ -50,7 +50,7 @@ public final class CommercePrincipalResolver {
     private static Set<String> authorities(JwtAuthenticationToken jwt) {
         Set<String> authorities = jwt.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                // Spring's default JWT converter prefixes OAuth scopes with
+                // Spring's default JWT converter prefixes JWT scopes with
                 // SCOPE_. Commerce permissions are expressed without that
                 // transport prefix in the domain PEP.
                 .map(CommercePrincipalResolver::normalizeAuthority)

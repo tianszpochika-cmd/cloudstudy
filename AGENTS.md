@@ -11,7 +11,7 @@
 
 ## 2. 核心技术栈与架构选型约束 (Tech Stack Boundaries)
 
-本文件与 [v2-980plus 设计包](docs/06-design/v2-980plus/README.md)、[v2 微服务目标架构](docs/02-architecture/v2-microservices-architecture.md)、[平台能力矩阵](docs/02-architecture/v2-platform-capability-matrix.md)、[B7+ 代码任务基线](requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 和 ADR-0009/0010/0011 一起构成当前基线。`v2-980plus/` 是新一轮开发唯一的全量业务设计与需求落地基线；v1 详细设计、B0–B6 和 `core-api` 只保留历史/迁移语义，不能覆盖 v2。v2 设计单元描述业务，`ARCH-*` 描述平台能力；两者在任务设计时必须建立映射。
+本文件与 [v2-980plus 设计包](docs/06-design/v2-980plus/README.md)、[v2 微服务目标架构](docs/02-architecture/v2-microservices-architecture.md)、[平台能力矩阵](docs/02-architecture/v2-platform-capability-matrix.md)、[B7+ 代码任务基线](requirements/backlog/v2-B7plus-代码重塑与交互测试任务基线.md) 和 ADR-0009/0010/0012/0013 一起构成当前基线。`v2-980plus/` 是新一轮开发唯一的全量业务设计与需求落地基线；v1 详细设计、B0–B6 和 `core-api` 只保留历史/迁移语义，不能覆盖 v2。v2 设计单元描述业务，`ARCH-*` 描述平台能力；两者在任务设计时必须建立映射。
 
 所有 Agent 在编写、重构或引入第三方依赖时，必须严格遵守以下技术栈边界，**严禁私自引入冲突框架**：
 
@@ -41,7 +41,7 @@
 - **新服务主线**：`Java 25 LTS + Spring Boot 4.1.x + Spring Framework 7.x`；Spring Cloud 使用匹配的 release train，并由统一 BOM/Version Catalog 锁定版本。
 - **旧实现兼容**：`services/core-api` 当前仍是 Java 17 + Spring Boot 3 模块化单体，只作为 v1 迁移兼容和回滚边界；不得把它描述为 v2 微服务已经完成。
 - **API Gateway**：必须建设 `services/api-gateway`（Spring Cloud Gateway Server WebFlux），负责外部路由、`/api/v1` 版本、CORS、限流、requestId/traceId、JWT 预校验和边界审计；Gateway 不承载领域业务写入。
-- **IAM/RBAC/ABAC**：必须建设 `services/iam-service`，采用标准 OIDC/OAuth 2.1 IdP 集成，禁止自研协议/Token 服务器；拥有 principal 映射、用户、租户、设备、会话、角色、权限、策略和撤销事实。RBAC 结合资源所有者、阶段、内容版权、设备和同意状态决策；默认拒绝。
+- **IAM/RBAC/ABAC**：必须建设 `services/iam-service` 作为平台自有认证中心，使用账号密码校验并签发短时非对称 JWT Access Token，发布 JWKS，管理 Refresh Token 轮换/重放检测/撤销、principal、用户、租户、设备、会话、角色、权限、策略和撤销事实。RBAC 结合资源所有者、阶段、内容版权、设备和同意状态决策；默认拒绝。禁止引入 OIDC/OAuth、Keycloak 或第三方身份提供方作为正式登录方案。
 - **服务侧鉴权**：每个领域服务必须使用 Spring Security Resource Server 验证令牌并执行 PEP；正常热路径使用已验证 JWT、资源本地事实和版本化策略包/短时安全缓存，高风险/动态策略或安全缓存未命中才调用 PDP。PDP、撤销或策略版本异常必须 fail closed。严禁信任 `X-B5-Role`、`X-Role` 或客户端提交的 tenant/owner 字段。Gateway 鉴权不能替代服务侧鉴权。
 - **目标领域服务**：`learner-service`、`content-service`、`learning-service`、`assessment-service`、`media-service`、`gamification-service`、`social-service`、`commerce-service`、`notification-service`、`analytics-service`、`admin-ops-service`，边界和数据 owner 见 v2 微服务架构。
 - **平台服务**：`audit-service`（安全/管理/导出审计）和 `workflow-service`（Saga、定时任务、补偿、DLQ、人工恢复）；初期可由平台模块或 `job-runner` 承载，但不能跨服务直接写领域表。
@@ -50,6 +50,8 @@
 - **实时语音与媒体通信**：Phase 2 优先商业 RTC（声网/腾讯云 TRTC）和独立 `realtime-voice` 服务，实现低延迟双向对讲与 Barge-in；严禁 HTTP 轮询。自建 LiveKit 需新增 ADR。
 - **AI 智能编排中心**：Phase 2 使用 `Python 3.11+ (FastAPI + LangGraph / LiteLLM)` 独立服务，通过 REST/gRPC/事件与领域服务通信，客户端不得直连模型供应商。
 - **阶段边界**：Phase 1 不启用生成式 AI、K12 和实时 AI；Phase 2/3 服务可以提前做隔离设计，但没有 Gate 不得进入默认路由。
+
+认证中心安全边界：生产私钥只能由 secret manager/KMS 注入，不能进入 Git、容器镜像、普通配置或日志；密码使用 Argon2id（不可用时 BCrypt cost 12 以上）单向哈希，登录限流、失败锁定、密码重置、设备会话和审计必须落地。Web Access Token 只保存在内存，Refresh Token 使用 HttpOnly/Secure/SameSite Cookie；移动端只能使用 Keychain/Keystore 等系统安全存储，禁止普通 storage fallback；官网不保存业务 Token。
 
 ---
 
@@ -74,7 +76,7 @@
    - `content-service` 拥有内容/题目/答案规则版本，`assessment-service` 拥有 attempt/checkpoint/判分/报告，`learning-service` 拥有计划/SRS/进度/掌握度投影；BFF、workflow 和 audit 不得跨域双写。
    - `services/core-api` 只作为迁移中的反腐层；新增业务默认不得继续向其中增加跨域功能。
 3. **身份与权限**：
-   - 默认拒绝；权限判断至少包含 subject、tenant、role、permission、resource、action、owner、phase 和 content rights。
+   - `/api/v1/auth/login`、`/api/v1/auth/token/refresh`、`/api/v1/auth/logout`、`/api/v1/auth/sessions/{sessionId}/revoke`、`/api/v1/auth/password-reset/*` 和 `/api/v1/auth/jwks` 是认证中心的唯一公开/会话入口；默认拒绝；权限判断至少包含 subject、tenant、role、permission、resource、action、owner、phase 和 content rights。
    - Gateway 和领域服务都必须鉴权；401/403 不能伪装为空列表；任何客户端角色头都无效。
    - Phase 1 tenant 由服务端派生；Phase 3 共享 schema 必须强制 `tenant_id`、`TenantScope` 和跨租户测试，MySQL 不得被声称为自动行级隔离。
 4. **可靠性与事件**：

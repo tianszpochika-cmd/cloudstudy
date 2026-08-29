@@ -9,8 +9,8 @@ const requireRuntime = args.has('--require-runtime')
 const failures = []
 const requiredRuntimeEnv = [
   'B26_GATEWAY_ORIGIN',
-  'B26_TEST_IDP_ISSUER',
-  'B26_TEST_ACCESS_TOKEN',
+  'B26_JWT_ISSUER',
+  'B26_JWT_ACCESS_TOKEN',
   'B26_BROWSER_EVIDENCE_DIR',
   'B26_DB_RECONCILIATION_FILE',
   'B26_KAFKA_EVIDENCE_FILE',

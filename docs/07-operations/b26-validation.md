@@ -8,7 +8,7 @@
 
 B26 的代码和静态验收基础已完成：Kafka/Outbox 可靠性边界、跨服务十步学习旅程、浏览器/H5 测试矩阵、证据契约和回归测试均已落地。B26 的运行 Gate 尚未关闭，不能把静态 preview、未登录页面或本地 HTTP 200 解释为真实数据测试通过。
 
-当前仍缺少标准 OIDC/JWKS 和有效 JWT 下的 Gateway→服务→MySQL→API 回放、Kafka Topic/Outbox/消费者 offset 证据、DB/Kafka 对账以及 P0/P1 缺陷闭环。因此当前状态是：**B26 代码/静态完成，真实运行和正式测试验收待完成。**
+当前仍缺少自有 IAM JWT/JWKS 和有效 JWT 下的 Gateway→服务→MySQL→API 回放、Kafka Topic/Outbox/消费者 offset 证据、DB/Kafka 对账以及 P0/P1 缺陷闭环。因此当前状态是：**B26 代码/静态完成，真实运行和正式测试验收待完成。**
 
 ## 任务状态
 
@@ -38,14 +38,14 @@ Official Site 的 Nuxt 开发终端曾出现一次 `#app-manifest` pre-transform
 
 ## 运行阻断项
 
-1. B25 的真实 OIDC/JWKS、有效 JWT 和 API→DB→API Gate 尚未通过；当前四端检查只验证了 fail-closed 登录/公开边界。
+1. B25 的真实 IAM JWT/JWKS、有效 JWT 和 API→DB→API Gate 尚未通过；当前四端检查只验证了 fail-closed 登录/公开边界。
 2. 当前没有 B26 的真实 Kafka Topic 创建、Outbox 发布、消费者处理、重试/DLQ/回放和 offset 重启对账证据。
 3. 尚未形成认证后浏览器 Network、服务日志、MySQL owner rows 和 Kafka eventId/dedupeKey 的同一 `runId/traceId` 证据链。
 4. 尚未形成 P0/P1 缺陷台账、复测结果和独立测试人员交接签收。
 
 ## 下一步运行验收顺序
 
-1. 先关闭 B25：启动批准的标准 OIDC 测试 IdP，取得真实 JWT，完成 Gateway→服务→MySQL→API 的注册、登录、onboarding 和学习写链回放。
+1. 先关闭 B25：启动平台自有 IAM JWT/JWKS，取得真实 JWT，完成 Gateway→服务→MySQL→API 的注册、登录、onboarding 和学习写链回放。
 2. 在固定 Kafka `19092` 上创建 B26 Topic 和 ACL，执行 Outbox 发布、重复消费、失败重试、DLQ、回放、乱序和消费者重启对账。
 3. 使用同一合成账号和 `runId/traceId` 执行浏览器/H5 十步旅程，收集 Network、服务日志、MySQL owner rows、Kafka eventId/dedupeKey 和截图/录像。
 4. 关闭或批准 P0/P1，完成复测后，才可把 B26 交给独立测试/验收人员；B27 的真机、RC 和上线交接仍在 B26 之后。

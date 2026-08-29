@@ -14,7 +14,7 @@ const scorePercent = computed(() => Math.round((report.value?.score ?? 0) * 100)
 
 async function load(): Promise<void> {
   await store.loadPlacement()
-  // The H5 callback can finish one event-loop turn after the first page
+  // The H5 response can finish one event-loop turn after the first page
   // onShow. Re-run a legitimate server read once when the first response is
   // an empty projection; this removes the need for a user to press Reload and
   // still never fabricates a question or report locally.

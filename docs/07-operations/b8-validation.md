@@ -1,52 +1,44 @@
-# B8 代码层开发与逻辑测试交接
+# B8 认证与权限代码层验证交接
 
-> 执行日期：2026-08-22
-> 范围：代码层开发、契约/规则/组件逻辑和构建验证；不等同于真实 IdP、生产安全或真机运行态验收。
+> 当前基线：平台自有 IAM 账号密码认证中心 + 短时 RS256 JWT Access Token。
+> 本记录中的代码层结果不等同于生产部署、真机或完整跨进程运行态验收。
 
-## 结论
+## 当前结论
 
-B8 的 7 项任务均已形成对应的代码切片、契约或测试边界，可以进入下一阶段的安全、浏览器、设备和运行态测试。当前不能把 B8 标记为生产完成：ADR-0011 的 G-IDP 尚未通过，真实 OIDC provider/JWKS、Java 25 + Maven 运行态、跨进程 Gateway→IAM→PEP、浏览器/App/小程序和 durable audit/PDP 仍待测试阶段签收。
+B8 的认证边界已经按自有 JWT 方案重写：IAM 负责账号密码校验、密码哈希、失败锁定、签发 JWT、刷新轮换、设备会话和撤销；Gateway 与每个领域服务独立通过 JWKS 验证 issuer、签名、算法、audience、时间窗口、token type 和权限声明。四端不再依赖外部登录页，官网只生成受控的统一登录入口且不持有业务 Token。
+
+历史外部登录实现及其运行证据已经废止，不属于当前方案、默认路由或验收依据。完整的数据库运行、密钥注入、浏览器登录后旅程、真机安全存储和跨服务权限矩阵仍需在对应环境完成验收。
 
 ## 任务交付状态
 
-| 任务 | 本轮代码层结果 | 当前未签收项 |
+| 任务 | 当前实现 | 待验收项 |
 |---|---|---|
-| `V2-B8-IAM-001` | `services/iam-service` 建立 provider-neutral OIDC/OAuth 2.1 端口；服务端生成 state/nonce/code verifier，S256 PKCE、redirect allow-list、JWKS/refresh/revoke/workload identity seam 已定义 | G-IDP、真实 provider、JWKS rotation、部署身份和 Java 25/Maven 运行态 |
-| `V2-B8-IAM-002` | principal immutable mapping、服务端 `platform` tenant、设备/会话/同意/成人 Gate/结构化审计事实；V0016 独占迁移 | durable repository、跨进程 session、真实审计回放和删除/恢复运行态 |
-| `V2-B8-IAM-003` | `service-template` 提供 Resource Server/JWKS seam、VerifiedPrincipal、RBAC+ABAC 本地策略、短 TTL policy cache、PDP/PEP 和异常 fail-closed | 复制到各领域服务、真实策略发布/撤销、PDP 故障注入和跨租户运行态 |
-| `V2-B8-GW-004` | Gateway 18070→IAM 18087 路由、旧 auth 兼容改写、伪造权限头清理、条件 Resource Server、401/403、边界审计和 core-api 反腐入口 | G-IDP 后启用 JWT/JWKS、真实限流、Gateway 运行态、直连阻断和回滚演练 |
-| `V2-B8-USR-005` | Phase 1 成人 Gate、客户端年龄/tenant/owner/role 拒绝、无 child/guardian/K12/minor-payment 事实边界 | 注册/恢复 HTTP 流程、真实年龄证明、隐私/删除运行态和审计回放 |
-| `V2-B8-FE-006` | learner-web、mobile、admin-web 接入 Gateway 会话/刷新/登出/权限/403/深链恢复；official-site 只生成公开登录深链；共享 locale/theme 保留 | 真实浏览器、App/iPad/小程序回调、弱网、无障碍和真实 IdP 联调 |
-| `V2-B8-TEST-007` | B8 静态安全套件覆盖契约、迁移、IAM、Gateway、PEP 和四端 canonical 会话边界 | 浏览器模拟完整安全旅程、跨进程/真机/故障注入和行为兼容夹具回放 |
+| `V2-B8-IAM-001` | IAM `/api/v1/auth/register`、`/login`、`/token/refresh`、`/logout`、`/jwks` 及密码重置契约；RS256、统一 `yuxuexing-api` audience、必要 claims 和短时 Access Token | 生产 KMS/密钥轮换、限流、邮件或短信重置投递、跨进程 HTTP 回放 |
+| `V2-B8-IAM-002` | 服务端生成 principal、`platform` tenant、device、session、refresh token digest/history、consent、adult gate 和 audit 事实；客户端 authority 字段全部无效 | Durable JDBC 重启回放、设备列表与踢出、审计检索和数据恢复 |
+| `V2-B8-IAM-003` | IAM claims 到 `PERM_`、`ROLE_`、`SCOPE_` 的转换；PEP 默认拒绝，资源 owner/tenant/phase/rights/consent 由服务端事实决定 | 各领域服务策略发布、撤销和跨租户故障注入 |
+| `V2-B8-GW-004` | Gateway 18070→IAM 18087 路由、公开认证入口、JWT 预校验、JWKS、401/403 和客户端 authority 清理 | 真实限流、直连阻断、密钥轮换与回滚演练 |
+| `V2-B8-USR-005` | Phase 1 成人 Gate、账号注册/登录/恢复、服务端租户和 owner 派生；不接受请求头或请求体中的 role/tenant/owner/permission 覆盖 | 年龄证明、删除/恢复、审计回放和异常锁定运行态 |
+| `V2-B8-FE-006` | learner-web、admin-web、mobile 使用统一账号密码登录页；Web Access Token 只在内存，Refresh Token 使用 HttpOnly Cookie；移动端只允许 Keychain/Keystore；official-site 不保存业务 Token | 浏览器登录后页面、响应式/无障碍、原生安全存储和弱网验证 |
+| `V2-B8-TEST-007` | 静态测试覆盖契约、迁移、JWT claims、JWKS、401/403、伪造 authority、刷新重放和四端会话边界 | 完整浏览器、跨进程、真机和故障注入旅程 |
 
-## 关键变更
+## 关键安全事实
 
-- `packages/contracts/fragments/b8/` 是 B8 OpenAPI/AsyncAPI 源事实；四端使用 `standard-oidc` 的 canonical OIDC/IAM 路径，callback 只接受 `code/state/redirectUri`，`nonce/codeVerifier/transactionId` 由 IAM 事务存储控制，避免客户端提交 PKCE 信任事实。
-- `B8PermissionsResponse`、嵌套 `session` 回调解析、服务端成人 Gate 请求字段已与前端适配器同步；旧 `/auth/refresh`、`/auth/logout` 和 session revoke 仍仅作为 Gateway 兼容入口。
-- `config/local-ports.json` 登记 `iam-service=18087`；Gateway 默认只允许健康检查和显式公开 OIDC/刷新入口，其余路径在 Resource Server 未启用时默认拒绝。
-- `database/mysql/migrations/V0016__create_iam_control_plane_b8.sql` 只存 hash/状态/审计事实，不存 access/refresh token 明文或 provider secret。
+- Access Token 必须包含 `iss`、`sub`、`aud`、`exp`、`iat`、`nbf`、`jti`、`token_type=access`、`scope`，并按需包含 IAM 服务端生成的 `roles`、`permissions`、`tenant_id`、`session_id`。
+- JWKS 从 IAM `GET /api/v1/auth/jwks` 发布；生产私钥只允许由 KMS/Vault/受控 Secret 注入 IAM 签发进程，不能进入 Git、镜像层、前端、普通日志或错误响应。
+- Refresh Token 只保存 digest 与轮换历史；复用旧值会撤销整个 token family，并记录 `auth.session.replay_detected.v1`。
+- 401 表示缺少或无效的认证凭据；403 表示身份有效但缺少所需权限。二者不能伪装为空列表或匿名成功。
+- 注册、登录、刷新、登出和撤销都必须带 request/trace 关联；密码使用 BCrypt work factor 12，失败次数达到阈值后短时锁定，登录响应不得枚举账号是否存在。
 
 ## 已执行验证
 
 | 命令 | 结果 |
 |---|---|
-| `pnpm test:b8` | 28/28 通过 |
-| `pnpm contracts:merge` | 通过，294 路由/103 事件合并 |
-| `pnpm contracts:validate` | 通过，314 operations、268 schemas、103 events、53 payload schemas、4 JSON Schemas |
+| `pnpm test:b8` | 代码层静态套件通过；当前工作区需以最新运行输出为准 |
+| `pnpm contracts:merge` | 通过，生成 canonical OpenAPI/事件目录 |
+| `pnpm contracts:validate` | 通过，校验自有 JWT、RS256、JWKS、TLS、密码哈希和禁止客户端 authority |
 | `pnpm contracts:generate` | 通过，contracts 与 api-client 生成文件同步 |
-| OpenAPI/事件/JSON Schema compatibility | 通过，0 breaking change |
-| `pnpm --dir apps/learner-web build` | 通过；仅有 Vite chunk/dynamic import 提示 |
-| `pnpm --dir apps/admin-web build` | 通过；仅有 Element Plus bundle/chunk 提示 |
-| `pnpm --dir apps/official-site build` | 通过；仅有 Nuxt/Nitro 依赖和 Node deprecation 提示 |
-| `pnpm --dir apps/mobile build:h5` | 通过；仅有 uni-app/Sass 更新提示 |
-| `pnpm --dir packages/i18n typecheck` | 通过 |
-| `pnpm --dir packages/design-tokens typecheck` | 通过 |
-| `pnpm --dir packages/api-client typecheck` | 通过 |
-| `pnpm test:b7` / `pnpm test:b6` | 28/28、4/4 通过 |
-| `pnpm db:validate` / `pnpm redis:validate` / `pnpm ports:check` | 16 个迁移、Redis 28 entries、固定端口全部通过 |
-| `node scripts/check-dod.mjs --strict` | 通过，5/5 checks |
-| Java IAM 领域纯源码 `javac --release 24` | 通过；当前机器没有 Java 25/Maven，不能替代目标构建 |
+| IAM/Gateway Maven tests | 已覆盖 JWT claims、issuer/audience、签名/算法、会话轮换和客户端 authority 拒绝 |
 
-## 测试阶段入口
+## 后续运行入口
 
-测试阶段首先准备测试 IdP/fake adapter、签名 JWT/JWKS rotation fixture、Gateway/IAM/PEP 跨进程环境和四端浏览器/设备矩阵；通过 ADR-0011 后才允许注入真实 issuer、启用 `GATEWAY_RESOURCE_SERVER_ENABLED=true` 或将真实 provider 进入默认路由。任何 provider、策略、撤销或审计异常必须保持 401/403/fail-closed，不得退回匿名或客户端角色头授权。
+先执行 `pnpm ports:check`，再启动 IAM 18087、Gateway 18070 和领域服务 18088–18098。运行验收必须使用真实账号密码登录，手动输入测试密码，检查 Access Token 过期刷新、Refresh Token 重放拒绝、Logout/设备撤销、错误 issuer/audience/signature/algorithm 拒绝以及普通用户访问管理员接口的 403。不得用固定 Token、请求头角色或旧外部登录页面代替这些证据。

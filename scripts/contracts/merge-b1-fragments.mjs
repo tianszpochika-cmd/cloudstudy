@@ -24,6 +24,17 @@ const eventFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'events', 
 // registry even if an old compatibility fragment is still present in a branch. The active
 // clients use learner/iam, B12 notifications, signed-url and B13 payment-intents instead.
 const retiredRoutes = new Set([
+  '/api/v1/auth/refresh',
+  '/api/v1/auth/sessions',
+  '/api/v1/auth/sms/send-code',
+  '/api/v1/auth/login/phone',
+  '/api/v1/auth/oidc/{provider}/authorization/start',
+  '/api/v1/auth/oidc/{provider}/callback',
+  '/api/v1/auth/oidc/{provider}/metadata',
+  '/api/v1/auth/oidc/{provider}/jwks',
+  '/api/v1/iam/session/refresh',
+  '/api/v1/iam/session/logout',
+  '/api/v1/iam/sessions/{sessionId}/revoke',
   '/api/v1/home/feed',
   '/api/v1/user/profile',
   '/api/v1/user/learning-preferences',
@@ -119,7 +130,11 @@ function writeJson(filePath, value) {
 }
 
 function stableJson(value) {
-  return JSON.stringify(value, Object.keys(value ?? {}).sort());
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
 }
 
 function listJsonFiles(directory) {
@@ -143,6 +158,10 @@ function mergeOpenApi(base, fragment, filePath) {
   for (const tag of fragment.tags ?? []) {
     const existing = (base.tags ?? []).find((candidate) => candidate.name === tag.name);
     if (existing && stableJson(existing) !== stableJson(tag)) {
+      if (tag.name === 'b8-auth') {
+        base.tags = base.tags.map((candidate) => candidate.name === tag.name ? tag : candidate);
+        continue;
+      }
       throw new Error(`${filePath} conflicts with OpenAPI tag ${tag.name}`);
     }
     if (!existing) (base.tags ??= []).push(tag);
@@ -150,7 +169,8 @@ function mergeOpenApi(base, fragment, filePath) {
 
   for (const [route, pathItem] of Object.entries(fragment.paths ?? {})) {
     const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)(?:[\\/]|-)/i.test(filePath);
-    if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment) {
+    const isB1LegacyAuthRoute = /[\\/]b1(?:[\\/]|-)/i.test(filePath) && route.startsWith('/api/v1/auth/');
+    if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment && !isB1LegacyAuthRoute) {
       throw new Error(`${filePath} conflicts with OpenAPI route ${route}; reconcile manually`);
     }
     base.paths[route] = pathItem;
@@ -161,9 +181,9 @@ function mergeOpenApi(base, fragment, filePath) {
     mergeNamedMap(base.components[componentGroup] ??= {}, fragment.components?.[componentGroup], `OpenAPI ${componentGroup}`, { allowOverride: isOverrideFragment });
   }
 
-  for (const metadataKey of ['x-b8-idp-integration', 'x-b8-compatibility']) {
+  for (const metadataKey of ['x-b8-authentication', 'x-b8-compatibility']) {
     if (fragment[metadataKey] === undefined) continue;
-    if (base[metadataKey] !== undefined && stableJson(base[metadataKey]) !== stableJson(fragment[metadataKey])) {
+    if (base[metadataKey] !== undefined && stableJson(base[metadataKey]) !== stableJson(fragment[metadataKey]) && metadataKey !== 'x-b8-compatibility') {
       throw new Error(`${filePath} conflicts with OpenAPI metadata ${metadataKey}`);
     }
     base[metadataKey] = fragment[metadataKey];
@@ -181,7 +201,7 @@ function mergeEvents(base, fragment, filePath) {
     }
     if (!existing) base.events.push(event);
   }
-  mergeNamedMap(base.payloadSchemas, fragment.payloadSchemas, 'event payload schema');
+  mergeNamedMap(base.payloadSchemas, fragment.payloadSchemas, 'event payload schema', { allowOverride: isOverrideFragment });
 
   if (fragment.asyncapi) {
     base.asyncapi ??= {};
@@ -200,6 +220,21 @@ function mergeEvents(base, fragment, filePath) {
 function merge({ write = false } = {}) {
   const openApi = readJson(openApiPath);
   const catalog = readJson(eventCatalogPath);
+  const retiredAuthEvents = new Set([
+    'auth.oidc.authorization.started.v1',
+    'auth.oidc.callback.completed.v1',
+  ]);
+  const retiredAuthPayloadSchemas = new Set([
+    'AuthOidcAuthorizationStarted',
+    'AuthOidcCallbackCompleted',
+  ]);
+  catalog.events = (catalog.events ?? []).filter((event) => !retiredAuthEvents.has(event.eventName));
+  for (const eventName of retiredAuthEvents) {
+    for (const channelName of Object.keys(catalog.asyncapi?.channels ?? {})) {
+      if (catalog.asyncapi.channels[channelName]?.address === eventName) delete catalog.asyncapi.channels[channelName];
+    }
+  }
+  for (const schemaName of retiredAuthPayloadSchemas) delete catalog.payloadSchemas?.[schemaName];
   const openApiFiles = [...listJsonFiles(openApiSharedFragmentDir), ...listJsonFiles(openApiFragmentDir), ...listJsonFiles(openApiB2FragmentDir), ...listJsonFiles(openApiB3FragmentDir), ...listJsonFiles(openApiB8FragmentDir), ...listJsonFiles(openApiB9FragmentDir), ...listJsonFiles(openApiB10FragmentDir), ...listJsonFiles(openApiB11FragmentDir), ...listJsonFiles(openApiB12FragmentDir), ...listJsonFiles(openApiB13FragmentDir), ...listJsonFiles(openApiB25FragmentDir)]
     .filter((filePath, index, files) => files.indexOf(filePath) === index)
     .filter((filePath) => readJson(filePath)['x-contract-status'] !== 'historical-compatibility');
@@ -210,7 +245,25 @@ function merge({ write = false } = {}) {
 
   for (const route of retiredRoutes) delete openApi.paths[route];
   openApi.tags = (openApi.tags ?? []).filter((tag) => !retiredB5AdminTags.has(tag.name));
+  openApi.tags = openApi.tags.filter((tag) => tag.name !== 'b8-iam');
   for (const schema of retiredB5AdminSchemas) delete openApi.components?.schemas?.[schema];
+
+  for (const schema of [
+    'B8AuthorizationStartResponse', 'B8OidcCallbackRequest', 'B8OidcCallbackResponse',
+    'B8SessionEstablishedResponse', 'B8SessionRefreshRequest', 'B8SessionTokenResponse',
+    'B8OidcProviderMetadata', 'B8AuthorizationTransaction',
+  ]) delete openApi.components?.schemas?.[schema];
+  for (const parameter of [
+    'B8Provider', 'B8RedirectUri', 'B8AuthIntent', 'B8ReturnTo', 'B8UiLocale', 'B8Theme',
+    'B8CodeChallenge', 'B8CodeChallengeMethod', 'B8State', 'B8Nonce', 'B8CallbackCode',
+    'B8OidcCallbackError', 'B8OidcCallbackErrorDescription', 'B8OidcCallbackErrorUri',
+  ]) delete openApi.components?.parameters?.[parameter];
+  for (const header of ['B8CallbackLocation', 'B8SessionCookie']) {
+    delete openApi.components?.headers?.[header];
+  }
+  for (const response of ['B8IdpUnavailable']) delete openApi.components?.responses?.[response];
+  delete openApi.components?.securitySchemes?.B8WorkloadIdentity;
+  delete openApi['x-b8-idp-integration'];
 
   if (write) {
     writeJson(openApiPath, openApi);

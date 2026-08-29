@@ -8,8 +8,7 @@
   },
   "services": {
     "api-gateway": {"port": 18070, "protocol": "http", "phase": "platform-0", "description": "Spring Cloud Gateway v2 external API boundary"},
-    "oidc-idp": {"port": 18099, "protocol": "http", "phase": "platform-0", "description": "Loopback-only Keycloak standard OIDC/OAuth 2.1 test provider; development only"},
-    "iam-service": {"port": 18087, "protocol": "http", "phase": "platform-0", "description": "Provider-neutral IAM and OIDC adapter boundary"},
+    "iam-service": {"port": 18087, "protocol": "http", "phase": "platform-0", "description": "Platform-owned account/password JWT authentication center and JWKS publisher"},
     "learner-service": {"port": 18088, "protocol": "http", "phase": "phase-1", "description": "Learner profile, goals, preferences and onboarding read model"},
     "content-service": {"port": 18089, "protocol": "http", "phase": "phase-1", "description": "Versioned content, rights, review and public projection boundary"},
     "learning-service": {"port": 18090, "protocol": "http", "phase": "phase-1", "description": "Learning plans, SRS, progress and mastery projection boundary"},

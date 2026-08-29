@@ -2,7 +2,7 @@
 
 > 日期：2026-08-24  
 > 模式：`local-real`  
-> 结论：B29 已完成；B30 真实 OIDC 注册登录仍未开始。
+> 结论：B29 已完成；B30 自有 IAM JWT 注册登录仍未开始。
 
 ## 1. 运行证据
 
@@ -30,4 +30,4 @@ Remove-Item Env:B29_RUNTIME_EVIDENCE_FILE
 
 ## 3. 真实边界
 
-B29 只证明后端进程、端口、健康、网关安全边界、owner schema 和观测基础可以真实运行；它不证明注册登录、有效 JWT、认证后学习业务、Kafka/Outbox 联动或四端页面已经可用。下一章 B30 必须启用标准 Keycloak OIDC/JWKS，并以浏览器注册账号后继续完成 IAM principal/session/audit 的数据库读回。
+B29 只证明后端进程、端口、健康、网关安全边界、owner schema 和观测基础可以真实运行；它不证明注册登录、有效 JWT、认证后学习业务、Kafka/Outbox 联动或四端页面已经可用。下一章 B30 必须启动平台自有 IAM JWT/JWKS，并以浏览器注册账号后继续完成 IAM principal/session/audit 的数据库读回。

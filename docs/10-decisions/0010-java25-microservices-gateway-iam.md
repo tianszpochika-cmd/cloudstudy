@@ -21,7 +21,7 @@
 ### 2. 入口与身份
 
 - 新增 `services/api-gateway`，使用 Spring Cloud Gateway Server WebFlux，负责外部路由、API 版本、TLS 边界策略、限流、CORS、request/trace 上下文、JWT 预校验和边界审计。
-- 新增 `services/iam-service`，作为产品 IAM 控制面，负责标准 OIDC/OAuth 2.1 IdP 集成、不可变 principal 映射、用户、租户、组织、设备、会话、同意、Token 撤销/轮换、角色、权限和策略元数据；不得自行实现 OIDC 协议或 Token 服务器。
+- 新增 `services/iam-service`，作为平台自有认证中心和 IAM 控制面，负责账号密码校验、不可变 principal 映射、用户、租户、组织、设备、会话、同意、短时非对称 JWT 签发、JWKS、公钥轮换、Token 撤销/轮换、角色、权限和策略元数据。
 - Gateway 不承载领域业务写入；任何领域服务都必须使用 Spring Security Resource Server 验证令牌并执行服务侧 PEP。
 
 ### 3. RBAC 与 ABAC
@@ -48,7 +48,7 @@
 
 ## 不在本 ADR 中决定的事项
 
-- 具体云厂商、Kafka 发行版、KMS/Vault 部署方式、标准 OIDC IdP 和服务网格实现；选择时需补充容量、成本、合规、运维责任和迁移/回滚证据。
+- 具体云厂商、Kafka 发行版、KMS/Vault 部署方式和服务网格实现；选择时需补充容量、成本、合规、运维责任和迁移/回滚证据。JWT 私钥只能由生产密钥管理系统或挂载 Secret 注入。
 - 自建 LiveKit、替换商业 RTC、引入向量数据库或改变 K12 受监管边界；这些仍需独立 ADR 和对应阶段 Gate。
 
 ## 代价

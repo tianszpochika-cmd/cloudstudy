@@ -47,7 +47,7 @@ pnpm --filter @englishflow/mobile exec tsc --noEmit    passed
    mvn -f services/service-template/pom.xml -o test
    ```
 
-2. Gateway 的 OIDC/JWKS、服务侧 PEP/RBAC/ABAC 属于 B8 Gate；B7 只保留默认拒绝的 JWT 预校验边界和 local profile 只读兼容，不能宣称 IAM 已完成。
+2. Gateway 的 自有 JWT 登录/JWKS、服务侧 PEP/RBAC/ABAC 属于 B8 Gate；B7 只保留默认拒绝的 JWT 预校验边界和 local profile 只读兼容，不能宣称 IAM 已完成。
 3. CORS/限流目前是本地 allow-list 和进程内占位，不是生产级分布式限流。
 4. 需要浏览器真实 viewport、键盘/读屏、主题持久化、SSR hydration、四端条件编译和真机交互回归；官网当前公开内容为静态投影，B9 再接入公开数据投影。
 5. Nuxt/uni-app 构建产生的 `.nuxt/`、`.output/`、`dist/` 仅是本地产物，不是源码完成证据。

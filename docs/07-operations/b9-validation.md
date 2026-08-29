@@ -5,7 +5,7 @@
 
 ## 结论
 
-B9 的 7 项任务均已形成代码、契约、迁移、前端入口或静态逻辑测试切片，可以进入测试阶段。Learner、Content、Admin、学习端和官网已经按 v2 的服务 owner、Gateway、公开投影、locale/theme 和答案规则边界接入；当前不能把 Java 25/Maven Spring Boot 运行态、真实 Gateway→服务链路、MySQL/Kafka/IdP、浏览器或真机验收描述为完成。
+B9 的 7 项任务均已形成代码、契约、迁移、前端入口或静态逻辑测试切片，可以进入测试阶段。Learner、Content、Admin、学习端和官网已经按 v2 的服务 owner、Gateway、公开投影、locale/theme 和答案规则边界接入；当前不能把 Java 25/Maven Spring Boot 运行态、真实 Gateway→服务链路、MySQL/Kafka/IAM JWT 认证中心、浏览器或真机验收描述为完成。
 
 ## 任务交付状态
 
@@ -48,4 +48,4 @@ B9 的 7 项任务均已形成代码、契约、迁移、前端入口或静态�
 
 ## 测试阶段入口
 
-先准备 Java 25 + Maven、测试 IdP/JWKS、Gateway/learner/content/admin-ops 跨进程环境，再执行服务测试和浏览器/设备矩阵。G-IDP 未通过前不得注入真实 issuer、启用 Resource Server 默认路由或把本地测试替身当作生产身份系统；任何权限、版权、投影或 Outbox 异常都必须保持拒绝/降级/可恢复语义。
+先准备 Java 25 + Maven、IAM JWT 认证中心/JWKS、Gateway/learner/content/admin-ops 跨进程环境，再执行服务测试和浏览器/设备矩阵。JWT runtime Gate 未通过前不得把本地测试替身当作生产身份系统；任何权限、版权、投影或 Outbox 异常都必须保持拒绝/降级/可恢复语义。

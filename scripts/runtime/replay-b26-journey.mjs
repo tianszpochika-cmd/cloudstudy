@@ -118,7 +118,7 @@ export function createB26JourneyPreview(input = {}) {
   }
   const runId = input.runId ?? 'run-b26-evt003-preview-001';
   const traceId = input.traceId ?? `trace-b26-evt003-${digest(runId)}`;
-  const subjectRef = input.subjectRef ?? 'external-oidc-subject-runtime-only';
+  const subjectRef = input.subjectRef ?? 'iam-jwt-subject-runtime-only';
   requiredText(runId, 'runId');
   requiredText(traceId, 'traceId');
   requiredText(subjectRef, 'subjectRef');

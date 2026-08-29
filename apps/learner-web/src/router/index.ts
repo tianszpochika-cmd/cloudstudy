@@ -135,7 +135,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../pages/B4WorldPage.vue'),
     meta: { requiresAuth: true, shell: true, title: '世界' },
   },
-  { path: '/auth/callback', name: 'auth-callback', component: () => import('../pages/AuthCallbackPage.vue') },
   // Kept as a compatibility URL for old bookmarks. The visible first-run
   // experience is the single onboarding flow, not a separate gate page.
   { path: '/adult-gate', name: 'adult-gate', redirect: { name: 'onboarding' }, meta: { requiresAuth: true, title: '开始设置' } },

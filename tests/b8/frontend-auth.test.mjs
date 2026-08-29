@@ -7,7 +7,7 @@ import test from 'node:test';
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');
 
-test('all four frontend projects enter through the Gateway and keep login/session seams separate', () => {
+test('all four frontend projects use the Gateway and share the platform login seam', () => {
   const files = [
     'apps/learner-web/src/auth/gateway-auth.ts',
     'apps/admin-web/src/auth/gateway-auth.ts',
@@ -21,73 +21,80 @@ test('all four frontend projects enter through the Gateway and keep login/sessio
   }
 });
 
-test('learner and admin session restore/refresh/revoke use server responses, not client roles', () => {
-  const learner = read('apps/learner-web/src/stores/session.ts');
-  const learnerClient = read('apps/learner-web/src/api/client.ts');
-  const admin = read('apps/admin-web/src/stores/admin.ts');
-  const adminClient = read('apps/admin-web/src/api/client.ts');
-  for (const source of [learner, admin]) {
-    assert.match(source, /restore/);
+test('learner and admin use account-password login, memory Access Tokens and server responses', () => {
+  const adapters = [
+    read('apps/learner-web/src/auth/gateway-auth.ts'),
+    read('apps/admin-web/src/auth/gateway-auth.ts'),
+  ];
+  for (const source of adapters) {
+    assert.match(source, /auth\/login/);
+    assert.match(source, /identifier/);
+    assert.match(source, /password/);
+    assert.match(source, /auth\/token\/refresh/);
+    assert.match(source, /logout|revoke/);
+    assert.doesNotMatch(source, /sessionStorage\.setItem\([^\n]*(token|access|refresh)/i);
+    assert.doesNotMatch(source, /localStorage\.setItem\([^\n]*(token|access|refresh)/i);
+    assert.doesNotMatch(source, /x-(?:b5-)?role|x-(?:tenant|owner|permission)(?:-|\b)/i);
+  }
+  for (const source of [read('apps/learner-web/src/stores/session.ts'), read('apps/admin-web/src/stores/admin.ts')]) {
+    assert.match(source, /login\(/);
+    assert.match(source, /password/);
     assert.match(source, /refreshSilently/);
     assert.match(source, /logout|revoke/);
+    assert.doesNotMatch(source, /sessionStorage\.setItem\([^\n]*(token|access|refresh)/i);
+    assert.doesNotMatch(source, /localStorage\.setItem\([^\n]*(token|access|refresh)/i);
   }
-  assert.match(learnerClient, /onUnauthorized/);
-  assert.match(adminClient, /refreshSilently/);
-  assert.match(adminClient, /forbiddenHeaderNames/);
-  assert.match(adminClient, /x-b5-role/);
-  assert.doesNotMatch(admin, /sessionStorage\.setItem\(['"]englishflow\.admin\.role/);
+  assert.match(read('apps/learner-web/src/auth/access-token.ts'), /memory/i);
+  assert.match(read('apps/admin-web/src/auth/access-token.ts'), /memory/i);
 });
 
-test('frontend auth adapters use canonical B8 IAM routes and only leave legacy aliases at the Gateway', () => {
+test('frontend auth adapters expose only the direct JWT routes', () => {
   const adapters = [
     read('apps/learner-web/src/auth/gateway-auth.ts'),
     read('apps/admin-web/src/auth/gateway-auth.ts'),
     read('apps/mobile/src/auth/gateway-auth.ts'),
   ];
   for (const source of adapters) {
-    assert.match(source, /authorization\/start/);
-    assert.match(source, /OIDC_PROVIDER/);
-    assert.match(source, /callback/);
-    assert.match(source, /iam\/principal\/me/);
-    assert.match(source, /iam\/permissions/);
-    assert.match(source, /iam\/session\/refresh/);
-    assert.match(source, /iam\/session\/logout/);
-    assert.doesNotMatch(source, /['"]\/auth\/refresh|['"]\/auth\/logout|['"]\/iam\/session['"]/);
-    assert.doesNotMatch(source, /codeVerifier|codeChallenge|nonce/);
+    for (const route of ['auth/login', 'auth/token/refresh', 'auth/logout', 'iam/principal/me', 'iam/permissions']) {
+      assert.match(source, new RegExp(route.replaceAll('/', '\\/')));
+    }
+    assert.doesNotMatch(source, /Oidc|oidc|authorization\/start|auth\/callback|codeVerifier|codeChallenge|nonce|state/i);
   }
 });
 
-test('mobile keeps refresh credentials out of ordinary storage and supports callback restoration', () => {
+test('mobile keeps Refresh Tokens only in native secure storage and uses a bounded H5 cookie session', () => {
   const session = read('apps/mobile/src/stores/session.ts');
   const runtime = read('apps/mobile/src/platform/uni-runtime.ts');
   assert.match(session, /getSecureStorage/);
-  assert.match(session, /setItem\(REFRESH_TOKEN_KEY/);
-  assert.match(session, /removeStorageSync\(['"]yx\.session\.refresh-token/);
-  assert.match(session, /readLaunchCallback/);
+  assert.match(session, /secure\.setItem\(REFRESH_TOKEN_KEY/);
+  assert.match(session, /REFRESH_TOKEN_KEY/);
+  assert.match(session, /secure storage|secureStorage/i);
+  assert.doesNotMatch(session, /setStorageSync\(['"]yx\.session\.refresh-token/);
   assert.match(runtime, /secure|Secure/i);
 });
 
-test('frontend routes expose explicit callback/forbidden states and reuse locale/theme context', () => {
-  const learnerRouter = read('apps/learner-web/src/router/index.ts');
-  const adminRouter = read('apps/admin-web/src/router/index.ts');
-  const learnerAuth = read('apps/learner-web/src/auth/gateway-auth.ts');
-  const adminAuth = read('apps/admin-web/src/auth/gateway-auth.ts');
-  const official = read('apps/official-site/utils/public-links.mjs');
-  for (const source of [learnerRouter, adminRouter]) {
-    assert.match(source, /auth\/callback|forbidden/);
+test('frontend routes expose explicit login and forbidden states and preserve locale/theme context', () => {
+  const sources = [
+    read('apps/learner-web/src/router/index.ts'),
+    read('apps/admin-web/src/router/index.ts'),
+    read('apps/learner-web/src/auth/gateway-auth.ts'),
+    read('apps/admin-web/src/auth/gateway-auth.ts'),
+    read('apps/mobile/src/auth/navigation.ts'),
+    read('apps/official-site/utils/public-links.mjs'),
+  ];
+  for (const source of sources.slice(0, 2)) {
+    assert.match(source, /login|forbidden/);
     assert.match(source, /requiresAuth|permission/);
+    assert.doesNotMatch(source, /auth\/callback|callback/i);
   }
-  for (const source of [learnerAuth, adminAuth, official]) {
-    assert.match(source, /uiLocale/);
-    assert.match(source, /theme/);
-  }
+  assert.match(sources[5], /uiLocale|locale/i);
+  assert.match(sources[5], /theme/i);
 });
 
-test('official site only builds a controlled public login link and does not own business session state', () => {
+test('official site creates only a controlled public login link and owns no business session state', () => {
   const source = read('apps/official-site/utils/public-links.mjs');
-  assert.match(source, /standard-oidc\/authorization\/start/);
-  assert.match(source, /redirectUri/);
+  assert.match(source, /buildLearnerLoginLink/);
   assert.match(source, /safePublicReturnTo/);
-  assert.match(source, /controlled absolute learner callback/);
-  assert.doesNotMatch(source, /sessionStorage|localStorage|refreshToken|Authorization/);
+  assert.match(source, /business tokens?/i);
+  assert.doesNotMatch(source, /sessionStorage|localStorage|refreshToken|Authorization/i);
 });

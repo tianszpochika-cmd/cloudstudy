@@ -51,6 +51,8 @@
 
 - 新服务目标运行时为 Java 25 LTS + Spring Boot 4.1.x/Spring Framework 7.x；Phase 2 AI 编排仍为 Python 3.11+。
 - 外部调用统一经过 api-gateway；身份、租户、会话、RBAC/ABAC 和策略撤销由 iam-service 负责，领域服务必须再次执行服务侧 PEP 校验。
+- 认证统一采用平台自有 IAM 账号密码登录；iam-service 签发短时 RS256 JWT Bearer（Access Token），发布 JWKS 并负责 Refresh Token 轮换、重放检测、撤销和设备会话。JWT profile、存储和异常交互以 [ADR-0012](../../10-decisions/0012-jwt-bearer-access-token-and-session.md) 与 [ADR-0013](../../10-decisions/0013-self-owned-jwt-authentication-center.md) 为准。
+- 四端只能通过 Authorization: Bearer 发送 Access Token；Token 不得进入 URL、localStorage、日志、事件、埋点或错误响应；Web Access Token 仅存内存，Web Refresh Token 使用 HttpOnly/Secure/SameSite Cookie，移动端只使用 Keychain/Keystore；Gateway 与每个领域服务必须独立通过 JWKS 验签并执行 PEP。
 - packages/contracts/ 是 OpenAPI、AsyncAPI 和 JSON Schema 的事实源；领域服务各自拥有数据、迁移、Redis 命名空间、Outbox 和审计边界。
 - 现有 services/core-api（Java 17/Spring Boot 3）仅作为 v1 兼容单体和 Strangler Fig 迁移边界，不代表 v2 微服务已实现完成；任何迁移都必须有契约、数据、权限、观测、回滚和 SLO 证据。
 - V2-980-* 只描述业务/跨域设计单元；ARCH-* 平台能力必须按 [平台能力矩阵](../../02-architecture/v2-platform-capability-matrix.md) 单独建任务，不计入 980。

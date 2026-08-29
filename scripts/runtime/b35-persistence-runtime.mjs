@@ -12,7 +12,7 @@ function query(schema, sql) {
 }
 
 const facts = {
-  iamExternalIdentities: query('iam_service', 'SELECT COUNT(*) FROM iam_external_identity'),
+  iamAccounts: query('iam_service', 'SELECT COUNT(*) FROM iam_account'),
   iamRevokedSessions: query('iam_service', 'SELECT COUNT(*) FROM iam_session WHERE revoked_at IS NOT NULL'),
   contentDefinitions: query('content_service', 'SELECT COUNT(*) FROM content_definition'),
   learningSrsState: query('learning_service', 'SELECT COUNT(*) FROM b25_learning_srs_state'),

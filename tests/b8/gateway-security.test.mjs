@@ -7,28 +7,28 @@ import test from 'node:test';
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..');
 const read = (path) => readFileSync(join(root, path), 'utf8');
 
-test('Gateway points IAM to the registered loopback port and keeps real JWT validation gated', () => {
+test('Gateway points IAM to the registered loopback port and requires explicit JWT validation', () => {
   const yaml = read('services/api-gateway/src/main/resources/application.yaml');
   const properties = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayProperties.java');
   const env = read('.env.example');
   assert.match(yaml, /iam-base-url: \$\{IAM_SERVICE_BASE_URL:http:\/\/127\.0\.0\.1:18087\}/);
-  assert.match(yaml, /resource-server-enabled: \$\{GATEWAY_RESOURCE_SERVER_ENABLED:false\}/);
+  assert.match(yaml, /resource-server-enabled: \$\{GATEWAY_RESOURCE_SERVER_ENABLED:true\}/);
   assert.match(yaml, /audit-enabled: \$\{GATEWAY_SECURITY_AUDIT_ENABLED:true\}/);
   assert.match(properties, /record Identity/);
-  assert.match(properties, /ReactiveJwtDecoders|issuerUri/);
+  assert.match(properties, /jwkSetUri|issuerUri/);
   assert.match(env, /IAM_SERVICE_PORT=18087/);
-  assert.match(env, /GATEWAY_RESOURCE_SERVER_ENABLED=false/);
+  assert.match(env, /GATEWAY_RESOURCE_SERVER_ENABLED=true/);
 });
 
-test('Gateway security is authenticated when enabled and fail-closed otherwise', () => {
+test('Gateway security uses the explicit IAM JWKS decoder and fails closed otherwise', () => {
   const config = read('services/api-gateway/src/main/java/com/englishflow/gateway/config/GatewayConfiguration.java');
   const decoder = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/JwtPreValidationBoundaryGlobalFilter.java');
   assert.match(config, /oauth2ResourceServer/);
   assert.match(config, /anyExchange\(\)\.authenticated\(\)/);
   assert.match(config, /anyExchange\(\)\.denyAll\(\)/);
-  assert.match(config, /ReactiveJwtDecoders\.fromIssuerLocation/);
+  assert.match(config, /NimbusReactiveJwtDecoder\.withJwkSetUri/);
   assert.match(decoder, /resourceServerEnabled/);
-  assert.match(decoder, /auth\/oidc/);
+  assert.match(decoder, /auth\/jwks/);
   assert.doesNotMatch(decoder, /Bearer.*authenticated|presence.*auth/i);
 });
 
@@ -37,8 +37,8 @@ test('Gateway routes canonical IAM paths, preserves explicit legacy rewrites and
   const sanitizer = read('services/api-gateway/src/main/java/com/englishflow/gateway/filter/ClientAuthorizationContextSanitizerGlobalFilter.java');
   assert.match(routes, /iam-auth/);
   assert.match(routes, /\/api\/v1\/iam\/\*\*/);
-  assert.match(routes, /auth\/refresh.*iam\/session\/refresh|auth\/refresh[\s\S]*rewritePath\("\/api\/v1\/auth\/refresh", "\/api\/v1\/iam\/session\/refresh"\)/);
-  assert.match(routes, /auth\/logout[\s\S]*iam\/session\/logout/);
+  assert.match(routes, /auth\/token\/refresh/);
+  assert.match(routes, /\/api\/v1\/auth\/\*\*/);
   assert.match(routes, /core-api-legacy-compat/);
   for (const header of ['X-B5-Role', 'X-Role', 'X-Tenant-Id', 'X-Owner-Id']) assert.match(sanitizer, new RegExp(header));
   assert.doesNotMatch(sanitizer, /remove.*Authorization/);

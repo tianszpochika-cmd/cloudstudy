@@ -154,7 +154,7 @@ function validateAuthorizationAndSecurity(config, errors) {
   requireArray(limiter?.sensitiveRouteOverrides, 'rateLimiting.sensitiveRouteOverrides', errors, 3)
 
   const jwks = quality?.jwks
-  fail(jwks?.protocol === 'OIDC-OAuth2.1', 'JWKS must be bound to standard OIDC/OAuth 2.1', errors)
+  fail(jwks?.protocol === 'self-owned-JWT', 'JWKS must be bound to the platform-owned JWT authentication center', errors)
   fail(jwks?.issuerSource === 'runtime-env-only' && jwks?.jwksUriSource === 'runtime-env-only', 'JWKS issuer and URI must be runtime-only', errors)
   fail(JSON.stringify(jwks?.allowedAlgorithms) === JSON.stringify(['RS256', 'ES256']), 'JWKS allowed algorithms must be asymmetric', errors)
   fail((jwks?.forbiddenAlgorithms ?? []).includes('none') && (jwks?.forbiddenAlgorithms ?? []).includes('HS256'), 'JWKS unsafe algorithms must be forbidden', errors)

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-/** Explicit OIDC Resource Server configuration; no local token issuer is supported. */
+/** Explicit self-owned JWT Resource Server configuration; services never issue tokens. */
 @Validated
 @ConfigurationProperties(
         prefix = "security.resource-server",
@@ -19,6 +19,7 @@ public class ResourceServerSecurityProperties {
     private boolean enabled;
     private String issuerUri;
     private String jwkSetUri;
+    private String audience = "yuxuexing-api";
 
     @NotNull
     private Duration policyCacheTtl = Duration.ofSeconds(30);
@@ -32,6 +33,8 @@ public class ResourceServerSecurityProperties {
     public void setIssuerUri(String issuerUri) { this.issuerUri = issuerUri; }
     public String getJwkSetUri() { return jwkSetUri; }
     public void setJwkSetUri(String jwkSetUri) { this.jwkSetUri = jwkSetUri; }
+    public String getAudience() { return audience; }
+    public void setAudience(String audience) { this.audience = audience; }
     public Duration getPolicyCacheTtl() { return policyCacheTtl; }
     public void setPolicyCacheTtl(Duration policyCacheTtl) { this.policyCacheTtl = policyCacheTtl; }
     public Duration getPdpTimeout() { return pdpTimeout; }
@@ -45,8 +48,7 @@ public class ResourceServerSecurityProperties {
 
     @AssertTrue(message = "issuer-uri and jwk-set-uri are required when the Resource Server is enabled")
     public boolean isVerificationConfigurationComplete() {
-        return !enabled && isBlank(issuerUri) && isBlank(jwkSetUri)
-                || enabled && !isBlank(issuerUri) && !isBlank(jwkSetUri);
+        return !enabled || !isBlank(issuerUri) && !isBlank(jwkSetUri) && !isBlank(audience);
     }
 
     private static boolean isBlank(String value) { return value == null || value.isBlank(); }

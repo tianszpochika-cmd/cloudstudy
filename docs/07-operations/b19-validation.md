@@ -10,7 +10,7 @@
 - 合成学习旅程：覆盖登录、学习目标、学习内容、提交、服务端判分、复习投影、报告和通知，并验证重复提交、事件去重、失败补偿和数据对账边界。
 - 浏览器与设备矩阵：固定四端 origin、公开/登录边界、八态、权限、深链、键盘、响应式、H5/App/小程序/iPad/PWA 和媒体/secure storage 证据字段。
 - QA 专项门禁：弱网/离线、LCP/交互响应、Ultra/High/Medium/Performance、可访问性、对比度、非颜色状态、locale/contentLocale、主题和缺陷分级。
-- B19 bootstrap：静态模式只执行测试资产和前置门禁；runtime 模式要求真实 Gateway、OIDC、Kafka、账号矩阵、浏览器和设备证据目录，不会隐式伪造运行通过。
+- B19 bootstrap：静态模式只执行测试资产和前置门禁；runtime 模式要求真实 Gateway、自有 JWT 登录、Kafka、账号矩阵、浏览器和设备证据目录，不会隐式伪造运行通过。
 
 ## 2. 静态验证结果
 
@@ -30,13 +30,13 @@
 
 以下内容不能由静态 fixture、源码扫描或前端 build 代替：
 
-- Gateway、OIDC、MySQL、Kafka、领域服务之间的真实跨进程学习旅程、Outbox/事件对账和失败补偿；
+- Gateway、自有 JWT 登录、MySQL、Kafka、领域服务之间的真实跨进程学习旅程、Outbox/事件对账和失败补偿；
 - Chrome/Edge/Safari 的 Playwright 浏览器执行、八态、深链、键盘/响应式和 Console 证据；
 - iOS、Android、iPad、PWA、微信小程序的安装/升级、secure storage、媒体权限、横竖屏、后台恢复和系统返回键；
 - 2G/3G/断网、LCP/交互响应、四级画质、读屏、真实对比度和设备级主题/i18n 视觉证据；
 - P0/P1 缺陷清零、P2 处置、可复现缺陷报告和完整证据索引。
 
-`pnpm b19:bootstrap --require-runtime` 已按设计失败并保留阻塞原因：B17 运行预检发现当前 Java 24、Maven/Docker 不可用、B16 测试 IdP/Kafka 变量缺失；B19 进一步缺少 `B19_RUNTIME_ORIGIN`、`B19_RUNTIME_ACCOUNT_MATRIX`、`B19_RUNTIME_IDP_ISSUER`、`B19_RUNTIME_KAFKA_BOOTSTRAP`、`B19_RUNTIME_MYSQL_DSN`、Gateway/浏览器/设备证据目录等变量。该失败是阻断证据，不是测试误报。
+`pnpm b19:bootstrap --require-runtime` 已按设计失败并保留阻塞原因：B17 运行预检发现当前 Java 24、Maven/Docker 不可用、B16 测试 IAM JWT 认证中心/Kafka 变量缺失；B19 进一步缺少 `B19_RUNTIME_ORIGIN`、`B19_RUNTIME_ACCOUNT_MATRIX`、`B19_RUNTIME_auth_service_ISSUER`、`B19_RUNTIME_KAFKA_BOOTSTRAP`、`B19_RUNTIME_MYSQL_DSN`、Gateway/浏览器/设备证据目录等变量。该失败是阻断证据，不是测试误报。
 
 ## 4. 交接结论
 

@@ -1,11 +1,10 @@
 /* eslint-disable */
 // GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json
 
-import type { AuthRefreshResponse, B10AssessmentContentSnapshotResponse, B10AssessmentReportResponse, B10AssessmentSessionResponse, B10AttemptResponse, B10CheckpointResponse, B10ContentRecoveryResponse, B10LearnerContentSnapshotResponse, B10MasteryProjectionResponse, B10ReadShadowResponse, B10ReviewQueueResponse, B10RouteDecisionResponse, B11MediaAsset, B11MediaCompatibility, B11MediaContentRange, B11MediaManifest, B11MediaProgressReceipt, B11MessagePage, B11NotificationPreference, B11RecordingMetadata, B11ShadowingCompletionReceipt, B11SignedMediaUrl, B11SyncConflictPage, B11SyncReceipt, B11VectorClock, B12EventReceipt, B12FocusSession, B12GrowthSummary, B12InteractionResult, B12Leaderboard, B12LedgerPage, B12NotificationMessage, B12NotificationPreference, B12RecoveryPage, B12RecoveryResult, B12Report, B12ReportPage, B12RetryResult, B12RewardClaimResult, B12RewardPage, B12RewardProbability, B12RoomState, B12SettlementResult, B12Visibility, B13AdminCommandResult, B13AdminOrderPage, B13AnalyticsReceipt, B13AuditPage, B13CallbackResult, B13CommandPreparation, B13Entitlement, B13MetricProjection, B13Order, B13OrderPage, B13PaymentIntentResult, B13PaymentReadiness, B13PublicCatalog, B13RecomputeJob, B13ReconciliationResult, B13Refund, B13Sku, B13SupportTicket, B13SupportTicketPage, B1AnyData, B1AssessmentReadResponse, B1AssessmentStartResponse, B1AssessmentStepResponse, B1AuthTokenResponse, B1ContentDiff, B1ImportReport, B1MediaAsset, B1MediaUploadIntent, B1OfflineManifest, B1PrivacyExportResponse, B1SignedMediaAccess, B8AdultGateResponse, B8AuthorizationDecisionResponse, B8AuthorizationStartResponse, B8Consent, B8ConsentListResponse, B8DeviceListResponse, B8JwksResponse, B8OidcCallbackResponse, B8OidcProviderMetadata, B8PermissionsResponse, B8PrincipalResponse, B8SessionRevocationResponse, B8SessionTokenResponse, B9AdminContentStateListResponse, B9AdminContentStateResponse, B9AssessmentContentSnapshotResponse, B9ContentCommandAcceptedResponse, B9FirstDayProjectionResponse, B9HomeProjectionResponse, B9InternalPublicProjectionResponse, B9LearnerContentCatalogResponse, B9LearnerContentProjectionResponse, B9LearnerPreferencesResponse, B9LearnerProfileResponse, B9LearnerTargetResponse, B9LegacyShadowProfileResponse, B9PublicContentCatalogResponse, B9PublicContentProjectionResponse, B9PublicSiteProjectionResponse, HealthResponse } from '@englishflow/contracts';
+import type { B10AssessmentContentSnapshotResponse, B10AssessmentReportResponse, B10AssessmentSessionResponse, B10AttemptResponse, B10CheckpointResponse, B10ContentRecoveryResponse, B10LearnerContentSnapshotResponse, B10MasteryProjectionResponse, B10ReadShadowResponse, B10ReviewQueueResponse, B10RouteDecisionResponse, B11MediaAsset, B11MediaCompatibility, B11MediaContentRange, B11MediaManifest, B11MediaProgressReceipt, B11MessagePage, B11NotificationPreference, B11RecordingMetadata, B11ShadowingCompletionReceipt, B11SignedMediaUrl, B11SyncConflictPage, B11SyncReceipt, B11VectorClock, B12EventReceipt, B12FocusSession, B12GrowthSummary, B12InteractionResult, B12Leaderboard, B12LedgerPage, B12NotificationMessage, B12NotificationPreference, B12RecoveryPage, B12RecoveryResult, B12Report, B12ReportPage, B12RetryResult, B12RewardClaimResult, B12RewardPage, B12RewardProbability, B12RoomState, B12SettlementResult, B12Visibility, B13AdminCommandResult, B13AdminOrderPage, B13AnalyticsReceipt, B13AuditPage, B13CallbackResult, B13CommandPreparation, B13Entitlement, B13MetricProjection, B13Order, B13OrderPage, B13PaymentIntentResult, B13PaymentReadiness, B13PublicCatalog, B13RecomputeJob, B13ReconciliationResult, B13Refund, B13Sku, B13SupportTicket, B13SupportTicketPage, B1AnyData, B1AssessmentReadResponse, B1AssessmentStartResponse, B1AssessmentStepResponse, B1ContentDiff, B1ImportReport, B1MediaAsset, B1MediaUploadIntent, B1OfflineManifest, B1PrivacyExportResponse, B1SignedMediaAccess, B8AdultGateResponse, B8AuthorizationDecisionResponse, B8Consent, B8ConsentListResponse, B8DeviceListResponse, B8PermissionsResponse, B8PrincipalResponse, B9AdminContentStateListResponse, B9AdminContentStateResponse, B9AssessmentContentSnapshotResponse, B9ContentCommandAcceptedResponse, B9FirstDayProjectionResponse, B9HomeProjectionResponse, B9InternalPublicProjectionResponse, B9LearnerContentCatalogResponse, B9LearnerContentProjectionResponse, B9LearnerPreferencesResponse, B9LearnerProfileResponse, B9LearnerTargetResponse, B9LegacyShadowProfileResponse, B9PublicContentCatalogResponse, B9PublicContentProjectionResponse, B9PublicSiteProjectionResponse, HealthResponse } from '@englishflow/contracts';
 
 export interface GeneratedApiOperationRegistry {
   getHealth: { method: "GET"; path: "/api/v1/health"; response: HealthResponse; };
-  refreshAuthSession: { method: "POST"; path: "/api/v1/auth/refresh"; response: AuthRefreshResponse; };
   createContentEntity: { method: "POST"; path: "/api/v1/content"; response: unknown; };
   createContentVersion: { method: "POST"; path: "/api/v1/content/{contentId}/versions"; response: unknown; };
   previewContentVersion: { method: "GET"; path: "/api/v1/content/{contentId}/versions/{versionId}/preview"; response: unknown; };
@@ -25,12 +24,9 @@ export interface GeneratedApiOperationRegistry {
   startPlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/start"; response: B1AssessmentStartResponse; };
   submitPlacementStep: { method: "POST"; path: "/api/v1/assessment/placement/submit-step"; response: B1AssessmentStepResponse; };
   createPrivacyExport: { method: "POST"; path: "/api/v1/privacy/export"; response: B1PrivacyExportResponse; };
-  sendB1SmsCode: { method: "POST"; path: "/api/v1/auth/sms/send-code"; response: B1AnyData; };
-  loginB1Phone: { method: "POST"; path: "/api/v1/auth/login/phone"; response: B1AuthTokenResponse; };
-  registerB1Phone: { method: "POST"; path: "/api/v1/auth/register"; response: B1AuthTokenResponse; };
-  logoutB1Session: { method: "POST"; path: "/api/v1/auth/logout"; response: B1AnyData; };
-  listB1AuthSessions: { method: "GET"; path: "/api/v1/auth/sessions"; response: B1AnyData; };
-  revokeB1AuthSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; response: B1AnyData; };
+  registerB8Account: { method: "POST"; path: "/api/v1/auth/register"; response: unknown; };
+  logoutB8JwtSession: { method: "POST"; path: "/api/v1/auth/logout"; response: unknown; };
+  revokeB8JwtSession: { method: "POST"; path: "/api/v1/auth/sessions/{sessionId}/revoke"; response: unknown; };
   getB1OnboardingOptions: { method: "GET"; path: "/api/v1/onboarding/options"; response: B1AnyData; };
   getB1OnboardingProfile: { method: "GET"; path: "/api/v1/onboarding/profile"; response: B1AnyData; };
   saveB1OnboardingProfile: { method: "POST"; path: "/api/v1/onboarding/profile"; response: B1AnyData; };
@@ -242,22 +238,14 @@ export interface GeneratedApiOperationRegistry {
   getB6DataReliabilityDrill: { method: "GET"; path: "/api/v1/data-reliability/drills/{drillId}"; response: unknown; };
   evaluateB6ReleaseGate: { method: "POST"; path: "/api/v1/release/gates/evaluate"; response: unknown; };
   getB6ReleaseGate: { method: "GET"; path: "/api/v1/release/gates/{gateId}"; response: unknown; };
-  startB8OidcAuthorization: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/authorization/start"; response: B8AuthorizationStartResponse; };
-  completeB8OidcBrowserCallback: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/callback"; response: unknown; };
-  exchangeB8OidcCallback: { method: "POST"; path: "/api/v1/auth/oidc/{provider}/callback"; response: B8OidcCallbackResponse; };
-  refreshB8IamSession: { method: "POST"; path: "/api/v1/iam/session/refresh"; response: B8SessionTokenResponse; };
-  logoutB8IamSession: { method: "POST"; path: "/api/v1/iam/session/logout"; response: B8SessionRevocationResponse; };
-  revokeB8IamSession: { method: "POST"; path: "/api/v1/iam/sessions/{sessionId}/revoke"; response: B8SessionRevocationResponse; };
-  getB8CurrentPrincipal: { method: "GET"; path: "/api/v1/iam/principal/me"; response: B8PrincipalResponse; };
-  listB8IamDevices: { method: "GET"; path: "/api/v1/iam/devices"; response: B8DeviceListResponse; };
-  kickoutB8IamDevice: { method: "POST"; path: "/api/v1/iam/devices/{deviceId}/kickout"; response: B8SessionRevocationResponse; };
+  getB8Principal: { method: "GET"; path: "/api/v1/iam/principal/me"; response: B8PrincipalResponse; };
+  listB8Devices: { method: "GET"; path: "/api/v1/iam/devices"; response: B8DeviceListResponse; };
+  kickoutB8Device: { method: "POST"; path: "/api/v1/iam/devices/{deviceId}/kickout"; response: unknown; };
   evaluateB8AdultGate: { method: "POST"; path: "/api/v1/iam/adult-gate"; response: B8AdultGateResponse; };
-  listB8IamConsents: { method: "GET"; path: "/api/v1/iam/consents"; response: B8ConsentListResponse; };
-  updateB8IamConsent: { method: "PUT"; path: "/api/v1/iam/consents"; response: B8Consent; };
-  getB8OidcProviderMetadata: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/metadata"; response: B8OidcProviderMetadata; };
-  getB8OidcProviderJwks: { method: "GET"; path: "/api/v1/auth/oidc/{provider}/jwks"; response: B8JwksResponse; };
+  listB8Consents: { method: "GET"; path: "/api/v1/iam/consents"; response: B8ConsentListResponse; };
+  updateB8Consent: { method: "PUT"; path: "/api/v1/iam/consents"; response: B8Consent; };
   decideB8Authorization: { method: "POST"; path: "/internal/v1/iam/authorization/decisions"; response: B8AuthorizationDecisionResponse; };
-  getB8IamPermissions: { method: "GET"; path: "/api/v1/iam/permissions"; response: B8PermissionsResponse; };
+  getB8Permissions: { method: "GET"; path: "/api/v1/iam/permissions"; response: B8PermissionsResponse; };
   listB9PublicContentCatalog: { method: "GET"; path: "/api/v1/public/content/catalog"; response: B9PublicContentCatalogResponse; };
   getB9PublicContentProjection: { method: "GET"; path: "/api/v1/public/content/{contentCode}"; response: B9PublicContentProjectionResponse; };
   getB9OfficialSiteProjection: { method: "GET"; path: "/api/v1/public/site/projection"; response: B9PublicSiteProjectionResponse; };
@@ -378,6 +366,11 @@ export interface GeneratedApiOperationRegistry {
   updateB11MediaProgress: { method: "PUT"; path: "/api/v1/learning/media-progress"; response: B11MediaProgressReceipt; };
   updateB11ShadowingCompletion: { method: "POST"; path: "/api/v1/speaking/shadowing/completions"; response: B11ShadowingCompletionReceipt; };
   b25EnsureDailyTaskPublic: { method: "POST"; path: "/api/v1/onboarding/daily-tasks/ensure"; response: unknown; };
+  loginB8Account: { method: "POST"; path: "/api/v1/auth/login"; response: unknown; };
+  refreshB8JwtSession: { method: "POST"; path: "/api/v1/auth/token/refresh"; response: unknown; };
+  getB8JwtJwks: { method: "GET"; path: "/api/v1/auth/jwks"; response: unknown; };
+  requestB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/request"; response: unknown; };
+  confirmB8PasswordReset: { method: "POST"; path: "/api/v1/auth/password-reset/confirm"; response: unknown; };
 }
 
 export type GeneratedApiOperationId = keyof GeneratedApiOperationRegistry;

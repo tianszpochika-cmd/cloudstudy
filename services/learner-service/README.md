@@ -13,7 +13,7 @@
 ## 安全与阶段边界
 
 - 请求必须来自已验证的 IAM principal；tenant、owner、role、permission 和 consent 不接受客户端覆盖。
-- Resource Server/JWKS 配置默认关闭并 fail-closed，真实 G-IDP、issuer、JWKS、PDP/PEP 和 durable adapter 通过后才可启用。
+- Resource Server/JWKS 配置默认关闭并 fail-closed，真实 JWT runtime Gate、issuer、JWKS、PDP/PEP 和 durable adapter 通过后才可启用。
 - 当前没有把 Spring HTTP controller、MySQL repository 或 Kafka consumer 误报为完成；本轮交付的是可编译的领域/应用代码、契约和测试边界。
 
 ## 验证
