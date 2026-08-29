@@ -10,6 +10,7 @@ import {
   validateGatewaySourceText,
   validateMigrationDirectory,
   validateMigrationSqlText,
+  validateOwnerSourceText,
 } from '../../scripts/audit/p1r-data-ownership-check.mjs';
 
 const root = path.resolve(import.meta.dirname, '..', '..');
@@ -86,6 +87,22 @@ test('Gateway source scan rejects persistence APIs, write SQL, configuration and
   for (const [relativePath, content] of samples) {
     const errors = validateGatewaySourceText({ relativePath, content });
     assert(errors.length > 0, `${relativePath} should fail closed`);
+  }
+});
+
+test('owner source scan applies the full migration policy to SQL outside canonical migration directories', () => {
+  for (const content of [
+    'USE assessment_service;',
+    'GRANT SELECT ON learning_service.* TO \'reader\';',
+    'CREATE SCHEMA rogue_service;',
+    "PREPARE statement FROM 'DROP SCHEMA learning_service'; EXECUTE statement;",
+  ]) {
+    const errors = validateOwnerSourceText({
+      service: 'learning-service',
+      relativePath: 'services/learning-service/src/main/resources/bootstrap/unsafe.sql',
+      content,
+    });
+    assert(errors.length > 0, `expected SQL source policy failure for: ${content}`);
   }
 });
 
@@ -194,6 +211,19 @@ test('nested B25 and Redis candidate metadata cannot promote static inputs to ru
     changed.redisRegistry.globalRules.status = 'RUNTIME_VERIFIED';
     changed.redisRegistry.entries[0].status = 'PASS';
   }, /\.b25\.|\.redis\.|attempts to promote/);
+});
+
+test('unknown runtime-proof fields and aliased promoted states fail closed', () => {
+  const mutations = [
+    (changed) => { changed.policy.runtimeProof = 'PASS'; },
+    (changed) => { changed.b25.runtimeVerified = true; },
+    (changed) => { changed.redisRegistry.entries[0].verification = { state: 'PASS' }; },
+    (changed) => { changed.policy.verificationState = 'PASS'; },
+    (changed) => { changed.b25.proof = true; },
+  ];
+  for (const mutate of mutations) {
+    assertMutationFails(mutate, /unknown runtime-proof field|attempts to promote/);
+  }
 });
 
 test('governance prose fields cannot be replaced by keyword-containing negations', () => {
@@ -322,6 +352,21 @@ test('migration SQL scan follows MySQL dash-comment whitespace rules', () => {
   }
 });
 
+test('migration SQL scan treats comment markers inside backtick identifiers as identifier content', () => {
+  for (const sql of [
+    'CREATE TABLE `foo-- hidden` (id INT); INSERT INTO assessment_service.attempts(id) VALUES (1);',
+    'CREATE TABLE `foo# hidden` (id INT); INSERT INTO assessment_service.attempts(id) VALUES (1);',
+    'CREATE TABLE `foo``-- hidden` (id INT); INSERT INTO assessment_service.attempts(id) VALUES (1);',
+  ]) {
+    const errors = validateMigrationSqlText({
+      service: 'learning-service',
+      filename: 'V99__unsafe_backtick_comment_marker.sql',
+      sql,
+    });
+    assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  }
+});
+
 test('migration SQL scan fails closed across NO_BACKSLASH_ESCAPES string semantics', () => {
   const errors = validateMigrationSqlText({
     service: 'learning-service',
@@ -329,6 +374,20 @@ test('migration SQL scan fails closed across NO_BACKSLASH_ESCAPES string semanti
     sql: "SELECT 'safe\\'; INSERT INTO assessment_service.attempts(id) VALUES (1); -- ';",
   });
   assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+});
+
+test('migration SQL scan fails closed across default MySQL backslash-escaped strings', () => {
+  for (const sql of [
+    "SELECT 'foo\\'bar'; INSERT INTO assessment_service.attempts(id) VALUES (1);",
+    'SELECT "foo\\"bar"; INSERT INTO assessment_service.attempts(id) VALUES (1);',
+  ]) {
+    const errors = validateMigrationSqlText({
+      service: 'learning-service',
+      filename: 'V99__unsafe_default_escape.sql',
+      sql,
+    });
+    assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  }
 });
 
 test('migration SQL scan rejects ANSI_QUOTES cross-service schema identifiers', () => {

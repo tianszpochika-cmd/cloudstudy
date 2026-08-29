@@ -107,6 +107,26 @@ const EXPECTED_OWNER_GOVERNANCE = Object.freeze({
 });
 
 const PROMOTED_STATES = new Set(['PASS', 'PASSED', 'ACCEPTED', 'VERIFIED', 'RUNTIME_VERIFIED', 'COMPLETE', 'CLOSED']);
+const APPROVED_RUNTIME_GOVERNANCE_KEYS = new Set([
+  'businessSchemaStatus',
+  'collectionStatus',
+  'defaultDecision',
+  'emptyAndExistingDatabaseVerification',
+  'lrn_b25_srs_state',
+  'm2RuntimeRequirements',
+  'mustNotBeTreatedAsRuntimeProof',
+  'ownerGrantAndSchemaVerification',
+  'ownerMismatchDecision',
+  'rollbackAndCompensationRuntimeVerification',
+  'runtime',
+  'runtimeEvidenceRequired',
+  'runtimeRequired',
+  'runtimeStatus',
+  'runtimeVerificationTask',
+  'staticValidatorCannotPromoteRuntime',
+  'status',
+]);
+const RUNTIME_PROMOTION_KEY_PATTERN = /(?:runtime|verif|proof|evidence)/iu;
 const SOURCE_SCAN_EXTENSIONS = new Set(['.java', '.kt', '.sql', '.xml', '.yml', '.yaml', '.properties']);
 const FORBIDDEN_GATEWAY_PERSISTENCE_MARKERS = [
   'spring-boot-starter-data-jpa',
@@ -163,7 +183,7 @@ function serviceRedisNamespace(service) {
   return service === 'api-gateway' ? 'gateway' : service.replace(/-service$/u, '');
 }
 
-function normalizeSqlForPolicyScan(sql) {
+function normalizeSqlForPolicyScan(sql, { backslashEscapes = false } = {}) {
   const source = String(sql ?? '');
   let normalized = '';
   let mode = 'NORMAL';
@@ -190,6 +210,11 @@ function normalizeSqlForPolicyScan(sql) {
     }
     if (mode === 'SINGLE_QUOTED_STRING') {
       normalized += blank(character);
+      if (backslashEscapes && character === '\\' && next !== undefined) {
+        normalized += blank(next);
+        index += 1;
+        continue;
+      }
       if (character === "'" && next === "'") {
         normalized += ' ';
         index += 1;
@@ -237,6 +262,37 @@ function normalizeSqlForPolicyScan(sql) {
       mode = 'SINGLE_QUOTED_STRING';
       continue;
     }
+    if (character === '`') {
+      let cursor = index + 1;
+      let value = '';
+      let closed = false;
+      while (cursor < source.length) {
+        const quotedCharacter = source[cursor];
+        const quotedNext = source[cursor + 1];
+        if (quotedCharacter === '`' && quotedNext === '`') {
+          value += '`';
+          cursor += 2;
+          continue;
+        }
+        if (quotedCharacter === '`') {
+          cursor += 1;
+          closed = true;
+          break;
+        }
+        value += quotedCharacter;
+        cursor += 1;
+      }
+      const previousWord = normalized.match(/([a-z]+)\s*$/iu)?.[1]?.toUpperCase();
+      const isPolicyRelevantIdentifier = closed
+        && /^[a-z_][a-z0-9_]*$/iu.test(value)
+        && (/(?:_service)$/iu.test(value) || /^core_api$/iu.test(value) || previousWord === 'USE');
+      const rawToken = source.slice(index, cursor);
+      normalized += isPolicyRelevantIdentifier
+        ? `\`${value}\``
+        : [...rawToken].map(blank).join('');
+      index = cursor - 1;
+      continue;
+    }
     if (character === '"') {
       let cursor = index + 1;
       let value = '';
@@ -244,6 +300,11 @@ function normalizeSqlForPolicyScan(sql) {
       while (cursor < source.length) {
         const quotedCharacter = source[cursor];
         const quotedNext = source[cursor + 1];
+        if (backslashEscapes && quotedCharacter === '\\' && quotedNext !== undefined) {
+          value += quotedNext;
+          cursor += 2;
+          continue;
+        }
         if (quotedCharacter === '"' && quotedNext === '"') {
           value += '"';
           cursor += 2;
@@ -292,21 +353,27 @@ export function validateMigrationSqlText({ service, filename = '<memory>', sql }
   if (!nonEmpty(service)) errors.push(`${filename}: migration service is required`);
   if (typeof sql !== 'string') errors.push(`${filename}: migration SQL must be a string`);
   if (errors.length > 0) return errors;
-  const normalized = normalizeSqlForPolicyScan(sql);
+  // MySQL string tokenization changes with NO_BACKSLASH_ESCAPES. Scan both
+  // interpretations and reject when either mode exposes a forbidden statement.
+  const normalizedVariants = [
+    normalizeSqlForPolicyScan(sql, { backslashEscapes: true }),
+    normalizeSqlForPolicyScan(sql, { backslashEscapes: false }),
+  ];
   const forbidden = [
     [/\bUSE(?:\s+|(?=[`"]))`?[a-z0-9_]+`?/iu, 'USE is forbidden; Flyway must receive the owner schema through its service-scoped connection'],
     [/\b(?:GRANT|REVOKE)\b/iu, 'GRANT/REVOKE is forbidden in service migrations; owner grants are provisioned and verified by P1R-M2-004'],
     [/\b(?:CREATE|DROP)\s+(?:DATABASE|SCHEMA)\b/iu, 'CREATE/DROP DATABASE or SCHEMA is forbidden in service migrations'],
   ];
   for (const [pattern, message] of forbidden) {
-    if (pattern.test(normalized)) errors.push(`${service}/${filename}: ${message}`);
+    if (normalizedVariants.some((normalized) => pattern.test(normalized))) errors.push(`${service}/${filename}: ${message}`);
   }
   const expectedSchema = serviceSchemaName(service);
-  for (const foreignSchema of foreignSchemaReferences(normalized, expectedSchema)) {
+  const foreignSchemas = new Set(normalizedVariants.flatMap((normalized) => foreignSchemaReferences(normalized, expectedSchema)));
+  for (const foreignSchema of [...foreignSchemas].sort()) {
     errors.push(`${service}/${filename}: cross-service schema reference is forbidden: ${foreignSchema}`);
   }
   const dynamicSql = /\b(?:PREPARE|EXECUTE)\b/iu;
-  if (dynamicSql.test(normalized)) {
+  if (normalizedVariants.some((normalized) => dynamicSql.test(normalized))) {
     const migrationId = `${service}/${filename}`;
     const expectedDigest = EXPECTED_DYNAMIC_SQL_MIGRATION_DIGESTS[migrationId];
     if (normalizedTextSha256(sql) !== expectedDigest) {
@@ -753,18 +820,25 @@ function checkM2Gaps(policy, errors) {
   }
 }
 
-function checkNoRuntimePromotion(value, errors, location = '$', key = '') {
+function checkNoRuntimePromotion(value, errors, location = '$', promotionContext = false) {
   if (Array.isArray(value)) {
-    value.forEach((item, index) => checkNoRuntimePromotion(item, errors, `${location}[${index}]`, key));
+    value.forEach((item, index) => checkNoRuntimePromotion(item, errors, `${location}[${index}]`, promotionContext));
     return;
   }
   if (!isRecord(value)) return;
   for (const [childKey, child] of Object.entries(value)) {
     const childLocation = `${location}.${childKey}`;
-    if (/^(?:runtimeStatus|status|result|decision|outcome)$/i.test(childKey) && typeof child === 'string' && PROMOTED_STATES.has(child.toUpperCase())) {
+    const unknownPromotionKey = RUNTIME_PROMOTION_KEY_PATTERN.test(childKey) && !APPROVED_RUNTIME_GOVERNANCE_KEYS.has(childKey);
+    const runtimeAtUnknownLocation = childKey === 'runtime' && childLocation !== '$.b25.runtime';
+    if (unknownPromotionKey || runtimeAtUnknownLocation) {
+      errors.push(`${childLocation} uses an unknown runtime-proof field; D2 candidate documents require an approved governance field`);
+    }
+    const statusLikeKey = /^(?:runtimeStatus|status|result|decision|outcome|state)$/iu.test(childKey);
+    if (typeof child === 'string' && PROMOTED_STATES.has(child.trim().toUpperCase())
+      && (promotionContext || unknownPromotionKey || runtimeAtUnknownLocation || statusLikeKey)) {
       errors.push(`${childLocation} attempts to promote a D2/candidate policy to runtime ${child}`);
     }
-    checkNoRuntimePromotion(child, errors, childLocation, childKey);
+    checkNoRuntimePromotion(child, errors, childLocation, promotionContext || unknownPromotionKey || runtimeAtUnknownLocation);
   }
 }
 
@@ -848,16 +922,38 @@ export function validateGatewaySourceText({ relativePath = '<memory>', content }
   return errors;
 }
 
+export function validateOwnerSourceText({ service, relativePath = '<memory>', content } = {}) {
+  const errors = [];
+  if (!nonEmpty(service)) errors.push(`${relativePath}: owner service is required`);
+  if (typeof content !== 'string') errors.push(`${service ?? '<unknown>'}/${relativePath}: source content must be a string`);
+  if (errors.length > 0) return errors;
+  if (path.extname(relativePath).toLowerCase() === '.sql') {
+    const normalizedPath = relativePath.replaceAll('\\', '/');
+    const migrationMarker = '/db/migration/';
+    const migrationIndex = normalizedPath.indexOf(migrationMarker);
+    const policyFilename = migrationIndex >= 0
+      ? normalizedPath.slice(migrationIndex + migrationMarker.length)
+      : normalizedPath;
+    return validateMigrationSqlText({ service, filename: policyFilename, sql: content });
+  }
+  const expectedSchema = serviceSchemaName(service);
+  for (const foreignSchema of foreignSchemaReferences(content, expectedSchema)) {
+    errors.push(`${service}: cross-service schema reference is forbidden in ${relativePath}: ${foreignSchema}`);
+  }
+  return errors;
+}
+
 function checkServiceSourceIsolation(root, policy, errors) {
   for (const owner of policy.serviceOwners ?? []) {
     if (owner?.dataOwner !== true || !EXPECTED_EXISTING_MIGRATION_SERVICES.includes(owner.service)) continue;
     const sourceRoot = path.join(root, 'services', owner.service, 'src', 'main');
-    const expectedSchema = owner.schema?.name ?? serviceSchemaName(owner.service);
     for (const file of sourceFiles(sourceRoot)) {
       const content = fs.readFileSync(file, 'utf8');
-      for (const foreignSchema of foreignSchemaReferences(content, expectedSchema)) {
-        errors.push(`${owner.service}: cross-service schema reference is forbidden in ${path.relative(root, file)}: ${foreignSchema}`);
-      }
+      errors.push(...validateOwnerSourceText({
+        service: owner.service,
+        relativePath: path.relative(root, file).replaceAll('\\', '/'),
+        content,
+      }));
     }
   }
 
@@ -981,7 +1077,7 @@ if (isCli) {
     }
     const report = validateDataOwnership(options);
     if (options.json || report.result === 'FAIL') console.log(JSON.stringify(report, null, 2));
-    else console.log(`P1R data ownership audit PASS: ${report.summary.totalServices} services, ${report.summary.dataOwners} data owners, ${report.summary.existingMigrationCollections} existing candidate migrations and ${report.summary.plannedMigrationCollections} planned migrations.`);
+    else console.log(`P1R data ownership static/D2 audit PASS (runtimeStatus=${report.summary.runtimeStatus}): ${report.summary.totalServices} services, ${report.summary.dataOwners} data owners, ${report.summary.existingMigrationCollections} existing candidate migrations and ${report.summary.plannedMigrationCollections} planned migrations.`);
     process.exit(report.result === 'PASS' ? 0 : 1);
   } catch (error) {
     console.error(JSON.stringify({ result: 'FAIL', errors: [error instanceof Error ? error.message : String(error)], summary: {} }, null, 2));
