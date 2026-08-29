@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -7,6 +8,7 @@ import {
   validateDataOwnership,
   validateDataOwnershipData,
   validateGatewaySourceText,
+  validateMigrationDirectory,
   validateMigrationSqlText,
 } from '../../scripts/audit/p1r-data-ownership-check.mjs';
 
@@ -341,5 +343,23 @@ test('migration SQL scan rejects ANSI_QUOTES cross-service schema identifiers', 
       sql,
     });
     assert(errors.some((error) => /cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  }
+});
+
+test('migration directory audit recursively discovers and rejects nested unsafe Flyway SQL', () => {
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'p1r-migration-audit-'));
+  try {
+    const nested = path.join(temporaryRoot, 'nested');
+    fs.mkdirSync(nested);
+    fs.writeFileSync(path.join(nested, 'V99__unsafe_nested.sql'), 'INSERT INTO assessment_service.attempts(id) VALUES (1);');
+    const errors = validateMigrationDirectory({
+      service: 'learning-service',
+      directory: temporaryRoot,
+      declaredFileCount: 1,
+    });
+    assert(errors.some((error) => /nested\/V99__unsafe_nested\.sql.*cross-service schema reference is forbidden: assessment_service/.test(error)), errors.join('\n'));
+  } finally {
+    assert(path.resolve(temporaryRoot).startsWith(path.resolve(os.tmpdir())), 'temporary migration root must stay inside the system temp directory');
+    fs.rmSync(temporaryRoot, { recursive: true, force: true });
   }
 });

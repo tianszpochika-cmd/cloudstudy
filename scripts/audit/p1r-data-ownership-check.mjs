@@ -792,20 +792,7 @@ function checkMigrationFiles(root, policy, errors) {
   for (const item of collections) {
     const directory = checkCandidatePath(root, item.path, `${item.service} migration path`, errors, { mustExist: true, directory: true });
     if (!directory) continue;
-    const files = fs.readdirSync(directory, { withFileTypes: true })
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.sql'))
-      .map((entry) => entry.name);
-    add(errors, files.length === item.fileCount, `${item.service} migration fileCount drift: declared ${item.fileCount}, found ${files.length}`);
-    const versions = new Set();
-    for (const file of files) {
-      const match = file.match(/^V(\d+)__([A-Za-z0-9][A-Za-z0-9_-]*)\.sql$/);
-      add(errors, Boolean(match), `${item.service} migration filename is invalid: ${file}`);
-      if (!match) continue;
-      add(errors, !versions.has(match[1]), `${item.service} migration version is duplicated: V${match[1]}`);
-      versions.add(match[1]);
-      const sql = fs.readFileSync(path.join(directory, file), 'utf8');
-      errors.push(...validateMigrationSqlText({ service: item.service, filename: file, sql }));
-    }
+    errors.push(...validateMigrationDirectory({ service: item.service, directory, declaredFileCount: item.fileCount }));
   }
 }
 
@@ -822,6 +809,31 @@ function sourceFiles(directory) {
     }
   }
   return files;
+}
+
+export function validateMigrationDirectory({ service, directory, declaredFileCount } = {}) {
+  const errors = [];
+  if (!nonEmpty(service)) errors.push('migration directory service is required');
+  if (!nonEmpty(directory) || !fs.existsSync(directory) || !fs.statSync(directory).isDirectory()) {
+    errors.push(`${service ?? '<unknown>'} migration directory does not exist: ${directory ?? '<missing>'}`);
+    return errors;
+  }
+  const files = sourceFiles(directory)
+    .filter((file) => path.extname(file).toLowerCase() === '.sql')
+    .sort((left, right) => left.localeCompare(right));
+  add(errors, files.length === declaredFileCount, `${service} migration fileCount drift: declared ${declaredFileCount}, found ${files.length}`);
+  const versions = new Set();
+  for (const file of files) {
+    const relativeFile = path.relative(directory, file).replaceAll('\\', '/');
+    const match = path.basename(file).match(/^V(\d+)__([A-Za-z0-9][A-Za-z0-9_-]*)\.sql$/);
+    add(errors, Boolean(match), `${service} migration filename is invalid: ${relativeFile}`);
+    if (!match) continue;
+    add(errors, !versions.has(match[1]), `${service} migration version is duplicated: V${match[1]}`);
+    versions.add(match[1]);
+    const sql = fs.readFileSync(file, 'utf8');
+    errors.push(...validateMigrationSqlText({ service, filename: relativeFile, sql }));
+  }
+  return errors;
 }
 
 export function validateGatewaySourceText({ relativePath = '<memory>', content } = {}) {
