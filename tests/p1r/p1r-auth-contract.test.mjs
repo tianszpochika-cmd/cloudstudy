@@ -26,12 +26,8 @@ function assertMutationFails(mutate, expected) {
 test('auth audit defaults to the mutable B8 fragment and honors the canonical replay code', () => {
   const report = validateAuthContract({ root });
   assert.equal(report.summary.coveredPathCount, 15);
-  if (report.result === 'FAIL') {
-    assert.equal(report.errors.length, 2);
-    assert(report.errors.every((error) => error.includes('AUTH_REFRESH_REUSE_DETECTED')));
-  } else {
-    assert.deepEqual(report.errors, []);
-  }
+  assert.equal(report.result, 'PASS', report.errors.join('\n'));
+  assert.deepEqual(report.errors, []);
 });
 
 test('normalized in-memory B8 auth contract passes without writing the fragment', () => {
