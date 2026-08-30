@@ -293,6 +293,197 @@ export const M1009_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["components.schemas.B8ConsentState.properties.unsatisfiedPurposes.items.enum", "enum contract changed from unspecified to specified"],
   ["components.schemas.B8ConsentUpdateRequest.properties.type.enum", "new enum value added: VOICE_RECORDING"],
 ]);
+
+export const M1010_ASSESSMENT_PROMOTION_ID = 'M1-010_ASSESSMENT_CONTRACT_PROMOTION';
+export const M1010_SOURCE_CONTRACT_BASELINE_REF = '760621e45b9adc95a6aa40fb1678a8d3ebc87797';
+export const M1010_OPENAPI_SOURCE_SEMANTIC_SHA256 = '4c9e3b197f4ec93977af0afbd98141b30eae62d2401b5a6ce28ab7537ada90d2';
+export const M1010_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'c326a90b2706a91a88b7dd6d865a84ab26a09cb211a68ac6347487c9fcfcec68';
+export const M1010_EVENT_SOURCE_SEMANTIC_SHA256 = 'c12e249d48f85e439634e10e71e94db9be9b96cc1e2bb72e465383efb497840e';
+export const M1010_EVENT_EXPECTED_SEMANTIC_SHA256 = 'bba617d505acd04ac14a2c3c5e261c02e6ab8a075c5c551fe05eabe849024470';
+export const M1010_ASSESSMENT_EVENT_NAMES = Object.freeze([
+  'assessment.attempt.submitted.v1',
+  'assessment.attempt.assessed.v1',
+]);
+const M1010_OPENAPI_APPROVED_PATH_PROJECTIONS = Object.freeze([
+  '/api/v1/assessment/daily-stream',
+  '/api/v1/assessment/sessions',
+  '/api/v1/assessment/sessions/{sessionId}',
+  '/api/v1/assessment/sessions/{sessionId}/answers',
+  '/api/v1/assessment/sessions/{sessionId}/checkpoint',
+  '/api/v1/assessment/sessions/{sessionId}/complete',
+  '/api/v1/exam/sessions',
+  '/api/v1/exam/sessions/{sessionId}/heartbeat',
+  '/api/v1/exam/sessions/{sessionId}/anti-cheat-events',
+  '/api/v1/exam/sessions/{sessionId}/answer-sheet/marks',
+  '/api/v1/exam/sessions/{sessionId}/checkpoint',
+  '/api/v1/exam/sessions/{sessionId}/answers',
+  '/api/v1/exam/sessions/{sessionId}/submit',
+  '/api/v1/assessment/sessions/{sessionId}/attempts',
+  '/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint',
+  '/api/v1/assessment/reports/{reportId}',
+]);
+const M1010_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
+  'B10RuleContract',
+  'B10AssessmentContentSnapshot',
+  'B10AssessmentSession',
+  'B10AttemptSubmission',
+  'B10SubmitAttemptRequest',
+  'B10Attempt',
+  'B10CheckpointRequest',
+  'B10Checkpoint',
+  'B10AssessmentReport',
+  'B10ActiveSessionAttemptPin',
+  'B10RuleVersion',
+  'B10SessionStatus',
+  'B10AttemptStatus',
+  'B10ReportStatus',
+  'B10AssessmentItemRulePin',
+  'B10ReasonTrace',
+  'B10ObjectiveOutcome',
+  'B10SelfRatingOutcome',
+  'B10ManualReviewOutcome',
+  'B10AssessmentOutcome',
+  'B10ChoiceResponse',
+  'B10MatchingPair',
+  'B10MatchingResponse',
+  'B10OrderingResponse',
+  'B10ClozeEntry',
+  'B10ClozeResponse',
+  'B10TextResponse',
+  'B10UnansweredResponse',
+  'B10CandidateResponse',
+  'B10ProtectedDraft',
+  'B10AssessmentSessionCheckpointRequest',
+  'B10AssessmentCheckpoint',
+]);
+const M1010_EVENT_PAYLOAD_SCHEMA_PROJECTIONS = Object.freeze([
+  'B10AssessmentAttemptSubmitted',
+  'B10AssessmentAttemptAssessed',
+]);
+export const M1010_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.x-idempotency","operation x-idempotency contract changed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","new required field: baseStateVersion"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","new required field: checkpointVersion"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","new required field: clientEventId"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","new required field: clientSeq"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","new required field: checkpointDigest"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","new required field: protectedDraft"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","existing required field removed: checkpointSeq"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.required","existing required field removed: clientStateHash"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.description","description contract changed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.properties.checkpointSeq","existing property removed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.properties.currentExerciseId","existing property removed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.properties.clientState","existing property removed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.properties.clientStateHash","existing property removed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/checkpoint.request.properties.monotonicElapsedMs","existing property removed"],
+  ["POST /api/v1/assessment/sessions/{sessionId}/attempts.request.required","new required field: submissionDigest"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint.request.description","description contract changed"],
+  ["PUT /api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint.request.deprecated","deprecated contract changed"],
+  ["components.schemas.B10RuleContract.required","new required field: answerRuleVersion"],
+  ["components.schemas.B10RuleContract.required","existing required field removed: ruleVersion"],
+  ["components.schemas.B10RuleContract.properties.ruleVersion","existing property removed"],
+  ["components.schemas.B10AssessmentContentSnapshot.required","new required field: answerRuleSetVersion"],
+  ["components.schemas.B10AssessmentContentSnapshot.required","existing required field removed: gradingRuleSetVersion"],
+  ["components.schemas.B10AssessmentContentSnapshot.properties.gradingRuleSetVersion","existing property removed"],
+  ["components.schemas.B10AssessmentSession.required","new required field: itemRulePins"],
+  ["components.schemas.B10AssessmentSession.required","new required field: answerRuleSetVersion"],
+  ["components.schemas.B10AssessmentSession.required","new required field: completionRuleVersion"],
+  ["components.schemas.B10AssessmentSession.description","description contract changed"],
+  ["components.schemas.B10AssessmentSession.x-p1r-state-machine","unknown schema keyword or extension changed"],
+  ["components.schemas.B10AssessmentSession.properties.status","type changed from string to <unspecified>"],
+  ["components.schemas.B10AssessmentSession.properties.status.enum","enum contract changed from specified to unspecified"],
+  ["components.schemas.B10AssessmentSession.properties.status.$ref","$ref contract changed"],
+  ["components.schemas.B10AttemptSubmission.required","new required field: responseType"],
+  ["components.schemas.B10AttemptSubmission.required","new required field: responseDigest"],
+  ["components.schemas.B10AttemptSubmission.required","existing required field removed: response"],
+  ["components.schemas.B10AttemptSubmission.description","description contract changed"],
+  ["components.schemas.B10AttemptSubmission.oneOf","oneOf contract changed"],
+  ["components.schemas.B10AttemptSubmission.not","not contract changed"],
+  ["components.schemas.B10AttemptSubmission.properties.response","existing property removed"],
+  ["components.schemas.B10AttemptSubmission.properties.clientSubmissionId","existing property removed"],
+  ["components.schemas.B10SubmitAttemptRequest.required","new required field: submissionDigest"],
+  ["components.schemas.B10Attempt.required","new required field: submissionId"],
+  ["components.schemas.B10Attempt.required","new required field: itemRulePins"],
+  ["components.schemas.B10Attempt.required","new required field: answerRuleSetVersion"],
+  ["components.schemas.B10Attempt.required","new required field: completionRuleVersion"],
+  ["components.schemas.B10Attempt.description","description contract changed"],
+  ["components.schemas.B10Attempt.oneOf","oneOf contract changed"],
+  ["components.schemas.B10Attempt.x-p1r-state-machine","unknown schema keyword or extension changed"],
+  ["components.schemas.B10Attempt.properties.status","type changed from string to <unspecified>"],
+  ["components.schemas.B10Attempt.properties.status.enum","enum contract changed from specified to unspecified"],
+  ["components.schemas.B10Attempt.properties.status.$ref","$ref contract changed"],
+  ["components.schemas.B10Attempt.properties.assessmentVersion","type changed from string to <unspecified>"],
+  ["components.schemas.B10Attempt.properties.assessmentVersion.$ref","$ref contract changed"],
+  ["components.schemas.B10Attempt.properties.assessmentVersion.maxLength","maxLength contract changed"],
+  ["components.schemas.B10Attempt.properties.scoreBucket","existing property removed"],
+  ["components.schemas.B10Attempt.properties.reportId.nullable","nullable contract changed"],
+  ["components.schemas.B10CheckpointRequest.description","description contract changed"],
+  ["components.schemas.B10CheckpointRequest.deprecated","deprecated contract changed"],
+  ["components.schemas.B10Checkpoint.description","description contract changed"],
+  ["components.schemas.B10Checkpoint.deprecated","deprecated contract changed"],
+  ["components.schemas.B10AssessmentReport.required","new required field: sessionId"],
+  ["components.schemas.B10AssessmentReport.required","new required field: attemptVersion"],
+  ["components.schemas.B10AssessmentReport.required","new required field: submissionId"],
+  ["components.schemas.B10AssessmentReport.required","new required field: submissionDigest"],
+  ["components.schemas.B10AssessmentReport.required","new required field: reportRuleVersion"],
+  ["components.schemas.B10AssessmentReport.required","new required field: assessmentVersion"],
+  ["components.schemas.B10AssessmentReport.required","new required field: answerRuleSetVersion"],
+  ["components.schemas.B10AssessmentReport.required","new required field: completionRuleVersion"],
+  ["components.schemas.B10AssessmentReport.required","new required field: itemRulePins"],
+  ["components.schemas.B10AssessmentReport.required","new required field: asOf"],
+  ["components.schemas.B10AssessmentReport.required","new required field: assessmentFactWatermark"],
+  ["components.schemas.B10AssessmentReport.required","existing required field removed: scoreBucket"],
+  ["components.schemas.B10AssessmentReport.required","existing required field removed: mistakeCodes"],
+  ["components.schemas.B10AssessmentReport.description","description contract changed"],
+  ["components.schemas.B10AssessmentReport.oneOf","oneOf contract changed"],
+  ["components.schemas.B10AssessmentReport.x-p1r-state-machine","unknown schema keyword or extension changed"],
+  ["components.schemas.B10AssessmentReport.properties.status","type changed from string to <unspecified>"],
+  ["components.schemas.B10AssessmentReport.properties.status.enum","enum contract changed from specified to unspecified"],
+  ["components.schemas.B10AssessmentReport.properties.status.$ref","$ref contract changed"],
+  ["components.schemas.B10AssessmentReport.properties.scoreBucket","existing property removed"],
+  ["components.schemas.B10AssessmentReport.properties.masterySignal","existing property removed"],
+]);
+export const M1010_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["assessment.attempt.submitted.v1.compatibility","existing compatibility policy changed"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: snapshotId"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: snapshotHash"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: pin"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: submissionId"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: answerRuleSetVersion"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: answerRuleVersion"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: ruleDigest"],
+  ["assessment.attempt.submitted.v1.payload.required","new required field: completionRuleVersion"],
+  ["assessment.attempt.submitted.v1.payload.required","existing required field removed: contentSnapshotId"],
+  ["assessment.attempt.submitted.v1.payload.required","existing required field removed: gradingRuleVersion"],
+  ["assessment.attempt.assessed.v1.compatibility","existing compatibility policy changed"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: contentEpoch"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: snapshotId"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: snapshotHash"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: pin"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: submissionId"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: submissionDigest"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: answerRuleSetVersion"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: answerRuleVersion"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: ruleDigest"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: completionRuleVersion"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: reportId"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: reportVersion"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: reportRuleVersion"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: reportStatus"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: reportDigest"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: asOf"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: assessmentFactWatermark"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: outcomeKind"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: objectiveNumerator"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: objectiveDenominator"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: errorCategory"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: reasonTrace"],
+  ["assessment.attempt.assessed.v1.payload.required","new required field: outcomeDigest"],
+  ["assessment.attempt.assessed.v1.payload.required","existing required field removed: contentSnapshotId"],
+  ["assessment.attempt.assessed.v1.payload.required","existing required field removed: masterySignal"],
+  ["assessment.attempt.assessed.v1.payload.properties.scoreBucket.enum","existing enum value removed: PENDING_REVIEW"],
+  ["assessment.attempt.assessed.v1.payload.properties.masterySignal","existing property removed"],
+]);
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -619,6 +810,60 @@ export function buildM1009OpenApiExpectedProjection(previous, approved, allowanc
     && applyApprovedOpenApiProjection(expected.components?.responses, approved.components?.responses, M1009_OPENAPI_APPROVED_RESPONSE_PROJECTIONS)
     && applyApprovedOpenApiProjection(expected, approved, M1009_OPENAPI_APPROVED_ROOT_PROJECTIONS)
     && applyApprovedOpenApiTags(expected.tags, approved.tags, M1009_OPENAPI_APPROVED_TAGS);
+  return projected ? expected : undefined;
+}
+
+function isValidM1010PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && allowance.id === M1010_ASSESSMENT_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1010_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1009_MEDIA_PROMOTION_ID
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_AND_HISTORICAL_EVENT_PAYLOADS'
+    && allowance.eventCatalogDecision === 'HISTORICAL_PAYLOADS_ONLY_NO_CANONICAL_PROMOTION'
+    && allowance.canonicalFragment === 'packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json'
+    && allowance.legacyAdapterFragment === 'packages/contracts/fragments/b2-assessment-mastery.openapi.json'
+    && allowance.historicalEventFragment === 'packages/contracts/events/v1/fragments/b10-learning-assessment.events.json';
+}
+
+/**
+ * Rebuild the only approved M1-010 OpenAPI projection from the accepted
+ * 760621e M1-009 checkpoint. The allowlist limits which complete path/schema
+ * nodes may change; the semantic digest below fixes every nested value.
+ */
+export function buildM1010OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1010PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = applyApprovedOpenApiProjection(expected.paths, approved.paths, M1010_OPENAPI_APPROVED_PATH_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.schemas, approved.components?.schemas, M1010_OPENAPI_APPROVED_SCHEMA_PROJECTIONS);
+  return projected ? expected : undefined;
+}
+
+function applyApprovedEventEntries(target, approved, eventNames) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const targetByName = new Map(target.map((event, index) => [event?.eventName, { event, index }]));
+  const approvedByName = new Map(approved.map((event) => [event?.eventName, event]));
+  if (targetByName.size !== target.length || approvedByName.size !== approved.length) return false;
+  for (const eventName of eventNames) {
+    const targetEntry = targetByName.get(eventName);
+    const approvedEvent = approvedByName.get(eventName);
+    if (!targetEntry || !isRecord(approvedEvent)) return false;
+    target[targetEntry.index] = structuredClone(approvedEvent);
+  }
+  return true;
+}
+
+/**
+ * M1-010 intentionally does not promote assessment events. It may only replace
+ * the two historical event entries and their payload schemas with the frozen
+ * objective-only, learner-safe projection; AsyncAPI and platform governance
+ * remain byte-for-byte semantic descendants of the accepted source.
+ */
+export function buildM1010EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1010PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = applyApprovedEventEntries(expected.events, approved.events, M1010_ASSESSMENT_EVENT_NAMES)
+    && applyApprovedOpenApiProjection(expected.payloadSchemas, approved.payloadSchemas, M1010_EVENT_PAYLOAD_SCHEMA_PROJECTIONS);
   return projected ? expected : undefined;
 }
 
@@ -1007,6 +1252,77 @@ function compareM1009OpenApiPromotion(previous, current, allowance) {
   return changes;
 }
 
+function compareFrozenDescriptorSet(kind, previous, current, expected, location, message) {
+  const actual = (kind === 'openapi' ? compareOpenApi(previous, current) : compareEvents(previous, current))
+    .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
+  const frozen = expected
+    .map(([entryLocation, reason]) => describeChange(kind, entryLocation, reason))
+    .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
+  return stableGovernanceValue(actual) === stableGovernanceValue(frozen)
+    ? []
+    : [describeChange(kind, location, message)];
+}
+
+function compareM1010OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1010PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-010.openapiPromotion', 'M1-010 promotion allowance cannot be applied without the frozen assessment policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1010_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-010.openapiPromotion.source', 'M1-010 OpenAPI promotion source is not the frozen 760621e M1-009 evidence projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'openapi',
+    previous,
+    current,
+    M1010_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-010.openapiPromotion.change-descriptors',
+    'current OpenAPI changes do not exactly match the frozen M1-010 descriptor set',
+  ));
+  const expectedProjection = buildM1010OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-010.openapiPromotion.projection', 'the approved B2/B10 assessment projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1010_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-010.openapiPromotion.expected-projection', 'the allowlisted M1-010 OpenAPI projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-010.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source assessment projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1010EventPromotion(previous, current, allowance) {
+  if (!isValidM1010PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-010.eventPromotion', 'M1-010 event allowance cannot be applied without the frozen assessment policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1010_EVENT_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'm1-010.eventPromotion.source', 'M1-010 event source is not the frozen 760621e M1-009 evidence projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1010_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-010.eventPromotion.change-descriptors',
+    'current event changes do not exactly match the frozen M1-010 descriptor set',
+  ));
+  const expectedProjection = buildM1010EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-010.eventPromotion.projection', 'the approved historical assessment-event projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1010_EVENT_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'm1-010.eventPromotion.expected-projection', 'the allowlisted M1-010 event projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'm1-010.eventPromotion.projection', 'current event catalog is not the unique frozen-source historical payload projection'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -1260,6 +1576,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1010_ASSESSMENT_PROMOTION_ID) {
+    return compareM1010EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
     return compareM1008Promotion(previous, current, allowance);
   }
@@ -1377,6 +1696,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1010_ASSESSMENT_PROMOTION_ID) {
+      return compareM1010OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
       return compareM1008OpenApiPromotion(previous, current, allowance);
     }

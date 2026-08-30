@@ -41,7 +41,7 @@
       ],
       "sourceMarker": "GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json",
       "expectedOperationCount": 386,
-      "expectedSchemaCount": 579
+      "expectedSchemaCount": 601
     },
     "asyncapi": {
       "canonicalPath": "packages/contracts/events/v1/catalog.json",

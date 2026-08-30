@@ -131,21 +131,27 @@ function generateEventTypes(catalog) {
 
 function generateApiClientTypes(document) {
   const operations = [];
-  const responseTypes = new Set();
+  const operationTypes = new Set();
   const schemaNames = new Set(Object.keys(document.components?.schemas ?? {}));
+  const collectReferencedSchemaTypes = (typeName) => {
+    const referencedSchemaNames = typeName.match(/\b[A-Za-z_$][A-Za-z0-9_$]*\b/g) ?? [];
+    for (const referencedSchemaName of referencedSchemaNames) {
+      if (schemaNames.has(referencedSchemaName)) operationTypes.add(referencedSchemaName);
+    }
+  };
   for (const [route, pathItem] of Object.entries(document.paths ?? {})) {
     for (const [method, operation] of Object.entries(pathItem)) {
       if (!isHttpMethod(method)) continue;
       const response = Object.values(operation.responses ?? {}).find((candidate) => candidate?.content?.['application/json']?.schema);
+      const request = operation.requestBody?.content?.['application/json']?.schema;
+      const requestType = request ? schemaToTs(document, request) : 'never';
       const responseType = response ? schemaToTs(document, response.content['application/json'].schema) : 'unknown';
-      const referencedSchemaNames = responseType.match(/\b[A-Za-z_$][A-Za-z0-9_$]*\b/g) ?? [];
-      for (const referencedSchemaName of referencedSchemaNames) {
-        if (schemaNames.has(referencedSchemaName)) responseTypes.add(referencedSchemaName);
-      }
-      operations.push(`  ${operation.operationId}: { method: ${JSON.stringify(method.toUpperCase())}; path: ${JSON.stringify(route)}; response: ${responseType}; };`);
+      collectReferencedSchemaTypes(requestType);
+      collectReferencedSchemaTypes(responseType);
+      operations.push(`  ${operation.operationId}: { method: ${JSON.stringify(method.toUpperCase())}; path: ${JSON.stringify(route)}; request: ${requestType}; requestBodyRequired: ${String(operation.requestBody?.required === true)}; response: ${responseType}; };`);
     }
   }
-  const imports = responseTypes.size > 0 ? `import type { ${[...responseTypes].sort().join(', ')} } from '@englishflow/contracts';\n\n` : '';
+  const imports = operationTypes.size > 0 ? `import type { ${[...operationTypes].sort().join(', ')} } from '@englishflow/contracts';\n\n` : '';
   return `/* eslint-disable */\n// GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json\n\n${imports}export interface GeneratedApiOperationRegistry {\n${operations.join('\n')}\n}\n\nexport type GeneratedApiOperationId = keyof GeneratedApiOperationRegistry;\n`;
 }
 

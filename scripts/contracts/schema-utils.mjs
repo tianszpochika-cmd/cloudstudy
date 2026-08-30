@@ -77,6 +77,15 @@ function addNullable(typeName, schema) {
   return `${typeName} | null`;
 }
 
+function singleFieldNotRequiredClauses(schema) {
+  const clauses = Array.isArray(schema?.not?.anyOf)
+    ? schema.not.anyOf
+    : Array.isArray(schema?.not?.required) ? [schema.not] : [];
+  return [...new Set(clauses.flatMap((clause) => (
+    Array.isArray(clause?.required) && clause.required.length === 1 ? clause.required : []
+  )))];
+}
+
 function schemaBaseToTs(document, schema) {
   if (Array.isArray(schema.type)) {
     const types = schema.type.map((type) => schemaBaseToTs(document, { ...schema, type }));
@@ -97,7 +106,14 @@ function schemaBaseToTs(document, schema) {
   }
 
   if (schema.type === 'object' || schema.properties || schema.additionalProperties !== undefined) {
-    const properties = schema.properties ?? {};
+    const properties = { ...(schema.properties ?? {}) };
+    for (const field of singleFieldNotRequiredClauses(schema)) {
+      // Project the common JSON Schema `not: { required: [field] }` safeguard
+      // into a structural TypeScript constraint too. This matters for values
+      // assembled through variables or object spread, where excess-property
+      // checks alone cannot prevent client-owned authority fields.
+      properties[field] = { enum: [] };
+    }
     const required = new Set(schema.required ?? []);
     const fields = Object.entries(properties).map(([name, propertySchema]) => {
       const optional = required.has(name) ? '' : '?';
@@ -132,6 +148,12 @@ function compositionVariantToTs(document, variant, parentSchema) {
   const variantProperties = variant.properties ?? {};
   const parentRequired = new Set(parentSchema?.required ?? []);
   const variantRequired = new Set(variant.required ?? []);
+  const discriminator = parentSchema?.discriminator?.propertyName;
+  if (typeof discriminator === 'string' && parentRequired.has(discriminator)) {
+    // A source-required discriminator must remain required in every inline
+    // branch so the emitted union keeps its reliable narrowing key.
+    variantRequired.add(discriminator);
+  }
   for (const field of Object.keys(variantProperties)) {
     if (parentRequired.has(field)) variantRequired.add(field);
   }
@@ -141,23 +163,23 @@ function compositionVariantToTs(document, variant, parentSchema) {
       inheritedRequiredProperties[field] = parentProperties[field];
     }
   }
-  const forbiddenFields = [];
-  const forbiddenClauses = Array.isArray(variant.not?.anyOf)
-    ? variant.not.anyOf
-    : variant.not?.required ? [variant.not] : [];
-  for (const clause of forbiddenClauses) {
-    if (Array.isArray(clause?.required) && clause.required.length === 1) {
-      forbiddenFields.push(clause.required[0]);
+  const forbiddenFields = new Set(singleFieldNotRequiredClauses(variant));
+  if (parentSchema?.additionalProperties === false && variant.additionalProperties === false) {
+    for (const field of Object.keys(parentProperties)) {
+      if (!Object.hasOwn(variantProperties, field) && !Object.hasOwn(inheritedRequiredProperties, field)) {
+        // Both schemas are closed. A parent property omitted by this branch is
+        // rejected by JSON Schema, so model it as `?: never` rather than
+        // leaving a sibling payload field structurally assignable.
+        forbiddenFields.add(field);
+      }
     }
   }
   const forbiddenProperties = {};
   for (const field of forbiddenFields) {
-    if (!Object.hasOwn(variantProperties, field) && Object.hasOwn(parentProperties, field)) {
-      // An empty enum is the internal schema representation of TypeScript
-      // never. The source schema remains untouched; this only projects the
-      // common `not: { required: [...] }` pattern into `field?: never`.
-      forbiddenProperties[field] = { enum: [] };
-    }
+    // An empty enum is the internal schema representation of TypeScript never.
+    // The source schema remains untouched; this projects closed sibling fields
+    // and the common `not: { required: [...] }` pattern into `field?: never`.
+    forbiddenProperties[field] = { enum: [] };
   }
   if (Object.keys(inheritedRequiredProperties).length === 0
     && Object.keys(forbiddenProperties).length === 0
@@ -167,7 +189,7 @@ function compositionVariantToTs(document, variant, parentSchema) {
   return schemaToTs(document, {
     ...variant,
     required: [...variantRequired],
-    properties: { ...inheritedRequiredProperties, ...forbiddenProperties, ...variantProperties },
+    properties: { ...inheritedRequiredProperties, ...variantProperties, ...forbiddenProperties },
   });
 }
 

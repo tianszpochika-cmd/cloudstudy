@@ -3300,12 +3300,18 @@
         "attemptId",
         "sessionId",
         "contentVersionId",
-        "contentSnapshotId",
         "contentEpoch",
+        "snapshotId",
+        "snapshotHash",
+        "pin",
         "attemptVersion",
+        "submissionId",
         "submissionDigest",
         "itemCount",
-        "gradingRuleVersion",
+        "answerRuleSetVersion",
+        "answerRuleVersion",
+        "ruleDigest",
+        "completionRuleVersion",
         "submittedAt"
       ],
       "properties": {
@@ -3339,9 +3345,51 @@
           "format": "int64",
           "minimum": 0
         },
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "snapshotHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "pin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
+          "properties": {
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          }
+        },
         "attemptVersion": {
           "type": "integer",
           "minimum": 1
+        },
+        "submissionId": {
+          "type": "string",
+          "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$"
         },
         "submissionDigest": {
           "type": "string",
@@ -3351,6 +3399,22 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 1000
+        },
+        "answerRuleSetVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "answerRuleVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "ruleDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "completionRuleVersion": {
+          "type": "string",
+          "maxLength": 96
         },
         "gradingRuleVersion": {
           "type": "string",
@@ -3372,11 +3436,32 @@
         "attemptId",
         "sessionId",
         "contentVersionId",
-        "contentSnapshotId",
+        "contentEpoch",
+        "snapshotId",
+        "snapshotHash",
+        "pin",
         "attemptVersion",
+        "submissionId",
+        "submissionDigest",
+        "answerRuleSetVersion",
+        "answerRuleVersion",
+        "ruleDigest",
+        "completionRuleVersion",
         "assessmentVersion",
+        "reportId",
+        "reportVersion",
+        "reportRuleVersion",
+        "reportStatus",
+        "reportDigest",
+        "asOf",
+        "assessmentFactWatermark",
+        "outcomeKind",
+        "objectiveNumerator",
+        "objectiveDenominator",
         "scoreBucket",
-        "masterySignal",
+        "errorCategory",
+        "reasonTrace",
+        "outcomeDigest",
         "mistakeCodes",
         "assessedAt"
       ],
@@ -3406,32 +3491,200 @@
           "type": "string",
           "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
         },
+        "contentEpoch": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "snapshotHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "pin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
+          "properties": {
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          }
+        },
         "attemptVersion": {
           "type": "integer",
           "minimum": 1
         },
+        "submissionId": {
+          "type": "string",
+          "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "submissionDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "answerRuleSetVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "answerRuleVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "ruleDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "completionRuleVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
         "assessmentVersion": {
           "type": "string",
           "maxLength": 96
+        },
+        "reportId": {
+          "type": "string",
+          "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "reportVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reportRuleVersion": {
+          "type": "string",
+          "maxLength": 96
+        },
+        "reportStatus": {
+          "type": "string",
+          "enum": [
+            "READY",
+            "PARTIAL",
+            "FAILED"
+          ]
+        },
+        "reportDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "asOf": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assessmentFactWatermark": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "outcomeKind": {
+          "type": "string",
+          "enum": [
+            "OBJECTIVE"
+          ]
+        },
+        "objectiveNumerator": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "objectiveDenominator": {
+          "type": "integer",
+          "minimum": 1
         },
         "scoreBucket": {
           "type": "string",
           "enum": [
             "ZERO",
             "PARTIAL",
-            "FULL",
-            "PENDING_REVIEW"
+            "FULL"
           ]
         },
-        "masterySignal": {
+        "errorCategory": {
           "type": "string",
           "enum": [
-            "NO_SIGNAL",
-            "WEAK",
-            "STABLE",
-            "MASTERED",
-            "RETRY"
+            "NONE",
+            "CHOICE",
+            "MATCHING",
+            "ORDERING",
+            "CLOZE",
+            "TEXT",
+            "CONTENT",
+            "RULE"
           ]
+        },
+        "reasonTrace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleCode",
+              "ruleVersion",
+              "category"
+            ],
+            "properties": {
+              "itemId": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1
+              },
+              "ruleCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "ruleVersion": {
+                "type": "string",
+                "maxLength": 96
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "NONE",
+                  "CHOICE",
+                  "MATCHING",
+                  "ORDERING",
+                  "CLOZE",
+                  "TEXT",
+                  "CONTENT",
+                  "RULE"
+                ]
+              },
+              "reasonCode": {
+                "type": "string",
+                "maxLength": 96
+              },
+              "evidenceRef": {
+                "type": "string",
+                "pattern": "^evidence:[A-Za-z0-9._:-]{3,191}$"
+              }
+            }
+          },
+          "maxItems": 128
+        },
+        "outcomeDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
         },
         "mistakeCodes": {
           "type": "array",
@@ -7713,7 +7966,6 @@
     },
     {
       "eventName": "assessment.attempt.submitted.v1",
-      "status": "HISTORICAL_CANDIDATE",
       "domain": "assessment",
       "version": 1,
       "schema": "assessment.event.v1",
@@ -7740,12 +7992,12 @@
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish assessment.attempt.submitted.v2",
-        "consumerRule": "按 attemptId/attemptVersion/submissionDigest 去重；payload 只含版本、摘要和规则元数据，不含原始作答或答案规则值。"
-      }
+        "consumerRule": "按 attemptId/attemptVersion/submissionDigest 去重；payload 只含 immutable pin、提交摘要和版本元数据，不含原始作答、答案规则或录音。"
+      },
+      "status": "HISTORICAL_CANDIDATE"
     },
     {
       "eventName": "assessment.attempt.assessed.v1",
-      "status": "HISTORICAL_CANDIDATE",
       "domain": "assessment",
       "version": 1,
       "schema": "assessment.event.v1",
@@ -7772,8 +8024,9 @@
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish assessment.attempt.assessed.v2",
-        "consumerRule": "learning-service 只按 attemptId/assessmentVersion 应用一次；scoreBucket、mistakeCodes 和 masterySignal 是脱敏结果摘要。"
-      }
+        "consumerRule": "learning-service 只按 attemptId/assessmentVersion/outcomeDigest 应用一次，并自行决定是否投影 mastery/SRS；assessment 事件不携带或授权 mastery。"
+      },
+      "status": "HISTORICAL_CANDIDATE"
     },
     {
       "eventName": "learning.mastery.projected.v1",

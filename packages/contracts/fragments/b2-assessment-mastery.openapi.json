@@ -21,6 +21,18 @@
         ],
         "operationId": "getB2DailyStream",
         "summary": "获取已物化的 4:4:2 日流",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "getTodayLearningStream",
+          "legacyReadOnly": true,
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-006",
           "DEV-05-005"
@@ -83,6 +95,21 @@
         ],
         "operationId": "createB2AssessmentSession",
         "summary": "创建练习或阶段验收会话",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "createB10AssessmentSession",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "createB10AssessmentSession",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-001",
           "DEV-05-004",
@@ -159,6 +186,18 @@
         ],
         "operationId": "getB2AssessmentSession",
         "summary": "恢复练习会话和答案卡状态",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "getB10AssessmentSession",
+          "legacyReadOnly": true,
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B2SessionId"
@@ -214,6 +253,22 @@
         ],
         "operationId": "submitB2AssessmentAnswer",
         "summary": "提交练习答案并即时规则判分",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "submitB10AssessmentAttempt",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Legacy per-answer writes cannot create a canonical attempt until a protected final submission is formed.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-004",
           "DEV-05-007"
@@ -295,6 +350,22 @@
         ],
         "operationId": "saveB2AssessmentCheckpoint",
         "summary": "保存可恢复断点",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "putB10AssessmentSessionCheckpoint",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "putB10AssessmentSessionCheckpoint",
+          "translationBoundary": "Only a pre-submission protected draft with compatible state/digest/version may be translated.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-005"
         ],
@@ -372,6 +443,22 @@
         ],
         "operationId": "completeB2AssessmentSession",
         "summary": "完成练习会话并结算",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "submitB10AssessmentAttempt",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Completion is translated only as a protected canonical submission; score, mastery and rewards remain server-derived.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "assessment-complete",
@@ -558,6 +645,24 @@
         ],
         "operationId": "createB2ExamSession",
         "summary": "创建并启动模考会话",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "createB10AssessmentSession",
+          "translationBoundary": "A canonical session must be created with server-derived MOCK eligibility, content pin and completion rule; no B2 exam state is canonical.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-010"
         ],
@@ -687,6 +792,24 @@
         ],
         "operationId": "b2ExamHeartbeat",
         "summary": "上报活动和设备时间元数据",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "NONE",
+          "translationBoundary": "Historical telemetry has no canonical assessment replacement and cannot create session, attempt, score, reward, mastery or enforcement facts.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "exam-heartbeat",
@@ -758,6 +881,30 @@
         ],
         "operationId": "recordB2AntiCheatEvent",
         "summary": "记录切屏、失焦、设备或时钟异常元数据",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_NON_AUTHORITATIVE",
+          "nextTask": "FUTURE_RISK_PRIVACY_APPEAL",
+          "classification": "HISTORICAL_NON_AUTHORITATIVE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "NONE",
+          "authority": "HISTORICAL_TELEMETRY_ONLY",
+          "forbiddenEffects": [
+            "score",
+            "reward",
+            "ban"
+          ],
+          "translationBoundary": "Phase 1 anti-cheat telemetry is non-authoritative and cannot change score, reward, mastery, entitlement, account status or a ban decision.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-011"
         ],
@@ -898,6 +1045,24 @@
         ],
         "operationId": "updateB2AnswerSheetMark",
         "summary": "幂等更新疑问标记",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "NONE",
+          "translationBoundary": "A legacy doubt marker is not a canonical assessment response, outcome or report fact.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "answer-sheet-mark",
@@ -983,6 +1148,24 @@
         ],
         "operationId": "saveB2ExamCheckpoint",
         "summary": "保存模考断点，计时不暂停",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "putB10AssessmentSessionCheckpoint",
+          "translationBoundary": "Only a pre-submission protected draft with compatible base state, checkpoint version and digest may be translated; legacy timing remains non-canonical.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "exam-checkpoint",
@@ -1057,6 +1240,24 @@
         ],
         "operationId": "submitB2ExamAnswer",
         "summary": "保存模考答案修订，交卷前不返回判分",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Legacy answer revisions can be translated only as part of one protected final submission; they do not independently create a canonical score or attempt.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-010"
         ],
@@ -1134,6 +1335,24 @@
         ],
         "operationId": "submitB2Exam",
         "summary": "交卷并生成可复算报告",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Only an eligible protected canonical submission may be translated; report/outcome facts are then server-derived by assessment-service.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "exam-submit",

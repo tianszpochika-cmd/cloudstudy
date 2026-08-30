@@ -11,6 +11,8 @@ import {
   M1008_CONTENT_PROMOTION_ID,
   M1009_MEDIA_PROMOTION_ID,
   M1009_SOURCE_CONTRACT_BASELINE_REF,
+  M1010_ASSESSMENT_PROMOTION_ID,
+  M1010_SOURCE_CONTRACT_BASELINE_REF,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -28,11 +30,13 @@ const contractPaths = {
 const b26RuntimePath = 'config/b26-event-runtime.json';
 const contentLifecyclePolicyPath = 'config/p1r-content-lifecycle.v1.json';
 const mediaContractPolicyPath = 'config/p1r-media-contract.v1.json';
+const assessmentContractPolicyPath = 'config/p1r-assessment-contract.v1.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
 export const REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF = M1008_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF = M1009_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF = M1010_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -441,6 +445,39 @@ function loadM1009CompatibilityPolicy(readFile) {
   return Object.freeze({ ...policy.compatibilityPromotion });
 }
 
+export function validateM1010CompatibilityPolicy(policy) {
+  const errors = [];
+  exactPolicyValue(policy?.task, 'P1R-M1-010', 'assessment contract policy task', errors);
+  exactPolicyValue(policy?.maturity, 'D2_CONTRACT_READY', 'assessment contract policy maturity', errors);
+  exactPolicyValue(policy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'assessment contract policy runtimeStatus', errors);
+  exactPolicyValue(policy?.compatibilityPromotion, {
+    id: M1010_ASSESSMENT_PROMOTION_ID,
+    sourceContractBaseline: REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    previousPromotion: M1009_MEDIA_PROMOTION_ID,
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+    scope: 'OPENAPI_AND_HISTORICAL_EVENT_PAYLOADS',
+    eventCatalogDecision: 'HISTORICAL_PAYLOADS_ONLY_NO_CANONICAL_PROMOTION',
+    canonicalFragment: 'packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json',
+    legacyAdapterFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json',
+    historicalEventFragment: 'packages/contracts/events/v1/fragments/b10-learning-assessment.events.json',
+  }, 'M1-010 compatibility promotion', errors);
+  return errors;
+}
+
+function loadM1010CompatibilityPolicy(readFile) {
+  let policy;
+  try {
+    policy = JSON.parse(readFile(path.join(repoRoot, ...assessmentContractPolicyPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M1-010 compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM1010CompatibilityPolicy(policy);
+  if (errors.length > 0) {
+    throw new Error(`M1-010 compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({ ...policy.compatibilityPromotion });
+}
+
 function loadImmutableGovernanceBaseline(governanceRef, git) {
   if (governanceRef !== REQUIRED_EVENT_GOVERNANCE_BASELINE_REF) {
     throw new Error(
@@ -510,6 +547,23 @@ function loadM1009SourceContractBaseline(promotion, git) {
   };
 }
 
+function loadM1010SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M1-010 source contract ref ${REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  return {
+    ref,
+    commit,
+    openapi: JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`])),
+    catalog: JSON.parse(git(['show', `${commit}:${contractPaths.events}`])),
+    source: `git:${commit}:packages/contracts/{openapi/v1/openapi.json,events/v1/catalog.json}`,
+  };
+}
+
 export function runGitBaselineCompatibility({
   ref,
   kind = 'all',
@@ -525,7 +579,9 @@ export function runGitBaselineCompatibility({
   const baselineCommit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
   const currentCommit = git(['rev-parse', '--verify', 'HEAD^{commit}']).trim();
   const needsM1008Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM1010Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1009Promotion = selectedKinds.includes('openapi');
+  const needsM1009Policy = needsM1009Promotion || needsM1010Promotion;
   const needsEventGovernance = selectedKinds.includes('events');
   const immutableGovernanceBaseline = needsEventGovernance
     ? loadImmutableGovernanceBaseline(governanceRef, git)
@@ -539,11 +595,17 @@ export function runGitBaselineCompatibility({
       includeEvents: needsEventGovernance,
     })
     : undefined;
-  const mediaPromotion = needsM1009Promotion
+  const mediaPromotion = needsM1009Policy
     ? loadM1009CompatibilityPolicy(readFile)
     : undefined;
-  const mediaSourceContractBaseline = needsM1009Promotion
+  const mediaSourceContractBaseline = needsM1009Policy
     ? loadM1009SourceContractBaseline(mediaPromotion, git)
+    : undefined;
+  const assessmentPromotion = needsM1010Promotion
+    ? loadM1010CompatibilityPolicy(readFile)
+    : undefined;
+  const assessmentSourceContractBaseline = needsM1010Promotion
+    ? loadM1010SourceContractBaseline(assessmentPromotion, git)
     : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
@@ -562,11 +624,34 @@ export function runGitBaselineCompatibility({
     REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
   ]);
   const useM1009Promotion = needsM1009Promotion && m1009BaselineRefs.has(baselineCommit);
+  const m1010BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM1010Promotion = needsM1010Promotion && m1010BaselineRefs.has(baselineCommit);
   const m1008ToM1009IntegrityChanges = needsM1009Promotion
     ? compareContracts(
       'openapi',
       sourceContractBaseline.openapi,
       mediaSourceContractBaseline.openapi,
+      { allowance: promotion },
+    )
+    : [];
+  const m1009ToM1010OpenApiIntegrityChanges = needsM1009Promotion
+    ? compareContracts(
+      'openapi',
+      mediaSourceContractBaseline.openapi,
+      assessmentSourceContractBaseline.openapi,
+      { allowance: mediaPromotion },
+    )
+    : [];
+  const m1008ToM1010EventIntegrityChanges = needsEventGovernance
+    ? compareContracts(
+      'events',
+      sourceContractBaseline.catalog,
+      assessmentSourceContractBaseline.catalog,
       { allowance: promotion },
     )
     : [];
@@ -592,7 +677,59 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1009Promotion) {
+    if (contractKind === 'openapi' && useM1010Promotion) {
+      breakingChanges = [
+        ...m1008ToM1009IntegrityChanges,
+        ...m1009ToM1010OpenApiIntegrityChanges,
+        ...compareContracts(
+          'openapi',
+          assessmentSourceContractBaseline.openapi,
+          current,
+          { allowance: assessmentPromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: assessmentPromotion.id,
+        sourceContractBaseline: assessmentSourceContractBaseline.commit,
+        previousPromotion: mediaPromotion.id,
+        previousPromotionSource: mediaSourceContractBaseline.commit,
+        scope: 'explicit-openapi-and-historical-event-payloads',
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'events' && useM1010Promotion) {
+      const currentB26 = JSON.parse(readFile(path.join(repoRoot, ...b26RuntimePath.split('/'))));
+      breakingChanges = [
+        ...m1008ToM1010EventIntegrityChanges,
+        ...compareContracts(
+          'events',
+          assessmentSourceContractBaseline.catalog,
+          current,
+          { allowance: assessmentPromotion },
+        ),
+        ...compareB26WorkflowGovernance(
+          immutableGovernanceBaseline.b26Runtime,
+          currentB26,
+          { allowance: promotion },
+        ),
+        ...immutableBaselineIntegrityChanges,
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      resultGovernanceBaseline = governanceSummary;
+      promotionResult = {
+        id: assessmentPromotion.id,
+        sourceContractBaseline: assessmentSourceContractBaseline.commit,
+        previousPromotion: mediaPromotion.id,
+        previousPromotionSource: mediaSourceContractBaseline.commit,
+        immutableGovernanceBaseline: immutableGovernanceBaseline.commit,
+        scope: 'explicit-openapi-and-historical-event-payloads',
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1009Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...compareContracts(
@@ -700,7 +837,16 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1009Promotion
+    promotion: useM1010Promotion
+      ? {
+        id: assessmentPromotion.id,
+        sourceContractBaseline: assessmentSourceContractBaseline.commit,
+        previousPromotion: mediaPromotion.id,
+        previousPromotionSource: mediaSourceContractBaseline.commit,
+        runtimeStatus: assessmentPromotion.runtimeStatus,
+        scope: 'explicit-openapi-and-historical-event-payloads',
+      }
+      : useM1009Promotion
       ? {
         id: mediaPromotion.id,
         sourceContractBaseline: mediaSourceContractBaseline.commit,

@@ -3408,6 +3408,18 @@
         ],
         "operationId": "getB2DailyStream",
         "summary": "获取已物化的 4:4:2 日流",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "getTodayLearningStream",
+          "legacyReadOnly": true,
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-006",
           "DEV-05-005"
@@ -3480,6 +3492,41 @@
           "contentSource": "content-service protected snapshot",
           "pinRule": "server resolves and persists the contentVersionId/contentEpoch/snapshotHash pin"
         },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.create",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "serverDerivedResourceOwner": true,
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": [
+            "rawResponse",
+            "answerKey",
+            "answerRule",
+            "ruleDigest",
+            "recording",
+            "recordingUrl"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "assessment.session.created.v1",
+          "correlation": "canonical-request-and-trace-ids",
+          "redacted": [
+            "request.body.clientSessionRef",
+            "sealedRuleReference",
+            "answerKey"
+          ],
+          "logBoundary": "Only correlation, authorization decision, immutable pin identifiers and outcome codes may be logged; protected rules and answer-bearing values are prohibited."
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "b10-assessment-session-start",
@@ -3488,7 +3535,14 @@
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B10IdempotencyKey"
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 192
+            }
           }
         ],
         "requestBody": {
@@ -3573,6 +3627,42 @@
           "resourceOwner": "authenticated principal",
           "answerProtection": "session state and learner-safe items only"
         },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived session owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": [
+            "rawResponse",
+            "answerKey",
+            "answerRule",
+            "ruleDigest",
+            "recording",
+            "recordingUrl"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "assessment.session.read.v1",
+          "correlation": "canonical-request-and-trace-ids",
+          "redacted": [
+            "sealedRuleReference",
+            "answerKey",
+            "protectedDraft",
+            "rawResponse"
+          ],
+          "logBoundary": "Session reads are learner-safe; raw responses, protected drafts and sealed rule references must not enter audit payloads or logs."
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B10SessionId"
@@ -3634,6 +3724,22 @@
         ],
         "operationId": "submitB2AssessmentAnswer",
         "summary": "提交练习答案并即时规则判分",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "submitB10AssessmentAttempt",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Legacy per-answer writes cannot create a canonical attempt until a protected final submission is formed.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-004",
           "DEV-05-007"
@@ -3711,25 +3817,110 @@
     "/api/v1/assessment/sessions/{sessionId}/checkpoint": {
       "put": {
         "tags": [
-          "b2-assessment"
+          "b10-assessment"
         ],
-        "operationId": "saveB2AssessmentCheckpoint",
-        "summary": "保存可恢复断点",
-        "x-b2-acceptance": [
-          "DEV-05-005"
+        "summary": "Persist a protected pre-submission draft at the canonical assessment-session boundary",
+        "operationId": "putB10AssessmentSessionCheckpoint",
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
+        "x-contract": {
+          "owner": "assessment-service",
+          "canonical": true,
+          "checkpointScope": "PRE_SUBMISSION_SESSION_DRAFT",
+          "protectedDraft": "Encrypted or otherwise protected at rest; it is readable only by the session owner and scoring boundary and is never emitted to Outbox, analytics or logs.",
+          "writeAllowedSessionStates": [
+            "CREATED",
+            "IN_PROGRESS",
+            "INTERRUPTED"
+          ],
+          "terminalWrite": "SUBMITTING, COMPLETED, AUTO_SUBMITTED, CANCELLED and EXPIRED reject with 409; a checkpoint never creates or changes an attempt/report fact.",
+          "optimisticConcurrency": "baseStateVersion is compared to the server state; If-Match, when supplied, must encode the same base state version."
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.session.checkpoint.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived session owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": [
+            "rawResponse",
+            "answerKey",
+            "answerRule",
+            "ruleDigest",
+            "recording",
+            "recordingUrl"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "assessment.session.checkpointed.v1",
+          "correlation": "canonical-request-and-trace-ids",
+          "redacted": [
+            "request.body.protectedDraft",
+            "request.body.protectedDraft.responses[].response",
+            "sealedRuleReference",
+            "answerKey"
+          ],
+          "logBoundary": "Audit and operational logs may contain only sessionId, checkpointVersion, clientEventId, clientSeq, checkpointDigest, state version and authorization decision; protectedDraft response bodies and rules are prohibited."
+        },
         "x-idempotency": {
           "required": true,
-          "strategy": "assessment-checkpoint",
+          "strategy": "b10-assessment-session-checkpoint",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "相同 seq 重放返回首次确认；旧 seq 返回冲突"
+          "replayBehavior": "The same sessionId, checkpointVersion and checkpointDigest returns the original checkpoint acknowledgement without changing state.",
+          "conflicts": {
+            "sameCheckpointVersionDifferentDigest": {
+              "status": 409,
+              "errorCode": "ASM_CHECKPOINT_DIGEST_CONFLICT"
+            },
+            "staleBaseStateVersion": {
+              "status": 409,
+              "errorCode": "ASM_SESSION_STATE_VERSION_CONFLICT"
+            },
+            "staleCheckpointVersion": {
+              "status": 409,
+              "errorCode": "ASM_CHECKPOINT_VERSION_CONFLICT"
+            },
+            "terminalSessionWrite": {
+              "status": 409,
+              "errorCode": "ASM_SESSION_TERMINAL"
+            }
+          }
+        },
+        "x-checkpoint-concurrency": {
+          "sameVersionSameDigest": "REPLAY",
+          "olderVersion": "CONFLICT_409",
+          "sameVersionDifferentDigest": "CONFLICT_409",
+          "terminalState": "CONFLICT_409"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B2SessionId"
+            "$ref": "#/components/parameters/B10SessionId"
           },
           {
-            "$ref": "#/components/parameters/B2IdempotencyKey"
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 192
+            }
+          },
+          {
+            "$ref": "#/components/parameters/B10IfMatch"
           }
         ],
         "requestBody": {
@@ -3737,14 +3928,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B2CheckpointRequest"
+                "$ref": "#/components/schemas/B10AssessmentSessionCheckpointRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Checkpoint accepted",
+            "description": "Checkpoint saved or same-version/same-digest replay acknowledged",
             "content": {
               "application/json": {
                 "schema": {
@@ -3759,7 +3950,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object"
+                          "$ref": "#/components/schemas/B10AssessmentCheckpoint"
                         }
                       }
                     }
@@ -3779,6 +3970,15 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
           }
@@ -3792,6 +3992,22 @@
         ],
         "operationId": "completeB2AssessmentSession",
         "summary": "完成练习会话并结算",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "submitB10AssessmentAttempt",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Completion is translated only as a protected canonical submission; score, mastery and rewards remain server-derived.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "assessment-complete",
@@ -3978,6 +4194,24 @@
         ],
         "operationId": "createB2ExamSession",
         "summary": "创建并启动模考会话",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "createB10AssessmentSession",
+          "translationBoundary": "A canonical session must be created with server-derived MOCK eligibility, content pin and completion rule; no B2 exam state is canonical.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-010"
         ],
@@ -4107,6 +4341,24 @@
         ],
         "operationId": "b2ExamHeartbeat",
         "summary": "上报活动和设备时间元数据",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "NONE",
+          "translationBoundary": "Historical telemetry has no canonical assessment replacement and cannot create session, attempt, score, reward, mastery or enforcement facts.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "exam-heartbeat",
@@ -4178,6 +4430,30 @@
         ],
         "operationId": "recordB2AntiCheatEvent",
         "summary": "记录切屏、失焦、设备或时钟异常元数据",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_NON_AUTHORITATIVE",
+          "nextTask": "FUTURE_RISK_PRIVACY_APPEAL",
+          "classification": "HISTORICAL_NON_AUTHORITATIVE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "NONE",
+          "authority": "HISTORICAL_TELEMETRY_ONLY",
+          "forbiddenEffects": [
+            "score",
+            "reward",
+            "ban"
+          ],
+          "translationBoundary": "Phase 1 anti-cheat telemetry is non-authoritative and cannot change score, reward, mastery, entitlement, account status or a ban decision.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-011"
         ],
@@ -4318,6 +4594,24 @@
         ],
         "operationId": "updateB2AnswerSheetMark",
         "summary": "幂等更新疑问标记",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "NONE",
+          "translationBoundary": "A legacy doubt marker is not a canonical assessment response, outcome or report fact.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "answer-sheet-mark",
@@ -4403,6 +4697,24 @@
         ],
         "operationId": "saveB2ExamCheckpoint",
         "summary": "保存模考断点，计时不暂停",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "putB10AssessmentSessionCheckpoint",
+          "translationBoundary": "Only a pre-submission protected draft with compatible base state, checkpoint version and digest may be translated; legacy timing remains non-canonical.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "exam-checkpoint",
@@ -4477,6 +4789,24 @@
         ],
         "operationId": "submitB2ExamAnswer",
         "summary": "保存模考答案修订，交卷前不返回判分",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Legacy answer revisions can be translated only as part of one protected final submission; they do not independently create a canonical score or attempt.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-b2-acceptance": [
           "DEV-05-010"
         ],
@@ -4554,6 +4884,24 @@
         ],
         "operationId": "submitB2Exam",
         "summary": "交卷并生成可复算报告",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "owner": "assessment-service",
+          "disposition": "HISTORICAL_ADAPTER_ONLY",
+          "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION",
+          "classification": "HISTORICAL_CANDIDATE",
+          "mode": "ADAPTER_ONLY",
+          "canonicalTarget": "submitB10AssessmentAttempt",
+          "translationBoundary": "Only an eligible protected canonical submission may be translated; report/outcome facts are then server-derived by assessment-service.",
+          "newLegacyFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "exam-submit",
@@ -19423,6 +19771,42 @@
           "event": "assessment.attempt.submitted.v1",
           "rawResponse": "accepted only at the protected scoring boundary; never persisted in event payload or logs"
         },
+        "x-authorization": {
+          "requiredPermission": "assessment.attempt.submit",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived session owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": [
+            "rawResponse",
+            "answerKey",
+            "answerRule",
+            "ruleDigest",
+            "recording",
+            "recordingUrl"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "assessment.attempt.submitted.v1",
+          "correlation": "canonical-request-and-trace-ids",
+          "redacted": [
+            "request.body.items[].response",
+            "request.body.items[].responseDigest",
+            "sealedRuleReference",
+            "answerKey"
+          ],
+          "logBoundary": "Only submissionId, submissionDigest, immutable pin and version metadata may cross audit/event boundaries; raw candidate responses and answer rules are prohibited."
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "b10-assessment-attempt-submit",
@@ -19434,7 +19818,14 @@
             "$ref": "#/components/parameters/B10SessionId"
           },
           {
-            "$ref": "#/components/parameters/B10IdempotencyKey"
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 192
+            }
           },
           {
             "$ref": "#/components/parameters/B10IfMatch"
@@ -19510,8 +19901,14 @@
         "tags": [
           "b10-assessment"
         ],
-        "summary": "Persist a resumable checkpoint without changing the final assessment result",
+        "summary": "Deprecated compatibility adapter for the canonical session checkpoint",
         "operationId": "putB10AssessmentCheckpoint",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/docs/07-operations/b10-validation#legacy-adapter-retirement"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -19519,7 +19916,14 @@
         ],
         "x-contract": {
           "owner": "assessment-service",
-          "checkpoint": "monotonic cursor; checkpoint replay is idempotent"
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "putB10AssessmentSessionCheckpoint",
+          "checkpoint": "Legacy attempt-scoped cursor is translated only when it can be bound to the same pre-submission session draft; it never mutates a final attempt/report result.",
+          "unsupported": "A missing pre-submission session, any terminal session or a digest/state mismatch returns 409."
+        },
+        "x-p1r-assessment-legacy": {
+          "adapterOnly": true,
+          "replacementOperationId": "putB10AssessmentSessionCheckpoint"
         },
         "x-idempotency": {
           "required": true,
@@ -19615,7 +20019,44 @@
         "x-contract": {
           "owner": "assessment-service",
           "report": "replayable from assessmentVersion and content snapshot pin",
-          "answerProtection": "summary and mistake codes only"
+          "answerProtection": "learner-safe outcome summary and mistake codes only; assessment does not return or own mastery"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.report.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "adultGate",
+            "phase",
+            "contentRights",
+            "entitlement",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived report/session owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": [
+            "rawResponse",
+            "answerKey",
+            "answerRule",
+            "ruleDigest",
+            "recording",
+            "recordingUrl"
+          ]
+        },
+        "x-audit": {
+          "required": true,
+          "event": "assessment.report.read.v1",
+          "correlation": "canonical-request-and-trace-ids",
+          "redacted": [
+            "sealedRuleReference",
+            "answerKey",
+            "rawResponse",
+            "protectedDraft",
+            "masteryProjection"
+          ],
+          "logBoundary": "Reports expose only learner-safe assessment summaries. Raw responses, answer rules and learning-service mastery facts are prohibited from report logs and audit payloads."
         },
         "parameters": [
           {
@@ -42693,7 +43134,7 @@
         "additionalProperties": false,
         "required": [
           "ruleRef",
-          "ruleVersion",
+          "answerRuleVersion",
           "ruleDigest",
           "evaluationMode",
           "sealed"
@@ -42704,9 +43145,8 @@
             "type": "string",
             "pattern": "^rule:[a-z][a-z0-9._:-]{2,127}$"
           },
-          "ruleVersion": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$"
+          "answerRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
           },
           "ruleDigest": {
             "$ref": "#/components/schemas/B10Sha256"
@@ -42825,7 +43265,7 @@
         "required": [
           "pin",
           "snapshotVersion",
-          "gradingRuleSetVersion",
+          "answerRuleSetVersion",
           "items",
           "generatedAt"
         ],
@@ -42837,9 +43277,8 @@
           "snapshotVersion": {
             "$ref": "#/components/schemas/B10ProjectionVersion"
           },
-          "gradingRuleSetVersion": {
-            "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$"
+          "answerRuleSetVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
           },
           "items": {
             "type": "array",
@@ -43050,12 +43489,53 @@
       "B10AssessmentSession": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Session lifecycle only. Attempt and report lifecycles are distinct aggregates and cannot be inferred from this status.",
+        "x-p1r-state-machine": {
+          "aggregate": "assessment-session",
+          "initial": "CREATED",
+          "terminal": [
+            "COMPLETED",
+            "AUTO_SUBMITTED",
+            "CANCELLED",
+            "EXPIRED"
+          ],
+          "transitions": {
+            "CREATED": [
+              "IN_PROGRESS",
+              "CANCELLED",
+              "EXPIRED"
+            ],
+            "IN_PROGRESS": [
+              "INTERRUPTED",
+              "SUBMITTING",
+              "AUTO_SUBMITTED",
+              "CANCELLED",
+              "EXPIRED"
+            ],
+            "INTERRUPTED": [
+              "IN_PROGRESS",
+              "SUBMITTING",
+              "AUTO_SUBMITTED",
+              "CANCELLED",
+              "EXPIRED"
+            ],
+            "SUBMITTING": [
+              "COMPLETED",
+              "AUTO_SUBMITTED",
+              "EXPIRED"
+            ]
+          },
+          "statusSeparation": "session status never aliases attempt.status or report.status"
+        },
         "required": [
           "sessionId",
           "status",
           "mode",
           "pin",
           "items",
+          "itemRulePins",
+          "answerRuleSetVersion",
+          "completionRuleVersion",
           "stateVersion",
           "startedAt"
         ],
@@ -43064,14 +43544,7 @@
             "$ref": "#/components/schemas/B10SessionId"
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "IN_PROGRESS",
-              "SUBMITTED",
-              "ASSESSED",
-              "EXPIRED",
-              "CANCELLED"
-            ]
+            "$ref": "#/components/schemas/B10SessionStatus"
           },
           "mode": {
             "type": "string",
@@ -43091,6 +43564,21 @@
               "$ref": "#/components/schemas/B10LearnerContentItem"
             },
             "maxItems": 1000
+          },
+          "itemRulePins": {
+            "type": "array",
+            "description": "Learner-safe immutable answer-rule version/digest pins; the sealed rule reference and answer value are not exposed.",
+            "items": {
+              "$ref": "#/components/schemas/B10AssessmentItemRulePin"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "answerRuleSetVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "completionRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
           },
           "attemptCount": {
             "type": "integer",
@@ -43119,10 +43607,12 @@
       "B10AttemptSubmission": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Closed protected candidate-response union. The scoring boundary receives one explicit response shape and a digest; client score/rule authority is rejected.",
         "required": [
           "itemId",
           "sequence",
-          "response"
+          "responseType",
+          "responseDigest"
         ],
         "properties": {
           "itemId": {
@@ -43132,19 +43622,326 @@
             "type": "integer",
             "minimum": 0
           },
-          "response": {
-            "type": "object",
-            "description": "Protected candidate response. It is read only by the scoring boundary and is not written to Outbox, logs or analytics.",
-            "x-sensitive-fields": [
-              "response"
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "CHOICE",
+              "MATCHING",
+              "ORDERING",
+              "CLOZE",
+              "TEXT",
+              "UNANSWERED"
             ]
           },
-          "clientSubmissionId": {
+          "responseDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "selectedOptionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._:-]{0,63}$"
+            },
+            "minItems": 1,
+            "maxItems": 32,
+            "uniqueItems": true
+          },
+          "pairs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10MatchingPair"
+            },
+            "minItems": 1,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "orderedTokenIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+            },
+            "minItems": 1,
+            "maxItems": 256,
+            "uniqueItems": true
+          },
+          "blanks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ClozeEntry"
+            },
+            "minItems": 1,
+            "maxItems": 128,
+            "uniqueItems": true
+          },
+          "text": {
             "type": "string",
-            "minLength": 8,
-            "maxLength": 128
+            "minLength": 1,
+            "maxLength": 12000
           }
-        }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "score"
+              ]
+            },
+            {
+              "required": [
+                "scoreBucket"
+              ]
+            },
+            {
+              "required": [
+                "isCorrect"
+              ]
+            },
+            {
+              "required": [
+                "correct"
+              ]
+            },
+            {
+              "required": [
+                "answerRule"
+              ]
+            },
+            {
+              "required": [
+                "answerRuleVersion"
+              ]
+            },
+            {
+              "required": [
+                "ruleDigest"
+              ]
+            },
+            {
+              "required": [
+                "gradingRuleVersion"
+              ]
+            }
+          ]
+        },
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "sequence",
+              "responseType",
+              "responseDigest",
+              "selectedOptionIds"
+            ],
+            "properties": {
+              "itemId": {
+                "$ref": "#/components/schemas/B10Int64Id"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "CHOICE"
+                ]
+              },
+              "responseDigest": {
+                "$ref": "#/components/schemas/B10Sha256"
+              },
+              "selectedOptionIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9._:-]{0,63}$"
+                },
+                "minItems": 1,
+                "maxItems": 32,
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "sequence",
+              "responseType",
+              "responseDigest",
+              "pairs"
+            ],
+            "properties": {
+              "itemId": {
+                "$ref": "#/components/schemas/B10Int64Id"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "MATCHING"
+                ]
+              },
+              "responseDigest": {
+                "$ref": "#/components/schemas/B10Sha256"
+              },
+              "pairs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/B10MatchingPair"
+                },
+                "minItems": 1,
+                "maxItems": 128,
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "sequence",
+              "responseType",
+              "responseDigest",
+              "orderedTokenIds"
+            ],
+            "properties": {
+              "itemId": {
+                "$ref": "#/components/schemas/B10Int64Id"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "ORDERING"
+                ]
+              },
+              "responseDigest": {
+                "$ref": "#/components/schemas/B10Sha256"
+              },
+              "orderedTokenIds": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+                },
+                "minItems": 1,
+                "maxItems": 256,
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "sequence",
+              "responseType",
+              "responseDigest",
+              "blanks"
+            ],
+            "properties": {
+              "itemId": {
+                "$ref": "#/components/schemas/B10Int64Id"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "CLOZE"
+                ]
+              },
+              "responseDigest": {
+                "$ref": "#/components/schemas/B10Sha256"
+              },
+              "blanks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/B10ClozeEntry"
+                },
+                "minItems": 1,
+                "maxItems": 128,
+                "uniqueItems": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "sequence",
+              "responseType",
+              "responseDigest",
+              "text"
+            ],
+            "properties": {
+              "itemId": {
+                "$ref": "#/components/schemas/B10Int64Id"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "TEXT"
+                ]
+              },
+              "responseDigest": {
+                "$ref": "#/components/schemas/B10Sha256"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 12000
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "sequence",
+              "responseType",
+              "responseDigest"
+            ],
+            "properties": {
+              "itemId": {
+                "$ref": "#/components/schemas/B10Int64Id"
+              },
+              "sequence": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "responseType": {
+                "type": "string",
+                "enum": [
+                  "UNANSWERED"
+                ]
+              },
+              "responseDigest": {
+                "$ref": "#/components/schemas/B10Sha256"
+              }
+            }
+          }
+        ]
       },
       "B10SubmitAttemptRequest": {
         "type": "object",
@@ -43152,6 +43949,7 @@
         "required": [
           "expectedStateVersion",
           "submissionId",
+          "submissionDigest",
           "items"
         ],
         "properties": {
@@ -43161,6 +43959,9 @@
           "submissionId": {
             "type": "string",
             "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "submissionDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
           },
           "items": {
             "type": "array",
@@ -43180,14 +43981,38 @@
       "B10Attempt": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Assessment attempt lifecycle only. It does not own learning mastery, SRS, reward or progression state.",
+        "x-p1r-state-machine": {
+          "aggregate": "assessment-attempt",
+          "initial": "ACCEPTED",
+          "terminal": [
+            "ASSESSED",
+            "REJECTED"
+          ],
+          "transitions": {
+            "ACCEPTED": [
+              "ASSESSING",
+              "REJECTED"
+            ],
+            "ASSESSING": [
+              "ASSESSED",
+              "REJECTED"
+            ]
+          },
+          "statusSeparation": "attempt status never aliases session.status or report.status"
+        },
         "required": [
           "attemptId",
           "sessionId",
           "attemptVersion",
           "status",
           "itemCount",
+          "submissionId",
           "submissionDigest",
           "pin",
+          "itemRulePins",
+          "answerRuleSetVersion",
+          "completionRuleVersion",
           "createdAt"
         ],
         "properties": {
@@ -43202,14 +44027,7 @@
             "minimum": 1
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "ACCEPTED",
-              "ASSESSING",
-              "ASSESSED",
-              "REJECTED",
-              "COMPENSATED"
-            ]
+            "$ref": "#/components/schemas/B10AttemptStatus"
           },
           "itemCount": {
             "type": "integer",
@@ -43218,22 +44036,32 @@
           "submissionDigest": {
             "$ref": "#/components/schemas/B10Sha256"
           },
+          "submissionId": {
+            "type": "string",
+            "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$"
+          },
           "pin": {
             "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
-          "assessmentVersion": {
-            "type": "string",
-            "maxLength": 96
+          "itemRulePins": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10AssessmentItemRulePin"
+            },
+            "minItems": 1,
+            "maxItems": 1000
           },
-          "scoreBucket": {
-            "type": "string",
-            "enum": [
-              "UNASSESSED",
-              "ZERO",
-              "PARTIAL",
-              "FULL",
-              "PENDING_REVIEW"
-            ]
+          "answerRuleSetVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "completionRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "assessmentVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/B10AssessmentOutcome"
           },
           "createdAt": {
             "$ref": "#/components/schemas/B10DateTime"
@@ -43243,14 +44071,124 @@
             "nullable": true
           },
           "reportId": {
-            "$ref": "#/components/schemas/B10ReportId",
-            "nullable": true
+            "$ref": "#/components/schemas/B10ReportId"
+          },
+          "rejectionCode": {
+            "type": "string",
+            "maxLength": 96
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ACCEPTED",
+                  "ASSESSING"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "assessmentVersion"
+                  ]
+                },
+                {
+                  "required": [
+                    "outcome"
+                  ]
+                },
+                {
+                  "required": [
+                    "reportId"
+                  ]
+                },
+                {
+                  "required": [
+                    "assessedAt"
+                  ]
+                },
+                {
+                  "required": [
+                    "rejectionCode"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ASSESSED"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "assessmentVersion",
+              "outcome",
+              "reportId",
+              "assessedAt"
+            ],
+            "not": {
+              "required": [
+                "rejectionCode"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "REJECTED"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "rejectionCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "assessmentVersion"
+                  ]
+                },
+                {
+                  "required": [
+                    "outcome"
+                  ]
+                },
+                {
+                  "required": [
+                    "reportId"
+                  ]
+                },
+                {
+                  "required": [
+                    "assessedAt"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "B10CheckpointRequest": {
         "type": "object",
         "additionalProperties": false,
+        "deprecated": true,
+        "description": "Deprecated attempt-scoped checkpoint adapter request. New callers use B10AssessmentSessionCheckpointRequest.",
         "required": [
           "checkpointVersion",
           "itemCursor",
@@ -43280,6 +44218,8 @@
       "B10Checkpoint": {
         "type": "object",
         "additionalProperties": false,
+        "deprecated": true,
+        "description": "Deprecated attempt-scoped checkpoint adapter acknowledgement. It is not the canonical session checkpoint.",
         "required": [
           "attemptId",
           "checkpointVersion",
@@ -43310,13 +44250,40 @@
       "B10AssessmentReport": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Versioned assessment report. It is bound to one session, attempt and submission, and never owns mastery/SRS facts.",
+        "x-p1r-state-machine": {
+          "aggregate": "assessment-report",
+          "initial": "GENERATING",
+          "terminal": [
+            "READY",
+            "PARTIAL",
+            "FAILED"
+          ],
+          "transitions": {
+            "GENERATING": [
+              "READY",
+              "PARTIAL",
+              "FAILED"
+            ]
+          },
+          "statusSeparation": "report status never aliases session.status or attempt.status"
+        },
         "required": [
           "reportId",
+          "sessionId",
           "attemptId",
+          "attemptVersion",
+          "submissionId",
+          "submissionDigest",
           "reportVersion",
+          "reportRuleVersion",
+          "assessmentVersion",
+          "answerRuleSetVersion",
+          "completionRuleVersion",
+          "itemRulePins",
+          "asOf",
+          "assessmentFactWatermark",
           "status",
-          "scoreBucket",
-          "mistakeCodes",
           "pin",
           "generatedAt",
           "replayable"
@@ -43328,27 +44295,56 @@
           "attemptId": {
             "$ref": "#/components/schemas/B10AttemptId"
           },
+          "sessionId": {
+            "$ref": "#/components/schemas/B10SessionId"
+          },
+          "attemptVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "submissionId": {
+            "type": "string",
+            "pattern": "^sub_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "submissionDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
           "reportVersion": {
             "type": "integer",
             "minimum": 1
           },
-          "status": {
-            "type": "string",
-            "enum": [
-              "READY",
-              "PARTIAL",
-              "FAILED",
-              "COMPENSATED"
-            ]
+          "reportRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
           },
-          "scoreBucket": {
+          "assessmentVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "answerRuleSetVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "completionRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "itemRulePins": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10AssessmentItemRulePin"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          },
+          "asOf": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "assessmentFactWatermark": {
             "type": "string",
-            "enum": [
-              "ZERO",
-              "PARTIAL",
-              "FULL",
-              "PENDING_REVIEW"
-            ]
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "status": {
+            "$ref": "#/components/schemas/B10ReportStatus"
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/B10AssessmentOutcome"
           },
           "mistakeCodes": {
             "type": "array",
@@ -43357,16 +44353,6 @@
               "maxLength": 96
             },
             "maxItems": 64
-          },
-          "masterySignal": {
-            "type": "string",
-            "enum": [
-              "NO_SIGNAL",
-              "WEAK",
-              "STABLE",
-              "MASTERED",
-              "RETRY"
-            ]
           },
           "pin": {
             "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
@@ -43379,8 +44365,165 @@
             "enum": [
               true
             ]
+          },
+          "partialReasonCodes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 96
+            },
+            "minItems": 1,
+            "maxItems": 64
+          },
+          "failureCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "retryable": {
+            "type": "boolean"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "GENERATING"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "outcome"
+                  ]
+                },
+                {
+                  "required": [
+                    "mistakeCodes"
+                  ]
+                },
+                {
+                  "required": [
+                    "partialReasonCodes"
+                  ]
+                },
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "retryable"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "READY"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "outcome",
+              "mistakeCodes"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "partialReasonCodes"
+                  ]
+                },
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "retryable"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PARTIAL"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "outcome",
+              "partialReasonCodes"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "retryable"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "FAILED"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "failureCode",
+              "retryable"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "outcome"
+                  ]
+                },
+                {
+                  "required": [
+                    "mistakeCodes"
+                  ]
+                },
+                {
+                  "required": [
+                    "partialReasonCodes"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "B10LearningQueueItem": {
         "type": "object",
@@ -51978,6 +53121,586 @@
           }
         ],
         "x-availability-rule": "AVAILABLE requires an opaque contentRef and reasonCode=NONE; UNAVAILABLE requires a non-NONE reasonCode."
+      },
+      "B10RuleVersion": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$"
+      },
+      "B10SessionStatus": {
+        "type": "string",
+        "enum": [
+          "CREATED",
+          "IN_PROGRESS",
+          "INTERRUPTED",
+          "SUBMITTING",
+          "COMPLETED",
+          "AUTO_SUBMITTED",
+          "CANCELLED",
+          "EXPIRED"
+        ]
+      },
+      "B10AttemptStatus": {
+        "type": "string",
+        "enum": [
+          "ACCEPTED",
+          "ASSESSING",
+          "ASSESSED",
+          "REJECTED"
+        ]
+      },
+      "B10ReportStatus": {
+        "type": "string",
+        "enum": [
+          "GENERATING",
+          "READY",
+          "PARTIAL",
+          "FAILED"
+        ]
+      },
+      "B10AssessmentItemRulePin": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Per-item immutable answer-rule metadata. The fields identify a sealed rule contract and are not answer values.",
+        "required": [
+          "itemId",
+          "answerRuleVersion",
+          "ruleDigest",
+          "evaluationMode"
+        ],
+        "properties": {
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "answerRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "ruleDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "evaluationMode": {
+            "type": "string",
+            "enum": [
+              "DETERMINISTIC",
+              "MANUAL_REVIEW",
+              "SELF_RATING"
+            ]
+          }
+        }
+      },
+      "B10ReasonTrace": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learner-safe structured explanation trace. It cannot include candidate response text, an answer key or a sealed rule value.",
+        "required": [
+          "ruleCode",
+          "ruleVersion",
+          "category"
+        ],
+        "properties": {
+          "itemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "ruleCode": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+          },
+          "ruleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CHOICE",
+              "MATCHING",
+              "ORDERING",
+              "CLOZE",
+              "TEXT",
+              "CONTENT",
+              "RULE"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96
+          },
+          "evidenceRef": {
+            "type": "string",
+            "pattern": "^evidence:[A-Za-z0-9._:-]{3,191}$"
+          }
+        }
+      },
+      "B10ObjectiveOutcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learner-safe deterministic objective outcome. It is an assessment fact, not a learning-service mastery or SRS fact.",
+        "required": [
+          "outcomeKind",
+          "objectiveNumerator",
+          "objectiveDenominator",
+          "scoreBucket",
+          "errorCategory",
+          "reasonTrace",
+          "outcomeDigest"
+        ],
+        "properties": {
+          "outcomeKind": {
+            "type": "string",
+            "enum": [
+              "OBJECTIVE"
+            ]
+          },
+          "objectiveNumerator": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "objectiveDenominator": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "scoreBucket": {
+            "type": "string",
+            "enum": [
+              "ZERO",
+              "PARTIAL",
+              "FULL"
+            ]
+          },
+          "errorCategory": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CHOICE",
+              "MATCHING",
+              "ORDERING",
+              "CLOZE",
+              "TEXT",
+              "CONTENT",
+              "RULE"
+            ]
+          },
+          "reasonTrace": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ReasonTrace"
+            },
+            "maxItems": 128
+          },
+          "outcomeDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
+        }
+      },
+      "B10SelfRatingOutcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Learner self-rating only. It deliberately has no objectiveNumerator, objectiveDenominator or scoreBucket.",
+        "required": [
+          "outcomeKind",
+          "selfRating",
+          "outcomeDigest"
+        ],
+        "properties": {
+          "outcomeKind": {
+            "type": "string",
+            "enum": [
+              "SELF_RATING"
+            ]
+          },
+          "selfRating": {
+            "type": "string",
+            "enum": [
+              "EASY",
+              "NEUTRAL",
+              "DIFFICULT",
+              "UNSURE"
+            ]
+          },
+          "reasonTrace": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ReasonTrace"
+            },
+            "maxItems": 128
+          },
+          "outcomeDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
+        }
+      },
+      "B10ManualReviewOutcome": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Manual-review outcome status only. A pending or subjective review cannot be represented as an objective score.",
+        "required": [
+          "outcomeKind",
+          "reviewStatus",
+          "outcomeDigest"
+        ],
+        "properties": {
+          "outcomeKind": {
+            "type": "string",
+            "enum": [
+              "MANUAL_REVIEW"
+            ]
+          },
+          "reviewStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "PARTIAL",
+              "UNAVAILABLE"
+            ]
+          },
+          "reasonTrace": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ReasonTrace"
+            },
+            "maxItems": 128
+          },
+          "outcomeDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
+        }
+      },
+      "B10AssessmentOutcome": {
+        "description": "Discriminated assessment outcome. Only the OBJECTIVE branch carries an objective score summary.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/B10ObjectiveOutcome"
+          },
+          {
+            "$ref": "#/components/schemas/B10SelfRatingOutcome"
+          },
+          {
+            "$ref": "#/components/schemas/B10ManualReviewOutcome"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "outcomeKind",
+          "mapping": {
+            "OBJECTIVE": "#/components/schemas/B10ObjectiveOutcome",
+            "SELF_RATING": "#/components/schemas/B10SelfRatingOutcome",
+            "MANUAL_REVIEW": "#/components/schemas/B10ManualReviewOutcome"
+          }
+        }
+      },
+      "B10ChoiceResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseType",
+          "selectedOptionIds"
+        ],
+        "properties": {
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "CHOICE"
+            ]
+          },
+          "selectedOptionIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._:-]{0,63}$"
+            },
+            "minItems": 1,
+            "maxItems": 32,
+            "uniqueItems": true
+          }
+        }
+      },
+      "B10MatchingPair": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "leftId",
+          "rightId"
+        ],
+        "properties": {
+          "leftId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "rightId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          }
+        }
+      },
+      "B10MatchingResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseType",
+          "pairs"
+        ],
+        "properties": {
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "MATCHING"
+            ]
+          },
+          "pairs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10MatchingPair"
+            },
+            "minItems": 1,
+            "maxItems": 128,
+            "uniqueItems": true
+          }
+        }
+      },
+      "B10OrderingResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseType",
+          "orderedTokenIds"
+        ],
+        "properties": {
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "ORDERING"
+            ]
+          },
+          "orderedTokenIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+            },
+            "minItems": 1,
+            "maxItems": 256,
+            "uniqueItems": true
+          }
+        }
+      },
+      "B10ClozeEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "blankId",
+          "text"
+        ],
+        "properties": {
+          "blankId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          }
+        }
+      },
+      "B10ClozeResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseType",
+          "blanks"
+        ],
+        "properties": {
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "CLOZE"
+            ]
+          },
+          "blanks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ClozeEntry"
+            },
+            "minItems": 1,
+            "maxItems": 128,
+            "uniqueItems": true
+          }
+        }
+      },
+      "B10TextResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseType",
+          "text"
+        ],
+        "properties": {
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "TEXT"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 12000
+          }
+        }
+      },
+      "B10UnansweredResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responseType"
+        ],
+        "properties": {
+          "responseType": {
+            "type": "string",
+            "enum": [
+              "UNANSWERED"
+            ]
+          }
+        }
+      },
+      "B10CandidateResponse": {
+        "description": "Closed candidate-response union. The protected scoring boundary accepts only these explicit response forms.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/B10ChoiceResponse"
+          },
+          {
+            "$ref": "#/components/schemas/B10MatchingResponse"
+          },
+          {
+            "$ref": "#/components/schemas/B10OrderingResponse"
+          },
+          {
+            "$ref": "#/components/schemas/B10ClozeResponse"
+          },
+          {
+            "$ref": "#/components/schemas/B10TextResponse"
+          },
+          {
+            "$ref": "#/components/schemas/B10UnansweredResponse"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "responseType",
+          "mapping": {
+            "CHOICE": "#/components/schemas/B10ChoiceResponse",
+            "MATCHING": "#/components/schemas/B10MatchingResponse",
+            "ORDERING": "#/components/schemas/B10OrderingResponse",
+            "CLOZE": "#/components/schemas/B10ClozeResponse",
+            "TEXT": "#/components/schemas/B10TextResponse",
+            "UNANSWERED": "#/components/schemas/B10UnansweredResponse"
+          }
+        }
+      },
+      "B10ProtectedDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Protected pre-submission candidate draft. It must be encrypted or equivalently protected at rest and is never emitted to Outbox, analytics or logs.",
+        "x-sensitive-fields": [
+          "responses"
+        ],
+        "required": [
+          "responses"
+        ],
+        "properties": {
+          "responses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10AttemptSubmission"
+            },
+            "maxItems": 1000
+          }
+        }
+      },
+      "B10AssessmentSessionCheckpointRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Canonical session checkpoint command. baseStateVersion, checkpointVersion and client sequence are concurrency facts; protectedDraft is not an assessment submission.",
+        "required": [
+          "baseStateVersion",
+          "checkpointVersion",
+          "clientEventId",
+          "clientSeq",
+          "checkpointDigest",
+          "protectedDraft"
+        ],
+        "properties": {
+          "baseStateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "checkpointVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          },
+          "clientSeq": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "checkpointDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "protectedDraft": {
+            "$ref": "#/components/schemas/B10ProtectedDraft",
+            "writeOnly": true,
+            "x-protected": true,
+            "x-sensitive": true
+          }
+        }
+      },
+      "B10AssessmentCheckpoint": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Canonical session-level checkpoint acknowledgement. It is not an attempt or report fact.",
+        "required": [
+          "sessionId",
+          "checkpointVersion",
+          "clientEventId",
+          "clientSeq",
+          "checkpointDigest",
+          "stateVersion",
+          "replayed",
+          "savedAt"
+        ],
+        "properties": {
+          "sessionId": {
+            "$ref": "#/components/schemas/B10SessionId"
+          },
+          "checkpointVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          },
+          "clientSeq": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "checkpointDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "savedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
+        }
       }
     },
     "requestBodies": {},

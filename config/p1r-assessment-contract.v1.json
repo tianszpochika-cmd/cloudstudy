@@ -1,0 +1,642 @@
+{
+  "$schema": "p1r.assessment-contract.v1",
+  "schemaVersion": "p1r.assessment-contract.v1",
+  "task": "P1R-M1-010",
+  "phase": "P1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "canonicalSources": {
+    "b10Fragment": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+    "b2LegacyFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json",
+    "openApi": "packages/contracts/openapi/v1/openapi.json",
+    "historicalEventFragment": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "gapRegistry": "config/p1r-gap-registry.v1.json"
+  },
+  "compatibilityPromotion": {
+    "id": "M1-010_ASSESSMENT_CONTRACT_PROMOTION",
+    "sourceContractBaseline": "760621e45b9adc95a6aa40fb1678a8d3ebc87797",
+    "previousPromotion": "M1-009_MEDIA_CONTRACT_PROMOTION",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_AND_HISTORICAL_EVENT_PAYLOADS",
+    "eventCatalogDecision": "HISTORICAL_PAYLOADS_ONLY_NO_CANONICAL_PROMOTION",
+    "canonicalFragment": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+    "legacyAdapterFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json",
+    "historicalEventFragment": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json"
+  },
+  "runtimeBoundary": {
+    "staticContractOnly": true,
+    "prohibitedRuntimeClaims": [
+      "assessment-service-http-executed",
+      "mysql-session-attempt-report-persisted",
+      "outbox-or-kafka-delivery-verified",
+      "gateway-or-resource-server-pep-verified",
+      "saga-or-learning-projection-verified",
+      "browser-or-device-e2e-verified"
+    ]
+  },
+  "canonicalRoutes": [
+    {
+      "id": "assessment-session-create",
+      "path": "/api/v1/assessment/sessions",
+      "method": "POST",
+      "operationId": "createB10AssessmentSession",
+      "requestSchema": "B10CreateAssessmentSessionRequest",
+      "responseSchema": "B10AssessmentSession",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "assessment-session-read",
+      "path": "/api/v1/assessment/sessions/{sessionId}",
+      "method": "GET",
+      "operationId": "getB10AssessmentSession",
+      "requestSchema": null,
+      "responseSchema": "B10AssessmentSession",
+      "idempotencyRequired": false
+    },
+    {
+      "id": "assessment-session-checkpoint",
+      "path": "/api/v1/assessment/sessions/{sessionId}/checkpoint",
+      "method": "PUT",
+      "operationId": "putB10AssessmentSessionCheckpoint",
+      "requestSchema": "B10AssessmentSessionCheckpointRequest",
+      "responseSchema": "B10AssessmentCheckpoint",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "assessment-attempt-submit",
+      "path": "/api/v1/assessment/sessions/{sessionId}/attempts",
+      "method": "POST",
+      "operationId": "submitB10AssessmentAttempt",
+      "requestSchema": "B10SubmitAttemptRequest",
+      "responseSchema": "B10Attempt",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "assessment-report-read",
+      "path": "/api/v1/assessment/reports/{reportId}",
+      "method": "GET",
+      "operationId": "getB10AssessmentReport",
+      "requestSchema": null,
+      "responseSchema": "B10AssessmentReport",
+      "idempotencyRequired": false
+    }
+  ],
+  "authorization": {
+    "defaultDecision": "DENY",
+    "trustedFacts": [
+      "subject",
+      "tenant",
+      "adultGate",
+      "phase",
+      "contentRights",
+      "entitlement",
+      "resourceOwner",
+      "policyVersion"
+    ],
+    "serviceSidePepRequired": true,
+    "auditSensitiveFields": [
+      "rawResponse",
+      "answerKey",
+      "answerRule",
+      "ruleDigest",
+      "recording",
+      "recordingUrl"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "tenant",
+      "tenantId",
+      "subject",
+      "subjectId",
+      "owner",
+      "ownerId",
+      "adultGate",
+      "phase",
+      "contentRights",
+      "entitlement",
+      "policyVersion",
+      "score",
+      "isCorrect",
+      "answerRule",
+      "ruleDigest"
+    ]
+  },
+  "states": {
+    "session": [
+      "CREATED",
+      "IN_PROGRESS",
+      "INTERRUPTED",
+      "SUBMITTING",
+      "COMPLETED",
+      "AUTO_SUBMITTED",
+      "CANCELLED",
+      "EXPIRED"
+    ],
+    "attempt": [
+      "ACCEPTED",
+      "ASSESSING",
+      "ASSESSED",
+      "REJECTED"
+    ],
+    "report": [
+      "GENERATING",
+      "READY",
+      "PARTIAL",
+      "FAILED"
+    ]
+  },
+  "pins": {
+    "activeContentPinRequiredFields": [
+      "contentCode",
+      "contentVersionId",
+      "contentEpoch",
+      "snapshotId",
+      "snapshotHash",
+      "status",
+      "pinnedAt"
+    ],
+    "parentReplayFields": [
+      "itemRulePins",
+      "answerRuleSetVersion",
+      "completionRuleVersion"
+    ],
+    "itemRulePinRequiredFields": [
+      "itemId",
+      "answerRuleVersion",
+      "ruleDigest",
+      "evaluationMode"
+    ]
+  },
+  "checkpoint": {
+    "requestSchema": "B10AssessmentSessionCheckpointRequest",
+    "responseSchema": "B10AssessmentCheckpoint",
+    "requiredFields": [
+      "protectedDraft",
+      "baseStateVersion",
+      "checkpointVersion",
+      "clientEventId",
+      "clientSeq",
+      "checkpointDigest"
+    ],
+    "conflictHttpStatus": "409",
+    "conflictPolicy": {
+      "sameVersionSameDigest": "REPLAY",
+      "olderVersion": "CONFLICT_409",
+      "sameVersionDifferentDigest": "CONFLICT_409",
+      "terminalState": "CONFLICT_409"
+    }
+  },
+  "answerSubmission": {
+    "itemSchema": "B10AttemptSubmission",
+    "itemRequiredFields": [
+      "itemId",
+      "sequence",
+      "responseType",
+      "responseDigest"
+    ],
+    "responseTypes": [
+      "CHOICE",
+      "MATCHING",
+      "ORDERING",
+      "CLOZE",
+      "TEXT",
+      "UNANSWERED"
+    ],
+    "forbiddenFields": [
+      "score",
+      "scoreBucket",
+      "isCorrect",
+      "correct",
+      "answerRule",
+      "answerRuleVersion",
+      "ruleDigest",
+      "gradingRuleVersion"
+    ],
+    "requiresClosedOneOf": true,
+    "requiresForbiddenNot": true
+  },
+  "outcome": {
+    "requiredFields": [
+      "objectiveNumerator",
+      "objectiveDenominator",
+      "scoreBucket",
+      "errorCategory",
+      "reasonTrace",
+      "outcomeDigest"
+    ],
+    "forbiddenClaims": [
+      "subjective-self-rating-as-objective",
+      "mastery-authority",
+      "ai-authority",
+      "official-certification",
+      "testbank-authority",
+      "nationwide-percentile",
+      "authoritative-cheating-conclusion"
+    ]
+  },
+  "report": {
+    "requiredFields": [
+      "sessionId",
+      "attemptId",
+      "submissionId",
+      "submissionDigest",
+      "attemptVersion",
+      "reportVersion",
+      "reportRuleVersion",
+      "assessmentVersion",
+      "asOf",
+      "assessmentFactWatermark"
+    ],
+    "forbiddenFields": [
+      "mastery",
+      "masteryLevel",
+      "masterySignal",
+      "srsSchedule",
+      "reviewSchedule",
+      "nationwidePercentile",
+      "officialCertification"
+    ]
+  },
+  "ownership": {
+    "assessmentOwner": "assessment-service",
+    "learningDownstreamOwner": "learning-service",
+    "assessmentMustNotOwn": [
+      "mastery",
+      "srs",
+      "reviewSchedule",
+      "contentAnswerRuleMaster"
+    ]
+  },
+  "legacyCompatibility": [
+    {
+      "id": "b10-attempt-checkpoint",
+      "source": "B10",
+      "path": "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint",
+      "method": "PUT",
+      "operationId": "putB10AssessmentCheckpoint",
+      "adapterOnly": true,
+      "replacementOperationId": "putB10AssessmentSessionCheckpoint"
+    },
+    {
+      "id": "b2-daily-stream",
+      "source": "B2",
+      "path": "/api/v1/assessment/daily-stream",
+      "method": "GET",
+      "operationId": "getB2DailyStream",
+      "adapterOnly": true,
+      "replacementOperationId": "getTodayLearningStream"
+    },
+    {
+      "id": "b2-session-create",
+      "source": "B2",
+      "path": "/api/v1/assessment/sessions",
+      "method": "POST",
+      "operationId": "createB2AssessmentSession",
+      "adapterOnly": true,
+      "replacementOperationId": "createB10AssessmentSession"
+    },
+    {
+      "id": "b2-session-read",
+      "source": "B2",
+      "path": "/api/v1/assessment/sessions/{sessionId}",
+      "method": "GET",
+      "operationId": "getB2AssessmentSession",
+      "adapterOnly": true,
+      "replacementOperationId": "getB10AssessmentSession"
+    },
+    {
+      "id": "b2-answer-submit",
+      "source": "B2",
+      "path": "/api/v1/assessment/sessions/{sessionId}/answers",
+      "method": "POST",
+      "operationId": "submitB2AssessmentAnswer",
+      "adapterOnly": true,
+      "replacementOperationId": "submitB10AssessmentAttempt"
+    },
+    {
+      "id": "b2-checkpoint",
+      "source": "B2",
+      "path": "/api/v1/assessment/sessions/{sessionId}/checkpoint",
+      "method": "PUT",
+      "operationId": "saveB2AssessmentCheckpoint",
+      "adapterOnly": true,
+      "replacementOperationId": "putB10AssessmentSessionCheckpoint"
+    },
+    {
+      "id": "b2-session-complete",
+      "source": "B2",
+      "path": "/api/v1/assessment/sessions/{sessionId}/complete",
+      "method": "POST",
+      "operationId": "completeB2AssessmentSession",
+      "adapterOnly": true,
+      "replacementOperationId": "submitB10AssessmentAttempt"
+    }
+  ],
+  "legacyExamWriteOperations": [
+    {
+      "id": "b2-exam-session-create",
+      "path": "/api/v1/exam/sessions",
+      "method": "POST",
+      "operationId": "createB2ExamSession",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_ADAPTER_ONLY",
+      "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION"
+    },
+    {
+      "id": "b2-exam-heartbeat",
+      "path": "/api/v1/exam/sessions/{sessionId}/heartbeat",
+      "method": "POST",
+      "operationId": "b2ExamHeartbeat",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_ADAPTER_ONLY",
+      "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION"
+    },
+    {
+      "id": "b2-exam-anti-cheat-event",
+      "path": "/api/v1/exam/sessions/{sessionId}/anti-cheat-events",
+      "method": "POST",
+      "operationId": "recordB2AntiCheatEvent",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_NON_AUTHORITATIVE",
+      "nextTask": "FUTURE_RISK_PRIVACY_APPEAL",
+      "forbiddenEffects": [
+        "score",
+        "reward",
+        "ban"
+      ]
+    },
+    {
+      "id": "b2-exam-answer-sheet-mark",
+      "path": "/api/v1/exam/sessions/{sessionId}/answer-sheet/marks",
+      "method": "POST",
+      "operationId": "updateB2AnswerSheetMark",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_ADAPTER_ONLY",
+      "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION"
+    },
+    {
+      "id": "b2-exam-checkpoint",
+      "path": "/api/v1/exam/sessions/{sessionId}/checkpoint",
+      "method": "PUT",
+      "operationId": "saveB2ExamCheckpoint",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_ADAPTER_ONLY",
+      "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION"
+    },
+    {
+      "id": "b2-exam-answer-submit",
+      "path": "/api/v1/exam/sessions/{sessionId}/answers",
+      "method": "POST",
+      "operationId": "submitB2ExamAnswer",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_ADAPTER_ONLY",
+      "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION"
+    },
+    {
+      "id": "b2-exam-submit",
+      "path": "/api/v1/exam/sessions/{sessionId}/submit",
+      "method": "POST",
+      "operationId": "submitB2Exam",
+      "adapterOnly": true,
+      "owner": "assessment-service",
+      "disposition": "HISTORICAL_ADAPTER_ONLY",
+      "nextTask": "FUTURE_EXAM_COMPATIBILITY_MIGRATION"
+    }
+  ],
+  "events": {
+    "historicalEventNames": [
+      "assessment.attempt.submitted.v1",
+      "assessment.attempt.assessed.v1"
+    ],
+    "requiredSubmittedFields": [
+      "attemptId",
+      "sessionId",
+      "contentVersionId",
+      "contentEpoch",
+      "snapshotId",
+      "snapshotHash",
+      "answerRuleSetVersion",
+      "answerRuleVersion",
+      "ruleDigest",
+      "completionRuleVersion",
+      "submissionId",
+      "submissionDigest",
+      "attemptVersion"
+    ],
+    "requiredAssessedFields": [
+      "attemptId",
+      "sessionId",
+      "contentVersionId",
+      "contentEpoch",
+      "snapshotId",
+      "snapshotHash",
+      "answerRuleSetVersion",
+      "answerRuleVersion",
+      "ruleDigest",
+      "completionRuleVersion",
+      "submissionId",
+      "submissionDigest",
+      "attemptVersion",
+      "reportId",
+      "reportVersion",
+      "reportRuleVersion",
+      "assessmentVersion",
+      "asOf",
+      "assessmentFactWatermark",
+      "outcomeKind",
+      "objectiveNumerator",
+      "objectiveDenominator",
+      "scoreBucket",
+      "errorCategory",
+      "reasonTrace",
+      "outcomeDigest"
+    ],
+    "forbiddenPayloadFields": [
+      "rawResponse",
+      "response",
+      "responses",
+      "answer",
+      "answers",
+      "answerKey",
+      "answerRule",
+      "rules",
+      "recording",
+      "recordingUrl",
+      "audio",
+      "transcript",
+      "selfRating",
+      "reviewStatus"
+    ],
+    "objectiveOutcomeKind": "OBJECTIVE",
+    "gapId": "EVENT-GAP-BIND-ASM-001",
+    "gapStatus": "OPEN"
+  },
+  "phase1Prohibitions": [
+    "authoritative-cheating-conclusion",
+    "focus-or-switch-score-driving",
+    "focus-or-switch-reward-driving",
+    "focus-or-switch-ban-driving",
+    "official-certification",
+    "official-testbank",
+    "nationwide-percentile",
+    "ai-scoring-authority",
+    "ai-mastery-authority"
+  ],
+  "scopeGroups": [
+    {
+      "id": "assessment-contract",
+      "asmIds": [
+        "ASM-0215",
+        "ASM-0216",
+        "ASM-0217",
+        "ASM-0220",
+        "ASM-0227",
+        "ASM-0228",
+        "ASM-0229",
+        "ASM-0231",
+        "ASM-0232",
+        "ASM-0235",
+        "ASM-0236",
+        "ASM-0237",
+        "ASM-0238",
+        "ASM-0239",
+        "ASM-0240",
+        "ASM-0241",
+        "ASM-0242",
+        "ASM-0243",
+        "ASM-0245",
+        "ASM-0246",
+        "ASM-0247",
+        "ASM-0248",
+        "ASM-0249",
+        "ASM-0250",
+        "ASM-0251",
+        "ASM-0252"
+      ],
+      "scope": "assessment session, protected checkpoint, attempt, deterministic objective scoring and immutable report contract",
+      "downstreamOwner": "assessment-service",
+      "disposition": "IN_SCOPE_CANONICAL_CONTRACT",
+      "nextTask": "P1R-M1-010"
+    },
+    {
+      "id": "non-authoritative-security-candidate",
+      "asmIds": [
+        "ASM-0230"
+      ],
+      "scope": "Phase 1 only freezes non-authoritative cheating boundary; risk, privacy and appeal design is deferred",
+      "downstreamOwner": "future-risk-privacy-appeal-owner",
+      "disposition": "OUT_OF_SCOPE_NON_AUTHORITATIVE_ONLY",
+      "nextTask": "FUTURE_RISK_PRIVACY_APPEAL"
+    },
+    {
+      "id": "prohibited-product-claim",
+      "asmIds": [
+        "ASM-0244"
+      ],
+      "scope": "official test-bank product claim is prohibited without rights evidence and independent approval",
+      "downstreamOwner": "legal-rights-approval",
+      "disposition": "PROHIBITED_PENDING_AUTHORIZATION",
+      "nextTask": "FUTURE_LEGAL_RIGHTS_APPROVAL"
+    },
+    {
+      "id": "downstream-learning-and-ui",
+      "asmIds": [
+        "ASM-0218",
+        "ASM-0219",
+        "ASM-0221",
+        "ASM-0222",
+        "ASM-0223",
+        "ASM-0224",
+        "ASM-0225",
+        "ASM-0226",
+        "ASM-0233",
+        "ASM-0234",
+        "ASM-0253",
+        "ASM-0254",
+        "ASM-0255",
+        "ASM-0256",
+        "ASM-0257",
+        "ASM-0258",
+        "ASM-0259",
+        "ASM-0260",
+        "ASM-0261"
+      ],
+      "scope": "daily stream, D+1/D+7, mastery, mistake repair, reward/UI and task presentation remain downstream-owned",
+      "downstreamOwner": "learning-service/gamification-service/UI",
+      "disposition": "OUT_OF_SCOPE_DOWNSTREAM",
+      "nextTask": "P1R-M1-013/M4"
+    },
+    {
+      "id": "placement-plan-inputs",
+      "asmIds": [
+        "ASM-0262",
+        "ASM-0263",
+        "ASM-0264",
+        "ASM-0265",
+        "ASM-0266"
+      ],
+      "scope": "placement and user plan inputs are not assessment-session ownership",
+      "downstreamOwner": "learning-service",
+      "disposition": "OUT_OF_SCOPE_PLACEMENT_PLAN_INPUT",
+      "nextTask": "P1R-M1-012"
+    }
+  ],
+  "adversarialCases": [
+    "CONFIG_UNKNOWN_FIELD",
+    "CONFIG_DUPLICATE_ROUTE",
+    "CONFIG_RUNTIME_PROMOTION",
+    "COMPATIBILITY_PROMOTION_DRIFT",
+    "CANONICAL_ROUTE_DRIFT",
+    "MISSING_PEP_TRUSTED_FACT",
+    "AUTHZ_DEFAULT_ALLOW",
+    "SESSION_STATE_ENUM_DRIFT",
+    "ATTEMPT_STATE_ENUM_DRIFT",
+    "REPORT_STATE_ENUM_DRIFT",
+    "ATTEMPT_ACCEPTED_REJECTION_LEAK",
+    "ATTEMPT_ASSESSED_REJECTION_LEAK",
+    "ATTEMPT_REJECTED_OUTCOME_LEAK",
+    "REPORT_GENERATING_OUTCOME_LEAK",
+    "REPORT_READY_FAILURE_LEAK",
+    "REPORT_PARTIAL_FAILURE_LEAK",
+    "REPORT_FAILED_OUTCOME_LEAK",
+    "PIN_FIELD_REMOVAL",
+    "PIN_UNKNOWN_FIELD",
+    "CHECKPOINT_NOT_SESSION_SCOPED",
+    "CHECKPOINT_MISSING_BASE_STATE_VERSION",
+    "CHECKPOINT_SAME_VERSION_REPLAY_WEAKENED",
+    "CHECKPOINT_OLD_VERSION_NOT_409",
+    "CHECKPOINT_SAME_VERSION_DIFFERENT_DIGEST_NOT_409",
+    "CHECKPOINT_TERMINAL_NOT_409",
+    "ANSWER_ONEOF_REMOVAL",
+    "ANSWER_NOT_GUARD_REMOVAL",
+    "ANSWER_NOT_GUARD_WEAKENED",
+    "ANSWER_UNKNOWN_TYPE",
+    "CLIENT_SCORE_INJECTION",
+    "CLIENT_RULE_INJECTION",
+    "SUBMISSION_DIGEST_REMOVAL",
+    "OUTCOME_OBJECTIVE_NUMERATOR_REMOVAL",
+    "OUTCOME_REASON_TRACE_REMOVAL",
+    "SUBJECTIVE_OBJECTIVE_IMPERSONATION",
+    "REPORT_VERSION_REMOVAL",
+    "REPORT_MASTERY_LEAK",
+    "LEGACY_ATTEMPT_ROUTE_NOT_DEPRECATED",
+    "LEGACY_DEPRECATION_DRIFT",
+    "B2_LEGACY_ROUTE_NOT_DEPRECATED",
+    "EVENT_RAW_RESPONSE_LEAK",
+    "EVENT_RAW_RULE_LEAK",
+    "EVENT_RECORDING_LEAK",
+    "EVENT_SUBJECTIVE_OUTCOME_LEAK",
+    "EVENT_CANONICAL_PROMOTION",
+    "EVENT_GAP_CLOSURE",
+    "AI_AUTHORITY_CLAIM",
+    "ANTI_CHEAT_AUTHORITY_CLAIM",
+    "OFFICIAL_CERTIFICATION_CLAIM",
+    "RUNTIME_STATUS_PROMOTION"
+  ]
+}

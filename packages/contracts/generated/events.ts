@@ -326,12 +326,12 @@ export type B9PublicProjectionInvalidated = { tenantId: string; projectionKey: s
 /**
  * Generated from the contract source.
  */
-export type B10AssessmentAttemptSubmitted = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId: string; contentEpoch: number; attemptVersion: number; submissionDigest: string; itemCount: number; gradingRuleVersion: string; submittedAt: string; };
+export type B10AssessmentAttemptSubmitted = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId?: string; contentEpoch: number; snapshotId: string; snapshotHash: string; pin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; attemptVersion: number; submissionId: string; submissionDigest: string; itemCount: number; answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; gradingRuleVersion?: string; submittedAt: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B10AssessmentAttemptAssessed = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId: string; attemptVersion: number; assessmentVersion: string; scoreBucket: "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; masterySignal: "NO_SIGNAL" | "WEAK" | "STABLE" | "MASTERED" | "RETRY"; mistakeCodes: ReadonlyArray<string>; assessedAt: string; };
+export type B10AssessmentAttemptAssessed = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId?: string; contentEpoch: number; snapshotId: string; snapshotHash: string; pin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; attemptVersion: number; submissionId: string; submissionDigest: string; answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; reportId: string; reportVersion: number; reportRuleVersion: string; reportStatus: "READY" | "PARTIAL" | "FAILED"; reportDigest: string; asOf: string; assessmentFactWatermark: string; outcomeKind: "OBJECTIVE"; objectiveNumerator: number; objectiveDenominator: number; scoreBucket: "ZERO" | "PARTIAL" | "FULL"; errorCategory: "NONE" | "CHOICE" | "MATCHING" | "ORDERING" | "CLOZE" | "TEXT" | "CONTENT" | "RULE"; reasonTrace: ReadonlyArray<{ itemId?: number; ruleCode: string; ruleVersion: string; category: "NONE" | "CHOICE" | "MATCHING" | "ORDERING" | "CLOZE" | "TEXT" | "CONTENT" | "RULE"; reasonCode?: string; evidenceRef?: string; }>; outcomeDigest: string; mistakeCodes: ReadonlyArray<string>; assessedAt: string; };
 
 /**
  * Generated from the contract source.
