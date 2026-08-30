@@ -118,10 +118,25 @@
     },
     {
       "taskId": "P1R-M1-007",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-30T06:57:16+08:00",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
+      "recordedAt": "2026-08-30T08:55:08+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-005 and P1R-M1-006 are accepted and pushed at dev@93c764f31daa22c4c58228241a15c5dbd03930ec. M1-007 starts the D2 reliability contract for Outbox, consumer dedupe, bounded retry, DLQ, replay, Saga compensation, two-person recovery and receipts without promoting B26 or M2 Kafka runtime evidence.",
+      "reason": "Final source 6ce98a95b75e7efca05cc511f5f773dbf2be08a4 closed three recorded REWORK cycles and was accepted by independent reviewer agent:m1_007_independent_review:gpt-5.6-luna:max plus a second Luna Max cross-review with no P1/P2 findings. The result is D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; B26 remains static-only, pending and NO-GO, while M2-004/005/006 retain runtime ownership.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-007/manifest.json"
     }
   ]

@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+  "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "c1769e2b7310b301e596c5edfe9ad2d2f824bf6fefa04555e6d13a8029f7be4f"
+      "digest": "ff04aa9ad3ef385cad0cd1f643b9baf68713f41945abd1a4c40665e58a95589d"
     },
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -53,10 +53,22 @@
     "originalFinishedAt": "2026-08-30T02:12:45+08:00",
     "originalReviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d",
-    "currentSourceRevalidationTask": "P1R-M1-006"
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+      }
+    ],
+    "previousCurrentSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-006",
+    "currentSourceRevalidationTask": "P1R-M1-007"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
-  "finishedAt": "2026-08-30T06:31:47+08:00",
+  "finishedAt": "2026-08-30T08:49:40+08:00",
   "actors": [
     "m1_004_evidence",
     "m1_004_evidence/data_owner_audit",
@@ -94,7 +106,8 @@
     "independent Luna Max adversarial acceptance review at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb",
     "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
     "pnpm p1r:ci:check",
-    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "independent Luna Max current-source revalidation review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
   ],
   "results": [
     {
@@ -131,6 +144,11 @@
       "check": "design-consistency",
       "status": "PASS",
       "details": "A Terra Ultra read-only review found the owner, tenant, retention, Gateway and migration policy consistent across the architecture, security and Redis documents; all runtime claims remain explicitly NOT_RUNTIME_VERIFIED."
+    },
+    {
+      "check": "m1-007-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_007_independent_review:gpt-5.6-luna:max revalidated the accepted M1-005 data-owner semantics at source 6ce98a95b75e7efca05cc511f5f773dbf2be08a4; owner governance, Redis and B25 static checks plus contract and P1R regression remain passing. M2-004 runtime evidence remains incomplete."
     }
   ],
   "rollbackEvidence": [
@@ -147,6 +165,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

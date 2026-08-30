@@ -2,14 +2,14 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+  "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
   "artifactDigests": [
     {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"},
-    {"path": "package.json", "algorithm": "sha256", "digest": "c1769e2b7310b301e596c5edfe9ad2d2f824bf6fefa04555e6d13a8029f7be4f"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "ff04aa9ad3ef385cad0cd1f643b9baf68713f41945abd1a4c40665e58a95589d"},
     {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "bb970ccea6931dde4fc760e865b4138d16a7303b5f1cff07d48f74e219609567"},
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "a60687c0f51da854cb0622e89b3e0a8d7733010bd91beba9195fec2700369097"},
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "2d72011d11d8aa86a8c096e19ab9aa291c3dd89c3894b72ef7cc736d5a2f5974"},
     {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "1b114da95da5e07b9bec7185ea3df1121d7fc721c0a86f4e4f2ed37bca5ccaba"},
-    {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "55283fe8d80aac9520513e349030e50180aacf26fdc1d98cbce4f1d3e7e820bb"},
+    {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "a1dfc6cf2faf0930d548baf0f50064b7feba9fce47bad8686938eaa033e34577"},
     {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "e42afaef870b4c5e75c2167be12192b49f66312040af8d1f38fd5d4cf6a49fae"},
     {"path": "packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json", "algorithm": "sha256", "digest": "1375999135fcc4137be1c2450304e759f7a07e2176d13aad465c2c11aa365c4a"},
     {"path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json", "algorithm": "sha256", "digest": "f3043d2fe3fccd09dfd0d23be027cab7767f0b92502b5117478d94677f8f139d"},
@@ -29,15 +29,15 @@
     {"path": "packages/contracts/src/event-schema-assertions.ts", "algorithm": "sha256", "digest": "77a80209599c0c68b763e7fe51d192df3dfed4075e37a27ab4f13a9e4d050235"},
     {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "a4d75aec10a37cff96d445cd9c29df2b74fafa511fe421374e08758ff3d50c0a"},
     {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"},
-    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "b84d7ee35abb55d4c5f77f544cd6c488a5e4c6803189cd40bab1a093f8fd08d1"},
+    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "e31f8116a9c5622c69a43c7cb1033649a2d2896bab977e60655849428271224c"},
     {"path": "scripts/contracts/event-governance-projection.mjs", "algorithm": "sha256", "digest": "67b1f1a83755c057b50ca12506f7db72ad73d6cccb35dd461ee4bcfb813a82bf"},
     {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "241c06d11f1b96311fdb81a0a09952d4732f3d6c5b6f239d94f3f9e8564eb2a3"},
     {"path": "scripts/contracts/generate-contracts.mjs", "algorithm": "sha256", "digest": "2d8dacc70e3682f3ca77f259a2f75443673e57d6c6255c669fb35d62bae9f30b"},
-    {"path": "scripts/contracts/validate-contracts.mjs", "algorithm": "sha256", "digest": "60f04f6aec364e4c22a7a53ee115a7d61cc3503bcf8b02203e27ebdffad67d16"},
+    {"path": "scripts/contracts/validate-contracts.mjs", "algorithm": "sha256", "digest": "9f28a00b29d6264157ba4aaa99298c455ced6a94a465da96a726d6993da7ae87"},
     {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "bff00af12ab60954ebbda041c57161aede79d8a3f6b3fe724154240d2470cd52"},
     {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "1306440c6fe3630cbaa1ce35bc40fa5140957b977b8b48c17a93ae147b859684"},
     {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "779ad2e8369113ed635c93edbc1e7560dc51a361c1c00ea5ccfd2b8f06adac87"},
-    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "85047c9989ce3d34b05ec99a87bf1e91435889489f52b1e21334df378bd2ba0c"},
+    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "b5545129c1ae45dead404e2cfe9a90a05168891f615fe693dce317954d38bb9e"},
     {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "7717e54ca9e3bda51c38aa8d81cd15207dbea557b3787d31a07359ff93463cc0"},
     {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "49a031a6c8d7a1a9ee0a281cf5863428ca778431bdc500265ea74c425739c853"},
     {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "cae21babe71dba069e4bec57b57df3cc2876a3a50824d57c6421e486a6b8b16b"}
@@ -51,8 +51,23 @@
     "b26RuntimeGate": "static-only",
     "b26DefaultDecision": "NO-GO"
   },
+  "provenance": {
+    "originalSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "originalFinishedAt": "2026-08-30T06:31:47+08:00",
+    "originalReviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+    "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+      }
+    ],
+    "previousCurrentSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-006",
+    "currentSourceRevalidationTask": "P1R-M1-007"
+  },
   "startedAt": "2026-08-30T02:24:20+08:00",
-  "finishedAt": "2026-08-30T06:31:47+08:00",
+  "finishedAt": "2026-08-30T08:49:40+08:00",
   "actors": [
     "m1_005_data_docs",
     "root-coordinator"
@@ -117,7 +132,8 @@
     "pnpm test:b8",
     "pnpm plan:p1r:check",
     "git diff --check",
-    "independent Luna Max adversarial acceptance review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+    "independent Luna Max adversarial acceptance review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "independent Luna Max current-source revalidation review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
   ],
   "results": [
     {
@@ -154,6 +170,11 @@
       "check": "independent-review",
       "status": "PASS",
       "details": "Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max accepted source 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a with zero current-source P1/P2 blockers after adversarial governance, fragment, payload, compatibility, B26 and runtime-claim mutation checks."
+    },
+    {
+      "check": "m1-007-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_007_independent_review:gpt-5.6-luna:max revalidated the accepted M1-006 event-governance semantics at source 6ce98a95b75e7efca05cc511f5f773dbf2be08a4. Catalog, generated AsyncAPI, B26 static bindings, compatibility and full event-governance delegation remain passing; M1-007 adds D2 reliability policy without changing the 154-event wire catalog."
     }
   ],
   "requestIds": [],
@@ -162,16 +183,16 @@
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "M1-006 source work is isolated in commits 3a9b84f, 7cdbdf7, e846b16, 02b905f, 3b03e34, d636df2, ee5efab, 868c217 and 3e4ba85 after accepted baseline 463c4b2; generated artifacts are reproducible from the catalog/fragments and either task source commit can be reverted without a runtime data migration."
+      "details": "M1-006 source work is isolated in commits 3a9b84f, 7cdbdf7, e846b16, 02b905f, 3b03e34, d636df2, ee5efab, 868c217 and 3e4ba85 after accepted baseline 463c4b2; M1-007 current-source revalidation at 6ce98a9 preserves that provenance, generated artifacts remain reproducible, and neither D2 task requires a runtime data migration."
     }
   ],
   "knownGaps": [
-    "P1R-M1-007 must freeze the complete Outbox, consumer dedupe, retry budget, DLQ, replay, Saga, compensation and manual recovery contract; M1-006 does not claim those reliability semantics are complete.",
-    "P1R-M2-005 must create and prove real Kafka brokers, topics, ACLs and Outbox-to-broker-to-consumer delivery, duplicate, disorder, outage, restart, DLQ and replay behavior.",
+    "P1R-M1-007 accepted the static D2 Outbox, consumer dedupe, retry budget, DLQ, replay, Saga, compensation and manual recovery contract at 6ce98a9; this revalidation does not promote any runtime behavior.",
+    "P1R-M2-005 must create and prove real Kafka brokers, topics, ACLs and Outbox-to-broker-to-consumer delivery, duplicate, disorder, outage, restart, DLQ and replay behavior; P1R-M2-006 must implement and prove Saga, compensation, scheduling, manual recovery and immutable audit runtime behavior.",
     "The 147 historical candidates and remaining EVENT-GAP bindings stay planned for P1R-M1-008 through P1R-M1-018 and their runtime tasks; they are not canonical Kafka routes.",
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

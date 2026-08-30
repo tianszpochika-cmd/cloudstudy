@@ -1,0 +1,263 @@
+{
+  "taskId": "P1R-M1-007",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+  "artifactDigests": [
+    {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "ff04aa9ad3ef385cad0cd1f643b9baf68713f41945abd1a4c40665e58a95589d"},
+    {"path": "config/b25-data.json", "algorithm": "sha256", "digest": "4ffd818b66b8b2ec7101690a5c4f11fe20dd2b201ab75a68ca87d71d4ea45d20"},
+    {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "bb970ccea6931dde4fc760e865b4138d16a7303b5f1cff07d48f74e219609567"},
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "2d72011d11d8aa86a8c096e19ab9aa291c3dd89c3894b72ef7cc736d5a2f5974"},
+    {"path": "config/p1r-data-ownership.v1.json", "algorithm": "sha256", "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"},
+    {"path": "config/p1r-saga-recovery.v1.json", "algorithm": "sha256", "digest": "9ee1ac164304afe7500615cc433c1c1dc9ccdde5eaba2ed152b0f507238278ac"},
+    {"path": "database/redis/keyspace.registry.json", "algorithm": "sha256", "digest": "cccd4f9ea1c2ce91ca045694de1c76d2ee0c0ff15b908b815a52321319e4af9d"},
+    {"path": "docs/02-architecture/data-flow.md", "algorithm": "sha256", "digest": "af96930882bfce0656644ec42c64a2e10e117ff4e53c383e3581bfb0b853888d"},
+    {"path": "docs/02-architecture/event-reliability-and-recovery.md", "algorithm": "sha256", "digest": "d4d8bcb189387d641d3707db7ec08b4327b9a14c79d31a430b107a42eac6f5ae"},
+    {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "1b114da95da5e07b9bec7185ea3df1121d7fc721c0a86f4e4f2ed37bca5ccaba"},
+    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "c9f5b0d0d1d053ed9faae5c3ffb8de7d3161e3dac9685338d3cf3a73a950f6fe"},
+    {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "a1dfc6cf2faf0930d548baf0f50064b7feba9fce47bad8686938eaa033e34577"},
+    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "e42afaef870b4c5e75c2167be12192b49f66312040af8d1f38fd5d4cf6a49fae"},
+    {"path": "packages/contracts/events/v1/fragments/b26-reliability.events.json", "algorithm": "sha256", "digest": "ae08075079047cc53810fcea92b0fc6c2da6719d956610bf0b915d7097883627"},
+    {"path": "packages/contracts/events/v1/reliability-policy.json", "algorithm": "sha256", "digest": "0bb294b858b5536ff0c385aad67a2083d1c7839d60b970e02ea88b63d5e3a34b"},
+    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "d0dd2d678ac6841267b9d42794b7d8654cddcb51a5b942d954fc813b373b5024"},
+    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "3b0223321373c3228e2d1ed32e84e2c650d73488a3a51ca8119c44c0db83267d"},
+    {"path": "packages/contracts/generated/schemas.ts", "algorithm": "sha256", "digest": "ffc5dfb0113e597cc6d8585e11c61f77f2c5a5b3d19838f7530eed0bd6886538"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "1ab22b4916c2decede6552a69eb32da82c5b3e3bb4340da574a4610f6bd52f24"},
+    {"path": "packages/contracts/schemas/v1/registry.json", "algorithm": "sha256", "digest": "b24bfbd877329711bc4c4d71ef0f9627fb1fabec178872e7f7192a20b55d4c4d"},
+    {"path": "packages/contracts/src/event-schema-assertions.ts", "algorithm": "sha256", "digest": "77a80209599c0c68b763e7fe51d192df3dfed4075e37a27ab4f13a9e4d050235"},
+    {"path": "scripts/audit/p1r-auth-contract-check.mjs", "algorithm": "sha256", "digest": "97f4accbc7c4abb89d948de5c9200627971840ca047e7231381499e762b299e2"},
+    {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"},
+    {"path": "scripts/audit/p1r-data-ownership-check.mjs", "algorithm": "sha256", "digest": "327c59f7e6a3577b68704dc4dbfce37024d4fa0937ca6162b4187cbca8d55c4a"},
+    {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "a4d75aec10a37cff96d445cd9c29df2b74fafa511fe421374e08758ff3d50c0a"},
+    {"path": "scripts/audit/p1r-event-reliability-check.mjs", "algorithm": "sha256", "digest": "4e2554c3132a0d326152cf76aa2549f3e72d838bcc2a4673dfc9f3ce854551f3"},
+    {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "98210c139d1c1e02098451303aa874958d449a0ad693099c2941e48f2898000b"},
+    {"path": "scripts/audit/p1r-iam-policy-contract-check.mjs", "algorithm": "sha256", "digest": "87e1634ec4b917dd0068be3d113e02682269516f1da8a6429b4505a175d8b935"},
+    {"path": "scripts/audit/p1r-saga-recovery-check.mjs", "algorithm": "sha256", "digest": "bd08243a9cb3a9fe8b0903825295acfb9a6d296aef26bf01b57572c719b14268"},
+    {"path": "scripts/audit/verify-phase1-rebaseline-plan.mjs", "algorithm": "sha256", "digest": "6fbac54e1ead9c2dc1b013b423c3fbb25a345a633070b5f7b2bad2077d6f8d40"},
+    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "bff00af12ab60954ebbda041c57161aede79d8a3f6b3fe724154240d2470cd52"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "1306440c6fe3630cbaa1ce35bc40fa5140957b977b8b48c17a93ae147b859684"},
+    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "e31f8116a9c5622c69a43c7cb1033649a2d2896bab977e60655849428271224c"},
+    {"path": "scripts/contracts/event-governance-projection.mjs", "algorithm": "sha256", "digest": "67b1f1a83755c057b50ca12506f7db72ad73d6cccb35dd461ee4bcfb813a82bf"},
+    {"path": "scripts/contracts/generate-contracts.mjs", "algorithm": "sha256", "digest": "2d8dacc70e3682f3ca77f259a2f75443673e57d6c6255c669fb35d62bae9f30b"},
+    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "241c06d11f1b96311fdb81a0a09952d4732f3d6c5b6f239d94f3f9e8564eb2a3"},
+    {"path": "scripts/contracts/validate-contracts.mjs", "algorithm": "sha256", "digest": "9f28a00b29d6264157ba4aaa99298c455ced6a94a465da96a726d6993da7ae87"},
+    {"path": "scripts/database/validate-b25-data.mjs", "algorithm": "sha256", "digest": "28ae79909f565ae95319cdc2a2bc1047b39fb88847c887a9c3541c798c9d9b57"},
+    {"path": "scripts/database/validate-redis-keyspace.mjs", "algorithm": "sha256", "digest": "4ca0067614f63dd40d41855615f904db245391867867dd9a026a8ce3fa2f05fd"},
+    {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "779ad2e8369113ed635c93edbc1e7560dc51a361c1c00ea5ccfd2b8f06adac87"},
+    {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "49a031a6c8d7a1a9ee0a281cf5863428ca778431bdc500265ea74c425739c853"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "cae21babe71dba069e4bec57b57df3cc2876a3a50824d57c6421e486a6b8b16b"},
+    {"path": "tests/p1r/p1r-api-contract.test.mjs", "algorithm": "sha256", "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"},
+    {"path": "tests/p1r/p1r-auth-contract.test.mjs", "algorithm": "sha256", "digest": "4b98459122f7b54c10bfe9c26713f1693dbe4e326c78394b8631e113bf153d9d"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "7717e54ca9e3bda51c38aa8d81cd15207dbea557b3787d31a07359ff93463cc0"},
+    {"path": "tests/p1r/p1r-data-ownership.test.mjs", "algorithm": "sha256", "digest": "45ff98545bad7954ae0f095e31f232a3ba440e3beb54db77432ae225f1dd89a0"},
+    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "b5545129c1ae45dead404e2cfe9a90a05168891f615fe693dce317954d38bb9e"},
+    {"path": "tests/p1r/p1r-event-reliability.test.mjs", "algorithm": "sha256", "digest": "eb4ce3a7bfcbee6c89835e113e84e62f84cba60119b006276e580c48ce1133f7"},
+    {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "f727005d07882112088ce8a369effd03a99feffc2a325e3577903ee8fb400ffc"},
+    {"path": "tests/p1r/p1r-iam-policy-contract.test.mjs", "algorithm": "sha256", "digest": "2c780e381bbd5b14cb2fa33c15ccabad14519c3a56d6ca51d7d4a23d06b9a9b6"},
+    {"path": "tests/p1r/p1r-saga-recovery-policy.test.mjs", "algorithm": "sha256", "digest": "db45dc7c7098a8eab7b34a26de2740888069b3a08930a154c79cce06d8e96f9b"}
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "93c764f31daa22c4c58228241a15c5dbd03930ec",
+    "sourceRange": "93c764f31daa22c4c58228241a15c5dbd03930ec..6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "m2RuntimeTasks": {
+      "P1R-M2-004": "NOT_COMPLETED",
+      "P1R-M2-005": "NOT_COMPLETED",
+      "P1R-M2-006": "NOT_COMPLETED"
+    },
+    "releaseBlocker": "P1R-M0-006 BLOCKED",
+    "remoteSource": "origin/dev@6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+  },
+  "startedAt": "2026-08-30T07:03:55+08:00",
+  "finishedAt": "2026-08-30T08:49:40+08:00",
+  "actors": [
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-007",
+    "INT-P1-017",
+    "E2E-P1-RECOVERY",
+    "ARCH-EVT-001",
+    "ARCH-DATA-001"
+  ],
+  "journeys": [],
+  "pages": [],
+  "rules": [
+    "Event identity is server-assigned; original facts self-root, derived control events preserve rootEventId and bind causationEventId to their immutable source event.",
+    "Each owner writes its domain fact and owner-local Outbox record atomically, publishes with a lease and broker acknowledgement, and claims at-least-once rather than exactly-once delivery.",
+    "Each consumer atomically commits its owner-local effect and dedupe receipt before offset commit; retry is bounded and classified, DLQ preserves original lineage, and replay uses the same consumer path.",
+    "Ordering is aggregate-scoped and gaps or stale versions defer or reconcile rather than silently apply; workflow coordinates Saga and compensation without foreign-schema writes, Kafka RPC or distributed 2PC.",
+    "Manual recovery binds an immutable action digest, server-derived requester and independent approver, pre/post reconciliation, audit correlation and a closure receipt before CLOSED.",
+    "Static policy, generated schemas, tests and B26 candidates cannot promote M2 runtime status or release readiness."
+  ],
+  "integrations": [
+    "INT-P1-017"
+  ],
+  "e2eScenarios": [
+    "E2E-P1-RECOVERY"
+  ],
+  "serviceOwners": [
+    "workflow-service",
+    "audit-service",
+    "domain-event-producer-services",
+    "domain-event-consumer-services"
+  ],
+  "dataOwners": [
+    "event-producing-owner-service",
+    "event-consuming-owner-service",
+    "workflow-service",
+    "audit-service"
+  ],
+  "statusTrajectory": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED"
+  ],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "64b5f96ba6b88b672936448d030d0c3902a1fa01",
+      "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "details": "Saga/recovery allowed surplus unsafe transitions; root/causation semantics, error routing and several JSON Schema conditionals were not fully failure-closed. Follow-ups ce3e3bb, 12ab943 and 93d75d7 closed the findings."
+    },
+    {
+      "round": 2,
+      "sourceCommit": "93d75d7bc8c1c95a27c5eb463109fc744610d912",
+      "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "details": "G1 expected five JSON Schemas while the canonical registry contained thirteen, and events[*].compatibility accepted an unknown nested key. Commit a6cdb51 closed both regressions."
+    },
+    {
+      "round": 3,
+      "sourceCommit": "a6cdb51a6057bfdadd0a5ac7894cab9ffff8511d",
+      "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "details": "The independent reliability gate did not delegate the complete event-governance checks, allowing producer, dataOwner, publish/subscribe operation, payload reference, governance status or correlation drift; the Outbox PUBLISHED schema also allowed attempt zero. Commit 6ce98a9 closed these bypasses."
+    },
+    {
+      "round": 4,
+      "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+      "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "details": "All current-source P1/P2 findings are closed; the final review accepted the D2 contract and retained every static/runtime boundary."
+    }
+  ],
+  "secondaryReviews": [
+    {
+      "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+      "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "details": "Secondary read-only review accepted the same source and ran the combined reliability plus Saga suite at 89/89."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:event-reliability:check -- --json",
+    "pnpm p1r:saga-recovery:check -- --json",
+    "node --test tests/p1r/p1r-event-reliability.test.mjs",
+    "node --test tests/p1r/p1r-event-reliability.test.mjs tests/p1r/p1r-saga-recovery-policy.test.mjs",
+    "pnpm test:p1r",
+    "node --test tests/g/g1-contract-data.test.mjs",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm typecheck",
+    "node --test tests/b26/b26-event-runtime.test.mjs",
+    "pnpm p1r:auth-contract:check",
+    "pnpm p1r:iam-policy-contract:check",
+    "pnpm p1r:gateway-contract:check",
+    "pnpm p1r:data-ownership:check -- --json",
+    "pnpm p1r:event-governance:check -- --json",
+    "node scripts/database/validate-redis-keyspace.mjs",
+    "node scripts/database/validate-b25-data.mjs --mode static",
+    "pnpm plan:p1r:check",
+    "pnpm p1r:ci:check",
+    "pnpm test:g",
+    "git diff --check",
+    "independent Luna Max acceptance review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+    "secondary Luna Max acceptance review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+  ],
+  "results": [
+    {
+      "check": "event-reliability-contract",
+      "status": "PASS",
+      "details": "The standalone audit reports D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED for 7 canonical events and 8 reliability record schemas, with 5 Outbox states, 6 consumer states and a retry maximum of 5. Primary adversarial reliability tests pass 78/78."
+    },
+    {
+      "check": "saga-compensation-and-manual-recovery",
+      "status": "PASS",
+      "details": "The Saga audit freezes 7 Saga states, 8 step states, 4 compensation states, 10 recovery states, 22 receipt fields and retry budget 5. Secondary combined reliability plus Saga tests pass 89/89."
+    },
+    {
+      "check": "contract-generation-and-validation",
+      "status": "PASS",
+      "details": "Contract merge and no-write generation are current; validation passes 377 operations, 536 OpenAPI schemas, 154 events, 104 event payload schemas, 7 AsyncAPI channels, 21 AsyncAPI operations and 13 JSON Schemas. Immutable contract/governance compatibility reports no breaking drift."
+    },
+    {
+      "check": "regression-gates",
+      "status": "PASS",
+      "details": "P1R passes 276/276, G1 passes 6/6 with 13 JSON Schemas, typecheck passes 7/7 and the targeted B26 suite passes 13/13. Auth, IAM, Gateway, data ownership, event governance, event reliability, Saga recovery, Redis, B25 static, plan, CI, diff and compatibility checks pass."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "All sources and validators retain D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED. B26 remains static-only / pending / NO-GO; P1R-M2-004, P1R-M2-005 and P1R-M2-006 remain incomplete, and P1R-M0-006 remains BLOCKED."
+    },
+    {
+      "check": "three-rework-review-closure",
+      "status": "PASS",
+      "details": "The primary independent reviewer issued REWORK at 64b5f96, 93d75d7 and a6cdb51, then ACCEPTED 6ce98a9 after all current-source P1/P2 findings closed. The secondary independent reviewer also ACCEPTED 6ce98a9."
+    },
+    {
+      "check": "m1-002-through-m1-006-current-source-revalidation",
+      "status": "PASS",
+      "details": "The primary M1-007 reviewer confirmed that the accepted M1-002, M1-003, M1-004, M1-005 and M1-006 D2 semantics remain valid at 6ce98a9; their manifests retain original acceptance provenance and bind current-source Git-blob digests."
+    },
+    {
+      "check": "historical-full-g-context",
+      "status": "NOT_APPLICABLE",
+      "details": "The non-gating full historical G suite remains 39/41 only because the pre-existing G0 and G3 source-marker assertions still fail; the task-relevant G1 slice passes 6/6."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "M1-007 source is isolated after checkpoint 93c764f in commits 64b5f96, ce3e3bb, 12ab943, 93d75d7, a6cdb51 and 6ce98a9; it adds repository policy, schemas, validators, tests and documentation without a database migration, broker mutation or runtime event. Revert those source commits in reverse order and rerun generation, validation, compatibility and regression gates; do not alter immutable baselines 463c4b2 or 868c217."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004 remains incomplete and must provide real independent-schema grants, migration, tenant-denial, Redis rebuild/restart and owner lifecycle evidence; M1-007 adds no database or Redis runtime proof.",
+    "P1R-M2-005 remains incomplete and must prove real Kafka brokers/topics/ACLs, Outbox persistence and publishing, consumer dedupe, bounded retry, DLQ/replay, duplicate/disorder/outage/restart behavior.",
+    "P1R-M2-006 remains incomplete and must prove real Saga orchestration, compensation, scheduled work, two-person manual recovery, reconciliation and immutable audit/closure receipts.",
+    "B26 remains a historical static candidate with runtimeGate=static-only, runtimeStatus=pending and defaultDecision=NO-GO; it is not production or runtime evidence.",
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
+    "The 147 historical event candidates and remaining EVENT-GAP bindings stay planned for later M1 domain tasks and are not promoted by this reliability contract.",
+    "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy source marker; G1 passes 6/6 and this pre-existing gap is not masked."
+  ],
+  "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}

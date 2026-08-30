@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+  "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
   "artifactDigests": [
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -42,12 +42,12 @@
     {
       "path": "packages/contracts/README.md",
       "algorithm": "sha256",
-      "digest": "55283fe8d80aac9520513e349030e50180aacf26fdc1d98cbce4f1d3e7e820bb"
+      "digest": "a1dfc6cf2faf0930d548baf0f50064b7feba9fce47bad8686938eaa033e34577"
     },
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "a60687c0f51da854cb0622e89b3e0a8d7733010bd91beba9195fec2700369097"
+      "digest": "2d72011d11d8aa86a8c096e19ab9aa291c3dd89c3894b72ef7cc736d5a2f5974"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
@@ -68,12 +68,26 @@
     "originalFinishedAt": "2026-08-29T22:09:32+08:00",
     "originalReviewer": "m1_002_final_review",
     "originalAcceptedContractBaseline": "0a985f00c521e8f27a54f891fc1526178ba0320c",
-    "previousCurrentSourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-004",
-    "currentSourceRevalidationTask": "P1R-M1-006"
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-004",
+        "sourceCommit": "e4618b324e5a93926da0750a8100fc9377ac97ec"
+      },
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+      },
+      {
+        "taskId": "P1R-M1-007",
+        "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+      }
+    ],
+    "previousCurrentSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-006",
+    "currentSourceRevalidationTask": "P1R-M1-007"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
-  "finishedAt": "2026-08-30T06:31:47+08:00",
+  "finishedAt": "2026-08-30T08:49:40+08:00",
   "actors": [
     "m1_002_auth_contract",
     "m1_002_auth_audit",
@@ -104,7 +118,8 @@
     "independent Luna Max current-source revalidation review at e4618b324e5a93926da0750a8100fc9377ac97ec",
     "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
     "pnpm p1r:ci:check",
-    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "independent Luna Max current-source revalidation review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
   ],
   "results": [
     {
@@ -141,12 +156,17 @@
       "check": "design-consistency",
       "status": "PASS",
       "details": "ADR-0013 and the contract guide describe the same transport matrix and termination semantics; the generated v2 design package contains no conflicting client, redirect URI or password-login prohibition."
+    },
+    {
+      "check": "m1-007-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_007_independent_review:gpt-5.6-luna:max revalidated the accepted M1-002 semantics at source 6ce98a95b75e7efca05cc511f5f773dbf2be08a4; auth, contract generation/validation/compatibility, G1 and the expanded P1R suite remain passing without any runtime promotion."
     }
   ],
   "rollbackEvidence": [
     {
       "status": "PASS",
-      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidation at 3e4ba85 preserves that provenance, and canonical/generated artifacts remain reproducible from fragments."
+      "details": "Original implementation remains isolated in 98380db7 plus strict-test follow-up 25705c4c; current-source revalidations at 3e4ba85 and 6ce98a9 preserve that provenance, and canonical/generated artifacts remain reproducible from fragments."
     }
   ],
   "knownGaps": [
@@ -155,6 +175,6 @@
     "The Gateway D2 policy is accepted by P1R-M1-004; real CORS, CSRF, Origin/Referer, public-path, Redis rate-limit, durable audit and direct-connect runtime enforcement remain owned by P1R-M2-001.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-002-relevant G1 slice passes 6/6 and the independent reviewer confirmed the two failures predate this source commit."
   ],
-  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }
