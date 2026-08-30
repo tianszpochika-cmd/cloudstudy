@@ -204,6 +204,8 @@ if (outcome.outcomeKind === 'SELF_RATING') {
 }
 
 type AcceptedAttempt = B10Attempt & { status: 'ACCEPTED' };
+type AssessedAttempt = B10Attempt & { status: 'ASSESSED' };
+type AssessedAtRejectsNull = Assert<null extends AssessedAttempt['assessedAt'] ? false : true>;
 type GeneratingReport = B10AssessmentReport & { status: 'GENERATING' };
 declare let acceptedAttempt: AcceptedAttempt;
 // @ts-expect-error accepted attempts cannot carry an outcome.

@@ -144,7 +144,7 @@ function makeFixture() {
       assessmentVersion: { type: 'string' },
       outcome: ref('B10AssessmentOutcome'),
       reportId: { type: 'string' },
-      assessedAt: { type: 'string', format: 'date-time' },
+      assessedAt: { type: 'string', format: 'date-time', nullable: true },
       rejectionCode: { type: 'string' },
     }, ['attemptId', 'sessionId', 'status', 'pin', 'itemRulePins', 'answerRuleSetVersion', 'completionRuleVersion', 'submissionId', 'submissionDigest', 'attemptVersion']),
     B10AssessmentSessionCheckpointRequest: closed({
@@ -184,16 +184,30 @@ function makeFixture() {
       retryable: { type: 'boolean' },
     }, ['reportId', 'status', 'pin', 'itemRulePins', 'answerRuleSetVersion', 'completionRuleVersion', ...policy.report.requiredFields]),
   };
-  schemas.B10AttemptSubmission.oneOf = policy.answerSubmission.responseTypes.map((responseType) => closed({
-    itemId: { type: 'integer', minimum: 1 },
-    sequence: { type: 'integer', minimum: 1 },
-    responseType: { const: responseType },
-    responseDigest: { type: 'string' },
-  }, [...policy.answerSubmission.itemRequiredFields]));
+  schemas.B10AttemptSubmission.oneOf = policy.answerSubmission.responseTypes.map((responseType) => {
+    const rawFields = policy.auditRedaction.answerRawFieldsByResponseType[responseType];
+    const rawProperties = Object.fromEntries(rawFields.map((field) => [field, field === 'text'
+      ? { type: 'string' }
+      : { type: 'array', items: { type: 'string' } }]));
+    return closed({
+      itemId: { type: 'integer', minimum: 1 },
+      sequence: { type: 'integer', minimum: 1 },
+      responseType: { const: responseType },
+      responseDigest: { type: 'string' },
+      ...rawProperties,
+    }, [...policy.answerSubmission.itemRequiredFields, ...rawFields]);
+  });
   schemas.B10AttemptSubmission.not = forbiddenAnswerNot();
   schemas.B10Attempt.oneOf = [
     { properties: { status: { enum: ['ACCEPTED', 'ASSESSING'] } }, required: ['status'], not: forbiddenNot(['assessmentVersion', 'outcome', 'reportId', 'assessedAt', 'rejectionCode']) },
-    { properties: { status: { enum: ['ASSESSED'] } }, required: ['status', 'assessmentVersion', 'outcome', 'reportId', 'assessedAt'], not: forbiddenNot(['rejectionCode']) },
+    {
+      properties: {
+        status: { enum: ['ASSESSED'] },
+        assessedAt: { type: 'string', format: 'date-time' },
+      },
+      required: ['status', 'assessmentVersion', 'outcome', 'reportId', 'assessedAt'],
+      not: forbiddenNot(['rejectionCode']),
+    },
     { properties: { status: { enum: ['REJECTED'] } }, required: ['status', 'rejectionCode'], not: forbiddenNot(['assessmentVersion', 'outcome', 'reportId', 'assessedAt']) },
   ];
   schemas.B10AssessmentReport.oneOf = [
@@ -234,6 +248,20 @@ function makeFixture() {
       },
     },
     components: { schemas },
+  };
+  b10OpenApi.paths['/api/v1/assessment/sessions/{sessionId}/attempts'].post['x-audit'] = {
+    required: policy.auditRedaction.submit.required,
+    event: policy.auditRedaction.submit.event,
+    correlation: policy.auditRedaction.submit.correlation,
+    redacted: [...policy.auditRedaction.submit.redacted],
+    logBoundary: policy.auditRedaction.submit.logBoundary,
+  };
+  b10OpenApi.paths['/api/v1/assessment/sessions/{sessionId}/checkpoint'].put['x-audit'] = {
+    required: policy.auditRedaction.checkpoint.required,
+    event: policy.auditRedaction.checkpoint.event,
+    correlation: policy.auditRedaction.checkpoint.correlation,
+    redacted: [...policy.auditRedaction.checkpoint.redacted],
+    logBoundary: policy.auditRedaction.checkpoint.logBoundary,
   };
 
   const b2OpenApi = { openapi: '3.1.0', info: { title: 'B2 fixture', version: '1.0.0' }, paths: {}, components: { schemas: {} } };
@@ -328,6 +356,81 @@ rejectMutation('CHECKPOINT_SAME_VERSION_REPLAY_WEAKENED', (fixture) => { b10Oper
 rejectMutation('CHECKPOINT_OLD_VERSION_NOT_409', (fixture) => { b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put')['x-checkpoint-concurrency'].olderVersion = 'ALLOW'; });
 rejectMutation('CHECKPOINT_SAME_VERSION_DIFFERENT_DIGEST_NOT_409', (fixture) => { b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put')['x-checkpoint-concurrency'].sameVersionDifferentDigest = 'REPLAY'; });
 rejectMutation('CHECKPOINT_TERMINAL_NOT_409', (fixture) => { delete b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put').responses[409]; });
+for (const [name, pathValue] of [
+  ['SUBMIT_AUDIT_SELECTED_OPTION_IDS_REDACTION_MISSING', 'request.body.items[].selectedOptionIds'],
+  ['SUBMIT_AUDIT_PAIRS_REDACTION_MISSING', 'request.body.items[].pairs'],
+  ['SUBMIT_AUDIT_ORDERED_TOKEN_IDS_REDACTION_MISSING', 'request.body.items[].orderedTokenIds'],
+  ['SUBMIT_AUDIT_BLANKS_REDACTION_MISSING', 'request.body.items[].blanks'],
+  ['SUBMIT_AUDIT_TEXT_REDACTION_MISSING', 'request.body.items[].text'],
+  ['SUBMIT_AUDIT_RESPONSE_DIGEST_REDACTION_MISSING', 'request.body.items[].responseDigest'],
+]) {
+  rejectMutation(name, (fixture) => {
+    const redacted = b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/attempts', 'post')['x-audit'].redacted;
+    redacted.splice(redacted.indexOf(pathValue), 1);
+  });
+}
+for (const [name, pathValue] of [
+  ['CHECKPOINT_AUDIT_SELECTED_OPTION_IDS_REDACTION_MISSING', 'request.body.protectedDraft.responses[].selectedOptionIds'],
+  ['CHECKPOINT_AUDIT_PAIRS_REDACTION_MISSING', 'request.body.protectedDraft.responses[].pairs'],
+  ['CHECKPOINT_AUDIT_ORDERED_TOKEN_IDS_REDACTION_MISSING', 'request.body.protectedDraft.responses[].orderedTokenIds'],
+  ['CHECKPOINT_AUDIT_BLANKS_REDACTION_MISSING', 'request.body.protectedDraft.responses[].blanks'],
+  ['CHECKPOINT_AUDIT_TEXT_REDACTION_MISSING', 'request.body.protectedDraft.responses[].text'],
+  ['CHECKPOINT_AUDIT_RESPONSE_DIGEST_REDACTION_MISSING', 'request.body.protectedDraft.responses[].responseDigest'],
+  ['CHECKPOINT_AUDIT_PROTECTED_DRAFT_REDACTION_MISSING', 'request.body.protectedDraft'],
+]) {
+  rejectMutation(name, (fixture) => {
+    const redacted = b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put')['x-audit'].redacted;
+    redacted.splice(redacted.indexOf(pathValue), 1);
+  });
+}
+rejectMutation('SUBMIT_AUDIT_LEGACY_RESPONSE_PATH', (fixture) => {
+  b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/attempts', 'post')['x-audit'].redacted[1] = 'request.body.items[].response';
+});
+rejectMutation('CHECKPOINT_AUDIT_LEGACY_RESPONSE_PATH', (fixture) => {
+  b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put')['x-audit'].redacted[2] = 'request.body.protectedDraft.responses[].response';
+});
+rejectMutation('ATTEMPT_ASSESSED_AT_NULLABLE', (fixture) => {
+  fixture.b10OpenApi.components.schemas.B10Attempt.oneOf[1].properties.assessedAt.nullable = true;
+});
+rejectMutation('ATTEMPT_ASSESSED_AT_BRANCH_OVERRIDE_REMOVAL', (fixture) => {
+  delete fixture.b10OpenApi.components.schemas.B10Attempt.oneOf[1].properties.assessedAt;
+});
+rejectMutation('ANSWER_UNREDACTED_RAW_FIELD_INJECTION', (fixture) => {
+  const answer = fixture.b10OpenApi.components.schemas.B10AttemptSubmission;
+  answer.properties.selfRating = { type: 'boolean' };
+  answer.oneOf[0].properties.selfRating = { type: 'boolean' };
+});
+rejectMutation('ANSWER_BRANCH_MULTI_DISCRIMINATOR', (fixture) => {
+  fixture.b10OpenApi.components.schemas.B10AttemptSubmission.oneOf[0].properties.responseType = {
+    type: 'string',
+    enum: ['CHOICE', 'TEXT'],
+  };
+});
+rejectMutation('ANSWER_RAW_FIELD_OPTIONAL', (fixture) => {
+  const branch = fixture.b10OpenApi.components.schemas.B10AttemptSubmission.oneOf[0];
+  branch.required.splice(branch.required.indexOf('selectedOptionIds'), 1);
+});
+rejectMutation('ANSWER_ROOT_REQUIRED_DRIFT', (fixture) => {
+  fixture.b10OpenApi.components.schemas.B10AttemptSubmission.required.push('selectedOptionIds');
+});
+rejectMutation('SUBMIT_AUDIT_REQUIRED_REMOVAL', (fixture) => {
+  delete b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/attempts', 'post')['x-audit'].required;
+});
+rejectMutation('CHECKPOINT_AUDIT_EVENT_DRIFT', (fixture) => {
+  b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put')['x-audit'].event = 'assessment.checkpoint.saved.v1';
+});
+rejectMutation('SUBMIT_AUDIT_CORRELATION_DRIFT', (fixture) => {
+  b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/attempts', 'post')['x-audit'].correlation = 'request-id-only';
+});
+rejectMutation('CHECKPOINT_AUDIT_LOG_BOUNDARY_REMOVAL', (fixture) => {
+  delete b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/checkpoint', 'put')['x-audit'].logBoundary;
+});
+rejectMutation('SUBMIT_AUDIT_UNKNOWN_FIELD', (fixture) => {
+  b10Operation(fixture, '/api/v1/assessment/sessions/{sessionId}/attempts', 'post')['x-audit'].runtimeSink = 'raw-answer-log';
+});
+rejectMutation('CANONICAL_SUBMIT_AUDIT_DRIFT', (fixture) => {
+  fixture.canonicalOpenApi.paths['/api/v1/assessment/sessions/{sessionId}/attempts'].post['x-audit'].redacted.pop();
+});
 rejectMutation('ANSWER_ONEOF_REMOVAL', (fixture) => { fixture.b10OpenApi.components.schemas.B10AttemptSubmission.oneOf.pop(); });
 rejectMutation('ANSWER_NOT_GUARD_REMOVAL', (fixture) => { delete fixture.b10OpenApi.components.schemas.B10AttemptSubmission.not; });
 rejectMutation('ANSWER_NOT_GUARD_WEAKENED', (fixture) => { fixture.b10OpenApi.components.schemas.B10AttemptSubmission.not.anyOf.pop(); });

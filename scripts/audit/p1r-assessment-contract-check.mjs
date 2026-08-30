@@ -39,6 +39,48 @@ const ANSWER_ITEM_REQUIRED_FIELDS = Object.freeze(['itemId', 'sequence', 'respon
 const ANSWER_FORBIDDEN_FIELDS = Object.freeze([
   'score', 'scoreBucket', 'isCorrect', 'correct', 'answerRule', 'answerRuleVersion', 'ruleDigest', 'gradingRuleVersion',
 ]);
+const ANSWER_RAW_FIELDS_BY_RESPONSE_TYPE = Object.freeze({
+  CHOICE: Object.freeze(['selectedOptionIds']),
+  MATCHING: Object.freeze(['pairs']),
+  ORDERING: Object.freeze(['orderedTokenIds']),
+  CLOZE: Object.freeze(['blanks']),
+  TEXT: Object.freeze(['text']),
+  UNANSWERED: Object.freeze([]),
+});
+const ANSWER_RAW_FIELDS = Object.freeze(ANSWER_TYPES.flatMap((responseType) => ANSWER_RAW_FIELDS_BY_RESPONSE_TYPE[responseType]));
+const SUBMIT_AUDIT_REDACTED_PATHS = Object.freeze([
+  'request.body.items[].responseDigest',
+  ...ANSWER_RAW_FIELDS.map((field) => `request.body.items[].${field}`),
+  'sealedRuleReference', 'answerKey',
+]);
+const CHECKPOINT_AUDIT_REDACTED_PATHS = Object.freeze([
+  'request.body.protectedDraft', 'request.body.protectedDraft.responses[].responseDigest',
+  ...ANSWER_RAW_FIELDS.map((field) => `request.body.protectedDraft.responses[].${field}`),
+  'sealedRuleReference', 'answerKey',
+]);
+const FORBIDDEN_AUDIT_REDACTION_PATHS = Object.freeze([
+  'request.body.items[].response', 'request.body.protectedDraft.responses[].response',
+]);
+const SUBMIT_X_AUDIT = Object.freeze({
+  required: true,
+  event: 'assessment.attempt.submitted.v1',
+  correlation: 'canonical-request-and-trace-ids',
+  redacted: SUBMIT_AUDIT_REDACTED_PATHS,
+  logBoundary: 'Only submissionId, submissionDigest, immutable pin and version metadata may cross audit/event boundaries; raw candidate responses and answer rules are prohibited.',
+});
+const CHECKPOINT_X_AUDIT = Object.freeze({
+  required: true,
+  event: 'assessment.session.checkpointed.v1',
+  correlation: 'canonical-request-and-trace-ids',
+  redacted: CHECKPOINT_AUDIT_REDACTED_PATHS,
+  logBoundary: 'Audit and operational logs may contain only sessionId, checkpointVersion, clientEventId, clientSeq, checkpointDigest, state version and authorization decision; protectedDraft response bodies and rules are prohibited.',
+});
+const EXPECTED_AUDIT_REDACTION_POLICY = Object.freeze({
+  answerRawFieldsByResponseType: ANSWER_RAW_FIELDS_BY_RESPONSE_TYPE,
+  submit: Object.freeze({ operationId: 'submitB10AssessmentAttempt', ...SUBMIT_X_AUDIT }),
+  checkpoint: Object.freeze({ operationId: 'putB10AssessmentSessionCheckpoint', ...CHECKPOINT_X_AUDIT }),
+  forbiddenLegacyPaths: FORBIDDEN_AUDIT_REDACTION_PATHS,
+});
 const OUTCOME_FIELDS = Object.freeze([
   'objectiveNumerator', 'objectiveDenominator', 'scoreBucket', 'errorCategory', 'reasonTrace', 'outcomeDigest',
 ]);
@@ -90,7 +132,19 @@ const EXPECTED_ADVERSARIAL_CASES = Object.freeze([
   'REPORT_GENERATING_OUTCOME_LEAK', 'REPORT_READY_FAILURE_LEAK', 'REPORT_PARTIAL_FAILURE_LEAK', 'REPORT_FAILED_OUTCOME_LEAK',
   'PIN_FIELD_REMOVAL', 'PIN_UNKNOWN_FIELD', 'CHECKPOINT_NOT_SESSION_SCOPED', 'CHECKPOINT_MISSING_BASE_STATE_VERSION',
   'CHECKPOINT_SAME_VERSION_REPLAY_WEAKENED', 'CHECKPOINT_OLD_VERSION_NOT_409', 'CHECKPOINT_SAME_VERSION_DIFFERENT_DIGEST_NOT_409',
-  'CHECKPOINT_TERMINAL_NOT_409', 'ANSWER_ONEOF_REMOVAL', 'ANSWER_NOT_GUARD_REMOVAL', 'ANSWER_NOT_GUARD_WEAKENED', 'ANSWER_UNKNOWN_TYPE', 'CLIENT_SCORE_INJECTION',
+  'CHECKPOINT_TERMINAL_NOT_409',
+  'SUBMIT_AUDIT_SELECTED_OPTION_IDS_REDACTION_MISSING', 'SUBMIT_AUDIT_PAIRS_REDACTION_MISSING', 'SUBMIT_AUDIT_ORDERED_TOKEN_IDS_REDACTION_MISSING',
+  'SUBMIT_AUDIT_BLANKS_REDACTION_MISSING', 'SUBMIT_AUDIT_TEXT_REDACTION_MISSING',
+  'CHECKPOINT_AUDIT_SELECTED_OPTION_IDS_REDACTION_MISSING', 'CHECKPOINT_AUDIT_PAIRS_REDACTION_MISSING', 'CHECKPOINT_AUDIT_ORDERED_TOKEN_IDS_REDACTION_MISSING',
+  'CHECKPOINT_AUDIT_BLANKS_REDACTION_MISSING', 'CHECKPOINT_AUDIT_TEXT_REDACTION_MISSING',
+  'SUBMIT_AUDIT_RESPONSE_DIGEST_REDACTION_MISSING', 'CHECKPOINT_AUDIT_RESPONSE_DIGEST_REDACTION_MISSING',
+  'CHECKPOINT_AUDIT_PROTECTED_DRAFT_REDACTION_MISSING', 'SUBMIT_AUDIT_LEGACY_RESPONSE_PATH', 'CHECKPOINT_AUDIT_LEGACY_RESPONSE_PATH',
+  'ATTEMPT_ASSESSED_AT_NULLABLE', 'ATTEMPT_ASSESSED_AT_BRANCH_OVERRIDE_REMOVAL',
+  'ANSWER_UNREDACTED_RAW_FIELD_INJECTION', 'ANSWER_BRANCH_MULTI_DISCRIMINATOR', 'ANSWER_RAW_FIELD_OPTIONAL', 'ANSWER_ROOT_REQUIRED_DRIFT',
+  'SUBMIT_AUDIT_REQUIRED_REMOVAL', 'CHECKPOINT_AUDIT_EVENT_DRIFT',
+  'SUBMIT_AUDIT_CORRELATION_DRIFT', 'CHECKPOINT_AUDIT_LOG_BOUNDARY_REMOVAL', 'SUBMIT_AUDIT_UNKNOWN_FIELD',
+  'CANONICAL_SUBMIT_AUDIT_DRIFT',
+  'ANSWER_ONEOF_REMOVAL', 'ANSWER_NOT_GUARD_REMOVAL', 'ANSWER_NOT_GUARD_WEAKENED', 'ANSWER_UNKNOWN_TYPE', 'CLIENT_SCORE_INJECTION',
   'CLIENT_RULE_INJECTION', 'SUBMISSION_DIGEST_REMOVAL', 'OUTCOME_OBJECTIVE_NUMERATOR_REMOVAL', 'OUTCOME_REASON_TRACE_REMOVAL',
   'SUBJECTIVE_OBJECTIVE_IMPERSONATION', 'REPORT_VERSION_REMOVAL', 'REPORT_MASTERY_LEAK', 'LEGACY_ATTEMPT_ROUTE_NOT_DEPRECATED', 'LEGACY_DEPRECATION_DRIFT', 'B2_LEGACY_ROUTE_NOT_DEPRECATED',
   'EVENT_RAW_RESPONSE_LEAK', 'EVENT_RAW_RULE_LEAK', 'EVENT_RECORDING_LEAK', 'EVENT_SUBJECTIVE_OUTCOME_LEAK', 'EVENT_CANONICAL_PROMOTION', 'EVENT_GAP_CLOSURE',
@@ -160,7 +214,7 @@ const EXPECTED_LEGACY_EXAM_WRITES = Object.freeze([
 ]);
 const POLICY_ROOT_KEYS = Object.freeze([
   '$schema', 'schemaVersion', 'task', 'phase', 'maturity', 'runtimeStatus', 'canonicalSources', 'compatibilityPromotion', 'runtimeBoundary',
-  'canonicalRoutes', 'authorization', 'states', 'pins', 'checkpoint', 'answerSubmission', 'outcome', 'report', 'ownership',
+  'canonicalRoutes', 'authorization', 'states', 'pins', 'checkpoint', 'answerSubmission', 'auditRedaction', 'outcome', 'report', 'ownership',
   'legacyCompatibility', 'legacyExamWriteOperations', 'events', 'phase1Prohibitions', 'scopeGroups', 'adversarialCases',
 ]);
 
@@ -483,6 +537,12 @@ function checkPolicy(policy, errors) {
   add(errors, policy.answerSubmission && policy.answerSubmission.requiresClosedOneOf === true, 'assessment answer schema must require closed oneOf');
   add(errors, policy.answerSubmission && policy.answerSubmission.requiresForbiddenNot === true, 'assessment answer schema must require forbidden-field not guard');
 
+  knownKeys(errors, policy.auditRedaction, ['answerRawFieldsByResponseType', 'submit', 'checkpoint', 'forbiddenLegacyPaths'], 'assessment auditRedaction');
+  knownKeys(errors, policy.auditRedaction && policy.auditRedaction.answerRawFieldsByResponseType, ANSWER_TYPES, 'assessment audit raw fields by response type');
+  knownKeys(errors, policy.auditRedaction && policy.auditRedaction.submit, ['operationId', 'required', 'event', 'correlation', 'redacted', 'logBoundary'], 'assessment submit audit redaction');
+  knownKeys(errors, policy.auditRedaction && policy.auditRedaction.checkpoint, ['operationId', 'required', 'event', 'correlation', 'redacted', 'logBoundary'], 'assessment checkpoint audit redaction');
+  exact(errors, policy.auditRedaction, EXPECTED_AUDIT_REDACTION_POLICY, 'assessment audit redaction allowlist');
+
   knownKeys(errors, policy.outcome, ['requiredFields', 'forbiddenClaims'], 'assessment outcome');
   exact(errors, policy.outcome && policy.outcome.requiredFields, OUTCOME_FIELDS, 'assessment outcome fields');
   exact(errors, policy.outcome && policy.outcome.forbiddenClaims, OUTCOME_FORBIDDEN_CLAIMS, 'assessment outcome forbidden claims');
@@ -594,6 +654,57 @@ function checkCanonicalRoutes(b10OpenApi, canonicalOpenApi, errors) {
   }
 }
 
+function checkAuditRedaction(b10OpenApi, canonicalOpenApi, errors) {
+  for (const [source, document] of [['fragment', b10OpenApi], ['canonical projection', canonicalOpenApi]]) {
+    const submit = operationAt(document, {
+      path: '/api/v1/assessment/sessions/{sessionId}/attempts',
+      method: 'POST',
+    });
+    const checkpoint = operationAt(document, {
+      path: '/api/v1/assessment/sessions/{sessionId}/checkpoint',
+      method: 'PUT',
+    });
+    exact(errors, submit && submit['x-audit'], SUBMIT_X_AUDIT, `assessment ${source} submit x-audit contract`);
+    exact(errors, checkpoint && checkpoint['x-audit'], CHECKPOINT_X_AUDIT, `assessment ${source} checkpoint x-audit contract`);
+    for (const forbiddenPath of FORBIDDEN_AUDIT_REDACTION_PATHS) {
+      add(errors, !(submit && submit['x-audit'] && submit['x-audit'].redacted || []).includes(forbiddenPath), `assessment ${source} submit audit redaction must not use obsolete path ${forbiddenPath}`);
+      add(errors, !(checkpoint && checkpoint['x-audit'] && checkpoint['x-audit'].redacted || []).includes(forbiddenPath), `assessment ${source} checkpoint audit redaction must not use obsolete path ${forbiddenPath}`);
+    }
+  }
+}
+
+function checkAnswerRawFieldCoverage(b10OpenApi, answer, errors) {
+  const answerFlat = flattenSchema(b10OpenApi, answer);
+  const commonFields = new Set(ANSWER_ITEM_REQUIRED_FIELDS);
+  const expectedRootRawFields = [...ANSWER_RAW_FIELDS].sort();
+  const actualRootRawFields = Object.keys(answerFlat.properties)
+    .filter((field) => !commonFields.has(field))
+    .sort();
+  exact(errors, actualRootRawFields, expectedRootRawFields, 'answer submission root raw-field inventory');
+
+  for (const [index, branch] of (answerFlat.oneOf || []).entries()) {
+    const branchFlat = flattenSchema(b10OpenApi, branch);
+    const responseTypes = enumFor(dereference(b10OpenApi, branchFlat.properties.responseType));
+    const hasSingleKnownResponseType = Array.isArray(responseTypes)
+      && responseTypes.length === 1
+      && ANSWER_TYPES.includes(responseTypes[0]);
+    add(errors, hasSingleKnownResponseType, `answer submission branch ${index} must have exactly one known responseType`);
+    if (!hasSingleKnownResponseType) continue;
+    const responseType = responseTypes[0];
+    const actualRawFields = Object.keys(branchFlat.properties)
+      .filter((field) => !commonFields.has(field))
+      .sort();
+    const expectedRawFields = [...ANSWER_RAW_FIELDS_BY_RESPONSE_TYPE[responseType]].sort();
+    exact(errors, actualRawFields, expectedRawFields, `answer submission ${responseType} raw-field inventory`);
+    exact(
+      errors,
+      [...branchFlat.required].sort(),
+      [...ANSWER_ITEM_REQUIRED_FIELDS, ...expectedRawFields].sort(),
+      `answer submission ${responseType} required fields`,
+    );
+  }
+}
+
 function checkSchemas(b10OpenApi, errors) {
   const session = component(b10OpenApi, 'B10AssessmentSession');
   const attempt = component(b10OpenApi, 'B10Attempt');
@@ -640,6 +751,7 @@ function checkSchemas(b10OpenApi, errors) {
 
   const answerFlat = flattenSchema(b10OpenApi, answer);
   add(errors, schemaHasRequired(b10OpenApi, answer, ANSWER_ITEM_REQUIRED_FIELDS), 'answer submission must retain item identity, sequence, response type and digest');
+  exact(errors, [...answerFlat.required].sort(), [...ANSWER_ITEM_REQUIRED_FIELDS].sort(), 'answer submission root required fields');
   add(errors, Array.isArray(answerFlat.oneOf) && answerFlat.oneOf.length === ANSWER_TYPES.length, 'answer submission must have exactly six oneOf branches');
   const branchTypes = (answerFlat.oneOf || []).map((branch) => {
     const flat = flattenSchema(b10OpenApi, branch);
@@ -648,6 +760,7 @@ function checkSchemas(b10OpenApi, errors) {
   });
   exact(errors, [...branchTypes].sort(), [...ANSWER_TYPES].sort(), 'answer submission response type union');
   add(errors, (answerFlat.oneOf || []).every((branch) => isClosedObject(b10OpenApi, branch)), 'every answer response oneOf branch must be closed');
+  checkAnswerRawFieldCoverage(b10OpenApi, answer, errors);
   exact(errors, answerFlat.not, forbiddenFieldNot(ANSWER_FORBIDDEN_FIELDS), 'answer submission forbidden-field not guard');
   add(errors, !hasForbiddenPayloadProperty(b10OpenApi, answer, ANSWER_FORBIDDEN_FIELDS), 'answer submission must reject client score/rule authority');
 
@@ -691,6 +804,9 @@ function checkStatePayloadMutualExclusion(doc, attempt, report, errors) {
   add(errors, Array.isArray(attemptFlat.oneOf) && attemptFlat.oneOf.length === 3, 'B10Attempt must have three fail-closed status branches');
   checkStateBranch(doc, attempt, ['ACCEPTED', 'ASSESSING'], ['status'], [...ATTEMPT_ASSESSED_FIELDS, 'rejectionCode'], 'B10Attempt ACCEPTED/ASSESSING', errors);
   checkStateBranch(doc, attempt, ['ASSESSED'], ['status', ...ATTEMPT_ASSESSED_FIELDS], ['rejectionCode'], 'B10Attempt ASSESSED', errors);
+  const assessedBranch = stateBranch(doc, attempt, ['ASSESSED']);
+  const assessedAt = assessedBranch && flattenSchema(doc, assessedBranch).properties.assessedAt;
+  exact(errors, assessedAt, { type: 'string', format: 'date-time' }, 'B10Attempt ASSESSED assessedAt non-null branch schema');
   checkStateBranch(doc, attempt, ['REJECTED'], ['status', 'rejectionCode'], ATTEMPT_ASSESSED_FIELDS, 'B10Attempt REJECTED', errors);
 
   const reportFlat = flattenSchema(doc, report);
@@ -817,6 +933,7 @@ export function validateAssessmentContractData(input = {}) {
   if (errors.length === 0) {
     checkPolicy(input.policy, errors);
     checkCanonicalRoutes(input.b10OpenApi, input.canonicalOpenApi, errors);
+    checkAuditRedaction(input.b10OpenApi, input.canonicalOpenApi, errors);
     checkSchemas(input.b10OpenApi, errors);
     checkLegacyOperations(input.b10OpenApi, input.b2OpenApi, input.policy, errors);
     checkEvents(input.eventFragment, input.catalog, input.gapRegistry, errors);

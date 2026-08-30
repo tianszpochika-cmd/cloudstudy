@@ -479,8 +479,12 @@
           "event": "assessment.attempt.submitted.v1",
           "correlation": "canonical-request-and-trace-ids",
           "redacted": [
-            "request.body.items[].response",
             "request.body.items[].responseDigest",
+            "request.body.items[].selectedOptionIds",
+            "request.body.items[].pairs",
+            "request.body.items[].orderedTokenIds",
+            "request.body.items[].blanks",
+            "request.body.items[].text",
             "sealedRuleReference",
             "answerKey"
           ],
@@ -630,7 +634,12 @@
           "correlation": "canonical-request-and-trace-ids",
           "redacted": [
             "request.body.protectedDraft",
-            "request.body.protectedDraft.responses[].response",
+            "request.body.protectedDraft.responses[].responseDigest",
+            "request.body.protectedDraft.responses[].selectedOptionIds",
+            "request.body.protectedDraft.responses[].pairs",
+            "request.body.protectedDraft.responses[].orderedTokenIds",
+            "request.body.protectedDraft.responses[].blanks",
+            "request.body.protectedDraft.responses[].text",
             "sealedRuleReference",
             "answerKey"
           ],
@@ -3156,6 +3165,10 @@
                 "enum": [
                   "ASSESSED"
                 ]
+              },
+              "assessedAt": {
+                "type": "string",
+                "format": "date-time"
               }
             },
             "required": [

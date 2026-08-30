@@ -215,6 +215,65 @@
     "requiresClosedOneOf": true,
     "requiresForbiddenNot": true
   },
+  "auditRedaction": {
+    "answerRawFieldsByResponseType": {
+      "CHOICE": [
+        "selectedOptionIds"
+      ],
+      "MATCHING": [
+        "pairs"
+      ],
+      "ORDERING": [
+        "orderedTokenIds"
+      ],
+      "CLOZE": [
+        "blanks"
+      ],
+      "TEXT": [
+        "text"
+      ],
+      "UNANSWERED": []
+    },
+    "submit": {
+      "operationId": "submitB10AssessmentAttempt",
+      "required": true,
+      "event": "assessment.attempt.submitted.v1",
+      "correlation": "canonical-request-and-trace-ids",
+      "redacted": [
+        "request.body.items[].responseDigest",
+        "request.body.items[].selectedOptionIds",
+        "request.body.items[].pairs",
+        "request.body.items[].orderedTokenIds",
+        "request.body.items[].blanks",
+        "request.body.items[].text",
+        "sealedRuleReference",
+        "answerKey"
+      ],
+      "logBoundary": "Only submissionId, submissionDigest, immutable pin and version metadata may cross audit/event boundaries; raw candidate responses and answer rules are prohibited."
+    },
+    "checkpoint": {
+      "operationId": "putB10AssessmentSessionCheckpoint",
+      "required": true,
+      "event": "assessment.session.checkpointed.v1",
+      "correlation": "canonical-request-and-trace-ids",
+      "redacted": [
+        "request.body.protectedDraft",
+        "request.body.protectedDraft.responses[].responseDigest",
+        "request.body.protectedDraft.responses[].selectedOptionIds",
+        "request.body.protectedDraft.responses[].pairs",
+        "request.body.protectedDraft.responses[].orderedTokenIds",
+        "request.body.protectedDraft.responses[].blanks",
+        "request.body.protectedDraft.responses[].text",
+        "sealedRuleReference",
+        "answerKey"
+      ],
+      "logBoundary": "Audit and operational logs may contain only sessionId, checkpointVersion, clientEventId, clientSeq, checkpointDigest, state version and authorization decision; protectedDraft response bodies and rules are prohibited."
+    },
+    "forbiddenLegacyPaths": [
+      "request.body.items[].response",
+      "request.body.protectedDraft.responses[].response"
+    ]
+  },
   "outcome": {
     "requiredFields": [
       "objectiveNumerator",
@@ -613,6 +672,33 @@
     "CHECKPOINT_OLD_VERSION_NOT_409",
     "CHECKPOINT_SAME_VERSION_DIFFERENT_DIGEST_NOT_409",
     "CHECKPOINT_TERMINAL_NOT_409",
+    "SUBMIT_AUDIT_SELECTED_OPTION_IDS_REDACTION_MISSING",
+    "SUBMIT_AUDIT_PAIRS_REDACTION_MISSING",
+    "SUBMIT_AUDIT_ORDERED_TOKEN_IDS_REDACTION_MISSING",
+    "SUBMIT_AUDIT_BLANKS_REDACTION_MISSING",
+    "SUBMIT_AUDIT_TEXT_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_SELECTED_OPTION_IDS_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_PAIRS_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_ORDERED_TOKEN_IDS_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_BLANKS_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_TEXT_REDACTION_MISSING",
+    "SUBMIT_AUDIT_RESPONSE_DIGEST_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_RESPONSE_DIGEST_REDACTION_MISSING",
+    "CHECKPOINT_AUDIT_PROTECTED_DRAFT_REDACTION_MISSING",
+    "SUBMIT_AUDIT_LEGACY_RESPONSE_PATH",
+    "CHECKPOINT_AUDIT_LEGACY_RESPONSE_PATH",
+    "ATTEMPT_ASSESSED_AT_NULLABLE",
+    "ATTEMPT_ASSESSED_AT_BRANCH_OVERRIDE_REMOVAL",
+    "ANSWER_UNREDACTED_RAW_FIELD_INJECTION",
+    "ANSWER_BRANCH_MULTI_DISCRIMINATOR",
+    "ANSWER_RAW_FIELD_OPTIONAL",
+    "ANSWER_ROOT_REQUIRED_DRIFT",
+    "SUBMIT_AUDIT_REQUIRED_REMOVAL",
+    "CHECKPOINT_AUDIT_EVENT_DRIFT",
+    "SUBMIT_AUDIT_CORRELATION_DRIFT",
+    "CHECKPOINT_AUDIT_LOG_BOUNDARY_REMOVAL",
+    "SUBMIT_AUDIT_UNKNOWN_FIELD",
+    "CANONICAL_SUBMIT_AUDIT_DRIFT",
     "ANSWER_ONEOF_REMOVAL",
     "ANSWER_NOT_GUARD_REMOVAL",
     "ANSWER_NOT_GUARD_WEAKENED",
