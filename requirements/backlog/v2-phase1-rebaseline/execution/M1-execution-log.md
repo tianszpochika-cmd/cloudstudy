@@ -9,6 +9,7 @@
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
 - `P1R-M1-013`：`ACCEPTED`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2 为 `0/0`。
+- `P1R-M1-014`：`IN_PROGRESS`；不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，只冻结可信完成白名单、不可变奖励账本、P0 游戏 catalog、受控社交空间与 lease/focus/leaderboard/moderation 的 D2 契约。
 - M1-013 接受前完成共享 OpenAPI、生成类型、兼容工具和审计测试的 current-source revalidation；`P1R-M1-001` 至 `P1R-M1-012` 的 manifest 继续保留各自原始 provenance，并统一绑定 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，不把旧任务重写为 M1-013 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
@@ -134,6 +135,16 @@
 - 独立 reviewer：`agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`；Evidence：`evidence/p1r/m1/P1R-M1-013/manifest.json`。
 - D2 边界：结果仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，`P1R-M0-006` 继续 `BLOCKED`，真实 schema/Outbox/Kafka/worker/Saga、浏览器/设备和 E2E 未验证。
 - Evidence/台账关闭集成提交：`c9a67577db590b92982571a1aecba6200adcb9cf`。当前台账为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`；下一推荐任务为 `P1R-M1-014`，保持 `PLANNED`，不启动。
+
+## M1-014 执行轨道
+
+不可变来源检查点：`dev@e3514c359e6f6be5445cf46a7734325b2835b941`。
+
+1. policy-model：冻结 `P1_REWARD_POLICY_V1`、source whitelist、不可变 ledger/补偿、P0 `SENTENCE_TRAIN` catalog，以及 `PUBLIC_THEME_ROOM`、`INVITE_STUDY_ROOM`、`CHECKIN_GOAL_GROUP` 三类空间和服务端 authority。
+2. contract-event：收敛 B4/B12 历史 route/schema，建立 canonical GAM/SOC OpenAPI 与 v2 事件治理、producer/consumer/topic/partition/lineage；旧 v1 与 notification 继续 historical-only。
+3. validation-compat：建立专用 checker、对抗测试、B4/B12 canonical projection 测试、B26 static binding、source-bound compatibility 与 generated TypeScript 边界。
+
+三条实施轨道必须保持文件互斥，公共生成物、catalog projection、compatibility、状态、Evidence、最终提交和推送由统筹 Agent 独占。M1-014 不实现真实数据库、Outbox/Kafka consumer、WebSocket/Redis lease、页面或 E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 
 ## M1-011 执行轨道
 

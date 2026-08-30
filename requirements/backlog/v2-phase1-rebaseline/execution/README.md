@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`（共 108 项）。
+- 当前台账计数：`20 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 86 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -22,7 +22,8 @@
 - `P1R-M1-010` 已由独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 绑定最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05` 接受，首轮 `3bfc63d` 的 raw-answer audit redaction 与 `ASSESSED.assessedAt` nullability 两项缺口已完成返工；共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-010/manifest.json`。结论只冻结 assessment session/checkpoint/attempt、确定性判分摘要、报告快照、版本与幂等 D2 契约；placement、learning 下游和真实运行仍由后续任务负责。
 - `P1R-M1-011` 已由独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 绑定最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09` 接受；首轮 `5b6a3d5` 的 eligibility pin、goal exactly-once、If-Match/幂等、event allow-list 与 legacy mapping 缺口已完成返工。共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-011/manifest.json`；结论只冻结 learner/profile/target/preferences、planning-input pin、首日投影与目标事件 D2 契约。
 - `P1R-M1-012` 已由独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 绑定最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72` 接受，P1/P2 为 `0/0`；共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。四维 10 题 placement、不可变 result/report、`SKIPPED + UNVERIFIED`、canonical completion event、placement→plan Saga 与生成类型均通过静态失败关闭验收；真实数据库/Outbox/Kafka/workflow/browser/E2E 仍未验证。
-- `P1R-M1-013` 已接受：不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，Evidence/台账关闭集成提交 `c9a67577db590b92982571a1aecba6200adcb9cf`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`；learning `67/67`、tooling `50/50`、P1R `818/818`、typecheck `7/7`，contracts `401/646/158/108/17/60/13`，fixed compatibility/Gateway/event/reliability/B26/plan/CI/diff 均 PASS。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`；下一推荐 `P1R-M1-014`，未启动。
+- `P1R-M1-013` 已接受：不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，Evidence/台账关闭集成提交 `c9a67577db590b92982571a1aecba6200adcb9cf`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`；learning `67/67`、tooling `50/50`、P1R `818/818`、typecheck `7/7`，contracts `401/646/158/108/17/60/13`，fixed compatibility/Gateway/event/reliability/B26/plan/CI/diff 均 PASS。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+- `P1R-M1-014` 已从干净且同步的 `dev@e3514c359e6f6be5445cf46a7734325b2835b941` 启动；仅冻结可信完成白名单、不可变奖励账本、P0 游戏目录，以及受控房间/租约/focus/榜单/举报的 D2 契约。B4/B12 v1 保持历史候选，真实 schema/Outbox/Kafka/WebSocket/browser/E2E 均未验证。
 
 ## M0 记录索引
 
@@ -56,3 +57,4 @@
 | `P1R-M1-011` | `P1R-M1-011.md` | `ACCEPTED` |
 | `P1R-M1-012` | `P1R-M1-012.md` | `ACCEPTED` |
 | `P1R-M1-013` | `P1R-M1-013.md` | `ACCEPTED` |
+| `P1R-M1-014` | `P1R-M1-014.md` | `IN_PROGRESS` |

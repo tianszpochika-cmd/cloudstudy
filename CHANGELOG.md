@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-014-START-20260831] 启动 Phase 1 可信完成→奖励账本、游戏 catalog、受控自习室/榜单/举报 D2 契约：以已同步的 `dev@e3514c359e6f6be5445cf46a7734325b2835b941` 为不可变来源检查点，冻结精确 source whitelist、不可变 ledger/补偿、P0 唯一 `SENTENCE_TRAIN`、公开主题房/邀请学习室/打卡目标组三类空间、服务端 lease/focus 计时、榜单隐私与低 UGC 举报。该条只记录 `IN_PROGRESS`；B4/B12 v1 保持 historical-only，真实 schema/Outbox/Kafka/WebSocket/browser/E2E 均未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
 - [P1R-M1-013-ACCEPT-20260831] 接受 Phase 1 日计划、Session 衔接、SRS、错题修复、mastery 与报告水位 D2 契约：最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，Evidence/台账关闭集成提交 `c9a67577db590b92982571a1aecba6200adcb9cf`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`。learning `67/67`、tooling `50/50`、P1R `818/818`、typecheck `7/7`，contracts `401/646/158/108/17/60/13`，fixed compatibility/Gateway/event/reliability/B26/plan/CI/diff 均 PASS。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 pending/NO-GO，M0-006 继续 `BLOCKED`；下一推荐 `P1R-M1-014`，未启动。
 
 - [P1R-M1-013-START-20260831] 启动 Phase 1 日计划、Session 衔接、SRS、错题修复、mastery 与报告水位 D2 契约：以已同步的 `dev@a07a58a7d245295c54d39487a6669545d077c513` 为不可变来源检查点，冻结 `P1_DAILY_PLAN_V1` 稳定排序/预算/积压/解释、`SM2_Q03_V1` 精确公式与 outcome cap、单一 SRS 写入口、repair/D1/D7、mastery Gate、report numerator/denominator/watermark、时区/DST 和离线冲突。该条只记录 `IN_PROGRESS`；真实 schema/Outbox/Kafka/worker/Saga、页面/设备/E2E 均未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
