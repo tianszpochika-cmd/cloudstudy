@@ -7,10 +7,12 @@ import test from 'node:test';
 import { findCanonicalMergeDrift, mergeEvents, selectEventFragmentFiles } from '../../scripts/contracts/merge-b1-fragments.mjs';
 import { buildGeneratedOutputs, findGeneratedOutputDrift } from '../../scripts/contracts/generate-contracts.mjs';
 import {
+  buildM1008OpenApiExpectedProjection,
   compareContracts,
   M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256,
   M1008_CONTENT_EVENT_NAMES,
   runCompatibilityDiff,
+  stableGovernanceSha256,
 } from '../../scripts/contracts/compatibility-diff.mjs';
 import {
   hasRequiredCiContractBaseline,
@@ -538,59 +540,14 @@ function runM1008PromotionWithMutation({ mutateCatalog, mutateB26, mutatePolicy 
   });
 }
 
-const M1008_LEGACY_CONTENT_ROUTES = Object.freeze([
-  '/api/v1/content',
-  '/api/v1/content/{contentId}/versions',
-  '/api/v1/content/{contentId}/versions/{versionId}/submit',
-  '/api/v1/content/{contentId}/versions/{versionId}/review',
-  '/api/v1/content/{contentId}/versions/{versionId}/publish',
-  '/api/v1/content/{contentId}/versions/{versionId}/archive',
-  '/api/v1/content/{contentId}/versions/{versionId}/restore',
-  '/api/v1/content/imports',
-]);
+const m1008SourceOpenApi = gitJson(
+  REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+  'packages/contracts/openapi/v1/openapi.json',
+);
 
-function m1008ExpectedOpenApiProjection(source) {
-  const projection = structuredClone(source);
-  for (const route of M1008_LEGACY_CONTENT_ROUTES) {
-    projection.paths[route].post['x-p1r-deprecation'] = {
-      deprecationAt: '2026-08-30T00:00:00Z',
-      sunsetAt: 'UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED',
-      migrationLink: '/api/v1/admin/content-commands',
-    };
-  }
-  const adminState = projection.components.schemas.B9AdminContentState;
-  delete adminState.properties.reviewStages;
-  adminState.properties.reviewRecords = {
-    type: 'array',
-    readOnly: true,
-    items: {
-      type: 'object',
-      readOnly: true,
-      additionalProperties: false,
-      required: ['reviewStage', 'decision', 'reviewVersion', 'auditId', 'decidedAt'],
-      properties: {
-        reviewStage: {
-          type: 'string',
-          enum: ['FIRST_REVIEW', 'FINAL_REVIEW'],
-        },
-        decision: {
-          type: 'string',
-          enum: ['APPROVED', 'REJECTED', 'CHANGES_REQUESTED'],
-        },
-        reviewVersion: {
-          type: 'integer',
-          minimum: 1,
-        },
-        auditId: {
-          $ref: '#/components/schemas/B9AuditId',
-        },
-        decidedAt: {
-          $ref: '#/components/schemas/B9DateTime',
-        },
-      },
-    },
-    maxItems: 2,
-  };
+function m1008ExpectedOpenApiProjection(approved) {
+  const projection = buildM1008OpenApiExpectedProjection(m1008SourceOpenApi, approved);
+  assert.ok(projection, 'frozen-source M1-008 OpenAPI projection must be constructible');
   return projection;
 }
 
@@ -609,6 +566,9 @@ function runM1008OpenApiPromotionWithMutation({ mutateOpenApi } = {}) {
 }
 
 test('M1-008 exact OpenAPI promotion passes with the frozen projection', () => {
+  const expectedProjection = m1008ExpectedOpenApiProjection(openApi);
+  assert.deepEqual(expectedProjection, openApi);
+  assert.equal(stableGovernanceSha256(expectedProjection), M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256);
   const result = runM1008OpenApiPromotionWithMutation();
   assert.equal(result.compatible, true);
   assert.equal(result.results[0].promotion.id, 'M1-008_CONTENT_LIFECYCLE_PROMOTION');
@@ -646,6 +606,21 @@ test('M1-008 OpenAPI promotion rejects extra paths, schemas, enum values, weaken
     }],
     ['B1 authority reactivation', (document) => {
       document.paths['/api/v1/content'].post['x-authority-inputs-ignored'] = [];
+    }],
+    ['B1 publish replay contradiction', (document) => {
+      document.paths['/api/v1/content/{contentId}/versions/{versionId}/publish'].post['x-idempotency'].replayBehavior = 'old version enters ARCHIVED';
+    }],
+    ['B1 archive replay contradiction', (document) => {
+      document.paths['/api/v1/content/{contentId}/versions/{versionId}/archive'].post['x-idempotency'].replayBehavior = 'returns ARCHIVED';
+    }],
+    ['B10 future pin oneOf weakening', (document) => {
+      document.components.schemas.B10ContentVersionPin.oneOf[3].required.pop();
+    }],
+    ['B10 recovery emergency reason mismatch', (document) => {
+      document.components.schemas.B10ContentRecovery.properties.recoveryReasonCode.enum.pop();
+    }],
+    ['B10 active pin ref drift', (document) => {
+      document.components.schemas.B10AssessmentSession.properties.pin.$ref = '#/components/schemas/B10ContentVersionPin';
     }],
     ['Gateway owner drift', (document) => {
       document['x-p1r-gateway-boundary'].routeRules.find((rule) => rule.ruleId === 'admin-content').upstreamOwner = 'audit-service';
@@ -734,6 +709,9 @@ test('M1-008 promotion fails closed when policy values or shape are changed', ()
     (policy) => { policy.eventGovernance.compatibilityPromotion.eventNames.push('content.version.injected.v1'); },
     (policy) => { policy.eventGovernance.compatibilityPromotion.allowAll = true; },
     (policy) => { policy.eventGovernance.compatibilityPromotion.immutableGovernanceBaseline = 'f'.repeat(40); },
+    (policy) => { policy.reviewWorkflow.stageOrder.reverse(); },
+    (policy) => { policy.publishEligibility.clientFactSubmission = 'ALLOWED'; },
+    (policy) => { policy.internalRetirement.externalCommand = 'ALLOWED'; },
     (policy) => { policy.unexpectedPromotionFlag = true; },
   ]) {
     assert.throws(

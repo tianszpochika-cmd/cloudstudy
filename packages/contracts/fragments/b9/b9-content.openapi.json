@@ -1282,7 +1282,7 @@
           {
             "properties": {
               "status": {
-                "const": "SCHEDULED"
+                "enum": ["SCHEDULED"]
               }
             },
             "not": {
@@ -1296,7 +1296,7 @@
           {
             "properties": {
               "status": {
-                "const": "CANCELLED"
+                "enum": ["CANCELLED"]
               }
             },
             "required": ["completedAt"],
@@ -1307,7 +1307,7 @@
           {
             "properties": {
               "status": {
-                "const": "EXECUTED"
+                "enum": ["EXECUTED"]
               }
             },
             "required": ["completedAt"],
@@ -1321,7 +1321,7 @@
           {
             "properties": {
               "status": {
-                "const": "INVALIDATED"
+                "enum": ["INVALIDATED"]
               }
             },
             "required": ["failureCode", "completedAt"],
@@ -1332,7 +1332,7 @@
           {
             "properties": {
               "status": {
-                "const": "RECOVERY_REQUIRED"
+                "enum": ["RECOVERY_REQUIRED"]
               }
             },
             "required": ["failureCode", "recoveryTaskId"]
@@ -1520,7 +1520,7 @@
           {
             "properties": {
               "command": {
-                "const": "VALIDATE_DRAFT"
+                "enum": ["VALIDATE_DRAFT"]
               }
             },
             "not": {
@@ -1538,7 +1538,7 @@
           {
             "properties": {
               "command": {
-                "const": "SUBMIT_REVIEW"
+                "enum": ["SUBMIT_REVIEW"]
               }
             },
             "not": {
@@ -1573,7 +1573,7 @@
           {
             "properties": {
               "command": {
-                "const": "PUBLISH"
+                "enum": ["PUBLISH"]
               }
             },
             "required": ["targetVersionNumber"],
@@ -1591,7 +1591,7 @@
           {
             "properties": {
               "command": {
-                "const": "SCHEDULE_PUBLISH"
+                "enum": ["SCHEDULE_PUBLISH"]
               }
             },
             "required": ["schedule"],
@@ -1609,7 +1609,7 @@
           {
             "properties": {
               "command": {
-                "const": "CANCEL_SCHEDULED_PUBLISH"
+                "enum": ["CANCEL_SCHEDULED_PUBLISH"]
               }
             },
             "required": ["scheduledPublishTaskId"],
@@ -1626,7 +1626,7 @@
           {
             "properties": {
               "command": {
-                "const": "UNPUBLISH"
+                "enum": ["UNPUBLISH"]
               }
             },
             "required": ["reasonCode"],
@@ -1644,7 +1644,7 @@
           {
             "properties": {
               "command": {
-                "const": "ROLLBACK"
+                "enum": ["ROLLBACK"]
               }
             },
             "required": ["targetVersionNumber", "reasonCode"],
@@ -1841,7 +1841,7 @@
           },
           "availability": {
             "type": "string",
-            "const": "PUBLISHED",
+            "enum": ["PUBLISHED"],
             "description": "公开投影只返回已发布版本；投影落后或重建期间通过 projectionStatus 表达，不降级为空列表或草稿。"
           },
           "projectionStatus": {
@@ -1987,7 +1987,7 @@
             ],
             "properties": {
               "status": {
-                "const": "AVAILABLE"
+                "enum": ["AVAILABLE"]
               }
             },
             "not": {
@@ -2019,7 +2019,7 @@
             ],
             "properties": {
               "status": {
-                "const": "UNAVAILABLE"
+                "enum": ["UNAVAILABLE"]
               }
             }
           }
@@ -2071,7 +2071,7 @@
           },
           "availability": {
             "type": "string",
-            "const": "PUBLISHED"
+            "enum": ["PUBLISHED"]
           }
         }
       },

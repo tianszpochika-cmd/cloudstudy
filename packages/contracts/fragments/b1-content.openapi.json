@@ -577,7 +577,7 @@
           "required": true,
           "strategy": "content-publish",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "发布操作按内容版本幂等，旧发布版本进入 ARCHIVED 并失效缓存"
+          "replayBehavior": "同 contentCode+targetVersionNumber+command 返回首次 PUBLISH 结果；成功只切换 currentPublication 并更新 contentEpoch/projection，旧版本保留为可验证回滚候选且不自动进入 ARCHIVED"
         },
         "parameters": [
           {
@@ -681,7 +681,7 @@
           "required": true,
           "strategy": "content-archive",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "重复下线返回当前 ARCHIVED 状态"
+          "replayBehavior": "同 contentCode+contentEpoch+请求摘要返回首次 UNPUBLISH 发布指针结果；重复请求不产生 ARCHIVED，独立退休后的版本状态仅作为只读结果返回"
         },
         "parameters": [
           {

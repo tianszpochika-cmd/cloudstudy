@@ -40,13 +40,53 @@ test('B10 OpenAPI covers snapshot, attempt, projection and compatibility boundar
     '/internal/v1/compatibility/b10/reconciliations',
     '/internal/v1/compatibility/b10/rollbacks',
   ]) assert.ok(openApi.paths[route], `missing B10 route ${route}`);
-  for (const schema of ['B10ContentVersionPin', 'B10AssessmentContentSnapshot', 'B10Attempt', 'B10MasteryProjection', 'B10ReadShadow', 'B10RollbackRequest']) {
+  for (const schema of ['B10ContentVersionPin', 'B10ActiveSessionAttemptPin', 'B10AssessmentContentSnapshot', 'B10Attempt', 'B10MasteryProjection', 'B10ReadShadow', 'B10RollbackRequest']) {
     assert.ok(openApi.components.schemas[schema], `missing B10 schema ${schema}`);
   }
   for (const operation of Object.values(openApi.paths).flatMap((item) => Object.values(item))) {
     if (!operation || typeof operation !== 'object' || !operation.operationId) continue;
     if (operation.security?.some((entry) => entry.B8WorkloadIdentity)) assert.ok(operation.security.length > 0);
   }
+});
+
+test('B10 keeps active session and attempt pins immutable while future reads alone may fall back', () => {
+  const schemas = openApi.components.schemas;
+  assert.deepEqual(schemas.B10ContentVersionPin['x-p1r-pin-scope-policy'], {
+    usage: 'FUTURE_READ_OR_UNSTARTED_TASK',
+    safeFallback: 'ALLOWED_BEFORE_SESSION_OR_ATTEMPT_START_ONLY',
+    activeReplacement: 'PROHIBITED',
+    recoveredIdentity: 'FULL_IMMUTABLE_FALLBACK',
+    permanentRemovalRecovery: 'PROHIBITED',
+  });
+  assert.equal(schemas.B10ContentVersionPin.readOnly, true);
+  assert.equal(schemas.B10ContentVersionPin.oneOf.length, 5);
+  assert.deepEqual(schemas.B10ContentVersionPin.oneOf[0].properties.pinStatus.enum, ['PINNED']);
+  assert.deepEqual(schemas.B10ContentVersionPin.oneOf[0].properties.recoveryReasonCode.enum, ['NONE']);
+  assert.deepEqual(schemas.B10ContentVersionPin.oneOf[3].required, ['recoveryReasonCode', 'fallbackVersionId', 'fallbackContentEpoch', 'fallbackSnapshotId', 'fallbackSnapshotHash']);
+  assert.deepEqual(schemas.B10ContentVersionPin.oneOf[4].properties.recoveryReasonCode.enum, ['RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED']);
+  assert.deepEqual(schemas.B10ActiveSessionAttemptPin['x-p1r-active-pin-policy'].allowedOutcomes, ['AVAILABLE', 'UNAVAILABLE']);
+  assert.deepEqual(schemas.B10ActiveSessionAttemptPin.properties.status.enum, ['AVAILABLE', 'UNAVAILABLE']);
+  assert.deepEqual(schemas.B10ActiveSessionAttemptPin.oneOf[1].required, ['status', 'reasonCode', 'alternativeAction']);
+  for (const name of ['B10AssessmentSession', 'B10Attempt', 'B10AssessmentReport', 'B10MasteryProjection']) {
+    assert.equal(schemas[name].properties.pin.$ref, '#/components/schemas/B10ActiveSessionAttemptPin');
+  }
+  for (const name of ['B10LearnerContentSnapshot', 'B10AssessmentContentSnapshot', 'B10LearningQueueItem']) {
+    assert.equal(schemas[name].properties.pin.$ref, '#/components/schemas/B10ContentVersionPin');
+  }
+  const recovery = schemas.B10ContentRecovery;
+  assert.ok(recovery.required.includes('usageScope'));
+  assert.deepEqual(recovery.properties.mustNotRegrade.enum, [true]);
+  assert.deepEqual(recovery.properties.usageScope.enum, ['FUTURE_READ_ONLY']);
+  assert.deepEqual(recovery.properties.recoveryReasonCode.enum.slice(-3), ['RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED']);
+  assert.deepEqual(recovery.oneOf[0].properties.resolution.enum, ['EXACT_PIN']);
+  assert.deepEqual(recovery.oneOf[2].properties.resolution.enum, ['SAFE_FUTURE_FALLBACK']);
+  assert.deepEqual(recovery.oneOf[2].required, ['resolvedVersionId', 'resolvedSnapshotId']);
+  assert.equal(contentOpenApi.paths['/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery'].get['x-contract'].activeSessionOrAttempt, 'PROHIBITED');
+  const unsupported = [];
+  walk(contentOpenApi, (value) => {
+    if (value && typeof value === 'object' && Object.hasOwn(value, 'const')) unsupported.push(value.const);
+  });
+  assert.deepEqual(unsupported, []);
 });
 
 test('B10 events have the canonical envelope and no answer-bearing payload fields', () => {

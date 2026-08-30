@@ -14,7 +14,7 @@ Outbox、consumer dedupe、重试/DLQ/replay、Saga/补偿、双人审批和人�
 
 ## 内容发布
 
-内容版本持久态为 `DRAFT -> IN_REVIEW -> APPROVED -> PUBLISHED -> ARCHIVED`；`UNPUBLISH` 清除当前发布指针但不把版本写成 `UNPUBLISHED`，`ROLLBACK` 是把指针切回已验证历史版本的审计动作。即时或排期发布都必须在执行时重新检查不可变 content hash、校验报告、L1/L2 review version、版权快照、媒体、Phase/feature Gate 和 expected stateVersion。排期任务与版本状态分离，失败进入统一恢复契约，不能由客户端提交执行结果。
+内容版本持久态为 `DRAFT -> IN_REVIEW -> APPROVED -> PUBLISHED -> ARCHIVED`；`UNPUBLISH` 清除当前发布指针但不把版本写成 `UNPUBLISHED`，`ROLLBACK` 是把指针切回已验证历史版本的审计动作。`ARCHIVED` 只由 content-service 内部退休处理器在发布指针已移走、回滚资格已结束且 active pin 已清除或明确不可用后产生，不是外部 archive/UNPUBLISH 的结果。即时或排期发布都必须在执行时重新检查不可变 content hash、校验报告、L1/L2 review version、版权快照、媒体、Phase/feature Gate 和 expected stateVersion。排期任务与版本状态分离，失败进入统一恢复契约，不能由客户端提交执行结果。
 
 公开与学习投影只包含已发布 allow-list，以 `contentEpoch/projectionVersion` 单调更新；草稿、答案规则、审核者身份和版权凭证原文不得暴露。新 Session 使用当前版本，已开始 Session 固定原 `contentVersionId`；紧急版权、安全或法律下线返回明确 unavailable 和替代路径，不伪装成空列表。五个 `content.version.*` 事实只在 owner 事实成功后进入 D2 Outbox/Kafka 契约，owner 内部缓存失效不晋升为新的跨服务事件；真实发布、调度、Kafka 与投影运行仍分别由 M2/M3 任务验证。
 

@@ -234,7 +234,7 @@
         "sourceCode": "fixture-source-catalog",
         "licenseCode": "fixture-license-v1",
         "authorizationEvidenceRef": "evidence-ref://synthetic/rights-002",
-        "workflow": "PUBLISHED -> ARCHIVED -> rollback-to-approved-version"
+        "workflow": "PUBLISHED -> UNPUBLISH_POINTER -> rollback-to-validated-published-version"
       }
     ],
     "fixturePolicy": "synthetic-references-only-no-real-subjects-no-raw-media-no-secrets"

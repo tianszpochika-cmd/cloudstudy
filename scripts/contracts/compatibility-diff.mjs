@@ -82,11 +82,68 @@ export const M1008_CONTENT_GAP_IDS = Object.freeze([
   'EVENT-GAP-BIND-CONT-001',
 ]);
 export const M1008_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a873b367761fb59e44ea46181199da1605ba0a124973cface6c035e90291f79b';
-// The projection fingerprint includes the exact post-merge B1/B9 artifact,
+// The projection fingerprint includes the exact post-merge B1/B9/B10 artifact,
 // including additions that the legacy comparator intentionally does not walk
 // (new paths, schemas and operation extensions). This keeps the allowance
 // finite without embedding a megabyte-sized OpenAPI snapshot in this script.
-export const M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'a9f97b3d20e1a539e60494f5508fcfe1396912267a23b70b93260af55abc7736';
+export const M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '59b841d88878d7b5afffd17916f060590d47c17cfdc17bc73c8447276aa99579';
+const M1008_OPENAPI_APPROVED_PATH_PROJECTIONS = Object.freeze([
+  '/api/v1/content',
+  '/api/v1/content/{contentId}/versions',
+  '/api/v1/content/{contentId}/versions/{versionId}/submit',
+  '/api/v1/content/{contentId}/versions/{versionId}/review',
+  '/api/v1/content/{contentId}/versions/{versionId}/publish',
+  '/api/v1/content/{contentId}/versions/{versionId}/archive',
+  '/api/v1/content/{contentId}/versions/{versionId}/restore',
+  '/api/v1/content/imports',
+  '/api/v1/public/content/catalog',
+  '/api/v1/admin/content-publish-tasks/{taskId}',
+  '/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery',
+]);
+const M1008_OPENAPI_APPROVED_PARAMETER_PROJECTIONS = Object.freeze([
+  'B1ContentRole',
+  'B9ScheduledPublishTaskQuery',
+  'B9ScheduledPublishTaskId',
+]);
+const M1008_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
+  'B1CreateContentRequest',
+  'B1CreateVersionRequest',
+  'B1ActorRequest',
+  'B1ActorReasonRequest',
+  'B1ReviewDecisionRequest',
+  'B1ImportRequest',
+  'B9ContentVersionSummary',
+  'B9ContentCommandRequest',
+  'B9ContentCommandAccepted',
+  'B9PublicContentProjection',
+  'B9LearnerContentProjection',
+  'B9PublicContentCard',
+  'B9PublicProjectionState',
+  'B9AdminContentState',
+  'B9PublishScheduleInput',
+  'B9ScheduledPublishTask',
+  'B9ScheduledPublishTaskRef',
+  'B9SessionContentPin',
+  'B9ScheduledPublishTaskResponse',
+  'B9OffsetDateTime',
+  'B9ScheduledPublishTaskId',
+  'B9DisplayTimeZone',
+  'B9ContentValidationReportId',
+  'B9RightsSnapshotId',
+  'B9AuditId',
+  'B9EvidenceVersion',
+  'B10ContentVersionPin',
+  'B10ActiveSessionAttemptPin',
+  'B10RuleContract',
+  'B10ContentRecovery',
+  'B10AssessmentSession',
+  'B10Attempt',
+  'B10AssessmentReport',
+  'B10MasteryProjection',
+]);
+const M1008_OPENAPI_APPROVED_ROOT_PROJECTIONS = Object.freeze([
+  'x-p1r-gateway-boundary',
+]);
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -166,6 +223,37 @@ export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["components.schemas.B9AdminContentState.properties.latestStatus.description", "description contract changed"],
   ["components.schemas.B9AdminContentState.properties.latestStatus.x-deprecated-values", "unknown schema keyword or extension changed"],
   ["components.schemas.B9AdminContentState.properties.reviewStages", "existing property removed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/publish.x-idempotency", "operation x-idempotency contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/archive.x-idempotency", "operation x-idempotency contract changed"],
+  ["components.schemas.B9PublicContentProjection.properties.availability.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B9PublicContentProjection.properties.availability.const", "const contract changed"],
+  ["components.schemas.B9PublicContentCard.properties.availability.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B9PublicContentCard.properties.availability.const", "const contract changed"],
+  ["components.schemas.B10ContentVersionPin.description", "description contract changed"],
+  ["components.schemas.B10ContentVersionPin.readOnly", "readOnly contract changed"],
+  ["components.schemas.B10ContentVersionPin.oneOf", "oneOf contract changed"],
+  ["components.schemas.B10ContentVersionPin.x-p1r-pin-scope-policy", "unknown schema keyword or extension changed"],
+  ["components.schemas.B10ContentVersionPin.properties.fallbackVersionId.nullable", "nullable contract changed"],
+  ["components.schemas.B10ContentVersionPin.properties.recoveryReasonCode.enum", "new enum value added: RIGHTS_REMOVED"],
+  ["components.schemas.B10ContentVersionPin.properties.recoveryReasonCode.enum", "new enum value added: SECURITY_REMOVED"],
+  ["components.schemas.B10ContentVersionPin.properties.recoveryReasonCode.enum", "new enum value added: LEGAL_REMOVED"],
+  ["components.schemas.B10RuleContract.properties.sealed.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B10RuleContract.properties.sealed.const", "const contract changed"],
+  ["components.schemas.B10ContentRecovery.required", "new required field: usageScope"],
+  ["components.schemas.B10ContentRecovery.description", "description contract changed"],
+  ["components.schemas.B10ContentRecovery.oneOf", "oneOf contract changed"],
+  ["components.schemas.B10ContentRecovery.x-p1r-recovery-scope-policy", "unknown schema keyword or extension changed"],
+  ["components.schemas.B10ContentRecovery.properties.mustNotRegrade.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B10ContentRecovery.properties.mustNotRegrade.const", "const contract changed"],
+  ["components.schemas.B10ContentRecovery.properties.recoveryReasonCode.enum", "new enum value added: RIGHTS_REMOVED"],
+  ["components.schemas.B10ContentRecovery.properties.recoveryReasonCode.enum", "new enum value added: SECURITY_REMOVED"],
+  ["components.schemas.B10ContentRecovery.properties.recoveryReasonCode.enum", "new enum value added: LEGAL_REMOVED"],
+  ["components.schemas.B10AssessmentSession.properties.pin.$ref", "$ref contract changed"],
+  ["components.schemas.B10Attempt.properties.pin.$ref", "$ref contract changed"],
+  ["components.schemas.B10AssessmentReport.properties.pin.$ref", "$ref contract changed"],
+  ["components.schemas.B10AssessmentReport.properties.replayable.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B10AssessmentReport.properties.replayable.const", "const contract changed"],
+  ["components.schemas.B10MasteryProjection.properties.pin.$ref", "$ref contract changed"],
 ]);
 
 function parseArgs(argv) {
@@ -316,6 +404,31 @@ export function stableGovernanceValue(value) {
 
 export function stableGovernanceSha256(value) {
   return createHash('sha256').update(stableGovernanceValue(value)).digest('hex');
+}
+
+function applyApprovedOpenApiProjection(target, approved, names) {
+  if (!isRecord(target) || !isRecord(approved)) return false;
+  for (const name of names) {
+    if (!Object.hasOwn(approved, name)) return false;
+    target[name] = structuredClone(approved[name]);
+  }
+  return true;
+}
+
+/**
+ * Rebuild the one approved M1-008 OpenAPI projection from the frozen 6ce source.
+ * The approved document contributes values only at an explicit B1/B9/B10/Gateway
+ * allowlist. The resulting semantic hash is frozen separately, so changing an
+ * allowlisted value or adding any unlisted projection still fails closed.
+ */
+export function buildM1008OpenApiExpectedProjection(previous, approved) {
+  if (!isRecord(previous) || !isRecord(approved)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = applyApprovedOpenApiProjection(expected.paths, approved.paths, M1008_OPENAPI_APPROVED_PATH_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.parameters, approved.components?.parameters, M1008_OPENAPI_APPROVED_PARAMETER_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.schemas, approved.components?.schemas, M1008_OPENAPI_APPROVED_SCHEMA_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected, approved, M1008_OPENAPI_APPROVED_ROOT_PROJECTIONS);
+  return projected ? expected : undefined;
 }
 
 function m1008ChannelId(eventName) {
@@ -600,8 +713,10 @@ function compareM1008OpenApiPromotion(previous, current, allowance) {
   }
 
   const expectedDescriptors = M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS
-    .map(([location, reason]) => describeChange('openapi', location, reason));
-  const actualDescriptors = compareOpenApi(previous, current);
+    .map(([location, reason]) => describeChange('openapi', location, reason))
+    .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
+  const actualDescriptors = compareOpenApi(previous, current)
+    .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
   if (stableGovernanceValue(actualDescriptors) !== stableGovernanceValue(expectedDescriptors)) {
     changes.push(describeChange(
       'openapi',
@@ -609,12 +724,28 @@ function compareM1008OpenApiPromotion(previous, current, allowance) {
       'current OpenAPI changes do not exactly match the frozen M1-008 descriptor set',
     ));
   }
-  if (stableGovernanceSha256(current) !== M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+  const expectedProjection = buildM1008OpenApiExpectedProjection(previous, current);
+  if (expectedProjection === undefined) {
     changes.push(describeChange(
       'openapi',
       'm1-008.openapiPromotion.projection',
-      'current OpenAPI is not the frozen M1-008 B1/B9 projection',
+      'the approved B1/B9/B10/Gateway projection cannot be constructed from the frozen source',
     ));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange(
+        'openapi',
+        'm1-008.openapiPromotion.expected-projection',
+        'the allowlisted M1-008 projection does not match its frozen semantic digest',
+      ));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange(
+        'openapi',
+        'm1-008.openapiPromotion.projection',
+        'current OpenAPI is not the unique frozen-source B1/B9/B10/Gateway projection',
+      ));
+    }
   }
   return changes;
 }
@@ -797,7 +928,7 @@ export function compareB26WorkflowGovernance(governanceBaseline, current, { allo
   return changes;
 }
 
-function compareOpenApi(previous, current) {
+export function compareOpenApi(previous, current) {
   const changes = [];
   const previousSecuritySchemes = previous.components?.securitySchemes ?? {};
   const currentSecuritySchemes = current.components?.securitySchemes ?? {};
@@ -836,6 +967,16 @@ function compareOpenApi(previous, current) {
         const currentSchemes = new Set(currentSecurity.flatMap((requirement) => Object.keys(requirement ?? {})));
         for (const scheme of previousSchemes) {
           if (!currentSchemes.has(scheme)) changes.push(describeChange('openapi', `${method.toUpperCase()} ${route}.security`, `existing security scheme requirement removed: ${scheme}`));
+        }
+      }
+      for (const field of ['x-migration', 'x-idempotency']) {
+        if (previousOperation[field] !== undefined
+          && stableGovernanceValue(previousOperation[field]) !== stableGovernanceValue(currentOperation[field])) {
+          changes.push(describeChange(
+            'openapi',
+            `${method.toUpperCase()} ${route}.${field}`,
+            `operation ${field} contract changed`,
+          ));
         }
       }
       const previousRequest = resolveMaybe(previous, previousOperation.requestBody?.content?.['application/json']?.schema);

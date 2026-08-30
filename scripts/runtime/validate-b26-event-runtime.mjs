@@ -631,6 +631,10 @@ export function validateB26EventRuntime(manifest, fragment, {
     runtimeGate: runtimeRequested ? 'blocked' : 'static-only',
     runtimeEvidencePending: manifest?.runtimeStatus === 'pending',
     topicCount: manifest?.topics?.length ?? 0,
+    fragmentEventCount: fragment?.events?.length ?? 0,
+    routedCanonicalEventCount: manifest?.eventRouting?.length ?? 0,
+    fragmentPayloadSchemaCount: Object.keys(fragment?.payloadSchemas ?? {}).length,
+    // Compatibility aliases retained for existing callers. Prefer the explicit fields above.
     eventCount: fragment?.events?.length ?? 0,
     routeCount: manifest?.eventRouting?.length ?? 0,
     payloadSchemaCount: Object.keys(fragment?.payloadSchemas ?? {}).length,

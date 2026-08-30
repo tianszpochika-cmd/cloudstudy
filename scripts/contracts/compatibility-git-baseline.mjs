@@ -179,6 +179,9 @@ const M1008_POLICY_TOP_LEVEL_KEYS = Object.freeze([
   'legacyWireAliases',
   'commands',
   'actorClasses',
+  'reviewWorkflow',
+  'publishEligibility',
+  'internalRetirement',
   'schedule',
   'projection',
   'legacyB1',
@@ -280,6 +283,49 @@ export function validateM1008CompatibilityPolicy(policy) {
     actorContext: 'SERVER_DERIVED',
     clientRoleHeader: 'PROHIBITED',
   }, 'content lifecycle policy owner', errors);
+  exactPolicyValue(policy.reviewWorkflow, {
+    contentBindingFields: ['contentVersionId', 'contentHash'],
+    stageOrder: ['FIRST_REVIEW', 'FINAL_REVIEW'],
+    clientStageOrActorFacts: 'PROHIBITED',
+    reviewFirstRequiredFacts: ['VALIDATION_REPORT_PASS', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'REVIEW_VERSION_CURRENT'],
+    reviewFinalRequiredFacts: ['FIRST_REVIEW_APPROVED', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'FIRST_REVIEWER_DISTINCT', 'REVIEW_VERSION_CURRENT'],
+    protectedContentMutation: 'INVALIDATE_VALIDATION_AND_REVIEWS',
+  }, 'content lifecycle review workflow', errors);
+  exactPolicyValue(policy.publishEligibility, {
+    owner: 'content-service',
+    clientFactSubmission: 'PROHIBITED',
+    bindingFields: ['contentVersionId', 'contentHash', 'expectedStateVersion'],
+    requiredFacts: [
+      { name: 'VALIDATION_REPORT', requiredFields: ['reportId', 'reportVersion', 'contentHash'], decision: 'PASS' },
+      { name: 'FIRST_REVIEW', requiredFields: ['reviewVersion', 'contentHash'], decision: 'APPROVED' },
+      { name: 'FINAL_REVIEW', requiredFields: ['reviewVersion', 'contentHash'], decision: 'APPROVED' },
+      { name: 'RIGHTS_SNAPSHOT', requiredFields: ['snapshotId', 'snapshotVersion'], decision: 'VALID' },
+      { name: 'MEDIA', requiredFields: [], decision: 'READY' },
+      { name: 'PHASE_FEATURE_GATE', requiredFields: [], decision: 'ALLOW' },
+    ],
+    actorFactFields: ['editorSubjectId', 'firstReviewerSubjectId', 'finalReviewerSubjectId', 'releaseOperatorSubjectId'],
+    actorSeparation: 'ALL_FOUR_DISTINCT',
+    protectedContentMutation: 'INVALIDATE_VALIDATION_AND_REVIEWS',
+    scheduleExecution: 'RECHECK_ALL_REQUIRED_FACTS',
+  }, 'content lifecycle publish eligibility', errors);
+  exactPolicyValue(policy.internalRetirement, {
+    externalCommand: 'PROHIBITED',
+    handlerOwner: 'content-service',
+    callerIdentity: 'B8WorkloadIdentity',
+    externalExposure: 'DENY',
+    fromStates: ['PUBLISHED'],
+    terminalState: 'ARCHIVED',
+    allowedReasons: ['RETENTION_EXPIRED', 'RIGHTS_PERMANENTLY_REMOVED', 'SECURITY_PERMANENTLY_REMOVED', 'LEGAL_PERMANENTLY_REMOVED'],
+    currentPublicationPrecondition: 'MUST_NOT_REFERENCE_TARGET_VERSION',
+    rollbackEligibilityPrecondition: 'MUST_NOT_BE_ROLLBACK_TARGET',
+    activePinPrecondition: 'NO_ACTIVE_PIN_OR_ALL_PINS_EXPLICIT_UNAVAILABLE_EMERGENCY',
+    recovery: 'PROHIBITED',
+    idempotencyScope: 'contentVersionId+expectedStateVersion+retirementReason',
+    correlationFields: ['retirementId', 'auditId', 'requestId', 'traceId', 'contentVersionId', 'stateVersion'],
+    canonicalEvent: 'NONE',
+    implementationTask: 'P1R-M3-006',
+    runtimeEvidenceTask: 'P1R-M2-004',
+  }, 'content lifecycle internal retirement', errors);
 
   const governance = policy.eventGovernance;
   exactPolicyKeys(governance, M1008_EVENT_GOVERNANCE_KEYS, 'content event governance policy', errors);

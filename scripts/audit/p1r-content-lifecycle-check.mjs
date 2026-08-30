@@ -13,6 +13,7 @@ export const DEFAULT_CONTENT_LIFECYCLE_POLICY = 'config/p1r-content-lifecycle.v1
 const B9_OPENAPI_PATH = 'packages/contracts/fragments/b9/b9-content.openapi.json';
 const B9_SHARED_OPENAPI_PATH = 'packages/contracts/fragments/b9/b9-shared.openapi.json';
 const B1_OPENAPI_PATH = 'packages/contracts/fragments/b1-content.openapi.json';
+const B10_OPENAPI_PATH = 'packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json';
 const B26_FRAGMENT_PATH = 'packages/contracts/events/v1/fragments/b26-reliability.events.json';
 
 const PERSISTENT_STATES = ['DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED', 'ARCHIVED'];
@@ -101,12 +102,189 @@ const ACTOR_CLASSES = [
   { name: 'FINAL_REVIEWER', commands: ['REVIEW_FINAL'], separation: ['MUST_DIFFER_FROM_EDITOR', 'MUST_DIFFER_FROM_FIRST_REVIEWER', 'CANNOT_RELEASE_OWN_REVIEW'] },
   { name: 'RELEASE_OPERATOR', commands: ['PUBLISH', 'SCHEDULE_PUBLISH', 'CANCEL_SCHEDULED_PUBLISH', 'UNPUBLISH', 'ROLLBACK'], separation: ['MUST_DIFFER_FROM_EDITOR', 'MUST_DIFFER_FROM_FIRST_REVIEWER', 'MUST_DIFFER_FROM_FINAL_REVIEWER'] },
 ];
+const REVIEW_WORKFLOW = {
+  contentBindingFields: ['contentVersionId', 'contentHash'],
+  stageOrder: ['FIRST_REVIEW', 'FINAL_REVIEW'],
+  clientStageOrActorFacts: 'PROHIBITED',
+  reviewFirstRequiredFacts: ['VALIDATION_REPORT_PASS', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'REVIEW_VERSION_CURRENT'],
+  reviewFinalRequiredFacts: ['FIRST_REVIEW_APPROVED', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'FIRST_REVIEWER_DISTINCT', 'REVIEW_VERSION_CURRENT'],
+  protectedContentMutation: 'INVALIDATE_VALIDATION_AND_REVIEWS',
+};
+const PUBLISH_ELIGIBILITY = {
+  owner: 'content-service',
+  clientFactSubmission: 'PROHIBITED',
+  bindingFields: ['contentVersionId', 'contentHash', 'expectedStateVersion'],
+  requiredFacts: [
+    { name: 'VALIDATION_REPORT', requiredFields: ['reportId', 'reportVersion', 'contentHash'], decision: 'PASS' },
+    { name: 'FIRST_REVIEW', requiredFields: ['reviewVersion', 'contentHash'], decision: 'APPROVED' },
+    { name: 'FINAL_REVIEW', requiredFields: ['reviewVersion', 'contentHash'], decision: 'APPROVED' },
+    { name: 'RIGHTS_SNAPSHOT', requiredFields: ['snapshotId', 'snapshotVersion'], decision: 'VALID' },
+    { name: 'MEDIA', requiredFields: [], decision: 'READY' },
+    { name: 'PHASE_FEATURE_GATE', requiredFields: [], decision: 'ALLOW' },
+  ],
+  actorFactFields: ['editorSubjectId', 'firstReviewerSubjectId', 'finalReviewerSubjectId', 'releaseOperatorSubjectId'],
+  actorSeparation: 'ALL_FOUR_DISTINCT',
+  protectedContentMutation: 'INVALIDATE_VALIDATION_AND_REVIEWS',
+  scheduleExecution: 'RECHECK_ALL_REQUIRED_FACTS',
+};
+const INTERNAL_RETIREMENT = {
+  externalCommand: 'PROHIBITED',
+  handlerOwner: 'content-service',
+  callerIdentity: 'B8WorkloadIdentity',
+  externalExposure: 'DENY',
+  fromStates: ['PUBLISHED'],
+  terminalState: 'ARCHIVED',
+  allowedReasons: ['RETENTION_EXPIRED', 'RIGHTS_PERMANENTLY_REMOVED', 'SECURITY_PERMANENTLY_REMOVED', 'LEGAL_PERMANENTLY_REMOVED'],
+  currentPublicationPrecondition: 'MUST_NOT_REFERENCE_TARGET_VERSION',
+  rollbackEligibilityPrecondition: 'MUST_NOT_BE_ROLLBACK_TARGET',
+  activePinPrecondition: 'NO_ACTIVE_PIN_OR_ALL_PINS_EXPLICIT_UNAVAILABLE_EMERGENCY',
+  recovery: 'PROHIBITED',
+  idempotencyScope: 'contentVersionId+expectedStateVersion+retirementReason',
+  correlationFields: ['retirementId', 'auditId', 'requestId', 'traceId', 'contentVersionId', 'stateVersion'],
+  canonicalEvent: 'NONE',
+  implementationTask: 'P1R-M3-006',
+  runtimeEvidenceTask: 'P1R-M2-004',
+};
+const B10_PIN_SCOPE_POLICY = {
+  usage: 'FUTURE_READ_OR_UNSTARTED_TASK',
+  safeFallback: 'ALLOWED_BEFORE_SESSION_OR_ATTEMPT_START_ONLY',
+  activeReplacement: 'PROHIBITED',
+  recoveredIdentity: 'FULL_IMMUTABLE_FALLBACK',
+  permanentRemovalRecovery: 'PROHIBITED',
+};
+const B10_FUTURE_PIN_REQUIRED = [
+  'contentCode', 'contentVersionId', 'contentEpoch', 'snapshotId', 'snapshotHash', 'pinStatus', 'pinnedAt',
+];
+const B10_FUTURE_PIN_PROPERTIES = {
+  contentCode: { $ref: '#/components/schemas/B10ContentCode' },
+  contentVersionId: { $ref: '#/components/schemas/B10Int64Id' },
+  contentEpoch: { $ref: '#/components/schemas/B10ContentEpoch' },
+  snapshotId: { $ref: '#/components/schemas/B10SnapshotId' },
+  snapshotHash: { $ref: '#/components/schemas/B10Sha256' },
+  pinStatus: { type: 'string', enum: ['PINNED', 'UNPUBLISHED', 'RECOVERABLE', 'RECOVERED', 'UNAVAILABLE'] },
+  pinnedAt: { $ref: '#/components/schemas/B10DateTime' },
+  fallbackVersionId: { $ref: '#/components/schemas/B10Int64Id' },
+  fallbackContentEpoch: { $ref: '#/components/schemas/B10ContentEpoch' },
+  fallbackSnapshotId: { $ref: '#/components/schemas/B10SnapshotId' },
+  fallbackSnapshotHash: { $ref: '#/components/schemas/B10Sha256' },
+  recoveryReasonCode: { type: 'string', enum: ['NONE', 'CONTENT_UNPUBLISHED', 'RIGHTS_EXPIRED', 'SNAPSHOT_MISSING', 'POLICY_DENIED', 'SERVICE_DEGRADED', 'RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED'] },
+};
+const B10_FUTURE_FALLBACK_DENIAL = {
+  anyOf: [
+    { required: ['fallbackVersionId'] },
+    { required: ['fallbackContentEpoch'] },
+    { required: ['fallbackSnapshotId'] },
+    { required: ['fallbackSnapshotHash'] },
+  ],
+};
+const B10_FUTURE_PIN_ONE_OF = [
+  {
+    properties: {
+      pinStatus: { type: 'string', enum: ['PINNED'] },
+      recoveryReasonCode: { type: 'string', enum: ['NONE'] },
+    },
+    required: ['recoveryReasonCode'],
+    not: B10_FUTURE_FALLBACK_DENIAL,
+  },
+  {
+    properties: {
+      pinStatus: { type: 'string', enum: ['UNPUBLISHED'] },
+      recoveryReasonCode: { type: 'string', enum: ['CONTENT_UNPUBLISHED'] },
+    },
+    required: ['recoveryReasonCode'],
+    not: B10_FUTURE_FALLBACK_DENIAL,
+  },
+  {
+    properties: {
+      pinStatus: { type: 'string', enum: ['RECOVERABLE'] },
+      recoveryReasonCode: { type: 'string', enum: ['CONTENT_UNPUBLISHED', 'RIGHTS_EXPIRED', 'SNAPSHOT_MISSING', 'POLICY_DENIED', 'SERVICE_DEGRADED'] },
+    },
+    required: ['recoveryReasonCode'],
+    not: B10_FUTURE_FALLBACK_DENIAL,
+  },
+  {
+    properties: {
+      pinStatus: { type: 'string', enum: ['RECOVERED'] },
+      recoveryReasonCode: { type: 'string', enum: ['CONTENT_UNPUBLISHED', 'RIGHTS_EXPIRED', 'SNAPSHOT_MISSING', 'POLICY_DENIED', 'SERVICE_DEGRADED'] },
+    },
+    required: ['recoveryReasonCode', 'fallbackVersionId', 'fallbackContentEpoch', 'fallbackSnapshotId', 'fallbackSnapshotHash'],
+  },
+  {
+    properties: {
+      pinStatus: { type: 'string', enum: ['UNAVAILABLE'] },
+      recoveryReasonCode: { type: 'string', enum: ['RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED'] },
+    },
+    required: ['recoveryReasonCode'],
+    not: B10_FUTURE_FALLBACK_DENIAL,
+  },
+];
+const B10_ACTIVE_PIN_POLICY = {
+  usage: 'ACTIVE_SESSION_OR_ATTEMPT',
+  versionIdentity: 'IMMUTABLE',
+  allowedOutcomes: ['AVAILABLE', 'UNAVAILABLE'],
+  safeFutureFallback: 'PROHIBITED',
+  silentReplacement: 'PROHIBITED',
+};
+const B10_ACTIVE_PIN_REQUIRED = [
+  'contentCode', 'contentVersionId', 'contentEpoch', 'snapshotId', 'snapshotHash', 'status', 'pinnedAt',
+];
+const B10_ACTIVE_PIN_PROPERTIES = {
+  contentCode: { $ref: '#/components/schemas/B10ContentCode' },
+  contentVersionId: { $ref: '#/components/schemas/B10Int64Id' },
+  contentEpoch: { $ref: '#/components/schemas/B10ContentEpoch' },
+  snapshotId: { $ref: '#/components/schemas/B10SnapshotId' },
+  snapshotHash: { $ref: '#/components/schemas/B10Sha256' },
+  status: { type: 'string', enum: ['AVAILABLE', 'UNAVAILABLE'] },
+  pinnedAt: { $ref: '#/components/schemas/B10DateTime' },
+  reasonCode: { type: 'string', enum: ['RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED'] },
+  alternativeAction: { type: 'string', enum: ['RETURN_TO_CATALOG', 'SELECT_ALTERNATIVE_TASK', 'CONTACT_SUPPORT'] },
+  alternativeContentVersionId: { $ref: '#/components/schemas/B10Int64Id' },
+};
+const B10_ACTIVE_PIN_ONE_OF = [
+  {
+    properties: { status: { type: 'string', enum: ['AVAILABLE'] } },
+    required: ['status'],
+    not: { anyOf: [{ required: ['reasonCode'] }, { required: ['alternativeAction'] }, { required: ['alternativeContentVersionId'] }] },
+  },
+  {
+    properties: { status: { type: 'string', enum: ['UNAVAILABLE'] } },
+    required: ['status', 'reasonCode', 'alternativeAction'],
+  },
+];
+const B10_RECOVERY_SCOPE_POLICY = {
+  routeUsage: 'FUTURE_READ_ONLY',
+  activeSessionOrAttempt: 'PROHIBITED',
+  historicalRegrade: 'PROHIBITED',
+};
+const B10_RECOVERY_ONE_OF = [
+  {
+    properties: { resolution: { type: 'string', enum: ['EXACT_PIN'] } },
+    required: ['resolvedVersionId', 'resolvedSnapshotId'],
+  },
+  {
+    properties: { resolution: { type: 'string', enum: ['IMMUTABLE_SNAPSHOT'] } },
+    required: ['resolvedSnapshotId'],
+    not: { required: ['resolvedVersionId'] },
+  },
+  {
+    properties: { resolution: { type: 'string', enum: ['SAFE_FUTURE_FALLBACK'] } },
+    required: ['resolvedVersionId', 'resolvedSnapshotId'],
+  },
+  {
+    properties: {
+      resolution: { type: 'string', enum: ['UNAVAILABLE'] },
+      recoveryReasonCode: { type: 'string', enum: ['CONTENT_UNPUBLISHED', 'RIGHTS_EXPIRED', 'SNAPSHOT_MISSING', 'POLICY_DENIED', 'SERVICE_DEGRADED', 'RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED'] },
+    },
+    required: ['recoveryReasonCode'],
+    not: { anyOf: [{ required: ['resolvedVersionId'] }, { required: ['resolvedSnapshotId'] }] },
+  },
+];
 const SCHEDULE = {
   states: ['SCHEDULED', 'CANCELLED', 'EXECUTED', 'INVALIDATED', 'RECOVERY_REQUIRED'],
   clock: { scheduledAt: 'UTC_INSTANT', displayTimeZone: 'IANA_TIME_ZONE', dueCheck: 'SERVER_OWNED_CLOCK' },
   bindingFields: ['contentVersionId', 'contentHash', 'validationReportId', 'validationReportVersion', 'firstReviewVersion', 'finalReviewVersion', 'rightsSnapshotId', 'rightsSnapshotVersion', 'scheduledAt', 'displayTimeZone'],
   idempotency: { key: 'Idempotency-Key', scope: 'contentVersionId+scheduledAt+command', duplicate: 'RETURN_ORIGINAL_TASK' },
-  dueRecheck: { required: ['CONTENT_HASH', 'VALIDATION_REPORT', 'FIRST_REVIEW', 'FINAL_REVIEW', 'RIGHTS_SNAPSHOT', 'EXPECTED_STATE_VERSION'], onFailure: 'INVALIDATED_OR_RECOVERY_REQUIRED', directForeignWrite: 'PROHIBITED' },
+  dueRecheck: { required: ['CONTENT_HASH', 'VALIDATION_REPORT', 'FIRST_REVIEW', 'FINAL_REVIEW', 'RIGHTS_SNAPSHOT', 'MEDIA', 'PHASE_FEATURE_GATE', 'EXPECTED_STATE_VERSION'], onFailure: 'INVALIDATED_OR_RECOVERY_REQUIRED', directForeignWrite: 'PROHIBITED' },
   recovery: { taskId: 'P1R-M1-007', owner: 'workflow-service', mode: 'SAGA_COMPENSATION_AND_MANUAL_RECOVERY', directDomainWrite: 'PROHIBITED' },
 };
 const B9_TASK_STATE_FIELD_POLICY = {
@@ -187,7 +365,8 @@ const COMPATIBILITY_PROMOTION = {
 const POLICY_KEYS = [
   '$schema', 'schemaVersion', 'taskId', 'phase', 'maturity', 'runtimeStatus',
   'sourceOfTruth', 'sourceRefs', 'owner', 'persistentVersionStates', 'reviewStages',
-  'legacyWireAliases', 'commands', 'actorClasses', 'schedule', 'projection',
+  'legacyWireAliases', 'commands', 'actorClasses', 'reviewWorkflow', 'publishEligibility',
+  'internalRetirement', 'schedule', 'projection',
   'legacyB1', 'eventGovernance', 'plannedClosureDisposition', 'runtimeEvidenceBoundary',
 ];
 
@@ -214,6 +393,24 @@ function exact(errors, actual, expected, label) {
 function exactKeys(errors, value, expected, label) {
   add(errors, isRecord(value), label + ' must be an object');
   if (isRecord(value)) exact(errors, Object.keys(value).sort(), expected.slice().sort(), label + ' keys');
+}
+
+function singletonEnumValue(value) {
+  return isRecord(value) && Array.isArray(value.enum) && value.enum.length === 1 ? value.enum[0] : undefined;
+}
+
+function findKeywordLocations(value, keyword, location = '$', found = []) {
+  if (Array.isArray(value)) {
+    value.forEach(function (item, index) { findKeywordLocations(item, keyword, location + '[' + index + ']', found); });
+    return found;
+  }
+  if (!isRecord(value)) return found;
+  for (const [key, child] of Object.entries(value)) {
+    const itemLocation = location + '.' + key;
+    if (key === keyword) found.push(itemLocation);
+    findKeywordLocations(child, keyword, itemLocation, found);
+  }
+  return found;
 }
 
 function readJson(root, relativePath) {
@@ -267,7 +464,6 @@ function hasForbiddenProjectionField(document, source, forbiddenFields, seenRefe
 function commandNamesFromBranch(branch) {
   const discriminator = branch && branch.properties && branch.properties.command;
   if (!isRecord(discriminator)) return [];
-  if (typeof discriminator.const === 'string' && Object.keys(discriminator).length === 1) return [discriminator.const];
   if (Array.isArray(discriminator.enum) && Object.keys(discriminator).length === 1 && discriminator.enum.every(function (item) { return typeof item === 'string'; })) return discriminator.enum.slice();
   return [];
 }
@@ -296,9 +492,7 @@ function checkCommandOneOf(request, errors) {
     coveredCommands.push(...commands);
     if (!spec || !isRecord(branch)) continue;
     exactKeys(errors, branch, ['properties', ...(spec.required.length > 0 ? ['required'] : []), 'not'], label);
-    const expectedDiscriminator = spec.commands.length === 1
-      ? { command: { const: spec.commands[0] } }
-      : { command: { enum: spec.commands } };
+    const expectedDiscriminator = { command: { enum: spec.commands } };
     exact(errors, branch.properties, expectedDiscriminator, label + ' discriminator');
     exact(errors, branch.required || [], spec.required, label + ' required fields');
     exactForbiddenConstraint(errors, branch.not, spec.forbidden, label + ' forbidden fields');
@@ -314,14 +508,14 @@ function checkScheduledTaskOneOf(task, errors) {
   if (!Array.isArray(branches)) return;
   const coveredStatuses = [];
   for (const [index, branch] of branches.entries()) {
-    const status = branch && branch.properties && branch.properties.status && branch.properties.status.const;
+    const status = singletonEnumValue(branch && branch.properties && branch.properties.status);
     const spec = B9_TASK_ONE_OF.find(function (candidate) { return candidate.status === status; });
     const label = 'B9 scheduled task oneOf branch ' + (status || '#' + index);
     add(errors, spec !== undefined, label + ' must have a frozen task-status discriminator');
     if (typeof status === 'string') coveredStatuses.push(status);
     if (!spec || !isRecord(branch)) continue;
     exactKeys(errors, branch, ['properties', ...(spec.required.length > 0 ? ['required'] : []), ...(spec.forbidden.length > 0 ? ['not'] : [])], label);
-    exact(errors, branch.properties, { status: { const: spec.status } }, label + ' discriminator');
+    exact(errors, branch.properties, { status: { enum: [spec.status] } }, label + ' discriminator');
     exact(errors, branch.required || [], spec.required, label + ' required fields');
     exactForbiddenConstraint(errors, branch.not, spec.forbidden, label + ' forbidden fields');
   }
@@ -349,6 +543,9 @@ function checkPolicy(policy, errors) {
   ], 'legacy wire aliases');
   exact(errors, policy.commands, COMMANDS, 'content command state machine');
   exact(errors, policy.actorClasses, ACTOR_CLASSES, 'four content actor classes');
+  exact(errors, policy.reviewWorkflow, REVIEW_WORKFLOW, 'content review workflow');
+  exact(errors, policy.publishEligibility, PUBLISH_ELIGIBILITY, 'content publish eligibility');
+  exact(errors, policy.internalRetirement, INTERNAL_RETIREMENT, 'content internal retirement');
   exact(errors, policy.schedule, SCHEDULE, 'content scheduling policy');
   exact(errors, policy.projection, PROJECTION, 'content projection policy');
   exact(errors, policy.legacyB1, LEGACY_B1, 'legacy B1 disposition');
@@ -403,6 +600,7 @@ function scanRuntimePromotion(value, location, errors) {
     '$.eventGovernance.compatibilityPromotion.runtimeStatus',
     '$.plannedClosureDisposition[0].runtimeStatus',
     '$.plannedClosureDisposition[1].runtimeStatus',
+    '$.internalRetirement.runtimeEvidenceTask',
     '$.runtimeEvidenceBoundary',
     '$.runtimeEvidenceBoundary.runtimeStatus',
     '$.runtimeEvidenceBoundary.b26.runtimeStatus',
@@ -419,6 +617,7 @@ function scanRuntimePromotion(value, location, errors) {
 }
 
 function checkB9(policy, b9, b9Shared, catalog, errors) {
+  add(errors, findKeywordLocations(b9, 'const').length === 0, 'B9 content OpenAPI 3.0.3 schemas must use singleton enum instead of unsupported const');
   const request = schema(b9, 'B9ContentCommandRequest');
   add(errors, request && request.additionalProperties === false, 'B9 content command request must be a closed object');
   const commandNames = (request && request.properties && request.properties.command && request.properties.command.enum) || [];
@@ -499,6 +698,8 @@ function checkB9(policy, b9, b9Shared, catalog, errors) {
     const publishedOnlyText = String(status && status.description || '') + ' ' + String(projection && projection.properties && projection.properties.availability && projection.properties.availability.description || '');
     add(errors, /published|已发布/.test(publishedOnlyText), name + ' projectionStatus description must state published-only behavior');
   }
+  exact(errors, schema(b9, 'B9PublicContentProjection') && schema(b9, 'B9PublicContentProjection').properties && schema(b9, 'B9PublicContentProjection').properties.availability && schema(b9, 'B9PublicContentProjection').properties.availability.enum, ['PUBLISHED'], 'B9 public projection availability singleton enum');
+  exact(errors, schema(b9, 'B9PublicContentCard') && schema(b9, 'B9PublicContentCard').properties && schema(b9, 'B9PublicContentCard').properties.availability && schema(b9, 'B9PublicContentCard').properties.availability.enum, ['PUBLISHED'], 'B9 public card availability singleton enum');
 
   const assessmentRoute = b9 && b9.paths && b9.paths['/internal/v1/content/versions/{contentVersionId}/assessment-snapshot'] && b9.paths['/internal/v1/content/versions/{contentVersionId}/assessment-snapshot'].get;
   add(errors, assessmentRoute && assessmentRoute.operationId === 'getB9AssessmentContentSnapshot', 'B9 assessment projection must remain the named internal snapshot operation');
@@ -520,8 +721,8 @@ function checkB9(policy, b9, b9Shared, catalog, errors) {
   exact(errors, sessionPin && sessionPin.properties && sessionPin.properties.status && sessionPin.properties.status.enum, ['AVAILABLE', 'UNAVAILABLE'], 'B9SessionContentPin status enum');
   add(errors, /不得静默|must not silently|no silent fallback/i.test(String(sessionPin && sessionPin.description || '')), 'B9SessionContentPin must explicitly prohibit silent fallback');
   const pinAlternatives = (sessionPin && sessionPin.oneOf) || [];
-  const availablePin = pinAlternatives.find(function (item) { return item && item.properties && item.properties.status && item.properties.status.const === 'AVAILABLE'; });
-  const unavailablePin = pinAlternatives.find(function (item) { return item && item.properties && item.properties.status && item.properties.status.const === 'UNAVAILABLE'; });
+  const availablePin = pinAlternatives.find(function (item) { return singletonEnumValue(item && item.properties && item.properties.status) === 'AVAILABLE'; });
+  const unavailablePin = pinAlternatives.find(function (item) { return singletonEnumValue(item && item.properties && item.properties.status) === 'UNAVAILABLE'; });
   add(errors, pinAlternatives.length === 2 && availablePin && unavailablePin, 'B9SessionContentPin must have exactly AVAILABLE and UNAVAILABLE alternatives');
   add(errors, availablePin && !(availablePin.required || []).includes('reasonCode') && !(availablePin.required || []).includes('alternativeAction'), 'available B9SessionContentPin must not carry removal details');
   exact(errors, availablePin && availablePin.not && availablePin.not.anyOf && availablePin.not.anyOf.map(function (item) { return item && item.required && item.required[0]; }), ['reasonCode', 'alternativeAction', 'alternativeContentVersionId'], 'available B9SessionContentPin removal-detail denial');
@@ -559,6 +760,54 @@ function checkB1(policy, b1, errors) {
     }
   }
   exact(errors, legacyWrites, policy.legacyB1 && policy.legacyB1.deprecatedLifecycleWrites, 'B1 deprecated lifecycle/write operation set');
+  const publish = b1 && b1.paths && b1.paths['/api/v1/content/{contentId}/versions/{versionId}/publish'] && b1.paths['/api/v1/content/{contentId}/versions/{versionId}/publish'].post;
+  const unpublish = b1 && b1.paths && b1.paths['/api/v1/content/{contentId}/versions/{versionId}/archive'] && b1.paths['/api/v1/content/{contentId}/versions/{versionId}/archive'].post;
+  add(errors, publish && publish['x-idempotency'] && publish['x-idempotency'].replayBehavior === '同 contentCode+targetVersionNumber+command 返回首次 PUBLISH 结果；成功只切换 currentPublication 并更新 contentEpoch/projection，旧版本保留为可验证回滚候选且不自动进入 ARCHIVED', 'B1 publish replay semantics must preserve the previous version as a rollback candidate');
+  add(errors, unpublish && unpublish['x-migration'] === '将下线意图转换为 B9 UNPUBLISH command；UNPUBLISH 只清除当前发布指针，不把版本持久状态改写为 UNPUBLISHED；ARCHIVED 仅由独立生命周期退休操作产生。', 'B1 archive migration must remain an UNPUBLISH pointer action');
+  add(errors, unpublish && unpublish['x-idempotency'] && unpublish['x-idempotency'].replayBehavior === '同 contentCode+contentEpoch+请求摘要返回首次 UNPUBLISH 发布指针结果；重复请求不产生 ARCHIVED，独立退休后的版本状态仅作为只读结果返回', 'B1 archive replay semantics must not turn UNPUBLISH into ARCHIVED');
+}
+
+function checkB10(b10, errors) {
+  add(errors, findKeywordLocations(b10, 'const').length === 0, 'B10 content OpenAPI 3.0.3 schemas must use singleton enum instead of unsupported const');
+  const pin = schema(b10, 'B10ContentVersionPin');
+  add(errors, pin && pin.type === 'object' && pin.readOnly === true && pin.additionalProperties === false, 'B10 future-read content pin must be a closed read-only object');
+  exact(errors, pin && pin['x-p1r-pin-scope-policy'], B10_PIN_SCOPE_POLICY, 'B10 future-read content pin scope');
+  exact(errors, pin && pin.required, B10_FUTURE_PIN_REQUIRED, 'B10 future-read content pin required fields');
+  exact(errors, pin && pin.properties, B10_FUTURE_PIN_PROPERTIES, 'B10 future-read content pin properties');
+  exact(errors, pin && pin.oneOf, B10_FUTURE_PIN_ONE_OF, 'B10 future-read content pin branches');
+
+  const activePin = schema(b10, 'B10ActiveSessionAttemptPin');
+  add(errors, activePin && activePin.type === 'object' && activePin.readOnly === true && activePin.additionalProperties === false, 'B10 active session/attempt pin must be a closed read-only object');
+  exact(errors, activePin && activePin['x-p1r-active-pin-policy'], B10_ACTIVE_PIN_POLICY, 'B10 active session/attempt pin policy');
+  exact(errors, activePin && activePin.required, B10_ACTIVE_PIN_REQUIRED, 'B10 active session/attempt pin required fields');
+  exact(errors, activePin && activePin.properties, B10_ACTIVE_PIN_PROPERTIES, 'B10 active session/attempt pin properties');
+  exact(errors, activePin && activePin.oneOf, B10_ACTIVE_PIN_ONE_OF, 'B10 active session/attempt pin branches');
+  for (const name of ['B10AssessmentSession', 'B10Attempt', 'B10AssessmentReport', 'B10MasteryProjection']) {
+    const parent = schema(b10, name);
+    add(errors, parent && parent.properties && parent.properties.pin && parent.properties.pin.$ref === '#/components/schemas/B10ActiveSessionAttemptPin', name + ' must use the immutable active-session/attempt pin');
+  }
+  for (const name of ['B10LearnerContentSnapshot', 'B10AssessmentContentSnapshot', 'B10LearningQueueItem']) {
+    const parent = schema(b10, name);
+    add(errors, parent && parent.properties && parent.properties.pin && parent.properties.pin.$ref === '#/components/schemas/B10ContentVersionPin', name + ' must keep the future-read or unstarted-task pin');
+  }
+
+  const recovery = schema(b10, 'B10ContentRecovery');
+  exact(errors, recovery && recovery.required, ['usageScope', 'requestedVersionId', 'resolution', 'mustNotRegrade', 'resolvedAt'], 'B10 content recovery required fields');
+  exact(errors, recovery && recovery['x-p1r-recovery-scope-policy'], B10_RECOVERY_SCOPE_POLICY, 'B10 recovery scope policy');
+  exact(errors, recovery && recovery.properties && recovery.properties.usageScope && recovery.properties.usageScope.enum, ['FUTURE_READ_ONLY'], 'B10 recovery usage scope');
+  exact(errors, recovery && recovery.properties && recovery.properties.mustNotRegrade && recovery.properties.mustNotRegrade.enum, [true], 'B10 recovery historical regrade prohibition');
+  exact(errors, recovery && recovery.properties && recovery.properties.recoveryReasonCode && recovery.properties.recoveryReasonCode.enum, ['NONE', 'CONTENT_UNPUBLISHED', 'RIGHTS_EXPIRED', 'SNAPSHOT_MISSING', 'POLICY_DENIED', 'SERVICE_DEGRADED', 'RIGHTS_REMOVED', 'SECURITY_REMOVED', 'LEGAL_REMOVED'], 'B10 recovery reason-code union');
+  exact(errors, recovery && recovery.oneOf, B10_RECOVERY_ONE_OF, 'B10 active/future recovery branches');
+  const response = schema(b10, 'B10ContentRecoveryResponse');
+  add(errors, response && response.properties && response.properties.data && response.properties.data.$ref === '#/components/schemas/B10ContentRecovery', 'B10 recovery response must use the frozen scoped recovery decision');
+  const recoveryOperation = b10 && b10.paths && b10.paths['/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery'] && b10.paths['/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery'].get;
+  exact(errors, recoveryOperation && recoveryOperation['x-contract'], {
+    owner: 'content-service',
+    consumer: 'assessment-service/learning-service',
+    recovery: 'exact immutable snapshot first; safe fallback only for future reads; never regrade a historical attempt',
+    usageScope: 'FUTURE_READ_ONLY',
+    activeSessionOrAttempt: 'PROHIBITED',
+  }, 'B10 recovery route scope');
 }
 
 function checkEventGovernance(input, errors) {
@@ -658,7 +907,8 @@ export function validateContentLifecycleData(input = {}) {
   for (const [key, label] of [
     ['policy', 'content lifecycle policy'], ['b9OpenApi', 'B9 content OpenAPI'],
     ['b9SharedOpenApi', 'B9 shared OpenAPI'],
-    ['b1OpenApi', 'B1 content OpenAPI'], ['catalog', 'event catalog'],
+    ['b1OpenApi', 'B1 content OpenAPI'], ['b10OpenApi', 'B10 learning/assessment content OpenAPI'],
+    ['catalog', 'event catalog'],
     ['b26Runtime', 'B26 static candidate'], ['reliabilityPolicy', 'event reliability policy'],
     ['b26Fragment', 'B26 event fragment'], ['registry', 'schema registry'],
     ['sagaPolicy', 'Saga recovery policy'], ['ownerPolicy', 'data ownership policy'],
@@ -668,6 +918,7 @@ export function validateContentLifecycleData(input = {}) {
     checkPolicy(input.policy, errors);
     checkB9(input.policy, input.b9OpenApi, input.b9SharedOpenApi, input.catalog, errors);
     checkB1(input.policy, input.b1OpenApi, errors);
+    checkB10(input.b10OpenApi, errors);
     checkEventGovernance(input, errors);
     checkLinkedAudits(input, errors);
   }
@@ -695,6 +946,7 @@ export function readContentLifecycleInputs(options = {}) {
     b9OpenApi: readJson(root, B9_OPENAPI_PATH),
     b9SharedOpenApi: readJson(root, B9_SHARED_OPENAPI_PATH),
     b1OpenApi: readJson(root, B1_OPENAPI_PATH),
+    b10OpenApi: readJson(root, B10_OPENAPI_PATH),
     catalog: readJson(root, 'packages/contracts/events/v1/catalog.json'),
     b26Runtime: readJson(root, 'config/b26-event-runtime.json'),
     reliabilityPolicy: readJson(root, 'packages/contracts/events/v1/reliability-policy.json'),

@@ -26,10 +26,18 @@ function b9Schema(input, name) {
   return input.b9OpenApi.components.schemas[name] || input.b9SharedOpenApi.components.schemas[name];
 }
 
+function b10Schema(input, name) {
+  return input.b10OpenApi.components.schemas[name];
+}
+
 function b9AdminReviewRecord(input) {
   const reviewRecords = b9Schema(input, 'B9AdminContentState').properties.reviewRecords;
   const items = reviewRecords.items;
   return items.$ref ? b9Schema(input, items.$ref.split('/').at(-1)) : items;
+}
+
+function singletonEnumValue(value) {
+  return value && Array.isArray(value.enum) && value.enum.length === 1 ? value.enum[0] : undefined;
 }
 
 test('P1R-M1-008 content lifecycle, B9/B1 disposition, catalog, B26 and reliability governance pass as D2 only', () => {
@@ -63,6 +71,13 @@ test('content lifecycle rejects state, command, actor, schedule, projection, leg
     ['review stage swap', (input) => { input.policy.reviewStages[0] = 'REVIEW_FIRST'; }, /review stage names/],
     ['reviewer becomes release operator', (input) => { input.policy.commands[4].actorClass = 'RELEASE_OPERATOR'; }, /content command state machine/],
     ['role separation weakened', (input) => { input.policy.actorClasses[3].separation.pop(); }, /four content actor classes/],
+    ['review order reversed', (input) => { input.policy.reviewWorkflow.stageOrder.reverse(); }, /content review workflow/],
+    ['final review can skip first approval', (input) => { input.policy.reviewWorkflow.reviewFinalRequiredFacts.shift(); }, /content review workflow/],
+    ['publish eligibility loses media', (input) => { input.policy.publishEligibility.requiredFacts = input.policy.publishEligibility.requiredFacts.filter((fact) => fact.name !== 'MEDIA'); }, /content publish eligibility/],
+    ['publish actor separation weakened', (input) => { input.policy.publishEligibility.actorSeparation = 'EDITOR_MAY_RELEASE'; }, /content publish eligibility/],
+    ['internal retirement becomes external', (input) => { input.policy.internalRetirement.externalCommand = 'ALLOWED'; }, /content internal retirement/],
+    ['internal retirement keeps public pointer', (input) => { input.policy.internalRetirement.currentPublicationPrecondition = 'OPTIONAL'; }, /content internal retirement/],
+    ['internal retirement remains recoverable', (input) => { input.policy.internalRetirement.recovery = 'ALLOWED'; }, /content internal retirement/],
     ['missing scheduled command', (input) => { input.policy.commands.splice(7, 1); }, /content command state machine/],
     ['schedule status injection', (input) => { input.policy.schedule.states.push('SUCCEEDED'); }, /content scheduling policy/],
     ['schedule uses local clock', (input) => { input.policy.schedule.clock.scheduledAt = 'LOCAL_TIME'; }, /content scheduling policy/],
@@ -125,15 +140,19 @@ test('content lifecycle rejects B9 client authority, command/review-stage confus
       b9Schema(input, 'B9ContentCommandRequest')['x-command-field-policy'].UNPUBLISH.allowed.push('targetVersionNumber');
     }, /B9 command field policy/],
     ['B9 VALIDATE_DRAFT schema loses its field denial', (input) => {
-      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => item.properties.command.const === 'VALIDATE_DRAFT');
+      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => singletonEnumValue(item.properties.command) === 'VALIDATE_DRAFT');
       delete branch.not;
     }, /B9 command oneOf branch VALIDATE_DRAFT/],
+    ['B9 OpenAPI 3.0 discriminator regresses to const', (input) => {
+      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => singletonEnumValue(item.properties.command) === 'VALIDATE_DRAFT');
+      branch.properties.command = { const: 'VALIDATE_DRAFT' };
+    }, /singleton enum instead of unsupported const|frozen command discriminator/],
     ['B9 UNPUBLISH schema accepts targetVersionNumber', (input) => {
-      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => item.properties.command.const === 'UNPUBLISH');
+      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => singletonEnumValue(item.properties.command) === 'UNPUBLISH');
       branch.not.anyOf = branch.not.anyOf.filter((item) => item.required[0] !== 'targetVersionNumber');
     }, /B9 command oneOf branch UNPUBLISH forbidden fields/],
     ['B9 SCHEDULE_PUBLISH schema accepts a review decision', (input) => {
-      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => item.properties.command.const === 'SCHEDULE_PUBLISH');
+      const branch = b9Schema(input, 'B9ContentCommandRequest').oneOf.find((item) => singletonEnumValue(item.properties.command) === 'SCHEDULE_PUBLISH');
       branch.not.anyOf = branch.not.anyOf.filter((item) => item.required[0] !== 'reviewDecision');
     }, /B9 command oneOf branch SCHEDULE_PUBLISH forbidden fields/],
     ['B9 client actor injection', (input) => {
@@ -158,11 +177,11 @@ test('content lifecycle rejects B9 client authority, command/review-stage confus
       task.required = task.required.filter((field) => field !== 'traceId');
     }, /correlation field traceId/],
     ['B9 scheduled task lets SCHEDULED carry completedAt', (input) => {
-      const branch = b9Schema(input, 'B9ScheduledPublishTask').oneOf.find((item) => item.properties.status.const === 'SCHEDULED');
+      const branch = b9Schema(input, 'B9ScheduledPublishTask').oneOf.find((item) => singletonEnumValue(item.properties.status) === 'SCHEDULED');
       branch.not.anyOf = branch.not.anyOf.filter((item) => item.required[0] !== 'completedAt');
     }, /B9 scheduled task oneOf branch SCHEDULED forbidden fields/],
     ['B9 scheduled task lets RECOVERY_REQUIRED omit recoveryTaskId', (input) => {
-      const branch = b9Schema(input, 'B9ScheduledPublishTask').oneOf.find((item) => item.properties.status.const === 'RECOVERY_REQUIRED');
+      const branch = b9Schema(input, 'B9ScheduledPublishTask').oneOf.find((item) => singletonEnumValue(item.properties.status) === 'RECOVERY_REQUIRED');
       branch.required = branch.required.filter((field) => field !== 'recoveryTaskId');
     }, /B9 scheduled task oneOf branch RECOVERY_REQUIRED required fields/],
     ['B9 projection status required breaking change', (input) => {
@@ -180,12 +199,12 @@ test('content lifecycle rejects B9 client authority, command/review-stage confus
     }, /emergency reason codes/],
     ['B9 session pin loses alternative action', (input) => {
       const sessionPin = b9Schema(input, 'B9SessionContentPin');
-      const unavailable = sessionPin.oneOf.find((item) => item.properties.status.const === 'UNAVAILABLE');
+      const unavailable = sessionPin.oneOf.find((item) => singletonEnumValue(item.properties.status) === 'UNAVAILABLE');
       unavailable.required = unavailable.required.filter((field) => field !== 'alternativeAction');
     }, /must expose reasonCode and alternativeAction/],
     ['B9 available session pin permits removal detail', (input) => {
       const sessionPin = b9Schema(input, 'B9SessionContentPin');
-      const available = sessionPin.oneOf.find((item) => item.properties.status.const === 'AVAILABLE');
+      const available = sessionPin.oneOf.find((item) => singletonEnumValue(item.properties.status) === 'AVAILABLE');
       available.not.anyOf = available.not.anyOf.filter((item) => item.required[0] !== 'reasonCode');
     }, /removal-detail denial/],
   ];
@@ -210,6 +229,64 @@ test('content lifecycle rejects legacy B1 reactivation and authority-header acce
     ['B1 deprecated write operation is renamed', (input) => {
       input.b1OpenApi.paths['/api/v1/content'].post.operationId = 'newContentWrite';
     }, /deprecated lifecycle\/write operation set/],
+    ['B1 publish archives the replaced version', (input) => {
+      input.b1OpenApi.paths['/api/v1/content/{contentId}/versions/{versionId}/publish'].post['x-idempotency'].replayBehavior = 'old version enters ARCHIVED';
+    }, /publish replay semantics/],
+    ['B1 unpublish returns ARCHIVED', (input) => {
+      input.b1OpenApi.paths['/api/v1/content/{contentId}/versions/{versionId}/archive'].post['x-idempotency'].replayBehavior = 'returns ARCHIVED';
+    }, /archive replay semantics/],
+  ];
+  for (const [name, mutate, expected] of cases) {
+    const report = evaluate(mutate);
+    assert.equal(report.result, 'FAIL', name);
+    assert.match(report.errors.join('\n'), expected, name);
+  }
+});
+
+test('content lifecycle rejects B10 active-pin replacement and future-fallback scope drift', () => {
+  const cases = [
+    ['future pinned state admits fallback identity', (input) => {
+      b10Schema(input, 'B10ContentVersionPin').oneOf[0].not.anyOf.shift();
+    }, /future-read content pin branches/],
+    ['future recovered state loses immutable fallback snapshot hash', (input) => {
+      b10Schema(input, 'B10ContentVersionPin').oneOf[3].required.pop();
+    }, /future-read content pin branches/],
+    ['future unavailable state admits a transient reason', (input) => {
+      b10Schema(input, 'B10ContentVersionPin').oneOf[4].properties.recoveryReasonCode.enum.push('SERVICE_DEGRADED');
+    }, /future-read content pin branches/],
+    ['future pin loses read-only boundary', (input) => {
+      b10Schema(input, 'B10ContentVersionPin').readOnly = false;
+    }, /closed read-only object/],
+    ['active session uses the broad future pin', (input) => {
+      b10Schema(input, 'B10AssessmentSession').properties.pin.$ref = '#/components/schemas/B10ContentVersionPin';
+    }, /immutable active-session\/attempt pin/],
+    ['active pin admits recoverable replacement', (input) => {
+      b10Schema(input, 'B10ActiveSessionAttemptPin').oneOf[0].properties.status.enum.push('RECOVERABLE');
+    }, /active session\/attempt pin branches/],
+    ['active unavailable pin admits an outage fallback', (input) => {
+      b10Schema(input, 'B10ActiveSessionAttemptPin').properties.reasonCode.enum.push('SERVICE_DEGRADED');
+    }, /active session\/attempt pin properties/],
+    ['future queue is mislabeled as an active pin', (input) => {
+      b10Schema(input, 'B10LearningQueueItem').properties.pin.$ref = '#/components/schemas/B10ActiveSessionAttemptPin';
+    }, /future-read or unstarted-task pin/],
+    ['future recovery route admits an active scope', (input) => {
+      b10Schema(input, 'B10ContentRecovery').properties.usageScope.enum.push('ACTIVE_SESSION_OR_ATTEMPT');
+    }, /recovery usage scope/],
+    ['future recovery operation admits active sessions', (input) => {
+      input.b10OpenApi.paths['/internal/v1/content/assessment-snapshots/{contentVersionId}/recovery'].get['x-contract'].activeSessionOrAttempt = 'ALLOWED';
+    }, /recovery route scope/],
+    ['future recovery top-level reason set rejects emergency unavailability', (input) => {
+      b10Schema(input, 'B10ContentRecovery').properties.recoveryReasonCode.enum.pop();
+    }, /recovery reason-code union/],
+    ['future fallback loses its resolved snapshot', (input) => {
+      b10Schema(input, 'B10ContentRecovery').oneOf[2].required.pop();
+    }, /active\/future recovery branches/],
+    ['historical attempt may be regraded', (input) => {
+      b10Schema(input, 'B10ContentRecovery').properties.mustNotRegrade.enum = [false];
+    }, /historical regrade prohibition/],
+    ['B10 OpenAPI 3.0 schema regresses to const', (input) => {
+      b10Schema(input, 'B10ContentRecovery').properties.mustNotRegrade = { type: 'boolean', const: true };
+    }, /singleton enum instead of unsupported const|historical regrade prohibition/],
   ];
   for (const [name, mutate, expected] of cases) {
     const report = evaluate(mutate);

@@ -1698,9 +1698,9 @@ export type B10ReportId = string;
 export type B10QueueItemId = string;
 
 /**
- * Generated from the contract source.
+ * Content pin for a future read or a task that has not started. SAFE_FUTURE_FALLBACK may be represented only before a session or attempt starts; active session and attempt projections use B10ActiveSessionAttemptPin and never replace their pinned contentVersionId silently.
  */
-export type B10ContentVersionPin = { contentCode: B10ContentCode; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; pinStatus: "PINNED" | "UNPUBLISHED" | "RECOVERABLE" | "RECOVERED" | "UNAVAILABLE"; pinnedAt: B10DateTime; fallbackVersionId?: B10Int64Id | null; recoveryReasonCode?: "NONE" | "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; };
+export type B10ContentVersionPin = { pinStatus?: "PINNED"; recoveryReasonCode: "NONE"; } | { pinStatus?: "UNPUBLISHED"; recoveryReasonCode: "CONTENT_UNPUBLISHED"; } | { pinStatus?: "RECOVERABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; } | { pinStatus?: "RECOVERED"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; } | { pinStatus?: "UNAVAILABLE"; recoveryReasonCode: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; };
 
 /**
  * Generated from the contract source.
@@ -1733,9 +1733,9 @@ export type B10LearnerContentSnapshot = { pin: B10ContentVersionPin; snapshotVer
 export type B10AssessmentContentSnapshot = { pin: B10ContentVersionPin; snapshotVersion: B10ProjectionVersion; gradingRuleSetVersion: string; items: ReadonlyArray<B10AssessmentContentItem>; generatedAt: B10DateTime; };
 
 /**
- * Generated from the contract source.
+ * Future-read-only recovery decision. The route cannot be applied to an active session or attempt. SAFE_FUTURE_FALLBACK requires an explicit replacement version and snapshot and never regrades historical facts.
  */
-export type B10ContentRecovery = { requestedVersionId: B10Int64Id; resolvedVersionId?: B10Int64Id | null; resolvedSnapshotId?: B10SnapshotId | null; resolution: "EXACT_PIN" | "IMMUTABLE_SNAPSHOT" | "SAFE_FUTURE_FALLBACK" | "UNAVAILABLE"; contentEpoch?: B10ContentEpoch; recoveryReasonCode?: "NONE" | "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; mustNotRegrade: true; resolvedAt: B10DateTime; };
+export type B10ContentRecovery = { resolution?: "EXACT_PIN"; } | { resolution?: "IMMUTABLE_SNAPSHOT"; } | { resolution?: "SAFE_FUTURE_FALLBACK"; } | { resolution?: "UNAVAILABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; };
 
 /**
  * The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.
@@ -1745,7 +1745,7 @@ export type B10CreateAssessmentSessionRequest = { contentVersionId: B10Int64Id; 
 /**
  * Generated from the contract source.
  */
-export type B10AssessmentSession = { sessionId: B10SessionId; status: "IN_PROGRESS" | "SUBMITTED" | "ASSESSED" | "EXPIRED" | "CANCELLED"; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; pin: B10ContentVersionPin; items: ReadonlyArray<B10LearnerContentItem>; attemptCount?: number; stateVersion: B10StateVersion; startedAt: B10DateTime; expiresAt?: B10DateTime | null; reportId?: B10ReportId | null; lastAttemptId?: B10AttemptId | null; };
+export type B10AssessmentSession = { sessionId: B10SessionId; status: "IN_PROGRESS" | "SUBMITTED" | "ASSESSED" | "EXPIRED" | "CANCELLED"; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; pin: B10ActiveSessionAttemptPin; items: ReadonlyArray<B10LearnerContentItem>; attemptCount?: number; stateVersion: B10StateVersion; startedAt: B10DateTime; expiresAt?: B10DateTime | null; reportId?: B10ReportId | null; lastAttemptId?: B10AttemptId | null; };
 
 /**
  * Generated from the contract source.
@@ -1760,7 +1760,7 @@ export type B10SubmitAttemptRequest = { expectedStateVersion: B10StateVersion; s
 /**
  * Generated from the contract source.
  */
-export type B10Attempt = { attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; status: "ACCEPTED" | "ASSESSING" | "ASSESSED" | "REJECTED" | "COMPENSATED"; itemCount: number; submissionDigest: B10Sha256; pin: B10ContentVersionPin; assessmentVersion?: string; scoreBucket?: "UNASSESSED" | "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; createdAt: B10DateTime; assessedAt?: B10DateTime | null; reportId?: B10ReportId | null; };
+export type B10Attempt = { attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; status: "ACCEPTED" | "ASSESSING" | "ASSESSED" | "REJECTED" | "COMPENSATED"; itemCount: number; submissionDigest: B10Sha256; pin: B10ActiveSessionAttemptPin; assessmentVersion?: string; scoreBucket?: "UNASSESSED" | "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; createdAt: B10DateTime; assessedAt?: B10DateTime | null; reportId?: B10ReportId | null; };
 
 /**
  * Generated from the contract source.
@@ -1775,7 +1775,7 @@ export type B10Checkpoint = { attemptId: B10AttemptId; checkpointVersion: number
 /**
  * Generated from the contract source.
  */
-export type B10AssessmentReport = { reportId: B10ReportId; attemptId: B10AttemptId; reportVersion: number; status: "READY" | "PARTIAL" | "FAILED" | "COMPENSATED"; scoreBucket: "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; mistakeCodes: ReadonlyArray<string>; masterySignal?: "NO_SIGNAL" | "WEAK" | "STABLE" | "MASTERED" | "RETRY"; pin: B10ContentVersionPin; generatedAt: B10DateTime; replayable: true; };
+export type B10AssessmentReport = { reportId: B10ReportId; attemptId: B10AttemptId; reportVersion: number; status: "READY" | "PARTIAL" | "FAILED" | "COMPENSATED"; scoreBucket: "ZERO" | "PARTIAL" | "FULL" | "PENDING_REVIEW"; mistakeCodes: ReadonlyArray<string>; masterySignal?: "NO_SIGNAL" | "WEAK" | "STABLE" | "MASTERED" | "RETRY"; pin: B10ActiveSessionAttemptPin; generatedAt: B10DateTime; replayable: true; };
 
 /**
  * Generated from the contract source.
@@ -1790,7 +1790,7 @@ export type B10CompleteReviewRequest = { expectedStateVersion: B10StateVersion; 
 /**
  * Generated from the contract source.
  */
-export type B10MasteryProjection = { itemId: B10Int64Id; fromState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED" | "NONE"; toState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; srsStage?: "NEW" | "D0" | "D1" | "D7" | "MASTERED"; nextReviewAt?: B10DateTime | null; projectionVersion: B10ProjectionVersion; projectionStatus: "PENDING" | "APPLIED" | "RETRYING" | "COMPENSATED" | "MANUAL_REVIEW"; sourceAssessmentId: B10AttemptId; pin: B10ContentVersionPin; projectedAt: B10DateTime; };
+export type B10MasteryProjection = { itemId: B10Int64Id; fromState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED" | "NONE"; toState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; srsStage?: "NEW" | "D0" | "D1" | "D7" | "MASTERED"; nextReviewAt?: B10DateTime | null; projectionVersion: B10ProjectionVersion; projectionStatus: "PENDING" | "APPLIED" | "RETRYING" | "COMPENSATED" | "MANUAL_REVIEW"; sourceAssessmentId: B10AttemptId; pin: B10ActiveSessionAttemptPin; projectedAt: B10DateTime; };
 
 /**
  * Generated from the contract source.
@@ -2741,6 +2741,11 @@ export type B9AuditId = string;
  * 校验、审核或版权快照的单调版本；不得由客户端降级或重用旧版本绕过服务端重查。
  */
 export type B9EvidenceVersion = number;
+
+/**
+ * Immutable pin used after an assessment session or attempt starts. The contentVersionId/contentEpoch/snapshotId/snapshotHash identity never changes. Emergency rights, security or legal removal returns UNAVAILABLE instead of a silent fallback.
+ */
+export type B10ActiveSessionAttemptPin = { status: "AVAILABLE"; } | { status: "UNAVAILABLE"; };
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;

@@ -1059,7 +1059,7 @@
           "required": true,
           "strategy": "content-publish",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "发布操作按内容版本幂等，旧发布版本进入 ARCHIVED 并失效缓存"
+          "replayBehavior": "同 contentCode+targetVersionNumber+command 返回首次 PUBLISH 结果；成功只切换 currentPublication 并更新 contentEpoch/projection，旧版本保留为可验证回滚候选且不自动进入 ARCHIVED"
         },
         "parameters": [
           {
@@ -1167,7 +1167,7 @@
           "required": true,
           "strategy": "content-archive",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "重复下线返回当前 ARCHIVED 状态"
+          "replayBehavior": "同 contentCode+contentEpoch+请求摘要返回首次 UNPUBLISH 发布指针结果；重复请求不产生 ARCHIVED，独立退休后的版本状态仅作为只读结果返回"
         },
         "parameters": [
           {
@@ -19012,7 +19012,7 @@
         "tags": [
           "b10-content-snapshot"
         ],
-        "summary": "Resolve an unavailable pinned version without rewriting historical facts",
+        "summary": "Resolve a future content read without rewriting active or historical facts",
         "operationId": "resolveB10ContentSnapshotRecovery",
         "security": [
           {
@@ -19022,7 +19022,9 @@
         "x-contract": {
           "owner": "content-service",
           "consumer": "assessment-service/learning-service",
-          "recovery": "exact immutable snapshot first; safe fallback only for future reads; never regrade a historical attempt"
+          "recovery": "exact immutable snapshot first; safe fallback only for future reads; never regrade a historical attempt",
+          "usageScope": "FUTURE_READ_ONLY",
+          "activeSessionOrAttempt": "PROHIBITED"
         },
         "parameters": [
           {
@@ -38184,7 +38186,9 @@
           {
             "properties": {
               "command": {
-                "const": "VALIDATE_DRAFT"
+                "enum": [
+                  "VALIDATE_DRAFT"
+                ]
               }
             },
             "not": {
@@ -38230,7 +38234,9 @@
           {
             "properties": {
               "command": {
-                "const": "SUBMIT_REVIEW"
+                "enum": [
+                  "SUBMIT_REVIEW"
+                ]
               }
             },
             "not": {
@@ -38318,7 +38324,9 @@
           {
             "properties": {
               "command": {
-                "const": "PUBLISH"
+                "enum": [
+                  "PUBLISH"
+                ]
               }
             },
             "required": [
@@ -38362,7 +38370,9 @@
           {
             "properties": {
               "command": {
-                "const": "SCHEDULE_PUBLISH"
+                "enum": [
+                  "SCHEDULE_PUBLISH"
+                ]
               }
             },
             "required": [
@@ -38406,7 +38416,9 @@
           {
             "properties": {
               "command": {
-                "const": "CANCEL_SCHEDULED_PUBLISH"
+                "enum": [
+                  "CANCEL_SCHEDULED_PUBLISH"
+                ]
               }
             },
             "required": [
@@ -38445,7 +38457,9 @@
           {
             "properties": {
               "command": {
-                "const": "UNPUBLISH"
+                "enum": [
+                  "UNPUBLISH"
+                ]
               }
             },
             "required": [
@@ -38489,7 +38503,9 @@
           {
             "properties": {
               "command": {
-                "const": "ROLLBACK"
+                "enum": [
+                  "ROLLBACK"
+                ]
               }
             },
             "required": [
@@ -38709,7 +38725,9 @@
           },
           "availability": {
             "type": "string",
-            "const": "PUBLISHED",
+            "enum": [
+              "PUBLISHED"
+            ],
             "description": "公开投影只返回已发布版本；投影落后或重建期间通过 projectionStatus 表达，不降级为空列表或草稿。"
           },
           "projectionStatus": {
@@ -38843,7 +38861,9 @@
           },
           "availability": {
             "type": "string",
-            "const": "PUBLISHED"
+            "enum": [
+              "PUBLISHED"
+            ]
           }
         }
       },
@@ -40712,7 +40732,16 @@
       },
       "B10ContentVersionPin": {
         "type": "object",
+        "readOnly": true,
         "additionalProperties": false,
+        "description": "Content pin for a future read or a task that has not started. SAFE_FUTURE_FALLBACK may be represented only before a session or attempt starts; active session and attempt projections use B10ActiveSessionAttemptPin and never replace their pinned contentVersionId silently.",
+        "x-p1r-pin-scope-policy": {
+          "usage": "FUTURE_READ_OR_UNSTARTED_TASK",
+          "safeFallback": "ALLOWED_BEFORE_SESSION_OR_ATTEMPT_START_ONLY",
+          "activeReplacement": "PROHIBITED",
+          "recoveredIdentity": "FULL_IMMUTABLE_FALLBACK",
+          "permanentRemovalRecovery": "PROHIBITED"
+        },
         "required": [
           "contentCode",
           "contentVersionId",
@@ -40752,8 +40781,16 @@
             "$ref": "#/components/schemas/B10DateTime"
           },
           "fallbackVersionId": {
-            "$ref": "#/components/schemas/B10Int64Id",
-            "nullable": true
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "fallbackContentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "fallbackSnapshotId": {
+            "$ref": "#/components/schemas/B10SnapshotId"
+          },
+          "fallbackSnapshotHash": {
+            "$ref": "#/components/schemas/B10Sha256"
           },
           "recoveryReasonCode": {
             "type": "string",
@@ -40763,10 +40800,220 @@
               "RIGHTS_EXPIRED",
               "SNAPSHOT_MISSING",
               "POLICY_DENIED",
-              "SERVICE_DEGRADED"
+              "SERVICE_DEGRADED",
+              "RIGHTS_REMOVED",
+              "SECURITY_REMOVED",
+              "LEGAL_REMOVED"
             ]
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "pinStatus": {
+                "type": "string",
+                "enum": [
+                  "PINNED"
+                ]
+              },
+              "recoveryReasonCode": {
+                "type": "string",
+                "enum": [
+                  "NONE"
+                ]
+              }
+            },
+            "required": [
+              "recoveryReasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "pinStatus": {
+                "type": "string",
+                "enum": [
+                  "UNPUBLISHED"
+                ]
+              },
+              "recoveryReasonCode": {
+                "type": "string",
+                "enum": [
+                  "CONTENT_UNPUBLISHED"
+                ]
+              }
+            },
+            "required": [
+              "recoveryReasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "pinStatus": {
+                "type": "string",
+                "enum": [
+                  "RECOVERABLE"
+                ]
+              },
+              "recoveryReasonCode": {
+                "type": "string",
+                "enum": [
+                  "CONTENT_UNPUBLISHED",
+                  "RIGHTS_EXPIRED",
+                  "SNAPSHOT_MISSING",
+                  "POLICY_DENIED",
+                  "SERVICE_DEGRADED"
+                ]
+              }
+            },
+            "required": [
+              "recoveryReasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "pinStatus": {
+                "type": "string",
+                "enum": [
+                  "RECOVERED"
+                ]
+              },
+              "recoveryReasonCode": {
+                "type": "string",
+                "enum": [
+                  "CONTENT_UNPUBLISHED",
+                  "RIGHTS_EXPIRED",
+                  "SNAPSHOT_MISSING",
+                  "POLICY_DENIED",
+                  "SERVICE_DEGRADED"
+                ]
+              }
+            },
+            "required": [
+              "recoveryReasonCode",
+              "fallbackVersionId",
+              "fallbackContentEpoch",
+              "fallbackSnapshotId",
+              "fallbackSnapshotHash"
+            ]
+          },
+          {
+            "properties": {
+              "pinStatus": {
+                "type": "string",
+                "enum": [
+                  "UNAVAILABLE"
+                ]
+              },
+              "recoveryReasonCode": {
+                "type": "string",
+                "enum": [
+                  "RIGHTS_REMOVED",
+                  "SECURITY_REMOVED",
+                  "LEGAL_REMOVED"
+                ]
+              }
+            },
+            "required": [
+              "recoveryReasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fallbackVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackContentEpoch"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotId"
+                  ]
+                },
+                {
+                  "required": [
+                    "fallbackSnapshotHash"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "B10ContentItemOption": {
         "type": "object",
@@ -40871,7 +41118,9 @@
           },
           "sealed": {
             "type": "boolean",
-            "const": true
+            "enum": [
+              true
+            ]
           }
         }
       },
@@ -41004,13 +41253,26 @@
       "B10ContentRecovery": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Future-read-only recovery decision. The route cannot be applied to an active session or attempt. SAFE_FUTURE_FALLBACK requires an explicit replacement version and snapshot and never regrades historical facts.",
+        "x-p1r-recovery-scope-policy": {
+          "routeUsage": "FUTURE_READ_ONLY",
+          "activeSessionOrAttempt": "PROHIBITED",
+          "historicalRegrade": "PROHIBITED"
+        },
         "required": [
+          "usageScope",
           "requestedVersionId",
           "resolution",
           "mustNotRegrade",
           "resolvedAt"
         ],
         "properties": {
+          "usageScope": {
+            "type": "string",
+            "enum": [
+              "FUTURE_READ_ONLY"
+            ]
+          },
           "requestedVersionId": {
             "$ref": "#/components/schemas/B10Int64Id"
           },
@@ -41042,17 +41304,110 @@
               "RIGHTS_EXPIRED",
               "SNAPSHOT_MISSING",
               "POLICY_DENIED",
-              "SERVICE_DEGRADED"
+              "SERVICE_DEGRADED",
+              "RIGHTS_REMOVED",
+              "SECURITY_REMOVED",
+              "LEGAL_REMOVED"
             ]
           },
           "mustNotRegrade": {
             "type": "boolean",
-            "const": true
+            "enum": [
+              true
+            ]
           },
           "resolvedAt": {
             "$ref": "#/components/schemas/B10DateTime"
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "resolution": {
+                "type": "string",
+                "enum": [
+                  "EXACT_PIN"
+                ]
+              }
+            },
+            "required": [
+              "resolvedVersionId",
+              "resolvedSnapshotId"
+            ]
+          },
+          {
+            "properties": {
+              "resolution": {
+                "type": "string",
+                "enum": [
+                  "IMMUTABLE_SNAPSHOT"
+                ]
+              }
+            },
+            "required": [
+              "resolvedSnapshotId"
+            ],
+            "not": {
+              "required": [
+                "resolvedVersionId"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "resolution": {
+                "type": "string",
+                "enum": [
+                  "SAFE_FUTURE_FALLBACK"
+                ]
+              }
+            },
+            "required": [
+              "resolvedVersionId",
+              "resolvedSnapshotId"
+            ]
+          },
+          {
+            "properties": {
+              "resolution": {
+                "type": "string",
+                "enum": [
+                  "UNAVAILABLE"
+                ]
+              },
+              "recoveryReasonCode": {
+                "type": "string",
+                "enum": [
+                  "CONTENT_UNPUBLISHED",
+                  "RIGHTS_EXPIRED",
+                  "SNAPSHOT_MISSING",
+                  "POLICY_DENIED",
+                  "SERVICE_DEGRADED",
+                  "RIGHTS_REMOVED",
+                  "SECURITY_REMOVED",
+                  "LEGAL_REMOVED"
+                ]
+              }
+            },
+            "required": [
+              "recoveryReasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "resolvedVersionId"
+                  ]
+                },
+                {
+                  "required": [
+                    "resolvedSnapshotId"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "B10CreateAssessmentSessionRequest": {
         "type": "object",
@@ -41125,7 +41480,7 @@
             ]
           },
           "pin": {
-            "$ref": "#/components/schemas/B10ContentVersionPin"
+            "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
           "items": {
             "type": "array",
@@ -41261,7 +41616,7 @@
             "$ref": "#/components/schemas/B10Sha256"
           },
           "pin": {
-            "$ref": "#/components/schemas/B10ContentVersionPin"
+            "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
           "assessmentVersion": {
             "type": "string",
@@ -41411,14 +41766,16 @@
             ]
           },
           "pin": {
-            "$ref": "#/components/schemas/B10ContentVersionPin"
+            "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
           "generatedAt": {
             "$ref": "#/components/schemas/B10DateTime"
           },
           "replayable": {
             "type": "boolean",
-            "const": true
+            "enum": [
+              true
+            ]
           }
         }
       },
@@ -41584,7 +41941,7 @@
             "$ref": "#/components/schemas/B10AttemptId"
           },
           "pin": {
-            "$ref": "#/components/schemas/B10ContentVersionPin"
+            "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
           "projectedAt": {
             "$ref": "#/components/schemas/B10DateTime"
@@ -47958,7 +48315,9 @@
           {
             "properties": {
               "status": {
-                "const": "SCHEDULED"
+                "enum": [
+                  "SCHEDULED"
+                ]
               }
             },
             "not": {
@@ -47984,7 +48343,9 @@
           {
             "properties": {
               "status": {
-                "const": "CANCELLED"
+                "enum": [
+                  "CANCELLED"
+                ]
               }
             },
             "required": [
@@ -47999,7 +48360,9 @@
           {
             "properties": {
               "status": {
-                "const": "EXECUTED"
+                "enum": [
+                  "EXECUTED"
+                ]
               }
             },
             "required": [
@@ -48023,7 +48386,9 @@
           {
             "properties": {
               "status": {
-                "const": "INVALIDATED"
+                "enum": [
+                  "INVALIDATED"
+                ]
               }
             },
             "required": [
@@ -48039,7 +48404,9 @@
           {
             "properties": {
               "status": {
-                "const": "RECOVERY_REQUIRED"
+                "enum": [
+                  "RECOVERY_REQUIRED"
+                ]
               }
             },
             "required": [
@@ -48149,7 +48516,9 @@
             ],
             "properties": {
               "status": {
-                "const": "AVAILABLE"
+                "enum": [
+                  "AVAILABLE"
+                ]
               }
             },
             "not": {
@@ -48181,7 +48550,9 @@
             ],
             "properties": {
               "status": {
-                "const": "UNAVAILABLE"
+                "enum": [
+                  "UNAVAILABLE"
+                ]
               }
             }
           }
@@ -48236,6 +48607,126 @@
         "format": "int64",
         "minimum": 1,
         "description": "校验、审核或版权快照的单调版本；不得由客户端降级或重用旧版本绕过服务端重查。"
+      },
+      "B10ActiveSessionAttemptPin": {
+        "type": "object",
+        "readOnly": true,
+        "additionalProperties": false,
+        "description": "Immutable pin used after an assessment session or attempt starts. The contentVersionId/contentEpoch/snapshotId/snapshotHash identity never changes. Emergency rights, security or legal removal returns UNAVAILABLE instead of a silent fallback.",
+        "x-p1r-active-pin-policy": {
+          "usage": "ACTIVE_SESSION_OR_ATTEMPT",
+          "versionIdentity": "IMMUTABLE",
+          "allowedOutcomes": [
+            "AVAILABLE",
+            "UNAVAILABLE"
+          ],
+          "safeFutureFallback": "PROHIBITED",
+          "silentReplacement": "PROHIBITED"
+        },
+        "required": [
+          "contentCode",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotId",
+          "snapshotHash",
+          "status",
+          "pinnedAt"
+        ],
+        "properties": {
+          "contentCode": {
+            "$ref": "#/components/schemas/B10ContentCode"
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "snapshotId": {
+            "$ref": "#/components/schemas/B10SnapshotId"
+          },
+          "snapshotHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "UNAVAILABLE"
+            ]
+          },
+          "pinnedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "RIGHTS_REMOVED",
+              "SECURITY_REMOVED",
+              "LEGAL_REMOVED"
+            ]
+          },
+          "alternativeAction": {
+            "type": "string",
+            "enum": [
+              "RETURN_TO_CATALOG",
+              "SELECT_ALTERNATIVE_TASK",
+              "CONTACT_SUPPORT"
+            ]
+          },
+          "alternativeContentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "AVAILABLE"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "alternativeAction"
+                  ]
+                },
+                {
+                  "required": [
+                    "alternativeContentVersionId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "UNAVAILABLE"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "reasonCode",
+              "alternativeAction"
+            ]
+          }
+        ]
       }
     },
     "requestBodies": {},
