@@ -40,8 +40,8 @@
         "packages/api-client/src/generated/index.ts"
       ],
       "sourceMarker": "GENERATED FILE. Source: packages/contracts/openapi/v1/openapi.json",
-      "expectedOperationCount": 377,
-      "expectedSchemaCount": 536
+      "expectedOperationCount": 378,
+      "expectedSchemaCount": 548
     },
     "asyncapi": {
       "canonicalPath": "packages/contracts/events/v1/catalog.json",
