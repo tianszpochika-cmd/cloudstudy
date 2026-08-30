@@ -26,7 +26,9 @@ M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bc
 
 `P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，raw-answer 脱敏和终态时间 nullability 已在原最终源码闭合，复审 `ACCEPT`、P1/P2 为 `0/0`；共享制品已在 `daa543b` 完成 current-source revalidation。
 
-`P1R-M1-011` 已接受：不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`；首轮 `5b6a3d5` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`。当前台账计数为 `18 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 89 PLANNED`（共 108 项），下一项依赖已满足的任务为 `P1R-M1-012`。
+`P1R-M1-011` 已接受：不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`；首轮 `5b6a3d5` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`。
+
+`P1R-M1-012` 已从已同步的 `dev@270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3` 按状态机启动。当前台账计数为 `18 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 88 PLANNED`（共 108 项）。本任务只允许形成 placement manifest/result、completion event 与 placement→plan Saga 的 D2 契约；接手者必须以远程 `dev`、状态轨迹和 Evidence Gate 为准，不从聊天记录或静态候选推断运行完成状态。
 
 ## 1. 获取检查点
 
@@ -107,8 +109,8 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先确认 `origin/dev` 包含 M1-011 最终源码 `daa543b` 及其 Evidence/台账集成提交，并确认 `pnpm p1r:evidence:check` 与 `pnpm plan:p1r:check` 通过；不能只从聊天记录恢复。
-2. 从台账启动依赖已满足的 `P1R-M1-012`，先冻结 placement manifest/result、completion event 与 placement→plan Saga 的 Contract/Data/Security 边界；保持 `NOT_RUNTIME_VERIFIED`，不得把现有 B9/B10/B25 候选实现或静态 B26 输入当运行证明。
+1. 先确认 `origin/dev` 包含 M1-012 启动检查点及其父提交 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，并确认 `pnpm plan:p1r:check` 通过；不能只从聊天记录恢复。
+2. 继续执行 `P1R-M1-012`，冻结 placement manifest/result、completion event 与 placement→plan Saga 的 Contract/Data/Security 边界；保持 `NOT_RUNTIME_VERIFIED`，不得把现有 B9/B10/B25 候选实现或静态 B26 输入当运行证明。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

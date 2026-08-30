@@ -7,6 +7,7 @@
 - `P1R-M1-001` 至 `P1R-M1-009` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`，共享制品最新在 `daa543b369c0e369a8f70e2f79278eb934ff9a09` 完成 current-source revalidation。
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；共享制品在 `daa543b...` 完成 current-source revalidation，原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
+- `P1R-M1-012`：`IN_PROGRESS`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，只冻结 `P1_PLACEMENT_V1` manifest、结果摘要、canonical completion event 及 placement→plan Saga/补偿的 D2 契约。
 - M1-011 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-010` 的 manifest 已保留各自原始 provenance，并统一绑定 `daa543b...` 完成 current-source revalidation；这不把旧任务重写为 M1-011 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
@@ -91,6 +92,16 @@
 - 终验结果：assessment `83/83`、CLI `77` cases、P1R `433/433`、tooling `35/35`、workspace typecheck `7/7`，contracts merge/generate/validate 与固定 compatibility 均 PASS；canonical 为 386 operations、601 schemas、154 events、104 payload schemas、12 AsyncAPI channels、45 operations、13 JSON Schemas。
 - 已知非本任务问题：完整历史 G 保持既知 G0/G3 两项 stale marker 失败；direct API audit 保持既存 B9 content-publish-task 200 envelope 缺口。两项均未由 M1-010 引入，也没有被伪装成全绿。
 - D2 边界：`EVENT-GAP-BIND-ASM-001` 仍开放；placement/Saga 归 M1-012，learning SRS/mastery/report watermark 归 M1-013，真实 owner schema/Outbox、Kafka、workflow runtime 分别归 M2-004/005/006；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
+## M1-012 执行轨道
+
+不可变来源检查点：`dev@270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`。
+
+1. Placement manifest 与结果：冻结 `P1_PLACEMENT_V1` 的四维题目覆盖、维度权重、计分/等级边界、覆盖与置信度、内容/规则 pin、同 session 恢复、完成后报告不可变和 skip=`UNVERIFIED`，客户端不得提交答案、得分、等级或推荐结论。
+2. Canonical completion event：assessment-service 仅在首个持久化完成结果后发布唯一 completion fact；event payload 绑定 learner/session/report、manifest/result/内容版本、置信度与根因关联，消费者、group、topic、partition、schema 和兼容策略由 M1-006 治理失败关闭。
+3. Placement→plan Saga：workflow-service 只负责重试、去重、补偿与人工恢复；learning-service 基于同一 placement/target/planning-input pin 幂等生成计划。重复、乱序、回放或计划失败不得创建第二份计划或修改 assessment 报告，客户端不得重算分数或触发跨 owner 写入。
+
+统筹 Agent 负责统一模型、公共生成物、兼容投影、状态、Evidence、提交和推送；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-012 不实现真实 owner schema/事务/Outbox、Kafka topic/ACL/delivery、workflow Saga runtime、浏览器或 E2E；结论只能是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 
 ## M1-011 执行轨道
 

@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-012-START-20260830] 启动 Phase 1 `P1_PLACEMENT_V1` manifest、结果摘要、canonical completion event 与 placement→plan Saga/补偿 D2 契约：以已同步的 `dev@270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3` 为不可变来源检查点，收敛四维权重/覆盖/置信度、计分和等级边界、内容与规则 pin、同 session 恢复、幂等完成、skip=`UNVERIFIED`、事件治理和失败恢复。该条只记录 `IN_PROGRESS`；真实数据库/Outbox/Kafka/workflow、浏览器与 E2E 均未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
 - [P1R-M1-011-LEARNER-PLANNING-CONTRACT-20260830] 接受 learner 目标、画像、偏好、planning-input 与首日投影 D2 契约：冻结 10 个 canonical route、四个 goalCode exactly-once、`5/15/30/45`、服务端 eligibility pin、三写 If-Match/版本/幂等、四态 first-day、只读 recovery 和唯一 canonical `learner.target.updated.v1` 事件。初始 `5b6a3d5` 经独立 Luna Max 评审返工，最终 `daa543b` 以 P1/P2=`0/0` 接受；CLI 10 routes/145 cases、定点 150/150、tooling 40/40、P1R 589/589、typecheck 7/7 及 contracts/compatibility/治理门禁通过。结论仍为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 pending/NO-GO、M2-004/005/006 未完成、M0-006 BLOCKED。
 
 - [P1R-M1-011-START-20260830] 启动 Phase 1 learner 目标、5/15/30/45 时长、画像、计划输入与首日投影 D2 契约：以已同步的 `dev@14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1` 为不可变来源检查点，收敛 target/profile version、服务端派生身份、planning-input pin、首日投影唯一 owner、失败状态与只读恢复查询。该条只记录 `IN_PROGRESS`；placement manifest/完成事件仍归 M1-012，计划算法/SRS/mastery/watermark 仍归 M1-013，真实数据库、Outbox/Kafka、workflow、浏览器和 E2E 均未验证，M0-006 继续 `BLOCKED`。
