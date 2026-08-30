@@ -160,6 +160,32 @@
           "B11-Media"
         ],
         "operationId": "createB11MediaAccess",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/media/assets/{assetId}/signed-access",
+            "method": "POST",
+            "operationId": "createMediaAssetSignedAccess"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "createMediaAssetSignedAccess",
+          "method": "POST",
+          "path": "/api/v1/media/assets/{assetId}/signed-access"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在 assetVersion/subject/tenant/channel/range/expiry/revocationVersion 绑定和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/media/assets/{assetId}/signed-access"
+        },
+        "x-migration": "旧 signed-url 请求迁移到统一的短时 access grant；URL 不进入 metadata、事件、日志、telemetry 或普通审计。",
         "security": [
           {
             "bearerAuth": []
@@ -246,6 +272,32 @@
           "B11-Media"
         ],
         "operationId": "streamB11MediaContent",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/media/assets/{assetId}/signed-access",
+            "method": "POST",
+            "operationId": "createMediaAssetSignedAccess"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "createMediaAssetSignedAccess",
+          "method": "POST",
+          "path": "/api/v1/media/assets/{assetId}/signed-access"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在客户端切换为范围绑定的短时 grant 且兼容回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/media/assets/{assetId}/signed-access"
+        },
+        "x-migration": "Gateway 不再代理媒体 bytes；客户端先取得范围绑定的短时 grant，再访问交付通道。",
         "security": [
           {
             "bearerAuth": []
@@ -1282,6 +1334,32 @@
           "B11-Media"
         ],
         "operationId": "createB11Recording",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/speaking/recordings/upload-intents",
+            "method": "POST",
+            "operationId": "createSpeakingRecordingUploadIntent"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "createSpeakingRecordingUploadIntent",
+          "method": "POST",
+          "path": "/api/v1/speaking/recordings/upload-intents"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在录音专用 consent、intent/complete、owner PEP、删除与回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/speaking/recordings/upload-intents"
+        },
+        "x-migration": "旧 metadata 登记不代表远端资产完成；canonical 流程由 media-service 创建本人绑定 intent 并可信校验。",
         "security": [
           {
             "bearerAuth": []
@@ -1359,6 +1437,33 @@
           "B11-Media"
         ],
         "operationId": "updateB11ShadowingCompletion",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete",
+            "method": "POST",
+            "operationId": "completeSpeakingShadowingSession"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "completeSpeakingShadowingSession",
+          "method": "POST",
+          "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在 assessment-owned attempt、可信结果、兼容读取与回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete"
+        },
+        "x-migration": "旧 learning write 只作兼容适配；canonical completion 由 assessment-service 拥有，learning 只消费可信结果。",
+        "x-authority-inputs-ignored": ["tenantId", "ownerId", "subjectId", "score", "aiScore", "transcript", "pitchPreserved"],
         "security": [
           {
             "bearerAuth": []
@@ -1380,9 +1485,12 @@
           }
         },
         "x-contract": {
-          "owner": "learning-service",
-          "writeModel": "b3_learning_interaction",
-          "aiScoring": "disabled in Phase 1"
+          "owner": "assessment-service",
+          "writeModel": "assessment_shadowing_attempt",
+          "aiScoring": "disabled in Phase 1",
+          "phase": "P1",
+          "maturity": "HISTORICAL_COMPATIBILITY_ONLY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
         "x-idempotency": {
           "required": true,
@@ -1391,7 +1499,7 @@
         },
         "responses": {
           "200": {
-            "description": "跟读完成事实已写入 learning-service owner schema",
+            "description": "历史兼容请求由 assessment-service 适配为跟读 attempt；learning 仅消费可信结果。",
             "content": {
               "application/json": {
                 "schema": {

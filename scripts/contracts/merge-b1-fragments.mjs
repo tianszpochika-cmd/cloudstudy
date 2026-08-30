@@ -29,6 +29,8 @@ const canonicalB1ContentFragment = 'packages/contracts/fragments/b1-content.open
 const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility', 'x-b8-iam-policy-governance'];
 const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';
 const requiredCanonicalGatewayMetadata = ['x-p1r-gateway-boundary'];
+const canonicalMediaFragment = 'packages/contracts/fragments/b11/p1r-media.openapi.json';
+const requiredCanonicalMediaMetadata = ['x-p1r-media-contract'];
 
 // v2 canonicalization boundary. These routes were exposed by the historical B1/B2/B4/B6
 // slices or by the pre-B11 commerce/media naming. They must not leak back into the generated
@@ -184,7 +186,14 @@ function mergeNamedMap(target, source, label, { allowOverride = false } = {}) {
   }
 }
 
-function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canonicalGatewayMetadataWrites) {
+function mergeOpenApi(
+  base,
+  fragment,
+  filePath,
+  canonicalB8MetadataWrites,
+  canonicalGatewayMetadataWrites,
+  canonicalMediaMetadataWrites,
+) {
   for (const tag of fragment.tags ?? []) {
     const existing = (base.tags ?? []).find((candidate) => candidate.name === tag.name);
     if (existing && stableJson(existing) !== stableJson(tag)) {
@@ -227,6 +236,14 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canon
     if (!isGatewayCanonicalSource) throw new Error(`${filePath} cannot define canonical OpenAPI metadata ${metadataKey}`);
     base[metadataKey] = fragment[metadataKey];
     canonicalGatewayMetadataWrites.add(metadataKey);
+  }
+
+  for (const metadataKey of requiredCanonicalMediaMetadata) {
+    if (fragment[metadataKey] === undefined) continue;
+    const isMediaCanonicalSource = normalizeRepoPath(filePath) === canonicalMediaFragment;
+    if (!isMediaCanonicalSource) throw new Error(`${filePath} cannot define canonical OpenAPI metadata ${metadataKey}`);
+    base[metadataKey] = fragment[metadataKey];
+    canonicalMediaMetadataWrites.add(metadataKey);
   }
 }
 
@@ -319,8 +336,10 @@ export function merge({ write = false } = {}) {
   // fragment, so a future deletion fails both write and --check modes.
   for (const metadataKey of requiredCanonicalB8Metadata) delete openApi[metadataKey];
   for (const metadataKey of requiredCanonicalGatewayMetadata) delete openApi[metadataKey];
+  for (const metadataKey of requiredCanonicalMediaMetadata) delete openApi[metadataKey];
   const canonicalB8MetadataWrites = new Set();
   const canonicalGatewayMetadataWrites = new Set();
+  const canonicalMediaMetadataWrites = new Set();
   const retiredAuthEvents = new Set([
     'auth.oidc.authorization.started.v1',
     'auth.oidc.callback.completed.v1',
@@ -341,7 +360,14 @@ export function merge({ write = false } = {}) {
     .filter((filePath) => readJson(filePath)['x-contract-status'] !== 'historical-compatibility');
   const eventFiles = selectEventFragmentFiles(listEventJsonFiles(eventFragmentDir));
 
-  for (const filePath of openApiFiles) mergeOpenApi(openApi, readJson(filePath), path.relative(repoRoot, filePath), canonicalB8MetadataWrites, canonicalGatewayMetadataWrites);
+  for (const filePath of openApiFiles) mergeOpenApi(
+    openApi,
+    readJson(filePath),
+    path.relative(repoRoot, filePath),
+    canonicalB8MetadataWrites,
+    canonicalGatewayMetadataWrites,
+    canonicalMediaMetadataWrites,
+  );
   const missingCanonicalB8Metadata = requiredCanonicalB8Metadata.filter((metadataKey) => !canonicalB8MetadataWrites.has(metadataKey));
   if (missingCanonicalB8Metadata.length > 0) {
     throw new Error(`${canonicalB8AuthFragment} must define ${missingCanonicalB8Metadata.join(', ')} during every canonical merge`);
@@ -349,6 +375,10 @@ export function merge({ write = false } = {}) {
   const missingCanonicalGatewayMetadata = requiredCanonicalGatewayMetadata.filter((metadataKey) => !canonicalGatewayMetadataWrites.has(metadataKey));
   if (missingCanonicalGatewayMetadata.length > 0) {
     throw new Error(`${canonicalGatewayFragment} must define ${missingCanonicalGatewayMetadata.join(', ')} during every canonical merge`);
+  }
+  const missingCanonicalMediaMetadata = requiredCanonicalMediaMetadata.filter((metadataKey) => !canonicalMediaMetadataWrites.has(metadataKey));
+  if (missingCanonicalMediaMetadata.length > 0) {
+    throw new Error(`${canonicalMediaFragment} must define ${missingCanonicalMediaMetadata.join(', ')} during every canonical merge`);
   }
   for (const filePath of eventFiles) mergeEvents(catalog, readJson(filePath), path.relative(repoRoot, filePath));
   pruneUnreferencedEventPayloadSchemas(catalog);

@@ -956,6 +956,33 @@
         ],
         "summary": "创建私有媒体上传意图",
         "operationId": "createContentMediaUploadIntent",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/media/upload-intents",
+            "method": "POST",
+            "operationId": "createMediaUploadIntent"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "createMediaUploadIntent",
+          "method": "POST",
+          "path": "/api/v1/media/upload-intents"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在 canonical media intent、owner storage、Gateway、读影子、对账与回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/media/upload-intents"
+        },
+        "x-migration": "兼容适配器只转译声明字段；actorId 不再是授权事实，tenant/subject/owner/rights 由服务端派生。",
+        "x-authority-inputs-ignored": ["actorId", "tenantId", "ownerId", "rightsStatus", "media_consent"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-media-upload-intent",
@@ -1033,6 +1060,33 @@
         ],
         "summary": "完成媒体上传并校验 hash、大小和 MIME",
         "operationId": "completeContentMediaUpload",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/media/upload-intents/{uploadIntentId}/complete",
+            "method": "POST",
+            "operationId": "completeMediaUploadIntent"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "completeMediaUploadIntent",
+          "method": "POST",
+          "path": "/api/v1/media/upload-intents/{uploadIntentId}/complete"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在可信对象校验、处理任务、恢复和兼容回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/media/upload-intents/{uploadIntentId}/complete"
+        },
+        "x-migration": "客户端 hash/size/MIME 只作声明；canonical media-service 通过 completionRef 创建可信校验 task。",
+        "x-authority-inputs-ignored": ["actorId", "tenantId", "ownerId", "malwareStatus", "processingResult"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-media-upload-complete",
@@ -1116,6 +1170,33 @@
         ],
         "summary": "为已发布媒体签发短期、可撤销的访问凭证",
         "operationId": "signContentMediaAccess",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/media/assets/{assetId}/signed-access",
+            "method": "POST",
+            "operationId": "createMediaAssetSignedAccess"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "createMediaAssetSignedAccess",
+          "method": "POST",
+          "path": "/api/v1/media/assets/{assetId}/signed-access"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在 canonical grant、撤销、版权与范围绑定运行 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/media/assets/{assetId}/signed-access"
+        },
+        "x-migration": "requesterId 不再是授权事实；canonical grant 绑定服务端 subject/tenant/assetVersion/channel/range/expiry/revocationVersion。",
+        "x-authority-inputs-ignored": ["requesterId", "tenantId", "ownerId", "rightsStatus", "media_consent"],
         "x-idempotency": {
           "required": false,
           "strategy": "short-lived-media-signature",

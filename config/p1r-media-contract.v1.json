@@ -1,0 +1,678 @@
+{
+  "$schema": "p1r.media-contract.v1",
+  "schemaVersion": "p1r.media-contract.v1",
+  "task": "P1R-M1-009",
+  "phase": "P1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "canonicalSources": {
+    "openApi": "packages/contracts/openapi/v1/openapi.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "gatewayExtension": "x-p1r-gateway-boundary"
+  },
+  "compatibilityPromotion": {
+    "id": "M1-009_MEDIA_CONTRACT_PROMOTION",
+    "sourceContractBaseline": "ca282cd00dabeeb3fafbf6b4570054bd5b9f8549",
+    "previousPromotion": "M1-008_CONTENT_LIFECYCLE_PROMOTION",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_ONLY",
+    "eventCatalogDecision": "UNCHANGED_HISTORICAL_ONLY",
+    "canonicalFragment": "packages/contracts/fragments/b11/p1r-media.openapi.json"
+  },
+  "runtimeBoundary": {
+    "staticContractOnly": true,
+    "prohibitedRuntimeClaims": [
+      "object-store-upload-or-download-executed",
+      "provider-or-worker-callback-verified",
+      "malware-scan-executed",
+      "transcode-or-rendition-worker-executed",
+      "short-lived-url-issued-or-revoked",
+      "quota-reservation-enforced",
+      "retention-delete-or-legal-hold-executed",
+      "kafka-outbox-or-audit-runtime-evidence-captured",
+      "browser-or-device-pitch-preservation-verified"
+    ]
+  },
+  "owners": {
+    "content": {
+      "service": "content-service",
+      "facts": [
+        "source-content-version",
+        "official-subtitle-text",
+        "content-rights",
+        "content-review",
+        "content-publication"
+      ]
+    },
+    "media": {
+      "service": "media-service",
+      "facts": [
+        "media-and-recording-asset-metadata",
+        "object-reference-and-integrity",
+        "processing-task",
+        "rendition",
+        "subtitle-artifact-metadata",
+        "metadata-only-manifest",
+        "short-lived-upload-and-access-grant",
+        "object-delete-receipt"
+      ]
+    },
+    "assessment": {
+      "service": "assessment-service",
+      "facts": [
+        "shadowing-session",
+        "speaking-attempt",
+        "user-self-rating",
+        "rule-based-result-summary",
+        "recording-reference-without-bytes"
+      ]
+    },
+    "privacy": {
+      "service": "learner-service.privacy",
+      "facts": [
+        "privacy-export-request",
+        "privacy-export-status",
+        "privacy-export-receipt"
+      ]
+    },
+    "identity": {
+      "service": "iam-service",
+      "facts": [
+        "adult-gate",
+        "voice-recording-consent",
+        "account-deletion-request"
+      ]
+    },
+    "workflow": {
+      "service": "workflow-service",
+      "facts": [
+        "saga-and-recovery-coordination",
+        "owner-receipt-collection"
+      ],
+      "foreignDomainWrite": "PROHIBITED"
+    },
+    "audit": {
+      "service": "audit-service",
+      "facts": [
+        "immutable-audit"
+      ],
+      "businessStateOwner": false
+    }
+  },
+  "authorization": {
+    "serverDerivedFields": [
+      "tenant",
+      "subject",
+      "owner",
+      "actor",
+      "rights",
+      "consent",
+      "taskAttempt",
+      "assetVersion",
+      "objectVerification"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "tenant",
+      "tenantId",
+      "tenantRef",
+      "subject",
+      "subjectId",
+      "owner",
+      "ownerId",
+      "actor",
+      "actorId",
+      "roles",
+      "permissions",
+      "rights",
+      "rightsStatus",
+      "consent",
+      "consentGranted",
+      "media_consent",
+      "taskAttempt",
+      "attempt",
+      "retryable",
+      "processingResult",
+      "malwareStatus"
+    ],
+    "adultGate": {
+      "authority": "iam-service",
+      "requiredState": "ELIGIBLE",
+      "missingOrUncertain": "DENY"
+    },
+    "consent": {
+      "type": "VOICE_RECORDING",
+      "purpose": "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY",
+      "genericMediaConsentAllowed": false,
+      "requiredFacts": [
+        "documentVersion",
+        "documentDigest",
+        "state",
+        "effectiveAt",
+        "withdrawalEffect",
+        "revalidation",
+        "provenance",
+        "policyRef",
+        "policyVersion",
+        "decisionRef"
+      ],
+      "states": [
+        "GRANTED",
+        "WITHDRAWN"
+      ],
+      "withdrawnOrStale": "DENY_UPLOAD_PROCESS_AND_DELIVERY"
+    },
+    "sourceRights": {
+      "requiredForSourceAudioAndOfficialSubtitle": true,
+      "revokedOrExpired": "DENY_SOURCE_AND_OFFICIAL_SUBTITLE",
+      "personalRecordingReplay": "DENY",
+      "personalRecordingDeleteAndExport": "ALLOW_OWNER_PRIVACY_FLOW"
+    }
+  },
+  "canonicalRoutes": [
+    {
+      "id": "media-upload-intent",
+      "path": "/api/v1/media/upload-intents",
+      "method": "POST",
+      "owner": "media-service",
+      "operationId": "createMediaUploadIntent",
+      "requestSchema": "MediaUploadIntentRequest",
+      "responseSchema": "MediaUploadIntent",
+      "successStatus": "201",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "media-upload-complete",
+      "path": "/api/v1/media/upload-intents/{uploadIntentId}/complete",
+      "method": "POST",
+      "owner": "media-service",
+      "operationId": "completeMediaUploadIntent",
+      "requestSchema": "MediaUploadIntentCompleteRequest",
+      "responseSchema": "MediaUploadIntentCompletion",
+      "successStatus": "202",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "media-processing-task-read",
+      "path": "/api/v1/media/processing-tasks/{taskId}",
+      "method": "GET",
+      "owner": "media-service",
+      "operationId": "getMediaProcessingTask",
+      "requestSchema": null,
+      "responseSchema": "MediaProcessingTask",
+      "successStatus": "200",
+      "idempotencyRequired": false
+    },
+    {
+      "id": "media-processing-task-retry",
+      "path": "/api/v1/media/processing-tasks/{taskId}/retry",
+      "method": "POST",
+      "owner": "media-service",
+      "operationId": "retryMediaProcessingTask",
+      "requestSchema": "MediaProcessingTaskRetryRequest",
+      "responseSchema": "MediaProcessingTask",
+      "successStatus": "202",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "media-asset-read",
+      "path": "/api/v1/media/assets/{assetId}",
+      "method": "GET",
+      "owner": "media-service",
+      "operationId": "getMediaAsset",
+      "requestSchema": null,
+      "responseSchema": "MediaAsset",
+      "successStatus": "200",
+      "idempotencyRequired": false
+    },
+    {
+      "id": "media-manifest-read",
+      "path": "/api/v1/media/assets/{assetId}/manifest",
+      "method": "GET",
+      "owner": "media-service",
+      "operationId": "getMediaAssetManifest",
+      "requestSchema": null,
+      "responseSchema": "MediaManifest",
+      "successStatus": "200",
+      "idempotencyRequired": false
+    },
+    {
+      "id": "media-signed-access",
+      "path": "/api/v1/media/assets/{assetId}/signed-access",
+      "method": "POST",
+      "owner": "media-service",
+      "operationId": "createMediaAssetSignedAccess",
+      "requestSchema": "MediaSignedAccessRequest",
+      "responseSchema": "MediaSignedAccessGrant",
+      "successStatus": "200",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "speaking-recording-upload-intent",
+      "path": "/api/v1/speaking/recordings/upload-intents",
+      "method": "POST",
+      "owner": "media-service",
+      "operationId": "createSpeakingRecordingUploadIntent",
+      "requestSchema": "SpeakingRecordingUploadIntentRequest",
+      "responseSchema": "SpeakingRecordingUploadIntent",
+      "successStatus": "201",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "speaking-recording-complete",
+      "path": "/api/v1/speaking/recordings/{recordingId}/complete",
+      "method": "POST",
+      "owner": "media-service",
+      "operationId": "completeSpeakingRecording",
+      "requestSchema": "SpeakingRecordingCompleteRequest",
+      "responseSchema": "SpeakingRecording",
+      "successStatus": "202",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "speaking-recording-read",
+      "path": "/api/v1/speaking/recordings/{recordingId}",
+      "method": "GET",
+      "owner": "media-service",
+      "operationId": "getSpeakingRecording",
+      "requestSchema": null,
+      "responseSchema": "SpeakingRecording",
+      "successStatus": "200",
+      "idempotencyRequired": false
+    },
+    {
+      "id": "speaking-recording-delete",
+      "path": "/api/v1/speaking/recordings/{recordingId}",
+      "method": "DELETE",
+      "owner": "media-service",
+      "operationId": "deleteSpeakingRecording",
+      "requestSchema": null,
+      "responseSchema": "SpeakingRecordingDeleteReceipt",
+      "successStatus": "202",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "shadowing-session-create",
+      "path": "/api/v1/speaking/shadowing/sessions",
+      "method": "POST",
+      "owner": "assessment-service",
+      "operationId": "createSpeakingShadowingSession",
+      "requestSchema": "SpeakingShadowingSessionCreateRequest",
+      "responseSchema": "SpeakingShadowingSession",
+      "successStatus": "201",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "shadowing-session-progress",
+      "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress",
+      "method": "POST",
+      "owner": "assessment-service",
+      "operationId": "recordSpeakingShadowingProgress",
+      "requestSchema": "SpeakingShadowingProgressRequest",
+      "responseSchema": "SpeakingShadowingSession",
+      "successStatus": "200",
+      "idempotencyRequired": true
+    },
+    {
+      "id": "shadowing-session-complete",
+      "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete",
+      "method": "POST",
+      "owner": "assessment-service",
+      "operationId": "completeSpeakingShadowingSession",
+      "requestSchema": "SpeakingShadowingCompletionRequest",
+      "responseSchema": "SpeakingShadowingCompletionReceipt",
+      "successStatus": "200",
+      "idempotencyRequired": true
+    }
+  ],
+  "schemaRequirements": [
+    {"name":"MediaUploadIntentRequest","requiredFields":["purpose","mediaKind","sourceContentVersionId","sourceSegmentId","expectedObject"],"allowedFields":["purpose","mediaKind","sourceContentVersionId","sourceSegmentId","expectedObject"],"forbiddenFields":["tenant","tenantId","owner","ownerId","subject","subjectId","consent","media_consent","rights","rightsStatus","processingResult","malwareStatus"]},
+    {"name":"MediaExpectedObject","requiredFields":["mimeType","sha256","sizeBytes","durationMs"],"allowedFields":["mimeType","sha256","sizeBytes","durationMs"],"forbiddenFields":["objectKey","objectUrl","objectVersion","verifiedSizeBytes","verifiedMimeType"]},
+    {"name":"MediaUploadIntent","requiredFields":["uploadIntentId","assetId","status","uploadGrant","quotaPolicyRef","quotaPolicyVersion","expiresAt"],"allowedFields":["uploadIntentId","assetId","status","uploadGrant","quotaPolicyRef","quotaPolicyVersion","expiresAt"],"forbiddenFields":["objectKey","objectUrl","permanentUrl","signedUrl"]},
+    {"name":"MediaUploadGrant","requiredFields":["url","expiresAt","singleUse","binding"],"allowedFields":["url","expiresAt","singleUse","binding"],"forbiddenFields":["permanentUrl","signedUrl","token","credential"]},
+    {"name":"MediaUploadBinding","requiredFields":["uploadIntentId","assetId","assetVersion","tenantRef","subjectRef","expiresAt"],"allowedFields":["uploadIntentId","assetId","assetVersion","tenantRef","subjectRef","expiresAt"],"forbiddenFields":["tenant","tenantId","subject","subjectId","owner","ownerId","credential","token","objectKey","objectUrl","permanentUrl","signedUrl"]},
+    {"name":"MediaUploadIntentCompleteRequest","requiredFields":["completionRef"],"allowedFields":["completionRef"],"forbiddenFields":["objectVersion","sha256","sizeBytes","mimeType","durationMs","malwareStatus","processingResult","taskAttempt"]},
+    {"name":"MediaUploadIntentCompletion","requiredFields":["taskId","assetId","assetVersion","status","auditId"],"allowedFields":["taskId","assetId","assetVersion","status","auditId"],"forbiddenFields":["objectKey","objectUrl","signedUrl","rawAudio"]},
+    {"name":"MediaProcessingTask","requiredFields":["taskId","taskType","assetId","assetVersion","taskVersion","attempt","dedupeKey","nextAttemptAt","failureClass","status","auditId"],"allowedFields":["taskId","taskType","assetId","assetVersion","taskVersion","attempt","dedupeKey","nextAttemptAt","failureClass","status","auditId"],"forbiddenFields":["retryable","workerToken","objectUrl","rawAudio"]},
+    {"name":"MediaProcessingTaskRetryRequest","requiredFields":["expectedTaskVersion"],"allowedFields":["expectedTaskVersion"],"forbiddenFields":["attempt","taskAttempt","retryable","workerId","actorId"]},
+    {"name":"MediaAsset","requiredFields":["assetId","assetVersion","kind","status","integrity","processingStatus","malwareStatus","sourceContentVersionId","rightsState"],"allowedFields":["assetId","assetVersion","kind","status","integrity","processingStatus","malwareStatus","sourceContentVersionId","rightsState"],"forbiddenFields":["objectKey","bucket","objectUrl","permanentUrl","signedUrl","rawAudio"]},
+    {"name":"MediaManifest","requiredFields":["assetId","assetVersion","sourceContentVersionId","integrity","renditions","subtitleTracks","fallbackAlternatives","playbackCapabilities","malwareStatus","status"],"allowedFields":["assetId","assetVersion","sourceContentVersionId","integrity","renditions","subtitleTracks","fallbackAlternatives","playbackCapabilities","malwareStatus","status"],"forbiddenFields":["url","signedUrl","objectUrl","permanentUrl","rawAudio","subtitleText","transcript"]},
+    {"name":"MediaFallbackAlternative","requiredFields":["kind","availability","reasonCode"],"allowedFields":["kind","availability","reasonCode","contentRef"],"forbiddenFields":["subtitleText","transcript","url","signedUrl"]},
+    {"name":"MediaSignedAccessRequest","requiredFields":["channel","range"],"allowedFields":["channel","range"],"forbiddenFields":["tenant","subject","owner","assetVersion","expiresAt","revocationVersion","downloadUrl"]},
+    {"name":"MediaSignedAccessGrant","requiredFields":["url","expiresAt","binding","revocationVersion"],"allowedFields":["url","expiresAt","binding","revocationVersion"],"forbiddenFields":["permanentUrl","signedUrl","token","credential"]},
+    {"name":"MediaAccessBinding","requiredFields":["assetId","assetVersion","tenantRef","subjectRef","channel","range","expiry","revocationVersion"],"allowedFields":["assetId","assetVersion","tenantRef","subjectRef","channel","range","expiry","revocationVersion"],"forbiddenFields":["tenant","subject","owner","rights"]},
+    {"name":"MediaIntegrity","requiredFields":["objectVersion","sha256","sizeBytes","magicMimeType","durationMs","verificationStatus"],"allowedFields":["objectVersion","sha256","sizeBytes","magicMimeType","durationMs","verificationStatus"],"forbiddenFields":["objectUrl","objectKey","clientVerified"]},
+    {"name":"MediaRendition","requiredFields":["renditionId","assetVersion","sourceChecksumSha256","outputChecksumSha256","objectVersion","mimeType","sizeBytes","status","failureClass"],"allowedFields":["renditionId","assetVersion","sourceChecksumSha256","outputChecksumSha256","objectVersion","mimeType","sizeBytes","status","failureClass"],"forbiddenFields":["url","signedUrl","objectUrl","subtitleText"]},
+    {"name":"MediaSubtitleTrack","requiredFields":["subtitleTrackId","contentVersionId","rightsState","artifactVersion","language","status"],"allowedFields":["subtitleTrackId","contentVersionId","rightsState","artifactVersion","language","status"],"forbiddenFields":["text","subtitleText","transcript","generatedByAi","asr"]},
+    {"name":"SpeakingRecordingUploadIntentRequest","requiredFields":["purpose","sourceContentVersionId","sourceSegmentId","expectedObject"],"allowedFields":["purpose","sourceContentVersionId","sourceSegmentId","shadowingSessionId","expectedObject"],"forbiddenFields":["tenant","tenantId","owner","ownerId","subject","subjectId","consent","media_consent","transcript","asr","aiScore","permissionState","localDraft","localDraftState"]},
+    {"name":"SpeakingRecordingUploadIntent","requiredFields":["recordingId","status","uploadIntent","retentionPolicyRef","retentionPolicyVersion"],"allowedFields":["recordingId","status","uploadIntent","retentionPolicyRef","retentionPolicyVersion"],"forbiddenFields":["retentionDays","retentionUntil","legalHoldOverride","transcript"]},
+    {"name":"SpeakingRecordingCompleteRequest","requiredFields":["completionRef"],"allowedFields":["completionRef"],"forbiddenFields":["objectVersion","sha256","sizeBytes","mimeType","durationMs","malwareStatus","asr","aiScore","permissionState","localDraft","localDraftState"]},
+    {"name":"SpeakingRecording","requiredFields":["recordingId","assetId","status","malwareStatus","sourceContentVersionId","sourceSegmentId","retentionPolicyRef","retentionPolicyVersion","legalHoldState"],"allowedFields":["recordingId","assetId","status","malwareStatus","sourceContentVersionId","sourceSegmentId","retentionPolicyRef","retentionPolicyVersion","legalHoldState"],"forbiddenFields":["url","signedUrl","objectUrl","transcript","asrScore","aiScore","retentionDays"]},
+    {"name":"SpeakingRecordingDeleteReceipt","requiredFields":["recordingId","status","deleteRequestId","legalHoldState","retentionPolicyRef","retentionPolicyVersion","auditId"],"allowedFields":["recordingId","status","deleteRequestId","legalHoldState","purgeReceiptRef","retentionPolicyRef","retentionPolicyVersion","auditId"],"forbiddenFields":["deletedAtClaim","retentionDays","forceDelete","legalHoldOverride"]},
+    {"name":"SpeakingShadowingSessionCreateRequest","requiredFields":["sourceContentVersionId","sourceSegmentId"],"allowedFields":["sourceContentVersionId","sourceSegmentId"],"forbiddenFields":["tenant","owner","actor","recordingUrl","aiMode","asr","targetGapMs"]},
+    {"name":"SpeakingShadowingSession","requiredFields":["sessionId","status","sourceContentVersionId","sourceSegmentId","attemptRef","targetGapMs"],"allowedFields":["sessionId","status","sourceContentVersionId","sourceSegmentId","attemptRef","targetGapMs"],"forbiddenFields":["recordingBytes","recordingUrl","aiScore","transcript"],"constants":{"targetGapMs":500}},
+    {"name":"SpeakingShadowingProgressRequest","requiredFields":["progressMs","expectedSessionVersion"],"allowedFields":["progressMs","recordingId","selfRating","expectedSessionVersion"],"forbiddenFields":["tenant","owner","actor","finalScore","aiScore","transcript","pitchPreserved"]},
+    {"name":"SpeakingShadowingCompletionRequest","requiredFields":["expectedSessionVersion"],"allowedFields":["recordingId","selfRating","expectedSessionVersion"],"forbiddenFields":["tenant","owner","actor","finalScore","aiScore","asr","transcript","pitchPreserved"]},
+    {"name":"SpeakingShadowingCompletionReceipt","requiredFields":["sessionId","attemptId","status","recordingRef","feedbackKind","aiScoringAvailable"],"allowedFields":["sessionId","attemptId","status","recordingRef","feedbackKind","aiScoringAvailable"],"forbiddenFields":["recordingUrl","recordingBytes","transcript","aiScore"],"constants":{"aiScoringAvailable":false}},
+    {"name":"MediaPlaybackCapability","requiredFields":["minimumRate","maximumRate","continuous","presets","pitchPreservationRequired","timelineUnit","fallback"],"allowedFields":["minimumRate","maximumRate","continuous","presets","pitchPreservationRequired","timelineUnit","fallback"],"forbiddenFields":["clientPitchPreserved","aiPlayback"],"constants":{"minimumRate":0.5,"maximumRate":2,"continuous":true,"pitchPreservationRequired":true,"timelineUnit":"MILLISECONDS","fallback":"EXPLICIT_DISABLE_OR_UNSUPPORTED"}},
+    {"name":"MediaPublishEligibility","requiredFields":["contentVersionId","assetId","assetVersion","mediaStatus","malwareStatus","rightsState","subtitleEligibility","decision","decisionRef","policyVersion","evaluatedAt","scheduleDueAt","recheckRequired"],"allowedFields":["contentVersionId","assetId","assetVersion","mediaStatus","malwareStatus","rightsState","subtitleEligibility","decision","decisionRef","policyVersion","evaluatedAt","scheduleDueAt","recheckRequired"],"forbiddenFields":["tenant","owner","actor","forceAllow","clientDecision","rightsOverride"]}
+  ],
+  "upload": {
+    "intent": {
+      "singleUse": true,
+      "shortLived": true,
+      "bindingFields": [
+        "principal",
+        "tenant",
+        "asset"
+      ],
+      "quota": {
+        "policyRefRequired": true,
+        "policyVersionRequired": true,
+        "reservationRequired": true,
+        "numericLimitsInvented": false
+      }
+    },
+    "verification": {
+      "authorities": [
+        "verified-provider",
+        "verified-worker"
+      ],
+      "requiredFacts": [
+        "objectVersion",
+        "sha256",
+        "realSizeBytes",
+        "magicMimeType",
+        "realDurationMs"
+      ],
+      "clientDeclaredFacts": "NON_AUTHORITATIVE"
+    },
+    "malware": {
+      "statuses": [
+        "PENDING",
+        "CLEAN",
+        "INFECTED",
+        "ERROR"
+      ],
+      "processAndDeliveryRequires": "CLEAN",
+      "nonCleanDecision": "DENY"
+    }
+  },
+  "tasks": {
+    "types": [
+      "UPLOAD_VERIFY",
+      "MALWARE_SCAN",
+      "TRANSCODE",
+      "RENDITION",
+      "SUBTITLE_INGEST",
+      "DELETE_OBJECT"
+    ],
+    "requiredFields": [
+      "taskId",
+      "taskType",
+      "assetVersion",
+      "taskVersion",
+      "attempt",
+      "dedupeKey",
+      "nextAttemptAt",
+      "failureClass",
+      "auditId"
+    ],
+    "staleCallback": "COMPARE_AND_SET_ASSET_VERSION_AND_TASK_VERSION",
+    "retry": {
+      "policyTask": "P1R-M1-007",
+      "onlyFailureClass": "TRANSIENT",
+      "maxAttempts": 5,
+      "strategy": "EXPONENTIAL_WITH_JITTER",
+      "minimumBackoffSeconds": 1,
+      "maximumBackoffSeconds": 60,
+      "terminalFailureClasses": [
+        "CHECKSUM_MISMATCH",
+        "MIME_DISALLOWED",
+        "SIZE_EXCEEDED",
+        "QUOTA_EXCEEDED",
+        "MALWARE_INFECTED",
+        "CONSENT_WITHDRAWN",
+        "RIGHTS_REVOKED",
+        "DELETE_REQUESTED",
+        "STALE_CALLBACK",
+        "UNKNOWN"
+      ],
+      "unknownFailureClass": "FAIL_CLOSED",
+      "exhausted": "WORKFLOW_OWNED_DLQ_AND_MANUAL_RECOVERY",
+      "clientMayClassifyOrOverride": false
+    }
+  },
+  "rendition": {
+    "requiredFields": [
+      "sourceChecksumSha256",
+      "outputChecksumSha256",
+      "objectVersion",
+      "mimeType",
+      "sizeBytes",
+      "status",
+      "failureClass",
+      "assetVersion"
+    ],
+    "deliveryRequiresReadyRendition": true
+  },
+  "subtitles": {
+    "officialTextOwner": "content-service",
+    "officialTextRequirements": [
+      "content-version",
+      "rights",
+      "review",
+      "publication"
+    ],
+    "artifactMetadataOwner": "media-service",
+    "personalRecordingTranscript": "PROHIBITED",
+    "asrGeneration": "PROHIBITED"
+  },
+  "delivery": {
+    "manifest": "METADATA_ONLY",
+    "subtitleUnavailableAlternatives": {
+      "requiredFields": [
+        "fallbackAlternatives"
+      ],
+      "requiredKinds": [
+        "TEXT_ALTERNATIVE",
+        "PRACTICE_ALTERNATIVE"
+      ],
+      "exactCount": 2,
+      "uniqueKinds": true,
+      "decision": "EXPLICIT_AVAILABLE_OR_UNAVAILABLE_WITH_REASON"
+    },
+    "grantKinds": [
+      "UPLOAD",
+      "ACCESS"
+    ],
+    "grantBindingFields": [
+      "asset",
+      "assetVersion",
+      "tenant",
+      "subject",
+      "channel",
+      "range",
+      "expiry",
+      "revocationVersion"
+    ],
+    "personalRecordingReplay": {
+      "canonicalPath": "/api/v1/media/assets/{assetId}/signed-access",
+      "channel": "RECORDING",
+      "dedicatedRecordingSignedAccessRouteForbidden": true
+    },
+    "forbiddenSinks": [
+      "event",
+      "log",
+      "telemetry",
+      "ordinary-audit"
+    ],
+    "rangeMismatch": "DENY"
+  },
+  "capture": {
+    "microphoneStart": "EXPLICIT_USER_ACTION_ONLY",
+    "permissionDenied": {
+      "remoteRecordingCreated": false,
+      "fallback": "SILENT_PRACTICE"
+    },
+    "localDraft": {
+      "state": "LOCAL_ENCRYPTED_DRAFT",
+      "remoteAssetState": "REMOTE_ASSET",
+      "ordinaryStorageFallback": false,
+      "clientPermissionIsServerEvidence": false,
+      "localDraftIsRemoteCompletionEvidence": false
+    }
+  },
+  "publishEligibility": {
+    "schema": "MediaPublishEligibility",
+    "bindingFields": [
+      "contentVersionId",
+      "assetId",
+      "assetVersion"
+    ],
+    "allowRequires": {
+      "mediaStatus": "READY",
+      "malwareStatus": "CLEAN",
+      "rightsState": "VALID",
+      "subtitleEligibility": [
+        "OFFICIAL_SUBTITLE_READY",
+        "TEXT_ALTERNATIVE_READY"
+      ]
+    },
+    "serverDerivedFields": [
+      "decision",
+      "decisionRef",
+      "policyVersion",
+      "evaluatedAt",
+      "scheduleDueAt",
+      "recheckRequired"
+    ],
+    "missingStaleOrRevoked": "DENY",
+    "scheduleDueTimeRecheck": true
+  },
+  "lifecycle": {
+    "retention": {
+      "policyTask": "P1R-M1-017",
+      "policyRefRequired": true,
+      "policyVersionRequired": true,
+      "exactDaysFrozen": false
+    },
+    "deleteStates": [
+      "DELETE_REQUESTED",
+      "HOLD_BLOCKED",
+      "PURGE_PENDING",
+      "DELETED",
+      "PURGE_FAILED"
+    ],
+    "legalHoldBeforeDelete": true,
+    "revokeGrantAndCancelEligibleTaskBeforePurge": true,
+    "falseDeleteSuccess": "PROHIBITED",
+    "ownerReceiptRequired": true,
+    "deleteReceipt": {
+      "purgeReceiptRef": {
+        "requiredWhen": "DELETED",
+        "forbiddenWhen": [
+          "HOLD_BLOCKED",
+          "PURGE_FAILED"
+        ]
+      },
+      "nonDeletedStatesMayNotClaimPurgeSuccess": true
+    }
+  },
+  "playback": {
+    "minimumRate": 0.5,
+    "maximumRate": 2,
+    "continuous": true,
+    "presets": [
+      0.5,
+      0.75,
+      1,
+      1.25,
+      1.5,
+      2
+    ],
+    "pitchPreservationRequired": true,
+    "timelineUnit": "MILLISECONDS",
+    "fallback": "EXPLICIT_DISABLE_OR_UNSUPPORTED",
+    "clientClaimIsEvidence": false
+  },
+  "phaseFeatures": {
+    "disabled": [
+      "ASR",
+      "AI_SCORING",
+      "GENERATIVE_AI",
+      "DIGITAL_HUMAN",
+      "RTC"
+    ],
+    "rejectedAliases": [
+      "asr",
+      "transcribe",
+      "transcript",
+      "aiScore",
+      "aiScoring",
+      "voiceModel",
+      "voiceClone",
+      "prompt",
+      "digitalHuman",
+      "rtc"
+    ],
+    "failureCode": "PHASE_FEATURE_DISABLED"
+  },
+  "historicalEvents": [
+    "media.started.v1",
+    "media.segment_completed.v1",
+    "media.downloaded.v1",
+    "media.revoked.v1",
+    "recording.saved.v1",
+    "speaking.permission_requested.v1",
+    "shadowing.completed.v1",
+    "speaking.self_rating.submitted.v1",
+    "speaking.shadowing.progressed.v1",
+    "media.offline.package.synced.v1",
+    "listening.dictation.submitted.v1"
+  ],
+  "eventPromotion": {
+    "historicalOnly": true,
+    "unpublishedCandidates": [
+      "media.asset_registered",
+      "media.asset_activated",
+      "media.asset_transcoding_updated",
+      "media.asset_rendition_updated",
+      "media.asset_revoked"
+    ]
+  },
+  "legacyCompatibility": [
+    {"path":"/api/v1/content/media/upload-intents","method":"POST","operationId":"createContentMediaUploadIntent","mode":"REPLACED","replacement":{"path":"/api/v1/media/upload-intents","method":"POST","operationId":"createMediaUploadIntent"}},
+    {"path":"/api/v1/content/media/{mediaAssetId}/complete","method":"POST","operationId":"completeContentMediaUpload","mode":"REPLACED","replacement":{"path":"/api/v1/media/upload-intents/{uploadIntentId}/complete","method":"POST","operationId":"completeMediaUploadIntent"}},
+    {"path":"/api/v1/content/media/{mediaAssetId}/signed-access","method":"POST","operationId":"signContentMediaAccess","mode":"REPLACED","replacement":{"path":"/api/v1/media/assets/{assetId}/signed-access","method":"POST","operationId":"createMediaAssetSignedAccess"}},
+    {"path":"/api/v1/speaking/recordings","method":"POST","operationId":"createB3SpeakingRecording","mode":"REPLACED","replacement":{"path":"/api/v1/speaking/recordings/upload-intents","method":"POST","operationId":"createSpeakingRecordingUploadIntent"}},
+    {"path":"/api/v1/speaking/recordings/{recordingId}","method":"GET","operationId":"getB3SpeakingRecording","mode":"CONVERGED_IN_PLACE","replacement":{"path":"/api/v1/speaking/recordings/{recordingId}","method":"GET","operationId":"getSpeakingRecording"}},
+    {"path":"/api/v1/speaking/recordings/{recordingId}","method":"DELETE","operationId":"deleteB3SpeakingRecording","mode":"CONVERGED_IN_PLACE","replacement":{"path":"/api/v1/speaking/recordings/{recordingId}","method":"DELETE","operationId":"deleteSpeakingRecording"}},
+    {"path":"/api/v1/speaking/recordings/{recordingId}/self-rating","method":"POST","operationId":"submitB3SpeakingSelfRating","mode":"REPLACED","replacement":{"path":"/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress","method":"POST","operationId":"recordSpeakingShadowingProgress"}},
+    {"path":"/api/v1/speaking/shadowing/sessions","method":"POST","operationId":"createB3ShadowingSession","mode":"CONVERGED_IN_PLACE","replacement":{"path":"/api/v1/speaking/shadowing/sessions","method":"POST","operationId":"createSpeakingShadowingSession"}},
+    {"path":"/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress","method":"POST","operationId":"updateB3ShadowingProgress","mode":"CONVERGED_IN_PLACE","replacement":{"path":"/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress","method":"POST","operationId":"recordSpeakingShadowingProgress"}},
+    {"path":"/api/v1/media/assets/{assetId}","method":"GET","operationId":"getB11MediaAsset","mode":"CONVERGED_IN_PLACE","replacement":{"path":"/api/v1/media/assets/{assetId}","method":"GET","operationId":"getMediaAsset"}},
+    {"path":"/api/v1/media/assets/{assetId}/manifest","method":"GET","operationId":"getB11MediaManifest","mode":"CONVERGED_IN_PLACE","replacement":{"path":"/api/v1/media/assets/{assetId}/manifest","method":"GET","operationId":"getMediaAssetManifest"}},
+    {"path":"/api/v1/media/assets/{assetId}/signed-url","method":"POST","operationId":"createB11MediaAccess","mode":"REPLACED","replacement":{"path":"/api/v1/media/assets/{assetId}/signed-access","method":"POST","operationId":"createMediaAssetSignedAccess"}},
+    {"path":"/api/v1/media/assets/{assetId}/content","method":"GET","operationId":"streamB11MediaContent","mode":"REPLACED","replacement":{"path":"/api/v1/media/assets/{assetId}/signed-access","method":"POST","operationId":"createMediaAssetSignedAccess"}},
+    {"path":"/api/v1/multimodal/recordings","method":"POST","operationId":"createB11Recording","mode":"REPLACED","replacement":{"path":"/api/v1/speaking/recordings/upload-intents","method":"POST","operationId":"createSpeakingRecordingUploadIntent"}},
+    {"path":"/api/v1/speaking/shadowing/completions","method":"POST","operationId":"updateB11ShadowingCompletion","mode":"REPLACED","replacement":{"path":"/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete","method":"POST","operationId":"completeSpeakingShadowingSession"}}
+  ],
+  "adversarialCases": [
+    "CLIENT_AUTHORITY_AND_CONSENT_INJECTION",
+    "CROSS_OWNER_OR_TENANT_ACCESS",
+    "MISSING_INVALID_OR_WITHDRAWN_VOICE_CONSENT",
+    "UPLOAD_INTENT_REPLAY_OR_EXPIRY",
+    "MIME_POLYGLOT_HASH_SIZE_DURATION_MISMATCH",
+    "QUOTA_RESERVATION_BYPASS",
+    "MALWARE_NOT_CLEAN",
+    "STALE_CALLBACK_AND_RETRY_SPOOF",
+    "URL_LEAK_OR_SCOPE_ESCALATION",
+    "LEGAL_HOLD_DELETE_RACE",
+    "SENSITIVE_ALIAS_OR_UNKNOWN_FIELD",
+    "AI_ASR_ALIAS",
+    "PLAYBACK_RATE_OR_CLIENT_PITCH_CLAIM",
+    "SUBTITLE_OWNER_OR_TRANSCRIPT_CONFUSION",
+    "DUPLICATE_POLICY_VALUE",
+    "RUNTIME_PROMOTION"
+  ]
+}

@@ -58,7 +58,7 @@
       { "ruleId": "admin-analytics", "priority": 800, "match": { "type": "EXACT", "path": "/api/v1/admin/ops/metrics", "methods": ["GET"] }, "upstreamOwner": "analytics-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
       { "ruleId": "learning-content-snapshot", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/learning/content-snapshots", "methods": ["GET"] }, "upstreamOwner": "content-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_READ", "compatibilityMode": "NONE" },
       { "ruleId": "speaking-recordings", "priority": 800, "match": { "type": "PREFIX", "path": "/api/v1/speaking/recordings", "methods": ["GET", "POST", "DELETE"] }, "upstreamOwner": "media-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
-      { "ruleId": "speaking-shadowing-completion", "priority": 900, "match": { "type": "EXACT", "path": "/api/v1/speaking/shadowing/completions", "methods": ["POST"] }, "upstreamOwner": "learning-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
+      { "ruleId": "speaking-shadowing-completion", "priority": 900, "match": { "type": "EXACT", "path": "/api/v1/speaking/shadowing/completions", "methods": ["POST"] }, "upstreamOwner": "assessment-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
       { "ruleId": "auth-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/auth", "methods": ["GET", "POST"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
       { "ruleId": "iam-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/iam", "methods": ["GET", "POST", "PUT"] }, "upstreamOwner": "iam-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "HIGH_RISK_ADMIN", "compatibilityMode": "NONE" },
       { "ruleId": "learner-domain", "priority": 100, "match": { "type": "PREFIX", "path": "/api/v1/learner", "methods": ["GET", "PATCH", "PUT"] }, "upstreamOwner": "learner-service", "internalTargetClass": "INTERNAL_V1", "visibility": "AUTHENTICATED", "authClass": "AUTHENTICATED_WRITE", "compatibilityMode": "NONE" },
@@ -192,7 +192,7 @@
       "sink": "audit-service",
       "allowedFields": ["occurredAt", "routeId", "method", "status", "requestId", "traceId", "subjectHash", "tenantHash", "clientProfile", "decision", "reasonCode", "latencyBucket"],
       "boundedFields": true,
-      "redactedFields": ["Authorization", "Cookie", "Set-Cookie", "accessToken", "refreshToken", "password", "requestBody", "queryString", "rawAudio", "paymentCredential"],
+      "redactedFields": ["Authorization", "Cookie", "Set-Cookie", "accessToken", "refreshToken", "password", "requestBody", "queryString", "rawAudio", "base64Audio", "uploadUrl", "accessUrl", "signedUrl", "objectUrl", "objectKey", "objectCredential", "transcript", "transcriptText", "subtitleText", "captionText", "paymentCredential"],
       "clientAuthorityFactsPersisted": false,
       "durableRuntimeEvidenceRequired": true
     },

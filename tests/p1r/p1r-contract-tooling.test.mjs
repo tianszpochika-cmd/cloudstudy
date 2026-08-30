@@ -8,11 +8,14 @@ import { findCanonicalMergeDrift, mergeEvents, selectEventFragmentFiles } from '
 import { buildGeneratedOutputs, findGeneratedOutputDrift } from '../../scripts/contracts/generate-contracts.mjs';
 import {
   buildM1008OpenApiExpectedProjection,
+  buildM1009OpenApiExpectedProjection,
   compareContracts,
   M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256,
   M1008_CONTENT_EVENT_NAMES,
   M1008_REVIEWED_EVENT_COMPATIBILITY,
   M1008_REVIEWED_EVENT_PAYLOAD_SCHEMA,
+  M1009_MEDIA_PROMOTION_ID,
+  M1009_OPENAPI_EXPECTED_SEMANTIC_SHA256,
   runCompatibilityDiff,
   stableGovernanceSha256,
 } from '../../scripts/contracts/compatibility-diff.mjs';
@@ -20,10 +23,12 @@ import {
   hasRequiredCiContractBaseline,
   inspectRequiredCiContractGate,
   REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+  REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
   REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND,
   REQUIRED_CI_CONTRACT_BASELINE_REF,
   REQUIRED_EVENT_GOVERNANCE_BASELINE_REF,
   runGitBaselineCompatibility,
+  validateM1009CompatibilityPolicy,
 } from '../../scripts/contracts/compatibility-git-baseline.mjs';
 import { validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
 import { schemaToTs } from '../../scripts/contracts/schema-utils.mjs';
@@ -33,6 +38,7 @@ const openApiPath = path.join(root, 'packages', 'contracts', 'openapi', 'v1', 'o
 const eventCatalogPath = path.join(root, 'packages', 'contracts', 'events', 'v1', 'catalog.json');
 const b26RuntimePath = path.join(root, 'config', 'b26-event-runtime.json');
 const contentLifecyclePolicyPath = path.join(root, 'config', 'p1r-content-lifecycle.v1.json');
+const mediaContractPolicyPath = path.join(root, 'config', 'p1r-media-contract.v1.json');
 const openApi = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
 const eventCatalog = JSON.parse(fs.readFileSync(eventCatalogPath, 'utf8'));
 const b26Runtime = JSON.parse(fs.readFileSync(b26RuntimePath, 'utf8'));
@@ -538,10 +544,16 @@ test('Git compatibility adds the fixed governance freeze when the historical bas
 
 test('git baseline compatibility reads immutable baseline blobs and rejects a true self-comparison', () => {
   const currentText = fs.readFileSync(openApiPath, 'utf8');
+  const m1009SourceText = JSON.stringify(gitJson(
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    'packages/contracts/openapi/v1/openapi.json',
+  ));
   const git = (args) => {
     if (args[0] === 'rev-parse' && args[2] === 'HEAD^{commit}') return 'current-commit';
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF;
+    if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse') return 'baseline-commit';
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1009SourceText;
     if (args[0] === 'show') return currentText;
     throw new Error(`Unexpected git invocation: ${args.join(' ')}`);
   };
@@ -551,7 +563,9 @@ test('git baseline compatibility reads immutable baseline blobs and rejects a tr
 
   const sameHeadGit = (args) => {
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF;
+    if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse') return 'current-commit';
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1009SourceText;
     if (args[0] === 'show') return currentText;
     throw new Error(`Unexpected git invocation: ${args.join(' ')}`);
   };
@@ -597,6 +611,26 @@ const m1008SourceOpenApi = gitJson(
   REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
   'packages/contracts/openapi/v1/openapi.json',
 );
+const m1008AcceptedOpenApi = gitJson(
+  REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+  'packages/contracts/openapi/v1/openapi.json',
+);
+const contentLifecyclePolicy = JSON.parse(fs.readFileSync(contentLifecyclePolicyPath, 'utf8'));
+const m1008PolicyPromotion = contentLifecyclePolicy.eventGovernance.compatibilityPromotion;
+const m1008OpenApiAllowance = Object.freeze({
+  id: 'M1-008_CONTENT_LIFECYCLE_PROMOTION',
+  sourceContractBaseline: m1008PolicyPromotion.sourceContractBaseline,
+  immutableGovernanceBaseline: m1008PolicyPromotion.immutableGovernanceBaseline,
+  fromStatus: m1008PolicyPromotion.fromStatus,
+  toStatus: m1008PolicyPromotion.toStatus,
+  eventNames: [...m1008PolicyPromotion.eventNames],
+  gapIds: [...m1008PolicyPromotion.gapIds],
+  topic: m1008PolicyPromotion.topic,
+  addedConsumerGroups: [...m1008PolicyPromotion.addedConsumerGroups],
+  runtimeStatus: m1008PolicyPromotion.runtimeStatus,
+  canonicalEnvelope: [...contentLifecyclePolicy.eventGovernance.canonicalEnvelope],
+  closureStatus: 'D2_CONTRACT_CLOSED',
+});
 
 function m1008ExpectedOpenApiProjection(approved) {
   const projection = buildM1008OpenApiExpectedProjection(m1008SourceOpenApi, approved);
@@ -605,22 +639,27 @@ function m1008ExpectedOpenApiProjection(approved) {
 }
 
 function runM1008OpenApiPromotionWithMutation({ mutateOpenApi } = {}) {
-  const mutatedOpenApi = m1008ExpectedOpenApiProjection(openApi);
+  const mutatedOpenApi = m1008ExpectedOpenApiProjection(m1008AcceptedOpenApi);
   mutateOpenApi?.(mutatedOpenApi);
-  const readFile = (filePath) => {
-    if (path.resolve(filePath) === path.resolve(openApiPath)) return JSON.stringify(mutatedOpenApi);
-    return fs.readFileSync(filePath, 'utf8');
-  };
-  return runGitBaselineCompatibility({
-    ref: REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
-    kind: 'openapi',
-    readFile,
+  const breakingChanges = compareContracts('openapi', m1008SourceOpenApi, mutatedOpenApi, {
+    allowance: m1008OpenApiAllowance,
   });
+  return {
+    compatible: breakingChanges.length === 0,
+    results: [{
+      promotion: {
+        id: 'M1-008_CONTENT_LIFECYCLE_PROMOTION',
+        sourceContractBaseline: REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: EXPECTED_EVENT_GOVERNANCE_BASELINE_REF,
+      },
+      breakingChanges,
+    }],
+  };
 }
 
 test('M1-008 exact OpenAPI promotion passes with the frozen projection', () => {
-  const expectedProjection = m1008ExpectedOpenApiProjection(openApi);
-  assert.deepEqual(expectedProjection, openApi);
+  const expectedProjection = m1008ExpectedOpenApiProjection(m1008AcceptedOpenApi);
+  assert.deepEqual(expectedProjection, m1008AcceptedOpenApi);
   assert.equal(stableGovernanceSha256(expectedProjection), M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256);
   const result = runM1008OpenApiPromotionWithMutation();
   assert.equal(result.compatible, true);
@@ -636,7 +675,7 @@ test('default OpenAPI compatibility remains strict for the M1-008 promotion', ()
     REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
     'packages/contracts/openapi/v1/openapi.json',
   );
-  const changes = compareContracts('openapi', sourceOpenApi, m1008ExpectedOpenApiProjection(openApi));
+  const changes = compareContracts('openapi', sourceOpenApi, m1008ExpectedOpenApiProjection(m1008AcceptedOpenApi));
   assert.ok(changes.length > 0);
   assert.ok(changes.some((change) => change.location === 'POST /api/v1/admin/content-commands.request.oneOf'));
 });
@@ -695,6 +734,111 @@ test('M1-008 OpenAPI promotion rejects extra paths, schemas, enum values, weaken
     assert.equal(result.compatible, false, `${label} unexpectedly passed`);
     assert.ok(result.results[0].breakingChanges.length > 0, `${label} produced no evidence`);
   }
+});
+
+const mediaContractPolicy = JSON.parse(fs.readFileSync(mediaContractPolicyPath, 'utf8'));
+const m1009SourceOpenApi = m1008AcceptedOpenApi;
+const m1009Allowance = mediaContractPolicy.compatibilityPromotion;
+
+function runM1009OpenApiPromotionWithMutation(mutateOpenApi) {
+  const mutatedOpenApi = structuredClone(openApi);
+  mutateOpenApi?.(mutatedOpenApi);
+  const breakingChanges = compareContracts('openapi', m1009SourceOpenApi, mutatedOpenApi, {
+    allowance: m1009Allowance,
+  });
+  return { compatible: breakingChanges.length === 0, breakingChanges };
+}
+
+test('M1-009 exact media OpenAPI promotion passes from the immutable M1-008 checkpoint', () => {
+  assert.deepEqual(validateM1009CompatibilityPolicy(mediaContractPolicy), []);
+  const projection = buildM1009OpenApiExpectedProjection(m1009SourceOpenApi, openApi, m1009Allowance);
+  assert.ok(projection, 'frozen-source M1-009 OpenAPI projection must be constructible');
+  assert.deepEqual(projection, openApi);
+  assert.equal(stableGovernanceSha256(projection), M1009_OPENAPI_EXPECTED_SEMANTIC_SHA256);
+  assert.equal(M1009_OPENAPI_EXPECTED_SEMANTIC_SHA256.length, 64);
+  assert.equal(m1009Allowance.id, M1009_MEDIA_PROMOTION_ID);
+  assert.deepEqual(runM1009OpenApiPromotionWithMutation(), { compatible: true, breakingChanges: [] });
+
+  const baselineCatalog = gitJson(
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    'packages/contracts/events/v1/catalog.json',
+  );
+  assert.equal(stableGovernanceSha256(baselineCatalog), stableGovernanceSha256(eventCatalog));
+});
+
+test('default OpenAPI compatibility remains strict for the M1-009 promotion', () => {
+  const changes = compareContracts('openapi', m1009SourceOpenApi, openApi);
+  assert.ok(changes.length > 0);
+  assert.ok(changes.some((change) => change.location === 'components.schemas.B8Consent.required'));
+});
+
+test('M1-009 promotion rejects unapproved routes, schemas, owner, consent, retry, delivery and Phase 1 drift', () => {
+  const mutations = [
+    ['extra route', (document) => {
+      document.paths['/api/v1/media/injected'] = { get: { responses: { 200: { description: 'injected' } } } };
+    }],
+    ['extra schema', (document) => {
+      document.components.schemas.M1009Injected = { type: 'object', additionalProperties: false };
+    }],
+    ['Gateway owner drift', (document) => {
+      document['x-p1r-gateway-boundary'].routeRules.find((rule) => rule.ruleId === 'speaking-recordings').upstreamOwner = 'learning-service';
+    }],
+    ['voice consent removed', (document) => {
+      document.components.schemas.B8Consent.properties.type.enum = document.components.schemas.B8Consent.properties.type.enum.filter((value) => value !== 'VOICE_RECORDING');
+    }],
+    ['voice purpose removed', (document) => {
+      document.components.schemas.B8Consent.properties.purpose.enum = document.components.schemas.B8Consent.properties.purpose.enum.filter((value) => value !== 'ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY');
+    }],
+    ['retry budget drift', (document) => {
+      document.components.schemas.MediaProcessingTask['x-retry-policy'].maxAttempts = 6;
+    }],
+    ['malware gate weakened', (document) => {
+      document.components.schemas.MediaAsset['x-p1r-media-malware-gate'].deliveryRequires = 'PENDING_OR_CLEAN';
+    }],
+    ['signed access binding weakened', (document) => {
+      document.components.schemas.MediaAccessBinding.required = document.components.schemas.MediaAccessBinding.required.filter((field) => field !== 'revocationVersion');
+    }],
+    ['manifest fallback weakened', (document) => {
+      document.components.schemas.MediaManifest.properties.fallbackAlternatives.minItems = 1;
+    }],
+    ['delete receipt false success', (document) => {
+      document.components.schemas.SpeakingRecordingDeleteReceipt.oneOf = [];
+    }],
+    ['publish eligibility bypass', (document) => {
+      document.components.schemas.MediaPublishEligibility.oneOf[0].properties.malwareStatus.const = 'PENDING';
+    }],
+    ['Phase 1 AI alias', (document) => {
+      document.components.schemas.SpeakingShadowingCompletionReceipt.properties.aiScore = { type: 'number' };
+    }],
+  ];
+  for (const [label, mutateOpenApi] of mutations) {
+    const result = runM1009OpenApiPromotionWithMutation(mutateOpenApi);
+    assert.equal(result.compatible, false, `${label} unexpectedly passed`);
+    assert.ok(result.breakingChanges.length > 0, `${label} produced no evidence`);
+  }
+});
+
+test('M1-009 policy allowance and full fixed-baseline chain fail closed on drift and pass canonically', () => {
+  for (const mutate of [
+    (policy) => { policy.compatibilityPromotion.sourceContractBaseline = 'f'.repeat(40); },
+    (policy) => { policy.compatibilityPromotion.previousPromotion = 'M1-007_EVENT_RELIABILITY_PROMOTION'; },
+    (policy) => { policy.compatibilityPromotion.runtimeStatus = 'RUNTIME_VERIFIED'; },
+    (policy) => { policy.compatibilityPromotion.eventCatalogDecision = 'PROMOTE_MEDIA_EVENTS'; },
+    (policy) => { policy.compatibilityPromotion.canonicalFragment = 'packages/contracts/openapi/v1/openapi.json'; },
+  ]) {
+    const mutated = structuredClone(mediaContractPolicy);
+    mutate(mutated);
+    assert.ok(validateM1009CompatibilityPolicy(mutated).length > 0);
+  }
+
+  const result = runGitBaselineCompatibility({
+    ref: REQUIRED_CI_CONTRACT_BASELINE_REF,
+    governanceRef: EXPECTED_EVENT_GOVERNANCE_BASELINE_REF,
+    kind: 'all',
+  });
+  assert.equal(result.compatible, true);
+  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1009_MEDIA_PROMOTION_ID);
+  assert.deepEqual(result.results.flatMap((entry) => entry.breakingChanges), []);
 });
 
 test('M1-008 exact source-baseline promotion passes with immutable governance attached', () => {

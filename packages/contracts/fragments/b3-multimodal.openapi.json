@@ -1305,6 +1305,33 @@
     "/api/v1/speaking/recordings": {
       "post": {
         "operationId": "createB3SpeakingRecording",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/speaking/recordings/upload-intents",
+            "method": "POST",
+            "operationId": "createSpeakingRecordingUploadIntent"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "createSpeakingRecordingUploadIntent",
+          "method": "POST",
+          "path": "/api/v1/speaking/recordings/upload-intents"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在录音 consent、intent/complete、可信校验、owner PEP 和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/speaking/recordings/upload-intents"
+        },
+        "x-migration": "旧直接登记只作兼容适配；canonical 流程先创建本人绑定的短时上传意图，再以 completionRef 完成可信校验。",
+        "x-authority-inputs-ignored": ["tenantId", "ownerId", "subjectId", "consent", "media_consent", "rightsStatus", "aiScore", "transcript"],
         "tags": [
           "b3-speaking"
         ],
@@ -1493,6 +1520,33 @@
     "/api/v1/speaking/recordings/{recordingId}/self-rating": {
       "post": {
         "operationId": "submitB3SpeakingSelfRating",
+        "deprecated": true,
+        "x-p1r-media-legacy": {
+          "classification": "HISTORICAL_COMPATIBILITY_ONLY",
+          "authoritySource": false,
+          "replacement": {
+            "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress",
+            "method": "POST",
+            "operationId": "recordSpeakingShadowingProgress"
+          }
+        },
+        "x-canonical-replacement": {
+          "operationId": "recordSpeakingShadowingProgress",
+          "method": "POST",
+          "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-004",
+          "condition": "仅在 assessment-owned shadowing session/attempt 和兼容回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-004_ACCEPTED",
+          "migrationLink": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"
+        },
+        "x-migration": "自评是 assessment session 的非权威输入；不得直接写 learning、SRS 或 mastery。",
+        "x-authority-inputs-ignored": ["tenantId", "ownerId", "subjectId", "finalScore", "aiScore", "transcript", "pitchPreserved"],
         "tags": [
           "b3-speaking"
         ],

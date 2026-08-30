@@ -150,7 +150,17 @@
     "consent": {
       "authority": "iam-service server record bound to a published document version and digest",
       "requiredConsentFailure": "RESTRICTED_AND_DENY",
-      "withdrawal": "applies documented restriction, revocation and revalidation effects before protected capability use"
+      "withdrawal": "applies documented restriction, revocation and revalidation effects before protected capability use",
+      "protectedCapabilityPurposes": [
+        {
+          "type": "VOICE_RECORDING",
+          "purpose": "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY",
+          "phase": "P1",
+          "adultEligibilityRequired": true,
+          "genericMediaConsentAllowed": false,
+          "withdrawnOrStale": "DENY_UPLOAD_PROCESS_AND_DELIVERY"
+        }
+      ]
     },
     "pepPdp": {
       "normalPath": "domain-service local PEP: validated JWT plus local resource facts plus versioned policy bundle or bounded security cache",
@@ -3981,11 +3991,24 @@
       },
       "B8Consent": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "type",
           "version",
           "decision",
-          "decidedAt"
+          "decidedAt",
+          "purpose",
+          "required",
+          "document",
+          "state",
+          "effectiveAt",
+          "restrictionEffect",
+          "revalidation",
+          "withdrawalEffect",
+          "provenance",
+          "policyRef",
+          "policyVersion",
+          "decisionRef"
         ],
         "x-server-authoritative-fields": [
           "purpose",
@@ -3996,7 +4019,10 @@
           "restrictionEffect",
           "revalidation",
           "withdrawalEffect",
-          "provenance"
+          "provenance",
+          "policyRef",
+          "policyVersion",
+          "decisionRef"
         ],
         "properties": {
           "type": {
@@ -4005,7 +4031,8 @@
               "TERMS",
               "PRIVACY",
               "ADULT_LEARNING",
-              "PRODUCT_ANALYTICS"
+              "PRODUCT_ANALYTICS",
+              "VOICE_RECORDING"
             ]
           },
           "version": {
@@ -4029,7 +4056,8 @@
               "ACCOUNT_TERMS",
               "PRIVACY_NOTICE",
               "ADULT_LEARNING_ELIGIBILITY",
-              "PRODUCT_ANALYTICS"
+              "PRODUCT_ANALYTICS",
+              "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"
             ],
             "description": "Server-published processing purpose associated with type."
           },
@@ -4068,6 +4096,21 @@
           },
           "provenance": {
             "$ref": "#/components/schemas/B8ConsentProvenance"
+          },
+          "policyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "decisionRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
           }
         }
       },
@@ -4093,7 +4136,8 @@
               "TERMS",
               "PRIVACY",
               "ADULT_LEARNING",
-              "PRODUCT_ANALYTICS"
+              "PRODUCT_ANALYTICS",
+              "VOICE_RECORDING"
             ]
           },
           "version": {
@@ -4152,13 +4196,27 @@
           "requiredPurposes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "ACCOUNT_TERMS",
+                "PRIVACY_NOTICE",
+                "ADULT_LEARNING_ELIGIBILITY",
+                "PRODUCT_ANALYTICS",
+                "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"
+              ]
             }
           },
           "unsatisfiedPurposes": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "ACCOUNT_TERMS",
+                "PRIVACY_NOTICE",
+                "ADULT_LEARNING_ELIGIBILITY",
+                "PRODUCT_ANALYTICS",
+                "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"
+              ]
             }
           },
           "evaluatedAt": {

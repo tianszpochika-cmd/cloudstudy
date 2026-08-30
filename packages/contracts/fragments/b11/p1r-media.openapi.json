@@ -1,0 +1,3316 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "语学星 P1R Media, Recording and Shadowing Contract",
+    "version": "1.0.0",
+    "description": "P1R-M1-009 canonical D2 contract. Static contract only; runtime remains unverified."
+  },
+  "x-contract-status": "canonical",
+  "x-p1r-media-contract": {
+    "schemaVersion": "p1r.media-contract.v1",
+    "taskId": "P1R-M1-009",
+    "phase": "PHASE_1",
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "canonicalFragment": "packages/contracts/fragments/b11/p1r-media.openapi.json",
+    "canonicalRoutes": [
+      {
+        "method": "POST",
+        "path": "/api/v1/media/upload-intents",
+        "owner": "media-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/media/upload-intents/{uploadIntentId}/complete",
+        "owner": "media-service"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/media/processing-tasks/{taskId}",
+        "owner": "media-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/media/processing-tasks/{taskId}/retry",
+        "owner": "media-service"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/media/assets/{assetId}",
+        "owner": "media-service"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/media/assets/{assetId}/manifest",
+        "owner": "media-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/media/assets/{assetId}/signed-access",
+        "owner": "media-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/speaking/recordings/upload-intents",
+        "owner": "media-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/speaking/recordings/{recordingId}/complete",
+        "owner": "media-service"
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/speaking/recordings/{recordingId}",
+        "owner": "media-service"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/speaking/recordings/{recordingId}",
+        "owner": "media-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/speaking/shadowing/sessions",
+        "owner": "assessment-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress",
+        "owner": "assessment-service"
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete",
+        "owner": "assessment-service"
+      }
+    ],
+    "owners": {
+      "content": "content-service",
+      "media": "media-service",
+      "assessment": "assessment-service",
+      "learning": "CONSUMER_OF_TRUSTED_ASSESSMENT_ONLY"
+    },
+    "consent": {
+      "type": "VOICE_RECORDING",
+      "purpose": "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY",
+      "authority": "iam-service",
+      "genericMediaConsent": "PROHIBITED"
+    },
+    "playback": {
+      "minimumRate": 0.5,
+      "maximumRate": 2,
+      "continuous": true,
+      "presets": [
+        0.5,
+        0.75,
+        1,
+        1.25,
+        1.5,
+        2
+      ],
+      "pitchPreservationRequired": true,
+      "timelineUnit": "MILLISECONDS"
+    },
+    "clientCapture": {
+      "microphoneRequestTrigger": "EXPLICIT_USER_ACTION_ONLY",
+      "permissionDenied": "SILENT_PRACTICE_AVAILABLE_AND_NO_REMOTE_RECORDING",
+      "localDraft": "LOCAL_ENCRYPTED_DRAFT_NOT_REMOTE_ASSET",
+      "ordinaryStorageFallback": "PROHIBITED"
+    },
+    "publishEligibilitySchema": "#/components/schemas/MediaPublishEligibility",
+    "retentionPolicyTask": "P1R-M1-017",
+    "exactRetentionDaysFrozen": false,
+    "phaseFeatures": {
+      "ASR": "DISABLED",
+      "AI_SCORING": "DISABLED",
+      "GENERATIVE_AI": "DISABLED",
+      "DIGITAL_HUMAN": "DISABLED",
+      "RTC": "DISABLED"
+    },
+    "historicalEvents": [
+      "listening.dictation.submitted.v1",
+      "media.downloaded.v1",
+      "media.offline.package.synced.v1",
+      "media.revoked.v1",
+      "media.segment_completed.v1",
+      "media.started.v1",
+      "recording.saved.v1",
+      "shadowing.completed.v1",
+      "speaking.permission_requested.v1",
+      "speaking.self_rating.submitted.v1",
+      "speaking.shadowing.progressed.v1"
+    ],
+    "candidateServiceEventsNotPublished": [
+      "media.asset_activated.v1",
+      "media.asset_registered.v1",
+      "media.asset_revoked.v1",
+      "media.rendition_updated.v1",
+      "media.transcoding_updated.v1"
+    ]
+  },
+  "tags": [
+    {
+      "name": "P1R-Media",
+      "description": "Canonical media upload, processing, manifest and access grants."
+    },
+    {
+      "name": "P1R-Recording",
+      "description": "Adult owner-bound personal recording metadata and deletion."
+    },
+    {
+      "name": "P1R-Shadowing",
+      "description": "Rule-based assessment-owned Phase 1 shadowing sessions."
+    }
+  ],
+  "paths": {
+    "/api/v1/media/upload-intents": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Create a server-bound one-use media upload intent",
+        "operationId": "createMediaUploadIntent",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaUploadIntentRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-upload-intent",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first intent for the same principal, tenant, purpose and request digest until it expires"
+        },
+        "responses": {
+          "201": {
+            "description": "Media upload intent created",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaUploadIntent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/media/upload-intents/{uploadIntentId}/complete": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Submit an opaque provider completion reference for trusted verification",
+        "operationId": "completeMediaUploadIntent",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "uploadIntentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaUploadIntentCompleteRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-upload-completion",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first durable verification task; a changed completion reference conflicts"
+        },
+        "responses": {
+          "202": {
+            "description": "Verification task accepted",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaUploadIntentCompletion"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/media/processing-tasks/{taskId}": {
+      "get": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Read a media processing task without exposing worker credentials or objects",
+        "operationId": "getMediaProcessingTask",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media processing task",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaProcessingTask"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/media/processing-tasks/{taskId}/retry": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Request retry only when the server-classified failure is transient",
+        "operationId": "retryMediaProcessingTask",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaProcessingTaskRetryRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-processing-retry",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the existing retry transition for the same task version and request digest"
+        },
+        "responses": {
+          "202": {
+            "description": "Retry accepted or existing transition returned",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaProcessingTask"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}": {
+      "get": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Read strict media asset metadata",
+        "operationId": "getMediaAsset",
+        "x-p1r-media-compatibility": {
+          "mode": "CONVERGED_IN_PLACE",
+          "legacyOperationId": "getB11MediaAsset",
+          "historicalAuthority": false
+        },
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media asset metadata",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaAsset"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/manifest": {
+      "get": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Read metadata-only renditions, subtitle artifacts and playback capabilities",
+        "operationId": "getMediaAssetManifest",
+        "x-p1r-media-compatibility": {
+          "mode": "CONVERGED_IN_PLACE",
+          "legacyOperationId": "getB11MediaManifest",
+          "historicalAuthority": false
+        },
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata-only media manifest",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaManifest"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/media/assets/{assetId}/signed-access": {
+      "post": {
+        "tags": [
+          "P1R-Media"
+        ],
+        "summary": "Create a short-lived, scope-bound media access grant",
+        "operationId": "createMediaAssetSignedAccess",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assetId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaSignedAccessRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "media-signed-access",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first unexpired grant for the same asset version, principal, channel, range and request digest"
+        },
+        "responses": {
+          "200": {
+            "description": "Short-lived media access grant",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/MediaSignedAccessGrant"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/recordings/upload-intents": {
+      "post": {
+        "tags": [
+          "P1R-Recording"
+        ],
+        "summary": "Create an adult-consented owner-bound recording upload intent",
+        "operationId": "createSpeakingRecordingUploadIntent",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeakingRecordingUploadIntentRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "speaking-recording-upload-intent",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first intent for the same owner, source segment and request digest until it expires"
+        },
+        "responses": {
+          "201": {
+            "description": "Recording upload intent created",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingRecordingUploadIntent"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/recordings/{recordingId}/complete": {
+      "post": {
+        "tags": [
+          "P1R-Recording"
+        ],
+        "summary": "Complete a recording upload and start trusted verification",
+        "operationId": "completeSpeakingRecording",
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeakingRecordingCompleteRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "speaking-recording-completion",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first durable recording verification state; changed completion reference conflicts"
+        },
+        "responses": {
+          "202": {
+            "description": "Recording verification accepted",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingRecording"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/recordings/{recordingId}": {
+      "get": {
+        "tags": [
+          "P1R-Recording"
+        ],
+        "summary": "Read owner-bound recording metadata without audio bytes or URL",
+        "operationId": "getSpeakingRecording",
+        "x-p1r-media-compatibility": {
+          "mode": "CONVERGED_IN_PLACE",
+          "legacyOperationId": "getB3SpeakingRecording",
+          "historicalAuthority": false
+        },
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Speaking recording metadata",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingRecording"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "P1R-Recording"
+        ],
+        "summary": "Request owner recording deletion subject to legal hold and retention policy",
+        "operationId": "deleteSpeakingRecording",
+        "x-p1r-media-compatibility": {
+          "mode": "CONVERGED_IN_PLACE",
+          "legacyOperationId": "deleteB3SpeakingRecording",
+          "historicalAuthority": false
+        },
+        "x-contract": {
+          "owner": "media-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "x-idempotency": {
+          "required": true,
+          "strategy": "speaking-recording-delete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the existing delete, hold, purge or failure receipt for the same recording and request digest"
+        },
+        "responses": {
+          "202": {
+            "description": "Deletion request accepted or existing state returned",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingRecordingDeleteReceipt"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/shadowing/sessions": {
+      "post": {
+        "tags": [
+          "P1R-Shadowing"
+        ],
+        "summary": "Create a server-owned 500 ms Phase 1 shadowing session",
+        "operationId": "createSpeakingShadowingSession",
+        "x-p1r-media-compatibility": {
+          "mode": "CONVERGED_IN_PLACE",
+          "legacyOperationId": "createB3ShadowingSession",
+          "historicalAuthority": false
+        },
+        "x-contract": {
+          "owner": "assessment-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeakingShadowingSessionCreateRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "speaking-shadowing-session",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first session for the same subject, source segment and request digest"
+        },
+        "responses": {
+          "201": {
+            "description": "Shadowing session created",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingShadowingSession"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress": {
+      "post": {
+        "tags": [
+          "P1R-Shadowing"
+        ],
+        "summary": "Record non-authoritative learner progress and self-rating",
+        "operationId": "recordSpeakingShadowingProgress",
+        "x-p1r-media-compatibility": {
+          "mode": "CONVERGED_IN_PLACE",
+          "legacyOperationId": "updateB3ShadowingProgress",
+          "historicalAuthority": false
+        },
+        "x-contract": {
+          "owner": "assessment-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shadowingSessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeakingShadowingProgressRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "speaking-shadowing-progress",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first state transition for the same session version and request digest"
+        },
+        "responses": {
+          "200": {
+            "description": "Shadowing progress recorded",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingShadowingSession"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete": {
+      "post": {
+        "tags": [
+          "P1R-Shadowing"
+        ],
+        "summary": "Complete a rule-based assessment-owned shadowing attempt",
+        "operationId": "completeSpeakingShadowingSession",
+        "x-contract": {
+          "owner": "assessment-service",
+          "phase": "P1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shadowingSessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyRequired"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpeakingShadowingCompletionRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "speaking-shadowing-completion",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return the first assessment receipt for the same session version and request digest"
+        },
+        "responses": {
+          "200": {
+            "description": "Shadowing completion receipt",
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SpeakingShadowingCompletionReceipt"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/MediaGone"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "429": {
+            "$ref": "#/components/responses/ApiRateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MediaExpectedObject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mimeType",
+          "sha256",
+          "sizeBytes",
+          "durationMs"
+        ],
+        "properties": {
+          "mimeType": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "description": "Client declaration only. Provider/worker verification remains authoritative."
+      },
+      "MediaUploadIntentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "purpose",
+          "mediaKind",
+          "sourceContentVersionId",
+          "sourceSegmentId",
+          "expectedObject"
+        ],
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "CONTENT_SOURCE",
+              "OFFICIAL_SUBTITLE_ARTIFACT"
+            ]
+          },
+          "mediaKind": {
+            "type": "string",
+            "enum": [
+              "AUDIO",
+              "VIDEO",
+              "IMAGE",
+              "SUBTITLE"
+            ]
+          },
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "expectedObject": {
+            "$ref": "#/components/schemas/MediaExpectedObject"
+          }
+        },
+        "x-server-derived-authority": [
+          "tenant",
+          "subject",
+          "owner",
+          "rights",
+          "assetVersion",
+          "objectVerification"
+        ],
+        "x-client-declaration-trust": "NON_AUTHORITATIVE"
+      },
+      "MediaUploadBinding": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uploadIntentId",
+          "assetId",
+          "assetVersion",
+          "tenantRef",
+          "subjectRef",
+          "expiresAt"
+        ],
+        "properties": {
+          "uploadIntentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tenantRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "subjectRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MediaUploadGrant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "url",
+          "expiresAt",
+          "singleUse",
+          "binding"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "singleUse": {
+            "type": "boolean",
+            "const": true
+          },
+          "binding": {
+            "$ref": "#/components/schemas/MediaUploadBinding"
+          }
+        },
+        "x-sensitive-transient-value": true,
+        "x-forbidden-sinks": [
+          "event",
+          "log",
+          "telemetry",
+          "ordinary-audit"
+        ]
+      },
+      "MediaUploadIntent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uploadIntentId",
+          "assetId",
+          "status",
+          "uploadGrant",
+          "quotaPolicyRef",
+          "quotaPolicyVersion",
+          "expiresAt"
+        ],
+        "properties": {
+          "uploadIntentId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "INTENT_CREATED"
+            ]
+          },
+          "uploadGrant": {
+            "$ref": "#/components/schemas/MediaUploadGrant"
+          },
+          "quotaPolicyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "quotaPolicyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MediaUploadIntentCompleteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "completionRef"
+        ],
+        "properties": {
+          "completionRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "description": "Opaque provider completion reference. Client object facts are not authoritative."
+      },
+      "MediaUploadIntentCompletion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "assetId",
+          "assetVersion",
+          "status",
+          "auditId"
+        ],
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VERIFYING",
+              "QUEUED"
+            ]
+          },
+          "auditId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "MediaProcessingTask": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "taskVersion",
+          "taskType",
+          "assetId",
+          "assetVersion",
+          "attempt",
+          "dedupeKey",
+          "nextAttemptAt",
+          "failureClass",
+          "status",
+          "auditId"
+        ],
+        "properties": {
+          "taskId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "taskVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "taskType": {
+            "type": "string",
+            "enum": [
+              "UPLOAD_VERIFY",
+              "MALWARE_SCAN",
+              "TRANSCODE",
+              "RENDITION",
+              "SUBTITLE_INGEST",
+              "DELETE_OBJECT"
+            ]
+          },
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+        "nextAttemptAt": {
+          "type": "string",
+          "format": "date-time",
+          "nullable": true
+        },
+          "failureClass": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "TRANSIENT",
+              "CHECKSUM_MISMATCH",
+              "MIME_DISALLOWED",
+              "SIZE_EXCEEDED",
+              "QUOTA_EXCEEDED",
+              "MALWARE_INFECTED",
+              "CONSENT_WITHDRAWN",
+              "RIGHTS_REVOKED",
+              "DELETE_REQUESTED",
+              "STALE_CALLBACK",
+              "UNKNOWN"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSING",
+              "RETRY_WAIT",
+              "SUCCEEDED",
+              "FAILED",
+              "QUARANTINED",
+              "CANCELLED",
+              "DLQ_PENDING",
+              "RECOVERY_REQUIRED"
+            ]
+          },
+          "auditId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "x-stale-callback-rule": "COMPARE_AND_SET_ASSET_VERSION_AND_TASK_VERSION",
+        "x-retry-policy": {
+          "sourceTask": "P1R-M1-007",
+          "onlyFailureClass": "TRANSIENT",
+          "maxAttempts": 5,
+          "backoff": "EXPONENTIAL_WITH_JITTER",
+          "minimumDelaySeconds": 1,
+          "maximumDelaySeconds": 60,
+          "unknownFailure": "FAIL_CLOSED",
+          "exhausted": "WORKFLOW_OWNED_DLQ_AND_MANUAL_RECOVERY",
+          "clientMayClassifyOrOverride": false
+        }
+      },
+      "MediaProcessingTaskRetryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedTaskVersion"
+        ],
+        "properties": {
+          "expectedTaskVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "MediaIntegrity": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "objectVersion",
+          "sha256",
+          "sizeBytes",
+          "magicMimeType",
+          "durationMs",
+          "verificationStatus"
+        ],
+        "properties": {
+          "objectVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "magicMimeType": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "durationMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "verificationStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "VERIFIED",
+              "FAILED"
+            ]
+          }
+        },
+        "x-authority": "VERIFIED_PROVIDER_OR_WORKER_ONLY"
+      },
+      "MediaAsset": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "assetVersion",
+          "kind",
+          "status",
+          "integrity",
+          "malwareStatus",
+          "processingStatus",
+          "sourceContentVersionId",
+          "rightsState"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "AUDIO",
+              "VIDEO",
+              "IMAGE",
+              "SUBTITLE",
+              "RECORDING"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VERIFYING",
+              "QUEUED",
+              "PROCESSING",
+              "READY",
+              "FAILED",
+              "QUARANTINED",
+              "REVOKED",
+              "DELETE_REQUESTED",
+              "HOLD_BLOCKED",
+              "PURGE_PENDING",
+              "DELETED",
+              "PURGE_FAILED"
+            ]
+          },
+          "integrity": {
+            "$ref": "#/components/schemas/MediaIntegrity"
+          },
+          "malwareStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "INFECTED",
+              "ERROR"
+            ]
+          },
+          "processingStatus": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "QUEUED",
+              "PROCESSING",
+              "READY",
+              "FAILED",
+              "QUARANTINED",
+              "CANCELLED"
+            ]
+          },
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rightsState": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "EXPIRED",
+              "REVOKED",
+              "UNKNOWN_DENY"
+            ]
+          }
+        },
+        "x-p1r-media-malware-gate": {
+          "readyRequires": "CLEAN",
+          "deliveryRequires": "CLEAN",
+          "nonCleanDecision": "DENY"
+        }
+      },
+      "MediaRendition": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "renditionId",
+          "assetVersion",
+          "sourceChecksumSha256",
+          "outputChecksumSha256",
+          "objectVersion",
+          "mimeType",
+          "sizeBytes",
+          "status",
+          "failureClass"
+        ],
+        "properties": {
+          "renditionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sourceChecksumSha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "outputChecksumSha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "objectVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "mimeType": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "sizeBytes": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSING",
+              "READY",
+              "FAILED",
+              "QUARANTINED",
+              "REVOKED"
+            ]
+          },
+          "failureClass": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "TRANSIENT",
+              "CHECKSUM_MISMATCH",
+              "MIME_DISALLOWED",
+              "MALWARE_INFECTED",
+              "RIGHTS_REVOKED",
+              "UNKNOWN"
+            ]
+          }
+        }
+      },
+      "MediaSubtitleTrack": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subtitleTrackId",
+          "contentVersionId",
+          "rightsState",
+          "artifactVersion",
+          "language",
+          "status"
+        ],
+        "properties": {
+          "subtitleTrackId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "contentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "rightsState": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "EXPIRED",
+              "REVOKED",
+              "UNKNOWN_DENY"
+            ]
+          },
+          "artifactVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 32
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSING",
+              "READY",
+              "FAILED",
+              "REVOKED"
+            ]
+          }
+        },
+        "description": "Artifact metadata only. Official subtitle text and review remain content-service facts.",
+        "x-personal-recording-transcript": "PROHIBITED"
+      },
+      "MediaPlaybackCapability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "minimumRate",
+          "maximumRate",
+          "continuous",
+          "presets",
+          "pitchPreservationRequired",
+          "timelineUnit",
+          "fallback"
+        ],
+        "properties": {
+          "minimumRate": {
+            "type": "number",
+            "const": 0.5
+          },
+          "maximumRate": {
+            "type": "number",
+            "const": 2
+          },
+          "continuous": {
+            "type": "boolean",
+            "const": true
+          },
+          "presets": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": {
+              "type": "number",
+              "enum": [
+                0.5,
+                0.75,
+                1,
+                1.25,
+                1.5,
+                2
+              ]
+            },
+            "x-exact-values": [
+              0.5,
+              0.75,
+              1,
+              1.25,
+              1.5,
+              2
+            ]
+          },
+          "pitchPreservationRequired": {
+            "type": "boolean",
+            "const": true
+          },
+          "timelineUnit": {
+            "type": "string",
+            "const": "MILLISECONDS"
+          },
+          "fallback": {
+            "type": "string",
+            "const": "EXPLICIT_DISABLE_OR_UNSUPPORTED"
+          }
+        },
+        "x-client-claim-is-evidence": false
+      },
+      "MediaFallbackAlternative": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "availability",
+          "reasonCode"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "TEXT_ALTERNATIVE",
+              "PRACTICE_ALTERNATIVE"
+            ]
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "UNAVAILABLE"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "OFFICIAL_SUBTITLE_MISSING",
+              "RIGHTS_UNAVAILABLE",
+              "MEDIA_UNAVAILABLE",
+              "DEVICE_UNSUPPORTED",
+              "MICROPHONE_DENIED"
+            ]
+          },
+          "contentRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "availability": {
+                "enum": [
+                  "AVAILABLE"
+                ]
+              },
+              "reasonCode": {
+                "enum": [
+                  "NONE"
+                ]
+              }
+            },
+            "required": [
+              "contentRef"
+            ]
+          },
+          {
+            "properties": {
+              "availability": {
+                "enum": [
+                  "UNAVAILABLE"
+                ]
+              },
+              "reasonCode": {
+                "enum": [
+                  "OFFICIAL_SUBTITLE_MISSING",
+                  "RIGHTS_UNAVAILABLE",
+                  "MEDIA_UNAVAILABLE",
+                  "DEVICE_UNSUPPORTED",
+                  "MICROPHONE_DENIED"
+                ]
+              }
+            }
+          }
+        ],
+        "x-availability-rule": "AVAILABLE requires an opaque contentRef and reasonCode=NONE; UNAVAILABLE requires a non-NONE reasonCode."
+      },
+      "MediaManifest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "assetVersion",
+          "sourceContentVersionId",
+          "integrity",
+          "malwareStatus",
+          "renditions",
+          "subtitleTracks",
+          "fallbackAlternatives",
+          "playbackCapabilities",
+          "status"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "integrity": {
+            "$ref": "#/components/schemas/MediaIntegrity"
+          },
+          "malwareStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "INFECTED",
+              "ERROR"
+            ]
+          },
+          "renditions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaRendition"
+            }
+          },
+          "subtitleTracks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MediaSubtitleTrack"
+            }
+          },
+          "fallbackAlternatives": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/MediaFallbackAlternative"
+            },
+            "allOf": [
+              {
+                "not": {
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "TEXT_ALTERNATIVE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                }
+              },
+              {
+                "not": {
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "PRACTICE_ALTERNATIVE"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "kind"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "playbackCapabilities": {
+            "$ref": "#/components/schemas/MediaPlaybackCapability"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PROCESSING",
+              "READY",
+              "FAILED",
+              "QUARANTINED",
+              "REVOKED"
+            ]
+          }
+        },
+        "x-metadata-only": true,
+        "x-p1r-media-malware-gate": {
+          "readyRequires": "CLEAN",
+          "deliveryRequires": "CLEAN",
+          "nonCleanDecision": "DENY"
+        },
+        "x-p1r-media-fallback-alternatives": {
+          "requiredKinds": [
+            "TEXT_ALTERNATIVE",
+            "PRACTICE_ALTERNATIVE"
+          ],
+          "uniqueKinds": true,
+          "unavailableRequiresReason": true
+        }
+      },
+      "MediaSignedAccessRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "channel",
+          "range"
+        ],
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "STREAM",
+              "OFFLINE_DOWNLOAD",
+              "SUBTITLE",
+              "RECORDING"
+            ]
+          },
+          "range": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "x-server-derived-authority": [
+          "tenant",
+          "subject",
+          "owner",
+          "assetVersion",
+          "expiry",
+          "revocationVersion",
+          "rights",
+          "consent"
+        ]
+      },
+      "MediaAccessBinding": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assetId",
+          "assetVersion",
+          "tenantRef",
+          "subjectRef",
+          "channel",
+          "range",
+          "expiry",
+          "revocationVersion"
+        ],
+        "properties": {
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tenantRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "subjectRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "STREAM",
+              "OFFLINE_DOWNLOAD",
+              "SUBTITLE",
+              "RECORDING"
+            ]
+          },
+          "range": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "expiry": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revocationVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "MediaSignedAccessGrant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "url",
+          "expiresAt",
+          "binding",
+          "revocationVersion"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "binding": {
+            "$ref": "#/components/schemas/MediaAccessBinding"
+          },
+          "revocationVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-sensitive-transient-value": true,
+        "x-forbidden-sinks": [
+          "event",
+          "log",
+          "telemetry",
+          "ordinary-audit"
+        ]
+      },
+      "SpeakingRecordingUploadIntentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "purpose",
+          "sourceContentVersionId",
+          "sourceSegmentId",
+          "expectedObject"
+        ],
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "const": "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"
+          },
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "shadowingSessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedObject": {
+            "$ref": "#/components/schemas/MediaExpectedObject"
+          }
+        },
+        "x-required-consent-type": "VOICE_RECORDING",
+        "x-server-derived-authority": [
+          "adultGate",
+          "consent",
+          "tenant",
+          "subject",
+          "owner",
+          "rights"
+        ]
+      },
+      "SpeakingRecordingUploadIntent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordingId",
+          "status",
+          "uploadIntent",
+          "retentionPolicyRef",
+          "retentionPolicyVersion"
+        ],
+        "properties": {
+          "recordingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "UPLOAD_PENDING"
+            ]
+          },
+          "uploadIntent": {
+            "$ref": "#/components/schemas/MediaUploadIntent"
+          },
+          "retentionPolicyRef": {
+            "type": "string",
+            "const": "P1R-M1-017"
+          },
+          "retentionPolicyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "x-exact-retention-days-frozen": false
+      },
+      "SpeakingRecordingCompleteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "completionRef"
+        ],
+        "properties": {
+          "completionRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          }
+        },
+        "description": "Opaque completion reference; client integrity, malware and AI claims are prohibited."
+      },
+      "SpeakingRecording": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordingId",
+          "assetId",
+          "status",
+          "malwareStatus",
+          "sourceContentVersionId",
+          "sourceSegmentId",
+          "retentionPolicyRef",
+          "retentionPolicyVersion",
+          "legalHoldState"
+        ],
+        "properties": {
+          "recordingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "VERIFYING",
+              "PROCESSING",
+              "REMOTE_READY",
+              "FAILED",
+              "QUARANTINED",
+              "DELETE_REQUESTED",
+              "HOLD_BLOCKED",
+              "PURGE_PENDING",
+              "DELETED",
+              "PURGE_FAILED"
+            ]
+          },
+          "malwareStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "INFECTED",
+              "ERROR"
+            ]
+          },
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "retentionPolicyRef": {
+            "type": "string",
+            "const": "P1R-M1-017"
+          },
+          "retentionPolicyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "legalHoldState": {
+            "type": "string",
+            "enum": [
+              "NOT_CHECKED_DENY",
+              "CLEAR",
+              "HELD"
+            ]
+          }
+        },
+        "x-personal-recording-replay-on-source-rights-revoked": "DENY",
+        "x-p1r-media-malware-gate": {
+          "readyRequires": "CLEAN",
+          "deliveryRequires": "CLEAN",
+          "nonCleanDecision": "DENY"
+        },
+        "x-ai-transcript": "PROHIBITED"
+      },
+      "SpeakingRecordingDeleteReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recordingId",
+          "status",
+          "deleteRequestId",
+          "legalHoldState",
+          "retentionPolicyRef",
+          "retentionPolicyVersion",
+          "auditId"
+        ],
+        "properties": {
+          "recordingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DELETE_REQUESTED",
+              "HOLD_BLOCKED",
+              "PURGE_PENDING",
+              "DELETED",
+              "PURGE_FAILED"
+            ]
+          },
+          "deleteRequestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "legalHoldState": {
+            "type": "string",
+            "enum": [
+              "NOT_CHECKED_DENY",
+              "CLEAR",
+              "HELD"
+            ]
+          },
+          "retentionPolicyRef": {
+            "type": "string",
+            "const": "P1R-M1-017"
+          },
+          "retentionPolicyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "purgeReceiptRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "auditId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "DELETED"
+                ]
+              },
+              "purgeReceiptRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              }
+            },
+            "required": [
+              "purgeReceiptRef"
+            ]
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "HOLD_BLOCKED"
+                ]
+              }
+            },
+            "not": {
+              "required": [
+                "purgeReceiptRef"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "PURGE_FAILED"
+                ]
+              }
+            },
+            "not": {
+              "required": [
+                "purgeReceiptRef"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "DELETE_REQUESTED",
+                  "PURGE_PENDING"
+                ]
+              }
+            },
+            "not": {
+              "required": [
+                "purgeReceiptRef"
+              ]
+            }
+          }
+        ],
+        "x-owner-receipt-rule": "purgeReceiptRef is required only after owner-confirmed DELETED; all non-deleted states forbid purge success."
+      },
+      "SpeakingShadowingSessionCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sourceContentVersionId",
+          "sourceSegmentId"
+        ],
+        "properties": {
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "x-server-derived": [
+          "targetGapMs",
+          "tenant",
+          "subject",
+          "owner",
+          "attemptRef"
+        ]
+      },
+      "SpeakingShadowingSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "status",
+          "sourceContentVersionId",
+          "sourceSegmentId",
+          "targetGapMs",
+          "attemptRef"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "COMPLETED",
+              "ABANDONED",
+              "RECOVERY_REQUIRED"
+            ]
+          },
+          "sourceContentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceSegmentId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "targetGapMs": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 500
+          },
+          "attemptRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      },
+      "SpeakingShadowingProgressRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "progressMs",
+          "expectedSessionVersion"
+        ],
+        "properties": {
+          "progressMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recordingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "selfRating": {
+            "type": "string",
+            "enum": [
+              "NEEDS_PRACTICE",
+              "OK",
+              "CONFIDENT"
+            ]
+          },
+          "expectedSessionVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-client-result-authority": false
+      },
+      "SpeakingShadowingCompletionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedSessionVersion"
+        ],
+        "properties": {
+          "recordingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "selfRating": {
+            "type": "string",
+            "enum": [
+              "NEEDS_PRACTICE",
+              "OK",
+              "CONFIDENT"
+            ]
+          },
+          "expectedSessionVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-client-result-authority": false
+      },
+      "SpeakingShadowingCompletionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "attemptId",
+          "status",
+          "recordingRef",
+          "feedbackKind",
+          "aiScoringAvailable"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "attemptId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETED",
+              "RECOVERY_REQUIRED"
+            ]
+          },
+        "recordingRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "nullable": true,
+          "description": "Null when microphone permission was denied and the learner completed silent practice."
+        },
+          "feedbackKind": {
+            "type": "string",
+            "const": "RULE_BASED_SELF_RATING"
+          },
+          "aiScoringAvailable": {
+            "type": "boolean",
+            "const": false
+          }
+        },
+        "x-learning-write": "PROHIBITED",
+        "x-trusted-result-owner": "assessment-service"
+      },
+      "MediaPublishEligibility": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentVersionId",
+          "assetId",
+          "assetVersion",
+          "mediaStatus",
+          "malwareStatus",
+          "rightsState",
+          "subtitleEligibility",
+          "decision",
+          "policyVersion",
+          "decisionRef",
+          "evaluatedAt",
+          "scheduleDueAt",
+          "recheckRequired"
+        ],
+        "properties": {
+          "contentVersionId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "mediaStatus": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "NOT_READY"
+            ]
+          },
+          "malwareStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "INFECTED",
+              "ERROR"
+            ]
+          },
+          "rightsState": {
+            "type": "string",
+            "enum": [
+              "VALID",
+              "EXPIRED",
+              "REVOKED",
+              "UNKNOWN_DENY"
+            ]
+          },
+          "subtitleEligibility": {
+            "type": "string",
+            "enum": [
+              "OFFICIAL_SUBTITLE_READY",
+              "TEXT_ALTERNATIVE_READY",
+              "MISSING",
+              "STALE",
+              "REVOKED"
+            ]
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "DENY"
+            ],
+            "readOnly": true
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "readOnly": true
+          },
+          "decisionRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "readOnly": true
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "scheduleDueAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "readOnly": true
+          },
+          "recheckRequired": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "decision": {
+                "const": "ALLOW"
+              },
+              "mediaStatus": {
+                "const": "READY"
+              },
+              "malwareStatus": {
+                "const": "CLEAN"
+              },
+              "rightsState": {
+                "const": "VALID"
+              },
+              "subtitleEligibility": {
+                "enum": [
+                  "OFFICIAL_SUBTITLE_READY",
+                  "TEXT_ALTERNATIVE_READY"
+                ]
+              },
+              "recheckRequired": {
+                "const": true
+              }
+            }
+          },
+          {
+            "properties": {
+              "decision": {
+                "const": "DENY"
+              }
+            }
+          }
+        ],
+        "x-p1r-media-publish-eligibility": {
+          "missingStaleOrRevoked": "DENY",
+          "scheduleDueTimeRecheck": true,
+          "serverDerivedFields": [
+            "decision",
+            "decisionRef",
+            "policyVersion",
+            "evaluatedAt",
+            "scheduleDueAt",
+            "recheckRequired"
+          ]
+        },
+        "x-client-facts-authoritative": false
+      }
+    },
+    "responses": {
+      "MediaGone": {
+        "description": "The resource, consent, rights, grant or recording is no longer available",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/XRequestId"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/XTraceId"
+          },
+          "X-API-Version": {
+            "$ref": "#/components/headers/XApiVersion"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApiErrorEnvelope"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -41,8 +41,8 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.summary, {
     routeRuleCount: 53,
-    publicOperationCount: 327,
-    coveredPublicOperationCount: 327,
+    publicOperationCount: 335,
+    coveredPublicOperationCount: 335,
     publicCoverageErrorCount: 0,
     internalOperationCount: 51,
     externalDeniedInternalOperationCount: 51,

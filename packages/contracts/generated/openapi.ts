@@ -1215,12 +1215,12 @@ export type B8AdultGateResponse = { status: "PASSED" | "REJECTED" | "NOT_EVALUAT
 /**
  * Generated from the contract source.
  */
-export type B8Consent = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; decidedAt: string; purpose?: "ACCOUNT_TERMS" | "PRIVACY_NOTICE" | "ADULT_LEARNING_ELIGIBILITY" | "PRODUCT_ANALYTICS"; required?: boolean; document?: B8ConsentDocument; state?: "GRANTED" | "WITHDRAWN"; effectiveAt?: string; restrictionEffect?: "NO_RESTRICTION" | "RESTRICT_PROTECTED_CAPABILITY" | "RESTRICT_ALL_LEARNING_ACCESS"; revalidation?: B8RevalidationRequirement; withdrawalEffect?: B8ConsentWithdrawalEffect; provenance?: B8ConsentProvenance; };
+export type B8Consent = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS" | "VOICE_RECORDING"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; decidedAt: string; purpose: "ACCOUNT_TERMS" | "PRIVACY_NOTICE" | "ADULT_LEARNING_ELIGIBILITY" | "PRODUCT_ANALYTICS" | "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"; required: boolean; document: B8ConsentDocument; state: "GRANTED" | "WITHDRAWN"; effectiveAt: string; restrictionEffect: "NO_RESTRICTION" | "RESTRICT_PROTECTED_CAPABILITY" | "RESTRICT_ALL_LEARNING_ACCESS"; revalidation: B8RevalidationRequirement; withdrawalEffect: B8ConsentWithdrawalEffect; provenance: B8ConsentProvenance; policyRef: string; policyVersion: string; decisionRef: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B8ConsentState = { required?: boolean; accepted?: boolean; version?: string; learningAccess?: "ELIGIBLE" | "RESTRICTED"; requiredPurposes?: ReadonlyArray<string>; unsatisfiedPurposes?: ReadonlyArray<string>; evaluatedAt?: string; policyVersion?: string; revalidation?: B8RevalidationRequirement; provenance?: B8ConsentProvenance; };
+export type B8ConsentState = { required?: boolean; accepted?: boolean; version?: string; learningAccess?: "ELIGIBLE" | "RESTRICTED"; requiredPurposes?: ReadonlyArray<"ACCOUNT_TERMS" | "PRIVACY_NOTICE" | "ADULT_LEARNING_ELIGIBILITY" | "PRODUCT_ANALYTICS" | "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY">; unsatisfiedPurposes?: ReadonlyArray<"ACCOUNT_TERMS" | "PRIVACY_NOTICE" | "ADULT_LEARNING_ELIGIBILITY" | "PRODUCT_ANALYTICS" | "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY">; evaluatedAt?: string; policyVersion?: string; revalidation?: B8RevalidationRequirement; provenance?: B8ConsentProvenance; };
 
 /**
  * Generated from the contract source.
@@ -1230,7 +1230,7 @@ export type B8ConsentListResponse = { items: ReadonlyArray<B8Consent>; };
 /**
  * Generated from the contract source.
  */
-export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; expectedDocumentDigest?: string; };
+export type B8ConsentUpdateRequest = { type: "TERMS" | "PRIVACY" | "ADULT_LEARNING" | "PRODUCT_ANALYTICS" | "VOICE_RECORDING"; version: string; decision: "ACCEPTED" | "WITHDRAWN"; expectedDocumentDigest?: string; };
 
 /**
  * Generated from the contract source.
@@ -2747,6 +2747,156 @@ export type B9EvidenceVersion = number;
  */
 export type B10ActiveSessionAttemptPin = ({ contentCode: B10ContentCode; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; status: "AVAILABLE" | "UNAVAILABLE"; pinnedAt: B10DateTime; reasonCode?: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; alternativeAction?: "RETURN_TO_CATALOG" | "SELECT_ALTERNATIVE_TASK" | "CONTACT_SUPPORT"; alternativeContentVersionId?: B10Int64Id; }) & ({ reasonCode?: never; alternativeAction?: never; alternativeContentVersionId?: never; status: "AVAILABLE"; } | { reasonCode: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; alternativeAction: "RETURN_TO_CATALOG" | "SELECT_ALTERNATIVE_TASK" | "CONTACT_SUPPORT"; status: "UNAVAILABLE"; });
 
+/**
+ * Client declaration only. Provider/worker verification remains authoritative.
+ */
+export type MediaExpectedObject = { mimeType: string; sha256: string; sizeBytes: number; durationMs: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaUploadIntentRequest = { purpose: "CONTENT_SOURCE" | "OFFICIAL_SUBTITLE_ARTIFACT"; mediaKind: "AUDIO" | "VIDEO" | "IMAGE" | "SUBTITLE"; sourceContentVersionId: string; sourceSegmentId: string; expectedObject: MediaExpectedObject; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaUploadBinding = { uploadIntentId: string; assetId: string; assetVersion: number; tenantRef: string; subjectRef: string; expiresAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaUploadGrant = { url: string; expiresAt: string; singleUse: true; binding: MediaUploadBinding; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaUploadIntent = { uploadIntentId: string; assetId: string; status: "INTENT_CREATED"; uploadGrant: MediaUploadGrant; quotaPolicyRef: string; quotaPolicyVersion: string; expiresAt: string; };
+
+/**
+ * Opaque provider completion reference. Client object facts are not authoritative.
+ */
+export type MediaUploadIntentCompleteRequest = { completionRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaUploadIntentCompletion = { taskId: string; assetId: string; assetVersion: number; status: "VERIFYING" | "QUEUED"; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaProcessingTask = { taskId: string; taskVersion: number; taskType: "UPLOAD_VERIFY" | "MALWARE_SCAN" | "TRANSCODE" | "RENDITION" | "SUBTITLE_INGEST" | "DELETE_OBJECT"; assetId: string; assetVersion: number; attempt: number; dedupeKey: string; nextAttemptAt: string | null; failureClass: "NONE" | "TRANSIENT" | "CHECKSUM_MISMATCH" | "MIME_DISALLOWED" | "SIZE_EXCEEDED" | "QUOTA_EXCEEDED" | "MALWARE_INFECTED" | "CONSENT_WITHDRAWN" | "RIGHTS_REVOKED" | "DELETE_REQUESTED" | "STALE_CALLBACK" | "UNKNOWN"; status: "QUEUED" | "PROCESSING" | "RETRY_WAIT" | "SUCCEEDED" | "FAILED" | "QUARANTINED" | "CANCELLED" | "DLQ_PENDING" | "RECOVERY_REQUIRED"; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaProcessingTaskRetryRequest = { expectedTaskVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaIntegrity = { objectVersion: string; sha256: string; sizeBytes: number; magicMimeType: string; durationMs: number; verificationStatus: "PENDING" | "VERIFIED" | "FAILED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaAsset = { assetId: string; assetVersion: number; kind: "AUDIO" | "VIDEO" | "IMAGE" | "SUBTITLE" | "RECORDING"; status: "VERIFYING" | "QUEUED" | "PROCESSING" | "READY" | "FAILED" | "QUARANTINED" | "REVOKED" | "DELETE_REQUESTED" | "HOLD_BLOCKED" | "PURGE_PENDING" | "DELETED" | "PURGE_FAILED"; integrity: MediaIntegrity; malwareStatus: "PENDING" | "CLEAN" | "INFECTED" | "ERROR"; processingStatus: "NOT_STARTED" | "QUEUED" | "PROCESSING" | "READY" | "FAILED" | "QUARANTINED" | "CANCELLED"; sourceContentVersionId: string; rightsState: "VALID" | "EXPIRED" | "REVOKED" | "UNKNOWN_DENY"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaRendition = { renditionId: string; assetVersion: number; sourceChecksumSha256: string; outputChecksumSha256: string; objectVersion: string; mimeType: string; sizeBytes: number; status: "QUEUED" | "PROCESSING" | "READY" | "FAILED" | "QUARANTINED" | "REVOKED"; failureClass: "NONE" | "TRANSIENT" | "CHECKSUM_MISMATCH" | "MIME_DISALLOWED" | "MALWARE_INFECTED" | "RIGHTS_REVOKED" | "UNKNOWN"; };
+
+/**
+ * Artifact metadata only. Official subtitle text and review remain content-service facts.
+ */
+export type MediaSubtitleTrack = { subtitleTrackId: string; contentVersionId: string; rightsState: "VALID" | "EXPIRED" | "REVOKED" | "UNKNOWN_DENY"; artifactVersion: number; language: string; status: "QUEUED" | "PROCESSING" | "READY" | "FAILED" | "REVOKED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaPlaybackCapability = { minimumRate: 0.5; maximumRate: 2; continuous: true; presets: ReadonlyArray<0.5 | 0.75 | 1 | 1.25 | 1.5 | 2>; pitchPreservationRequired: true; timelineUnit: "MILLISECONDS"; fallback: "EXPLICIT_DISABLE_OR_UNSUPPORTED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaManifest = { assetId: string; assetVersion: number; sourceContentVersionId: string; integrity: MediaIntegrity; malwareStatus: "PENDING" | "CLEAN" | "INFECTED" | "ERROR"; renditions: ReadonlyArray<MediaRendition>; subtitleTracks: ReadonlyArray<MediaSubtitleTrack>; fallbackAlternatives: ReadonlyArray<MediaFallbackAlternative>; playbackCapabilities: MediaPlaybackCapability; status: "PROCESSING" | "READY" | "FAILED" | "QUARANTINED" | "REVOKED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaSignedAccessRequest = { channel: "STREAM" | "OFFLINE_DOWNLOAD" | "SUBTITLE" | "RECORDING"; range: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaAccessBinding = { assetId: string; assetVersion: number; tenantRef: string; subjectRef: string; channel: "STREAM" | "OFFLINE_DOWNLOAD" | "SUBTITLE" | "RECORDING"; range: string; expiry: string; revocationVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaSignedAccessGrant = { url: string; expiresAt: string; binding: MediaAccessBinding; revocationVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingRecordingUploadIntentRequest = { purpose: "ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"; sourceContentVersionId: string; sourceSegmentId: string; shadowingSessionId?: string; expectedObject: MediaExpectedObject; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingRecordingUploadIntent = { recordingId: string; status: "UPLOAD_PENDING"; uploadIntent: MediaUploadIntent; retentionPolicyRef: "P1R-M1-017"; retentionPolicyVersion: string; };
+
+/**
+ * Opaque completion reference; client integrity, malware and AI claims are prohibited.
+ */
+export type SpeakingRecordingCompleteRequest = { completionRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingRecording = { recordingId: string; assetId: string; status: "VERIFYING" | "PROCESSING" | "REMOTE_READY" | "FAILED" | "QUARANTINED" | "DELETE_REQUESTED" | "HOLD_BLOCKED" | "PURGE_PENDING" | "DELETED" | "PURGE_FAILED"; malwareStatus: "PENDING" | "CLEAN" | "INFECTED" | "ERROR"; sourceContentVersionId: string; sourceSegmentId: string; retentionPolicyRef: "P1R-M1-017"; retentionPolicyVersion: string; legalHoldState: "NOT_CHECKED_DENY" | "CLEAR" | "HELD"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingRecordingDeleteReceipt = ({ recordingId: string; status: "DELETE_REQUESTED" | "HOLD_BLOCKED" | "PURGE_PENDING" | "DELETED" | "PURGE_FAILED"; deleteRequestId: string; legalHoldState: "NOT_CHECKED_DENY" | "CLEAR" | "HELD"; retentionPolicyRef: "P1R-M1-017"; retentionPolicyVersion: string; purgeReceiptRef?: string; auditId: string; }) & ({ status: "DELETED"; purgeReceiptRef: string; } | { purgeReceiptRef?: never; status: "HOLD_BLOCKED"; } | { purgeReceiptRef?: never; status: "PURGE_FAILED"; } | { purgeReceiptRef?: never; status: "DELETE_REQUESTED" | "PURGE_PENDING"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingShadowingSessionCreateRequest = { sourceContentVersionId: string; sourceSegmentId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingShadowingSession = { sessionId: string; status: "ACTIVE" | "COMPLETED" | "ABANDONED" | "RECOVERY_REQUIRED"; sourceContentVersionId: string; sourceSegmentId: string; targetGapMs: number; attemptRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingShadowingProgressRequest = { progressMs: number; recordingId?: string; selfRating?: "NEEDS_PRACTICE" | "OK" | "CONFIDENT"; expectedSessionVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingShadowingCompletionRequest = { recordingId?: string; selfRating?: "NEEDS_PRACTICE" | "OK" | "CONFIDENT"; expectedSessionVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type SpeakingShadowingCompletionReceipt = { sessionId: string; attemptId: string; status: "COMPLETED" | "RECOVERY_REQUIRED"; recordingRef: string | null; feedbackKind: "RULE_BASED_SELF_RATING"; aiScoringAvailable: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaPublishEligibility = ({ contentVersionId: string; assetId: string; assetVersion: number; mediaStatus: "READY" | "NOT_READY"; malwareStatus: "PENDING" | "CLEAN" | "INFECTED" | "ERROR"; rightsState: "VALID" | "EXPIRED" | "REVOKED" | "UNKNOWN_DENY"; subtitleEligibility: "OFFICIAL_SUBTITLE_READY" | "TEXT_ALTERNATIVE_READY" | "MISSING" | "STALE" | "REVOKED"; decision: "ALLOW" | "DENY"; policyVersion: string; decisionRef: string; evaluatedAt: string; scheduleDueAt: string | null; recheckRequired: boolean; }) & ({ decision: "ALLOW"; mediaStatus: "READY"; malwareStatus: "CLEAN"; rightsState: "VALID"; subtitleEligibility: "OFFICIAL_SUBTITLE_READY" | "TEXT_ALTERNATIVE_READY"; recheckRequired: true; } | { decision: "DENY"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type MediaFallbackAlternative = ({ kind: "TEXT_ALTERNATIVE" | "PRACTICE_ALTERNATIVE"; availability: "AVAILABLE" | "UNAVAILABLE"; reasonCode: "NONE" | "OFFICIAL_SUBTITLE_MISSING" | "RIGHTS_UNAVAILABLE" | "MEDIA_UNAVAILABLE" | "DEVICE_UNSUPPORTED" | "MICROPHONE_DENIED"; contentRef?: string; }) & ({ contentRef: string; availability: "AVAILABLE"; reasonCode: "NONE"; } | { availability: "UNAVAILABLE"; reasonCode: "OFFICIAL_SUBTITLE_MISSING" | "RIGHTS_UNAVAILABLE" | "MEDIA_UNAVAILABLE" | "DEVICE_UNSUPPORTED" | "MICROPHONE_DENIED"; });
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -2880,8 +3030,8 @@ export interface ApiOperationRegistry {
   createB3SentenceMining: { method: "POST"; path: "/api/v1/reading/mining"; request: B3MiningRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   getB3PhoneticsCatalog: { method: "GET"; path: "/api/v1/phonetics/catalog"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   createB3SpeakingRecording: { method: "POST"; path: "/api/v1/speaking/recordings"; request: B3RecordingRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  getB3SpeakingRecording: { method: "GET"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  deleteB3SpeakingRecording: { method: "DELETE"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  getSpeakingRecording: { method: "GET"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: ApiSuccessEnvelope & { data: SpeakingRecording; }; idempotent: false };
+  deleteSpeakingRecording: { method: "DELETE"; path: "/api/v1/speaking/recordings/{recordingId}"; request: never; response: ApiSuccessEnvelope & { data: SpeakingRecordingDeleteReceipt; }; idempotent: true };
   submitB3SpeakingSelfRating: { method: "POST"; path: "/api/v1/speaking/recordings/{recordingId}/self-rating"; request: B3SelfRatingRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   pushB4OfflineSync: { method: "POST"; path: "/api/v1/offline/sync/push"; request: B4SyncRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   pullB4OfflineSync: { method: "GET"; path: "/api/v1/offline/sync/pull"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
@@ -2914,8 +3064,8 @@ export interface ApiOperationRegistry {
   listB3ReadingQuestions: { method: "GET"; path: "/api/v1/reading/questions"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   submitB3ReadingAttempt: { method: "POST"; path: "/api/v1/reading/attempts"; request: B3ReadingAttemptRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   listB3MinimalPairs: { method: "GET"; path: "/api/v1/phonetics/minimal-pairs"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  createB3ShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions"; request: B3ShadowingSessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  updateB3ShadowingProgress: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"; request: B3ShadowingProgressRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  createSpeakingShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions"; request: SpeakingShadowingSessionCreateRequest; response: ApiSuccessEnvelope & { data: SpeakingShadowingSession; }; idempotent: true };
+  recordSpeakingShadowingProgress: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress"; request: SpeakingShadowingProgressRequest; response: ApiSuccessEnvelope & { data: SpeakingShadowingSession; }; idempotent: true };
   createB3RoleplaySession: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions"; request: B3RoleplaySessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   submitB3RoleplayTurn: { method: "POST"; path: "/api/v1/speaking/roleplay/sessions/{roleplaySessionId}/turns"; request: B3RoleplayTurnRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   getB4Streak: { method: "GET"; path: "/api/v1/gamification/streak"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
@@ -3040,8 +3190,8 @@ export interface ApiOperationRegistry {
   listB10LearningReviewQueue: { method: "GET"; path: "/api/v1/learning/review-queue"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B10LearningQueueItem>; }; idempotent: false };
   completeB10LearningReview: { method: "POST"; path: "/api/v1/learning/review-queue/{queueItemId}/complete"; request: B10CompleteReviewRequest; response: ApiSuccessEnvelope & { data: B10MasteryProjection; }; idempotent: true };
   getB10LearningMasteryProjection: { method: "GET"; path: "/api/v1/learning/mastery/{itemId}"; request: never; response: ApiSuccessEnvelope & { data: B10MasteryProjection; }; idempotent: false };
-  getB11MediaAsset: { method: "GET"; path: "/api/v1/media/assets/{assetId}"; request: never; response: ApiSuccessEnvelope & { data: B11MediaAsset; }; idempotent: false };
-  getB11MediaManifest: { method: "GET"; path: "/api/v1/media/assets/{assetId}/manifest"; request: never; response: ApiSuccessEnvelope & { data: B11MediaManifest; }; idempotent: false };
+  getMediaAsset: { method: "GET"; path: "/api/v1/media/assets/{assetId}"; request: never; response: ApiSuccessEnvelope & { data: MediaAsset; }; idempotent: false };
+  getMediaAssetManifest: { method: "GET"; path: "/api/v1/media/assets/{assetId}/manifest"; request: never; response: ApiSuccessEnvelope & { data: MediaManifest; }; idempotent: false };
   streamB11MediaContent: { method: "GET"; path: "/api/v1/media/assets/{assetId}/content"; request: never; response: ApiSuccessEnvelope & { data: B11MediaContentRange; }; idempotent: false };
   revokeB11MediaAsset: { method: "POST"; path: "/internal/v1/media/assets/{assetId}/revoke"; request: B11MediaRevocation; response: unknown; idempotent: true };
   getB11MediaCompatibility: { method: "GET"; path: "/internal/v1/compatibility/b11/media-assets/{assetId}"; request: never; response: B11MediaCompatibility; idempotent: false };
@@ -3144,6 +3294,14 @@ export interface ApiOperationRegistry {
   getB8ActivePolicyBundle: { method: "GET"; path: "/internal/v1/iam/policy-bundles/active"; request: never; response: unknown; idempotent: false };
   evaluateB8PdpDecision: { method: "POST"; path: "/internal/v1/iam/pdp/decisions"; request: B8PdpAuthorizationDecisionRequest; response: unknown; idempotent: true };
   getB9ScheduledPublishTask: { method: "GET"; path: "/api/v1/admin/content-publish-tasks/{taskId}"; request: never; response: B9ScheduledPublishTaskResponse; idempotent: false };
+  createMediaUploadIntent: { method: "POST"; path: "/api/v1/media/upload-intents"; request: MediaUploadIntentRequest; response: ApiSuccessEnvelope & { data: MediaUploadIntent; }; idempotent: true };
+  completeMediaUploadIntent: { method: "POST"; path: "/api/v1/media/upload-intents/{uploadIntentId}/complete"; request: MediaUploadIntentCompleteRequest; response: ApiSuccessEnvelope & { data: MediaUploadIntentCompletion; }; idempotent: true };
+  getMediaProcessingTask: { method: "GET"; path: "/api/v1/media/processing-tasks/{taskId}"; request: never; response: ApiSuccessEnvelope & { data: MediaProcessingTask; }; idempotent: false };
+  retryMediaProcessingTask: { method: "POST"; path: "/api/v1/media/processing-tasks/{taskId}/retry"; request: MediaProcessingTaskRetryRequest; response: ApiSuccessEnvelope & { data: MediaProcessingTask; }; idempotent: true };
+  createMediaAssetSignedAccess: { method: "POST"; path: "/api/v1/media/assets/{assetId}/signed-access"; request: MediaSignedAccessRequest; response: ApiSuccessEnvelope & { data: MediaSignedAccessGrant; }; idempotent: true };
+  createSpeakingRecordingUploadIntent: { method: "POST"; path: "/api/v1/speaking/recordings/upload-intents"; request: SpeakingRecordingUploadIntentRequest; response: ApiSuccessEnvelope & { data: SpeakingRecordingUploadIntent; }; idempotent: true };
+  completeSpeakingRecording: { method: "POST"; path: "/api/v1/speaking/recordings/{recordingId}/complete"; request: SpeakingRecordingCompleteRequest; response: ApiSuccessEnvelope & { data: SpeakingRecording; }; idempotent: true };
+  completeSpeakingShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete"; request: SpeakingShadowingCompletionRequest; response: ApiSuccessEnvelope & { data: SpeakingShadowingCompletionReceipt; }; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

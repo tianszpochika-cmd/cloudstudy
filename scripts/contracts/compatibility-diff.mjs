@@ -169,6 +169,130 @@ const M1008_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
 const M1008_OPENAPI_APPROVED_ROOT_PROJECTIONS = Object.freeze([
   'x-p1r-gateway-boundary',
 ]);
+
+export const M1009_MEDIA_PROMOTION_ID = 'M1-009_MEDIA_CONTRACT_PROMOTION';
+export const M1009_SOURCE_CONTRACT_BASELINE_REF = 'ca282cd00dabeeb3fafbf6b4570054bd5b9f8549';
+export const M1009_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'e6a0cb64034fd8d921ef90b86e1eac20908b56e8ddee5d65ac7257dbb2320e1c';
+export const M1009_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '4c9e3b197f4ec93977af0afbd98141b30eae62d2401b5a6ce28ab7537ada90d2';
+const M1009_OPENAPI_APPROVED_PATH_PROJECTIONS = Object.freeze([
+  '/api/v1/content/media/upload-intents',
+  '/api/v1/content/media/{mediaAssetId}/complete',
+  '/api/v1/content/media/{mediaAssetId}/signed-access',
+  '/api/v1/media/assets/{assetId}',
+  '/api/v1/media/assets/{assetId}/content',
+  '/api/v1/media/assets/{assetId}/manifest',
+  '/api/v1/media/assets/{assetId}/signed-access',
+  '/api/v1/media/assets/{assetId}/signed-url',
+  '/api/v1/media/processing-tasks/{taskId}',
+  '/api/v1/media/processing-tasks/{taskId}/retry',
+  '/api/v1/media/upload-intents',
+  '/api/v1/media/upload-intents/{uploadIntentId}/complete',
+  '/api/v1/multimodal/recordings',
+  '/api/v1/speaking/recordings',
+  '/api/v1/speaking/recordings/upload-intents',
+  '/api/v1/speaking/recordings/{recordingId}',
+  '/api/v1/speaking/recordings/{recordingId}/complete',
+  '/api/v1/speaking/recordings/{recordingId}/self-rating',
+  '/api/v1/speaking/shadowing/completions',
+  '/api/v1/speaking/shadowing/sessions',
+  '/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete',
+  '/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress',
+]);
+const M1009_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
+  'B8Consent',
+  'B8ConsentState',
+  'B8ConsentUpdateRequest',
+  'MediaAccessBinding',
+  'MediaAsset',
+  'MediaExpectedObject',
+  'MediaFallbackAlternative',
+  'MediaIntegrity',
+  'MediaManifest',
+  'MediaPlaybackCapability',
+  'MediaProcessingTask',
+  'MediaProcessingTaskRetryRequest',
+  'MediaPublishEligibility',
+  'MediaRendition',
+  'MediaSignedAccessGrant',
+  'MediaSignedAccessRequest',
+  'MediaSubtitleTrack',
+  'MediaUploadBinding',
+  'MediaUploadGrant',
+  'MediaUploadIntent',
+  'MediaUploadIntentCompleteRequest',
+  'MediaUploadIntentCompletion',
+  'MediaUploadIntentRequest',
+  'SpeakingRecording',
+  'SpeakingRecordingCompleteRequest',
+  'SpeakingRecordingDeleteReceipt',
+  'SpeakingRecordingUploadIntent',
+  'SpeakingRecordingUploadIntentRequest',
+  'SpeakingShadowingCompletionReceipt',
+  'SpeakingShadowingCompletionRequest',
+  'SpeakingShadowingProgressRequest',
+  'SpeakingShadowingSession',
+  'SpeakingShadowingSessionCreateRequest',
+]);
+const M1009_OPENAPI_APPROVED_RESPONSE_PROJECTIONS = Object.freeze([
+  'MediaGone',
+]);
+const M1009_OPENAPI_APPROVED_ROOT_PROJECTIONS = Object.freeze([
+  'x-b8-iam-policy-governance',
+  'x-p1r-gateway-boundary',
+  'x-p1r-media-contract',
+]);
+const M1009_OPENAPI_APPROVED_TAGS = Object.freeze([
+  'P1R-Media',
+  'P1R-Recording',
+  'P1R-Shadowing',
+]);
+export const M1009_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["DELETE /api/v1/speaking/recordings/{recordingId}.x-idempotency", "operation x-idempotency contract changed"],
+  ["DELETE /api/v1/speaking/recordings/{recordingId}.responses.200", "existing response removed"],
+  ["POST /api/v1/speaking/shadowing/sessions.x-idempotency", "operation x-idempotency contract changed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.required", "new required field: sourceContentVersionId"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.required", "existing required field removed: targetGapMs"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.required", "existing required field removed: contentVersionId"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.required", "existing required field removed: clientEventId"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.additionalProperties", "additionalProperties policy changed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.x-server-derived", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.properties.sourceSegmentId.minLength", "minLength contract changed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.properties.sourceSegmentId.maxLength", "maxLength contract changed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.properties.targetGapMs", "existing property removed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.properties.contentVersionId", "existing property removed"],
+  ["POST /api/v1/speaking/shadowing/sessions.request.properties.clientEventId", "existing property removed"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.x-idempotency", "operation x-idempotency contract changed"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.required", "new required field: progressMs"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.required", "new required field: expectedSessionVersion"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.required", "existing required field removed: positionMs"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.required", "existing required field removed: attemptNo"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.required", "existing required field removed: clientEventId"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.additionalProperties", "additionalProperties policy changed"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.x-client-result-authority", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.properties.positionMs", "existing property removed"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.properties.attemptNo", "existing property removed"],
+  ["POST /api/v1/speaking/shadowing/sessions/{shadowingSessionId}/progress.request.properties.clientEventId", "existing property removed"],
+  ["PUT /api/v1/iam/consents.request.properties.type.enum", "new enum value added: VOICE_RECORDING"],
+  ["components.schemas.B8Consent.required", "new required field: purpose"],
+  ["components.schemas.B8Consent.required", "new required field: required"],
+  ["components.schemas.B8Consent.required", "new required field: document"],
+  ["components.schemas.B8Consent.required", "new required field: state"],
+  ["components.schemas.B8Consent.required", "new required field: effectiveAt"],
+  ["components.schemas.B8Consent.required", "new required field: restrictionEffect"],
+  ["components.schemas.B8Consent.required", "new required field: revalidation"],
+  ["components.schemas.B8Consent.required", "new required field: withdrawalEffect"],
+  ["components.schemas.B8Consent.required", "new required field: provenance"],
+  ["components.schemas.B8Consent.required", "new required field: policyRef"],
+  ["components.schemas.B8Consent.required", "new required field: policyVersion"],
+  ["components.schemas.B8Consent.required", "new required field: decisionRef"],
+  ["components.schemas.B8Consent.additionalProperties", "additionalProperties policy changed"],
+  ["components.schemas.B8Consent.x-server-authoritative-fields", "unknown schema keyword or extension changed"],
+  ["components.schemas.B8Consent.properties.type.enum", "new enum value added: VOICE_RECORDING"],
+  ["components.schemas.B8Consent.properties.purpose.enum", "new enum value added: ADULT_VOICE_RECORDING_REMOTE_STORAGE_AND_REPLAY"],
+  ["components.schemas.B8ConsentState.properties.requiredPurposes.items.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B8ConsentState.properties.unsatisfiedPurposes.items.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B8ConsentUpdateRequest.properties.type.enum", "new enum value added: VOICE_RECORDING"],
+]);
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -453,6 +577,48 @@ export function buildM1008OpenApiExpectedProjection(previous, approved) {
     && applyApprovedOpenApiProjection(expected.components?.parameters, approved.components?.parameters, M1008_OPENAPI_APPROVED_PARAMETER_PROJECTIONS)
     && applyApprovedOpenApiProjection(expected.components?.schemas, approved.components?.schemas, M1008_OPENAPI_APPROVED_SCHEMA_PROJECTIONS)
     && applyApprovedOpenApiProjection(expected, approved, M1008_OPENAPI_APPROVED_ROOT_PROJECTIONS);
+  return projected ? expected : undefined;
+}
+
+function isValidM1009PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && allowance.id === M1009_MEDIA_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1009_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1008_CONTENT_PROMOTION_ID
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_ONLY'
+    && allowance.eventCatalogDecision === 'UNCHANGED_HISTORICAL_ONLY'
+    && allowance.canonicalFragment === 'packages/contracts/fragments/b11/p1r-media.openapi.json';
+}
+
+function applyApprovedOpenApiTags(target, approved, names) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const approvedByName = new Map(approved.map((tag) => [tag?.name, tag]));
+  if (approvedByName.size !== approved.length) return false;
+  const nameSet = new Set(names);
+  if (target.some((tag) => nameSet.has(tag?.name))) return false;
+  for (const name of names) {
+    const tag = approvedByName.get(name);
+    if (!isRecord(tag)) return false;
+    target.push(structuredClone(tag));
+  }
+  return true;
+}
+
+/**
+ * Rebuild the sole approved M1-009 OpenAPI projection from the immutable
+ * ca282 M1-008 evidence checkpoint. Additions and replacements are copied
+ * only from the explicit media/IAM/Gateway allowlist; a separate semantic
+ * digest then rejects any changed nested value or unlisted projection.
+ */
+export function buildM1009OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1009PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = applyApprovedOpenApiProjection(expected.paths, approved.paths, M1009_OPENAPI_APPROVED_PATH_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.schemas, approved.components?.schemas, M1009_OPENAPI_APPROVED_SCHEMA_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.responses, approved.components?.responses, M1009_OPENAPI_APPROVED_RESPONSE_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected, approved, M1009_OPENAPI_APPROVED_ROOT_PROJECTIONS)
+    && applyApprovedOpenApiTags(expected.tags, approved.tags, M1009_OPENAPI_APPROVED_TAGS);
   return projected ? expected : undefined;
 }
 
@@ -778,6 +944,63 @@ function compareM1008OpenApiPromotion(previous, current, allowance) {
         'openapi',
         'm1-008.openapiPromotion.projection',
         'current OpenAPI is not the unique frozen-source B1/B9/B10/Gateway projection',
+      ));
+    }
+  }
+  return changes;
+}
+
+function compareM1009OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1009PromotionAllowance(allowance)) {
+    return [describeChange(
+      'openapi',
+      'm1-009.openapiPromotion',
+      'M1-009 promotion allowance cannot be applied without the frozen media policy allowance',
+    )];
+  }
+
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1009_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange(
+      'openapi',
+      'm1-009.openapiPromotion.source',
+      'M1-009 OpenAPI promotion source is not the frozen ca282 M1-008 evidence projection',
+    ));
+  }
+
+  const expectedDescriptors = M1009_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS
+    .map(([location, reason]) => describeChange('openapi', location, reason))
+    .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
+  const actualDescriptors = compareOpenApi(previous, current)
+    .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
+  if (stableGovernanceValue(actualDescriptors) !== stableGovernanceValue(expectedDescriptors)) {
+    changes.push(describeChange(
+      'openapi',
+      'm1-009.openapiPromotion.change-descriptors',
+      'current OpenAPI changes do not exactly match the frozen M1-009 descriptor set',
+    ));
+  }
+
+  const expectedProjection = buildM1009OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange(
+      'openapi',
+      'm1-009.openapiPromotion.projection',
+      'the approved media/IAM/Gateway projection cannot be constructed from the frozen source',
+    ));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1009_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange(
+        'openapi',
+        'm1-009.openapiPromotion.expected-projection',
+        'the allowlisted M1-009 projection does not match its frozen semantic digest',
+      ));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange(
+        'openapi',
+        'm1-009.openapiPromotion.projection',
+        'current OpenAPI is not the unique frozen-source media/IAM/Gateway projection',
       ));
     }
   }
@@ -1156,6 +1379,9 @@ export function compareContracts(kind, previous, current, { governanceBaseline, 
   if (kind === 'openapi') {
     if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
       return compareM1008OpenApiPromotion(previous, current, allowance);
+    }
+    if (allowance?.id === M1009_MEDIA_PROMOTION_ID) {
+      return compareM1009OpenApiPromotion(previous, current, allowance);
     }
     return compareOpenApi(previous, current);
   }
