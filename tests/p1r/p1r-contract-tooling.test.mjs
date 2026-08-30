@@ -11,6 +11,8 @@ import {
   compareContracts,
   M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256,
   M1008_CONTENT_EVENT_NAMES,
+  M1008_REVIEWED_EVENT_COMPATIBILITY,
+  M1008_REVIEWED_EVENT_PAYLOAD_SCHEMA,
   runCompatibilityDiff,
   stableGovernanceSha256,
 } from '../../scripts/contracts/compatibility-diff.mjs';
@@ -622,6 +624,17 @@ test('M1-008 OpenAPI promotion rejects extra paths, schemas, enum values, weaken
     ['B10 active pin ref drift', (document) => {
       document.components.schemas.B10AssessmentSession.properties.pin.$ref = '#/components/schemas/B10ContentVersionPin';
     }],
+    ['B9 review record identity removed', (document) => {
+      const records = document.components.schemas.B9AdminContentState.properties.reviewRecords;
+      records.items.required = records.items.required.filter((field) => field !== 'contentHash');
+      delete records.items.properties.contentHash;
+    }],
+    ['B9 review stage cardinality weakened', (document) => {
+      document.components.schemas.B9AdminContentState.properties.reviewRecords.oneOf[2].allOf.shift();
+    }],
+    ['B9 review chain policy drift', (document) => {
+      document.components.schemas.B9AdminContentState.properties.reviewRecords['x-p1r-review-records-policy'].identityConstraint = 'BEST_EFFORT';
+    }],
     ['Gateway owner drift', (document) => {
       document['x-p1r-gateway-boundary'].routeRules.find((rule) => rule.ruleId === 'admin-content').upstreamOwner = 'audit-service';
     }],
@@ -644,6 +657,11 @@ test('M1-008 exact source-baseline promotion passes with immutable governance at
     scope: 'explicit-additive-only',
   });
   assert.deepEqual(result.results[0].breakingChanges, []);
+  assert.deepEqual(eventCatalog.payloadSchemas.B9ContentVersionReviewed, M1008_REVIEWED_EVENT_PAYLOAD_SCHEMA);
+  assert.deepEqual(
+    eventCatalog.events.find((event) => event.eventName === 'content.version.reviewed.v1').compatibility,
+    M1008_REVIEWED_EVENT_COMPATIBILITY,
+  );
 });
 
 test('default compareContracts remains strict for the M1-008 promotion', () => {
@@ -683,6 +701,19 @@ test('M1-008 promotion fails closed for extra event/status/topic/group/channel/o
     ['extra operation', (catalog) => {
       catalog.asyncapi.operations.injected_operation = structuredClone(catalog.asyncapi.operations.publish_content_version_submitted_v1);
     }],
+    ['reviewed event content hash removed', (catalog) => {
+      const payload = catalog.payloadSchemas.B9ContentVersionReviewed;
+      payload.required = payload.required.filter((field) => field !== 'contentHash');
+      delete payload.properties.contentHash;
+    }],
+    ['reviewed event content hash weakened', (catalog) => {
+      catalog.payloadSchemas.B9ContentVersionReviewed.properties.contentHash.pattern = '^.*$';
+    }],
+    ['reviewed event audit binding removed', (catalog) => {
+      const payload = catalog.payloadSchemas.B9ContentVersionReviewed;
+      payload.required = payload.required.filter((field) => field !== 'auditId');
+      delete payload.properties.auditId;
+    }],
     ['extra route', (_catalog) => {
       // B26 is mutated by the paired mutator below; this branch is only a marker.
     }],
@@ -710,6 +741,7 @@ test('M1-008 promotion fails closed when policy values or shape are changed', ()
     (policy) => { policy.eventGovernance.compatibilityPromotion.allowAll = true; },
     (policy) => { policy.eventGovernance.compatibilityPromotion.immutableGovernanceBaseline = 'f'.repeat(40); },
     (policy) => { policy.reviewWorkflow.stageOrder.reverse(); },
+    (policy) => { policy.reviewWorkflow.recordProjection.identityConstraint = 'BEST_EFFORT'; },
     (policy) => { policy.publishEligibility.clientFactSubmission = 'ALLOWED'; },
     (policy) => { policy.internalRetirement.externalCommand = 'ALLOWED'; },
     (policy) => { policy.unexpectedPromotionFlag = true; },

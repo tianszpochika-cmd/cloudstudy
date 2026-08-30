@@ -290,6 +290,27 @@ export function validateM1008CompatibilityPolicy(policy) {
     reviewFirstRequiredFacts: ['VALIDATION_REPORT_PASS', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'REVIEW_VERSION_CURRENT'],
     reviewFinalRequiredFacts: ['FIRST_REVIEW_APPROVED', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'FIRST_REVIEWER_DISTINCT', 'REVIEW_VERSION_CURRENT'],
     protectedContentMutation: 'INVALIDATE_VALIDATION_AND_REVIEWS',
+    recordProjection: {
+      policyId: 'P1R-B9-REVIEW-CHAIN-V1',
+      scope: 'CURRENT_CONTENT_VERSION_CHAIN',
+      collectionSemantics: 'STAGE_KEYED_SET_ORDER_INDEPENDENT',
+      allowedShapes: ['EMPTY', 'FIRST_ONLY', 'FIRST_AND_FINAL'],
+      recordIdentityFields: ['contentVersionId', 'contentHash'],
+      identityConstraint: 'ALL_RECORDS_SAME_AND_MATCH_EXACTLY_ONE_VERSION_SUMMARY',
+      allowedStageSets: [[], ['FIRST_REVIEW'], ['FIRST_REVIEW', 'FINAL_REVIEW']],
+      workflowStageOrder: ['FIRST_REVIEW', 'FINAL_REVIEW'],
+      stageMaxOccurrences: { FIRST_REVIEW: 1, FINAL_REVIEW: 1 },
+      finalPrerequisite: {
+        predecessorStage: 'FIRST_REVIEW',
+        predecessorDecision: 'APPROVED',
+        sameIdentityFields: ['contentVersionId', 'contentHash'],
+        precedence: 'STRICTLY_PRECEDES',
+      },
+      reviewVersionUniquenessScope: ['contentVersionId', 'contentHash', 'reviewStage'],
+      approvedOrLaterStatesRequireBothApproved: ['APPROVED', 'PUBLISHED', 'ARCHIVED'],
+      writer: 'SERVER_DERIVED_READ_ONLY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+    },
   }, 'content lifecycle review workflow', errors);
   exactPolicyValue(policy.publishEligibility, {
     owner: 'content-service',

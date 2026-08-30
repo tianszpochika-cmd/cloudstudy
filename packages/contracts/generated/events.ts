@@ -301,7 +301,7 @@ export type B9ContentVersionSubmitted = { tenantId: string; contentCode: string;
 /**
  * Generated from the contract source.
  */
-export type B9ContentVersionReviewed = { tenantId: string; contentCode: string; contentVersionId: number; versionNumber: number; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; reviewedAt: string; };
+export type B9ContentVersionReviewed = { tenantId: string; contentCode: string; contentVersionId: number; versionNumber: number; contentHash: string; stateVersion: number; commandId: string; auditId: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; reviewedAt: string; };
 
 /**
  * Generated from the contract source.

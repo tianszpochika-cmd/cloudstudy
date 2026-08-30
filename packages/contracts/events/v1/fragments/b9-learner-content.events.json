@@ -72,7 +72,7 @@
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish content.version.reviewed.v2",
-        "consumerRule": "双审阶段按 contentVersionId/reviewStage/reviewVersion 去重；作者不得作为自己的审核者。"
+        "consumerRule": "双审阶段按 contentVersionId/contentHash/reviewStage/reviewVersion 去重；作者不得作为自己的审核者。"
       }
     },
     {
@@ -200,12 +200,16 @@
       "$id": "platform.events.content.version.reviewed.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["tenantId", "contentCode", "contentVersionId", "versionNumber", "reviewStage", "decision", "reviewVersion", "reviewedAt"],
+      "required": ["tenantId", "contentCode", "contentVersionId", "versionNumber", "contentHash", "stateVersion", "commandId", "auditId", "reviewStage", "decision", "reviewVersion", "reviewedAt"],
       "properties": {
         "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
         "contentCode": { "type": "string", "maxLength": 128 },
         "contentVersionId": { "type": "integer", "minimum": 1 },
         "versionNumber": { "type": "integer", "minimum": 1 },
+        "contentHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "stateVersion": { "type": "integer", "minimum": 1 },
+        "commandId": { "type": "string", "pattern": "^cmd_[A-Za-z0-9._:-]{15,127}$" },
+        "auditId": { "type": "string", "pattern": "^aud_[A-Za-z0-9._:-]{15,127}$" },
         "reviewStage": { "type": "string", "enum": ["FIRST_REVIEW", "FINAL_REVIEW"] },
         "decision": { "type": "string", "enum": ["APPROVED", "REJECTED", "CHANGES_REQUESTED"] },
         "reviewVersion": { "type": "integer", "minimum": 1 },

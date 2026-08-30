@@ -36,6 +36,10 @@ function b9AdminReviewRecord(input) {
   return items.$ref ? b9Schema(input, items.$ref.split('/').at(-1)) : items;
 }
 
+function b9AdminReviewRecords(input) {
+  return b9Schema(input, 'B9AdminContentState').properties.reviewRecords;
+}
+
 function singletonEnumValue(value) {
   return value && Array.isArray(value.enum) && value.enum.length === 1 ? value.enum[0] : undefined;
 }
@@ -96,6 +100,12 @@ test('content lifecycle rejects state, command, actor, schedule, projection, leg
     ['canonical runtime promotion', (input) => { input.policy.eventGovernance.canonicalRuntimeStatus = 'RUNTIME_VERIFIED'; }, /content event governance policy/],
     ['compatibility promotion baseline moves', (input) => { input.policy.eventGovernance.compatibilityPromotion.immutableGovernanceBaseline = '0000000000000000000000000000000000000000'; }, /content event governance policy/],
     ['compatibility promotion consumer scope widens', (input) => { input.policy.eventGovernance.compatibilityPromotion.addedConsumerGroups.push('cg.learner-from-content.v1'); }, /content event governance policy/],
+    ['review projection identity binding weakens', (input) => {
+      input.policy.reviewWorkflow.recordProjection.identityConstraint = 'BEST_EFFORT';
+    }, /content review workflow/],
+    ['review projection claims runtime verification', (input) => {
+      input.policy.reviewWorkflow.recordProjection.runtimeStatus = 'RUNTIME_VERIFIED';
+    }, /content review workflow/],
   ];
   for (const [name, mutate, expected] of cases) {
     const report = evaluate(mutate);
@@ -124,6 +134,31 @@ test('content lifecycle rejects B9 client authority, command/review-stage confus
       const record = b9AdminReviewRecord(input);
       record.required = record.required.filter((field) => field !== 'reviewVersion');
     }, /review record required fields/],
+    ['B9 admin review record loses contentVersionId', (input) => {
+      const record = b9AdminReviewRecord(input);
+      record.required = record.required.filter((field) => field !== 'contentVersionId');
+    }, /review record required fields/],
+    ['B9 admin review record weakens contentHash', (input) => {
+      b9AdminReviewRecord(input).properties.contentHash.pattern = '^.*$';
+    }, /immutable contentHash/],
+    ['B9 admin review record targets another identity type', (input) => {
+      b9AdminReviewRecord(input).properties.contentVersionId.$ref = '#/components/schemas/B9ContentCode';
+    }, /bind contentVersionId/],
+    ['B9 admin review stage discriminator weakens', (input) => {
+      b9AdminReviewRecord(input).oneOf.pop();
+    }, /review record stage discriminator/],
+    ['B9 admin reviewRecords allow FINAL-only', (input) => {
+      b9AdminReviewRecords(input).oneOf[1].items.properties.reviewStage.enum = ['FINAL_REVIEW'];
+    }, /allowed array shapes/],
+    ['B9 admin reviewRecords allow duplicate FIRST', (input) => {
+      b9AdminReviewRecords(input).oneOf[2].allOf.shift();
+    }, /allowed array shapes/],
+    ['B9 admin reviewRecords allow duplicate FINAL', (input) => {
+      b9AdminReviewRecords(input).oneOf[2].allOf.pop();
+    }, /allowed array shapes/],
+    ['B9 admin reviewRecords lose identity and prerequisite policy', (input) => {
+      b9AdminReviewRecords(input)['x-p1r-review-records-policy'].finalPrerequisite.sameIdentityFields = [];
+    }, /reviewRecords projection policy/],
     ['B9 admin review record becomes client writable', (input) => {
       b9Schema(input, 'B9AdminContentState').properties.reviewRecords.readOnly = false;
     }, /reviewRecords must be a read-only array/],
@@ -136,6 +171,18 @@ test('content lifecycle rejects B9 client authority, command/review-stage confus
     ['B9 admin state restores legacy reviewStages aliases', (input) => {
       b9Schema(input, 'B9AdminContentState').properties.reviewStages = { type: 'array' };
     }, /must not retain legacy reviewStages aliases/],
+    ['reviewed event loses immutable content hash', (input) => {
+      const payload = input.catalog.payloadSchemas.B9ContentVersionReviewed;
+      payload.required = payload.required.filter((field) => field !== 'contentHash');
+      delete payload.properties.contentHash;
+    }, /reviewed\.v1 catalog payload/],
+    ['reviewed event loses audit correlation', (input) => {
+      const payload = input.catalog.payloadSchemas.B9ContentVersionReviewed;
+      payload.required = payload.required.filter((field) => field !== 'auditId');
+    }, /reviewed\.v1 catalog payload/],
+    ['reviewed event accepts reviewer prose', (input) => {
+      input.catalog.payloadSchemas.B9ContentVersionReviewed.properties.reviewNote = { type: 'string' };
+    }, /reviewed\.v1 catalog payload|field/],
     ['B9 command metadata lets UNPUBLISH target a version', (input) => {
       b9Schema(input, 'B9ContentCommandRequest')['x-command-field-policy'].UNPUBLISH.allowed.push('targetVersionNumber');
     }, /B9 command field policy/],

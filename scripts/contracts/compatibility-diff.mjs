@@ -24,6 +24,31 @@ export const M1008_CONTENT_EVENT_NAMES = Object.freeze([
   'content.version.unpublished.v1',
   'content.version.rolled_back.v1',
 ]);
+export const M1008_REVIEWED_EVENT_PAYLOAD_SCHEMA = Object.freeze({
+  $id: 'platform.events.content.version.reviewed.v1.payload',
+  type: 'object',
+  additionalProperties: false,
+  required: ['tenantId', 'contentCode', 'contentVersionId', 'versionNumber', 'contentHash', 'stateVersion', 'commandId', 'auditId', 'reviewStage', 'decision', 'reviewVersion', 'reviewedAt'],
+  properties: {
+    tenantId: { type: 'string', pattern: '^[a-z][a-z0-9_-]{1,63}$' },
+    contentCode: { type: 'string', maxLength: 128 },
+    contentVersionId: { type: 'integer', minimum: 1 },
+    versionNumber: { type: 'integer', minimum: 1 },
+    contentHash: { type: 'string', pattern: '^[a-fA-F0-9]{64}$' },
+    stateVersion: { type: 'integer', minimum: 1 },
+    commandId: { type: 'string', pattern: '^cmd_[A-Za-z0-9._:-]{15,127}$' },
+    auditId: { type: 'string', pattern: '^aud_[A-Za-z0-9._:-]{15,127}$' },
+    reviewStage: { type: 'string', enum: ['FIRST_REVIEW', 'FINAL_REVIEW'] },
+    decision: { type: 'string', enum: ['APPROVED', 'REJECTED', 'CHANGES_REQUESTED'] },
+    reviewVersion: { type: 'integer', minimum: 1 },
+    reviewedAt: { type: 'string', format: 'date-time' },
+  },
+});
+export const M1008_REVIEWED_EVENT_COMPATIBILITY = Object.freeze({
+  strategy: 'additive',
+  breakingChange: 'publish content.version.reviewed.v2',
+  consumerRule: '双审阶段按 contentVersionId/contentHash/reviewStage/reviewVersion 去重；作者不得作为自己的审核者。',
+});
 export const M1008_CONTENT_AGGREGATE_ID_FIELDS = Object.freeze({
   'content.version.submitted.v1': 'contentVersionId',
   'content.version.reviewed.v1': 'contentVersionId',
@@ -86,7 +111,7 @@ export const M1008_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a873b367761fb59e44ea4618119
 // including additions that the legacy comparator intentionally does not walk
 // (new paths, schemas and operation extensions). This keeps the allowance
 // finite without embedding a megabyte-sized OpenAPI snapshot in this script.
-export const M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '59b841d88878d7b5afffd17916f060590d47c17cfdc17bc73c8447276aa99579';
+export const M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'e6a0cb64034fd8d921ef90b86e1eac20908b56e8ddee5d65ac7257dbb2320e1c';
 const M1008_OPENAPI_APPROVED_PATH_PROJECTIONS = Object.freeze([
   '/api/v1/content',
   '/api/v1/content/{contentId}/versions',
@@ -582,9 +607,18 @@ export function buildM1008PromotionExpectedCatalog(previous, allowance) {
   const expected = structuredClone(previous);
   if (!isRecord(expected.asyncapi)
     || !isRecord(expected.asyncapi.channels)
-    || !isRecord(expected.asyncapi.operations)) return undefined;
+    || !isRecord(expected.asyncapi.operations)
+    || !isRecord(expected.payloadSchemas)) return undefined;
 
   const eventsByName = new Map((expected.events ?? []).map((event) => [event?.eventName, event]));
+  const reviewedEvent = eventsByName.get('content.version.reviewed.v1');
+  if (reviewedEvent?.payloadSchema?.$ref !== '#/payloadSchemas/B9ContentVersionReviewed'
+    || !isRecord(expected.payloadSchemas.B9ContentVersionReviewed)) return undefined;
+  // M1-008 explicitly tightens the reviewed fact so every decision is bound to
+  // the immutable content bytes. This shape is constructed from policy, never
+  // copied from the candidate catalog, and therefore remains fail closed.
+  expected.payloadSchemas.B9ContentVersionReviewed = structuredClone(M1008_REVIEWED_EVENT_PAYLOAD_SCHEMA);
+  reviewedEvent.compatibility = structuredClone(M1008_REVIEWED_EVENT_COMPATIBILITY);
   for (const eventName of allowance.eventNames ?? []) {
     const event = eventsByName.get(eventName);
     const consumers = M1008_CONTENT_CONSUMERS[eventName];

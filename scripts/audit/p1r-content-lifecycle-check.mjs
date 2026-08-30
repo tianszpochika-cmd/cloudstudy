@@ -19,7 +19,66 @@ const B26_FRAGMENT_PATH = 'packages/contracts/events/v1/fragments/b26-reliabilit
 const PERSISTENT_STATES = ['DRAFT', 'IN_REVIEW', 'APPROVED', 'PUBLISHED', 'ARCHIVED'];
 const REVIEW_STAGES = ['FIRST_REVIEW', 'FINAL_REVIEW'];
 const REVIEW_DECISIONS = ['APPROVED', 'REJECTED', 'CHANGES_REQUESTED'];
-const REVIEW_RECORD_FIELDS = ['reviewStage', 'decision', 'reviewVersion', 'auditId', 'decidedAt'];
+const REVIEW_RECORD_FIELDS = ['contentVersionId', 'contentHash', 'reviewStage', 'decision', 'reviewVersion', 'auditId', 'decidedAt'];
+const REVIEW_RECORD_POLICY = {
+  policyId: 'P1R-B9-REVIEW-CHAIN-V1',
+  scope: 'CURRENT_CONTENT_VERSION_CHAIN',
+  collectionSemantics: 'STAGE_KEYED_SET_ORDER_INDEPENDENT',
+  allowedShapes: ['EMPTY', 'FIRST_ONLY', 'FIRST_AND_FINAL'],
+  recordIdentityFields: ['contentVersionId', 'contentHash'],
+  identityConstraint: 'ALL_RECORDS_SAME_AND_MATCH_EXACTLY_ONE_VERSION_SUMMARY',
+  allowedStageSets: [[], ['FIRST_REVIEW'], ['FIRST_REVIEW', 'FINAL_REVIEW']],
+  workflowStageOrder: ['FIRST_REVIEW', 'FINAL_REVIEW'],
+  stageMaxOccurrences: { FIRST_REVIEW: 1, FINAL_REVIEW: 1 },
+  finalPrerequisite: {
+    predecessorStage: 'FIRST_REVIEW', predecessorDecision: 'APPROVED',
+    sameIdentityFields: ['contentVersionId', 'contentHash'], precedence: 'STRICTLY_PRECEDES',
+  },
+  reviewVersionUniquenessScope: ['contentVersionId', 'contentHash', 'reviewStage'],
+  approvedOrLaterStatesRequireBothApproved: ['APPROVED', 'PUBLISHED', 'ARCHIVED'],
+  writer: 'SERVER_DERIVED_READ_ONLY',
+  runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+};
+const REVIEW_RECORD_STAGE_BRANCHES = REVIEW_STAGES.map(function (reviewStage) {
+  return { required: ['reviewStage'], properties: { reviewStage: { enum: [reviewStage] } } };
+});
+const REVIEW_RECORD_ARRAY_BRANCHES = [
+  { minItems: 0, maxItems: 0 },
+  {
+    minItems: 1, maxItems: 1,
+    items: { type: 'object', required: ['reviewStage'], properties: { reviewStage: { enum: ['FIRST_REVIEW'] } } },
+  },
+  {
+    minItems: 2, maxItems: 2,
+    allOf: REVIEW_STAGES.map(function (reviewStage) {
+      return {
+        not: {
+          items: { type: 'object', required: ['reviewStage'], properties: { reviewStage: { enum: [reviewStage] } } },
+        },
+      };
+    }),
+  },
+];
+const B9_REVIEWED_EVENT_PAYLOAD = {
+  $id: 'platform.events.content.version.reviewed.v1.payload',
+  type: 'object',
+  additionalProperties: false,
+  required: ['tenantId', 'contentCode', 'contentVersionId', 'versionNumber', 'contentHash', 'stateVersion', 'commandId', 'auditId', 'reviewStage', 'decision', 'reviewVersion', 'reviewedAt'],
+  properties: {
+    tenantId: { type: 'string', pattern: '^[a-z][a-z0-9_-]{1,63}$' },
+    contentCode: { type: 'string', maxLength: 128 },
+    contentVersionId: { type: 'integer', minimum: 1 },
+    versionNumber: { type: 'integer', minimum: 1 },
+    contentHash: { type: 'string', pattern: '^[a-fA-F0-9]{64}$' },
+    stateVersion: { type: 'integer', minimum: 1 },
+    commandId: { type: 'string', pattern: '^cmd_[A-Za-z0-9._:-]{15,127}$' },
+    auditId: { type: 'string', pattern: '^aud_[A-Za-z0-9._:-]{15,127}$' },
+    reviewStage: { type: 'string', enum: REVIEW_STAGES },
+    decision: { type: 'string', enum: REVIEW_DECISIONS },
+    reviewVersion: { type: 'integer', minimum: 1 },
+    reviewedAt: { type: 'string', format: 'date-time' },
+  },
+};
 const CANONICAL_ENVELOPE = [
   'eventId', 'eventName', 'schema', 'version', 'occurredAt', 'aggregateType',
   'aggregateId', 'actorId', 'traceId', 'requestId', 'schemaVersion', 'dedupeKey', 'payload',
@@ -109,6 +168,7 @@ const REVIEW_WORKFLOW = {
   reviewFirstRequiredFacts: ['VALIDATION_REPORT_PASS', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'REVIEW_VERSION_CURRENT'],
   reviewFinalRequiredFacts: ['FIRST_REVIEW_APPROVED', 'CONTENT_HASH_MATCH', 'EDITOR_DISTINCT', 'FIRST_REVIEWER_DISTINCT', 'REVIEW_VERSION_CURRENT'],
   protectedContentMutation: 'INVALIDATE_VALIDATION_AND_REVIEWS',
+  recordProjection: REVIEW_RECORD_POLICY,
 };
 const PUBLISH_ELIGIBILITY = {
   owner: 'content-service',
@@ -598,6 +658,7 @@ function scanRuntimePromotion(value, location, errors) {
     '$.runtimeStatus',
     '$.eventGovernance.canonicalRuntimeStatus',
     '$.eventGovernance.compatibilityPromotion.runtimeStatus',
+    '$.reviewWorkflow.recordProjection.runtimeStatus',
     '$.plannedClosureDisposition[0].runtimeStatus',
     '$.plannedClosureDisposition[1].runtimeStatus',
     '$.internalRetirement.runtimeEvidenceTask',
@@ -645,15 +706,23 @@ function checkB9(policy, b9, b9Shared, catalog, errors) {
   add(errors, !(adminState && adminState.properties && Object.hasOwn(adminState.properties, 'reviewStages')), 'B9 admin content state must not retain legacy reviewStages aliases');
   const reviewRecords = adminState && adminState.properties && adminState.properties.reviewRecords;
   add(errors, reviewRecords && reviewRecords.type === 'array' && reviewRecords.readOnly === true, 'B9 admin reviewRecords must be a read-only array');
+  add(errors, reviewRecords && reviewRecords.minItems === 0 && reviewRecords.maxItems === 2 && reviewRecords.uniqueItems === true, 'B9 admin reviewRecords must allow only empty, FIRST-only, or one FIRST plus one FINAL');
+  exact(errors, reviewRecords && reviewRecords['x-p1r-review-records-policy'], REVIEW_RECORD_POLICY, 'B9 admin reviewRecords projection policy');
+  exact(errors, reviewRecords && reviewRecords.oneOf, REVIEW_RECORD_ARRAY_BRANCHES, 'B9 admin reviewRecords allowed array shapes');
   const reviewRecord = resolveInlineOrLocalSchema(b9, b9Shared, reviewRecords && reviewRecords.items);
   add(errors, reviewRecord && reviewRecord.type === 'object' && reviewRecord.additionalProperties === false && reviewRecord.readOnly === true, 'B9 admin review record must be a closed read-only object');
   exact(errors, reviewRecord && reviewRecord.required, REVIEW_RECORD_FIELDS, 'B9 admin review record required fields');
   exact(errors, Object.keys(reviewRecord && reviewRecord.properties || {}), REVIEW_RECORD_FIELDS, 'B9 admin review record field set');
+  exact(errors, reviewRecord && reviewRecord.oneOf, REVIEW_RECORD_STAGE_BRANCHES, 'B9 admin review record stage discriminator');
+  const contentVersionId = reviewRecord && reviewRecord.properties && reviewRecord.properties.contentVersionId;
+  const contentHash = reviewRecord && reviewRecord.properties && reviewRecord.properties.contentHash;
   const reviewStage = reviewRecord && reviewRecord.properties && reviewRecord.properties.reviewStage;
   const decision = reviewRecord && reviewRecord.properties && reviewRecord.properties.decision;
   const reviewVersion = reviewRecord && reviewRecord.properties && reviewRecord.properties.reviewVersion;
   const auditId = reviewRecord && reviewRecord.properties && reviewRecord.properties.auditId;
   const decidedAt = reviewRecord && reviewRecord.properties && reviewRecord.properties.decidedAt;
+  add(errors, contentVersionId && contentVersionId.$ref === '#/components/schemas/B9ContentVersionId', 'B9 admin review record must bind contentVersionId');
+  add(errors, contentHash && contentHash.type === 'string' && contentHash.pattern === '^[a-fA-F0-9]{64}$', 'B9 admin review record must bind the immutable contentHash');
   exact(errors, reviewStage && reviewStage.enum, REVIEW_STAGES, 'B9 admin review record reviewStage enum');
   add(errors, reviewStage && reviewStage.type === 'string', 'B9 admin review record reviewStage must be a string');
   exact(errors, decision && decision.enum, REVIEW_DECISIONS, 'B9 admin review record decision enum');
@@ -855,6 +924,10 @@ function checkEventGovernance(input, errors) {
     return fragment.path === 'packages/contracts/events/v1/fragments/b9-learner-content.events.json';
   });
   add(errors, b9Fragment && isRecord(b9Fragment.data), 'B9 learner-content event fragment is required');
+  const reviewedCatalogPayload = catalog && catalog.payloadSchemas && catalog.payloadSchemas.B9ContentVersionReviewed;
+  const reviewedFragmentPayload = b9Fragment && b9Fragment.data && b9Fragment.data.payloadSchemas && b9Fragment.data.payloadSchemas.B9ContentVersionReviewed;
+  exact(errors, reviewedCatalogPayload, B9_REVIEWED_EVENT_PAYLOAD, 'content.version.reviewed.v1 catalog payload');
+  exact(errors, reviewedFragmentPayload, B9_REVIEWED_EVENT_PAYLOAD, 'content.version.reviewed.v1 fragment payload');
   for (const eventName of CANONICAL_CONTENT_EVENTS) {
     const fragmentEvent = ((b9Fragment && b9Fragment.data && b9Fragment.data.events) || []).find(function (event) { return event && event.eventName === eventName; });
     const catalogEvent = eventByName(catalog, eventName);

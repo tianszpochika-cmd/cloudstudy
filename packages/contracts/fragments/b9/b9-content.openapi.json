@@ -2504,11 +2504,71 @@
           "reviewRecords": {
             "type": "array",
             "readOnly": true,
+            "description": "按 reviewStage 键控且物理顺序无语义的只读审核记录集合。空集合表示尚未审核；单条只能是 FIRST_REVIEW；双条必须各含一条 FIRST_REVIEW 与 FINAL_REVIEW。每条记录绑定不可变 contentVersionId/contentHash，FINAL_REVIEW 必须基于同一版本与哈希的 FIRST_REVIEW APPROVED。",
+            "minItems": 0,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "x-p1r-review-records-policy": {
+              "policyId": "P1R-B9-REVIEW-CHAIN-V1",
+              "scope": "CURRENT_CONTENT_VERSION_CHAIN",
+              "collectionSemantics": "STAGE_KEYED_SET_ORDER_INDEPENDENT",
+              "allowedShapes": [
+                "EMPTY",
+                "FIRST_ONLY",
+                "FIRST_AND_FINAL"
+              ],
+              "recordIdentityFields": [
+                "contentVersionId",
+                "contentHash"
+              ],
+              "identityConstraint": "ALL_RECORDS_SAME_AND_MATCH_EXACTLY_ONE_VERSION_SUMMARY",
+              "allowedStageSets": [
+                [],
+                [
+                  "FIRST_REVIEW"
+                ],
+                [
+                  "FIRST_REVIEW",
+                  "FINAL_REVIEW"
+                ]
+              ],
+              "workflowStageOrder": [
+                "FIRST_REVIEW",
+                "FINAL_REVIEW"
+              ],
+              "stageMaxOccurrences": {
+                "FIRST_REVIEW": 1,
+                "FINAL_REVIEW": 1
+              },
+              "finalPrerequisite": {
+                "predecessorStage": "FIRST_REVIEW",
+                "predecessorDecision": "APPROVED",
+                "sameIdentityFields": [
+                  "contentVersionId",
+                  "contentHash"
+                ],
+                "precedence": "STRICTLY_PRECEDES"
+              },
+              "reviewVersionUniquenessScope": [
+                "contentVersionId",
+                "contentHash",
+                "reviewStage"
+              ],
+              "approvedOrLaterStatesRequireBothApproved": [
+                "APPROVED",
+                "PUBLISHED",
+                "ARCHIVED"
+              ],
+              "writer": "SERVER_DERIVED_READ_ONLY",
+              "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+            },
             "items": {
               "type": "object",
               "readOnly": true,
               "additionalProperties": false,
               "required": [
+                "contentVersionId",
+                "contentHash",
                 "reviewStage",
                 "decision",
                 "reviewVersion",
@@ -2516,6 +2576,13 @@
                 "decidedAt"
               ],
               "properties": {
+                "contentVersionId": {
+                  "$ref": "#/components/schemas/B9ContentVersionId"
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-fA-F0-9]{64}$"
+                },
                 "reviewStage": {
                   "type": "string",
                   "enum": [
@@ -2541,9 +2608,97 @@
                 "decidedAt": {
                   "$ref": "#/components/schemas/B9DateTime"
                 }
-              }
+              },
+              "oneOf": [
+                {
+                  "required": [
+                    "reviewStage"
+                  ],
+                  "properties": {
+                    "reviewStage": {
+                      "enum": [
+                        "FIRST_REVIEW"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "required": [
+                    "reviewStage"
+                  ],
+                  "properties": {
+                    "reviewStage": {
+                      "enum": [
+                        "FINAL_REVIEW"
+                      ]
+                    }
+                  }
+                }
+              ]
             },
-            "maxItems": 2
+            "oneOf": [
+              {
+                "minItems": 0,
+                "maxItems": 0
+              },
+              {
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "reviewStage"
+                  ],
+                  "properties": {
+                    "reviewStage": {
+                      "enum": [
+                        "FIRST_REVIEW"
+                      ]
+                    }
+                  }
+                }
+              },
+              {
+                "minItems": 2,
+                "maxItems": 2,
+                "allOf": [
+                  {
+                    "not": {
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "reviewStage"
+                        ],
+                        "properties": {
+                          "reviewStage": {
+                            "enum": [
+                              "FIRST_REVIEW"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "not": {
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "reviewStage"
+                        ],
+                        "properties": {
+                          "reviewStage": {
+                            "enum": [
+                              "FINAL_REVIEW"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           },
           "scheduledPublishTask": {
             "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
