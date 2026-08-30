@@ -2,18 +2,18 @@
   "taskId": "P1R-M1-002",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
   "artifactDigests": [
-    {"path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json", "algorithm": "sha256", "digest": "26fb400dae4621ca4af006da80258e4907e0870c168c14586af250875bcfc714"},
-    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "415e06a76ad474ffcbf49b7d86c51c2db8a9071f2f4df09580a57f612b513300"},
-    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "a1a9d42d03dfba39aab8e1a87c817bcc3c3ce99dda1279385a8fb42f735622c9"},
-    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "f6292aaa801a5504b5fb374d67af8ac87b01d4a5e3eb83537581e54f17274a7c"},
+    {"path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json", "algorithm": "sha256", "digest": "adeaf107a42e3f00ec49c74434eb6aaa6f903e37471e5cd852f81d5b55c493a1"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "31037e15b4e3674f117778c5acaea8fbf0dce131aa421d9ef7ea7072cd513547"},
+    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "7340d104c51677ec1680d0f1ce2ae52812bd345010df0cb08334d9ef3920f022"},
+    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "88100f175d16921ea783231d61ca2a95db0cde5f816e98589cebc40a7a0ade63"},
     {"path": "scripts/audit/p1r-auth-contract-check.mjs", "algorithm": "sha256", "digest": "97f4accbc7c4abb89d948de5c9200627971840ca047e7231381499e762b299e2"},
     {"path": "tests/p1r/p1r-auth-contract.test.mjs", "algorithm": "sha256", "digest": "4b98459122f7b54c10bfe9c26713f1693dbe4e326c78394b8631e113bf153d9d"},
     {"path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md", "algorithm": "sha256", "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"},
     {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "e942a16596e1021c85f8fb493d2a7659fb9c09a17d8181746c6aa23ede1920a1"},
-    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "75e67aba4eb5971ec8db7ca41e68eae04b0677b43d861cc17d9de2140e91d683"}
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "70b3eeb7d12af5b2d75b26479567c99138a147fd5aec239c4609ce51e72d6208"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "1e82db56acf3c7cf48d2261688ba1e747a43538d55796569359d769bb5c2f82d"}
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -44,14 +44,19 @@
       {
         "taskId": "P1R-M1-008",
         "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1"
+      },
+      {
+        "taskId": "P1R-M1-009",
+        "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
       }
     ],
-    "previousCurrentSourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-007",
-    "currentSourceRevalidationTask": "P1R-M1-008"
+    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
+    "currentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max"
   },
   "startedAt": "2026-08-29T20:33:21+08:00",
-  "finishedAt": "2026-08-30T12:32:26+08:00",
+  "finishedAt": "2026-08-30T15:10:39+08:00",
   "actors": [
     "m1_002_auth_contract",
     "m1_002_auth_audit",

@@ -1,0 +1,187 @@
+{
+  "taskId": "P1R-M1-009",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "artifactDigests": [
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "70b3eeb7d12af5b2d75b26479567c99138a147fd5aec239c4609ce51e72d6208"},
+    {"path": "config/p1r-media-contract.v1.json", "algorithm": "sha256", "digest": "d7d3ce0f7e6286ac8c5281c249458b741fee11d66ec9508944e9281b4c5c883e"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md", "algorithm": "sha256", "digest": "4666baeb121246e4193391972b7c0dc133fd33a0512c1f3f400c748ed671c08c"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md", "algorithm": "sha256", "digest": "9f4783cf8b0f84703669e619e5826faa50a5d5c434d43be3f736dedc30a78f72"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md", "algorithm": "sha256", "digest": "e9c403f52cb1e2be9ece76cb99f2f7f0ead3e73f8dbec97e054066b56081bd4d"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md", "algorithm": "sha256", "digest": "1eb25cdf2c526bd67f88836aef4c9bae04f946127d6d75790a2cf7575b41dc24"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
+    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "88100f175d16921ea783231d61ca2a95db0cde5f816e98589cebc40a7a0ade63"},
+    {"path": "packages/contracts/fragments/b1-content.openapi.json", "algorithm": "sha256", "digest": "d5f143508e6f0dab1075209f243c15d21703e888f2cf7556c6e9bb217452b72a"},
+    {"path": "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json", "algorithm": "sha256", "digest": "15af7e4e85253ac665f22c937b9caebae3110069633112944add1cb195b28fec"},
+    {"path": "packages/contracts/fragments/b11/p1r-media.openapi.json", "algorithm": "sha256", "digest": "8a71e3a67fbe08bc0281643d2177c97a18355778c844d2c62b68b1b8d8fc1404"},
+    {"path": "packages/contracts/fragments/b3-multimodal.openapi.json", "algorithm": "sha256", "digest": "1313a0e42f578388ed49a9885f9d754c2cc24917393cb3e33cfec15a4a4214e2"},
+    {"path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json", "algorithm": "sha256", "digest": "adeaf107a42e3f00ec49c74434eb6aaa6f903e37471e5cd852f81d5b55c493a1"},
+    {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "4b9bdfa1a15420cbfcac9495357f9104544c5a8a4a20979873164f0460f11f82"},
+    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "7340d104c51677ec1680d0f1ce2ae52812bd345010df0cb08334d9ef3920f022"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "31037e15b4e3674f117778c5acaea8fbf0dce131aa421d9ef7ea7072cd513547"},
+    {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "c716273a5f525f48f67fcc10ac4b163cf3adbdf8185c271bf0cf8a088e3b4fde"},
+    {"path": "scripts/audit/p1r-media-contract-check.mjs", "algorithm": "sha256", "digest": "e24c8456f208697dcf39bfc0dbfeb27182ea0362c67751628966bc74212b9810"},
+    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "b3de1691c722b88ae8b34c6ffd6ad9d861f09576b704215393f95a15f373a80a"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "9b54f55662ea451534c0dc80dc1cd1ac5f407032d573186c87cad3dbadc235e1"},
+    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "947ba711f3638f7f881cbc29d2823dd711019db6637092f327eab3dfde4d6788"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "1e82db56acf3c7cf48d2261688ba1e747a43538d55796569359d769bb5c2f82d"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "a0c334466e5a740be259a1b453c0651083ae3d34d1600baea75104dc2cbd376c"},
+    {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "6c35b9475baabe508b4c2cb3d114d727c0b5eb35098d686990ca48ff5126e595"},
+    {"path": "tests/p1r/p1r-media-contract.test.mjs", "algorithm": "sha256", "digest": "344a5ae43f483bf96e6923660648990bccdd732201e4ecac42fbdd006d0705d6"}
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "ca282cd00dabeeb3fafbf6b4570054bd5b9f8549",
+    "sourceRange": "ca282cd00dabeeb3fafbf6b4570054bd5b9f8549..2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "sourceContractBaseline": "ca282cd00dabeeb3fafbf6b4570054bd5b9f8549",
+    "previousPromotion": "M1-008_CONTENT_LIFECYCLE_PROMOTION",
+    "promotion": "M1-009_MEDIA_CONTRACT_PROMOTION",
+    "expectedOpenApiSemanticSha256": "4c9e3b197f4ec93977af0afbd98141b30eae62d2401b5a6ce28ab7537ada90d2",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "m2RuntimeTasks": {
+      "P1R-M2-004": "NOT_COMPLETED",
+      "P1R-M2-005": "NOT_COMPLETED",
+      "P1R-M2-006": "NOT_COMPLETED"
+    },
+    "releaseBlocker": "P1R-M0-006 BLOCKED"
+  },
+  "startedAt": "2026-08-30T13:26:50+08:00",
+  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "actors": [
+    "root-coordinator",
+    "m1_009_scope_design",
+    "m1_009_security_review"
+  ],
+  "sourceIds": [
+    "P1R-M1-009",
+    "JNY-P1-06",
+    "JNY-P1-13",
+    "PAGE-P1-LISTENING",
+    "PAGE-P1-SPEAKING",
+    "PAGE-P1-ADMIN-MEDIA",
+    "INT-P1-005",
+    "INT-P1-006",
+    "CONTRACT-GAP-MEDIA-PROCESSING",
+    "CONTRACT-GAP-SPK-001",
+    "ARCH-API-001",
+    "ARCH-GW-001",
+    "ARCH-DATA-001",
+    "ARCH-SEC-001"
+  ],
+  "journeys": ["JNY-P1-06", "JNY-P1-13"],
+  "pages": ["PAGE-P1-LISTENING", "PAGE-P1-SPEAKING", "PAGE-P1-ADMIN-MEDIA"],
+  "rules": [
+    "Upload and access grants are short-lived, server-bound and never expose object credentials, permanent URLs or client-selected authority facts.",
+    "Media publish eligibility requires READY and CLEAN source media, valid rights and an official subtitle or text alternative; unknown or stale facts deny publication and delivery.",
+    "MediaManifest is metadata-only and contains exactly one TEXT_ALTERNATIVE and one PRACTICE_ALTERNATIVE with explicit availability reasons.",
+    "Adult remote voice recording requires the dedicated IAM-derived VOICE_RECORDING consent purpose and version; microphone denial preserves silent practice and never fabricates remote success.",
+    "Only assessment-service owns shadowing session, attempt and rule result facts; media-service owns the recording asset and learning-service consumes only trusted assessment results.",
+    "Phase 1 disables ASR, AI scoring, generative AI, digital human and RTC; historical media and recording events remain historical-only.",
+    "Static contracts, generated types, tests and B26 candidates cannot promote object-store, worker, database, broker, browser or device runtime readiness."
+  ],
+  "integrations": ["INT-P1-005", "INT-P1-006"],
+  "e2eScenarios": [],
+  "serviceOwners": ["media-service", "content-service", "assessment-service", "iam-service", "api-gateway", "workflow-service", "audit-service", "learning-service"],
+  "dataOwners": ["media-service", "content-service", "assessment-service", "iam-service", "workflow-service", "audit-service", "learning-service"],
+  "statusTrajectory": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+      "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "details": "The independent reviewer found zero current-source P1/P2 blockers after checking 14 canonical operations, 30 closed schemas, owner and consent boundaries, fallback cardinality, retry and deletion rules, legacy compatibility, Gateway projection, historical-only events and the fixed M1-008 to M1-009 promotion chain. All conclusions remain D2 and NOT_RUNTIME_VERIFIED."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:media-contract:check",
+    "node --test tests/p1r/p1r-media-contract.test.mjs",
+    "node --test tests/p1r/p1r-contract-tooling.test.mjs",
+    "pnpm test:p1r",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:iam-policy-contract:check",
+    "pnpm p1r:gateway-contract:check",
+    "pnpm p1r:data-ownership:check -- --json",
+    "pnpm p1r:content-lifecycle:check",
+    "pnpm p1r:event-governance:check",
+    "pnpm p1r:event-reliability:check",
+    "pnpm b26:static",
+    "pnpm typecheck",
+    "pnpm p1r:ci:check",
+    "pnpm plan:p1r:check",
+    "pnpm test:g",
+    "node scripts/audit/p1r-api-contract-check.mjs",
+    "git diff --check",
+    "independent Luna Max acceptance review at 2e7304a12c297d4c7bcad22b41cdb373b6030033"
+  ],
+  "results": [
+    {
+      "check": "media-contract-and-adversarial-policy",
+      "status": "PASS",
+      "details": "The media audit covers 14/14 canonical routes, 30/30 closed schemas and 11/11 historical media events with runtimeStatus=NOT_RUNTIME_VERIFIED. The standalone suite passes 45/45, including 41 fail-closed mutations for authority, consent, URL leakage, upload binding, malware, retry, fallback, publication and Phase 1 AI boundaries."
+    },
+    {
+      "check": "contract-generation-and-fixed-compatibility",
+      "status": "PASS",
+      "details": "Merge discovers 22 OpenAPI and 14 event fragments with 355 routes. Five generated outputs are current; validation passes 386 operations, 579 OpenAPI schemas, 154 events, 104 payload schemas, 12 AsyncAPI channels, 45 operations and 13 JSON Schemas. The explicit M1-009 OpenAPI projection and historical Git compatibility chain pass without moving immutable baselines."
+    },
+    {
+      "check": "owner-security-and-historical-event-boundaries",
+      "status": "PASS",
+      "details": "Gateway uniquely covers 335/335 public operations and denies 51/51 internal operations; IAM remains 8 operations and 30 policy schemas. B1/B3/B11 compatibility is explicit, recording consent is IAM-derived, media versus assessment ownership is fixed, and no historical media or recording event is promoted to canonical Kafka governance."
+    },
+    {
+      "check": "regression-and-independent-review",
+      "status": "PASS",
+      "details": "P1R passes 345/345, workspace typecheck passes 7/7, plan and CI guards pass, and the independent Luna Max reviewer accepted the clean source commit with P1/P2=0/0."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "All M1-009 policy and contract outputs remain D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED. B26 stays static-only, pending and NO-GO; M2-004/005/006 remain incomplete and P1R-M0-006 remains BLOCKED."
+    },
+    {
+      "check": "historical-full-g-context",
+      "status": "NOT_APPLICABLE",
+      "details": "The full historical G suite remains 39/41 only because the pre-existing G0 and G3 source-marker assertions still fail; the task-relevant G1 slice passes 6/6 and no M1-009 failure is hidden."
+    },
+    {
+      "check": "pre-existing-b9-api-envelope-context",
+      "status": "NOT_APPLICABLE",
+      "details": "The direct API audit still reports the B9 admin content-publish-task 200 envelope issue. The same error exists at the immutable ca282 source checkpoint and that operation did not change in M1-009, so it is recorded without being masked or misclassified as a media regression."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "M1-009 source is isolated after checkpoint ca282cd in commits 2a41746 and 2e7304a. Revert the source commit and task-start tracking commit in reverse order, then rerun merge, generation, validation, fixed compatibility, media, Gateway, IAM, P1R, typecheck, plan and diff checks. Do not move baselines ca282cd, 463c4b2 or 868c217, and do not interpret source rollback as object-store, database, broker or recording-data rollback."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004 remains incomplete and must prove real media/content/assessment owner schema, grants, object storage, integrity and malware scanning, tenant denial, deletion/legal-hold behavior and rollback evidence.",
+    "P1R-M2-005 remains incomplete and must prove real Kafka topics and ACLs, Outbox publication, consumer dedupe, retry, DLQ/replay, duplicate/disorder/outage/restart behavior and projection rebuilding.",
+    "P1R-M2-006 remains incomplete and must prove real workflow task, compensation, manual recovery, reconciliation and immutable audit/closure receipts.",
+    "Real transcoding, rendition, waveform and subtitle workers, CDN delivery, browser/device playback and pitch preservation, microphone permission, encrypted local drafts and end-to-end recording flows are not verified by M1-009.",
+    "Exact retention duration, export, legal hold and cross-owner purge execution remain owned by P1R-M1-017 and later runtime tasks; M1-009 freezes only policyRef/version and fail-closed receipt semantics.",
+    "Candidate media-service events media.asset_*, media.transcoding_updated and media.rendition_updated remain unregistered historical implementation candidates and must not publish before later event/runtime integration.",
+    "B26 remains a historical static candidate with runtimeGate=static-only, runtimeStatus=pending and defaultDecision=NO-GO; it is not broker, object-store or production evidence.",
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
+    "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy source marker, and the pre-existing B9 direct API envelope issue remains open outside M1-009."
+  ],
+  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}

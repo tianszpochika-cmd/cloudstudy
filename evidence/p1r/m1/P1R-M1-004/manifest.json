@@ -2,14 +2,14 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
   "artifactDigests": [
-    {"path": "package.json", "algorithm": "sha256", "digest": "61c482bd59aaf9d10f9b2daea0e536e4335766b482675c72fb3cc12aeb06ddde"},
-    {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "c71f705fe3f4355e6f461cdc6873dfdad8e2e2d1f667a96c6c09b185a59caa71"},
-    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "415e06a76ad474ffcbf49b7d86c51c2db8a9071f2f4df09580a57f612b513300"},
-    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "c4200854ada4030679524d9632d4dd0933a023aa8ec54fcc2fdc9e08edaa84a9"},
-    {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "c58331521ad0e0d647ea53d04156371f9a2c42e1512a26e8f3cad64a744ffdf1"},
-    {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "c5f0bf8dcee6fd6331281811b975dbc7faa26b2fb7e1351c4f7c00fecc3d0482"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
+    {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "4b9bdfa1a15420cbfcac9495357f9104544c5a8a4a20979873164f0460f11f82"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "31037e15b4e3674f117778c5acaea8fbf0dce131aa421d9ef7ea7072cd513547"},
+    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "947ba711f3638f7f881cbc29d2823dd711019db6637092f327eab3dfde4d6788"},
+    {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "c716273a5f525f48f67fcc10ac4b163cf3adbdf8185c271bf0cf8a088e3b4fde"},
+    {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "6c35b9475baabe508b4c2cb3d114d727c0b5eb35098d686990ca48ff5126e595"},
     {"path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md", "algorithm": "sha256", "digest": "f6e191bbf69ea3437c82f0d4fccde364dcc189d525ea3bcd4d4b91695afaa023"},
     {"path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md", "algorithm": "sha256", "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"},
     {"path": "docs/02-architecture/security-and-data-boundaries.md", "algorithm": "sha256", "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"},
@@ -45,14 +45,19 @@
       {
         "taskId": "P1R-M1-008",
         "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1"
+      },
+      {
+        "taskId": "P1R-M1-009",
+        "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
       }
     ],
-    "previousCurrentSourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-007",
-    "currentSourceRevalidationTask": "P1R-M1-008"
+    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
+    "currentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max"
   },
   "startedAt": "2026-08-29T23:52:04+08:00",
-  "finishedAt": "2026-08-30T12:32:26+08:00",
+  "finishedAt": "2026-08-30T15:10:39+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
