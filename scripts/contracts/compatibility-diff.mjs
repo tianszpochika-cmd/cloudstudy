@@ -782,6 +782,141 @@ const M1013_OPENAPI_ROUTE_PROJECTIONS = Object.freeze([
   ...M1013_LEGACY_ADAPTER_PROJECTIONS,
 ]);
 
+// M1-014 is a source-bound promotion from the accepted M1-013 projection.
+// Its approval is deliberately expressed as named operation/component/event
+// nodes instead of a B4/B12 fragment or path-family allowance.  B4/B12/v1
+// therefore remain historical compatibility evidence only.
+export const M1014_GAMIFICATION_SOCIAL_PROMOTION_ID = 'P1R-M1-014';
+export const M1014_SOURCE_CONTRACT_BASELINE_REF = 'e3514c359e6f6be5445cf46a7734325b2835b941';
+export const M1014_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1014_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'd0b297ae2370bf837d6b1a7dbe1c1776b221060ae10f32c27fb99353fa3a1c40';
+export const M1014_EVENT_SOURCE_SEMANTIC_SHA256 = '961e4a21be0b59d91d75870b96c105514a4f2fdd1be10728ad10b4b49de79720';
+export const M1014_B26_SOURCE_SEMANTIC_SHA256 = '53ba061644bfb91db85a945c778fd2467395dca7c117c56a6db1b1e5612f81c3';
+export const M1014_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '4ed99e38984eb422b42477d04149301d2ba05cfa1b7af1b7e5ff5344c459d0a4';
+export const M1014_EVENT_EXPECTED_SEMANTIC_SHA256 = '88397f7c17eb79f73686904f69983278009ee701c9b0bea2b69e26875206cc0c';
+export const M1014_B26_EXPECTED_SEMANTIC_SHA256 = 'cb5b6c24a62997861956a2f5b46b7f1e20c467430ea58caa19018af9e6682a9e';
+export const M1014_POLICY_SEMANTIC_SHA256 = 'b4860e3aad81f207fb2a2ff51be2b86ca1f1bdb01123d0d600f921a9846f46cb';
+export const M1014_APPROVED_SOURCE_FILES_SEMANTIC_SHA256 = 'dc18726f1db757108aaf45faa904b360572e6791c6e7dca9830e57aa32cc6ff3';
+export const M1014_APPROVED_CANONICAL_EVENTS_SEMANTIC_SHA256 = 'e494087315361a21a34f3644b63a74c175863205ed509f47febdffe453eea389';
+export const M1014_CANONICAL_ROUTES_SEMANTIC_SHA256 = '7b2e9226430d3df7a62e127678a93cbd3c92a45c172ac6ec0404105f04915eb1';
+export const M1014_LEGACY_ADAPTERS_SEMANTIC_SHA256 = '4a15d8eb382b6e843fe98aff483b53e39bca4c9c55ff2276a5a4af8829fc6568';
+export const M1014_HISTORICAL_ONLY_SOURCES_SEMANTIC_SHA256 = 'becf1429f5a428dc26f3c198a7f947f177ba65878e2d263c1db8d308f8d6d26c';
+export const M1014_PROHIBITED_RUNTIME_CLAIMS_SEMANTIC_SHA256 = '6b722d00f757fc468a89e0e5f27c80306b7c061254a0f5c66490b13520b9bfe9';
+export const M1014_B26_STATIC_POLICY_SEMANTIC_SHA256 = 'a967b692a61463029d4d899d8ebe32fbad0b57d1113824be5c9ad8a9dea4387e';
+export const M1014_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id', 'sourceContractBaseline', 'previousPromotion', 'immutableGovernanceBaseline', 'runtimeStatus', 'scope',
+  'approvedSourceFiles', 'approvedCanonicalEvents', 'canonicalRoutes', 'legacyAdapters', 'historicalOnlySources',
+  'prohibitedRuntimeClaims', 'b26StaticPolicy',
+]);
+export const M1014_CANONICAL_ROUTE_PROJECTIONS = Object.freeze([
+  Object.freeze({ id: 'M1014-GAM-SUMMARY', method: 'GET', path: '/api/v1/gamification/me/summary', operationId: 'getM1014GamificationSummary' }),
+  Object.freeze({ id: 'M1014-GAM-LEDGER-LIST', method: 'GET', path: '/api/v1/gamification/me/ledger', operationId: 'listM1014GamificationLedger' }),
+  Object.freeze({ id: 'M1014-GAM-REWARD-LIST', method: 'GET', path: '/api/v1/gamification/me/rewards', operationId: 'listM1014RewardGrants' }),
+  Object.freeze({ id: 'M1014-GAM-REWARD-PROBABILITY', method: 'GET', path: '/api/v1/gamification/me/rewards/{grantId}/probability', operationId: 'getM1014RewardProbability' }),
+  Object.freeze({ id: 'M1014-GAM-REWARD-CLAIM', method: 'POST', path: '/api/v1/gamification/me/rewards/{grantId}/claim', operationId: 'claimM1014Reward' }),
+  Object.freeze({ id: 'M1014-GAM-TRUSTED-COMPLETION', method: 'POST', path: '/internal/v1/gamification/trusted-events/completions', operationId: 'settleM1014TrustedCompletion' }),
+  Object.freeze({ id: 'M1014-SOC-ROOM-DISCONNECT', method: 'POST', path: '/api/v1/social/rooms/{roomId}/disconnect', operationId: 'disconnectM1014StudyRoom' }),
+  Object.freeze({ id: 'M1014-SOC-ROOM-RECOVER', method: 'POST', path: '/api/v1/social/rooms/{roomId}/recover', operationId: 'recoverM1014StudyRoomSeat' }),
+  Object.freeze({ id: 'M1014-SOC-LEASE-RENEW', method: 'POST', path: '/api/v1/social/rooms/{roomId}/lease/renew', operationId: 'renewM1014StudyRoomLease' }),
+  Object.freeze({ id: 'M1014-SOC-FOCUS-START', method: 'POST', path: '/api/v1/social/rooms/{roomId}/focus', operationId: 'startM1014RoomFocus' }),
+  Object.freeze({ id: 'M1014-SOC-FOCUS-UPDATE', method: 'PATCH', path: '/api/v1/social/rooms/{roomId}/focus', operationId: 'updateM1014RoomFocus' }),
+  Object.freeze({ id: 'M1014-SOC-PRESET-INTERACTION', method: 'POST', path: '/api/v1/social/rooms/{roomId}/interactions', operationId: 'recordM1014RoomInteraction' }),
+  Object.freeze({ id: 'M1014-SOC-LEADERBOARD-LIST', method: 'GET', path: '/api/v1/social/leaderboards', operationId: 'getM1014Leaderboard' }),
+  Object.freeze({ id: 'M1014-SOC-VISIBILITY-UPDATE', method: 'PATCH', path: '/api/v1/social/me/visibility', operationId: 'updateM1014SocialVisibility' }),
+  Object.freeze({ id: 'M1014-SOC-REPORT-CREATE', method: 'POST', path: '/api/v1/social/rooms/{roomId}/reports', operationId: 'createM1014SocialReport' }),
+  Object.freeze({ id: 'M1014-SOC-REPORT-GET', method: 'GET', path: '/api/v1/social/reports/{reportId}', operationId: 'getM1014SocialReport' }),
+  Object.freeze({ id: 'M1014-SOC-TRUSTED-EVENT', method: 'POST', path: '/internal/v1/social/trusted-events', operationId: 'consumeM1014SocialTrustedEvent' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-CATALOG', method: 'GET', path: '/api/v1/games/catalog', operationId: 'listM1014GameCatalog' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-SESSION-CREATE', method: 'POST', path: '/api/v1/games/sessions', operationId: 'createM1014GameSession' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-SESSION-GET', method: 'GET', path: '/api/v1/games/sessions/{sessionId}', operationId: 'getM1014GameSession' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-EVENT-SUBMIT', method: 'POST', path: '/api/v1/games/sessions/{sessionId}/events', operationId: 'submitM1014GameEvent' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-SESSION-PAUSE', method: 'POST', path: '/api/v1/games/sessions/{sessionId}/pause', operationId: 'pauseM1014GameSession' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-SESSION-RESUME', method: 'POST', path: '/api/v1/games/sessions/{sessionId}/resume', operationId: 'resumeM1014GameSession' }),
+  Object.freeze({ id: 'M1014-GAM-GAME-SESSION-FINISH', method: 'POST', path: '/api/v1/games/sessions/{sessionId}/finish', operationId: 'finishM1014GameSession' }),
+  Object.freeze({ id: 'M1014-SOC-ROOM-LIST', method: 'GET', path: '/api/v1/social/rooms', operationId: 'listM1014StudyRooms' }),
+  Object.freeze({ id: 'M1014-SOC-ROOM-GET', method: 'GET', path: '/api/v1/social/rooms/{roomId}', operationId: 'getM1014StudyRoom' }),
+  Object.freeze({ id: 'M1014-SOC-ROOM-JOIN', method: 'POST', path: '/api/v1/social/rooms/{roomId}/join', operationId: 'joinM1014StudyRoom' }),
+  Object.freeze({ id: 'M1014-SOC-ROOM-LEAVE', method: 'POST', path: '/api/v1/social/rooms/{roomId}/leave', operationId: 'leaveM1014StudyRoom' }),
+]);
+export const M1014_OPENAPI_PARAMETER_PROJECTIONS = Object.freeze([
+  'M1014GrantId', 'M1014IdempotencyKey', 'M1014LeaderboardKind', 'M1014LeaderboardPeriod',
+  'M1014OptionalRoomId', 'M1014ReportId', 'M1014RoomId', 'M1014SessionId',
+]);
+const M1014_OPENAPI_PROHIBITED_PARAMETER_ALIASES = Object.freeze(['M1014Cursor', 'M1014PageSize']);
+export const M1014_OPENAPI_SCHEMA_PROJECTIONS = Object.freeze([
+  'M1014FocusCommand', 'M1014FocusSession', 'M1014FocusUpdateCommand', 'M1014GameCatalog', 'M1014GameCatalogItem',
+  'M1014GameEventReceipt', 'M1014GameEventRequest', 'M1014GameSession', 'M1014GameSessionControlRequest',
+  'M1014GameSessionCreateRequest', 'M1014GameSessionResult', 'M1014GrowthSummary', 'M1014InteractionResult',
+  'M1014Leaderboard', 'M1014LeaderboardEntry', 'M1014LedgerEntry', 'M1014PresetInteraction', 'M1014Report',
+  'M1014ReportCommand', 'M1014RewardClaimRequest', 'M1014RewardClaimResult', 'M1014RewardGrant',
+  'M1014RewardProbability', 'M1014RoomCommand', 'M1014RoomDetails', 'M1014RoomJoinRequest', 'M1014RoomPage',
+  'M1014RoomState', 'M1014RoomSummary', 'M1014SettlementResult', 'M1014TrustedCompletion',
+  'M1014TrustedSocialEvent', 'M1014Visibility', 'M1014VisibilityCommand', 'M1014LeaderboardMasteryFact',
+  'M1014LeaderboardXpFact',
+]);
+const M1014_OPENAPI_TAG_PROJECTIONS = Object.freeze(['M1-014-GAM', 'M1-014-SOC']);
+export const M1014_REPLACED_EVENT_NAMES = Object.freeze([
+  'assessment.item.assessed.v2',
+  'learning.mastery.projected.v2',
+]);
+export const M1014_NEW_EVENT_NAMES = Object.freeze([
+  'learning.task.completed.v2',
+  'gamification.xp.ledger_posted.v2',
+  'gamification.reward.granted.v2',
+  'study_room.seat_joined.v2',
+  'study_room.focus_started.v2',
+  'study_room.seat_left.v2',
+  'leaderboard.snapshot_published.v2',
+  'social.report.created.v2',
+]);
+export const M1014_EVENT_PAYLOAD_SCHEMA_PROJECTIONS = Object.freeze([
+  'M1014LearningTaskCompleted', 'M1014GamificationXpLedgerPosted', 'M1014GamificationRewardGranted',
+  'M1014StudyRoomSeatJoined', 'M1014StudyRoomFocusStarted', 'M1014StudyRoomSeatLeft',
+  'M1014LeaderboardSnapshotPublished', 'M1014SocialReportCreated',
+]);
+export const M1014_ASYNCAPI_CHANNEL_PROJECTIONS = Object.freeze([
+  'learning_task_completed_v2', 'gamification_xp_ledger_posted_v2', 'gamification_reward_granted_v2',
+  'study_room_seat_joined_v2', 'study_room_focus_started_v2', 'study_room_seat_left_v2',
+  'leaderboard_snapshot_published_v2', 'social_report_created_v2',
+]);
+export const M1014_ASYNCAPI_OPERATION_PROJECTIONS = Object.freeze([
+  'publish_learning_task_completed_v2',
+  'subscribe_learning_task_completed_v2_cg_gamification_from_learning_v1',
+  'subscribe_learning_task_completed_v2_cg_workflow_from_learning_v1',
+  'publish_gamification_xp_ledger_posted_v2',
+  'subscribe_gamification_xp_ledger_posted_v2_cg_audit_from_gamification_v1',
+  'subscribe_gamification_xp_ledger_posted_v2_cg_workflow_from_gamification_v1',
+  'publish_gamification_reward_granted_v2',
+  'subscribe_gamification_reward_granted_v2_cg_audit_from_gamification_v1',
+  'subscribe_gamification_reward_granted_v2_cg_workflow_from_gamification_v1',
+  'publish_study_room_seat_joined_v2',
+  'subscribe_study_room_seat_joined_v2_cg_analytics_from_social_v1',
+  'subscribe_study_room_seat_joined_v2_cg_audit_from_social_v1',
+  'subscribe_study_room_seat_joined_v2_cg_workflow_from_social_v1',
+  'publish_study_room_focus_started_v2',
+  'subscribe_study_room_focus_started_v2_cg_analytics_from_social_v1',
+  'subscribe_study_room_focus_started_v2_cg_audit_from_social_v1',
+  'subscribe_study_room_focus_started_v2_cg_workflow_from_social_v1',
+  'publish_study_room_seat_left_v2',
+  'subscribe_study_room_seat_left_v2_cg_analytics_from_social_v1',
+  'subscribe_study_room_seat_left_v2_cg_audit_from_social_v1',
+  'subscribe_study_room_seat_left_v2_cg_workflow_from_social_v1',
+  'publish_leaderboard_snapshot_published_v2',
+  'subscribe_leaderboard_snapshot_published_v2_cg_analytics_from_social_v1',
+  'subscribe_leaderboard_snapshot_published_v2_cg_audit_from_social_v1',
+  'subscribe_leaderboard_snapshot_published_v2_cg_workflow_from_social_v1',
+  'publish_social_report_created_v2',
+  'subscribe_social_report_created_v2_cg_admin_ops_from_social_v1',
+  'subscribe_social_report_created_v2_cg_audit_from_social_v1',
+  'subscribe_social_report_created_v2_cg_workflow_from_social_v1',
+  'subscribe_assessment_item_assessed_v2_cg_gamification_from_assessment_v1',
+  'subscribe_learning_mastery_projected_v2_cg_gamification_from_learning_v1',
+  'subscribe_learning_mastery_projected_v2_cg_social_from_learning_v1',
+  'subscribe_gamification_xp_ledger_posted_v2_cg_social_from_gamification_v1',
+]);
+const M1014_B26_ADDED_TOPIC_PROJECTIONS = Object.freeze(['platform.gamification.v1', 'platform.social.v1']);
+const M1014_B26_REPLACED_TOPIC_PROJECTIONS = Object.freeze(['platform.assessment.v1', 'platform.learning.v1']);
+
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -1694,6 +1829,239 @@ export function compareM1013B26Descriptors(previous, current) {
   return changes;
 }
 
+function isValidM1014PromotionAllowance(allowance) {
+  const routeIdentity = Array.isArray(allowance?.canonicalRoutes)
+    ? allowance.canonicalRoutes.map((route) => ({
+      id: route?.id,
+      method: route?.method,
+      path: route?.path,
+      operationId: route?.operationId,
+    }))
+    : undefined;
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1014_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1014_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1013_LEARNING_LOOP_PROMOTION_ID
+    && allowance.immutableGovernanceBaseline === M1014_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC'
+    && stableGovernanceSha256(allowance.approvedSourceFiles) === M1014_APPROVED_SOURCE_FILES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.approvedCanonicalEvents) === M1014_APPROVED_CANONICAL_EVENTS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.canonicalRoutes) === M1014_CANONICAL_ROUTES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.legacyAdapters) === M1014_LEGACY_ADAPTERS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.historicalOnlySources) === M1014_HISTORICAL_ONLY_SOURCES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.prohibitedRuntimeClaims) === M1014_PROHIBITED_RUNTIME_CLAIMS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.b26StaticPolicy) === M1014_B26_STATIC_POLICY_SEMANTIC_SHA256
+    && stableGovernanceValue(routeIdentity) === stableGovernanceValue(M1014_CANONICAL_ROUTE_PROJECTIONS);
+}
+
+function copyM1014Operation(expected, approved, projection) {
+  const method = projection.method.toLowerCase();
+  const sourcePath = expected?.paths?.[projection.path];
+  const approvedPath = approved?.paths?.[projection.path];
+  if (!isRecord(sourcePath) || !isRecord(sourcePath[method])
+    || !isRecord(approvedPath) || !isRecord(approvedPath[method])
+    || approvedPath[method].operationId !== projection.operationId) return false;
+  sourcePath[method] = structuredClone(approvedPath[method]);
+  return true;
+}
+
+function insertM1014NamedEntry(target, approved, name) {
+  if (!isRecord(target) || !isRecord(approved) || Object.hasOwn(target, name) || !isRecord(approved[name])) return false;
+  target[name] = structuredClone(approved[name]);
+  return true;
+}
+
+function insertM1014NamedArrayEntry(target, approved, key, name) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const targetMatches = target.filter((entry) => entry?.[key] === name);
+  const approvedMatches = approved.filter((entry) => entry?.[key] === name);
+  if (targetMatches.length !== 0 || approvedMatches.length !== 1) return false;
+  const insertionIndex = approved.findIndex((entry) => entry?.[key] === name);
+  if (insertionIndex < 0) return false;
+  target.splice(insertionIndex, 0, structuredClone(approvedMatches[0]));
+  return true;
+}
+
+function replaceM1014NamedArrayEntry(target, approved, key, name) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const targetIndexes = target.reduce((indexes, entry, index) => (entry?.[key] === name ? indexes.concat(index) : indexes), []);
+  const approvedMatches = approved.filter((entry) => entry?.[key] === name);
+  if (targetIndexes.length !== 1 || approvedMatches.length !== 1) return false;
+  target[targetIndexes[0]] = structuredClone(approvedMatches[0]);
+  return true;
+}
+
+function sameM1014NamedArrayEntry(previous, approved, key, name) {
+  if (!Array.isArray(previous) || !Array.isArray(approved)) return false;
+  const sourceMatches = previous.filter((entry) => entry?.[key] === name);
+  const approvedMatches = approved.filter((entry) => entry?.[key] === name);
+  return sourceMatches.length === 1
+    && approvedMatches.length === 1
+    && stableGovernanceValue(sourceMatches[0]) === stableGovernanceValue(approvedMatches[0]);
+}
+
+function insertM1014Tag(target, approved, name) {
+  if (!Array.isArray(target?.tags) || !Array.isArray(approved?.tags)) return false;
+  return insertM1014NamedArrayEntry(target.tags, approved.tags, 'name', name);
+}
+
+/**
+ * Rebuilds the sole approved M1-014 OpenAPI state from the immutable e351
+ * M1-013 projection.  Every promotion is a named operation replacement;
+ * only its listed component parameters, schemas and two tags are inserted.
+ * No B4/B12 path object, component family or fragment is copied wholesale.
+ */
+export function buildM1014OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1014PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1014_OPENAPI_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous.paths) || !isRecord(previous.components?.parameters) || !isRecord(previous.components?.schemas)
+    || !isRecord(approved.components?.parameters) || !isRecord(approved.components?.schemas)) return undefined;
+  if (M1014_OPENAPI_PROHIBITED_PARAMETER_ALIASES.some((name) => Object.hasOwn(previous.components.parameters, name)
+    || Object.hasOwn(approved.components.parameters, name))) return undefined;
+  const expected = structuredClone(previous);
+  if (!M1014_CANONICAL_ROUTE_PROJECTIONS.every((projection) => copyM1014Operation(expected, approved, projection))) return undefined;
+  if (!M1014_OPENAPI_TAG_PROJECTIONS.every((name) => insertM1014Tag(expected, approved, name))) return undefined;
+  for (const name of M1014_OPENAPI_PARAMETER_PROJECTIONS) {
+    if (Object.hasOwn(previous.components.parameters, name)
+      || !insertM1014NamedEntry(expected.components.parameters, approved.components.parameters, name)) return undefined;
+  }
+  for (const name of M1014_OPENAPI_SCHEMA_PROJECTIONS) {
+    if (Object.hasOwn(previous.components.schemas, name)
+      || !insertM1014NamedEntry(expected.components.schemas, approved.components.schemas, name)) return undefined;
+  }
+  return expected;
+}
+
+/**
+ * Rebuilds the exact M1-014 event catalog and generated AsyncAPI projection.
+ * The two predecessor events only gain their allowlisted gamification
+ * consumers.  The review-scheduled event is intentionally copied from e351
+ * unchanged, so a gamification binding or any other review drift fails before
+ * a candidate projection can be constructed.
+ */
+export function buildM1014EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1014PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1014_EVENT_SOURCE_SEMANTIC_SHA256
+    || !isRecord(approved['x-p1r-event-governance'])
+    || !sameM1014NamedArrayEntry(previous.events, approved.events, 'eventName', 'learning.review.scheduled.v2')) return undefined;
+  const expected = structuredClone(previous);
+  expected['x-p1r-event-governance'] = structuredClone(approved['x-p1r-event-governance']);
+  const eventProjection = M1014_REPLACED_EVENT_NAMES.every((name) => replaceM1014NamedArrayEntry(expected.events, approved.events, 'eventName', name))
+    && M1014_NEW_EVENT_NAMES.every((name) => insertM1014NamedArrayEntry(expected.events, approved.events, 'eventName', name));
+  const payloadProjection = M1014_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.every((name) => insertM1014NamedEntry(expected.payloadSchemas, approved.payloadSchemas, name));
+  const channelProjection = M1014_ASYNCAPI_CHANNEL_PROJECTIONS.every((name) => insertM1014NamedEntry(expected.asyncapi?.channels, approved.asyncapi?.channels, name));
+  const operationProjection = M1014_ASYNCAPI_OPERATION_PROJECTIONS.every((name) => insertM1014NamedEntry(expected.asyncapi?.operations, approved.asyncapi?.operations, name));
+  return eventProjection && payloadProjection && channelProjection && operationProjection ? expected : undefined;
+}
+
+/**
+ * B26 remains an explicitly static, pending/NO-GO governance document.  The
+ * promotion may replace only the assessment and learning consumer ACL nodes,
+ * add two topics, and add eight named routes; review scheduling remains
+ * unchanged and cannot acquire a gamification consumer.
+ */
+export function buildM1014B26ExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1014PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1014_B26_SOURCE_SEMANTIC_SHA256
+    || !sameM1014NamedArrayEntry(previous.eventRouting, approved.eventRouting, 'eventName', 'learning.review.scheduled.v2')) return undefined;
+  const expected = structuredClone(previous);
+  const topics = M1014_B26_REPLACED_TOPIC_PROJECTIONS.every((name) => replaceM1014NamedArrayEntry(expected.topics, approved.topics, 'name', name))
+    && M1014_B26_ADDED_TOPIC_PROJECTIONS.every((name) => insertM1014NamedArrayEntry(expected.topics, approved.topics, 'name', name));
+  const routes = M1014_REPLACED_EVENT_NAMES.every((name) => replaceM1014NamedArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', name))
+    && M1014_NEW_EVENT_NAMES.every((name) => insertM1014NamedArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', name));
+  return topics && routes ? expected : undefined;
+}
+
+function compareM1014Value(changes, kind, previousValue, currentValue, location, reason) {
+  if (stableGovernanceValue(previousValue) !== stableGovernanceValue(currentValue)) {
+    changes.push(describeChange(kind, location, reason));
+  }
+}
+
+export const M1014_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1014_CANONICAL_ROUTE_PROJECTIONS.map((projection) => [
+    `${projection.method} ${projection.path}`,
+    'approved canonical M1-014 gamification/social operation changed',
+  ]),
+  ...M1014_OPENAPI_TAG_PROJECTIONS.map((name) => [`tags.${name}`, 'approved M1-014 API tag added']),
+  ...M1014_OPENAPI_PARAMETER_PROJECTIONS.map((name) => [`components.parameters.${name}`, 'approved M1-014 component parameter added']),
+  ...M1014_OPENAPI_SCHEMA_PROJECTIONS.map((name) => [`components.schemas.${name}`, 'approved M1-014 component schema added']),
+]);
+
+export const M1014_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ['x-p1r-event-governance', 'approved M1-014 event governance changed'],
+  ...M1014_REPLACED_EVENT_NAMES.map((name) => [name, 'approved canonical event consumer governance changed']),
+  ...M1014_NEW_EVENT_NAMES.map((name) => [name, 'approved canonical M1-014 event added']),
+  ...M1014_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.map((name) => [`payloadSchemas.${name}`, 'approved M1-014 event payload added']),
+  ...M1014_ASYNCAPI_CHANNEL_PROJECTIONS.map((name) => [`asyncapi.channels.${name}`, 'approved M1-014 AsyncAPI channel added']),
+  ...M1014_ASYNCAPI_OPERATION_PROJECTIONS.map((name) => [`asyncapi.operations.${name}`, 'approved M1-014 AsyncAPI operation added']),
+]);
+
+export const M1014_B26_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1014_B26_REPLACED_TOPIC_PROJECTIONS.map((name) => [`topics.${name}`, 'approved M1-014 B26 consumer ACL changed']),
+  ...M1014_B26_ADDED_TOPIC_PROJECTIONS.map((name) => [`topics.${name}`, 'approved M1-014 B26 topic added']),
+  ...M1014_REPLACED_EVENT_NAMES.map((name) => [`eventRouting.${name}`, 'approved M1-014 B26 consumer route changed']),
+  ...M1014_NEW_EVENT_NAMES.map((name) => [`eventRouting.${name}`, 'approved M1-014 B26 route added']),
+]);
+
+export function compareM1014OpenApiDescriptors(previous, current) {
+  const changes = [];
+  for (const projection of M1014_CANONICAL_ROUTE_PROJECTIONS) {
+    const method = projection.method.toLowerCase();
+    compareM1014Value(changes, 'openapi', previous?.paths?.[projection.path]?.[method], current?.paths?.[projection.path]?.[method], `${projection.method} ${projection.path}`, 'approved canonical M1-014 gamification/social operation changed');
+  }
+  for (const name of M1014_OPENAPI_TAG_PROJECTIONS) {
+    compareM1014Value(changes, 'openapi', (previous?.tags ?? []).find((tag) => tag?.name === name), (current?.tags ?? []).find((tag) => tag?.name === name), `tags.${name}`, 'approved M1-014 API tag added');
+  }
+  for (const name of M1014_OPENAPI_PARAMETER_PROJECTIONS) {
+    compareM1014Value(changes, 'openapi', previous?.components?.parameters?.[name], current?.components?.parameters?.[name], `components.parameters.${name}`, 'approved M1-014 component parameter added');
+  }
+  for (const name of M1014_OPENAPI_SCHEMA_PROJECTIONS) {
+    compareM1014Value(changes, 'openapi', previous?.components?.schemas?.[name], current?.components?.schemas?.[name], `components.schemas.${name}`, 'approved M1-014 component schema added');
+  }
+  return changes;
+}
+
+export function compareM1014EventDescriptors(previous, current) {
+  const changes = [];
+  compareM1014Value(changes, 'events', previous?.['x-p1r-event-governance'], current?.['x-p1r-event-governance'], 'x-p1r-event-governance', 'approved M1-014 event governance changed');
+  for (const name of M1014_REPLACED_EVENT_NAMES) {
+    compareM1014Value(changes, 'events', (previous?.events ?? []).find((event) => event?.eventName === name), (current?.events ?? []).find((event) => event?.eventName === name), name, 'approved canonical event consumer governance changed');
+  }
+  for (const name of M1014_NEW_EVENT_NAMES) {
+    compareM1014Value(changes, 'events', (previous?.events ?? []).find((event) => event?.eventName === name), (current?.events ?? []).find((event) => event?.eventName === name), name, 'approved canonical M1-014 event added');
+  }
+  for (const name of M1014_EVENT_PAYLOAD_SCHEMA_PROJECTIONS) {
+    compareM1014Value(changes, 'events', previous?.payloadSchemas?.[name], current?.payloadSchemas?.[name], `payloadSchemas.${name}`, 'approved M1-014 event payload added');
+  }
+  for (const name of M1014_ASYNCAPI_CHANNEL_PROJECTIONS) {
+    compareM1014Value(changes, 'events', previous?.asyncapi?.channels?.[name], current?.asyncapi?.channels?.[name], `asyncapi.channels.${name}`, 'approved M1-014 AsyncAPI channel added');
+  }
+  for (const name of M1014_ASYNCAPI_OPERATION_PROJECTIONS) {
+    compareM1014Value(changes, 'events', previous?.asyncapi?.operations?.[name], current?.asyncapi?.operations?.[name], `asyncapi.operations.${name}`, 'approved M1-014 AsyncAPI operation added');
+  }
+  return changes;
+}
+
+export function compareM1014B26Descriptors(previous, current) {
+  const changes = [];
+  for (const name of M1014_B26_REPLACED_TOPIC_PROJECTIONS) {
+    compareM1014Value(changes, 'events', (previous?.topics ?? []).find((topic) => topic?.name === name), (current?.topics ?? []).find((topic) => topic?.name === name), `topics.${name}`, 'approved M1-014 B26 consumer ACL changed');
+  }
+  for (const name of M1014_B26_ADDED_TOPIC_PROJECTIONS) {
+    compareM1014Value(changes, 'events', (previous?.topics ?? []).find((topic) => topic?.name === name), (current?.topics ?? []).find((topic) => topic?.name === name), `topics.${name}`, 'approved M1-014 B26 topic added');
+  }
+  for (const name of M1014_REPLACED_EVENT_NAMES) {
+    compareM1014Value(changes, 'events', (previous?.eventRouting ?? []).find((entry) => entry?.eventName === name), (current?.eventRouting ?? []).find((entry) => entry?.eventName === name), `eventRouting.${name}`, 'approved M1-014 B26 consumer route changed');
+  }
+  for (const name of M1014_NEW_EVENT_NAMES) {
+    compareM1014Value(changes, 'events', (previous?.eventRouting ?? []).find((entry) => entry?.eventName === name), (current?.eventRouting ?? []).find((entry) => entry?.eventName === name), `eventRouting.${name}`, 'approved M1-014 B26 route added');
+  }
+  return changes;
+}
+
 function m1008ChannelId(eventName) {
   return eventName.replaceAll('.', '_');
 }
@@ -2579,6 +2947,99 @@ function compareM1013B26Promotion(previous, current, allowance) {
   return changes;
 }
 
+function compareM1014OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1014PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-014.openapiPromotion', 'M1-014 promotion allowance cannot be applied without the frozen gamification/social policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1014_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-014.openapiPromotion.source', 'M1-014 OpenAPI promotion source is not the frozen e351 M1-013 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'openapi',
+    previous,
+    current,
+    M1014_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-014.openapiPromotion.change-descriptors',
+    'current OpenAPI changes do not exactly match the frozen M1-014 descriptor set',
+    compareM1014OpenApiDescriptors,
+  ));
+  const expectedProjection = buildM1014OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-014.openapiPromotion.projection', 'the approved canonical gamification/social OpenAPI projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1014_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-014.openapiPromotion.expected-projection', 'the allowlisted M1-014 OpenAPI projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-014.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source M1-014 projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1014EventPromotion(previous, current, allowance) {
+  if (!isValidM1014PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-014.eventPromotion', 'M1-014 event allowance cannot be applied without the frozen gamification/social policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1014_EVENT_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'm1-014.eventPromotion.source', 'M1-014 event source is not the frozen e351 M1-013 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1014_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-014.eventPromotion.change-descriptors',
+    'current event changes do not exactly match the frozen M1-014 descriptor set',
+    compareM1014EventDescriptors,
+  ));
+  const expectedProjection = buildM1014EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-014.eventPromotion.projection', 'the approved canonical event projection cannot be constructed from the frozen source, including the unchanged review-scheduled boundary'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1014_EVENT_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'm1-014.eventPromotion.expected-projection', 'the allowlisted M1-014 event projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'm1-014.eventPromotion.projection', 'current event catalog is not the unique frozen-source M1-014 projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1014B26Promotion(previous, current, allowance) {
+  if (!isValidM1014PromotionAllowance(allowance)) {
+    return [describeChange('events', 'b26.m1-014.compatibilityPromotion', 'M1-014 B26 allowance cannot be applied without the frozen static-only gamification/social policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1014_B26_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'b26.m1-014.source', 'M1-014 B26 promotion source is not the frozen e351 M1-013 projection'));
+  }
+  const expectedProjection = buildM1014B26ExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'b26.m1-014.projection', 'the approved static M1-014 topics and routes cannot be constructed from the frozen source'));
+  } else {
+    changes.push(...compareFrozenDescriptorSet(
+      'events',
+      previous,
+      current,
+      M1014_B26_EXPECTED_CHANGE_DESCRIPTORS,
+      'b26.m1-014.change-descriptors',
+      'current B26 changes do not exactly match the frozen M1-014 descriptor set',
+      compareM1014B26Descriptors,
+    ));
+    if (stableGovernanceSha256(expectedProjection) !== M1014_B26_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'b26.m1-014.expected-projection', 'the allowlisted static M1-014 B26 projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'b26.m1-014.projection', 'current B26 policy differs from the explicit static-only M1-014 projection'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -2680,6 +3141,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID) {
+    return compareM1014B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1013_LEARNING_LOOP_PROMOTION_ID) {
     return compareM1013B26Promotion(governanceBaseline, current, allowance);
   }
@@ -2841,6 +3305,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID) {
+    return compareM1014EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1013_LEARNING_LOOP_PROMOTION_ID) {
     return compareM1013EventPromotion(previous, current, allowance);
   }
@@ -2970,6 +3437,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID) {
+      return compareM1014OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1013_LEARNING_LOOP_PROMOTION_ID) {
       return compareM1013OpenApiPromotion(previous, current, allowance);
     }

@@ -21,13 +21,14 @@ test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pen
   assert.equal(result.staticStatus, 'PASS')
   assert.equal(result.runtimeStatus, 'pending')
   assert.equal(result.runtimeGate, 'static-only')
-  assert.equal(result.topicCount, 7)
+  assert.equal(result.topicCount, 9)
   assert.equal(result.fragmentEventCount, 7)
-  assert.equal(result.routedCanonicalEventCount, 17)
+  assert.equal(result.routedCanonicalEventCount, 25)
   assert.equal(result.fragmentPayloadSchemaCount, 7)
   assert.equal(result.eventCount, 7)
-  assert.equal(result.routeCount, 17)
+  assert.equal(result.routeCount, 25)
   assert.equal(result.payloadSchemaCount, 7)
+  assert.equal(result.consumerGroupCount, 28)
   assert.equal(result.runtimeEvidencePending, true)
 })
 
@@ -61,6 +62,41 @@ test('B26 freezes assessment placement completion on the assessment topic with b
   const event = catalog.events.find((candidate) => candidate.eventName === route.eventName)
   assert.equal(event.status, 'CANONICAL_D2')
   assert.equal(event['x-p1r-governance'].runtimeStatus, 'NOT_RUNTIME_VERIFIED')
+})
+
+test('B26 freezes M1-014 trusted source, gamification, and social routes with least-privilege consumer groups', () => {
+  const expectedRoutes = {
+    'assessment.item.assessed.v2': ['platform.assessment.v1', ['cg.learning-from-assessment.v1', 'cg.gamification-from-assessment.v1', 'cg.workflow-from-assessment.v1']],
+    'learning.task.completed.v2': ['platform.learning.v1', ['cg.gamification-from-learning.v1', 'cg.workflow-from-learning.v1']],
+    'learning.mastery.projected.v2': ['platform.learning.v1', ['cg.assessment-from-learning.v1', 'cg.gamification-from-learning.v1', 'cg.social-from-learning.v1', 'cg.workflow-from-learning.v1']],
+    'gamification.xp.ledger_posted.v2': ['platform.gamification.v1', ['cg.workflow-from-gamification.v1', 'cg.audit-from-gamification.v1', 'cg.social-from-gamification.v1']],
+    'gamification.reward.granted.v2': ['platform.gamification.v1', ['cg.workflow-from-gamification.v1', 'cg.audit-from-gamification.v1']],
+    'study_room.seat_joined.v2': ['platform.social.v1', ['cg.analytics-from-social.v1', 'cg.workflow-from-social.v1', 'cg.audit-from-social.v1']],
+    'study_room.focus_started.v2': ['platform.social.v1', ['cg.analytics-from-social.v1', 'cg.workflow-from-social.v1', 'cg.audit-from-social.v1']],
+    'study_room.seat_left.v2': ['platform.social.v1', ['cg.analytics-from-social.v1', 'cg.workflow-from-social.v1', 'cg.audit-from-social.v1']],
+    'leaderboard.snapshot_published.v2': ['platform.social.v1', ['cg.analytics-from-social.v1', 'cg.workflow-from-social.v1', 'cg.audit-from-social.v1']],
+    'social.report.created.v2': ['platform.social.v1', ['cg.admin-ops-from-social.v1', 'cg.audit-from-social.v1', 'cg.workflow-from-social.v1']],
+  }
+  for (const [eventName, [topic, consumerGroups]] of Object.entries(expectedRoutes)) {
+    assert.deepEqual(manifest.eventRouting.find((route) => route.eventName === eventName), {
+      eventName,
+      topic,
+      partitionKey: 'aggregateId',
+      consumerGroups,
+    })
+  }
+  const reviewRoute = manifest.eventRouting.find((route) => route.eventName === 'learning.review.scheduled.v2')
+  assert.ok(reviewRoute)
+  assert.equal(reviewRoute.consumerGroups.includes('cg.gamification-from-learning.v1'), false)
+
+  for (const [topicName, ownerService] of [['platform.gamification.v1', 'gamification-service'], ['platform.social.v1', 'social-service']]) {
+    const topic = manifest.topics.find((candidate) => candidate.name === topicName)
+    assert.equal(topic.ownerService, ownerService)
+    assert.equal(topic.producerPrincipal, `svc.${ownerService}`)
+    assert.equal(topic.acl.filter((entry) => entry.operation === 'WRITE').length, 1)
+    assert.equal(topic.acl.find((entry) => entry.operation === 'WRITE').principal, topic.producerPrincipal)
+    assert.ok(topic.acl.filter((entry) => entry.operation === 'READ').every((entry) => topic.consumerGroups.some((group) => group.name === entry.principal)))
+  }
 })
 
 test('B26 topics use fixed local port, aggregate partitioning, explicit ACL and isolated consumer groups', () => {

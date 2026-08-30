@@ -563,6 +563,46 @@ export type B10LearningMasteryProjectedV2 = ({ tenantId: string; principalId: st
  */
 export type B10LearningReviewScheduledV2 = ({ tenantId: string; principalId: string; queueItemId: string; logicalItemId: string; queueVersion: number; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; sourceAssessmentEventId: string; sourceItemAssessmentId: string; algorithmVersion: "SM2_Q03_V1"; timePolicyVersion: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; dueLocalDate: string; dueAt: string; timezoneId: string; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; scheduledAt: string; }) & ({ repairWorkflowState: "DELAY_VERIFY_D1"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "DELAY_VERIFY_D7"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "MASTERED"; masteryStage: "MASTERED" | "CONSOLIDATED"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "REOPENED"; masteryStage: "LEARNING"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "REVIEW_QUEUE" | "LEARNING"; });
 
+/**
+ * Generated from the contract source.
+ */
+export type M1014LearningTaskCompleted = { completionId: string; subjectRef: string; taskId: string; completionVersion: string; taskStatus: "COMPLETED"; completionFact: "SERVER_SETTLED"; completedAt: string; rootEventId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { completionRuleVersion: string; ruleDigest: string; }; outcomeDigest: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GamificationXpLedgerPosted = { ledgerEntryId: string; principalId: string; tenantId: string; entryType: "CREDIT" | "DEBIT" | "COMPENSATION"; amount: number; currency: "NON_CASH_PLATFORM_CREDIT"; tupleKey: string; dedupeKey: string; lineageDigest: string; rewardRuleVersion: string; sourceEventId: string; sourceEventName: "learning.task.completed.v2" | "assessment.item.assessed.v2" | "learning.mastery.projected.v2"; createdAt: string; auditRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GamificationRewardGranted = { grantId: string; principalId: string; tenantId: string; rewardCode: string; grantState: "AVAILABLE" | "CLAIMED" | "EXPIRED" | "REVOKED"; catalogVersion: string; rewardRuleVersion: string; probabilityVersion: string; drawId: string; eligibleRewardSetDigest: string; selectedRewardId: string; sourceLedgerEntryId: string; sourceEventId: string; lineageDigest: string; monetization: "FREE_NON_CASH"; drawnAt: string; auditRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014StudyRoomSeatJoined = { roomId: string; seatId: string; subjectRef: string; spaceType: "PUBLIC_THEME_ROOM" | "INVITE_STUDY_ROOM"; leaseId: string; leaseVersion: number; leasePolicyVersion: string; leaseExpiresAt: string; roomVisibility: "PUBLIC" | "INVITE_ONLY"; seatState: "ACTIVE"; joinedAt: string; lineageDigest: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014StudyRoomFocusStarted = { focusId: string; roomId: string; seatId: string; subjectRef: string; leaseId: string; leaseVersion: number; focusVersion: number; focusKind: "FOCUS" | "BREAK" | "REVIEW"; focusTagCode: "VOCABULARY" | "LISTENING" | "READING" | "GRAMMAR" | "SPEAKING" | "WRITING"; durationMinutes: 25 | 45; focusPolicyVersion: string; startedAt: string; endsAt: string; lineageDigest: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014StudyRoomSeatLeft = { roomId: string; seatId: string; subjectRef: string; spaceType: "PUBLIC_THEME_ROOM" | "INVITE_STUDY_ROOM"; leaseId: string; leaseVersion: number; leasePolicyVersion: string; reasonCode: "USER_LEFT" | "LEASE_EXPIRED" | "DISCONNECT_CLEANUP" | "FOCUS_COMPLETED"; leftAt: string; lineageDigest: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014LeaderboardSnapshotPublished = { snapshotId: string; scope: "GLOBAL" | "ROOM" | "GOAL_GROUP"; spaceType: "PUBLIC_THEME_ROOM" | "INVITE_STUDY_ROOM" | "CHECKIN_GOAL_GROUP"; metric: "FOCUS_MINUTES" | "MASTERED_WORDS" | "XP"; period: "DAY" | "WEEK"; timezoneId: "Asia/Shanghai"; projectionVersion: number; ruleVersion: string; tieBreakVersion: string; watermark: string; entryCount: number; snapshotDigest: string; snapshotAt: string; auditRef: string; lineageDigest: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014SocialReportCreated = { reportId: string; roomId: string; reporterId: string; tenantId: string; caseId: string; targetType: "SEAT" | "ROOM" | "PRESET_INTERACTION"; targetRef: string; reasonCode: "HARASSMENT" | "SPAM" | "INAPPROPRIATE_BEHAVIOR" | "SAFETY" | "IMPERSONATION"; state: "SUBMITTED" | "TRIAGED" | "RESOLVED" | "DISMISSED"; moderationPolicyVersion: string; auditRef: string; createdAt: string; lineageDigest: string; };
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated, "learning.event.v1"> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -1575,8 +1615,64 @@ export interface LearningReviewScheduledB10Event extends PlatformEventEnvelope<B
   dedupeKey: string;
 }
 
+export interface LearningTaskCompletedM1014LearningTaskCompletedEvent extends PlatformEventEnvelope<M1014LearningTaskCompleted, "learning.event.v2"> {
+  eventName: "learning.task.completed.v2";
+  version: 2;
+  schemaVersion: "learning.event.v2";
+  dedupeKey: string;
+}
+
+export interface GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent extends PlatformEventEnvelope<M1014GamificationXpLedgerPosted, "gamification.event.v2"> {
+  eventName: "gamification.xp.ledger_posted.v2";
+  version: 2;
+  schemaVersion: "gamification.event.v2";
+  dedupeKey: string;
+}
+
+export interface GamificationRewardGrantedM1014GamificationRewardGrantedEvent extends PlatformEventEnvelope<M1014GamificationRewardGranted, "gamification.event.v2"> {
+  eventName: "gamification.reward.granted.v2";
+  version: 2;
+  schemaVersion: "gamification.event.v2";
+  dedupeKey: string;
+}
+
+export interface StudyRoomSeatJoinedEvent extends PlatformEventEnvelope<M1014StudyRoomSeatJoined, "social.event.v2"> {
+  eventName: "study_room.seat_joined.v2";
+  version: 2;
+  schemaVersion: "social.event.v2";
+  dedupeKey: string;
+}
+
+export interface StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent extends PlatformEventEnvelope<M1014StudyRoomFocusStarted, "social.event.v2"> {
+  eventName: "study_room.focus_started.v2";
+  version: 2;
+  schemaVersion: "social.event.v2";
+  dedupeKey: string;
+}
+
+export interface StudyRoomSeatLeftEvent extends PlatformEventEnvelope<M1014StudyRoomSeatLeft, "social.event.v2"> {
+  eventName: "study_room.seat_left.v2";
+  version: 2;
+  schemaVersion: "social.event.v2";
+  dedupeKey: string;
+}
+
+export interface LeaderboardSnapshotPublishedEvent extends PlatformEventEnvelope<M1014LeaderboardSnapshotPublished, "social.event.v2"> {
+  eventName: "leaderboard.snapshot_published.v2";
+  version: 2;
+  schemaVersion: "social.event.v2";
+  dedupeKey: string;
+}
+
+export interface SocialReportCreatedM1014SocialReportCreatedEvent extends PlatformEventEnvelope<M1014SocialReportCreated, "social.event.v2"> {
+  eventName: "social.report.created.v2";
+  version: 2;
+  schemaVersion: "social.event.v2";
+  dedupeKey: string;
+}
+
 /** All catalog entries, including HISTORICAL_CANDIDATE records. New v2 publishers must use CanonicalPlatformEvent. */
-export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event;
+export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event | LearningTaskCompletedM1014LearningTaskCompletedEvent | GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent | GamificationRewardGrantedM1014GamificationRewardGrantedEvent | StudyRoomSeatJoinedEvent | StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent | StudyRoomSeatLeftEvent | LeaderboardSnapshotPublishedEvent | SocialReportCreatedM1014SocialReportCreatedEvent;
 
 /** @deprecated Use CanonicalPlatformEvent for new v2 event publication. */
 export type PlatformEvent = EventCatalogCandidate;
@@ -2316,6 +2412,11 @@ export const canonicalEventGovernance = {
         "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_learning_from_assessment_v1"
       },
       {
+        "service": "gamification-service",
+        "consumerGroup": "cg.gamification-from-assessment.v1",
+        "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_gamification_from_assessment_v1"
+      },
+      {
         "service": "workflow-service",
         "consumerGroup": "cg.workflow-from-assessment.v1",
         "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_workflow_from_assessment_v1"
@@ -2362,6 +2463,16 @@ export const canonicalEventGovernance = {
         "service": "assessment-service",
         "consumerGroup": "cg.assessment-from-learning.v1",
         "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_assessment_from_learning_v1"
+      },
+      {
+        "service": "gamification-service",
+        "consumerGroup": "cg.gamification-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_gamification_from_learning_v1"
+      },
+      {
+        "service": "social-service",
+        "consumerGroup": "cg.social-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_social_from_learning_v1"
       },
       {
         "service": "workflow-service",
@@ -2442,8 +2553,422 @@ export const canonicalEventGovernance = {
       "ARCH-EVT-001",
       "INT-P1-017"
     ]
+  },
+  "learning.task.completed.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "learning-service",
+      "dataOwner": "learning-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_learning_task_completed_v2"
+    },
+    "consumers": [
+      {
+        "service": "gamification-service",
+        "consumerGroup": "cg.gamification-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_task_completed_v2_cg_gamification_from_learning_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_task_completed_v2_cg_workflow_from_learning_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.learning.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.completionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "learning_task_completed_v2"
+    },
+    "schema": {
+      "schemaVersion": "learning.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014LearningTaskCompleted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "gamification.xp.ledger_posted.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "gamification-service",
+      "dataOwner": "gamification-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_gamification_xp_ledger_posted_v2"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-gamification.v1",
+        "subscriptionOperationId": "subscribe_gamification_xp_ledger_posted_v2_cg_workflow_from_gamification_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-gamification.v1",
+        "subscriptionOperationId": "subscribe_gamification_xp_ledger_posted_v2_cg_audit_from_gamification_v1"
+      },
+      {
+        "service": "social-service",
+        "consumerGroup": "cg.social-from-gamification.v1",
+        "subscriptionOperationId": "subscribe_gamification_xp_ledger_posted_v2_cg_social_from_gamification_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.gamification.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.ledgerEntryId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "gamification_xp_ledger_posted_v2"
+    },
+    "schema": {
+      "schemaVersion": "gamification.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014GamificationXpLedgerPosted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "gamification.reward.granted.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "gamification-service",
+      "dataOwner": "gamification-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_gamification_reward_granted_v2"
+    },
+    "consumers": [
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-gamification.v1",
+        "subscriptionOperationId": "subscribe_gamification_reward_granted_v2_cg_workflow_from_gamification_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-gamification.v1",
+        "subscriptionOperationId": "subscribe_gamification_reward_granted_v2_cg_audit_from_gamification_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.gamification.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.grantId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "gamification_reward_granted_v2"
+    },
+    "schema": {
+      "schemaVersion": "gamification.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014GamificationRewardGranted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "study_room.seat_joined.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "social-service",
+      "dataOwner": "social-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_study_room_seat_joined_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_seat_joined_v2_cg_analytics_from_social_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_seat_joined_v2_cg_workflow_from_social_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_seat_joined_v2_cg_audit_from_social_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.social.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.leaseId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "study_room_seat_joined_v2"
+    },
+    "schema": {
+      "schemaVersion": "social.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014StudyRoomSeatJoined",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "study_room.focus_started.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "social-service",
+      "dataOwner": "social-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_study_room_focus_started_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_focus_started_v2_cg_analytics_from_social_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_focus_started_v2_cg_workflow_from_social_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_focus_started_v2_cg_audit_from_social_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.social.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.focusId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "study_room_focus_started_v2"
+    },
+    "schema": {
+      "schemaVersion": "social.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014StudyRoomFocusStarted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "study_room.seat_left.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "social-service",
+      "dataOwner": "social-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_study_room_seat_left_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_seat_left_v2_cg_analytics_from_social_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_seat_left_v2_cg_workflow_from_social_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-social.v1",
+        "subscriptionOperationId": "subscribe_study_room_seat_left_v2_cg_audit_from_social_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.social.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.leaseId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "study_room_seat_left_v2"
+    },
+    "schema": {
+      "schemaVersion": "social.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014StudyRoomSeatLeft",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "leaderboard.snapshot_published.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "social-service",
+      "dataOwner": "social-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_leaderboard_snapshot_published_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-social.v1",
+        "subscriptionOperationId": "subscribe_leaderboard_snapshot_published_v2_cg_analytics_from_social_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-social.v1",
+        "subscriptionOperationId": "subscribe_leaderboard_snapshot_published_v2_cg_workflow_from_social_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-social.v1",
+        "subscriptionOperationId": "subscribe_leaderboard_snapshot_published_v2_cg_audit_from_social_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.social.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.snapshotId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "leaderboard_snapshot_published_v2"
+    },
+    "schema": {
+      "schemaVersion": "social.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014LeaderboardSnapshotPublished",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "social.report.created.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "social-service",
+      "dataOwner": "social-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_social_report_created_v2"
+    },
+    "consumers": [
+      {
+        "service": "admin-ops-service",
+        "consumerGroup": "cg.admin-ops-from-social.v1",
+        "subscriptionOperationId": "subscribe_social_report_created_v2_cg_admin_ops_from_social_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-social.v1",
+        "subscriptionOperationId": "subscribe_social_report_created_v2_cg_audit_from_social_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-social.v1",
+        "subscriptionOperationId": "subscribe_social_report_created_v2_cg_workflow_from_social_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.social.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.reportId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "social_report_created_v2"
+    },
+    "schema": {
+      "schemaVersion": "social.event.v2",
+      "payloadRef": "#/payloadSchemas/M1014SocialReportCreated",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
   }
 } as const;
 
 export type CanonicalEventName = keyof typeof canonicalEventGovernance;
-export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event;
+export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event | LearningTaskCompletedM1014LearningTaskCompletedEvent | GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent | GamificationRewardGrantedM1014GamificationRewardGrantedEvent | StudyRoomSeatJoinedEvent | StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent | StudyRoomSeatLeftEvent | LeaderboardSnapshotPublishedEvent | SocialReportCreatedM1014SocialReportCreatedEvent;

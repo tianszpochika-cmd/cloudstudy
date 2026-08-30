@@ -21,6 +21,7 @@ const baseline = {
   catalog: readJson('packages/contracts/events/v1/catalog.json'),
   ownerPolicy: readJson('config/p1r-data-ownership.v1.json'),
   b26Runtime: readJson('config/b26-event-runtime.json'),
+  gamificationSocialPolicy: readJson('config/p1r-gamification-social-contract.v1.json'),
   fragments: fs.readdirSync(fragmentDirectory)
     .filter((name) => name.endsWith('.events.json'))
     .sort()
@@ -48,16 +49,16 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   const report = validateEventGovernance({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
-    totalEvents: 158,
-    canonicalEvents: 17,
+    totalEvents: 166,
+    canonicalEvents: 25,
     historicalCandidates: 141,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 43,
-    plannedEventGaps: 9,
-    d2ContractClosedEventGaps: 7,
+    canonicalConsumerBindings: 68,
+    plannedEventGaps: 7,
+    d2ContractClosedEventGaps: 9,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 17,
-    asyncApiOperations: 60,
+    asyncApiChannels: 25,
+    asyncApiOperations: 93,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -67,10 +68,102 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 17);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 17);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 43);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 17, operationCount: 60 });
+  assert.equal(Object.keys(projection.channels).length, 25);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 25);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 68);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 25, operationCount: 93 });
+});
+
+test('M1-014 reward-source policy requires a complete approved profile and predicate beyond a Kafka consumer binding', () => {
+  const trusted = baseline.gamificationSocialPolicy.trustedCompletion;
+  assert.deepEqual(trusted.tupleFields, ['producerService', 'eventName', 'schemaVersion', 'qualifiedPredicate', 'rewardRuleVersion']);
+  assert.deepEqual(trusted.lineageRequiredFields, ['eventId', 'traceId', 'schemaVersion', 'contentPin']);
+  assert.deepEqual(trusted.derivedFieldMappings, {
+    rewardRuleVersion: {
+      kind: 'SERVER_SELECTED_GAMIFICATION_RULE_VERSION',
+      owner: 'gamification-service',
+      clientSupplied: false,
+    },
+  });
+  assert.deepEqual(trusted.rejectedEventNames, [
+    'learning.task.completed.v1',
+    'learning.review.scheduled.v2',
+    'assessment.item.assessed.v1',
+    'learning.mastery.projected.v1',
+  ]);
+  assert.deepEqual(trusted.rejectedCanonicalEvents, [{
+    eventName: 'learning.review.scheduled.v2',
+    producerService: 'learning-service',
+    schemaVersion: 'v2',
+    classification: 'CANONICAL_D2_QUEUE_FACT_REJECTED_FOR_REWARD',
+    reason: 'QUEUE_FACT_NOT_A_COMPLETION',
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+  }]);
+  const profiles = new Map(trusted.sourceProfiles.map((profile) => [profile.id, profile]));
+  for (const profile of profiles.values()) {
+    assert.ok(trusted.lineageRequiredFields.every((field) => profile.lineageFields.includes(field)), `${profile.id} common lineage`);
+    assert.deepEqual(Object.keys(profile.lineageFieldOrigins), profile.lineageFields, `${profile.id} lineage origins`);
+    assert.deepEqual(Object.keys(profile.dedupeFieldOrigins), profile.dedupeFields, `${profile.id} dedupe origins`);
+  }
+  assert.deepEqual(profiles.get('TASK_COMPLETED').qualifiedPredicate, { taskStatus: 'COMPLETED', completionFact: 'SERVER_SETTLED' });
+  assert.deepEqual(profiles.get('ASSESSMENT_ITEM_CORRECT').qualifiedPredicate, { objectiveOutcome: 'CORRECT_VERIFIED', objectiveCorrect: true, guessSignal: false });
+  assert.deepEqual(profiles.get('MASTERY_MILESTONE').qualifiedPredicate, {
+    masteryStageAfter: ['MASTERED', 'CONSOLIDATED'],
+    d7Gate: { result: 'PASSED', reasonCode: 'D7_PASSED' },
+    stateTransition: {
+      kind: 'DERIVED_MASTERY_STAGE_CHANGE',
+      inputFields: ['masteryStageBefore', 'masteryStageAfter'],
+      expression: 'masteryStageBefore != masteryStageAfter',
+      clientSupplied: false,
+    },
+  });
+  assert.ok(profiles.get('TASK_COMPLETED').lineageFields.includes('outcomeDigest'));
+  assert.equal(profiles.get('TASK_COMPLETED').lineageFields.includes('evidenceDigest'), false);
+  assert.ok(profiles.get('MASTERY_MILESTONE').lineageFields.includes('evidenceDigest'));
+  assert.equal(profiles.get('MASTERY_MILESTONE').lineageFields.includes('outcomeDigest'), false);
+
+  const assessmentRoute = baseline.b26Runtime.eventRouting.find((route) => route.eventName === 'assessment.item.assessed.v2');
+  assert.ok(assessmentRoute.consumerGroups.includes('cg.gamification-from-assessment.v1'));
+  const reviewRoute = baseline.b26Runtime.eventRouting.find((route) => route.eventName === 'learning.review.scheduled.v2');
+  assert.equal(reviewRoute.consumerGroups.includes('cg.gamification-from-learning.v1'), false);
+
+  const matchesApprovedRewardSource = (profileId, candidate) => {
+    const profile = profiles.get(profileId);
+    if (!profile) return false;
+    if (candidate.producerService !== profile.producerService || candidate.eventName !== profile.eventName || candidate.schemaVersion !== profile.schemaVersion || !candidate.rewardRuleVersion) return false;
+    if (!profile.lineageFields.every((field) => candidate[field] !== undefined && candidate[field] !== null && candidate[field] !== '')) return false;
+    if (!profile.dedupeFields.every((field) => candidate[field] !== undefined && candidate[field] !== null && candidate[field] !== '')) return false;
+    return Object.entries(profile.qualifiedPredicate).every(([field, expected]) => JSON.stringify(candidate[field]) === JSON.stringify(expected));
+  };
+  const correctAssessment = {
+    producerService: 'assessment-service', eventName: 'assessment.item.assessed.v2', schemaVersion: 'v2', rewardRuleVersion: 'reward-r1',
+    eventId: 'evt-1', traceId: 'trace-1', itemAssessmentId: 'item-1', attemptId: 'attempt-1', logicalItemId: 'logical-1', contentPin: 'content-1', rulePin: 'rule-1', objectivePolicyPin: 'policy-1', outcomeDigest: 'digest-1',
+    objectiveOutcome: 'CORRECT_VERIFIED', objectiveCorrect: true, guessSignal: false,
+  };
+  assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', correctAssessment), true);
+  assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', { ...correctAssessment, guessSignal: true }), false);
+  assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', { ...correctAssessment, guessSignal: undefined }), false);
+  assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', { ...correctAssessment, outcomeDigest: undefined }), false);
+  assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', { ...correctAssessment, eventName: 'learning.review.scheduled.v2' }), false);
+});
+
+test('M1-014 fragment inventory has the exact sixteenth GAM/SOC source fragment and event order', () => {
+  const inventory = baseline.catalog['x-p1r-event-governance'].fragmentInventory;
+  assert.equal(inventory.length, 16);
+  assert.deepEqual(inventory.find((entry) => entry.path === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json'), {
+    path: 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json',
+    eventNames: [
+      'learning.task.completed.v2',
+      'gamification.xp.ledger_posted.v2',
+      'gamification.reward.granted.v2',
+      'study_room.seat_joined.v2',
+      'study_room.focus_started.v2',
+      'study_room.seat_left.v2',
+      'leaderboard.snapshot_published.v2',
+      'social.report.created.v2',
+    ],
+  });
+  assert.deepEqual(inventory.map((entry) => entry.path), [...inventory.map((entry) => entry.path)].sort());
 });
 
 test('event payload schema policy supports bounded cross-field keywords recursively', () => {
@@ -161,25 +254,16 @@ test('generated TypeScript separates canonical publishers from historical catalo
   assert.match(generated, /export type CanonicalEventName = keyof typeof canonicalEventGovernance/);
   const canonicalUnion = generated.match(/export type CanonicalPlatformEvent = ([^;]+);/);
   assert.ok(canonicalUnion, 'generated TypeScript must declare CanonicalPlatformEvent');
-  assert.deepEqual(canonicalUnion[1].split(' | '), [
-    'LearnerTargetUpdatedEvent',
-    'ContentVersionSubmittedEvent',
-    'ContentVersionReviewedEvent',
-    'ContentVersionPublishedEvent',
-    'ContentVersionUnpublishedEvent',
-    'ContentVersionRolledBackEvent',
-    'AssessmentPlacementCompletedEvent',
-    'WorkflowOutboxPublishedEvent',
-    'WorkflowEventDeliveryFailedEvent',
-    'WorkflowEventDeadLetteredEvent',
-    'WorkflowEventReplayRequestedEvent',
-    'WorkflowEventOrderingDeferredEvent',
-    'WorkflowSagaCompensationRequestedEvent',
-    'WorkflowSagaManualRecoveryRequestedEvent',
-    'AssessmentItemAssessedEvent',
-    'LearningMasteryProjectedB10Event',
-    'LearningReviewScheduledB10Event',
-  ], 'CanonicalPlatformEvent must exactly preserve the seventeen canonical event interfaces in catalog order');
+  const eventInterfaces = [...generated.matchAll(/export interface ([A-Za-z0-9_]+Event) extends PlatformEventEnvelope<[^\n]+> \{\n([\s\S]*?)\n\}/g)];
+  const canonicalInterfaceNames = baseline.catalog.events
+    .filter((event) => event.status === 'CANONICAL_D2')
+    .map((event) => {
+      const eventLine = `eventName: ${JSON.stringify(event.eventName)};`;
+      const matchingInterfaces = eventInterfaces.filter(([, , body]) => body.includes(eventLine));
+      assert.equal(matchingInterfaces.length, 1, `${event.eventName} must map to exactly one generated canonical interface`);
+      return matchingInterfaces[0][1];
+    });
+  assert.deepEqual(canonicalUnion[1].split(' | '), canonicalInterfaceNames, 'CanonicalPlatformEvent must exactly preserve the fixed canonical event inventory in catalog order');
   for (const historicalInterface of [
     'ContentPublicProjectionInvalidatedEvent',
     'CmsContentPublishedEvent',
@@ -188,14 +272,13 @@ test('generated TypeScript separates canonical publishers from historical catalo
     assert.equal(canonicalUnion[1].split(' | ').includes(historicalInterface), false, `${historicalInterface} must remain outside CanonicalPlatformEvent`);
   }
 
-  const eventInterfaces = [...generated.matchAll(/export interface [A-Za-z0-9_]+Event extends PlatformEventEnvelope<[^\n]+> \{\n([\s\S]*?)\n\}/g)];
   assert.equal(eventInterfaces.length, baseline.catalog.events.length, 'every catalog event must have one generated concrete interface');
   for (const event of baseline.catalog.events) {
     const eventLine = `eventName: ${JSON.stringify(event.eventName)};`;
-    const matchingInterfaces = eventInterfaces.filter(([, body]) => body.includes(eventLine));
+    const matchingInterfaces = eventInterfaces.filter(([, , body]) => body.includes(eventLine));
     assert.equal(matchingInterfaces.length, 1, `${event.eventName} must map to exactly one generated interface`);
     assert.ok(
-      matchingInterfaces[0][1].includes(`schemaVersion: ${JSON.stringify(event.schema)};`),
+      matchingInterfaces[0][2].includes(`schemaVersion: ${JSON.stringify(event.schema)};`),
       `${event.eventName} must explicitly require schemaVersion in its generated interface`,
     );
   }
@@ -254,6 +337,53 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['unknown nested event compatibility field', (input) => { historical(input).compatibility.extra = 'x'; }, /compatibility keys must be exactly/],
     ['platform runtime promotion', (input) => { input.catalog['x-p1r-event-governance'].runtimeStatus = 'RUNTIME_VERIFIED'; }, /runtimeStatus must remain NOT_RUNTIME_VERIFIED/],
     ['Redis event-source promotion', (input) => { input.catalog['x-p1r-event-governance'].transportPolicy.redisStreams = 'ALLOWED'; }, /Redis Streams must be prohibited/],
+    ['M1-014 trusted assessment predicate drifts', (input) => {
+      input.gamificationSocialPolicy.trustedCompletion.sourceProfiles
+        .find((profile) => profile.id === 'ASSESSMENT_ITEM_CORRECT').qualifiedPredicate.guessSignal = true;
+    }, /source profile ASSESSMENT_ITEM_CORRECT must exactly match/],
+    ['M1-014 trusted source predicate becomes incomplete', (input) => {
+      delete input.gamificationSocialPolicy.trustedCompletion.sourceProfiles
+        .find((profile) => profile.id === 'TASK_COMPLETED').qualifiedPredicate.completionFact;
+    }, /source profile TASK_COMPLETED must exactly match/],
+    ['M1-014 common lineage cannot disappear from an approved profile', (input) => {
+      const profile = input.gamificationSocialPolicy.trustedCompletion.sourceProfiles
+        .find((candidate) => candidate.id === 'TASK_COMPLETED');
+      profile.lineageFields = profile.lineageFields.filter((field) => field !== 'contentPin');
+      delete profile.lineageFieldOrigins.contentPin;
+    }, /source profile TASK_COMPLETED must exactly match|must contain every common lineage field/],
+    ['M1-014 derived reward-rule version must remain server-selected', (input) => {
+      input.gamificationSocialPolicy.trustedCompletion.derivedFieldMappings.rewardRuleVersion.clientSupplied = true;
+    }, /derived field mappings must be exact and server-owned/],
+    ['M1-014 dedupe origin cannot relabel a server-selected rule as payload', (input) => {
+      input.gamificationSocialPolicy.trustedCompletion.sourceProfiles
+        .find((profile) => profile.id === 'ASSESSMENT_ITEM_CORRECT').dedupeFieldOrigins.rewardRuleVersion = 'PAYLOAD';
+    }, /source profile ASSESSMENT_ITEM_CORRECT must exactly match/],
+    ['M1-014 canonical review queue fact must remain explicitly rejected for rewards', (input) => {
+      input.gamificationSocialPolicy.trustedCompletion.rejectedCanonicalEvents[0].classification = 'CANONICAL_D2_REWARD_SOURCE';
+    }, /rejected canonical events must preserve the queue-fact exclusion/],
+    ['M1-014 task completion source loses its server-settled predicate', (input) => {
+      input.catalog.payloadSchemas.M1014LearningTaskCompleted.properties.completionFact.const = 'CLIENT_REPORTED';
+    }, /learning\.task\.completed\.v2 predicate completionFact must be an exact payload const/],
+    ['M1-014 correct assessment source permits guessed credit', (input) => {
+      const branch = input.catalog.payloadSchemas.B10AssessmentItemAssessedV2.oneOf
+        .find((candidate) => candidate.properties?.objectiveOutcome?.const === 'CORRECT_VERIFIED');
+      branch.properties.guessSignal.const = true;
+    }, /assessment\.item\.assessed\.v2 predicate must be encoded by an exact objective-correct, not-guessed payload branch/],
+    ['M1-014 mastery source uses an absent lineage digest', (input) => {
+      input.gamificationSocialPolicy.trustedCompletion.sourceProfiles
+        .find((profile) => profile.id === 'MASTERY_MILESTONE').lineageFields.splice(-1, 1, 'outcomeDigest');
+    }, /source profile MASTERY_MILESTONE must exactly match|lineage field outcomeDigest must exist/],
+    ['M1-014 mastery source loses a required state-transition input', (input) => {
+      const payload = input.catalog.payloadSchemas.B10LearningMasteryProjectedV2;
+      payload.required = payload.required.filter((field) => field !== 'masteryStageBefore');
+    }, /learning\.mastery\.projected\.v2 stateTransition must derive only from required masteryStageBefore\/masteryStageAfter payload fields/],
+    ['M1-014 consumer binding cannot add an unapproved queue reward source', (input) => {
+      input.b26Runtime.eventRouting.find((route) => route.eventName === 'learning.review.scheduled.v2')
+        .consumerGroups.push('cg.gamification-from-learning.v1');
+    }, /review scheduling must not bind gamification|event routing topic, partition key and consumer groups must exactly match/],
+    ['M1-014 consumer binding cannot replace an approved source profile', (input) => {
+      input.gamificationSocialPolicy.trustedCompletion.sourceProfiles.shift();
+    }, /source profiles must contain the exact three approved profiles|source profile TASK_COMPLETED must exactly match/],
     ['unknown canonical governance field', (input) => { canonical(input)['x-p1r-governance'].runtimeProof = true; }, /x-p1r-governance keys must be exactly/],
     ['unknown event attestation', (input) => { canonical(input).certified = true; }, /keys must be exactly/],
     ['wrong producer owner', (input) => {
@@ -273,7 +403,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['topic owner drift', (input) => {
       input.b26Runtime.topics.find((topic) => topic.name === 'platform.workflow.v1').ownerService = 'audit-service';
     }, /producer must match the B26 topic owner/],
-    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact seventeen canonical governance events/],
+    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact twenty-five canonical governance events/],
     ['consumer order drift', (input) => { canonical(input)['x-p1r-governance'].consumers.reverse(); }, /consumers and order must match/],
     ['client consumer group', (input) => { canonical(input)['x-p1r-governance'].consumers[0].consumerGroup = 'cg.browser-client.v1'; }, /cannot represent a client/],
     ['duplicate consumer group', (input) => {
@@ -305,7 +435,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
-    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact seventeen/],
+    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact twenty-five/],
     ['wrong planned closure family', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].family = 'WRONG'; }, /family must match the frozen gap registry/],
     ['closed content gap regresses to planned', (input) => {
       input.catalog['x-p1r-event-governance'].plannedClosures

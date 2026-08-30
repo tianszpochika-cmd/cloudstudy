@@ -145,13 +145,17 @@
       "producerPrincipal": "svc.learning-service",
       "consumerGroups": [
         { "name": "cg.assessment-from-learning.v1", "service": "assessment-service", "principal": "cg.assessment-from-learning.v1", "replayEnabled": true },
+        { "name": "cg.gamification-from-learning.v1", "service": "gamification-service", "principal": "cg.gamification-from-learning.v1", "replayEnabled": true },
         { "name": "cg.notification-from-learning.v1", "service": "notification-service", "principal": "cg.notification-from-learning.v1", "replayEnabled": true },
+        { "name": "cg.social-from-learning.v1", "service": "social-service", "principal": "cg.social-from-learning.v1", "replayEnabled": true },
         { "name": "cg.workflow-from-learning.v1", "service": "workflow-service", "principal": "cg.workflow-from-learning.v1", "replayEnabled": true }
       ],
       "acl": [
         { "principal": "svc.learning-service", "operation": "WRITE", "effect": "ALLOW" },
         { "principal": "cg.assessment-from-learning.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.gamification-from-learning.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.notification-from-learning.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.social-from-learning.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.workflow-from-learning.v1", "operation": "READ", "effect": "ALLOW" }
       ]
     },
@@ -191,12 +195,38 @@
       "producerPrincipal": "svc.assessment-service",
       "consumerGroups": [
         { "name": "cg.learning-from-assessment.v1", "service": "learning-service", "principal": "cg.learning-from-assessment.v1", "replayEnabled": true },
+        { "name": "cg.gamification-from-assessment.v1", "service": "gamification-service", "principal": "cg.gamification-from-assessment.v1", "replayEnabled": true },
         { "name": "cg.workflow-from-assessment.v1", "service": "workflow-service", "principal": "cg.workflow-from-assessment.v1", "replayEnabled": true }
       ],
       "acl": [
         { "principal": "svc.assessment-service", "operation": "WRITE", "effect": "ALLOW" },
         { "principal": "cg.learning-from-assessment.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.gamification-from-assessment.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.workflow-from-assessment.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.gamification.v1",
+      "ownerService": "gamification-service",
+      "purpose": "immutable reward-ledger and reward-grant integration facts",
+      "partitions": 6,
+      "partitionKey": "aggregateId",
+      "retentionMs": 2592000000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.gamification-service",
+      "consumerGroups": [
+        { "name": "cg.workflow-from-gamification.v1", "service": "workflow-service", "principal": "cg.workflow-from-gamification.v1", "replayEnabled": true },
+        { "name": "cg.audit-from-gamification.v1", "service": "audit-service", "principal": "cg.audit-from-gamification.v1", "replayEnabled": true },
+        { "name": "cg.social-from-gamification.v1", "service": "social-service", "principal": "cg.social-from-gamification.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.gamification-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-gamification.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-gamification.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.social-from-gamification.v1", "operation": "READ", "effect": "ALLOW" }
       ]
     },
     {
@@ -247,6 +277,32 @@
         { "principal": "svc.notification-service", "operation": "WRITE", "effect": "ALLOW" },
         { "principal": "cg.workflow-from-notification.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.analytics-from-notification.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.social.v1",
+      "ownerService": "social-service",
+      "purpose": "study-room lease, leaderboard and moderation integration facts",
+      "partitions": 6,
+      "partitionKey": "aggregateId",
+      "retentionMs": 2592000000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.social-service",
+      "consumerGroups": [
+        { "name": "cg.analytics-from-social.v1", "service": "analytics-service", "principal": "cg.analytics-from-social.v1", "replayEnabled": true },
+        { "name": "cg.workflow-from-social.v1", "service": "workflow-service", "principal": "cg.workflow-from-social.v1", "replayEnabled": true },
+        { "name": "cg.audit-from-social.v1", "service": "audit-service", "principal": "cg.audit-from-social.v1", "replayEnabled": true },
+        { "name": "cg.admin-ops-from-social.v1", "service": "admin-ops-service", "principal": "cg.admin-ops-from-social.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.social-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.analytics-from-social.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-social.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-social.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.admin-ops-from-social.v1", "operation": "READ", "effect": "ALLOW" }
       ]
     },
     {
@@ -423,9 +479,17 @@
   "eventRouting": [
     { "eventName": "learner.target.updated.v1", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-learner.v1", "cg.workflow-from-learner.v1"] },
     { "eventName": "assessment.placement.completed.v1", "topic": "platform.assessment.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-assessment.v1", "cg.workflow-from-assessment.v1"] },
-    { "eventName": "assessment.item.assessed.v2", "topic": "platform.assessment.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-assessment.v1", "cg.workflow-from-assessment.v1"] },
-    { "eventName": "learning.mastery.projected.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.assessment-from-learning.v1", "cg.workflow-from-learning.v1"] },
+    { "eventName": "assessment.item.assessed.v2", "topic": "platform.assessment.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-assessment.v1", "cg.gamification-from-assessment.v1", "cg.workflow-from-assessment.v1"] },
+    { "eventName": "learning.task.completed.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.gamification-from-learning.v1", "cg.workflow-from-learning.v1"] },
+    { "eventName": "learning.mastery.projected.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.assessment-from-learning.v1", "cg.gamification-from-learning.v1", "cg.social-from-learning.v1", "cg.workflow-from-learning.v1"] },
     { "eventName": "learning.review.scheduled.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.assessment-from-learning.v1", "cg.workflow-from-learning.v1"] },
+    { "eventName": "gamification.xp.ledger_posted.v2", "topic": "platform.gamification.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-gamification.v1", "cg.audit-from-gamification.v1", "cg.social-from-gamification.v1"] },
+    { "eventName": "gamification.reward.granted.v2", "topic": "platform.gamification.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-gamification.v1", "cg.audit-from-gamification.v1"] },
+    { "eventName": "study_room.seat_joined.v2", "topic": "platform.social.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-social.v1", "cg.workflow-from-social.v1", "cg.audit-from-social.v1"] },
+    { "eventName": "study_room.focus_started.v2", "topic": "platform.social.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-social.v1", "cg.workflow-from-social.v1", "cg.audit-from-social.v1"] },
+    { "eventName": "study_room.seat_left.v2", "topic": "platform.social.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-social.v1", "cg.workflow-from-social.v1", "cg.audit-from-social.v1"] },
+    { "eventName": "leaderboard.snapshot_published.v2", "topic": "platform.social.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-social.v1", "cg.workflow-from-social.v1", "cg.audit-from-social.v1"] },
+    { "eventName": "social.report.created.v2", "topic": "platform.social.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.admin-ops-from-social.v1", "cg.audit-from-social.v1", "cg.workflow-from-social.v1"] },
     { "eventName": "workflow.outbox.published.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
     { "eventName": "workflow.event.delivery_failed.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
     { "eventName": "workflow.event.dead_lettered.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-manual-recovery.v1", "cg.audit-from-workflow.v1"] },

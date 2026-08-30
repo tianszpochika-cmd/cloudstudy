@@ -3232,6 +3232,186 @@ export type B10LearningReport = { reportId: B10ReportId; reportVersion: number; 
  */
 export type B10LearningReviewResult = { reviewEventId: B10ReviewEventId; eventStatus: "ACCEPTED" | "DUPLICATE" | "RISK_FILTERED" | "CONFLICT" | "REJECTED" | "EXPIRED"; riskDecision: "ALLOW" | "ACCEPT_NO_REWARD" | "THROTTLE" | "REJECT" | "REVIEW"; stateVersion: B10StateVersion; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; verificationStage?: "IMMEDIATE_REPAIR" | "D1" | "D7"; repetitionCount: number; easeFactor: number; intervalDays: number; dueAt: B10DateTime | null; algorithmVersion: "SM2_Q03_V1"; contentPin: B10ContentVersionPin; projectionVersion: B10ProjectionVersion; projectedAt: B10DateTime; replayed: boolean; };
 
+/**
+ * Generated from the contract source.
+ */
+export type M1014GrowthSummary = { subjectRef: string; level: number; serverScore: number; streakDays: number; currentSeason: string; rewardCatalogVersion: string; rewardRuleVersion: string; featureEnabled: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014LedgerEntry = { ledgerEntryId: string; principalId: string; tenantId: string; entryType: "CREDIT" | "DEBIT" | "COMPENSATION"; amount: number; currency: "NON_CASH_PLATFORM_CREDIT"; tupleKey: string; dedupeKey: string; lineageDigest: string; rewardRuleVersion: string; createdAt: string; auditRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RewardGrant = { grantId: string; principalRef: string; rewardCode: string; grantState: "AVAILABLE" | "CLAIMED" | "EXPIRED" | "REVOKED"; catalogVersion: string; rewardRuleVersion: string; probabilityVersion: string; drawId: string; eligibleRewardSetDigest: string; selectedRewardId: string; monetization: "FREE_NON_CASH"; drawnAt: string; expiresAt?: string | null; auditRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RewardProbability = { grantId: string; catalogVersion: string; probabilityVersion: string; tiers: readonly [{ tierCode: string; basisPoints: number; }, ...Array<{ tierCode: string; basisPoints: number; }>]; auditRef: string; disclosedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RewardClaimRequest = { commandCode: "CLAIM"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RewardClaimResult = { grantId: string; claimId: string; state: "CLAIMED" | "ALREADY_CLAIMED" | "REJECTED"; catalogVersion: string; rewardRuleVersion: string; replayed: boolean; auditRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014TrustedCompletion = ({ producerService: "learning-service" | "assessment-service"; eventName: "learning.task.completed.v2" | "assessment.item.assessed.v2" | "learning.mastery.projected.v2"; schemaVersion: "v2"; qualifiedPredicate: { taskStatus: "COMPLETED"; completionFact: "SERVER_SETTLED"; } | { objectiveOutcome: "CORRECT_VERIFIED"; objectiveCorrect: true; guessSignal: false; } | { masteryStageAfter: "MASTERED" | "CONSOLIDATED"; d7Gate: { result: "PASSED"; reasonCode: "D7_PASSED"; }; stateTransition: true; }; rewardRuleVersion: string; lineage: { eventId: string; traceId: string; schemaVersion: "v2"; taskId: string; completionVersion: string; rootEventId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { completionRuleVersion: string; ruleDigest: string; }; outcomeDigest: string; } | { eventId: string; traceId: string; schemaVersion: "v2"; itemAssessmentId: string; attemptId: string; logicalItemId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; }; objectivePolicyPin: { policyVersion: string; policyDigest: string; }; outcomeDigest: string; } | { eventId: string; traceId: string; schemaVersion: "v2"; projectionId: string; masteryEpochId: string; masteryEpochVersion: number; projectionVersion: number; sourceAssessmentEventId: string; sourceItemAssessmentId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; masteryStageBefore: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; masteryRuleVersion: string; evidenceDigest: string; }; }) & ({ rewardRuleVersion: string; producerService: "learning-service"; eventName: "learning.task.completed.v2"; schemaVersion: "v2"; qualifiedPredicate: { taskStatus: unknown; completionFact: unknown; } & ({ taskStatus: "COMPLETED"; completionFact: "SERVER_SETTLED"; } | { objectiveOutcome: "CORRECT_VERIFIED"; objectiveCorrect: true; guessSignal: false; taskStatus?: never; completionFact?: never; } | { masteryStageAfter: "MASTERED" | "CONSOLIDATED"; d7Gate: { result: "PASSED"; reasonCode: "D7_PASSED"; }; stateTransition: true; taskStatus?: never; completionFact?: never; }); lineage: { eventId: unknown; traceId: unknown; schemaVersion: unknown; taskId: unknown; completionVersion: unknown; rootEventId: unknown; contentPin: unknown; rulePin: unknown; outcomeDigest: unknown; evidenceDigest?: never; } & ({ eventId: string; traceId: string; schemaVersion: "v2"; taskId: string; completionVersion: string; rootEventId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { completionRuleVersion: string; ruleDigest: string; }; outcomeDigest: string; } | { eventId: string; traceId: string; schemaVersion: "v2"; itemAssessmentId: string; attemptId: string; logicalItemId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; }; objectivePolicyPin: { policyVersion: string; policyDigest: string; }; outcomeDigest: string; taskId?: never; completionVersion?: never; rootEventId?: never; } | { eventId: string; traceId: string; schemaVersion: "v2"; projectionId: string; masteryEpochId: string; masteryEpochVersion: number; projectionVersion: number; sourceAssessmentEventId: string; sourceItemAssessmentId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; masteryStageBefore: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; masteryRuleVersion: string; evidenceDigest: string; taskId?: never; completionVersion?: never; rootEventId?: never; rulePin?: never; outcomeDigest?: never; }); } | { rewardRuleVersion: string; producerService: "assessment-service"; eventName: "assessment.item.assessed.v2"; schemaVersion: "v2"; qualifiedPredicate: { objectiveOutcome: unknown; objectiveCorrect: unknown; guessSignal: unknown; } & ({ taskStatus: "COMPLETED"; completionFact: "SERVER_SETTLED"; objectiveOutcome?: never; objectiveCorrect?: never; guessSignal?: never; } | { objectiveOutcome: "CORRECT_VERIFIED"; objectiveCorrect: true; guessSignal: false; } | { masteryStageAfter: "MASTERED" | "CONSOLIDATED"; d7Gate: { result: "PASSED"; reasonCode: "D7_PASSED"; }; stateTransition: true; objectiveOutcome?: never; objectiveCorrect?: never; guessSignal?: never; }); lineage: { eventId: unknown; traceId: unknown; schemaVersion: unknown; itemAssessmentId: unknown; attemptId: unknown; logicalItemId: unknown; contentPin: unknown; rulePin: unknown; objectivePolicyPin: unknown; outcomeDigest: unknown; evidenceDigest?: never; } & ({ eventId: string; traceId: string; schemaVersion: "v2"; taskId: string; completionVersion: string; rootEventId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { completionRuleVersion: string; ruleDigest: string; }; outcomeDigest: string; itemAssessmentId?: never; attemptId?: never; logicalItemId?: never; objectivePolicyPin?: never; } | { eventId: string; traceId: string; schemaVersion: "v2"; itemAssessmentId: string; attemptId: string; logicalItemId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; }; objectivePolicyPin: { policyVersion: string; policyDigest: string; }; outcomeDigest: string; } | { eventId: string; traceId: string; schemaVersion: "v2"; projectionId: string; masteryEpochId: string; masteryEpochVersion: number; projectionVersion: number; sourceAssessmentEventId: string; sourceItemAssessmentId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; masteryStageBefore: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; masteryRuleVersion: string; evidenceDigest: string; itemAssessmentId?: never; attemptId?: never; logicalItemId?: never; rulePin?: never; objectivePolicyPin?: never; outcomeDigest?: never; }); } | { rewardRuleVersion: string; producerService: "learning-service"; eventName: "learning.mastery.projected.v2"; schemaVersion: "v2"; qualifiedPredicate: { masteryStageAfter: unknown; d7Gate: unknown; stateTransition: unknown; } & ({ taskStatus: "COMPLETED"; completionFact: "SERVER_SETTLED"; masteryStageAfter?: never; d7Gate?: never; stateTransition?: never; } | { objectiveOutcome: "CORRECT_VERIFIED"; objectiveCorrect: true; guessSignal: false; masteryStageAfter?: never; d7Gate?: never; stateTransition?: never; } | { masteryStageAfter: "MASTERED" | "CONSOLIDATED"; d7Gate: { result: "PASSED"; reasonCode: "D7_PASSED"; }; stateTransition: true; }); lineage: { eventId: unknown; traceId: unknown; schemaVersion: unknown; projectionId: unknown; masteryEpochId: unknown; masteryEpochVersion: unknown; projectionVersion: unknown; sourceAssessmentEventId: unknown; sourceItemAssessmentId: unknown; contentPin: unknown; masteryStageBefore: unknown; masteryRuleVersion: unknown; evidenceDigest: unknown; outcomeDigest?: never; } & ({ eventId: string; traceId: string; schemaVersion: "v2"; taskId: string; completionVersion: string; rootEventId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { completionRuleVersion: string; ruleDigest: string; }; outcomeDigest: string; projectionId?: never; masteryEpochId?: never; masteryEpochVersion?: never; projectionVersion?: never; sourceAssessmentEventId?: never; sourceItemAssessmentId?: never; masteryStageBefore?: never; masteryRuleVersion?: never; evidenceDigest?: never; } | { eventId: string; traceId: string; schemaVersion: "v2"; itemAssessmentId: string; attemptId: string; logicalItemId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; }; objectivePolicyPin: { policyVersion: string; policyDigest: string; }; outcomeDigest: string; projectionId?: never; masteryEpochId?: never; masteryEpochVersion?: never; projectionVersion?: never; sourceAssessmentEventId?: never; sourceItemAssessmentId?: never; masteryStageBefore?: never; masteryRuleVersion?: never; evidenceDigest?: never; } | { eventId: string; traceId: string; schemaVersion: "v2"; projectionId: string; masteryEpochId: string; masteryEpochVersion: number; projectionVersion: number; sourceAssessmentEventId: string; sourceItemAssessmentId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; masteryStageBefore: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; masteryRuleVersion: string; evidenceDigest: string; }); });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014SettlementResult = { tupleKey: string; dedupeKey: string; lineageDigest: string; ledgerEntryId: string; rewardRuleVersion: string; decision: "APPLIED" | "DUPLICATE" | "REJECTED" | "DENIED"; decisionReason: "QUALIFIED" | "ALREADY_SETTLED" | "NOT_QUALIFIED" | "POLICY_DENIED" | "INVALID_LINEAGE"; replayed?: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameCatalogItem = ({ gameCode: "SENTENCE_TRAIN" | "WORD_MATCH" | "WORD_DEFENSE" | "WORD_PUZZLE" | "GRAMMAR_BLASTER" | "CATCH_MEANING"; releasePhase: "P0" | "P1" | "LONG_TERM"; enabled: boolean; catalogVersion: string; ruleVersion: string; maxMinutes?: number; passAccuracyPercent?: number; passCompletionPercent?: number; }) & ({ gameCode: "SENTENCE_TRAIN"; releasePhase: "P0"; enabled: true; } | { gameCode: "WORD_MATCH"; releasePhase: "P1"; enabled: false; } | { gameCode: "WORD_DEFENSE"; releasePhase: "P1"; enabled: false; } | { gameCode: "WORD_PUZZLE"; releasePhase: "P1"; enabled: false; } | { gameCode: "GRAMMAR_BLASTER"; releasePhase: "LONG_TERM"; enabled: false; } | { gameCode: "CATCH_MEANING"; releasePhase: "LONG_TERM"; enabled: false; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameCatalog = { catalogVersion: string; policyVersion: "P1_GAME_CATALOG_V1"; items: readonly [] | readonly [M1014GameCatalogItem] | readonly [M1014GameCatalogItem, M1014GameCatalogItem] | readonly [M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem] | readonly [M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem] | readonly [M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem] | readonly [M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem, M1014GameCatalogItem]; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameSessionCreateRequest = { gameCode: "SENTENCE_TRAIN"; performanceTier?: "Ultra" | "High" | "Medium" | "Performance"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameEventRequest = { eventId: string; seq: number; itemCode: string; responseToken: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameSessionControlRequest = { expectedVersion?: number; commandReason?: "USER_COMMAND" | "CLIENT_RECOVERY" | "SYSTEM_TIMEOUT"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameSession = { sessionId: string; gameCode: "SENTENCE_TRAIN"; status: "CREATED" | "RUNNING" | "PAUSED" | "FINISHED" | "EXPIRED" | "REJECTED"; catalogVersion: string; ruleVersion: string; contentVersionId: number; contentEpoch: number; snapshotHash: string; sessionVersion: number; startedAt: string; expiresAt: string; challengeRefs?: ReadonlyArray<{ itemCode: string; sequence: number; responseToken: string; }>; serverScore?: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameEventReceipt = { sessionId: string; eventId: string; seq: number; accepted: boolean; sessionVersion: number; serverTime: string; replayed: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014GameSessionResult = { sessionId: string; status: "FINISHED" | "EXPIRED" | "REJECTED"; serverScore: number; settlementState: "APPLIED" | "DUPLICATE" | "NOT_ELIGIBLE" | "DENIED"; completedAt: string; replayed: boolean; ledgerEntryId?: string | null; rewardGrantId?: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RoomSummary = { roomId: string; spaceType: "PUBLIC_THEME_ROOM" | "INVITE_STUDY_ROOM" | "CHECKIN_GOAL_GROUP"; visibility: "PUBLIC" | "INVITE_ONLY"; membership: "THEME_TEMPLATE_MANAGED" | "OWNER_INVITED"; minCapacity: number; maxCapacity: number; occupiedSeats: number; enabled: boolean; leaseMode: "REQUIRED" | "PROHIBITED"; catalogVersion: string; policyVersion: "P1_SOCIAL_SPACE_POLICY_V1"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RoomPage = { items: ReadonlyArray<M1014RoomSummary>; conserved: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RoomDetails = { roomId: string; spaceType: "PUBLIC_THEME_ROOM" | "INVITE_STUDY_ROOM" | "CHECKIN_GOAL_GROUP"; visibility: "PUBLIC" | "INVITE_ONLY"; membership: "THEME_TEMPLATE_MANAGED" | "OWNER_INVITED"; minCapacity: number; maxCapacity: number; occupiedSeats: number; enabled: boolean; leaseMode: "REQUIRED" | "PROHIBITED"; catalogVersion: string; policyVersion: "P1_SOCIAL_SPACE_POLICY_V1"; leasePolicyVersion: "P1_LEASE_POLICY_V1"; serverTime: string; visibleSeatCount?: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RoomJoinRequest = { preferredSeatIndex?: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RoomCommand = { leaseId?: string; leaseVersion?: number; expectedVersion?: number; reasonCode?: "DISCONNECT" | "RECOVER" | "RENEW" | "USER_LEFT"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014RoomState = { roomId: string; spaceType: "PUBLIC_THEME_ROOM" | "INVITE_STUDY_ROOM" | "CHECKIN_GOAL_GROUP"; roomVisibility: "PUBLIC" | "INVITE_ONLY"; seatState: "ACTIVE" | "DISCONNECTED" | "RECOVERED" | "EXPIRED" | "LEFT" | "NOT_APPLICABLE"; seatId: string | null; leaseId: string | null; leaseVersion: number; leaseExpiresAt: string | null; recoveryUntil: string | null; leasePolicyVersion: "P1_LEASE_POLICY_V1"; serverTime: string; replayed?: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014FocusCommand = { durationMinutes: 25 | 45; focusKind: "FOCUS" | "REVIEW"; focusTagCode: "VOCABULARY" | "LISTENING" | "READING" | "GRAMMAR" | "SPEAKING" | "WRITING"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014FocusUpdateCommand = { focusId: string; expectedFocusVersion: number; action: "PAUSE" | "RESUME" | "FINISH" | "ABORT"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014FocusSession = ({ focusId: string; roomId: string; seatId: string; leaseId: string; leaseVersion: number; focusVersion: number; state: "FOCUSING" | "PAUSED" | "COMPLETED" | "ABORTED" | "AUTO_RELEASED"; durationMinutes: 25 | 45; creditedMinutes: 0 | 25 | 45; startedAt: string; endsAt: string; serverTime: string; }) & ({ state: "COMPLETED"; creditedMinutes: 25 | 45; } | { state: "FOCUSING" | "PAUSED" | "ABORTED" | "AUTO_RELEASED"; creditedMinutes: 0; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014PresetInteraction = { presetCode: "CHEER_UP" | "STUDY_TOGETHER" | "CONGRATS" | "TRY_AGAIN" | "TONIGHT_20_MIN"; targetSeatId?: string | null; clientEventId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014InteractionResult = { eventId: string; roomId: string; presetCode: "CHEER_UP" | "STUDY_TOGETHER" | "CONGRATS" | "TRY_AGAIN" | "TONIGHT_20_MIN"; state: "DELIVERED"; deliveredAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014LeaderboardEntry = { rank: number; displayMode: "NICKNAME" | "ANONYMOUS" | "OPT_OUT"; displayName?: string | null; score: number; isSelf: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014Leaderboard = { snapshotId: string; metric: "FOCUS_MINUTES" | "MASTERED_WORDS" | "XP"; period: "DAY" | "WEEK"; timezoneId: "Asia/Shanghai"; projectionVersion: number; ruleVersion: string; tieBreakVersion: string; snapshotAt: string; watermark: string; auditRef: string; entries: ReadonlyArray<M1014LeaderboardEntry>; me: { present: boolean; visibility: "NICKNAME" | "ANONYMOUS" | "OPT_OUT"; score?: number | null; }; delayed: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014VisibilityCommand = { leaderboardVisibility: "NICKNAME" | "ANONYMOUS" | "OPT_OUT"; roomVisibility: "PUBLIC" | "INVITE_ONLY"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014Visibility = { leaderboardVisibility: "NICKNAME" | "ANONYMOUS" | "OPT_OUT"; roomVisibility: "PUBLIC" | "INVITE_ONLY"; policyVersion: "P1_SOCIAL_SPACE_POLICY_V1"; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014ReportCommand = { targetType: "SEAT" | "ROOM" | "PRESET_INTERACTION"; targetRef: string; reasonCode: "HARASSMENT" | "SPAM" | "INAPPROPRIATE_BEHAVIOR" | "SAFETY" | "IMPERSONATION"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014Report = { reportId: string; roomId: string; reporterId: string; tenantId: string; caseId: string; targetType: "SEAT" | "ROOM" | "PRESET_INTERACTION"; targetRef: string; reasonCode: "HARASSMENT" | "SPAM" | "INAPPROPRIATE_BEHAVIOR" | "SAFETY" | "IMPERSONATION"; state: "SUBMITTED" | "TRIAGED" | "RESOLVED" | "DISMISSED"; moderationPolicyVersion: "P1_MODERATION_POLICY_V1"; auditRef: string; createdAt: string; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014TrustedSocialEvent = ({ eventId: string; eventName: "learning.mastery.projected.v2" | "gamification.xp.ledger_posted.v2"; schemaVersion: "v2"; aggregateId: string; occurredAt: string; actorId: string; traceId: string; requestId: string; dedupeKey: string; sourceService: "learning-service" | "gamification-service"; payload: M1014LeaderboardMasteryFact | M1014LeaderboardXpFact; }) & ({ sourceService: "learning-service"; eventName: "learning.mastery.projected.v2"; schemaVersion: "v2"; payload: M1014LeaderboardMasteryFact; } | { sourceService: "gamification-service"; eventName: "gamification.xp.ledger_posted.v2"; schemaVersion: "v2"; payload: M1014LeaderboardXpFact; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014LeaderboardMasteryFact = { tenantId: string; principalId: string; projectionId: string; logicalItemId: string; masteryEpochId: string; masteryEpochVersion: number; projectionVersion: number; masteryStageBefore: "NEW" | "LEARNING"; masteryStageAfter: "MASTERED"; evidenceDigest: string; masteryRuleVersion: "P1_MASTERY_V1"; masteryFactWatermark: string; projectedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1014LeaderboardXpFact = { ledgerEntryId: string; principalId: string; tenantId: string; entryType: "CREDIT" | "DEBIT" | "COMPENSATION"; amount: number; currency: "NON_CASH_PLATFORM_CREDIT"; tupleKey: string; dedupeKey: string; lineageDigest: string; rewardRuleVersion: string; sourceEventId: string; sourceEventName: "learning.task.completed.v2" | "assessment.item.assessed.v2" | "learning.mastery.projected.v2"; createdAt: string; auditRef: string; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -3426,19 +3606,19 @@ export interface ApiOperationRegistry {
   getB4AvatarResources: { method: "GET"; path: "/api/v1/avatar/resources"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   getB4StudySpace: { method: "GET"; path: "/api/v1/avatar/study-space"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   saveB4StudySpace: { method: "PUT"; path: "/api/v1/avatar/study-space"; request: B4StudySpaceRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  listB4Games: { method: "GET"; path: "/api/v1/games/catalog"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  createB4GameSession: { method: "POST"; path: "/api/v1/games/sessions"; request: B4GameSessionRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  getB4GameSession: { method: "GET"; path: "/api/v1/games/sessions/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  submitB4GameEvent: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/events"; request: B4GameEventRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  pauseB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/pause"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  resumeB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/resume"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  finishB4GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/finish"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  listB4SocialRooms: { method: "GET"; path: "/api/v1/social/rooms"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  getB4SocialRoom: { method: "GET"; path: "/api/v1/social/rooms/{roomId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  joinB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/join"; request: B4JoinRoomRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  leaveB4SocialRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/leave"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  recordB12RoomInteraction: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/interactions"; request: B12PresetInteraction; response: ApiSuccessEnvelope & { data: B12InteractionResult; }; idempotent: true };
-  getB12Leaderboard: { method: "GET"; path: "/api/v1/social/leaderboards"; request: never; response: ApiSuccessEnvelope & { data: B12Leaderboard; }; idempotent: false };
+  listM1014GameCatalog: { method: "GET"; path: "/api/v1/games/catalog"; request: never; response: ApiCursorPageEnvelope & { data: M1014GameCatalog; }; idempotent: false };
+  createM1014GameSession: { method: "POST"; path: "/api/v1/games/sessions"; request: M1014GameSessionCreateRequest; response: ApiSuccessEnvelope & { data: M1014GameSession; }; idempotent: true };
+  getM1014GameSession: { method: "GET"; path: "/api/v1/games/sessions/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: M1014GameSession; }; idempotent: false };
+  submitM1014GameEvent: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/events"; request: M1014GameEventRequest; response: ApiSuccessEnvelope & { data: M1014GameEventReceipt; }; idempotent: true };
+  pauseM1014GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/pause"; request: M1014GameSessionControlRequest; response: ApiSuccessEnvelope & { data: M1014GameSession; }; idempotent: true };
+  resumeM1014GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/resume"; request: M1014GameSessionControlRequest; response: ApiSuccessEnvelope & { data: M1014GameSession; }; idempotent: true };
+  finishM1014GameSession: { method: "POST"; path: "/api/v1/games/sessions/{sessionId}/finish"; request: M1014GameSessionControlRequest; response: ApiSuccessEnvelope & { data: M1014GameSessionResult; }; idempotent: true };
+  listM1014StudyRooms: { method: "GET"; path: "/api/v1/social/rooms"; request: never; response: ApiCursorPageEnvelope & { data: M1014RoomPage; }; idempotent: false };
+  getM1014StudyRoom: { method: "GET"; path: "/api/v1/social/rooms/{roomId}"; request: never; response: ApiSuccessEnvelope & { data: M1014RoomDetails; }; idempotent: false };
+  joinM1014StudyRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/join"; request: M1014RoomJoinRequest; response: ApiSuccessEnvelope & { data: M1014RoomState; }; idempotent: true };
+  leaveM1014StudyRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/leave"; request: M1014RoomCommand; response: ApiSuccessEnvelope & { data: M1014RoomState; }; idempotent: true };
+  recordM1014RoomInteraction: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/interactions"; request: M1014PresetInteraction; response: ApiSuccessEnvelope & { data: M1014InteractionResult; }; idempotent: true };
+  getM1014Leaderboard: { method: "GET"; path: "/api/v1/social/leaderboards"; request: never; response: ApiSuccessEnvelope & { data: M1014Leaderboard; }; idempotent: false };
   createB4SocialWsTicket: { method: "POST"; path: "/api/v1/social/ws-ticket"; request: B4WsTicketRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   listB4OfflinePackages: { method: "GET"; path: "/api/v1/sync/offline-packages"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   authorizeB4OfflinePackage: { method: "POST"; path: "/api/v1/sync/offline-packages/{packageId}/authorize"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
@@ -3542,21 +3722,21 @@ export interface ApiOperationRegistry {
   recoverB11SyncConflict: { method: "POST"; path: "/api/v1/sync/conflicts/{conflictId}/recovery"; request: B11SyncRecovery; response: unknown; idempotent: true };
   createB11OfflineCompatibility: { method: "POST"; path: "/internal/v1/compatibility/b11/offline"; request: B11OfflineCompatibility; response: unknown; idempotent: true };
   createB11Recording: { method: "POST"; path: "/api/v1/multimodal/recordings"; request: B11RecordingMetadata; response: ApiSuccessEnvelope & { data: B11RecordingMetadata; }; idempotent: true };
-  getB12GamificationSummary: { method: "GET"; path: "/api/v1/gamification/me/summary"; request: never; response: ApiSuccessEnvelope & { data: B12GrowthSummary; }; idempotent: false };
-  listB12GamificationLedger: { method: "GET"; path: "/api/v1/gamification/me/ledger"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12LedgerEntry>; }; idempotent: false };
-  listB12RewardGrants: { method: "GET"; path: "/api/v1/gamification/me/rewards"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B12RewardGrant>; }; }; idempotent: false };
-  getB12RewardProbability: { method: "GET"; path: "/api/v1/gamification/me/rewards/{grantId}/probability"; request: never; response: ApiSuccessEnvelope & { data: B12RewardProbability; }; idempotent: false };
-  claimB12Reward: { method: "POST"; path: "/api/v1/gamification/me/rewards/{grantId}/claim"; request: B12RewardClaimRequest; response: ApiSuccessEnvelope & { data: B12RewardClaimResult; }; idempotent: true };
-  consumeB12TrustedCompletion: { method: "POST"; path: "/internal/v1/gamification/trusted-events/completions"; request: B12TrustedCompletion; response: B12SettlementResult; idempotent: true };
-  disconnectB12StudyRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/disconnect"; request: B12RoomCommand; response: ApiSuccessEnvelope & { data: B12RoomState; }; idempotent: true };
-  recoverB12StudyRoomSeat: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/recover"; request: B12RoomCommand; response: ApiSuccessEnvelope & { data: B12RoomState; }; idempotent: true };
-  renewB12StudyRoomLease: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/lease/renew"; request: B12RoomCommand; response: ApiSuccessEnvelope & { data: B12RoomState; }; idempotent: true };
-  startB12RoomFocus: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusCommand; response: ApiSuccessEnvelope & { data: B12FocusSession; }; idempotent: true };
-  updateB12RoomFocus: { method: "PATCH"; path: "/api/v1/social/rooms/{roomId}/focus"; request: B12FocusUpdateCommand; response: ApiSuccessEnvelope & { data: B12FocusSession; }; idempotent: true };
-  updateB12SocialVisibility: { method: "PATCH"; path: "/api/v1/social/me/visibility"; request: B12VisibilityCommand; response: ApiSuccessEnvelope & { data: B12Visibility; }; idempotent: true };
-  createB12SocialReport: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/reports"; request: B12ReportCommand; response: ApiSuccessEnvelope & { data: B12Report; }; idempotent: true };
-  getB12SocialReport: { method: "GET"; path: "/api/v1/social/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: B12Report; }; idempotent: false };
-  consumeB12SocialTrustedEvent: { method: "POST"; path: "/internal/v1/social/trusted-events"; request: B12TrustedSocialEvent; response: B12EventReceipt; idempotent: true };
+  getM1014GamificationSummary: { method: "GET"; path: "/api/v1/gamification/me/summary"; request: never; response: ApiSuccessEnvelope & { data: M1014GrowthSummary; }; idempotent: false };
+  listM1014GamificationLedger: { method: "GET"; path: "/api/v1/gamification/me/ledger"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1014LedgerEntry>; }; idempotent: false };
+  listM1014RewardGrants: { method: "GET"; path: "/api/v1/gamification/me/rewards"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<M1014RewardGrant>; }; }; idempotent: false };
+  getM1014RewardProbability: { method: "GET"; path: "/api/v1/gamification/me/rewards/{grantId}/probability"; request: never; response: ApiSuccessEnvelope & { data: M1014RewardProbability; }; idempotent: false };
+  claimM1014Reward: { method: "POST"; path: "/api/v1/gamification/me/rewards/{grantId}/claim"; request: M1014RewardClaimRequest; response: ApiSuccessEnvelope & { data: M1014RewardClaimResult; }; idempotent: true };
+  settleM1014TrustedCompletion: { method: "POST"; path: "/internal/v1/gamification/trusted-events/completions"; request: M1014TrustedCompletion; response: M1014SettlementResult; idempotent: true };
+  disconnectM1014StudyRoom: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/disconnect"; request: M1014RoomCommand; response: ApiSuccessEnvelope & { data: M1014RoomState; }; idempotent: true };
+  recoverM1014StudyRoomSeat: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/recover"; request: M1014RoomCommand; response: ApiSuccessEnvelope & { data: M1014RoomState; }; idempotent: true };
+  renewM1014StudyRoomLease: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/lease/renew"; request: M1014RoomCommand; response: ApiSuccessEnvelope & { data: M1014RoomState; }; idempotent: true };
+  startM1014RoomFocus: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/focus"; request: M1014FocusCommand; response: ApiSuccessEnvelope & { data: M1014FocusSession; }; idempotent: true };
+  updateM1014RoomFocus: { method: "PATCH"; path: "/api/v1/social/rooms/{roomId}/focus"; request: M1014FocusUpdateCommand; response: ApiSuccessEnvelope & { data: M1014FocusSession; }; idempotent: true };
+  updateM1014SocialVisibility: { method: "PATCH"; path: "/api/v1/social/me/visibility"; request: M1014VisibilityCommand; response: ApiSuccessEnvelope & { data: M1014Visibility; }; idempotent: true };
+  createM1014SocialReport: { method: "POST"; path: "/api/v1/social/rooms/{roomId}/reports"; request: M1014ReportCommand; response: ApiSuccessEnvelope & { data: M1014Report; }; idempotent: true };
+  getM1014SocialReport: { method: "GET"; path: "/api/v1/social/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: M1014Report; }; idempotent: false };
+  consumeM1014SocialTrustedEvent: { method: "POST"; path: "/internal/v1/social/trusted-events"; request: M1014TrustedSocialEvent; response: B12EventReceipt; idempotent: true };
   consumeB12NotificationTrustedEvent: { method: "POST"; path: "/internal/v1/notifications/trusted-events"; request: B12NotificationTrustedEvent; response: B12EventReceipt; idempotent: true };
   dispatchB12NotificationRetry: { method: "POST"; path: "/internal/v1/notifications/retry"; request: B12RetryCommand; response: B12RetryResult; idempotent: true };
   recoverB12NotificationTask: { method: "POST"; path: "/internal/v1/notifications/recovery"; request: B12RecoveryCommand; response: B12RecoveryResult; idempotent: true };

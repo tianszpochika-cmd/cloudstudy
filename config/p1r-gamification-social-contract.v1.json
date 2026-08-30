@@ -1,0 +1,1224 @@
+{
+  "$schema": "p1r.gamification-social-contract.v1",
+  "schemaVersion": "p1r.gamification-social-contract.v1",
+  "task": "P1R-M1-014",
+  "phase": "P1",
+  "sourceBaseline": "e3514c359e6f6be5445cf46a7734325b2835b941",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "collectionPolicy": {
+    "unknownFieldDecision": "DENY",
+    "unknownEnumDecision": "DENY",
+    "additionalProperties": "DENY",
+    "clientAuthorityExpansion": "PROHIBITED"
+  },
+  "canonicalSources": {
+    "productRequirements": "requirements/product-requirements.md",
+    "featureMatrix": "requirements/feature-matrix.md",
+    "phase1GrowthSocialDesign": "docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md",
+    "v2980Registry": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+    "fullCoverageDesign": "docs/06-design/phase-1/full-coverage/成长社群商业后台原子功能补充设计.md",
+    "socialDetailedDesign": "docs/06-design/detailed-specs/07_自习室社群与用户基础服务详细设计.md",
+    "m1014OpenApiFragment": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+    "m1014EventFragment": "packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "eventReliabilityPolicy": "packages/contracts/events/v1/reliability-policy.json",
+    "b26RuntimeContract": "config/b26-event-runtime.json"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-014",
+    "sourceContractBaseline": "e3514c359e6f6be5445cf46a7734325b2835b941",
+    "previousPromotion": "P1R-M1-013",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_EVENT_GOVERNANCE_B26_STATIC",
+    "approvedSourceFiles": [
+      "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+      "packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json",
+      "packages/contracts/events/v1/catalog.json",
+      "packages/contracts/events/v1/reliability-policy.json",
+      "config/b26-event-runtime.json",
+      "config/p1r-learning-loop-contract.v1.json",
+      "config/p1r-gamification-social-contract.v1.json"
+    ],
+    "canonicalRoutes": [
+      {
+        "id": "M1014-GAM-SUMMARY",
+        "method": "GET",
+        "path": "/api/v1/gamification/me/summary",
+        "operationId": "getM1014GamificationSummary",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014GrowthSummary",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-LEDGER-LIST",
+        "method": "GET",
+        "path": "/api/v1/gamification/me/ledger",
+        "operationId": "listM1014GamificationLedger",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014LedgerEntry[]",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.ledger.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-REWARD-LIST",
+        "method": "GET",
+        "path": "/api/v1/gamification/me/rewards",
+        "operationId": "listM1014RewardGrants",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014RewardGrant[]",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.reward.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-REWARD-PROBABILITY",
+        "method": "GET",
+        "path": "/api/v1/gamification/me/rewards/{grantId}/probability",
+        "operationId": "getM1014RewardProbability",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014RewardProbability",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.reward.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-REWARD-CLAIM",
+        "method": "POST",
+        "path": "/api/v1/gamification/me/rewards/{grantId}/claim",
+        "operationId": "claimM1014Reward",
+        "requestSchema": "M1014RewardClaimRequest",
+        "responseSchema": "M1014RewardClaimResult",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.reward.claim.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-TRUSTED-COMPLETION",
+        "method": "POST",
+        "path": "/internal/v1/gamification/trusted-events/completions",
+        "operationId": "settleM1014TrustedCompletion",
+        "requestSchema": "M1014TrustedCompletion",
+        "responseSchema": "M1014SettlementResult",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.trusted-event.write",
+        "security": "B8WorkloadIdentity",
+        "idempotency": "REQUIRED",
+        "successStatus": "202"
+      },
+      {
+        "id": "M1014-SOC-ROOM-DISCONNECT",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/disconnect",
+        "operationId": "disconnectM1014StudyRoom",
+        "requestSchema": "M1014RoomCommand",
+        "responseSchema": "M1014RoomState",
+        "owner": "social-service",
+        "requiredPermission": "social.room.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-ROOM-RECOVER",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/recover",
+        "operationId": "recoverM1014StudyRoomSeat",
+        "requestSchema": "M1014RoomCommand",
+        "responseSchema": "M1014RoomState",
+        "owner": "social-service",
+        "requiredPermission": "social.room.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-LEASE-RENEW",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/lease/renew",
+        "operationId": "renewM1014StudyRoomLease",
+        "requestSchema": "M1014RoomCommand",
+        "responseSchema": "M1014RoomState",
+        "owner": "social-service",
+        "requiredPermission": "social.room.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-FOCUS-START",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/focus",
+        "operationId": "startM1014RoomFocus",
+        "requestSchema": "M1014FocusCommand",
+        "responseSchema": "M1014FocusSession",
+        "owner": "social-service",
+        "requiredPermission": "social.focus.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "201"
+      },
+      {
+        "id": "M1014-SOC-FOCUS-UPDATE",
+        "method": "PATCH",
+        "path": "/api/v1/social/rooms/{roomId}/focus",
+        "operationId": "updateM1014RoomFocus",
+        "requestSchema": "M1014FocusUpdateCommand",
+        "responseSchema": "M1014FocusSession",
+        "owner": "social-service",
+        "requiredPermission": "social.focus.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-PRESET-INTERACTION",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/interactions",
+        "operationId": "recordM1014RoomInteraction",
+        "requestSchema": "M1014PresetInteraction",
+        "responseSchema": "M1014InteractionResult",
+        "owner": "social-service",
+        "requiredPermission": "social.interaction.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-LEADERBOARD-LIST",
+        "method": "GET",
+        "path": "/api/v1/social/leaderboards",
+        "operationId": "getM1014Leaderboard",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014Leaderboard",
+        "owner": "social-service",
+        "requiredPermission": "social.leaderboard.read",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-VISIBILITY-UPDATE",
+        "method": "PATCH",
+        "path": "/api/v1/social/me/visibility",
+        "operationId": "updateM1014SocialVisibility",
+        "requestSchema": "M1014VisibilityCommand",
+        "responseSchema": "M1014Visibility",
+        "owner": "social-service",
+        "requiredPermission": "social.visibility.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-REPORT-CREATE",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/reports",
+        "operationId": "createM1014SocialReport",
+        "requestSchema": "M1014ReportCommand",
+        "responseSchema": "M1014Report",
+        "owner": "social-service",
+        "requiredPermission": "social.report.create.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "202"
+      },
+      {
+        "id": "M1014-SOC-REPORT-GET",
+        "method": "GET",
+        "path": "/api/v1/social/reports/{reportId}",
+        "operationId": "getM1014SocialReport",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014Report",
+        "owner": "social-service",
+        "requiredPermission": "social.report.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-TRUSTED-EVENT",
+        "method": "POST",
+        "path": "/internal/v1/social/trusted-events",
+        "operationId": "consumeM1014SocialTrustedEvent",
+        "requestSchema": "M1014TrustedSocialEvent",
+        "responseSchema": "B12EventReceipt",
+        "owner": "social-service",
+        "requiredPermission": "social.trusted-event.write",
+        "security": "B8WorkloadIdentity",
+        "idempotency": "REQUIRED",
+        "successStatus": "202"
+      },
+      {
+        "id": "M1014-GAM-GAME-CATALOG",
+        "method": "GET",
+        "path": "/api/v1/games/catalog",
+        "operationId": "listM1014GameCatalog",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014GameCatalog",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-GAME-SESSION-CREATE",
+        "method": "POST",
+        "path": "/api/v1/games/sessions",
+        "operationId": "createM1014GameSession",
+        "requestSchema": "M1014GameSessionCreateRequest",
+        "responseSchema": "M1014GameSession",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.play.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "201"
+      },
+      {
+        "id": "M1014-GAM-GAME-SESSION-GET",
+        "method": "GET",
+        "path": "/api/v1/games/sessions/{sessionId}",
+        "operationId": "getM1014GameSession",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014GameSession",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.read.self",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-GAME-EVENT-SUBMIT",
+        "method": "POST",
+        "path": "/api/v1/games/sessions/{sessionId}/events",
+        "operationId": "submitM1014GameEvent",
+        "requestSchema": "M1014GameEventRequest",
+        "responseSchema": "M1014GameEventReceipt",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.play.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-GAME-SESSION-PAUSE",
+        "method": "POST",
+        "path": "/api/v1/games/sessions/{sessionId}/pause",
+        "operationId": "pauseM1014GameSession",
+        "requestSchema": "M1014GameSessionControlRequest",
+        "responseSchema": "M1014GameSession",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.play.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-GAME-SESSION-RESUME",
+        "method": "POST",
+        "path": "/api/v1/games/sessions/{sessionId}/resume",
+        "operationId": "resumeM1014GameSession",
+        "requestSchema": "M1014GameSessionControlRequest",
+        "responseSchema": "M1014GameSession",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.play.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-GAM-GAME-SESSION-FINISH",
+        "method": "POST",
+        "path": "/api/v1/games/sessions/{sessionId}/finish",
+        "operationId": "finishM1014GameSession",
+        "requestSchema": "M1014GameSessionControlRequest",
+        "responseSchema": "M1014GameSessionResult",
+        "owner": "gamification-service",
+        "requiredPermission": "gamification.game.play.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-ROOM-LIST",
+        "method": "GET",
+        "path": "/api/v1/social/rooms",
+        "operationId": "listM1014StudyRooms",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014RoomPage",
+        "owner": "social-service",
+        "requiredPermission": "social.room.read",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-ROOM-GET",
+        "method": "GET",
+        "path": "/api/v1/social/rooms/{roomId}",
+        "operationId": "getM1014StudyRoom",
+        "requestSchema": "NONE",
+        "responseSchema": "M1014RoomDetails",
+        "owner": "social-service",
+        "requiredPermission": "social.room.read",
+        "security": "bearerAuth",
+        "idempotency": "NOT_REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-ROOM-JOIN",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/join",
+        "operationId": "joinM1014StudyRoom",
+        "requestSchema": "M1014RoomJoinRequest",
+        "responseSchema": "M1014RoomState",
+        "owner": "social-service",
+        "requiredPermission": "social.room.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      },
+      {
+        "id": "M1014-SOC-ROOM-LEAVE",
+        "method": "POST",
+        "path": "/api/v1/social/rooms/{roomId}/leave",
+        "operationId": "leaveM1014StudyRoom",
+        "requestSchema": "M1014RoomCommand",
+        "responseSchema": "M1014RoomState",
+        "owner": "social-service",
+        "requiredPermission": "social.room.write.self",
+        "security": "bearerAuth",
+        "idempotency": "REQUIRED",
+        "successStatus": "200"
+      }
+    ],
+    "approvedCanonicalEvents": [
+      {
+        "eventName": "assessment.item.assessed.v2",
+        "payloadRef": "#/payloadSchemas/B10AssessmentItemAssessedV2",
+        "producer": "assessment-service",
+        "topic": "platform.assessment.v1",
+        "aggregateType": "assessment_item",
+        "aggregateIdField": "itemAssessmentId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "ALLOW_ONLY_WITH_PROFILE_ASSESSMENT_ITEM_CORRECT",
+        "requiredPayloadFields": [
+          "tenantId", "principalId", "itemAssessmentId", "attemptId", "sessionId", "logicalItemId", "contentPin", "rulePin", "reportPin", "objectivePolicyPin",
+          "objectiveOutcome", "objectiveNumerator", "objectiveDenominator", "objectiveCorrect", "guessSignal", "semanticErrorCategory",
+          "mappingVersion", "verificationStage", "reasonTrace", "outcomeDigest", "assessmentFactWatermark", "assessedAt"
+        ],
+        "consumers": [
+          { "service": "learning-service", "consumerGroup": "cg.learning-from-assessment.v1" },
+          { "service": "gamification-service", "consumerGroup": "cg.gamification-from-assessment.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-assessment.v1" }
+        ]
+      },
+      {
+        "eventName": "learning.mastery.projected.v2",
+        "payloadRef": "#/payloadSchemas/B10LearningMasteryProjectedV2",
+        "producer": "learning-service",
+        "topic": "platform.learning.v1",
+        "aggregateType": "mastery_projection",
+        "aggregateIdField": "projectionId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "ALLOW_ONLY_WITH_PROFILE_MASTERY_MILESTONE",
+        "requiredPayloadFields": [
+          "tenantId", "principalId", "projectionId", "logicalItemId", "sourceAssessmentEventId", "sourceItemAssessmentId", "contentPin",
+          "masteryStageBefore", "masteryStageAfter", "evidenceCount", "evidenceDigest", "evidenceLocalDates", "d7Gate", "aggregateScore",
+          "latestEffectiveQuality", "latestGuessSignal", "masteryEpochId", "masteryEpochVersion", "projectionVersion", "masteryRuleVersion",
+          "masteryFactWatermark", "reasonTrace", "projectedAt"
+        ],
+        "consumers": [
+          { "service": "assessment-service", "consumerGroup": "cg.assessment-from-learning.v1" },
+          { "service": "gamification-service", "consumerGroup": "cg.gamification-from-learning.v1" },
+          { "service": "social-service", "consumerGroup": "cg.social-from-learning.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-learning.v1" }
+        ]
+      },
+      {
+        "eventName": "learning.task.completed.v2",
+        "payloadRef": "#/payloadSchemas/M1014LearningTaskCompleted",
+        "producer": "learning-service",
+        "topic": "platform.learning.v1",
+        "aggregateType": "learning_task_completion",
+        "aggregateIdField": "completionId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "ALLOW_ONLY_WITH_PROFILE_TASK_COMPLETED",
+        "requiredPayloadFields": [
+          "completionId", "subjectRef", "taskId", "completionVersion", "taskStatus", "completionFact", "completedAt", "rootEventId", "contentPin", "rulePin", "outcomeDigest"
+        ],
+        "consumers": [
+          { "service": "gamification-service", "consumerGroup": "cg.gamification-from-learning.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-learning.v1" }
+        ]
+      },
+      {
+        "eventName": "gamification.xp.ledger_posted.v2",
+        "payloadRef": "#/payloadSchemas/M1014GamificationXpLedgerPosted",
+        "producer": "gamification-service",
+        "topic": "platform.gamification.v1",
+        "aggregateType": "growth_ledger",
+        "aggregateIdField": "ledgerEntryId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "OUTPUT_LEDGER_FACT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "ledgerEntryId", "principalId", "tenantId", "entryType", "amount", "currency", "tupleKey", "dedupeKey", "lineageDigest", "rewardRuleVersion", "sourceEventId", "sourceEventName", "createdAt", "auditRef"
+        ],
+        "consumers": [
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-gamification.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-gamification.v1" },
+          { "service": "social-service", "consumerGroup": "cg.social-from-gamification.v1" }
+        ]
+      },
+      {
+        "eventName": "gamification.reward.granted.v2",
+        "payloadRef": "#/payloadSchemas/M1014GamificationRewardGranted",
+        "producer": "gamification-service",
+        "topic": "platform.gamification.v1",
+        "aggregateType": "reward_grant",
+        "aggregateIdField": "grantId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "OUTPUT_FREE_NON_CASH_REWARD_FACT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "grantId", "principalId", "tenantId", "rewardCode", "grantState", "catalogVersion", "rewardRuleVersion", "probabilityVersion", "drawId", "eligibleRewardSetDigest", "selectedRewardId", "sourceLedgerEntryId", "sourceEventId", "lineageDigest", "monetization", "drawnAt", "auditRef"
+        ],
+        "consumers": [
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-gamification.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-gamification.v1" }
+        ]
+      },
+      {
+        "eventName": "study_room.seat_joined.v2",
+        "payloadRef": "#/payloadSchemas/M1014StudyRoomSeatJoined",
+        "producer": "social-service",
+        "topic": "platform.social.v1",
+        "aggregateType": "study_room_seat",
+        "aggregateIdField": "leaseId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "SOCIAL_LEASE_FACT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "roomId", "seatId", "subjectRef", "spaceType", "leaseId", "leaseVersion", "leasePolicyVersion", "leaseExpiresAt", "roomVisibility", "seatState", "joinedAt", "lineageDigest"
+        ],
+        "consumers": [
+          { "service": "analytics-service", "consumerGroup": "cg.analytics-from-social.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-social.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-social.v1" }
+        ]
+      },
+      {
+        "eventName": "study_room.focus_started.v2",
+        "payloadRef": "#/payloadSchemas/M1014StudyRoomFocusStarted",
+        "producer": "social-service",
+        "topic": "platform.social.v1",
+        "aggregateType": "study_room_focus",
+        "aggregateIdField": "focusId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "SOCIAL_FOCUS_FACT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "focusId", "roomId", "seatId", "subjectRef", "leaseId", "leaseVersion", "focusVersion", "focusKind", "focusTagCode", "durationMinutes", "focusPolicyVersion", "startedAt", "endsAt", "lineageDigest"
+        ],
+        "consumers": [
+          { "service": "analytics-service", "consumerGroup": "cg.analytics-from-social.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-social.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-social.v1" }
+        ]
+      },
+      {
+        "eventName": "study_room.seat_left.v2",
+        "payloadRef": "#/payloadSchemas/M1014StudyRoomSeatLeft",
+        "producer": "social-service",
+        "topic": "platform.social.v1",
+        "aggregateType": "study_room_seat",
+        "aggregateIdField": "leaseId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "SOCIAL_LEASE_FACT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "roomId", "seatId", "subjectRef", "spaceType", "leaseId", "leaseVersion", "leasePolicyVersion", "reasonCode", "leftAt", "lineageDigest"
+        ],
+        "consumers": [
+          { "service": "analytics-service", "consumerGroup": "cg.analytics-from-social.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-social.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-social.v1" }
+        ]
+      },
+      {
+        "eventName": "leaderboard.snapshot_published.v2",
+        "payloadRef": "#/payloadSchemas/M1014LeaderboardSnapshotPublished",
+        "producer": "social-service",
+        "topic": "platform.social.v1",
+        "aggregateType": "leaderboard_snapshot",
+        "aggregateIdField": "snapshotId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "LEADERBOARD_SNAPSHOT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "snapshotId", "scope", "spaceType", "metric", "period", "timezoneId", "projectionVersion", "ruleVersion", "tieBreakVersion", "watermark", "entryCount", "snapshotDigest", "snapshotAt", "auditRef", "lineageDigest"
+        ],
+        "consumers": [
+          { "service": "analytics-service", "consumerGroup": "cg.analytics-from-social.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-social.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-social.v1" }
+        ]
+      },
+      {
+        "eventName": "social.report.created.v2",
+        "payloadRef": "#/payloadSchemas/M1014SocialReportCreated",
+        "producer": "social-service",
+        "topic": "platform.social.v1",
+        "aggregateType": "social_report",
+        "aggregateIdField": "reportId",
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "rewardEligibility": "MODERATION_REPORT_NOT_COMPLETION_INPUT",
+        "requiredPayloadFields": [
+          "reportId", "roomId", "reporterId", "tenantId", "caseId", "targetType", "targetRef", "reasonCode", "state", "moderationPolicyVersion", "auditRef", "createdAt", "lineageDigest"
+        ],
+        "consumers": [
+          { "service": "admin-ops-service", "consumerGroup": "cg.admin-ops-from-social.v1" },
+          { "service": "audit-service", "consumerGroup": "cg.audit-from-social.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-social.v1" }
+        ]
+      }
+    ],
+    "legacyAdapters": [
+      {
+        "id": "HISTORICAL-B4-GAM-SOC-V1",
+        "sourceFragment": "packages/contracts/events/v1/catalog.json",
+        "mode": "HISTORICAL_ONLY_NO_CANONICAL_ADAPTER",
+        "eventNames": [
+          "gamification.profile.updated.v1", "gamification.xp.ledger_appended.v1", "gamification.currency.ledger_appended.v1", "gamification.streak.day_validated.v1", "gamification.streak.rescue_completed.v1", "gamification.quest.progressed.v1", "gamification.quest.claimed.v1", "gamification.achievement.unlocked.v1", "gamification.chest.granted.v1", "gamification.chest.opened.v1", "gamification.avatar.loadout_equipped.v1", "gamification.season.points_updated.v1", "games.session.created.v1", "games.session.event_accepted.v1", "games.session.completed.v1", "social.room.joined.v1", "social.focus.started.v1", "social.focus.completed.v1", "social.interaction.sent.v1", "social.room.left.v1", "social.focus.updated.v1", "social.moderation.reported.v1", "social.moderation.blocked.v1", "social.moderation.muted.v1"
+        ],
+        "canonical": false,
+        "runtimeAuthority": false
+      },
+      {
+        "id": "HISTORICAL-B12-GAM-SOC-V1",
+        "sourceFragment": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+        "mode": "HISTORICAL_ONLY_NO_CANONICAL_ADAPTER",
+        "eventNames": [
+          "gamification.session_started.v1", "gamification.xp.ledger_posted.v1", "gamification.reward.granted.v1", "gamification.avatar.equipped.v1", "study_room.joined.v1", "study_room.focus_started.v1", "study_room.left.v1", "leaderboard.refreshed.v1", "social.report.created.v1"
+        ],
+        "canonical": false,
+        "runtimeAuthority": false
+      }
+    ],
+    "historicalOnlySources": [
+      {
+        "source": "learning.task.completed.v1",
+        "sourceFile": "packages/contracts/events/v1/catalog.json",
+        "classification": "HISTORICAL_CANDIDATE",
+        "canonical": false,
+        "runtimeAuthority": false
+      },
+      {
+        "source": "B4_GAM_SOC_V1",
+        "sourceFile": "packages/contracts/events/v1/catalog.json",
+        "eventNames": [
+          "gamification.profile.updated.v1", "gamification.xp.ledger_appended.v1", "gamification.currency.ledger_appended.v1", "gamification.streak.day_validated.v1", "gamification.streak.rescue_completed.v1", "gamification.quest.progressed.v1", "gamification.quest.claimed.v1", "gamification.achievement.unlocked.v1", "gamification.chest.granted.v1", "gamification.chest.opened.v1", "gamification.avatar.loadout_equipped.v1", "gamification.season.points_updated.v1", "games.session.created.v1", "games.session.event_accepted.v1", "games.session.completed.v1", "social.room.joined.v1", "social.focus.started.v1", "social.focus.completed.v1", "social.interaction.sent.v1", "social.room.left.v1", "social.focus.updated.v1", "social.moderation.reported.v1", "social.moderation.blocked.v1", "social.moderation.muted.v1"
+        ],
+        "classification": "HISTORICAL_OR_MIGRATION_ONLY",
+        "canonical": false,
+        "runtimeAuthority": false
+      },
+      {
+        "source": "B12_GAM_SOC_V1",
+        "sourceFile": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+        "eventNames": [
+          "gamification.session_started.v1", "gamification.xp.ledger_posted.v1", "gamification.reward.granted.v1", "gamification.avatar.equipped.v1", "study_room.joined.v1", "study_room.focus_started.v1", "study_room.left.v1", "leaderboard.refreshed.v1", "social.report.created.v1"
+        ],
+        "classification": "HISTORICAL_OR_MIGRATION_ONLY",
+        "canonical": false,
+        "runtimeAuthority": false
+      }
+    ],
+    "prohibitedRuntimeClaims": [
+      "D2_CONTRACT_IS_RUNTIME_EVIDENCE",
+      "B26_STATIC_POLICY_IS_RUNTIME_EVIDENCE",
+      "HISTORICAL_B4_B12_OR_V1_IS_CANONICAL_RUNTIME",
+      "CLIENT_CAN_EMIT_TRUSTED_COMPLETION_OR_LEDGER_FACT",
+      "RANDOM_REWARD_OR_ROOM_LEASE_IS_RUNTIME_VERIFIED"
+    ],
+    "b26StaticPolicy": {
+      "contract": "config/b26-event-runtime.json",
+      "classification": "STATIC_GOVERNANCE_ONLY",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "allowsRuntimePromotion": false,
+      "requiresSeparateRuntimeEvidence": true
+    }
+  },
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+    "deferredTasks": [
+      "P1R-M2-004",
+      "P1R-M2-005",
+      "P1R-M2-006",
+      "P1R-M5-013",
+      "P1R-M7-001",
+      "P1R-M7-002",
+      "P1R-M7-004",
+      "P1R-M7-005",
+      "P1R-M8-005"
+    ]
+  },
+  "owners": {
+    "gamification-service": [
+      "reward-ledger",
+      "reward-catalog",
+      "reward-probability-audit",
+      "badge-progress",
+      "game-catalog"
+    ],
+    "social-service": [
+      "social-space",
+      "seat-lease",
+      "focus-session",
+      "leaderboard-snapshot",
+      "report-case"
+    ],
+    "assessment-service": [
+      "assessment-fact",
+      "objective-outcome"
+    ],
+    "learning-service": [
+      "task-completion-fact",
+      "mastery-projection",
+      "review-queue"
+    ],
+    "workflow-service": [
+      "saga-compensation-orchestration",
+      "dlq-manual-recovery"
+    ],
+    "audit-service": [
+      "immutable-audit-reference"
+    ]
+  },
+  "authority": {
+    "phase1Population": "ADULT_18_PLUS_ONLY",
+    "principalAndTenant": "SERVER_DERIVED_FROM_VERIFIED_TOKEN",
+    "gatewayIsNotDomainWriter": true,
+    "domainServicePepRequired": true,
+    "clientMayProduceKafkaFacts": false,
+    "clientMaySet": [],
+    "serverDerivedFields": [
+      "principalId",
+      "tenantId",
+      "rewardAmount",
+      "rewardRuleVersion",
+      "probabilityVersion",
+      "ledgerEntryId",
+      "leaderboardScore",
+      "reporterId"
+    ],
+    "opaqueServerIssuedReferenceFields": [
+      "leaseId"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "principalId",
+      "tenantId",
+      "ownerId",
+      "rewardAmount",
+      "rewardRuleVersion",
+      "probabilityVersion",
+      "ledgerEntryId",
+      "leaderboardScore",
+      "reporterId",
+      "role",
+      "permission"
+    ]
+  },
+  "trustedCompletion": {
+    "tupleFields": [
+      "producerService",
+      "eventName",
+      "schemaVersion",
+      "qualifiedPredicate",
+      "rewardRuleVersion"
+    ],
+    "lineageRequiredFields": [
+      "eventId",
+      "traceId",
+      "schemaVersion",
+      "contentPin"
+    ],
+    "derivedFieldMappings": {
+      "rewardRuleVersion": {
+        "kind": "SERVER_SELECTED_GAMIFICATION_RULE_VERSION",
+        "owner": "gamification-service",
+        "clientSupplied": false
+      }
+    },
+    "receiptFields": [
+      "tupleKey",
+      "dedupeKey",
+      "lineageDigest",
+      "ledgerEntryId",
+      "rewardRuleVersion",
+      "decision",
+      "decisionReason"
+    ],
+    "sourceProfiles": [
+      {
+        "id": "TASK_COMPLETED",
+        "producerService": "learning-service",
+        "eventName": "learning.task.completed.v2",
+        "schemaVersion": "v2",
+        "qualifiedPredicate": {
+          "taskStatus": "COMPLETED",
+          "completionFact": "SERVER_SETTLED"
+        },
+        "lineageFields": [
+          "eventId",
+          "traceId",
+          "schemaVersion",
+          "taskId",
+          "completionVersion",
+          "rootEventId",
+          "contentPin",
+          "rulePin",
+          "outcomeDigest"
+        ],
+        "lineageFieldOrigins": {
+          "eventId": "ENVELOPE",
+          "traceId": "ENVELOPE",
+          "schemaVersion": "ENVELOPE",
+          "taskId": "PAYLOAD",
+          "completionVersion": "PAYLOAD",
+          "rootEventId": "PAYLOAD",
+          "contentPin": "PAYLOAD",
+          "rulePin": "PAYLOAD",
+          "outcomeDigest": "PAYLOAD"
+        },
+        "dedupeFields": [
+          "taskId",
+          "completionVersion",
+          "rootEventId",
+          "rewardRuleVersion"
+        ],
+        "dedupeFieldOrigins": {
+          "taskId": "PAYLOAD",
+          "completionVersion": "PAYLOAD",
+          "rootEventId": "PAYLOAD",
+          "rewardRuleVersion": "DERIVED:rewardRuleVersion"
+        },
+        "maturity": "FUTURE_D2_CONTRACT_ONLY"
+      },
+      {
+        "id": "ASSESSMENT_ITEM_CORRECT",
+        "producerService": "assessment-service",
+        "eventName": "assessment.item.assessed.v2",
+        "schemaVersion": "v2",
+        "qualifiedPredicate": {
+          "objectiveOutcome": "CORRECT_VERIFIED",
+          "objectiveCorrect": true,
+          "guessSignal": false
+        },
+        "lineageFields": [
+          "eventId",
+          "traceId",
+          "schemaVersion",
+          "itemAssessmentId",
+          "attemptId",
+          "logicalItemId",
+          "contentPin",
+          "rulePin",
+          "objectivePolicyPin",
+          "outcomeDigest"
+        ],
+        "lineageFieldOrigins": {
+          "eventId": "ENVELOPE",
+          "traceId": "ENVELOPE",
+          "schemaVersion": "ENVELOPE",
+          "itemAssessmentId": "PAYLOAD",
+          "attemptId": "PAYLOAD",
+          "logicalItemId": "PAYLOAD",
+          "contentPin": "PAYLOAD",
+          "rulePin": "PAYLOAD",
+          "objectivePolicyPin": "PAYLOAD",
+          "outcomeDigest": "PAYLOAD"
+        },
+        "dedupeFields": [
+          "itemAssessmentId",
+          "eventId",
+          "rewardRuleVersion"
+        ],
+        "dedupeFieldOrigins": {
+          "itemAssessmentId": "PAYLOAD",
+          "eventId": "ENVELOPE",
+          "rewardRuleVersion": "DERIVED:rewardRuleVersion"
+        },
+        "maturity": "CANONICAL_D2_INPUT_ONLY"
+      },
+      {
+        "id": "MASTERY_MILESTONE",
+        "producerService": "learning-service",
+        "eventName": "learning.mastery.projected.v2",
+        "schemaVersion": "v2",
+        "qualifiedPredicate": {
+          "masteryStageAfter": [
+            "MASTERED",
+            "CONSOLIDATED"
+          ],
+          "d7Gate": {
+            "result": "PASSED",
+            "reasonCode": "D7_PASSED"
+          },
+          "stateTransition": {
+            "kind": "DERIVED_MASTERY_STAGE_CHANGE",
+            "inputFields": [
+              "masteryStageBefore",
+              "masteryStageAfter"
+            ],
+            "expression": "masteryStageBefore != masteryStageAfter",
+            "clientSupplied": false
+          }
+        },
+        "lineageFields": [
+          "eventId",
+          "traceId",
+          "schemaVersion",
+          "projectionId",
+          "masteryEpochId",
+          "masteryEpochVersion",
+          "projectionVersion",
+          "sourceAssessmentEventId",
+          "sourceItemAssessmentId",
+          "contentPin",
+          "masteryStageBefore",
+          "masteryRuleVersion",
+          "evidenceDigest"
+        ],
+        "lineageFieldOrigins": {
+          "eventId": "ENVELOPE",
+          "traceId": "ENVELOPE",
+          "schemaVersion": "ENVELOPE",
+          "projectionId": "PAYLOAD",
+          "masteryEpochId": "PAYLOAD",
+          "masteryEpochVersion": "PAYLOAD",
+          "projectionVersion": "PAYLOAD",
+          "sourceAssessmentEventId": "PAYLOAD",
+          "sourceItemAssessmentId": "PAYLOAD",
+          "contentPin": "PAYLOAD",
+          "masteryStageBefore": "PAYLOAD",
+          "masteryRuleVersion": "PAYLOAD",
+          "evidenceDigest": "PAYLOAD"
+        },
+        "dedupeFields": [
+          "masteryEpochId",
+          "projectionVersion",
+          "rewardRuleVersion"
+        ],
+        "dedupeFieldOrigins": {
+          "masteryEpochId": "PAYLOAD",
+          "projectionVersion": "PAYLOAD",
+          "rewardRuleVersion": "DERIVED:rewardRuleVersion"
+        },
+        "maturity": "CANONICAL_D2_INPUT_ONLY"
+      }
+    ],
+    "rejectedEventNames": [
+      "learning.task.completed.v1",
+      "learning.review.scheduled.v2",
+      "assessment.item.assessed.v1",
+      "learning.mastery.projected.v1"
+    ],
+    "rejectionReasons": {
+      "learning.task.completed.v1": "HISTORICAL_CANDIDATE_NOT_CANONICAL",
+      "learning.review.scheduled.v2": "QUEUE_FACT_NOT_A_COMPLETION",
+      "assessment.item.assessed.v1": "HISTORICAL_OR_UNPINNED",
+      "learning.mastery.projected.v1": "HISTORICAL_OR_UNPINNED"
+    },
+    "rejectedCanonicalEvents": [
+      {
+        "eventName": "learning.review.scheduled.v2",
+        "producerService": "learning-service",
+        "schemaVersion": "v2",
+        "classification": "CANONICAL_D2_QUEUE_FACT_REJECTED_FOR_REWARD",
+        "reason": "QUEUE_FACT_NOT_A_COMPLETION",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+      }
+    ]
+  },
+  "ledger": {
+    "owner": "gamification-service",
+    "writeModel": "APPEND_ONLY",
+    "mutateExistingEntry": "PROHIBITED",
+    "correctionModel": "COMPENSATING_ENTRY_ONLY",
+    "idempotency": "TUPLE_DEDUPE_AND_LEDGER_UNIQUENESS",
+    "mandatoryEntryFields": [
+      "ledgerEntryId",
+      "principalId",
+      "tenantId",
+      "entryType",
+      "amount",
+      "currency",
+      "tupleKey",
+      "dedupeKey",
+      "lineageDigest",
+      "rewardRuleVersion",
+      "createdAt",
+      "auditRef"
+    ],
+    "allowedEntryTypes": [
+      "CREDIT",
+      "DEBIT",
+      "COMPENSATION"
+    ],
+    "currency": "NON_CASH_PLATFORM_CREDIT",
+    "directClientWrite": "DENY"
+  },
+  "randomRewards": {
+    "owner": "gamification-service",
+    "paymentRequirement": "FREE_ONLY",
+    "cashOrWithdrawal": "PROHIBITED",
+    "paidRandomBox": "PROHIBITED",
+    "gamblingMechanic": "PROHIBITED",
+    "catalogVersionRequired": true,
+    "probabilityDisclosureRequired": true,
+    "probabilityAuditRequired": true,
+    "probabilityAuditFields": [
+      "catalogVersion",
+      "probabilityVersion",
+      "drawId",
+      "eligibleRewardSetDigest",
+      "selectedRewardId",
+      "drawnAt",
+      "auditRef"
+    ],
+    "serverRandomnessOnly": true,
+    "clientCanSupplyProbabilityOrOutcome": false
+  },
+  "gameCatalog": {
+    "phase1EnabledModes": [
+      "SENTENCE_TRAIN"
+    ],
+    "phase1DefaultDisabledModes": [
+      "WORD_MATCH",
+      "WORD_DEFENSE",
+      "WORD_PUZZLE",
+      "GRAMMAR_BLASTER",
+      "CATCH_MEANING"
+    ],
+    "catalogEntries": [
+      { "gameCode": "SENTENCE_TRAIN", "releasePhase": "P0", "enabled": true },
+      { "gameCode": "WORD_MATCH", "releasePhase": "P1", "enabled": false },
+      { "gameCode": "WORD_DEFENSE", "releasePhase": "P1", "enabled": false },
+      { "gameCode": "WORD_PUZZLE", "releasePhase": "P1", "enabled": false },
+      { "gameCode": "GRAMMAR_BLASTER", "releasePhase": "LONG_TERM", "enabled": false },
+      { "gameCode": "CATCH_MEANING", "releasePhase": "LONG_TERM", "enabled": false }
+    ],
+    "sentenceTrainRequirement": "P0_ONLY_SERVER_GATED_CATALOG_ENTRY",
+    "clientMayEnableMode": false
+  },
+  "socialSpaces": {
+    "owner": "social-service",
+    "spaceTypes": [
+      {
+        "type": "PUBLIC_THEME_ROOM",
+        "visibility": "PUBLIC",
+        "membership": "THEME_TEMPLATE_MANAGED",
+        "minCapacity": 20,
+        "maxCapacity": 30,
+        "seatLease": "REQUIRED",
+        "initialGate": {
+          "priority": "P0",
+          "enabled": true
+        }
+      },
+      {
+        "type": "INVITE_STUDY_ROOM",
+        "visibility": "INVITE_ONLY",
+        "membership": "OWNER_INVITED",
+        "minCapacity": 2,
+        "maxCapacity": 8,
+        "seatLease": "REQUIRED",
+        "initialGate": {
+          "priority": "P1",
+          "enabled": false
+        }
+      },
+      {
+        "type": "CHECKIN_GOAL_GROUP",
+        "visibility": "INVITE_ONLY",
+        "membership": "OWNER_INVITED",
+        "minCapacity": 3,
+        "maxCapacity": 10,
+        "seatLease": "PROHIBITED",
+        "initialGate": {
+          "priority": "P1",
+          "enabled": false
+        }
+      }
+    ],
+    "seatLease": {
+      "ttlSeconds": 90,
+      "renewEverySeconds": 30,
+      "disconnectRecoverySeconds": 60,
+      "noLearningActivityReleaseSeconds": 300,
+      "focusDurationsMinutes": [
+        25,
+        45
+      ],
+      "serverClockOnly": true,
+      "clientMaySetLeaseExpiry": false,
+      "focusCreditPolicy": {
+        "policyVersion": "P1_FOCUS_CREDIT_V1",
+        "creditedMetric": "FOCUS_MINUTES",
+        "qualifiedState": "COMPLETED",
+        "creditedMinutesSource": "durationMinutes",
+        "completionCondition": "SERVER_TIME_AT_OR_AFTER_ENDS_AT_WITH_ACTIVE_LEASE_AND_MATCHING_FOCUS_VERSION",
+        "nonQualifiedStates": [
+          "FOCUSING",
+          "PAUSED",
+          "ABORTED",
+          "AUTO_RELEASED"
+        ],
+        "nonQualifiedCreditMinutes": 0,
+        "clientFinishActionIsProof": false,
+        "clientHeartbeatAuthority": "NONE",
+        "offlineSuccessAuthority": "NONE",
+        "rewardTrigger": "PROHIBITED"
+      }
+    },
+    "inviteStudyRoom": {
+      "multipleRoomsAllowed": true,
+      "onePrimaryRoomPerPrincipal": true
+    },
+    "checkinGoalGroup": {
+      "sharedGoalRequired": true,
+      "fixedNonCashRewardSplitOnly": true,
+      "realtimePresence": "OUT_OF_SCOPE",
+      "seatLease": "PROHIBITED"
+    }
+  },
+  "leaderboard": {
+    "owner": "social-service",
+    "sourceFacts": "SERVER_SETTLED_ONLY",
+    "clientMaySetScore": false,
+    "snapshotRequired": true,
+    "snapshotFields": [
+      "metric",
+      "period",
+      "timezoneId",
+      "projectionVersion",
+      "ruleVersion",
+      "tieBreakVersion",
+      "snapshotAt",
+      "watermark",
+      "auditRef"
+    ],
+    "metricSources": [
+      {
+        "metric": "FOCUS_MINUTES",
+        "sourceKind": "OWNER_LOCAL_SETTLED_FACT",
+        "owner": "social-service",
+        "factSchema": "M1014FocusSession",
+        "qualificationPolicy": "P1_FOCUS_CREDIT_V1"
+      },
+      {
+        "metric": "MASTERED_WORDS",
+        "sourceKind": "CANONICAL_EVENT",
+        "producerService": "learning-service",
+        "eventName": "learning.mastery.projected.v2",
+        "consumerGroup": "cg.social-from-learning.v1",
+        "projectionSchema": "M1014LeaderboardMasteryFact"
+      },
+      {
+        "metric": "XP",
+        "sourceKind": "CANONICAL_EVENT",
+        "producerService": "gamification-service",
+        "eventName": "gamification.xp.ledger_posted.v2",
+        "consumerGroup": "cg.social-from-gamification.v1",
+        "projectionSchema": "M1014LeaderboardXpFact"
+      }
+    ],
+    "privacyModes": [
+      "NICKNAME",
+      "ANONYMOUS",
+      "OPT_OUT"
+    ],
+    "defaultTimezone": "Asia/Shanghai"
+  },
+  "moderation": {
+    "owner": "social-service",
+    "phase1UgcMode": "LOW_UGC_PRESET_ONLY",
+    "allowedSubmissionFields": [
+      "targetType",
+      "targetRef",
+      "reasonCode"
+    ],
+    "serverDerivedFields": [
+      "reporterId",
+      "tenantId",
+      "caseId",
+      "state",
+      "auditRef",
+      "createdAt"
+    ],
+    "forbiddenSubmissionFields": [
+      "text",
+      "message",
+      "content",
+      "html",
+      "url",
+      "emoji",
+      "image",
+      "audio",
+      "directMessage"
+    ],
+    "reportStateMachine": [
+      "SUBMITTED",
+      "TRIAGED",
+      "RESOLVED",
+      "DISMISSED"
+    ],
+    "freeText": "PROHIBITED",
+    "auditReferenceRequired": true
+  },
+  "events": {
+    "transport": "KAFKA_COMPATIBLE_OUTBOX_REQUIRED_FOR_FUTURE_RUNTIME",
+    "requiredEnvelopeFields": [
+      "eventId",
+      "traceId",
+      "schemaVersion",
+      "aggregateId",
+      "occurredAt"
+    ],
+    "delivery": "AT_LEAST_ONCE_WITH_IDEMPOTENT_CONSUMER",
+    "crossServiceWrite": "PROHIBITED",
+    "runtimeBinding": "NOT_RUNTIME_VERIFIED"
+  },
+  "phase1Prohibitions": [
+    "GENERATIVE_AI",
+    "K12_OR_MINOR_ACCOUNT",
+    "CASH_WITHDRAWAL",
+    "PAID_RANDOM_REWARD",
+    "GAMBLING_MECHANIC",
+    "CLIENT_AUTHORITATIVE_REWARD_OR_SCORE",
+    "UNMODERATED_FREE_TEXT_OR_DM",
+    "CHECKIN_GOAL_GROUP_SEAT_LEASE"
+  ]
+}

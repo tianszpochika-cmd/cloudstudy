@@ -2956,9 +2956,10 @@ function checkB26StaticPolicy(b26StaticPolicy, errors) {
       stable(topic?.consumerGroups?.map((entry) => entry?.name)) ===
         stable([
           "cg.learning-from-assessment.v1",
+          "cg.gamification-from-assessment.v1",
           "cg.workflow-from-assessment.v1",
         ]),
-    "B26 placement assessment topic ownership/consumers drifted",
+    "B26 placement assessment topic ownership/current-source consumers drifted",
   );
   const routing = (b26StaticPolicy?.eventRouting ?? []).find(
     (entry) => entry?.eventName === "assessment.placement.completed.v1",

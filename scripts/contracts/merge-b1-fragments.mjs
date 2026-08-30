@@ -286,7 +286,9 @@ export function mergeEvents(base, fragment, filePath) {
   if (fragment.asyncapi !== undefined) {
     throw new Error(`${filePath} must not define asyncapi; canonical channels and operations are generated from catalog event governance`);
   }
-  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|26)-/i.test(filePath);
+  const normalizedFragmentPath = normalizeRepoPath(filePath);
+  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|26)-/i.test(filePath)
+    || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json';
   for (const event of fragment.events ?? []) {
     if (event.status !== undefined || event['x-p1r-governance'] !== undefined) {
       throw new Error(`${filePath} must not define catalog-owned status or x-p1r-governance for ${event.eventName ?? '(missing eventName)'}`);
@@ -449,6 +451,10 @@ export function merge({ write = false } = {}) {
     'B8Provider', 'B8RedirectUri', 'B8AuthIntent', 'B8ReturnTo', 'B8UiLocale', 'B8Theme',
     'B8CodeChallenge', 'B8CodeChallengeMethod', 'B8State', 'B8Nonce', 'B8CallbackCode',
     'B8OidcCallbackError', 'B8OidcCallbackErrorDescription', 'B8OidcCallbackErrorUri',
+    // M1-014 list routes use the platform Cursor/PageSize pair. These aliases
+    // were source-owned by the replaced B12 fragment and must not survive as
+    // unused second definitions in the canonical projection.
+    'M1014Cursor', 'M1014PageSize',
   ]) delete openApi.components?.parameters?.[parameter];
   for (const header of ['B8CallbackLocation', 'B8SessionCookie']) {
     delete openApi.components?.headers?.[header];

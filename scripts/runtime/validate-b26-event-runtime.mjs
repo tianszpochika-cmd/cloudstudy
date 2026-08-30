@@ -135,10 +135,12 @@ const expectedTopicBindings = [
     ownerService: 'assessment-service',
     producerPrincipal: 'svc.assessment-service',
     consumerGroups: [
+      'cg.gamification-from-assessment.v1:gamification-service:cg.gamification-from-assessment.v1:true',
       'cg.learning-from-assessment.v1:learning-service:cg.learning-from-assessment.v1:true',
       'cg.workflow-from-assessment.v1:workflow-service:cg.workflow-from-assessment.v1:true',
     ],
     acl: [
+      'cg.gamification-from-assessment.v1:READ:ALLOW',
       'cg.learning-from-assessment.v1:READ:ALLOW',
       'cg.workflow-from-assessment.v1:READ:ALLOW',
       'svc.assessment-service:WRITE:ALLOW',
@@ -177,6 +179,22 @@ const expectedTopicBindings = [
     ],
   },
   {
+    name: 'platform.gamification.v1',
+    ownerService: 'gamification-service',
+    producerPrincipal: 'svc.gamification-service',
+    consumerGroups: [
+      'cg.audit-from-gamification.v1:audit-service:cg.audit-from-gamification.v1:true',
+      'cg.social-from-gamification.v1:social-service:cg.social-from-gamification.v1:true',
+      'cg.workflow-from-gamification.v1:workflow-service:cg.workflow-from-gamification.v1:true',
+    ],
+    acl: [
+      'cg.audit-from-gamification.v1:READ:ALLOW',
+      'cg.social-from-gamification.v1:READ:ALLOW',
+      'cg.workflow-from-gamification.v1:READ:ALLOW',
+      'svc.gamification-service:WRITE:ALLOW',
+    ],
+  },
+  {
     name: 'platform.learner.v1',
     ownerService: 'learner-service',
     producerPrincipal: 'svc.learner-service',
@@ -196,12 +214,16 @@ const expectedTopicBindings = [
     producerPrincipal: 'svc.learning-service',
     consumerGroups: [
       'cg.assessment-from-learning.v1:assessment-service:cg.assessment-from-learning.v1:true',
+      'cg.gamification-from-learning.v1:gamification-service:cg.gamification-from-learning.v1:true',
       'cg.notification-from-learning.v1:notification-service:cg.notification-from-learning.v1:true',
+      'cg.social-from-learning.v1:social-service:cg.social-from-learning.v1:true',
       'cg.workflow-from-learning.v1:workflow-service:cg.workflow-from-learning.v1:true',
     ],
     acl: [
       'cg.assessment-from-learning.v1:READ:ALLOW',
+      'cg.gamification-from-learning.v1:READ:ALLOW',
       'cg.notification-from-learning.v1:READ:ALLOW',
+      'cg.social-from-learning.v1:READ:ALLOW',
       'cg.workflow-from-learning.v1:READ:ALLOW',
       'svc.learning-service:WRITE:ALLOW',
     ],
@@ -218,6 +240,24 @@ const expectedTopicBindings = [
       'cg.analytics-from-notification.v1:READ:ALLOW',
       'cg.workflow-from-notification.v1:READ:ALLOW',
       'svc.notification-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.social.v1',
+    ownerService: 'social-service',
+    producerPrincipal: 'svc.social-service',
+    consumerGroups: [
+      'cg.admin-ops-from-social.v1:admin-ops-service:cg.admin-ops-from-social.v1:true',
+      'cg.analytics-from-social.v1:analytics-service:cg.analytics-from-social.v1:true',
+      'cg.audit-from-social.v1:audit-service:cg.audit-from-social.v1:true',
+      'cg.workflow-from-social.v1:workflow-service:cg.workflow-from-social.v1:true',
+    ],
+    acl: [
+      'cg.admin-ops-from-social.v1:READ:ALLOW',
+      'cg.analytics-from-social.v1:READ:ALLOW',
+      'cg.audit-from-social.v1:READ:ALLOW',
+      'cg.workflow-from-social.v1:READ:ALLOW',
+      'svc.social-service:WRITE:ALLOW',
     ],
   },
   {
@@ -238,16 +278,24 @@ const expectedTopicBindings = [
   },
 ]
 const expectedEventRoutingBindings = [
-  'assessment.item.assessed.v2|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
+  'assessment.item.assessed.v2|platform.assessment.v1|aggregateId|cg.gamification-from-assessment.v1,cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'assessment.placement.completed.v1|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'content.version.published.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.reviewed.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.rolled_back.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.submitted.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.unpublished.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
+  'gamification.reward.granted.v2|platform.gamification.v1|aggregateId|cg.audit-from-gamification.v1,cg.workflow-from-gamification.v1',
+  'gamification.xp.ledger_posted.v2|platform.gamification.v1|aggregateId|cg.audit-from-gamification.v1,cg.social-from-gamification.v1,cg.workflow-from-gamification.v1',
+  'leaderboard.snapshot_published.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
   'learner.target.updated.v1|platform.learner.v1|aggregateId|cg.learning-from-learner.v1,cg.workflow-from-learner.v1',
-  'learning.mastery.projected.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.workflow-from-learning.v1',
+  'learning.mastery.projected.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.gamification-from-learning.v1,cg.social-from-learning.v1,cg.workflow-from-learning.v1',
   'learning.review.scheduled.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.workflow-from-learning.v1',
+  'learning.task.completed.v2|platform.learning.v1|aggregateId|cg.gamification-from-learning.v1,cg.workflow-from-learning.v1',
+  'social.report.created.v2|platform.social.v1|aggregateId|cg.admin-ops-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
+  'study_room.focus_started.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
+  'study_room.seat_joined.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
+  'study_room.seat_left.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
   'workflow.event.dead_lettered.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
   'workflow.event.delivery_failed.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
   'workflow.event.ordering_deferred.v1|platform.workflow.v1|aggregateId|cg.workflow-manual-recovery.v1,cg.workflow-reliability.v1',
@@ -414,7 +462,7 @@ function validateBroker(manifest, localPorts, errors) {
 
 function validateTopics(manifest, errors) {
   const topics = manifest.topics ?? []
-  requireArray(topics, 'topics', errors, 7)
+  requireArray(topics, 'topics', errors, 9)
   unique(topics.map((topic) => topic?.name), 'topic names', errors)
   const actualTopicBindings = topics
     .map((topic) => ({
@@ -431,7 +479,7 @@ function validateTopics(manifest, errors) {
     .sort((left, right) => String(left.name).localeCompare(String(right.name), 'en'))
   requireCondition(
     stableJson(actualTopicBindings) === stableJson(expectedTopicBindings),
-    'B26 topic owner, consumer-group and ACL bindings must exactly match the frozen M1-006 policy',
+    'B26 topic owner, consumer-group and ACL bindings must exactly match the frozen M1-006/M1-014 policy',
     errors,
   )
   const groupNames = []
@@ -555,7 +603,7 @@ function validateFragment(manifest, fragment, catalog, errors) {
     .sort()
   requireCondition(
     stableJson(actualRoutingBindings) === stableJson(expectedEventRoutingBindings),
-    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006/M1-008 policy',
+    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006/M1-008/M1-014 policy',
     errors,
   )
   const routing = new Map((manifest.eventRouting ?? []).map((item) => [item.eventName, item]))

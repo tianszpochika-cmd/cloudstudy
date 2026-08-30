@@ -96,11 +96,11 @@ test('B4 game registry keeps all codes while gating availability by release phas
 
   const catalogItem = fragment.components.schemas.B4GameCatalogItem;
   assert.deepEqual(catalogItem.required, ['gameCode', 'releasePhase', 'enabled']);
-  assert.equal(fragment.paths['/api/v1/games/sessions'].post.responses['400'].$ref, '#/components/responses/B4GameCodeInvalid');
-  assert.equal(fragment.paths['/api/v1/games/sessions'].post.responses['409'].$ref, '#/components/responses/B4GameNotAvailable');
-  assert.match(fragment.components.responses.B4GameNotAvailable.description, /GAME_NOT_AVAILABLE/);
 
   const canonical = readJson('packages/contracts/openapi/v1/openapi.json');
+  const canonicalSession = canonical.paths['/api/v1/games/sessions'].post;
+  assert.equal(canonicalSession.responses['400'].$ref, '#/components/responses/ApiBadRequest');
+  assert.equal(canonicalSession.responses['409'].$ref, '#/components/responses/ApiConflict');
   assert.deepEqual(canonical.paths['/api/v1/games/catalog'].get['x-b4-game-registry'], {
     owner: 'gamification-service',
     releasePhase: {

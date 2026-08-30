@@ -216,6 +216,8 @@
 
 P0 只首发 `FEAT-GAM-009` 拼句小火车 (Sentence Train)；`FEAT-GAM-010..012` 在 P1 扩展，使学习游戏总数达到 4 款。6~8 款仅为长期目标，不作为 P1 交付承诺。
 
+P1R-M1-014 的 D2 静态冻结补充：六项候选游戏目录固定为 `SENTENCE_TRAIN`（P0 enabled）、`WORD_MATCH/WORD_DEFENSE/WORD_PUZZLE`（P1 disabled）和 `GRAMMAR_BLASTER/CATCH_MEANING`（LONG_TERM disabled），客户端不能开启模式。游戏结算只接受版本化的服务端可信完成白名单五元组（producerService、eventName、schemaVersion、qualifiedPredicate、rewardRuleVersion）及其 lineage/dedupe；`assessment.item.assessed.v2` 仅限 `CORRECT_VERIFIED + objectiveCorrect=true + guessSignal=false`，`learning.mastery.projected.v2` 仅限通过 D7 的真实掌握跃迁，未来 `learning.task.completed.v2` 仅能在其契约完成后按服务端资格判定接入。`learning.review.scheduled.v2` 是队列事实，`learning.task.completed.v1`、旧 B4/B12/v1 均不能发奖或充当 canonical/runtime。此为 D2 契约边界，不代表运行时已验证。
+
 | 功能编号 | 功能大类 | 功能名称 | 细分功能与验收要点 | 适用终端 | 阶段/优先级 | 关联 PRD |
 | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
 | **FEAT-GAM-001** | 数值引擎 | XP 经验值与段位升级 | 答对+5XP，完成每日目标+50XP，段位从星尘学徒晋升至银河大师 | All | Phase 1 (P0) | PRD §14.1 |
@@ -233,9 +235,9 @@ P0 只首发 `FEAT-GAM-009` 拼句小火车 (Sentence Train)；`FEAT-GAM-010..01
 | **FEAT-GAM-013** | 伴学角色 | 3D 半写实个性化形象 (Avatar) | 默认提供男女各 3 套基础形象，基于 Three.js 渲染与动作骨骼 | App/Web/H5 | Phase 1 (P0) | PRD §16.4 |
 | **FEAT-GAM-014** | 伴学衣柜 | Wardrobe 衣柜与服饰搭配 | 支持头部发型、上衣、裤装、鞋子、手持道具的自由换装与保存 | App/Web/H5 | Phase 1 (P0) | PRD §16.5 |
 | **FEAT-GAM-015** | 品质体系 | 道具品质等级梯度 | 道具划分为：普通 (Common) / 稀有 (Rare) / 史诗 (Epic) / 传奇 (Legendary) | All | Phase 1 (P0) | PRD §16.6 |
-| **FEAT-GAM-016** | 奖励箱 | 学习行为免费奖励箱 (Chest) | 达成每日目标或 Checkpoint 免费掉落，严禁任何付费购买行为 | App/Web/H5 | Phase 1 (P0) | PRD §16.7 |
+| **FEAT-GAM-016** | 奖励箱 | 学习行为免费奖励箱 (Chest) | 达成每日目标或 Checkpoint 免费掉落；仅免费、非现金、不可提现/交易，严禁任何付费购买、付费概率或付费随机机会 | App/Web/H5 | Phase 1 (P0) | PRD §16.7 |
 | **FEAT-GAM-017** | 奖励箱 | 奖励种类与开箱动效 | 提供青铜箱、白银箱、黄金箱、星河箱，开箱触发晃动与光柱动效 | App/Web/H5 | Phase 1 (P0) | PRD §16.8 |
-| **FEAT-GAM-018** | 奖励箱 | 掉落概率公示与开箱记录 | 界面显著位置公示各品质掉落概率（合规要求），提供历史抽取流水 | App/Web/H5 | Phase 1 (P0) | PRD §16.9 |
+| **FEAT-GAM-018** | 奖励箱 | 掉落概率公示与开箱记录 | 界面显著位置公示各品质掉落概率（合规要求），提供历史抽取流水；服务端保存 catalog/probability 版本、draw 与审计引用，客户端不能指定概率或结果 | App/Web/H5 | Phase 1 (P0) | PRD §16.9 |
 | **FEAT-GAM-019** | 碎片系统 | 重复道具自动转化为碎片 | 抽中已有装扮自动按品质折算为星光碎片，集齐指定碎片可合成装扮 | App/Web/H5 | Phase 1 (P0) | PRD §16.10 |
 | **FEAT-GAM-020** | 收藏图鉴 | Collection Book 收集图鉴 | 陈列全量装扮与道具图鉴，点亮已拥有的道具，达成全套解锁称号 | App/Web/H5 | Phase 1 (P0) | PRD §16.13 |
 | **FEAT-GAM-021** | 学习空间 | 个人星空学习桌 (Study Space) | 3D 个人书房/星空露台场景，摆放已解锁的奖杯、绿植与打卡日历 | App/Web/H5 | Phase 1 (P1) | PRD §16.3 |
@@ -245,9 +247,11 @@ P0 只首发 `FEAT-GAM-009` 拼句小火车 (Sentence Train)；`FEAT-GAM-010..01
 
 ## 7. 虚拟自习室、排行榜与社群互动 (SOC 域)
 
+P1R-M1-014 的专注与榜单 D2 边界：`P1_FOCUS_CREDIT_V1` 只允许服务端时间已到、租约有效且 `focusVersion` 匹配的 `COMPLETED` 结算 25/45 分钟；客户端 FINISH、心跳、自报时长或离线成功无结算/发奖权。榜单首轮只接受 social-service 本地已结算 `FOCUS_MINUTES`、`learning.mastery.projected.v2` 的 `MASTERED_WORDS` 和 `gamification.xp.ledger_posted.v2` 的 `XP`，快照必须带 `projectionVersion` 与 `tieBreakVersion`；这是静态契约，不是 runtime 证明。
+
 | 功能编号 | 功能大类 | 功能名称 | 细分功能与验收要点 | 适用终端 | 阶段/优先级 | 关联 PRD |
 | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
-| **FEAT-SOC-001** | 自习室 | 主题虚拟自习室大厅 | 提供 CET4 冲刺、考研早起、雅思静音、深夜自律等多间 20~30 人房间 | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
+| **FEAT-SOC-001** | 自习室 | 主题虚拟自习室大厅 | `PUBLIC_THEME_ROOM`：提供 CET4 冲刺、考研早起、雅思静音、深夜自律等多间 **20~30 人**运营主题房间；有座位/租约；首轮 Gate 为 P0、enabled=true | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
 | **FEAT-SOC-002** | 自习室 | 虚拟座位表与状态展示 | 展示入座同桌的 Avatar 头像、昵称、专注标签（如“正在背核心词”） | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
 | **FEAT-SOC-003** | 自习室 | 番茄钟与沉浸白噪音混音 | 25/45 分钟番茄钟，提供雨声、森林、咖啡馆、壁炉等白噪音音频 | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
 | **FEAT-SOC-004** | 自习室 | 离座与挂机自动释座 | 连续 5 分钟无做题/学习行为自动判定为挂机，释出座位转为离线 | App/Web/H5 | Phase 1 (P0) | PRD §15.2 |
@@ -256,7 +260,7 @@ P0 只首发 `FEAT-GAM-009` 拼句小火车 (Sentence Train)；`FEAT-GAM-010..01
 | **FEAT-SOC-007** | 排行榜 | 隐私保护与匿名模式 | 允许在设置中开启“隐身模式”，在公开榜单中显示为“匿名星友” | App/Web/H5 | Phase 1 (P0) | PRD §15.1 |
 | **FEAT-SOC-008** | 学习动态 | 极简系统生成学习 Feed | 仅展示系统生成的达标动态（如“@Tom 达成了连续 30 天打卡”），支持点赞 | App/Web/H5 | Phase 1 (P0) | PRD §15.3 |
 | **FEAT-SOC-009** | 成员名片 | Member Showcase 资料卡 | 点击同桌头像弹出其公开资料卡（展示当前等级、已戴勋章、3D 装扮） | App/Web/H5 | Phase 1 (P0) | PRD §16.12 |
-| **FEAT-SOC-010** | 兴趣小组 | 轻量学习打卡小组 | 支持 3~10 人创建微型小组，设定共同目标（如 21 天全员打卡），达标平分星币 | App/Web/H5 | Phase 1 (P1) | PRD §15.2 |
+| **FEAT-SOC-010** | 兴趣小组 | 轻量学习打卡小组 | `CHECKIN_GOAL_GROUP`：支持 **3~10 人**创建微型小组，设定共同目标（如 21 天全员打卡），达标按固定非现金规则分配；无座位/租约/实时在场；首轮 Gate 为 P1、enabled=false | App/Web/H5 | Phase 1 (P1) | PRD §15.2 |
 
 ---
 

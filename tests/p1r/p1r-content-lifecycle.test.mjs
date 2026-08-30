@@ -381,6 +381,14 @@ test('content lifecycle rejects canonical owner, topic, group, binding, fragment
       const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-BIND-LRN-001');
       closure.status = 'PLANNED';
     }, /catalog D2 closed gap set|catalog planned gap set/],
+    ['gamification binding D2 closure is falsely reopened', (input) => {
+      const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-BIND-GAM-001');
+      closure.status = 'PLANNED';
+    }, /P1R-M1-014 successor|catalog D2 closed gap set|catalog planned gap set/],
+    ['social binding D2 closure loses its exact successor task chain', (input) => {
+      const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-BIND-SOC-001');
+      closure.d2ClosureTasks = ['P1R-M1-006'];
+    }, /P1R-M1-014 closure tasks/],
     ['placement successor digest drifts after closure', (input) => {
       input.placementPolicy.learnerPlanningSuccessor.placementBinding.rawAuthorityFacts = 'ALLOWED';
     }, /placement successor policy digest drifted/],

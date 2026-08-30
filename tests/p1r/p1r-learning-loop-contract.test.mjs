@@ -194,6 +194,34 @@ reject('approved canonical event catalog aggregate cannot drift', (input) => {
   input.catalog.events.find((event) => event.eventName === 'assessment.item.assessed.v2').aggregateIdField = 'attemptId';
 }, /assessment\.item\.assessed\.v2 catalog aggregate id field/);
 
+reject('M1-014 current source cannot self-authorize an extra consumer', (input) => {
+  input.m1014CurrentSourcePolicy.compatibilityPromotion.approvedCanonicalEvents
+    .find((event) => event.eventName === 'assessment.item.assessed.v2')
+    .consumers.push({ service: 'notification-service', consumerGroup: 'cg.notification-from-assessment.v1' });
+}, /M1-014 current-source policy digest/);
+
+reject('M1-014 current-source revalidation cannot claim runtime verification', (input) => {
+  input.m1014CurrentSourcePolicy.runtimeStatus = 'RUNTIME_VERIFIED';
+}, /M1-014 current-source runtime status/);
+
+reject('M1-014 current-source revalidation rejects an extra assessment consumer', (input) => {
+  input.catalog.events.find((event) => event.eventName === 'assessment.item.assessed.v2')
+    ['x-p1r-governance'].consumers.push({
+      service: 'notification-service',
+      consumerGroup: 'cg.notification-from-assessment.v1',
+    });
+}, /assessment\.item\.assessed\.v2 governance consumers must exactly match the source-bound M1-014 consumer revalidation/);
+
+reject('M1-014 current-source revalidation rejects an extra mastery B26 consumer group', (input) => {
+  input.b26Runtime.eventRouting.find((route) => route.eventName === 'learning.mastery.projected.v2')
+    .consumerGroups.push('cg.notification-from-learning.v1');
+}, /learning\.mastery\.projected\.v2 B26 consumer groups must exactly match the source-bound M1-014 consumer revalidation/);
+
+reject('M1-014 current-source revalidation requires the explicit social mastery consumer', (input) => {
+  const route = input.b26Runtime.eventRouting.find((entry) => entry.eventName === 'learning.mastery.projected.v2');
+  route.consumerGroups = route.consumerGroups.filter((consumerGroup) => consumerGroup !== 'cg.social-from-learning.v1');
+}, /learning\.mastery\.projected\.v2 B26 consumer groups must exactly match the source-bound M1-014 consumer revalidation/);
+
 reject('assessment event cannot omit its server-pinned objective policy', (input) => {
   delete input.b10LearningLoopEventFragment.payloadSchemas.B10AssessmentItemAssessedV2.properties.objectivePolicyPin;
 }, /assessment\.item\.assessed\.v2 payload properties/);

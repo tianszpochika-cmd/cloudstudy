@@ -7,6 +7,7 @@ const scriptPath = fileURLToPath(import.meta.url);
 const defaultRoot = path.resolve(path.dirname(scriptPath), '..', '..');
 
 export const DEFAULT_LEARNING_LOOP_POLICY = 'config/p1r-learning-loop-contract.v1.json';
+export const DEFAULT_M1014_CURRENT_SOURCE_POLICY = 'config/p1r-gamification-social-contract.v1.json';
 export const DEFAULT_B10_OPENAPI = 'packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json';
 export const DEFAULT_B1_OPENAPI = 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json';
 export const DEFAULT_B9_OPENAPI = 'packages/contracts/fragments/b9/b9-learner.openapi.json';
@@ -353,6 +354,54 @@ const APPROVED_CANONICAL_EVENTS = Object.freeze([
     ]),
   }),
 ]);
+// M1-013 remains frozen at the policy above.  These are the only two event
+// consumer projections that may be revalidated against the reviewed current
+// M1-014 source.  This is deliberately not a merge rule: the source policy
+// digest and every listed consumer pair are pinned so an arbitrary new
+// consumer cannot become accepted by changing a current-source document.
+const M1_014_CURRENT_SOURCE_REVALIDATION = Object.freeze({
+  policyDigest: 'b4860e3aad81f207fb2a2ff51be2b86ca1f1bdb01123d0d600f921a9846f46cb',
+  policy: Object.freeze({
+    $schema: 'p1r.gamification-social-contract.v1',
+    schemaVersion: 'p1r.gamification-social-contract.v1',
+    task: 'P1R-M1-014',
+    phase: 'P1',
+    sourceBaseline: 'e3514c359e6f6be5445cf46a7734325b2835b941',
+    maturity: 'D2_CONTRACT_READY',
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+    promotion: Object.freeze({
+      id: 'P1R-M1-014',
+      sourceContractBaseline: 'e3514c359e6f6be5445cf46a7734325b2835b941',
+      previousPromotion: 'P1R-M1-013',
+      immutableGovernanceBaseline: '868c2177f62b6d2cf613bed702686dddcfe6943f',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      scope: 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC',
+    }),
+    runtimeBoundary: Object.freeze({
+      contractOnly: true,
+      runtimeEvidence: 'NOT_RUNTIME_VERIFIED',
+    }),
+  }),
+  events: Object.freeze([
+    Object.freeze({
+      eventName: 'assessment.item.assessed.v2',
+      consumers: Object.freeze([
+        Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-assessment.v1' }),
+        Object.freeze({ service: 'gamification-service', consumerGroup: 'cg.gamification-from-assessment.v1' }),
+        Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-assessment.v1' }),
+      ]),
+    }),
+    Object.freeze({
+      eventName: 'learning.mastery.projected.v2',
+      consumers: Object.freeze([
+        Object.freeze({ service: 'assessment-service', consumerGroup: 'cg.assessment-from-learning.v1' }),
+        Object.freeze({ service: 'gamification-service', consumerGroup: 'cg.gamification-from-learning.v1' }),
+        Object.freeze({ service: 'social-service', consumerGroup: 'cg.social-from-learning.v1' }),
+        Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' }),
+      ]),
+    }),
+  ]),
+});
 // This is deliberately a source-bound M1-013 inventory, rather than an
 // inventory of every adapter in the repository. M1-010 and M1-011 own other
 // adapter-only operations; their compatibility chains verify those operations
@@ -425,6 +474,16 @@ function same(left, right) {
 
 function exact(errors, actual, expected, label) {
   add(errors, same(actual, expected), `${label} must exactly match the frozen M1-013 rule model`);
+}
+
+function exactPinnedCurrentSource(errors, actual, expected, label) {
+  const matches = same(actual, expected);
+  add(errors, matches, `${label} must exactly match the pinned current M1-014 source`);
+  return matches;
+}
+
+function exactCurrentSourceConsumerRevalidation(errors, actual, expected, label) {
+  add(errors, same(actual, expected), `${label} must exactly match the source-bound M1-014 consumer revalidation`);
 }
 
 function exactKeys(errors, value, expected, label) {
@@ -1068,19 +1127,79 @@ function checkLearningLoopEventCrossFieldRules(input, errors) {
   exact(errors, review?.properties?.reasonCodes?.uniqueItems, true, 'review event reasonCodes uniqueness');
 }
 
+function revalidateM1014CurrentSourceConsumers(input, errors) {
+  const sourcePolicy = input?.m1014CurrentSourcePolicy;
+  const revalidatedConsumers = new Map();
+  if (!isRecord(sourcePolicy)) {
+    add(errors, false, 'M1-014 current-source policy must be an object');
+    return revalidatedConsumers;
+  }
+
+  const expectedSource = M1_014_CURRENT_SOURCE_REVALIDATION;
+  const expectedPolicy = expectedSource.policy;
+  const promotion = sourcePolicy.compatibilityPromotion;
+  let valid = true;
+  const check = (actual, expected, label) => {
+    valid = exactPinnedCurrentSource(errors, actual, expected, label) && valid;
+  };
+
+  check(stableJsonDigest(sourcePolicy), expectedSource.policyDigest, 'M1-014 current-source policy digest');
+  check(sourcePolicy.$schema, expectedPolicy.$schema, 'M1-014 current-source schema');
+  check(sourcePolicy.schemaVersion, expectedPolicy.schemaVersion, 'M1-014 current-source schema version');
+  check(sourcePolicy.task, expectedPolicy.task, 'M1-014 current-source task');
+  check(sourcePolicy.phase, expectedPolicy.phase, 'M1-014 current-source phase');
+  check(sourcePolicy.sourceBaseline, expectedPolicy.sourceBaseline, 'M1-014 current-source baseline');
+  check(sourcePolicy.maturity, expectedPolicy.maturity, 'M1-014 current-source maturity');
+  check(sourcePolicy.runtimeStatus, expectedPolicy.runtimeStatus, 'M1-014 current-source runtime status');
+  check(promotion?.id, expectedPolicy.promotion.id, 'M1-014 current-source promotion id');
+  check(promotion?.sourceContractBaseline, expectedPolicy.promotion.sourceContractBaseline, 'M1-014 current-source promotion baseline');
+  check(promotion?.previousPromotion, expectedPolicy.promotion.previousPromotion, 'M1-014 current-source predecessor');
+  check(promotion?.immutableGovernanceBaseline, expectedPolicy.promotion.immutableGovernanceBaseline, 'M1-014 current-source immutable governance baseline');
+  check(promotion?.runtimeStatus, expectedPolicy.promotion.runtimeStatus, 'M1-014 current-source promotion runtime status');
+  check(promotion?.scope, expectedPolicy.promotion.scope, 'M1-014 current-source promotion scope');
+  check(sourcePolicy.runtimeBoundary?.contractOnly, expectedPolicy.runtimeBoundary.contractOnly, 'M1-014 current-source contract-only boundary');
+  check(sourcePolicy.runtimeBoundary?.runtimeEvidence, expectedPolicy.runtimeBoundary.runtimeEvidence, 'M1-014 current-source runtime evidence');
+
+  const sourceEvents = Array.isArray(promotion?.approvedCanonicalEvents) ? promotion.approvedCanonicalEvents : [];
+  check(sourceEvents.length, 10, 'M1-014 current-source canonical event count');
+  for (const expectedEvent of expectedSource.events) {
+    const frozenEvent = APPROVED_CANONICAL_EVENTS.find((event) => event.eventName === expectedEvent.eventName);
+    const currentEvents = sourceEvents.filter((event) => event?.eventName === expectedEvent.eventName);
+    check(currentEvents.length, 1, `${expectedEvent.eventName} M1-014 current-source event count`);
+    const currentEvent = currentEvents[0];
+    check(currentEvent?.payloadRef, frozenEvent?.payloadRef, `${expectedEvent.eventName} M1-014 current-source payload ref`);
+    check(currentEvent?.producer, frozenEvent?.producer, `${expectedEvent.eventName} M1-014 current-source producer`);
+    check(currentEvent?.topic, frozenEvent?.topic, `${expectedEvent.eventName} M1-014 current-source topic`);
+    check(currentEvent?.aggregateType, frozenEvent?.aggregateType, `${expectedEvent.eventName} M1-014 current-source aggregate type`);
+    check(currentEvent?.aggregateIdField, frozenEvent?.aggregateIdField, `${expectedEvent.eventName} M1-014 current-source aggregate id field`);
+    check(currentEvent?.requiredPayloadFields, frozenEvent?.requiredPayloadFields, `${expectedEvent.eventName} M1-014 current-source payload fields`);
+    check(currentEvent?.status, 'CANONICAL_D2', `${expectedEvent.eventName} M1-014 current-source status`);
+    check(currentEvent?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', `${expectedEvent.eventName} M1-014 current-source runtime status`);
+    check(currentEvent?.consumers, expectedEvent.consumers, `${expectedEvent.eventName} M1-014 current-source consumers`);
+  }
+
+  if (valid) {
+    for (const expectedEvent of expectedSource.events) {
+      revalidatedConsumers.set(expectedEvent.eventName, expectedEvent.consumers);
+    }
+  }
+  return revalidatedConsumers;
+}
+
 function checkSourceArtifacts(input, errors) {
   const {
     policy, b10OpenApi, b1OpenApi, b9FirstDayOpenApi, b2CompatibilityOpenApi, b2SrsOpenApi, b2MasteryOpenApi, b10EventFragment, b10LearningLoopEventFragment,
-    b2SrsEventFragment, b2MasteryEventFragment, catalog, b26Runtime, generatedOpenApi, generatedEvents, generatedIndex, generatedSchemas, generatedApiClient,
+    b2SrsEventFragment, b2MasteryEventFragment, m1014CurrentSourcePolicy, catalog, b26Runtime, generatedOpenApi, generatedEvents, generatedIndex, generatedSchemas, generatedApiClient,
   } = input;
   for (const [value, label] of [
     [b10OpenApi, 'B10 learning/assessment fragment'], [b1OpenApi, 'B1 onboarding fragment'], [b9FirstDayOpenApi, 'B9 first-day projection fragment'], [b2CompatibilityOpenApi, 'B2 compatibility fragment'], [b2SrsOpenApi, 'B2 SRS fragment'],
     [b2MasteryOpenApi, 'B2 mastery fragment'], [b10EventFragment, 'B10 historical event fragment'],
     [b10LearningLoopEventFragment, 'B10 learning-loop event fragment'],
     [b2SrsEventFragment, 'B2 SRS historical event fragment'], [b2MasteryEventFragment, 'B2 mastery historical event fragment'],
+    [m1014CurrentSourcePolicy, 'M1-014 current-source policy'],
     [catalog, 'event catalog'], [b26Runtime, 'B26 static runtime policy'],
   ]) add(errors, isRecord(value), `${label} must be an object`);
-  if (![b10OpenApi, b1OpenApi, b9FirstDayOpenApi, b2CompatibilityOpenApi, b2SrsOpenApi, b2MasteryOpenApi, b10EventFragment, b10LearningLoopEventFragment, b2SrsEventFragment, b2MasteryEventFragment, catalog, b26Runtime].every(isRecord)) return;
+  if (![b10OpenApi, b1OpenApi, b9FirstDayOpenApi, b2CompatibilityOpenApi, b2SrsOpenApi, b2MasteryOpenApi, b10EventFragment, b10LearningLoopEventFragment, b2SrsEventFragment, b2MasteryEventFragment, m1014CurrentSourcePolicy, catalog, b26Runtime].every(isRecord)) return;
 
   checkCanonicalRoutes(policy, input, errors);
   checkLegacyAdapters(policy, input, errors);
@@ -1090,6 +1209,7 @@ function checkSourceArtifacts(input, errors) {
   checkFirstDayProjectionBoundary(input, errors);
   checkGeneratedTypeProjection(policy, input, errors);
   checkLearningLoopEventCrossFieldRules(input, errors);
+  const m1014RevalidatedConsumers = revalidateM1014CurrentSourceConsumers(input, errors);
 
   const canonicalOperation = policy?.srs?.writeEntry?.canonicalPublicOperationId;
   add(errors, !routeOperation(b2SrsOpenApi, canonicalOperation), 'legacy B2 SRS fragment must not impersonate the future single canonical SRS operation');
@@ -1155,10 +1275,22 @@ function checkSourceArtifacts(input, errors) {
     exact(errors, governance?.transport?.aggregateIdSource, `payload.${expected.aggregateIdField}`, `${expected.eventName} governance aggregate source`);
     exact(errors, governance?.transport?.delivery, 'at-least-once', `${expected.eventName} governance delivery`);
     exact(errors, governance?.schema?.payloadRef, expected.payloadRef, `${expected.eventName} governance payload ref`);
-    exact(errors, governance?.consumers?.map((consumer) => ({ service: consumer?.service, consumerGroup: consumer?.consumerGroup })), expected.consumers, `${expected.eventName} governance consumers`);
+    const currentSourceConsumers = m1014RevalidatedConsumers.get(expected.eventName);
+    const expectedConsumers = currentSourceConsumers ?? expected.consumers;
+    const governanceConsumers = governance?.consumers?.map((consumer) => ({ service: consumer?.service, consumerGroup: consumer?.consumerGroup }));
+    if (currentSourceConsumers) {
+      exactCurrentSourceConsumerRevalidation(errors, governanceConsumers, expectedConsumers, `${expected.eventName} governance consumers`);
+    } else {
+      exact(errors, governanceConsumers, expectedConsumers, `${expected.eventName} governance consumers`);
+    }
     exact(errors, route?.topic, expected.topic, `${expected.eventName} B26 topic`);
     exact(errors, route?.partitionKey, 'aggregateId', `${expected.eventName} B26 partition key`);
-    exact(errors, route?.consumerGroups, expected.consumers.map((consumer) => consumer.consumerGroup), `${expected.eventName} B26 consumer groups`);
+    const expectedConsumerGroups = expectedConsumers.map((consumer) => consumer.consumerGroup);
+    if (currentSourceConsumers) {
+      exactCurrentSourceConsumerRevalidation(errors, route?.consumerGroups, expectedConsumerGroups, `${expected.eventName} B26 consumer groups`);
+    } else {
+      exact(errors, route?.consumerGroups, expectedConsumerGroups, `${expected.eventName} B26 consumer groups`);
+    }
   }
   exact(errors, b26Runtime?.mode, 'static-only', 'B26 mode');
   exact(errors, b26Runtime?.runtimeStatus, 'pending', 'B26 runtime status');
@@ -1702,6 +1834,7 @@ export function readLearningLoopContractInputs({ root = defaultRoot } = {}) {
     b10LearningLoopEventFragment: readExistingJson(root, DEFAULT_B10_LEARNING_LOOP_EVENT_FRAGMENT, readErrors, 'B10 learning-loop event fragment'),
     b2SrsEventFragment: readExistingJson(root, DEFAULT_B2_SRS_EVENT_FRAGMENT, readErrors, 'B2 SRS event fragment'),
     b2MasteryEventFragment: readExistingJson(root, DEFAULT_B2_MASTERY_EVENT_FRAGMENT, readErrors, 'B2 mastery event fragment'),
+    m1014CurrentSourcePolicy: readExistingJson(root, DEFAULT_M1014_CURRENT_SOURCE_POLICY, readErrors, 'M1-014 current-source policy'),
     catalog: readExistingJson(root, DEFAULT_EVENT_CATALOG, readErrors, 'event catalog'),
     b26Runtime: readExistingJson(root, DEFAULT_B26_RUNTIME, readErrors, 'B26 runtime policy'),
     generatedOpenApi: readExistingText(root, DEFAULT_GENERATED_OPENAPI, readErrors, 'generated OpenAPI TypeScript'),

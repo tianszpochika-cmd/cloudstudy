@@ -1606,6 +1606,8 @@ P0 首发仅上线 1 款学习游戏：**拼句小火车 (Sentence Train)**。P1
 - 按用户选择显示昵称或匿名
 - 可完全退出排行榜
 
+P1R-M1-014 的首轮 D2 契约只开放三类可追溯指标：social-service 本地已结算专注事实的 `FOCUS_MINUTES`、`learning.mastery.projected.v2` 的 `MASTERED_WORDS`、`gamification.xp.ledger_posted.v2` 的 `XP`。快照必须包含 metric、period、timezoneId、projectionVersion、ruleVersion、tieBreakVersion、snapshotAt、watermark 与 auditRef；连续学习和 Checkpoint 榜保留为产品目标，在专用 canonical 契约完成前不得伪装为已开放指标。该冻结不是运行验证。
+
 ---
 
 ## 15.2 Study Room —— 多账户学习室 / 兴趣小组
@@ -1614,11 +1616,15 @@ P0 首发仅上线 1 款学习游戏：**拼句小火车 (Sentence Train)**。P1
 
 ### 规模
 
-建议：
+为避免把公共房间、邀请学习室和打卡目标组混成同一种空间，Phase 1 的产品语义固定为三类：
 
-- 2～8人小组
-- 可创建多个学习室
-- 每人可设置一个主学习室
+- `PUBLIC_THEME_ROOM`：运营模板管理的公开主题自习室，容量 **20～30 人**，有座位/专注租约；首轮目录 Gate 为 **P0、enabled=true**。
+- `INVITE_STUDY_ROOM`：邀请码加入的私密学习室，容量 **2～8 人**，有座位/专注租约；可创建多个，每人可设置一个主学习室；首轮目录 Gate 为 **P1、enabled=false**，保留为 Phase 1 增强能力。
+- `CHECKIN_GOAL_GROUP`：邀请码加入的共同目标/打卡小组，容量 **3～10 人**，只聚合服务端学习事实并按固定非现金规则结算；**没有**座位、租约或实时在场语义；首轮目录 Gate 为 **P1、enabled=false**。
+
+上述 Gate 是 P1 产品目录的初始值，不等同于已上线或已通过运行验证；实际开放仍须通过服务端权限、风控、审计与实施 Gate。
+
+有座位空间采用 90 秒租约 TTL、30 秒续租、60 秒断线恢复宽限和 5 分钟无学习活动释放。`P1_FOCUS_CREDIT_V1` 只允许服务端时间已到 `endsAt`、租约仍有效且 `focusVersion` 匹配的 `COMPLETED` 结算 25/45 分钟；其他状态均为 0。客户端 FINISH、心跳、自报时长与离线成功不是结算证明，也不能直接触发奖励。
 
 ### 适用场景
 

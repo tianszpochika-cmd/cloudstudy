@@ -1,0 +1,315 @@
+{
+  "version": "2.0.0",
+  "events": [
+    {
+      "eventName": "learning.task.completed.v2",
+      "domain": "learning",
+      "version": 2,
+      "schema": "learning.event.v2",
+      "aggregateType": "learning_task_completion",
+      "aggregateIdField": "completionId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014LearningTaskCompleted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.task.completed.v3",
+        "consumerRule": "只接受服务端已确认且满足奖励 predicate 的学习任务完成事实；按 eventId、aggregateId 和 dedupeKey 幂等。"
+      }
+    },
+    {
+      "eventName": "gamification.xp.ledger_posted.v2",
+      "domain": "gamification",
+      "version": 2,
+      "schema": "gamification.event.v2",
+      "aggregateType": "growth_ledger",
+      "aggregateIdField": "ledgerEntryId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014GamificationXpLedgerPosted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish gamification.xp.ledger_posted.v3",
+        "consumerRule": "账本分录只能由 gamification-service 发布；消费者不得根据客户端数值重算、改写或补写余额。"
+      }
+    },
+    {
+      "eventName": "gamification.reward.granted.v2",
+      "domain": "gamification",
+      "version": 2,
+      "schema": "gamification.event.v2",
+      "aggregateType": "reward_grant",
+      "aggregateIdField": "grantId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014GamificationRewardGranted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish gamification.reward.granted.v3",
+        "consumerRule": "奖励 grant 只能由服务端账本结算产生；只发布免费非现金奖励的可审计身份，不发布随机种子、现金价值或客户端输入。"
+      }
+    },
+    {
+      "eventName": "study_room.seat_joined.v2",
+      "domain": "social",
+      "version": 2,
+      "schema": "social.event.v2",
+      "aggregateType": "study_room_seat",
+      "aggregateIdField": "leaseId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014StudyRoomSeatJoined" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish study_room.seat_joined.v3",
+        "consumerRule": "按 roomId、seatId、leaseId 和 leaseVersion 幂等；只携带受控空间与租约身份，不发布成员隐私或自由内容。"
+      }
+    },
+    {
+      "eventName": "study_room.focus_started.v2",
+      "domain": "social",
+      "version": 2,
+      "schema": "social.event.v2",
+      "aggregateType": "study_room_focus",
+      "aggregateIdField": "focusId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014StudyRoomFocusStarted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish study_room.focus_started.v3",
+        "consumerRule": "focus 时长和结束时间由 social-service 服务端时钟决定；按 focusId、leaseId 和 leaseVersion 幂等。"
+      }
+    },
+    {
+      "eventName": "study_room.seat_left.v2",
+      "domain": "social",
+      "version": 2,
+      "schema": "social.event.v2",
+      "aggregateType": "study_room_seat",
+      "aggregateIdField": "leaseId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014StudyRoomSeatLeft" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish study_room.seat_left.v3",
+        "consumerRule": "退出、租约过期和断线清理都只释放服务端租约；按 roomId、seatId、leaseId 和 leaseVersion 幂等。"
+      }
+    },
+    {
+      "eventName": "leaderboard.snapshot_published.v2",
+      "domain": "social",
+      "version": 2,
+      "schema": "social.event.v2",
+      "aggregateType": "leaderboard_snapshot",
+      "aggregateIdField": "snapshotId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014LeaderboardSnapshotPublished" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish leaderboard.snapshot_published.v3",
+        "consumerRule": "榜单消费者按 snapshotId、snapshotVersion 和 watermark 幂等；榜单只读投影，不回写成长或房间事实。"
+      }
+    },
+    {
+      "eventName": "social.report.created.v2",
+      "domain": "social",
+      "version": 2,
+      "schema": "social.event.v2",
+      "aggregateType": "social_report",
+      "aggregateIdField": "reportId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1014SocialReportCreated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish social.report.created.v3",
+        "consumerRule": "举报只使用枚举原因并关联服务端 report/audit 身份；不发布自由文本、附件、联系方式或成员隐私。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "M1014LearningTaskCompleted": {
+      "$id": "platform.events.learning.task.completed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completionId", "subjectRef", "taskId", "completionVersion", "taskStatus", "completionFact", "completedAt", "rootEventId", "contentPin", "rulePin", "outcomeDigest"],
+      "properties": {
+        "completionId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "subjectRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "completionVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "taskStatus": { "type": "string", "const": "COMPLETED" },
+        "completionFact": { "type": "string", "const": "SERVER_SETTLED" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "rootEventId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "contentPin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"],
+          "properties": {
+            "contentVersionId": { "type": "integer", "minimum": 1 },
+            "contentEpoch": { "type": "integer", "minimum": 0 },
+            "snapshotId": { "type": "string", "minLength": 1, "maxLength": 128 },
+            "snapshotHash": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+          }
+        },
+        "rulePin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["completionRuleVersion", "ruleDigest"],
+          "properties": {
+            "completionRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+            "ruleDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+          }
+        },
+        "outcomeDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+      }
+    },
+    "M1014GamificationXpLedgerPosted": {
+      "$id": "platform.events.gamification.xp.ledger_posted.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ledgerEntryId", "principalId", "tenantId", "entryType", "amount", "currency", "tupleKey", "dedupeKey", "lineageDigest", "rewardRuleVersion", "sourceEventId", "sourceEventName", "createdAt", "auditRef"],
+      "properties": {
+        "ledgerEntryId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "tenantId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "entryType": { "type": "string", "enum": ["CREDIT", "DEBIT", "COMPENSATION"] },
+        "amount": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "const": "NON_CASH_PLATFORM_CREDIT" },
+        "tupleKey": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "dedupeKey": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "rewardRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "sourceEventId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "sourceEventName": { "type": "string", "enum": ["learning.task.completed.v2", "assessment.item.assessed.v2", "learning.mastery.projected.v2"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160 }
+      }
+    },
+    "M1014GamificationRewardGranted": {
+      "$id": "platform.events.gamification.reward.granted.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grantId", "principalId", "tenantId", "rewardCode", "grantState", "catalogVersion", "rewardRuleVersion", "probabilityVersion", "drawId", "eligibleRewardSetDigest", "selectedRewardId", "sourceLedgerEntryId", "sourceEventId", "lineageDigest", "monetization", "drawnAt", "auditRef"],
+      "properties": {
+        "grantId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "principalId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "tenantId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "rewardCode": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "grantState": { "type": "string", "enum": ["AVAILABLE", "CLAIMED", "EXPIRED", "REVOKED"] },
+        "catalogVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "rewardRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "probabilityVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "drawId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "eligibleRewardSetDigest": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "selectedRewardId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "sourceLedgerEntryId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "sourceEventId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "monetization": { "type": "string", "const": "FREE_NON_CASH" },
+        "drawnAt": { "type": "string", "format": "date-time" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160 }
+      }
+    },
+    "M1014StudyRoomSeatJoined": {
+      "$id": "platform.events.study_room.seat_joined.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roomId", "seatId", "subjectRef", "spaceType", "leaseId", "leaseVersion", "leasePolicyVersion", "leaseExpiresAt", "roomVisibility", "seatState", "joinedAt", "lineageDigest"],
+      "properties": {
+        "roomId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "seatId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "subjectRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "spaceType": { "type": "string", "enum": ["PUBLIC_THEME_ROOM", "INVITE_STUDY_ROOM"] },
+        "leaseId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "leaseVersion": { "type": "integer", "minimum": 1 },
+        "leasePolicyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "leaseExpiresAt": { "type": "string", "format": "date-time" },
+        "roomVisibility": { "type": "string", "enum": ["PUBLIC", "INVITE_ONLY"] },
+        "seatState": { "type": "string", "const": "ACTIVE" },
+        "joinedAt": { "type": "string", "format": "date-time" },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "M1014StudyRoomFocusStarted": {
+      "$id": "platform.events.study_room.focus_started.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["focusId", "roomId", "seatId", "subjectRef", "leaseId", "leaseVersion", "focusVersion", "focusKind", "focusTagCode", "durationMinutes", "focusPolicyVersion", "startedAt", "endsAt", "lineageDigest"],
+      "properties": {
+        "focusId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "roomId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "seatId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "subjectRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "leaseId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "leaseVersion": { "type": "integer", "minimum": 1 },
+        "focusVersion": { "type": "integer", "minimum": 1 },
+        "focusKind": { "type": "string", "enum": ["FOCUS", "BREAK", "REVIEW"] },
+        "focusTagCode": { "type": "string", "enum": ["VOCABULARY", "LISTENING", "READING", "GRAMMAR", "SPEAKING", "WRITING"] },
+        "durationMinutes": { "type": "integer", "enum": [25, 45] },
+        "focusPolicyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "endsAt": { "type": "string", "format": "date-time" },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "M1014StudyRoomSeatLeft": {
+      "$id": "platform.events.study_room.seat_left.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roomId", "seatId", "subjectRef", "spaceType", "leaseId", "leaseVersion", "leasePolicyVersion", "reasonCode", "leftAt", "lineageDigest"],
+      "properties": {
+        "roomId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "seatId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "subjectRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "spaceType": { "type": "string", "enum": ["PUBLIC_THEME_ROOM", "INVITE_STUDY_ROOM"] },
+        "leaseId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "leaseVersion": { "type": "integer", "minimum": 1 },
+        "leasePolicyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "reasonCode": { "type": "string", "enum": ["USER_LEFT", "LEASE_EXPIRED", "DISCONNECT_CLEANUP", "FOCUS_COMPLETED"] },
+        "leftAt": { "type": "string", "format": "date-time" },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "M1014LeaderboardSnapshotPublished": {
+      "$id": "platform.events.leaderboard.snapshot_published.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotId", "scope", "spaceType", "metric", "period", "timezoneId", "projectionVersion", "ruleVersion", "tieBreakVersion", "watermark", "entryCount", "snapshotDigest", "snapshotAt", "auditRef", "lineageDigest"],
+      "properties": {
+        "snapshotId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "scope": { "type": "string", "enum": ["GLOBAL", "ROOM", "GOAL_GROUP"] },
+        "spaceType": { "type": "string", "enum": ["PUBLIC_THEME_ROOM", "INVITE_STUDY_ROOM", "CHECKIN_GOAL_GROUP"] },
+        "metric": { "type": "string", "enum": ["FOCUS_MINUTES", "MASTERED_WORDS", "XP"] },
+        "period": { "type": "string", "enum": ["DAY", "WEEK"] },
+        "timezoneId": { "type": "string", "const": "Asia/Shanghai" },
+        "projectionVersion": { "type": "integer", "minimum": 1 },
+        "ruleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "tieBreakVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "watermark": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "entryCount": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "snapshotDigest": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "snapshotAt": { "type": "string", "format": "date-time" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    },
+    "M1014SocialReportCreated": {
+      "$id": "platform.events.social.report.created.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reportId", "roomId", "reporterId", "tenantId", "caseId", "targetType", "targetRef", "reasonCode", "state", "moderationPolicyVersion", "auditRef", "createdAt", "lineageDigest"],
+      "properties": {
+        "reportId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "roomId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "reporterId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "tenantId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "caseId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "targetType": { "type": "string", "enum": ["SEAT", "ROOM", "PRESET_INTERACTION"] },
+        "targetRef": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "reasonCode": { "type": "string", "enum": ["HARASSMENT", "SPAM", "INAPPROPRIATE_BEHAVIOR", "SAFETY", "IMPERSONATION"] },
+        "state": { "type": "string", "enum": ["SUBMITTED", "TRIAGED", "RESOLVED", "DISMISSED"] },
+        "moderationPolicyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lineageDigest": { "type": "string", "minLength": 1, "maxLength": 128 }
+      }
+    }
+  }
+}

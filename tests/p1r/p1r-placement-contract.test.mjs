@@ -760,3 +760,37 @@ test("CLI reports the static D2 source binding without claiming runtime verifica
   assert.equal(report.summary.runtimeStatus, "NOT_RUNTIME_VERIFIED");
   assert.equal(report.summary.contractIntegration, "SOURCE_BOUND_STATIC_D2");
 });
+
+test("placement keeps its route frozen while recognizing only the exact M1-014 assessment topic consumer addition", () => {
+  const accepted = validatePlacementContractData(cloneSourceInputs());
+  assert.equal(accepted.result, "PASS", accepted.errors.join("\n"));
+
+  for (const mutate of [
+    (fixture) => {
+      fixture.b26StaticPolicy.topics
+        .find((topic) => topic.name === "platform.assessment.v1")
+        .consumerGroups = fixture.b26StaticPolicy.topics
+          .find((topic) => topic.name === "platform.assessment.v1")
+          .consumerGroups.filter((group) => group.name !== "cg.gamification-from-assessment.v1");
+    },
+    (fixture) => {
+      fixture.b26StaticPolicy.topics
+        .find((topic) => topic.name === "platform.assessment.v1")
+        .consumerGroups.push({ name: "cg.unapproved-from-assessment.v1", service: "unknown-service" });
+    },
+  ]) {
+    const fixture = cloneSourceInputs();
+    mutate(fixture);
+    const rejected = validatePlacementContractData(fixture);
+    assert.equal(rejected.result, "FAIL");
+    assert.match(rejected.errors.join("\n"), /assessment topic ownership\/current-source consumers drifted/);
+  }
+
+  const route = sourceInputs.b26StaticPolicy.eventRouting.find(
+    (entry) => entry.eventName === "assessment.placement.completed.v1",
+  );
+  assert.deepEqual(route.consumerGroups, [
+    "cg.learning-from-assessment.v1",
+    "cg.workflow-from-assessment.v1",
+  ]);
+});

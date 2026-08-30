@@ -30,11 +30,11 @@
 
 **状态设计**：ST-H；结算中、资产缺失、奖励待确认、离线不发奖、性能降级和幂等补偿。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → gamification-service；xp_ledger、coin_ledger、streak、avatar、reward_chest、game_session。P0 仅上线 1 款学习游戏：拼句小火车 (Sentence Train)；P1 扩展至总计 4 款；6~8 款是长期目标，不属于 P0 或 P1 交付承诺。 学习结果驱动奖励；客户端不能直接记账；奖励概率、兑换和库存均受服务端规则、审计和阶段 Gate 控制。
+**契约与事实源**：Gateway → gamification-service；xp_ledger、coin_ledger、streak、avatar、reward_chest、game_session。P0 仅上线 1 款学习游戏：拼句小火车 (Sentence Train)；P1 扩展至总计 4 款；6~8 款是长期目标，不属于 P0 或 P1 交付承诺。学习结果驱动奖励；客户端不能直接记账。账本只追加，纠错只能以补偿分录表达；随机奖励只能免费、非现金、不可提现/交易，且由服务端版本化目录、概率公示、抽取审计与阶段 Gate 控制。可信完成仅按五元组（producerService、eventName、schemaVersion、qualifiedPredicate、rewardRuleVersion）及 lineage/dedupe 判定：`assessment.item.assessed.v2` 仅 `CORRECT_VERIFIED + objectiveCorrect=true + guessSignal=false`，`learning.mastery.projected.v2` 仅通过 D7 的真实掌握跃迁，未来 `learning.task.completed.v2` 仅在其专用契约完成后接入；`learning.review.scheduled.v2`、`learning.task.completed.v1` 和旧 B4/B12/v1 均不是奖励来源。以上是 P1R-M1-014 的 D2 静态契约，不构成 runtime 验证。
 
-**事件**：gamification.session_started.v1、xp.ledger_posted.v1、reward.granted.v1、avatar.equipped.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
+**事件（P1R-M1-014 canonical）**：`gamification.xp.ledger_posted.v2`、`gamification.reward.granted.v2`。游戏 session 仍由本域 REST 状态机管理；`gamification.session_started.v1`、`xp.ledger_posted.v1`、`reward.granted.v1`、`avatar.equipped.v1` 仅保留为旧 B4/B12 的历史/迁移名称，不是当前 canonical Kafka 事件，也不是 runtime 已验证声明。canonical 事件沿 requestId、traceId、eventId、dedupeKey 关联到领域事实。
 
-**验收**：重复事件不重复发奖；断网不产生伪奖励；低配设备可退到 2.5D/静态切片；无现金随机抽奖和学习无关变现。
+**验收**：重复事件不重复发奖；断网不产生伪奖励；低配设备可退到 2.5D/静态切片；无现金随机抽奖和学习无关变现；免费随机奖励的目录/概率/抽取/审计引用可回放，账本不覆盖历史分录。
 
 **逐条登记**：在 [980plus 功能点设计登记册](08-980plus-功能点设计登记册.md) 中按域筛选 GAM；每一条需保留来源、状态、设计锚点和 review 结论。
 
@@ -45,7 +45,7 @@
 **路由宿主**：world/study-room；leaderboard；feed；social/*  
 **终端**：apps/mobile（H5/App/iPad）+ apps/learner-web（PC/PWA）
 
-**交互意图**：提供低审核成本的陪伴和成就反馈，控制互动边界，不引入陌生人私聊和开放发帖。
+**交互意图**：提供低审核成本的陪伴和成就反馈，控制互动边界，不引入陌生人私聊和开放发帖。空间语义固定为：`PUBLIC_THEME_ROOM`（公开主题房，20～30 人，P0、enabled=true）、`INVITE_STUDY_ROOM`（邀请学习室，2～8 人，P1、enabled=false）和 `CHECKIN_GOAL_GROUP`（共同目标/打卡组，3～10 人，P1、enabled=false）。邀请学习室可有座位/租约；打卡组不具有座位、租约或实时在场语义。
 
 **主流程**：浏览房间/榜单 → 加入或占座 → 专注/预设互动 → 结束 → 结算学习时长 → 查看榜单
 
@@ -53,9 +53,9 @@
 
 **状态设计**：ST-I/ST-H；座位租约、WS 断连、匿名、空房、成员受限、榜单延迟和离线补偿。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → social-service；study_room、seat_lease、leaderboard_snapshot、preset_interaction、presence_event。互动使用预设动作或审核词库；房间和榜单按隐私设置脱敏；客服和风控仅按授权范围处理。
+**契约与事实源**：Gateway → social-service；study_room、seat_lease、leaderboard_snapshot、preset_interaction、presence_event。`PUBLIC_THEME_ROOM` 与 `INVITE_STUDY_ROOM` 的座位租约固定为 90 秒 TTL、30 秒续租、60 秒断线恢复宽限、5 分钟无学习活动释放，并仅支持 25/45 分钟专注；`CHECKIN_GOAL_GROUP` 明确禁止租约。专注分钟只按 `P1_FOCUS_CREDIT_V1` 结算：服务端时间已到 `endsAt`、租约仍有效且 `focusVersion` 匹配时，只有 `COMPLETED` 可记入 25/45 分钟；`FOCUSING/PAUSED/ABORTED/AUTO_RELEASED` 均记 0，客户端 FINISH、心跳、自报时长或离线成功都不是证明，也不能直接触发奖励。榜单只消费三类已结算事实：social-service 本地 `M1014FocusSession` 的 `FOCUS_MINUTES`、`learning.mastery.projected.v2` 的 `MASTERED_WORDS` 和 `gamification.xp.ledger_posted.v2` 的 `XP`；快照必须带 metric/period/timezoneId/projectionVersion/ruleVersion/tieBreakVersion/snapshotAt/watermark/auditRef，并按昵称/匿名/退出脱敏。举报只提交 targetType、targetRef、reasonCode，reporter 与 case/audit 均由服务端派生。互动使用预设动作或审核词库，拒绝自由文本、私聊、图片、音频和链接；房间和榜单按隐私设置脱敏；客服和风控仅按授权范围处理。以上是 P1R-M1-014 的 D2 静态契约，不构成 runtime 验证。
 
-**事件**：study_room.joined.v1、study_room.focus_started.v1、study_room.left.v1、leaderboard.refreshed.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
+**事件（P1R-M1-014 canonical）**：`study_room.seat_joined.v2`、`study_room.focus_started.v2`、`study_room.seat_left.v2`、`leaderboard.snapshot_published.v2`、`social.report.created.v2`。`study_room.joined.v1`、`study_room.focus_started.v1`、`study_room.left.v1`、`leaderboard.refreshed.v1` 与其他旧 B4/B12/v1 名称仅限历史/迁移，不得被描述为 canonical 或已验证 runtime 绑定。canonical 事件沿 requestId、traceId、eventId、dedupeKey 关联到领域事实。
 
 **验收**：租约过期可恢复或重新入座；WS 断连不丢学习时长；空房和受限互动提供可学习替代入口。
 

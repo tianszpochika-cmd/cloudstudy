@@ -423,6 +423,14 @@
     {
       "name": "P1R-Shadowing",
       "description": "Rule-based assessment-owned Phase 1 shadowing sessions."
+    },
+    {
+      "name": "M1-014-GAM",
+      "description": "M1-014 canonical gamification contracts; server-owned ledger, rewards, catalog and game sessions"
+    },
+    {
+      "name": "M1-014-SOC",
+      "description": "M1-014 canonical controlled social contracts; server-owned spaces, leases, focus, visibility and moderation"
     }
   ],
   "paths": {
@@ -14891,10 +14899,24 @@
     },
     "/api/v1/games/catalog": {
       "get": {
-        "operationId": "listB4Games",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
+        "summary": "Read the server-gated game catalog",
+        "operationId": "listM1014GameCatalog",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; release phase, enabled gate, catalog and rule pins are server-derived"
+        },
         "x-b4-game-registry": {
           "owner": "gamification-service",
           "releasePhase": {
@@ -14920,9 +14942,35 @@
             "code": "GAME_NOT_AVAILABLE"
           }
         },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.read.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; client cannot enable a game or replace its pins"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Server-gated game catalog",
             "content": {
               "application/json": {
                 "schema": {
@@ -14937,36 +14985,22 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameCatalog"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         },
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/Cursor"
-          },
-          {
-            "$ref": "#/components/parameters/PageSize"
-          }
-        ],
         "x-pagination": {
           "mode": "cursor",
           "cursorParameter": "#/components/parameters/Cursor",
@@ -14977,19 +15011,45 @@
     },
     "/api/v1/games/sessions": {
       "post": {
-        "operationId": "createB4GameSession",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-game-session",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一游戏和内容包只创建一个会话"
+        "summary": "Create a server-pinned game session",
+        "operationId": "createM1014GameSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "gameCode and performance hint only; subject, tenant, content, rule and session pins are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.play.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for eligibility, score, reward or version pins"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -14997,14 +15057,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B4GameSessionRequest"
+                "$ref": "#/components/schemas/M1014GameSessionCreateRequest"
               }
             }
           }
         },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-game-catalog-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-server-pinned-session",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "201": {
-            "description": "B4 envelope",
+            "description": "Server-pinned game session",
             "content": {
               "application/json": {
                 "schema": {
@@ -15019,29 +15086,23 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameSession"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
           },
           "400": {
             "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
@@ -15051,18 +15112,50 @@
     },
     "/api/v1/games/sessions/{sessionId}": {
       "get": {
-        "operationId": "getB4GameSession",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
+        "summary": "Read a learner-owned server game session",
+        "operationId": "getM1014GameSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; score, status, content and rule pins are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.read.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none"
+        },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4SessionId"
+            "$ref": "#/components/parameters/M1014SessionId"
           }
         ],
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Server-owned game session",
             "content": {
               "application/json": {
                 "schema": {
@@ -15077,48 +15170,71 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameSession"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }
     },
     "/api/v1/games/sessions/{sessionId}/events": {
       "post": {
-        "operationId": "submitB4GameEvent",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-game-event",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "按 sessionId、eventId、seq 去重并只由服务端判定"
+        "summary": "Submit an opaque server-validated game event",
+        "operationId": "submitM1014GameEvent",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "opaque response token and sequence only; score, correctness and reward facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.play.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for score, answer, correctness, elapsed time or reward"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4SessionId"
+            "$ref": "#/components/parameters/M1014SessionId"
           },
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -15126,14 +15242,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B4GameEventRequest"
+                "$ref": "#/components/schemas/M1014GameEventRequest"
               }
             }
           }
         },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-session-event-id-sequence-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-event-receipt",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Server-validated event receipt",
             "content": {
               "application/json": {
                 "schema": {
@@ -15148,26 +15271,23 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameEventReceipt"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
@@ -15177,27 +15297,70 @@
     },
     "/api/v1/games/sessions/{sessionId}/pause": {
       "post": {
-        "operationId": "pauseB4GameSession",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-game-pause",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "暂停状态转换可重放"
+        "summary": "Pause a server-owned game session",
+        "operationId": "pauseM1014GameSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "expected version only; pause time and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.play.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for elapsed time, score or reward"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4SessionId"
+            "$ref": "#/components/parameters/M1014SessionId"
           },
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1014GameSessionControlRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-session-state-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-session-state",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Paused game session",
             "content": {
               "application/json": {
                 "schema": {
@@ -15212,53 +15375,93 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameSession"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
     },
     "/api/v1/games/sessions/{sessionId}/resume": {
       "post": {
-        "operationId": "resumeB4GameSession",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-game-resume",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "恢复状态转换可重放"
+        "summary": "Resume a server-owned game session",
+        "operationId": "resumeM1014GameSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "expected version only; resume time and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.play.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for elapsed time, score or reward"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4SessionId"
+            "$ref": "#/components/parameters/M1014SessionId"
           },
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1014GameSessionControlRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-session-state-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-session-state",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Resumed game session",
             "content": {
               "application/json": {
                 "schema": {
@@ -15273,53 +15476,93 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameSession"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
     },
     "/api/v1/games/sessions/{sessionId}/finish": {
       "post": {
-        "operationId": "finishB4GameSession",
         "tags": [
-          "b4-games"
+          "M1-014-GAM"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-game-finish",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "最终判定和奖励资格只结算一次"
+        "summary": "Finish and settle a server-owned game session",
+        "operationId": "finishM1014GameSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_GAME_CATALOG_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "expected version only; completion, score and reward eligibility are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.game.play.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for score, correctness, elapsed time or reward"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4SessionId"
+            "$ref": "#/components/parameters/M1014SessionId"
           },
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1014GameSessionControlRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-session-finish-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-settlement-result",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Server settlement result",
             "content": {
               "application/json": {
                 "schema": {
@@ -15334,36 +15577,68 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014GameSessionResult"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
     },
     "/api/v1/social/rooms": {
       "get": {
-        "operationId": "listB4SocialRooms",
         "tags": [
-          "b4-social"
+          "M1-014-SOC"
         ],
+        "summary": "List server-gated controlled study spaces",
+        "operationId": "listM1014StudyRooms",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_SOCIAL_SPACE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; space type, capacity, gate, membership and lease mode are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.read",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; server applies the space catalog and privacy policy"
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/Cursor"
@@ -15374,7 +15649,7 @@
         ],
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Controlled space page",
             "content": {
               "application/json": {
                 "schema": {
@@ -15389,26 +15664,20 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014RoomPage"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         },
         "x-pagination": {
@@ -15421,18 +15690,50 @@
     },
     "/api/v1/social/rooms/{roomId}": {
       "get": {
-        "operationId": "getB4SocialRoom",
         "tags": [
-          "b4-social"
+          "M1-014-SOC"
         ],
+        "summary": "Read a server-owned controlled study space",
+        "operationId": "getM1014StudyRoom",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_SOCIAL_SPACE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; membership, occupancy, seat and lease state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.read",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none"
+        },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           }
         ],
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Controlled space details",
             "content": {
               "application/json": {
                 "schema": {
@@ -15447,48 +15748,73 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014RoomDetails"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }
     },
     "/api/v1/social/rooms/{roomId}/join": {
       "post": {
-        "operationId": "joinB4SocialRoom",
         "tags": [
-          "b4-social"
+          "M1-014-SOC"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-room-join",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "成员和座位分配只成功一次"
+        "summary": "Join a server-assigned room seat",
+        "operationId": "joinM1014StudyRoom",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_SOCIAL_SPACE_POLICY_V1",
+          "leasePolicy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "seat preference only; subject, membership, seat and lease are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion",
+            "invitation"
+          ],
+          "clientAuthority": "none for identity, capacity, lease expiry or membership"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -15496,14 +15822,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B4JoinRoomRequest"
+                "$ref": "#/components/schemas/M1014RoomJoinRequest"
               }
             }
           }
         },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-room-join-catalog-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-seat-and-lease",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Assigned room seat and lease",
             "content": {
               "application/json": {
                 "schema": {
@@ -15518,26 +15851,20 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014RoomState"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
@@ -15547,27 +15874,69 @@
     },
     "/api/v1/social/rooms/{roomId}/leave": {
       "post": {
-        "operationId": "leaveB4SocialRoom",
         "tags": [
-          "b4-social"
+          "M1-014-SOC"
         ],
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b4-room-leave",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "离开房间和释放租约可重放"
+        "summary": "Release the caller's server-owned room lease",
+        "operationId": "leaveM1014StudyRoom",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "lease identity/version echo only; release time and seat state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for principal, lease expiry, seat or focus minutes"
         },
         "parameters": [
           {
-            "$ref": "#/components/parameters/B4RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B4IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1014RoomCommand"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-room-leave-lease-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-seat-release",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
         "responses": {
           "200": {
-            "description": "B4 envelope",
+            "description": "Released room seat and lease",
             "content": {
               "application/json": {
                 "schema": {
@@ -15582,26 +15951,23 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1014RoomState"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
@@ -15609,9 +15975,34 @@
     "/api/v1/social/rooms/{roomId}/interactions": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "recordB12RoomInteraction",
+        "operationId": "recordM1014RoomInteraction",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_SOCIAL_SPACE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "closed preset and target intent only; delivery and moderation facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.interaction.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for free text, DM, attachment or delivery state"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -15619,10 +16010,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -15630,7 +16021,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12PresetInteraction"
+                "$ref": "#/components/schemas/M1014PresetInteraction"
               }
             }
           }
@@ -15638,7 +16029,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-preset-key",
-          "replayBehavior": "return-interaction-fact"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-interaction-fact",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -15657,7 +16050,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12InteractionResult"
+                          "$ref": "#/components/schemas/M1014InteractionResult"
                         }
                       }
                     }
@@ -15692,9 +16085,34 @@
     "/api/v1/social/leaderboards": {
       "get": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "getB12Leaderboard",
+        "operationId": "getM1014Leaderboard",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEADERBOARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; snapshot, score, rank, watermark and privacy projection are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.leaderboard.read",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for score, rank, snapshot or visibility"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -15702,13 +16120,13 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12LeaderboardKind"
+            "$ref": "#/components/parameters/M1014LeaderboardKind"
           },
           {
-            "$ref": "#/components/parameters/B12LeaderboardPeriod"
+            "$ref": "#/components/parameters/M1014LeaderboardPeriod"
           },
           {
-            "$ref": "#/components/parameters/B12OptionalRoomId"
+            "$ref": "#/components/parameters/M1014OptionalRoomId"
           }
         ],
         "responses": {
@@ -15728,7 +16146,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12Leaderboard"
+                          "$ref": "#/components/schemas/M1014Leaderboard"
                         }
                       }
                     }
@@ -23257,9 +23675,35 @@
     "/api/v1/gamification/me/summary": {
       "get": {
         "tags": [
-          "B12-Gamification"
+          "M1-014-GAM"
         ],
-        "operationId": "getB12GamificationSummary",
+        "operationId": "getM1014GamificationSummary",
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_REWARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; growth projection and reward rule facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.read.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23282,7 +23726,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12GrowthSummary"
+                          "$ref": "#/components/schemas/M1014GrowthSummary"
                         }
                       }
                     }
@@ -23314,9 +23758,34 @@
     "/api/v1/gamification/me/ledger": {
       "get": {
         "tags": [
-          "B12-Gamification"
+          "M1-014-GAM"
         ],
-        "operationId": "listB12GamificationLedger",
+        "operationId": "listM1014GamificationLedger",
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_REWARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; append-only ledger entries and balances are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.ledger.read.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for ledgerEntryId, tenantId, amount or currency"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23350,7 +23819,7 @@
                           "type": "array",
                           "maxItems": 100,
                           "items": {
-                            "$ref": "#/components/schemas/B12LedgerEntry"
+                            "$ref": "#/components/schemas/M1014LedgerEntry"
                           }
                         }
                       }
@@ -23389,9 +23858,34 @@
     "/api/v1/gamification/me/rewards": {
       "get": {
         "tags": [
-          "B12-Gamification"
+          "M1-014-GAM"
         ],
-        "operationId": "listB12RewardGrants",
+        "operationId": "listM1014RewardGrants",
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_REWARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; grants, draws and audit identities are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.reward.read.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23424,7 +23918,7 @@
                               "type": "array",
                               "maxItems": 100,
                               "items": {
-                                "$ref": "#/components/schemas/B12RewardGrant"
+                                "$ref": "#/components/schemas/M1014RewardGrant"
                               }
                             }
                           }
@@ -23473,9 +23967,34 @@
     "/api/v1/gamification/me/rewards/{grantId}/probability": {
       "get": {
         "tags": [
-          "B12-Gamification"
+          "M1-014-GAM"
         ],
-        "operationId": "getB12RewardProbability",
+        "operationId": "getM1014RewardProbability",
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_REWARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; probability, draw and eligible-set audit facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.reward.read.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23483,7 +24002,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12GrantId"
+            "$ref": "#/components/parameters/M1014GrantId"
           }
         ],
         "responses": {
@@ -23503,7 +24022,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12RewardProbability"
+                          "$ref": "#/components/schemas/M1014RewardProbability"
                         }
                       }
                     }
@@ -23538,9 +24057,34 @@
     "/api/v1/gamification/me/rewards/{grantId}/claim": {
       "post": {
         "tags": [
-          "B12-Gamification"
+          "M1-014-GAM"
         ],
-        "operationId": "claimB12Reward",
+        "operationId": "claimM1014Reward",
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_REWARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "claim command only; grant state, payment and reward outcome are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.reward.claim.self",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for reward value, probability, grant state or ledger"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23548,10 +24092,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12GrantId"
+            "$ref": "#/components/parameters/M1014GrantId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -23559,7 +24103,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RewardClaimRequest"
+                "$ref": "#/components/schemas/M1014RewardClaimRequest"
               }
             }
           }
@@ -23567,7 +24111,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-grant-command-key",
-          "replayBehavior": "return-original-claim"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-claim",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -23586,7 +24132,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12RewardClaimResult"
+                          "$ref": "#/components/schemas/M1014RewardClaimResult"
                         }
                       }
                     }
@@ -23621,9 +24167,33 @@
     "/internal/v1/gamification/trusted-events/completions": {
       "post": {
         "tags": [
-          "B12-Gamification"
+          "M1-014-GAM"
         ],
-        "operationId": "consumeB12TrustedCompletion",
+        "operationId": "settleM1014TrustedCompletion",
+        "x-owner": "gamification-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_REWARD_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; workload-only trusted tuple, predicate, lineage and settlement receipt"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "gamification.trusted-event.write",
+          "pep": "gamification-service-local",
+          "trustedFacts": [
+            "workloadIdentity",
+            "producerService",
+            "eventName",
+            "schemaVersion",
+            "qualifiedPredicate",
+            "rewardRuleVersion",
+            "lineage",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; clients cannot submit trusted completion or ledger facts"
+        },
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -23631,7 +24201,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -23639,7 +24209,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12TrustedCompletion"
+                "$ref": "#/components/schemas/M1014TrustedCompletion"
               }
             }
           }
@@ -23647,7 +24217,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "event-id-dedupe-key",
-          "replayBehavior": "return-original-settlement"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-settlement",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "202": {
@@ -23655,7 +24227,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B12SettlementResult"
+                  "$ref": "#/components/schemas/M1014SettlementResult"
                 }
               }
             }
@@ -23675,9 +24247,34 @@
     "/api/v1/social/rooms/{roomId}/disconnect": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "disconnectB12StudyRoom",
+        "operationId": "disconnectM1014StudyRoom",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "lease identity/version echo only; disconnect window and seat state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for lease expiry, focus minutes or reward"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23685,10 +24282,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -23696,7 +24293,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RoomCommand"
+                "$ref": "#/components/schemas/M1014RoomCommand"
               }
             }
           }
@@ -23704,7 +24301,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-command-key",
-          "replayBehavior": "return-room-seat-state"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-room-seat-state",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -23723,7 +24322,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12RoomState"
+                          "$ref": "#/components/schemas/M1014RoomState"
                         }
                       }
                     }
@@ -23758,9 +24357,34 @@
     "/api/v1/social/rooms/{roomId}/recover": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "recoverB12StudyRoomSeat",
+        "operationId": "recoverM1014StudyRoomSeat",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "lease identity/version echo only; recovery window and seat state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for lease expiry, focus minutes or reward"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23768,10 +24392,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -23779,7 +24403,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RoomCommand"
+                "$ref": "#/components/schemas/M1014RoomCommand"
               }
             }
           }
@@ -23787,7 +24411,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-recovery-key",
-          "replayBehavior": "return-recovered-seat"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-recovered-seat",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -23806,7 +24432,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12RoomState"
+                          "$ref": "#/components/schemas/M1014RoomState"
                         }
                       }
                     }
@@ -23841,9 +24467,34 @@
     "/api/v1/social/rooms/{roomId}/lease/renew": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "renewB12StudyRoomLease",
+        "operationId": "renewM1014StudyRoomLease",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "lease identity/version echo only; renewal time is server-clock-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.room.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for lease expiry, focus minutes or reward"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23851,10 +24502,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -23862,7 +24513,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RoomCommand"
+                "$ref": "#/components/schemas/M1014RoomCommand"
               }
             }
           }
@@ -23870,7 +24521,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-lease-key",
-          "replayBehavior": "return-renewed-seat"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-renewed-seat",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -23889,7 +24542,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12RoomState"
+                          "$ref": "#/components/schemas/M1014RoomState"
                         }
                       }
                     }
@@ -23924,9 +24577,34 @@
     "/api/v1/social/rooms/{roomId}/focus": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "startB12RoomFocus",
+        "operationId": "startM1014RoomFocus",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "duration/tag intent only; focus start/end, minutes and qualification are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.focus.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for elapsed time, lease expiry, score or reward"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -23934,10 +24612,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -23945,7 +24623,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12FocusCommand"
+                "$ref": "#/components/schemas/M1014FocusCommand"
               }
             }
           }
@@ -23953,7 +24631,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-focus-key",
-          "replayBehavior": "return-focus-session"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-focus-session",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "201": {
@@ -23972,7 +24652,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12FocusSession"
+                          "$ref": "#/components/schemas/M1014FocusSession"
                         }
                       }
                     }
@@ -24005,9 +24685,34 @@
       },
       "patch": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "updateB12RoomFocus",
+        "operationId": "updateM1014RoomFocus",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_LEASE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "focus action only; elapsed time, state and qualification are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.focus.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for elapsed time, lease expiry, score or reward"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -24015,10 +24720,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -24026,7 +24731,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12FocusUpdateCommand"
+                "$ref": "#/components/schemas/M1014FocusUpdateCommand"
               }
             }
           }
@@ -24034,7 +24739,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-focus-update-key",
-          "replayBehavior": "return-focus-session-state"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-focus-session-state",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -24053,7 +24760,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12FocusSession"
+                          "$ref": "#/components/schemas/M1014FocusSession"
                         }
                       }
                     }
@@ -24088,9 +24795,34 @@
     "/api/v1/social/me/visibility": {
       "patch": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "updateB12SocialVisibility",
+        "operationId": "updateM1014SocialVisibility",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_SOCIAL_SPACE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "closed privacy choices only; subject, tenant and policy are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.visibility.write.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for rank, score, room membership or owner"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -24098,7 +24830,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -24106,7 +24838,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12VisibilityCommand"
+                "$ref": "#/components/schemas/M1014VisibilityCommand"
               }
             }
           }
@@ -24114,7 +24846,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-visibility-version-key",
-          "replayBehavior": "return-visibility-fact"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-visibility-fact",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -24133,7 +24867,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12Visibility"
+                          "$ref": "#/components/schemas/M1014Visibility"
                         }
                       }
                     }
@@ -24168,9 +24902,34 @@
     "/api/v1/social/rooms/{roomId}/reports": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "createB12SocialReport",
+        "operationId": "createM1014SocialReport",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_MODERATION_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "target and closed reason only; reporter, tenant, case, state and audit identity are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.report.create.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none for reporter, case state, free text or attachments"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -24178,10 +24937,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12RoomId"
+            "$ref": "#/components/parameters/M1014RoomId"
           },
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -24189,7 +24948,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12ReportCommand"
+                "$ref": "#/components/schemas/M1014ReportCommand"
               }
             }
           }
@@ -24197,7 +24956,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-room-report-key",
-          "replayBehavior": "return-report-fact"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-report-fact",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "202": {
@@ -24216,7 +24977,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12Report"
+                          "$ref": "#/components/schemas/M1014Report"
                         }
                       }
                     }
@@ -24251,9 +25012,34 @@
     "/api/v1/social/reports/{reportId}": {
       "get": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "getB12SocialReport",
+        "operationId": "getM1014SocialReport",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_MODERATION_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; case state, reporter, tenant and audit identity are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.report.read.self",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "none"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -24261,7 +25047,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12ReportId"
+            "$ref": "#/components/parameters/M1014ReportId"
           }
         ],
         "responses": {
@@ -24281,7 +25067,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12Report"
+                          "$ref": "#/components/schemas/M1014Report"
                         }
                       }
                     }
@@ -24316,9 +25102,34 @@
     "/internal/v1/social/trusted-events": {
       "post": {
         "tags": [
-          "B12-Social"
+          "M1-014-SOC"
         ],
-        "operationId": "consumeB12SocialTrustedEvent",
+        "operationId": "consumeM1014SocialTrustedEvent",
+        "x-owner": "social-service",
+        "x-contract": {
+          "canonical": true,
+          "policy": "P1_SOCIAL_SPACE_POLICY_V1",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "none; workload-only event projection input"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "social.trusted-event.write",
+          "pep": "social-service-local",
+          "trustedFacts": [
+            "workloadIdentity",
+            "sourceService",
+            "eventName",
+            "schemaVersion",
+            "aggregateId",
+            "payloadTenant",
+            "payloadPrincipal",
+            "lineage",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; clients cannot publish trusted social facts"
+        },
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -24326,7 +25137,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B12IdempotencyKey"
+            "$ref": "#/components/parameters/M1014IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -24334,7 +25145,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12TrustedSocialEvent"
+                "$ref": "#/components/schemas/M1014TrustedSocialEvent"
               }
             }
           }
@@ -24342,7 +25153,9 @@
         "x-idempotency": {
           "required": true,
           "strategy": "event-id-dedupe-key",
-          "replayBehavior": "return-original-social-projection"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-social-projection",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "202": {
@@ -32515,6 +33328,86 @@
         "required": true,
         "schema": {
           "$ref": "#/components/schemas/B10LearningReportType"
+        }
+      },
+      "M1014IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 192
+        }
+      },
+      "M1014SessionId": {
+        "name": "sessionId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^gsess_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1014RoomId": {
+        "name": "roomId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1014GrantId": {
+        "name": "grantId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^grant_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1014ReportId": {
+        "name": "reportId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1014OptionalRoomId": {
+        "name": "roomId",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1014LeaderboardKind": {
+        "name": "kind",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "FOCUS_MINUTES",
+            "MASTERED_WORDS",
+            "XP"
+          ]
+        }
+      },
+      "M1014LeaderboardPeriod": {
+        "name": "period",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "DAY",
+            "WEEK"
+          ]
         }
       }
     },
@@ -60619,6 +61512,3127 @@
           "replayed": {
             "type": "boolean"
           }
+        }
+      },
+      "M1014GrowthSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subjectRef",
+          "level",
+          "serverScore",
+          "streakDays",
+          "currentSeason",
+          "rewardCatalogVersion",
+          "rewardRuleVersion",
+          "featureEnabled"
+        ],
+        "properties": {
+          "subjectRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "serverScore": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "streakDays": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currentSeason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "rewardCatalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "featureEnabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "M1014LedgerEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ledgerEntryId",
+          "principalId",
+          "tenantId",
+          "entryType",
+          "amount",
+          "currency",
+          "tupleKey",
+          "dedupeKey",
+          "lineageDigest",
+          "rewardRuleVersion",
+          "createdAt",
+          "auditRef"
+        ],
+        "properties": {
+          "ledgerEntryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "principalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "entryType": {
+            "type": "string",
+            "enum": [
+              "CREDIT",
+              "DEBIT",
+              "COMPENSATION"
+            ]
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "const": "NON_CASH_PLATFORM_CREDIT"
+          },
+          "tupleKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "lineageDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "x-server-derived": [
+          "principalId",
+          "tenantId",
+          "amount",
+          "ledgerEntryId",
+          "rewardRuleVersion",
+          "auditRef"
+        ]
+      },
+      "M1014RewardGrant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "principalRef",
+          "rewardCode",
+          "grantState",
+          "catalogVersion",
+          "rewardRuleVersion",
+          "probabilityVersion",
+          "drawId",
+          "eligibleRewardSetDigest",
+          "selectedRewardId",
+          "monetization",
+          "drawnAt",
+          "auditRef"
+        ],
+        "properties": {
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "principalRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "rewardCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "grantState": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "CLAIMED",
+              "EXPIRED",
+              "REVOKED"
+            ]
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "probabilityVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "drawId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "eligibleRewardSetDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "selectedRewardId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "monetization": {
+            "type": "string",
+            "const": "FREE_NON_CASH"
+          },
+          "drawnAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "x-server-derived": [
+          "principalRef",
+          "catalogVersion",
+          "rewardRuleVersion",
+          "probabilityVersion",
+          "drawId",
+          "eligibleRewardSetDigest",
+          "selectedRewardId",
+          "monetization",
+          "auditRef"
+        ]
+      },
+      "M1014RewardProbability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "catalogVersion",
+          "probabilityVersion",
+          "tiers",
+          "auditRef",
+          "disclosedAt"
+        ],
+        "properties": {
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "probabilityVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "tiers": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "tierCode",
+                "basisPoints"
+              ],
+              "properties": {
+                "tierCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "basisPoints": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                }
+              }
+            }
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "disclosedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1014RewardClaimRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandCode"
+        ],
+        "properties": {
+          "commandCode": {
+            "type": "string",
+            "const": "CLAIM"
+          }
+        }
+      },
+      "M1014RewardClaimResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "claimId",
+          "state",
+          "catalogVersion",
+          "rewardRuleVersion",
+          "replayed",
+          "auditRef"
+        ],
+        "properties": {
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "claimId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "CLAIMED",
+              "ALREADY_CLAIMED",
+              "REJECTED"
+            ]
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      },
+      "M1014TrustedCompletion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "producerService",
+          "eventName",
+          "schemaVersion",
+          "qualifiedPredicate",
+          "rewardRuleVersion",
+          "lineage"
+        ],
+        "oneOf": [
+          {
+            "required": [
+              "producerService",
+              "eventName",
+              "schemaVersion",
+              "qualifiedPredicate",
+              "rewardRuleVersion",
+              "lineage"
+            ],
+            "properties": {
+              "producerService": {
+                "type": "string",
+                "const": "learning-service"
+              },
+              "eventName": {
+                "type": "string",
+                "const": "learning.task.completed.v2"
+              },
+              "schemaVersion": {
+                "type": "string",
+                "const": "v2"
+              },
+              "qualifiedPredicate": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "taskStatus",
+                  "completionFact"
+                ],
+                "properties": {
+                  "taskStatus": {},
+                  "completionFact": {}
+                }
+              },
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "traceId",
+                  "schemaVersion",
+                  "taskId",
+                  "completionVersion",
+                  "rootEventId",
+                  "contentPin",
+                  "rulePin",
+                  "outcomeDigest"
+                ],
+                "properties": {
+                  "eventId": {},
+                  "traceId": {},
+                  "schemaVersion": {},
+                  "taskId": {},
+                  "completionVersion": {},
+                  "rootEventId": {},
+                  "contentPin": {},
+                  "rulePin": {},
+                  "outcomeDigest": {}
+                },
+                "not": {
+                  "required": [
+                    "evidenceDigest"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "required": [
+              "producerService",
+              "eventName",
+              "schemaVersion",
+              "qualifiedPredicate",
+              "rewardRuleVersion",
+              "lineage"
+            ],
+            "properties": {
+              "producerService": {
+                "type": "string",
+                "const": "assessment-service"
+              },
+              "eventName": {
+                "type": "string",
+                "const": "assessment.item.assessed.v2"
+              },
+              "schemaVersion": {
+                "type": "string",
+                "const": "v2"
+              },
+              "qualifiedPredicate": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "objectiveOutcome",
+                  "objectiveCorrect",
+                  "guessSignal"
+                ],
+                "properties": {
+                  "objectiveOutcome": {},
+                  "objectiveCorrect": {},
+                  "guessSignal": {}
+                }
+              },
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "traceId",
+                  "schemaVersion",
+                  "itemAssessmentId",
+                  "attemptId",
+                  "logicalItemId",
+                  "contentPin",
+                  "rulePin",
+                  "objectivePolicyPin",
+                  "outcomeDigest"
+                ],
+                "properties": {
+                  "eventId": {},
+                  "traceId": {},
+                  "schemaVersion": {},
+                  "itemAssessmentId": {},
+                  "attemptId": {},
+                  "logicalItemId": {},
+                  "contentPin": {},
+                  "rulePin": {},
+                  "objectivePolicyPin": {},
+                  "outcomeDigest": {}
+                },
+                "not": {
+                  "required": [
+                    "evidenceDigest"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "required": [
+              "producerService",
+              "eventName",
+              "schemaVersion",
+              "qualifiedPredicate",
+              "rewardRuleVersion",
+              "lineage"
+            ],
+            "properties": {
+              "producerService": {
+                "type": "string",
+                "const": "learning-service"
+              },
+              "eventName": {
+                "type": "string",
+                "const": "learning.mastery.projected.v2"
+              },
+              "schemaVersion": {
+                "type": "string",
+                "const": "v2"
+              },
+              "qualifiedPredicate": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "masteryStageAfter",
+                  "d7Gate",
+                  "stateTransition"
+                ],
+                "properties": {
+                  "masteryStageAfter": {},
+                  "d7Gate": {},
+                  "stateTransition": {}
+                }
+              },
+              "lineage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "traceId",
+                  "schemaVersion",
+                  "projectionId",
+                  "masteryEpochId",
+                  "masteryEpochVersion",
+                  "projectionVersion",
+                  "sourceAssessmentEventId",
+                  "sourceItemAssessmentId",
+                  "contentPin",
+                  "masteryStageBefore",
+                  "masteryRuleVersion",
+                  "evidenceDigest"
+                ],
+                "properties": {
+                  "eventId": {},
+                  "traceId": {},
+                  "schemaVersion": {},
+                  "projectionId": {},
+                  "masteryEpochId": {},
+                  "masteryEpochVersion": {},
+                  "projectionVersion": {},
+                  "sourceAssessmentEventId": {},
+                  "sourceItemAssessmentId": {},
+                  "contentPin": {},
+                  "masteryStageBefore": {},
+                  "masteryRuleVersion": {},
+                  "evidenceDigest": {}
+                },
+                "not": {
+                  "required": [
+                    "outcomeDigest"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "producerService": {
+            "type": "string",
+            "enum": [
+              "learning-service",
+              "assessment-service"
+            ]
+          },
+          "eventName": {
+            "type": "string",
+            "enum": [
+              "learning.task.completed.v2",
+              "assessment.item.assessed.v2",
+              "learning.mastery.projected.v2"
+            ]
+          },
+          "schemaVersion": {
+            "type": "string",
+            "const": "v2"
+          },
+          "qualifiedPredicate": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "taskStatus",
+                  "completionFact"
+                ],
+                "properties": {
+                  "taskStatus": {
+                    "type": "string",
+                    "const": "COMPLETED"
+                  },
+                  "completionFact": {
+                    "type": "string",
+                    "const": "SERVER_SETTLED"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "objectiveOutcome",
+                  "objectiveCorrect",
+                  "guessSignal"
+                ],
+                "properties": {
+                  "objectiveOutcome": {
+                    "type": "string",
+                    "const": "CORRECT_VERIFIED"
+                  },
+                  "objectiveCorrect": {
+                    "type": "boolean",
+                    "const": true
+                  },
+                  "guessSignal": {
+                    "type": "boolean",
+                    "const": false
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "masteryStageAfter",
+                  "d7Gate",
+                  "stateTransition"
+                ],
+                "properties": {
+                  "masteryStageAfter": {
+                    "type": "string",
+                    "enum": [
+                      "MASTERED",
+                      "CONSOLIDATED"
+                    ]
+                  },
+                  "d7Gate": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "result",
+                      "reasonCode"
+                    ],
+                    "properties": {
+                      "result": {
+                        "type": "string",
+                        "const": "PASSED"
+                      },
+                      "reasonCode": {
+                        "type": "string",
+                        "const": "D7_PASSED"
+                      }
+                    }
+                  },
+                  "stateTransition": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
+              }
+            ]
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "lineage": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "traceId",
+                  "schemaVersion",
+                  "taskId",
+                  "completionVersion",
+                  "rootEventId",
+                  "contentPin",
+                  "rulePin",
+                  "outcomeDigest"
+                ],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "traceId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "schemaVersion": {
+                    "type": "string",
+                    "const": "v2"
+                  },
+                  "taskId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "completionVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64
+                  },
+                  "rootEventId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "contentPin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "contentVersionId",
+                      "contentEpoch",
+                      "snapshotId",
+                      "snapshotHash"
+                    ],
+                    "properties": {
+                      "contentVersionId": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "contentEpoch": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "snapshotId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "snapshotHash": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  "rulePin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "completionRuleVersion",
+                      "ruleDigest"
+                    ],
+                    "properties": {
+                      "completionRuleVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96
+                      },
+                      "ruleDigest": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  "outcomeDigest": {
+                    "type": "string",
+                    "pattern": "^[A-Fa-f0-9]{64}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "traceId",
+                  "schemaVersion",
+                  "itemAssessmentId",
+                  "attemptId",
+                  "logicalItemId",
+                  "contentPin",
+                  "rulePin",
+                  "objectivePolicyPin",
+                  "outcomeDigest"
+                ],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "traceId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "schemaVersion": {
+                    "type": "string",
+                    "const": "v2"
+                  },
+                  "itemAssessmentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "attemptId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "logicalItemId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "contentPin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "contentVersionId",
+                      "contentEpoch",
+                      "snapshotId",
+                      "snapshotHash"
+                    ],
+                    "properties": {
+                      "contentVersionId": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "contentEpoch": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "snapshotId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "snapshotHash": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  "rulePin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "answerRuleSetVersion",
+                      "answerRuleVersion",
+                      "ruleDigest",
+                      "completionRuleVersion",
+                      "assessmentVersion"
+                    ],
+                    "properties": {
+                      "answerRuleSetVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96
+                      },
+                      "answerRuleVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96
+                      },
+                      "ruleDigest": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{64}$"
+                      },
+                      "completionRuleVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96
+                      },
+                      "assessmentVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96
+                      }
+                    }
+                  },
+                  "objectivePolicyPin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "policyVersion",
+                      "policyDigest"
+                    ],
+                    "properties": {
+                      "policyVersion": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 96
+                      },
+                      "policyDigest": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  "outcomeDigest": {
+                    "type": "string",
+                    "pattern": "^[A-Fa-f0-9]{64}$"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "traceId",
+                  "schemaVersion",
+                  "projectionId",
+                  "masteryEpochId",
+                  "masteryEpochVersion",
+                  "projectionVersion",
+                  "sourceAssessmentEventId",
+                  "sourceItemAssessmentId",
+                  "contentPin",
+                  "masteryStageBefore",
+                  "masteryRuleVersion",
+                  "evidenceDigest"
+                ],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "traceId": {
+                    "type": "string",
+                    "minLength": 8,
+                    "maxLength": 128
+                  },
+                  "schemaVersion": {
+                    "type": "string",
+                    "const": "v2"
+                  },
+                  "projectionId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "masteryEpochId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "masteryEpochVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "projectionVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "sourceAssessmentEventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "sourceItemAssessmentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "contentPin": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "contentVersionId",
+                      "contentEpoch",
+                      "snapshotId",
+                      "snapshotHash"
+                    ],
+                    "properties": {
+                      "contentVersionId": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "contentEpoch": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "snapshotId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128
+                      },
+                      "snapshotHash": {
+                        "type": "string",
+                        "pattern": "^[A-Fa-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  "masteryStageBefore": {
+                    "type": "string",
+                    "enum": [
+                      "NEW",
+                      "LEARNING",
+                      "MASTERED",
+                      "CONSOLIDATED"
+                    ]
+                  },
+                  "masteryRuleVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96
+                  },
+                  "evidenceDigest": {
+                    "type": "string",
+                    "pattern": "^[A-Fa-f0-9]{64}$"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "M1014SettlementResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tupleKey",
+          "dedupeKey",
+          "lineageDigest",
+          "ledgerEntryId",
+          "rewardRuleVersion",
+          "decision",
+          "decisionReason"
+        ],
+        "properties": {
+          "tupleKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "lineageDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "ledgerEntryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPLIED",
+              "DUPLICATE",
+              "REJECTED",
+              "DENIED"
+            ]
+          },
+          "decisionReason": {
+            "type": "string",
+            "enum": [
+              "QUALIFIED",
+              "ALREADY_SETTLED",
+              "NOT_QUALIFIED",
+              "POLICY_DENIED",
+              "INVALID_LINEAGE"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "M1014GameCatalogItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gameCode",
+          "releasePhase",
+          "enabled",
+          "catalogVersion",
+          "ruleVersion"
+        ],
+        "properties": {
+          "gameCode": {
+            "type": "string",
+            "enum": [
+              "SENTENCE_TRAIN",
+              "WORD_MATCH",
+              "WORD_DEFENSE",
+              "WORD_PUZZLE",
+              "GRAMMAR_BLASTER",
+              "CATCH_MEANING"
+            ]
+          },
+          "releasePhase": {
+            "type": "string",
+            "enum": [
+              "P0",
+              "P1",
+              "LONG_TERM"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "ruleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "maxMinutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 180
+          },
+          "passAccuracyPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "passCompletionPercent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "oneOf": [
+          {
+            "title": "P0 Sentence Train",
+            "required": [
+              "gameCode",
+              "releasePhase",
+              "enabled"
+            ],
+            "properties": {
+              "gameCode": {
+                "const": "SENTENCE_TRAIN"
+              },
+              "releasePhase": {
+                "const": "P0"
+              },
+              "enabled": {
+                "const": true
+              }
+            }
+          },
+          {
+            "title": "P1 disabled Word Match",
+            "required": [
+              "gameCode",
+              "releasePhase",
+              "enabled"
+            ],
+            "properties": {
+              "gameCode": {
+                "const": "WORD_MATCH"
+              },
+              "releasePhase": {
+                "const": "P1"
+              },
+              "enabled": {
+                "const": false
+              }
+            }
+          },
+          {
+            "title": "P1 disabled Word Defense",
+            "required": [
+              "gameCode",
+              "releasePhase",
+              "enabled"
+            ],
+            "properties": {
+              "gameCode": {
+                "const": "WORD_DEFENSE"
+              },
+              "releasePhase": {
+                "const": "P1"
+              },
+              "enabled": {
+                "const": false
+              }
+            }
+          },
+          {
+            "title": "P1 disabled Word Puzzle",
+            "required": [
+              "gameCode",
+              "releasePhase",
+              "enabled"
+            ],
+            "properties": {
+              "gameCode": {
+                "const": "WORD_PUZZLE"
+              },
+              "releasePhase": {
+                "const": "P1"
+              },
+              "enabled": {
+                "const": false
+              }
+            }
+          },
+          {
+            "title": "Long term disabled Grammar Blaster",
+            "required": [
+              "gameCode",
+              "releasePhase",
+              "enabled"
+            ],
+            "properties": {
+              "gameCode": {
+                "const": "GRAMMAR_BLASTER"
+              },
+              "releasePhase": {
+                "const": "LONG_TERM"
+              },
+              "enabled": {
+                "const": false
+              }
+            }
+          },
+          {
+            "title": "Long term disabled Catch Meaning",
+            "required": [
+              "gameCode",
+              "releasePhase",
+              "enabled"
+            ],
+            "properties": {
+              "gameCode": {
+                "const": "CATCH_MEANING"
+              },
+              "releasePhase": {
+                "const": "LONG_TERM"
+              },
+              "enabled": {
+                "const": false
+              }
+            }
+          }
+        ],
+        "x-game-catalog": {
+          "owner": "gamification-service",
+          "phase1EnabledModes": [
+            "SENTENCE_TRAIN"
+          ],
+          "unknownModeDecision": "DENY",
+          "disabledModeDecision": "GAME_NOT_AVAILABLE",
+          "clientMayEnableMode": false
+        }
+      },
+      "M1014GameCatalog": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogVersion",
+          "policyVersion",
+          "items"
+        ],
+        "properties": {
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "policyVersion": {
+            "type": "string",
+            "const": "P1_GAME_CATALOG_V1"
+          },
+          "items": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 6,
+            "uniqueItems": true,
+            "x-unique-by": "gameCode",
+            "items": {
+              "$ref": "#/components/schemas/M1014GameCatalogItem"
+            }
+          }
+        }
+      },
+      "M1014GameSessionCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gameCode"
+        ],
+        "properties": {
+          "gameCode": {
+            "type": "string",
+            "const": "SENTENCE_TRAIN"
+          },
+          "performanceTier": {
+            "type": "string",
+            "enum": [
+              "Ultra",
+              "High",
+              "Medium",
+              "Performance"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotHash",
+          "ruleVersion",
+          "score",
+          "rewardAmount",
+          "enabled"
+        ]
+      },
+      "M1014GameEventRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "seq",
+          "itemCode",
+          "responseToken"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "itemCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "responseToken": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "x-server-validates": [
+          "itemCode",
+          "responseToken",
+          "sessionVersion",
+          "serverClock"
+        ],
+        "x-forbidden-client-fields": [
+          "score",
+          "correct",
+          "isCorrect",
+          "elapsedSeconds",
+          "answerText",
+          "rawAnswer",
+          "rewardAmount"
+        ]
+      },
+      "M1014GameSessionControlRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "commandReason": {
+            "type": "string",
+            "enum": [
+              "USER_COMMAND",
+              "CLIENT_RECOVERY",
+              "SYSTEM_TIMEOUT"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "elapsedSeconds",
+          "score",
+          "completedAt",
+          "rewardAmount",
+          "serverTime"
+        ]
+      },
+      "M1014GameSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "gameCode",
+          "status",
+          "catalogVersion",
+          "ruleVersion",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotHash",
+          "sessionVersion",
+          "startedAt",
+          "expiresAt"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "pattern": "^gsess_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "gameCode": {
+            "type": "string",
+            "const": "SENTENCE_TRAIN"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "RUNNING",
+              "PAUSED",
+              "FINISHED",
+              "EXPIRED",
+              "REJECTED"
+            ]
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "ruleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "contentVersionId": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "contentEpoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "snapshotHash": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "sessionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "challengeRefs": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "itemCode",
+                "sequence",
+                "responseToken"
+              ],
+              "properties": {
+                "itemCode": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "sequence": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "responseToken": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              }
+            }
+          },
+          "serverScore": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "x-server-derived": [
+          "sessionId",
+          "catalogVersion",
+          "ruleVersion",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotHash",
+          "status",
+          "serverScore",
+          "startedAt",
+          "expiresAt"
+        ]
+      },
+      "M1014GameEventReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "eventId",
+          "seq",
+          "accepted",
+          "sessionVersion",
+          "serverTime",
+          "replayed"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "pattern": "^gsess_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "eventId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "seq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "sessionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "M1014GameSessionResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "sessionId",
+          "status",
+          "serverScore",
+          "settlementState",
+          "completedAt",
+          "replayed"
+        ],
+        "properties": {
+          "sessionId": {
+            "type": "string",
+            "pattern": "^gsess_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "FINISHED",
+              "EXPIRED",
+              "REJECTED"
+            ]
+          },
+          "serverScore": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "settlementState": {
+            "type": "string",
+            "enum": [
+              "APPLIED",
+              "DUPLICATE",
+              "NOT_ELIGIBLE",
+              "DENIED"
+            ]
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "ledgerEntryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "nullable": true
+          },
+          "rewardGrantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "nullable": true
+          }
+        }
+      },
+      "M1014RoomSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roomId",
+          "spaceType",
+          "visibility",
+          "membership",
+          "minCapacity",
+          "maxCapacity",
+          "occupiedSeats",
+          "enabled",
+          "leaseMode",
+          "catalogVersion",
+          "policyVersion"
+        ],
+        "properties": {
+          "roomId": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "spaceType": {
+            "type": "string",
+            "enum": [
+              "PUBLIC_THEME_ROOM",
+              "INVITE_STUDY_ROOM",
+              "CHECKIN_GOAL_GROUP"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "INVITE_ONLY"
+            ]
+          },
+          "membership": {
+            "type": "string",
+            "enum": [
+              "THEME_TEMPLATE_MANAGED",
+              "OWNER_INVITED"
+            ]
+          },
+          "minCapacity": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 30
+          },
+          "maxCapacity": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 30
+          },
+          "occupiedSeats": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "leaseMode": {
+            "type": "string",
+            "enum": [
+              "REQUIRED",
+              "PROHIBITED"
+            ]
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "policyVersion": {
+            "type": "string",
+            "const": "P1_SOCIAL_SPACE_POLICY_V1"
+          }
+        },
+        "x-space-catalog": [
+          {
+            "spaceType": "PUBLIC_THEME_ROOM",
+            "visibility": "PUBLIC",
+            "membership": "THEME_TEMPLATE_MANAGED",
+            "minCapacity": 20,
+            "maxCapacity": 30,
+            "leaseMode": "REQUIRED",
+            "priority": "P0",
+            "enabled": true
+          },
+          {
+            "spaceType": "INVITE_STUDY_ROOM",
+            "visibility": "INVITE_ONLY",
+            "membership": "OWNER_INVITED",
+            "minCapacity": 2,
+            "maxCapacity": 8,
+            "leaseMode": "REQUIRED",
+            "priority": "P1",
+            "enabled": false
+          },
+          {
+            "spaceType": "CHECKIN_GOAL_GROUP",
+            "visibility": "INVITE_ONLY",
+            "membership": "OWNER_INVITED",
+            "minCapacity": 3,
+            "maxCapacity": 10,
+            "leaseMode": "PROHIBITED",
+            "priority": "P1",
+            "enabled": false
+          }
+        ]
+      },
+      "M1014RoomPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "conserved"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/M1014RoomSummary"
+            }
+          },
+          "conserved": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "M1014RoomDetails": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roomId",
+          "spaceType",
+          "visibility",
+          "membership",
+          "minCapacity",
+          "maxCapacity",
+          "occupiedSeats",
+          "enabled",
+          "leaseMode",
+          "catalogVersion",
+          "policyVersion",
+          "leasePolicyVersion",
+          "serverTime"
+        ],
+        "properties": {
+          "roomId": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "spaceType": {
+            "type": "string",
+            "enum": [
+              "PUBLIC_THEME_ROOM",
+              "INVITE_STUDY_ROOM",
+              "CHECKIN_GOAL_GROUP"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "INVITE_ONLY"
+            ]
+          },
+          "membership": {
+            "type": "string",
+            "enum": [
+              "THEME_TEMPLATE_MANAGED",
+              "OWNER_INVITED"
+            ]
+          },
+          "minCapacity": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 30
+          },
+          "maxCapacity": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 30
+          },
+          "occupiedSeats": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "leaseMode": {
+            "type": "string",
+            "enum": [
+              "REQUIRED",
+              "PROHIBITED"
+            ]
+          },
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "policyVersion": {
+            "type": "string",
+            "const": "P1_SOCIAL_SPACE_POLICY_V1"
+          },
+          "leasePolicyVersion": {
+            "type": "string",
+            "const": "P1_LEASE_POLICY_V1"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "visibleSeatCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          }
+        }
+      },
+      "M1014RoomJoinRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "preferredSeatIndex": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 30
+          }
+        },
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "leaseId",
+          "leaseExpiresAt",
+          "membership",
+          "capacity"
+        ]
+      },
+      "M1014RoomCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "leaseId": {
+            "type": "string",
+            "pattern": "^lease_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "leaseVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "DISCONNECT",
+              "RECOVER",
+              "RENEW",
+              "USER_LEFT"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "leaseExpiresAt",
+          "serverTime",
+          "focusMinutes",
+          "score"
+        ]
+      },
+      "M1014RoomState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "roomId",
+          "spaceType",
+          "roomVisibility",
+          "seatState",
+          "seatId",
+          "leaseId",
+          "leaseVersion",
+          "leaseExpiresAt",
+          "recoveryUntil",
+          "leasePolicyVersion",
+          "serverTime"
+        ],
+        "properties": {
+          "roomId": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "spaceType": {
+            "type": "string",
+            "enum": [
+              "PUBLIC_THEME_ROOM",
+              "INVITE_STUDY_ROOM",
+              "CHECKIN_GOAL_GROUP"
+            ]
+          },
+          "roomVisibility": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "INVITE_ONLY"
+            ]
+          },
+          "seatState": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "DISCONNECTED",
+              "RECOVERED",
+              "EXPIRED",
+              "LEFT",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "seatId": {
+            "type": "string",
+            "pattern": "^seat_[A-Za-z0-9._:-]{8,127}$",
+            "nullable": true
+          },
+          "leaseId": {
+            "type": "string",
+            "pattern": "^lease_[A-Za-z0-9._:-]{8,127}$",
+            "nullable": true
+          },
+          "leaseVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "leaseExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "recoveryUntil": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "leasePolicyVersion": {
+            "type": "string",
+            "const": "P1_LEASE_POLICY_V1"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "x-lease-policy": {
+          "ttlSeconds": 90,
+          "renewEverySeconds": 30,
+          "disconnectRecoverySeconds": 60,
+          "noLearningActivityReleaseSeconds": 300,
+          "focusDurationsMinutes": [
+            25,
+            45
+          ],
+          "serverClockOnly": true,
+          "clientMaySetLeaseExpiry": false
+        }
+      },
+      "M1014FocusCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "durationMinutes",
+          "focusKind",
+          "focusTagCode"
+        ],
+        "properties": {
+          "durationMinutes": {
+            "type": "integer",
+            "enum": [
+              25,
+              45
+            ]
+          },
+          "focusKind": {
+            "type": "string",
+            "enum": [
+              "FOCUS",
+              "REVIEW"
+            ]
+          },
+          "focusTagCode": {
+            "type": "string",
+            "enum": [
+              "VOCABULARY",
+              "LISTENING",
+              "READING",
+              "GRAMMAR",
+              "SPEAKING",
+              "WRITING"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "startedAt",
+          "endsAt",
+          "elapsedSeconds",
+          "heartbeat",
+          "clientDurationMinutes",
+          "offlineSuccess",
+          "focusMinutes",
+          "score",
+          "rewardAmount"
+        ]
+      },
+      "M1014FocusUpdateCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "focusId",
+          "expectedFocusVersion",
+          "action"
+        ],
+        "properties": {
+          "focusId": {
+            "type": "string",
+            "pattern": "^focus_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "expectedFocusVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "PAUSE",
+              "RESUME",
+              "FINISH",
+              "ABORT"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "elapsedSeconds",
+          "completedAt",
+          "heartbeat",
+          "clientDurationMinutes",
+          "offlineSuccess",
+          "focusMinutes",
+          "score",
+          "rewardAmount"
+        ]
+      },
+      "M1014FocusSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "focusId",
+          "roomId",
+          "seatId",
+          "leaseId",
+          "leaseVersion",
+          "focusVersion",
+          "state",
+          "durationMinutes",
+          "creditedMinutes",
+          "startedAt",
+          "endsAt",
+          "serverTime"
+        ],
+        "properties": {
+          "focusId": {
+            "type": "string",
+            "pattern": "^focus_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "roomId": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "seatId": {
+            "type": "string",
+            "pattern": "^seat_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "leaseId": {
+            "type": "string",
+            "pattern": "^lease_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "leaseVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "focusVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "FOCUSING",
+              "PAUSED",
+              "COMPLETED",
+              "ABORTED",
+              "AUTO_RELEASED"
+            ]
+          },
+          "durationMinutes": {
+            "type": "integer",
+            "enum": [
+              25,
+              45
+            ]
+          },
+          "creditedMinutes": {
+            "type": "integer",
+            "enum": [
+              0,
+              25,
+              45
+            ]
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "serverTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-server-derived": [
+          "leaseVersion",
+          "focusVersion",
+          "durationMinutes",
+          "creditedMinutes",
+          "startedAt",
+          "endsAt",
+          "serverTime",
+          "state"
+        ],
+        "oneOf": [
+          {
+            "title": "Server-qualified completed focus",
+            "required": [
+              "state",
+              "creditedMinutes"
+            ],
+            "properties": {
+              "state": {
+                "const": "COMPLETED"
+              },
+              "creditedMinutes": {
+                "enum": [
+                  25,
+                  45
+                ]
+              }
+            }
+          },
+          {
+            "title": "Non-qualified focus state",
+            "required": [
+              "state",
+              "creditedMinutes"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "FOCUSING",
+                  "PAUSED",
+                  "ABORTED",
+                  "AUTO_RELEASED"
+                ]
+              },
+              "creditedMinutes": {
+                "const": 0
+              }
+            }
+          }
+        ],
+        "x-p1r-cross-field-invariants": [
+          "state=COMPLETED => creditedMinutes=durationMinutes",
+          "state!=COMPLETED => creditedMinutes=0"
+        ],
+        "x-focus-credit-policy": {
+          "policyVersion": "P1_FOCUS_CREDIT_V1",
+          "creditedMetric": "FOCUS_MINUTES",
+          "qualifiedState": "COMPLETED",
+          "creditedMinutesSource": "durationMinutes",
+          "completionCondition": "SERVER_TIME_AT_OR_AFTER_ENDS_AT_WITH_ACTIVE_LEASE_AND_MATCHING_FOCUS_VERSION",
+          "nonQualifiedStates": [
+            "FOCUSING",
+            "PAUSED",
+            "ABORTED",
+            "AUTO_RELEASED"
+          ],
+          "nonQualifiedCreditMinutes": 0,
+          "clientFinishActionIsProof": false,
+          "clientHeartbeatAuthority": "NONE",
+          "offlineSuccessAuthority": "NONE",
+          "rewardTrigger": "PROHIBITED"
+        }
+      },
+      "M1014PresetInteraction": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "presetCode",
+          "clientEventId"
+        ],
+        "properties": {
+          "presetCode": {
+            "type": "string",
+            "enum": [
+              "CHEER_UP",
+              "STUDY_TOGETHER",
+              "CONGRATS",
+              "TRY_AGAIN",
+              "TONIGHT_20_MIN"
+            ]
+          },
+          "targetSeatId": {
+            "type": "string",
+            "pattern": "^seat_[A-Za-z0-9._:-]{8,127}$",
+            "nullable": true
+          },
+          "clientEventId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          }
+        },
+        "x-forbidden-client-fields": [
+          "text",
+          "message",
+          "content",
+          "url",
+          "attachment",
+          "directMessage"
+        ]
+      },
+      "M1014InteractionResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "roomId",
+          "presetCode",
+          "state",
+          "deliveredAt"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "roomId": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "presetCode": {
+            "type": "string",
+            "enum": [
+              "CHEER_UP",
+              "STUDY_TOGETHER",
+              "CONGRATS",
+              "TRY_AGAIN",
+              "TONIGHT_20_MIN"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "const": "DELIVERED"
+          },
+          "deliveredAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1014LeaderboardEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rank",
+          "displayMode",
+          "score",
+          "isSelf"
+        ],
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "displayMode": {
+            "type": "string",
+            "enum": [
+              "NICKNAME",
+              "ANONYMOUS",
+              "OPT_OUT"
+            ]
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "nullable": true
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "isSelf": {
+            "type": "boolean"
+          }
+        },
+        "x-server-derived": [
+          "rank",
+          "score",
+          "displayMode",
+          "displayName"
+        ]
+      },
+      "M1014Leaderboard": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "snapshotId",
+          "metric",
+          "period",
+          "timezoneId",
+          "projectionVersion",
+          "ruleVersion",
+          "tieBreakVersion",
+          "snapshotAt",
+          "watermark",
+          "auditRef",
+          "entries",
+          "me",
+          "delayed"
+        ],
+        "properties": {
+          "snapshotId": {
+            "type": "string",
+            "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "metric": {
+            "type": "string",
+            "enum": [
+              "FOCUS_MINUTES",
+              "MASTERED_WORDS",
+              "XP"
+            ]
+          },
+          "period": {
+            "type": "string",
+            "enum": [
+              "DAY",
+              "WEEK"
+            ]
+          },
+          "timezoneId": {
+            "type": "string",
+            "const": "Asia/Shanghai"
+          },
+          "projectionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "ruleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "tieBreakVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "snapshotAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "watermark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "entries": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/M1014LeaderboardEntry"
+            }
+          },
+          "me": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "present",
+              "visibility"
+            ],
+            "properties": {
+              "present": {
+                "type": "boolean"
+              },
+              "visibility": {
+                "type": "string",
+                "enum": [
+                  "NICKNAME",
+                  "ANONYMOUS",
+                  "OPT_OUT"
+                ]
+              },
+              "score": {
+                "type": "integer",
+                "minimum": 0,
+                "nullable": true
+              }
+            }
+          },
+          "delayed": {
+            "type": "boolean"
+          }
+        },
+        "x-leaderboard-policy": {
+          "sourceFacts": "SERVER_SETTLED_ONLY",
+          "clientMaySetScore": false,
+          "snapshotRequired": true,
+          "projectionVersionRequired": true,
+          "tieBreakVersionRequired": true,
+          "metricSources": [
+            {
+              "metric": "FOCUS_MINUTES",
+              "sourceKind": "OWNER_LOCAL_SETTLED_FACT",
+              "owner": "social-service",
+              "factSchema": "M1014FocusSession",
+              "qualificationPolicy": "P1_FOCUS_CREDIT_V1"
+            },
+            {
+              "metric": "MASTERED_WORDS",
+              "sourceKind": "CANONICAL_EVENT",
+              "producerService": "learning-service",
+              "eventName": "learning.mastery.projected.v2",
+              "consumerGroup": "cg.social-from-learning.v1",
+              "projectionSchema": "M1014LeaderboardMasteryFact"
+            },
+            {
+              "metric": "XP",
+              "sourceKind": "CANONICAL_EVENT",
+              "producerService": "gamification-service",
+              "eventName": "gamification.xp.ledger_posted.v2",
+              "consumerGroup": "cg.social-from-gamification.v1",
+              "projectionSchema": "M1014LeaderboardXpFact"
+            }
+          ],
+          "privacyModes": [
+            "NICKNAME",
+            "ANONYMOUS",
+            "OPT_OUT"
+          ],
+          "defaultTimezone": "Asia/Shanghai"
+        }
+      },
+      "M1014VisibilityCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "leaderboardVisibility",
+          "roomVisibility"
+        ],
+        "properties": {
+          "leaderboardVisibility": {
+            "type": "string",
+            "enum": [
+              "NICKNAME",
+              "ANONYMOUS",
+              "OPT_OUT"
+            ]
+          },
+          "roomVisibility": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "INVITE_ONLY"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "rank",
+          "score",
+          "tenantId",
+          "ownerId"
+        ]
+      },
+      "M1014Visibility": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "leaderboardVisibility",
+          "roomVisibility",
+          "policyVersion",
+          "updatedAt"
+        ],
+        "properties": {
+          "leaderboardVisibility": {
+            "type": "string",
+            "enum": [
+              "NICKNAME",
+              "ANONYMOUS",
+              "OPT_OUT"
+            ]
+          },
+          "roomVisibility": {
+            "type": "string",
+            "enum": [
+              "PUBLIC",
+              "INVITE_ONLY"
+            ]
+          },
+          "policyVersion": {
+            "type": "string",
+            "const": "P1_SOCIAL_SPACE_POLICY_V1"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1014ReportCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "targetType",
+          "targetRef",
+          "reasonCode"
+        ],
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "SEAT",
+              "ROOM",
+              "PRESET_INTERACTION"
+            ]
+          },
+          "targetRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "HARASSMENT",
+              "SPAM",
+              "INAPPROPRIATE_BEHAVIOR",
+              "SAFETY",
+              "IMPERSONATION"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "text",
+          "message",
+          "content",
+          "html",
+          "url",
+          "attachment",
+          "image",
+          "audio",
+          "directMessage",
+          "reporterId",
+          "tenantId",
+          "caseId",
+          "state"
+        ]
+      },
+      "M1014Report": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reportId",
+          "roomId",
+          "reporterId",
+          "tenantId",
+          "caseId",
+          "targetType",
+          "targetRef",
+          "reasonCode",
+          "state",
+          "moderationPolicyVersion",
+          "auditRef",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "roomId": {
+            "type": "string",
+            "pattern": "^room_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "reporterId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "caseId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "targetType": {
+            "type": "string",
+            "enum": [
+              "SEAT",
+              "ROOM",
+              "PRESET_INTERACTION"
+            ]
+          },
+          "targetRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "HARASSMENT",
+              "SPAM",
+              "INAPPROPRIATE_BEHAVIOR",
+              "SAFETY",
+              "IMPERSONATION"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "SUBMITTED",
+              "TRIAGED",
+              "RESOLVED",
+              "DISMISSED"
+            ]
+          },
+          "moderationPolicyVersion": {
+            "type": "string",
+            "const": "P1_MODERATION_POLICY_V1"
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-server-derived": [
+          "reporterId",
+          "tenantId",
+          "caseId",
+          "state",
+          "auditRef",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "M1014TrustedSocialEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventId",
+          "eventName",
+          "schemaVersion",
+          "aggregateId",
+          "occurredAt",
+          "actorId",
+          "traceId",
+          "requestId",
+          "dedupeKey",
+          "sourceService",
+          "payload"
+        ],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "eventName": {
+            "type": "string",
+            "enum": [
+              "learning.mastery.projected.v2",
+              "gamification.xp.ledger_posted.v2"
+            ]
+          },
+          "schemaVersion": {
+            "type": "string",
+            "const": "v2"
+          },
+          "aggregateId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 255
+          },
+          "sourceService": {
+            "type": "string",
+            "enum": [
+              "learning-service",
+              "gamification-service"
+            ]
+          },
+          "payload": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/M1014LeaderboardMasteryFact"
+              },
+              {
+                "$ref": "#/components/schemas/M1014LeaderboardXpFact"
+              }
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "title": "Mastered word leaderboard fact",
+            "required": [
+              "sourceService",
+              "eventName",
+              "schemaVersion",
+              "payload"
+            ],
+            "properties": {
+              "sourceService": {
+                "const": "learning-service"
+              },
+              "eventName": {
+                "const": "learning.mastery.projected.v2"
+              },
+              "schemaVersion": {
+                "const": "v2"
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1014LeaderboardMasteryFact"
+              }
+            }
+          },
+          {
+            "title": "XP leaderboard fact",
+            "required": [
+              "sourceService",
+              "eventName",
+              "schemaVersion",
+              "payload"
+            ],
+            "properties": {
+              "sourceService": {
+                "const": "gamification-service"
+              },
+              "eventName": {
+                "const": "gamification.xp.ledger_posted.v2"
+              },
+              "schemaVersion": {
+                "const": "v2"
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1014LeaderboardXpFact"
+              }
+            }
+          }
+        ],
+        "x-p1r-cross-field-invariants": [
+          "sourceService=MUST_EQUAL_VERIFIED_WORKLOAD_IDENTITY_SERVICE",
+          "actorId=MUST_EQUAL_PAYLOAD_PRINCIPAL_ID",
+          "eventName=learning.mastery.projected.v2 => sourceService=learning-service AND aggregateId=payload.projectionId",
+          "eventName=gamification.xp.ledger_posted.v2 => sourceService=gamification-service AND aggregateId=payload.ledgerEntryId"
+        ],
+        "x-trusted-event-boundary": {
+          "transport": "KAFKA_COMPATIBLE_OUTBOX_ONLY",
+          "clientMayProduce": false,
+          "sourceServiceBinding": "MUST_EQUAL_VERIFIED_WORKLOAD_IDENTITY_SERVICE",
+          "unknownEventDecision": "DENY",
+          "unknownFieldDecision": "DENY",
+          "acceptedBindings": [
+            {
+              "producerService": "learning-service",
+              "eventName": "learning.mastery.projected.v2",
+              "schemaVersion": "v2",
+              "consumerGroup": "cg.social-from-learning.v1",
+              "metric": "MASTERED_WORDS"
+            },
+            {
+              "producerService": "gamification-service",
+              "eventName": "gamification.xp.ledger_posted.v2",
+              "schemaVersion": "v2",
+              "consumerGroup": "cg.social-from-gamification.v1",
+              "metric": "XP"
+            }
+          ]
+        }
+      },
+      "M1014LeaderboardMasteryFact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tenantId",
+          "principalId",
+          "projectionId",
+          "logicalItemId",
+          "masteryEpochId",
+          "masteryEpochVersion",
+          "projectionVersion",
+          "masteryStageBefore",
+          "masteryStageAfter",
+          "evidenceDigest",
+          "masteryRuleVersion",
+          "masteryFactWatermark",
+          "projectedAt"
+        ],
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+          },
+          "principalId": {
+            "type": "string",
+            "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+          },
+          "projectionId": {
+            "type": "string",
+            "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "logicalItemId": {
+            "type": "string",
+            "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "masteryEpochId": {
+            "type": "string",
+            "pattern": "^mep_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "masteryEpochVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "projectionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "masteryStageBefore": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING"
+            ]
+          },
+          "masteryStageAfter": {
+            "type": "string",
+            "const": "MASTERED"
+          },
+          "evidenceDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "masteryRuleVersion": {
+            "type": "string",
+            "const": "P1_MASTERY_V1"
+          },
+          "masteryFactWatermark": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "projectedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-server-derived": [
+          "tenantId",
+          "principalId",
+          "projectionId",
+          "logicalItemId",
+          "masteryEpochId",
+          "masteryEpochVersion",
+          "projectionVersion",
+          "masteryStageBefore",
+          "masteryStageAfter",
+          "evidenceDigest",
+          "masteryRuleVersion",
+          "masteryFactWatermark",
+          "projectedAt"
+        ],
+        "x-source-event": {
+          "producerService": "learning-service",
+          "eventName": "learning.mastery.projected.v2",
+          "consumerGroup": "cg.social-from-learning.v1",
+          "qualification": "FIRST_TRANSITION_TO_MASTERED_ONLY"
+        }
+      },
+      "M1014LeaderboardXpFact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ledgerEntryId",
+          "principalId",
+          "tenantId",
+          "entryType",
+          "amount",
+          "currency",
+          "tupleKey",
+          "dedupeKey",
+          "lineageDigest",
+          "rewardRuleVersion",
+          "sourceEventId",
+          "sourceEventName",
+          "createdAt",
+          "auditRef"
+        ],
+        "properties": {
+          "ledgerEntryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "principalId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "entryType": {
+            "type": "string",
+            "enum": [
+              "CREDIT",
+              "DEBIT",
+              "COMPENSATION"
+            ]
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "const": "NON_CASH_PLATFORM_CREDIT"
+          },
+          "tupleKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "lineageDigest": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "rewardRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "sourceEventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sourceEventName": {
+            "type": "string",
+            "enum": [
+              "learning.task.completed.v2",
+              "assessment.item.assessed.v2",
+              "learning.mastery.projected.v2"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        },
+        "x-server-derived": [
+          "ledgerEntryId",
+          "principalId",
+          "tenantId",
+          "entryType",
+          "amount",
+          "currency",
+          "tupleKey",
+          "dedupeKey",
+          "lineageDigest",
+          "rewardRuleVersion",
+          "sourceEventId",
+          "sourceEventName",
+          "createdAt",
+          "auditRef"
+        ],
+        "x-source-event": {
+          "producerService": "gamification-service",
+          "eventName": "gamification.xp.ledger_posted.v2",
+          "consumerGroup": "cg.social-from-gamification.v1",
+          "qualification": "APPEND_ONLY_LEDGER_ENTRY_WITH_ENTRY_TYPE_SIGN"
         }
       }
     },

@@ -91,6 +91,7 @@ export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/b6-platform-quality.events.json', 'platform.build.registered.v1 platform.compatibility.checked.v1 platform.performance.degraded.v1 quality.e2e.completed.v1 quality.security.scan_completed.v1 quality.reliability.completed.v1 observability.alert.raised.v1 data.backup.drill_completed.v1 release.gate.evaluated.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b8-auth-iam.events.json', 'auth.account.registered.v1 auth.login.succeeded.v1 auth.principal.mapped.v1 auth.session.rotated.v1 auth.session.replay_detected.v1 auth.device.revoked.v1 iam.session.revoked.v1 auth.consent.updated.v1 auth.adult_gate.rejected.v1 iam.policy.version_changed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b9-learner-content.events.json', 'learner.profile.updated.v1 learner.target.updated.v1 learner.first_day.projected.v1 content.version.submitted.v1 content.version.reviewed.v1 content.version.published.v1 content.version.unpublished.v1 content.version.rolled_back.v1 content.public_projection.invalidated.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json', 'learning.task.completed.v2 gamification.xp.ledger_posted.v2 gamification.reward.granted.v2 study_room.seat_joined.v2 study_room.focus_started.v2 study_room.seat_left.v2 leaderboard.snapshot_published.v2 social.report.created.v2'),
 ]);
 
 export const EXPECTED_FORBIDDEN_PAYLOAD_FIELD_PATTERNS = [

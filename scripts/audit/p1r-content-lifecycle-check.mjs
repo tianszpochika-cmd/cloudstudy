@@ -101,13 +101,13 @@ const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-BIND-CONT-001',
   'EVENT-GAP-BIND-ASM-001',
   'EVENT-GAP-BIND-LRN-001',
+  'EVENT-GAP-BIND-GAM-001',
+  'EVENT-GAP-BIND-SOC-001',
 ];
 const EXPECTED_GLOBAL_PLANNED_EVENT_GAPS = [
   'EVENT-GAP-IAM-001',
   'EVENT-GAP-BIND-IAM-001',
   'EVENT-GAP-BIND-IAM-002',
-  'EVENT-GAP-BIND-GAM-001',
-  'EVENT-GAP-BIND-SOC-001',
   'EVENT-GAP-BIND-NOTIF-001',
   'EVENT-GAP-BIND-PRIV-001',
   'EVENT-GAP-USR-DEL-001',
@@ -939,6 +939,11 @@ function checkEventGovernance(input, errors) {
     const closure = closureById.get(gapId);
     add(errors, closure && closure.status === 'D2_CONTRACT_CLOSED', gapId + ' must be D2_CONTRACT_CLOSED only under the frozen P1R-M1-012 successor');
     exact(errors, closure && closure.d2ClosureTasks, ['P1R-M1-012', 'P1R-M1-006'], gapId + ' P1R-M1-012 closure tasks');
+  }
+  for (const gapId of ['EVENT-GAP-BIND-GAM-001', 'EVENT-GAP-BIND-SOC-001']) {
+    const closure = closureById.get(gapId);
+    add(errors, closure && closure.status === 'D2_CONTRACT_CLOSED', gapId + ' must be D2_CONTRACT_CLOSED only under the frozen P1R-M1-014 successor');
+    exact(errors, closure && closure.d2ClosureTasks, ['P1R-M1-006', 'P1R-M1-014'], gapId + ' P1R-M1-014 closure tasks');
   }
   const actualClosed = (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
     .filter(function (closure) { return closure.status === 'D2_CONTRACT_CLOSED'; })

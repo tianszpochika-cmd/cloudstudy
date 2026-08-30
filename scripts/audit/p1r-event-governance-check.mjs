@@ -32,9 +32,17 @@ const EXPECTED_CANONICAL_EVENTS = [
   'content.version.rolled_back.v1',
   'content.version.submitted.v1',
   'content.version.unpublished.v1',
+  'gamification.reward.granted.v2',
+  'gamification.xp.ledger_posted.v2',
+  'leaderboard.snapshot_published.v2',
   'learner.target.updated.v1',
   'learning.mastery.projected.v2',
   'learning.review.scheduled.v2',
+  'learning.task.completed.v2',
+  'social.report.created.v2',
+  'study_room.focus_started.v2',
+  'study_room.seat_joined.v2',
+  'study_room.seat_left.v2',
   'workflow.outbox.published.v1',
   'workflow.event.delivery_failed.v1',
   'workflow.event.dead_lettered.v1',
@@ -70,6 +78,8 @@ const D2_CONTRACT_CLOSED_GAPS = new Set([
   'EVENT-GAP-BIND-CONT-001',
   'EVENT-GAP-BIND-ASM-001',
   'EVENT-GAP-BIND-LRN-001',
+  'EVENT-GAP-BIND-GAM-001',
+  'EVENT-GAP-BIND-SOC-001',
 ]);
 const EXPECTED_GAP_CLOSURE_DETAILS = {
   'EVENT-GAP-IAM-001': { family: 'EVENT-GAP-IAM', d2ClosureTasks: ['P1R-M1-003', 'P1R-M1-006'] },
@@ -94,6 +104,145 @@ const REQUIRED_ENVELOPE = [
   'aggregateId', 'actorId', 'traceId', 'requestId', 'schemaVersion', 'dedupeKey', 'payload',
 ];
 const REQUIRED_CORRELATION = ['eventId', 'aggregateId', 'requestId', 'traceId', 'dedupeKey'];
+const TRUSTED_COMPLETION_TUPLE_FIELDS = ['producerService', 'eventName', 'schemaVersion', 'qualifiedPredicate', 'rewardRuleVersion'];
+const TRUSTED_COMPLETION_LINEAGE_FIELDS = ['eventId', 'traceId', 'schemaVersion', 'contentPin'];
+const TRUSTED_COMPLETION_DERIVED_FIELD_MAPPINGS = {
+  rewardRuleVersion: {
+    kind: 'SERVER_SELECTED_GAMIFICATION_RULE_VERSION',
+    owner: 'gamification-service',
+    clientSupplied: false,
+  },
+};
+const TRUSTED_COMPLETION_RECEIPT_FIELDS = ['tupleKey', 'dedupeKey', 'lineageDigest', 'ledgerEntryId', 'rewardRuleVersion', 'decision', 'decisionReason'];
+const EXPECTED_TRUSTED_COMPLETION_PROFILES = [
+  {
+    id: 'TASK_COMPLETED',
+    producerService: 'learning-service',
+    eventName: 'learning.task.completed.v2',
+    schemaVersion: 'v2',
+    qualifiedPredicate: { taskStatus: 'COMPLETED', completionFact: 'SERVER_SETTLED' },
+    lineageFields: ['eventId', 'traceId', 'schemaVersion', 'taskId', 'completionVersion', 'rootEventId', 'contentPin', 'rulePin', 'outcomeDigest'],
+    lineageFieldOrigins: {
+      eventId: 'ENVELOPE',
+      traceId: 'ENVELOPE',
+      schemaVersion: 'ENVELOPE',
+      taskId: 'PAYLOAD',
+      completionVersion: 'PAYLOAD',
+      rootEventId: 'PAYLOAD',
+      contentPin: 'PAYLOAD',
+      rulePin: 'PAYLOAD',
+      outcomeDigest: 'PAYLOAD',
+    },
+    dedupeFields: ['taskId', 'completionVersion', 'rootEventId', 'rewardRuleVersion'],
+    dedupeFieldOrigins: {
+      taskId: 'PAYLOAD',
+      completionVersion: 'PAYLOAD',
+      rootEventId: 'PAYLOAD',
+      rewardRuleVersion: 'DERIVED:rewardRuleVersion',
+    },
+    maturity: 'FUTURE_D2_CONTRACT_ONLY',
+  },
+  {
+    id: 'ASSESSMENT_ITEM_CORRECT',
+    producerService: 'assessment-service',
+    eventName: 'assessment.item.assessed.v2',
+    schemaVersion: 'v2',
+    qualifiedPredicate: { objectiveOutcome: 'CORRECT_VERIFIED', objectiveCorrect: true, guessSignal: false },
+    lineageFields: ['eventId', 'traceId', 'schemaVersion', 'itemAssessmentId', 'attemptId', 'logicalItemId', 'contentPin', 'rulePin', 'objectivePolicyPin', 'outcomeDigest'],
+    lineageFieldOrigins: {
+      eventId: 'ENVELOPE',
+      traceId: 'ENVELOPE',
+      schemaVersion: 'ENVELOPE',
+      itemAssessmentId: 'PAYLOAD',
+      attemptId: 'PAYLOAD',
+      logicalItemId: 'PAYLOAD',
+      contentPin: 'PAYLOAD',
+      rulePin: 'PAYLOAD',
+      objectivePolicyPin: 'PAYLOAD',
+      outcomeDigest: 'PAYLOAD',
+    },
+    dedupeFields: ['itemAssessmentId', 'eventId', 'rewardRuleVersion'],
+    dedupeFieldOrigins: {
+      itemAssessmentId: 'PAYLOAD',
+      eventId: 'ENVELOPE',
+      rewardRuleVersion: 'DERIVED:rewardRuleVersion',
+    },
+    maturity: 'CANONICAL_D2_INPUT_ONLY',
+  },
+  {
+    id: 'MASTERY_MILESTONE',
+    producerService: 'learning-service',
+    eventName: 'learning.mastery.projected.v2',
+    schemaVersion: 'v2',
+    qualifiedPredicate: {
+      masteryStageAfter: ['MASTERED', 'CONSOLIDATED'],
+      d7Gate: { result: 'PASSED', reasonCode: 'D7_PASSED' },
+      stateTransition: {
+        kind: 'DERIVED_MASTERY_STAGE_CHANGE',
+        inputFields: ['masteryStageBefore', 'masteryStageAfter'],
+        expression: 'masteryStageBefore != masteryStageAfter',
+        clientSupplied: false,
+      },
+    },
+    lineageFields: ['eventId', 'traceId', 'schemaVersion', 'projectionId', 'masteryEpochId', 'masteryEpochVersion', 'projectionVersion', 'sourceAssessmentEventId', 'sourceItemAssessmentId', 'contentPin', 'masteryStageBefore', 'masteryRuleVersion', 'evidenceDigest'],
+    lineageFieldOrigins: {
+      eventId: 'ENVELOPE',
+      traceId: 'ENVELOPE',
+      schemaVersion: 'ENVELOPE',
+      projectionId: 'PAYLOAD',
+      masteryEpochId: 'PAYLOAD',
+      masteryEpochVersion: 'PAYLOAD',
+      projectionVersion: 'PAYLOAD',
+      sourceAssessmentEventId: 'PAYLOAD',
+      sourceItemAssessmentId: 'PAYLOAD',
+      contentPin: 'PAYLOAD',
+      masteryStageBefore: 'PAYLOAD',
+      masteryRuleVersion: 'PAYLOAD',
+      evidenceDigest: 'PAYLOAD',
+    },
+    dedupeFields: ['masteryEpochId', 'projectionVersion', 'rewardRuleVersion'],
+    dedupeFieldOrigins: {
+      masteryEpochId: 'PAYLOAD',
+      projectionVersion: 'PAYLOAD',
+      rewardRuleVersion: 'DERIVED:rewardRuleVersion',
+    },
+    maturity: 'CANONICAL_D2_INPUT_ONLY',
+  },
+];
+const TRUSTED_COMPLETION_REJECTED_EVENT_NAMES = [
+  'learning.task.completed.v1',
+  'learning.review.scheduled.v2',
+  'assessment.item.assessed.v1',
+  'learning.mastery.projected.v1',
+];
+const TRUSTED_COMPLETION_REJECTED_CANONICAL_EVENTS = [
+  {
+    eventName: 'learning.review.scheduled.v2',
+    producerService: 'learning-service',
+    schemaVersion: 'v2',
+    classification: 'CANONICAL_D2_QUEUE_FACT_REJECTED_FOR_REWARD',
+    reason: 'QUEUE_FACT_NOT_A_COMPLETION',
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+  },
+];
+const TRUSTED_COMPLETION_REJECTION_REASONS = {
+  'learning.task.completed.v1': 'HISTORICAL_CANDIDATE_NOT_CANONICAL',
+  'learning.review.scheduled.v2': 'QUEUE_FACT_NOT_A_COMPLETION',
+  'assessment.item.assessed.v1': 'HISTORICAL_OR_UNPINNED',
+  'learning.mastery.projected.v1': 'HISTORICAL_OR_UNPINNED',
+};
+const TRUSTED_COMPLETION_ROUTING = {
+  'assessment.item.assessed.v2': ['cg.learning-from-assessment.v1', 'cg.gamification-from-assessment.v1', 'cg.workflow-from-assessment.v1'],
+  'learning.task.completed.v2': ['cg.gamification-from-learning.v1', 'cg.workflow-from-learning.v1'],
+  'learning.mastery.projected.v2': ['cg.assessment-from-learning.v1', 'cg.gamification-from-learning.v1', 'cg.social-from-learning.v1', 'cg.workflow-from-learning.v1'],
+};
+const TRUSTED_COMPLETION_DERIVED_ORIGIN_PREFIX = 'DERIVED:';
+const MASTERY_MILESTONE_DERIVED_TRANSITION = {
+  kind: 'DERIVED_MASTERY_STAGE_CHANGE',
+  inputFields: ['masteryStageBefore', 'masteryStageAfter'],
+  expression: 'masteryStageBefore != masteryStageAfter',
+  clientSupplied: false,
+};
 const PLACEMENT_COMPLETED_EVENT = 'assessment.placement.completed.v1';
 const PLACEMENT_COMMON_REQUIRED = [
   'tenantId', 'principalId', 'sessionId', 'stateVersion', 'sessionSnapshotDigest',
@@ -291,7 +440,7 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, governance.traceability?.sourceRefs?.includes('INT-P1-017'), 'event governance must trace to INT-P1-017');
 
   add(errors, stableJson(governance.fragmentInventory) === stableJson(EXPECTED_EVENT_FRAGMENT_INVENTORY), 'fragmentInventory must exactly match the frozen M1-006 source inventory');
-  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 15, 'fragmentInventory must contain the exact 15 governed fragment records');
+  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 16, 'fragmentInventory must contain the exact 16 governed fragment records');
   const inventoryPaths = [];
   for (const [index, fragment] of (governance.fragmentInventory ?? []).entries()) {
     exactKeys(errors, fragment, ['path', 'eventNames'], `fragmentInventory[${index}]`);
@@ -323,8 +472,8 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_GAP_CLOSURES), 'plannedClosures must cover the exact M1-006 event gap registry');
   add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_GAP_CLOSURE_ORDER), 'plannedClosures must preserve the canonical gap registry order');
   const closureCounts = countEventGapClosures(governance.plannedClosures);
-  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly nine PLANNED event gaps');
-  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly seven D2_CONTRACT_CLOSED event gaps');
+  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly seven PLANNED event gaps');
+  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly nine D2_CONTRACT_CLOSED event gaps');
 }
 
 function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors) {
@@ -403,7 +552,155 @@ function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEven
   add(errors, event['x-kafka'] === undefined, `${label} must not retain duplicate x-kafka metadata`);
 }
 
-export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, fragments = [], checkProjection = true } = {}) {
+function payloadFieldSchema(payload, field) {
+  return payload?.properties?.[field];
+}
+
+function isRequiredPayloadField(payload, field) {
+  return Array.isArray(payload?.required) && payload.required.includes(field) && isRecord(payloadFieldSchema(payload, field));
+}
+
+function isEnvelopeField(field) {
+  return REQUIRED_ENVELOPE.includes(field);
+}
+
+function checkProfileFieldOrigins({ fields, origins, payload, derivedFieldMappings, allowDerived, label, kind }, errors) {
+  const fieldSet = [...fields].sort();
+  const originKeys = Object.keys(origins ?? {}).sort();
+  add(errors, JSON.stringify(originKeys) === JSON.stringify(fieldSet), `${label} ${kind} field-origin mapping must cover exactly its declared fields`);
+  for (const field of fields) {
+    const origin = origins?.[field];
+    if (origin === 'ENVELOPE') {
+      add(errors, isEnvelopeField(field), `${label} ${kind} field ${field} marked ENVELOPE must be a canonical envelope field`);
+      continue;
+    }
+    if (origin === 'PAYLOAD') {
+      add(errors, isRequiredPayloadField(payload, field), `${label} ${kind} field ${field} marked PAYLOAD must be a required canonical payload property`);
+      continue;
+    }
+    const derivedField = typeof origin === 'string' && origin.startsWith(TRUSTED_COMPLETION_DERIVED_ORIGIN_PREFIX)
+      ? origin.slice(TRUSTED_COMPLETION_DERIVED_ORIGIN_PREFIX.length)
+      : undefined;
+    const isExplicitServerDerived = allowDerived
+      && derivedField === field
+      && stableJson(derivedFieldMappings?.[derivedField]) === stableJson(TRUSTED_COMPLETION_DERIVED_FIELD_MAPPINGS[derivedField]);
+    add(errors, isExplicitServerDerived, `${label} ${kind} field ${field} must be canonical ENVELOPE/PAYLOAD or the one explicit server-derived mapping`);
+  }
+}
+
+function schemaAllowsExactValue(schema, expected) {
+  if (!isRecord(schema)) return false;
+  if (isRecord(expected)) {
+    if (!isRecord(schema.properties)) return false;
+    if (!Array.isArray(schema.required) || !Object.keys(expected).every((field) => schema.required.includes(field))) return false;
+    return Object.entries(expected).every(([field, value]) => schemaAllowsExactValue(schema.properties[field], value));
+  }
+  if (Object.hasOwn(schema, 'const')) return stableJson(schema.const) === stableJson(expected);
+  return Array.isArray(schema.enum) && schema.enum.some((candidate) => stableJson(candidate) === stableJson(expected));
+}
+
+function schemaBranchAllowsPredicate(schema, predicate) {
+  return isRecord(schema?.properties) && Object.entries(predicate).every(([field, expected]) => schemaAllowsExactValue(schema.properties[field], expected));
+}
+
+function hasClosedPredicateBranch(payload, predicate) {
+  if (schemaBranchAllowsPredicate(payload, predicate)) return true;
+  return (payload?.oneOf ?? []).some((branch) => schemaBranchAllowsPredicate(branch, predicate));
+}
+
+function hasOneOfPredicateBranch(payload, predicate) {
+  return (payload?.oneOf ?? []).some((branch) => schemaBranchAllowsPredicate(branch, predicate));
+}
+
+function checkTrustedProfilePayload(profile, catalogEvent, catalog, derivedFieldMappings, errors) {
+  const payload = resolveLocalReference(catalog, catalogEvent?.payloadSchema?.$ref);
+  const label = `M1-014 trusted source ${profile.eventName}`;
+  add(errors, isRecord(payload) && payload.additionalProperties === false, `${label} payload must be a closed canonical object`);
+  if (!isRecord(payload)) return;
+
+  checkProfileFieldOrigins({
+    fields: profile.lineageFields,
+    origins: profile.lineageFieldOrigins,
+    payload,
+    derivedFieldMappings,
+    allowDerived: false,
+    label,
+    kind: 'lineage',
+  }, errors);
+  checkProfileFieldOrigins({
+    fields: profile.dedupeFields,
+    origins: profile.dedupeFieldOrigins,
+    payload,
+    derivedFieldMappings,
+    allowDerived: true,
+    label,
+    kind: 'dedupe',
+  }, errors);
+  for (const field of Object.keys(profile.qualifiedPredicate ?? {})) {
+    const isExplicitDerivedPredicate = profile.id === 'MASTERY_MILESTONE' && field === 'stateTransition';
+    add(errors, isExplicitDerivedPredicate || isRequiredPayloadField(payload, field), `${label} predicate field ${field} must be a required canonical payload property or the sole explicit derived predicate`);
+  }
+
+  if (profile.id === 'MASTERY_MILESTONE') {
+    const { stateTransition, masteryStageAfter, d7Gate } = profile.qualifiedPredicate;
+    add(errors, stableJson(stateTransition) === stableJson(MASTERY_MILESTONE_DERIVED_TRANSITION), `${label} must require the sole explicit derived stateTransition predicate`);
+    add(errors, isRequiredPayloadField(payload, 'masteryStageBefore') && isRequiredPayloadField(payload, 'masteryStageAfter'), `${label} stateTransition must derive only from required masteryStageBefore/masteryStageAfter payload fields`);
+    add(errors, Array.isArray(masteryStageAfter) && masteryStageAfter.length === 2, `${label} masteryStageAfter predicate must enumerate the exact two milestone stages`);
+    for (const stage of masteryStageAfter ?? []) {
+      add(errors, hasOneOfPredicateBranch(payload, { masteryStageAfter: stage, d7Gate }), `${label} must encode ${stage} with the exact D7-passed predicate in a closed payload branch`);
+    }
+    const d7GateSchema = payloadFieldSchema(payload, 'd7Gate');
+    const d7Fields = Object.keys(d7Gate ?? {});
+    const d7FieldsRequired = Array.isArray(d7GateSchema?.required)
+      && d7Fields.every((field) => d7GateSchema.required.includes(field));
+    const hasD7PassedBranch = (d7GateSchema?.oneOf ?? [])
+      .some((branch) => schemaBranchAllowsPredicate(branch, d7Gate));
+    add(errors, d7FieldsRequired && hasD7PassedBranch, `${label} must encode the exact D7-passed result/reason branch`);
+  } else if (profile.id === 'TASK_COMPLETED') {
+    for (const [field, expected] of Object.entries(profile.qualifiedPredicate)) {
+      add(errors, stableJson(payloadFieldSchema(payload, field)?.const) === stableJson(expected), `${label} predicate ${field} must be an exact payload const`);
+    }
+  } else if (profile.id === 'ASSESSMENT_ITEM_CORRECT') {
+    add(errors, hasOneOfPredicateBranch(payload, profile.qualifiedPredicate), `${label} predicate must be encoded by an exact objective-correct, not-guessed payload branch`);
+  } else {
+    add(errors, hasClosedPredicateBranch(payload, profile.qualifiedPredicate), `${label} predicate must be encoded by an exact closed canonical payload branch`);
+  }
+}
+
+function checkTrustedCompletionPolicy(policy, catalog, routeByEvent, errors) {
+  const trustedCompletion = policy?.trustedCompletion;
+  exactKeys(errors, trustedCompletion, ['tupleFields', 'lineageRequiredFields', 'derivedFieldMappings', 'receiptFields', 'sourceProfiles', 'rejectedEventNames', 'rejectedCanonicalEvents', 'rejectionReasons'], 'M1-014 trustedCompletion policy');
+  if (!isRecord(trustedCompletion)) return;
+  add(errors, JSON.stringify(trustedCompletion.tupleFields) === JSON.stringify(TRUSTED_COMPLETION_TUPLE_FIELDS), 'M1-014 trustedCompletion tuple fields must be exact and ordered');
+  add(errors, JSON.stringify(trustedCompletion.lineageRequiredFields) === JSON.stringify(TRUSTED_COMPLETION_LINEAGE_FIELDS), 'M1-014 trustedCompletion lineage fields must be exact and ordered');
+  add(errors, stableJson(trustedCompletion.derivedFieldMappings) === stableJson(TRUSTED_COMPLETION_DERIVED_FIELD_MAPPINGS), 'M1-014 trustedCompletion derived field mappings must be exact and server-owned');
+  add(errors, JSON.stringify(trustedCompletion.receiptFields) === JSON.stringify(TRUSTED_COMPLETION_RECEIPT_FIELDS), 'M1-014 trustedCompletion receipt fields must be exact and ordered');
+  add(errors, Array.isArray(trustedCompletion.sourceProfiles) && trustedCompletion.sourceProfiles.length === EXPECTED_TRUSTED_COMPLETION_PROFILES.length, 'M1-014 trustedCompletion source profiles must contain the exact three approved profiles');
+
+  const catalogByEventName = new Map((catalog.events ?? []).map((event) => [event?.eventName, event]));
+  for (const [index, expected] of EXPECTED_TRUSTED_COMPLETION_PROFILES.entries()) {
+    const profile = trustedCompletion.sourceProfiles?.[index];
+    exactKeys(errors, profile, ['id', 'producerService', 'eventName', 'schemaVersion', 'qualifiedPredicate', 'lineageFields', 'lineageFieldOrigins', 'dedupeFields', 'dedupeFieldOrigins', 'maturity'], `M1-014 trustedCompletion.sourceProfiles[${index}]`);
+    add(errors, stableJson(profile) === stableJson(expected), `M1-014 trustedCompletion source profile ${expected.id} must exactly match the approved producer, tuple, predicate, lineage and dedupe rule`);
+    add(errors, TRUSTED_COMPLETION_LINEAGE_FIELDS.every((field) => profile?.lineageFields?.includes(field)), `M1-014 trustedCompletion source profile ${expected.id} must contain every common lineage field`);
+    const catalogEvent = catalogByEventName.get(expected.eventName);
+    const route = routeByEvent.get(expected.eventName);
+    add(errors, catalogEvent?.status === CANONICAL_STATUS, `M1-014 trusted source ${expected.eventName} must be CANONICAL_D2`);
+    add(errors, catalogEvent?.['x-p1r-governance']?.producer?.service === expected.producerService, `M1-014 trusted source ${expected.eventName} producer must match its approved profile`);
+    add(errors, JSON.stringify(route?.consumerGroups) === JSON.stringify(TRUSTED_COMPLETION_ROUTING[expected.eventName]), `M1-014 trusted source ${expected.eventName} B26 consumer binding must be exact`);
+    checkTrustedProfilePayload(expected, catalogEvent, catalog, trustedCompletion.derivedFieldMappings, errors);
+  }
+
+  add(errors, JSON.stringify(trustedCompletion.rejectedEventNames) === JSON.stringify(TRUSTED_COMPLETION_REJECTED_EVENT_NAMES), 'M1-014 trustedCompletion rejected event names must be exact and ordered');
+  add(errors, stableJson(trustedCompletion.rejectedCanonicalEvents) === stableJson(TRUSTED_COMPLETION_REJECTED_CANONICAL_EVENTS), 'M1-014 trustedCompletion rejected canonical events must preserve the queue-fact exclusion');
+  add(errors, stableJson(trustedCompletion.rejectionReasons) === stableJson(TRUSTED_COMPLETION_REJECTION_REASONS), 'M1-014 trustedCompletion rejection reasons must be exact');
+  const approvedSourceNames = new Set((trustedCompletion.sourceProfiles ?? []).map((profile) => profile?.eventName));
+  add(errors, !approvedSourceNames.has('learning.review.scheduled.v2'), 'M1-014 review scheduling cannot be an approved reward source');
+  const reviewRoute = routeByEvent.get('learning.review.scheduled.v2');
+  add(errors, !reviewRoute?.consumerGroups?.includes('cg.gamification-from-learning.v1'), 'M1-014 review scheduling must not bind gamification');
+}
+
+export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, gamificationSocialPolicy, fragments = [], checkProjection = true } = {}) {
   const errors = [];
   add(errors, isRecord(catalog), 'event catalog must be an object');
   add(errors, isRecord(ownerPolicy), 'data ownership policy must be an object');
@@ -412,7 +709,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
 
   checkPlatformGovernance(catalog, errors);
   add(errors, b26Runtime.mode === 'static-only' && b26Runtime.runtimeStatus === 'pending' && b26Runtime.defaultDecision === 'NO-GO', 'B26 input must remain static-only, pending and NO-GO');
-  add(errors, Array.isArray(catalog.events) && catalog.events.length === 158, 'event catalog must contain exactly 158 current candidates');
+  add(errors, Array.isArray(catalog.events) && catalog.events.length === 166, 'event catalog must contain exactly 166 current candidates');
 
   const services = new Set((ownerPolicy.serviceOwners ?? []).map((owner) => owner.service));
   const dataOwners = new Set((ownerPolicy.serviceOwners ?? []).filter((owner) => owner.dataOwner === true).map((owner) => owner.service));
@@ -423,8 +720,9 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact seventeen canonical governance events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact twenty-five canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
+  if (gamificationSocialPolicy !== undefined) checkTrustedCompletionPolicy(gamificationSocialPolicy, catalog, routeByEvent, errors);
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
   add(errors, duplicates(eventNames).length === 0, `event catalog duplicates event names: ${duplicates(eventNames).join(', ')}`);
 
@@ -457,8 +755,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact seventeen governed events');
-  add(errors, counts.canonical === 17 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 17 canonical / 141 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact twenty-five governed events');
+  add(errors, counts.canonical === 25 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 25 canonical / 141 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);
@@ -540,6 +838,7 @@ export function validateEventGovernance({ root = defaultRoot } = {}) {
     catalog: read('packages/contracts/events/v1/catalog.json'),
     ownerPolicy: read('config/p1r-data-ownership.v1.json'),
     b26Runtime: read('config/b26-event-runtime.json'),
+    gamificationSocialPolicy: read('config/p1r-gamification-social-contract.v1.json'),
     fragments: listEventFragments(root),
   });
 }
