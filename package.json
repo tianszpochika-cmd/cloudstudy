@@ -36,6 +36,7 @@
     "p1r:event-governance:check": "node scripts/audit/p1r-event-governance-check.mjs",
     "p1r:event-reliability:check": "node scripts/audit/p1r-event-reliability-check.mjs",
     "p1r:saga-recovery:check": "node scripts/audit/p1r-saga-recovery-check.mjs",
+    "p1r:content-lifecycle:check": "node scripts/audit/p1r-content-lifecycle-check.mjs",
     "test:p1r": "node scripts/dev/run-node-tests.mjs tests/p1r",
     "services:build": "node scripts/runtime/build-v2-services.mjs",
     "services:run": "node scripts/runtime/run-v2-services.mjs",

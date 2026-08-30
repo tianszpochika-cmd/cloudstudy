@@ -308,7 +308,7 @@
       {
         "gapId": "EVENT-GAP-CONTENT-DUPLICATE",
         "family": "EVENT-GAP-CONTENT",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-008",
           "P1R-M1-006"
@@ -317,7 +317,7 @@
       {
         "gapId": "EVENT-GAP-BIND-CONT-001",
         "family": "EVENT-GAP-BIND",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-006",
           "P1R-M1-008"
@@ -7224,7 +7224,7 @@
     },
     {
       "eventName": "content.version.submitted.v1",
-      "status": "HISTORICAL_CANDIDATE",
+      "status": "CANONICAL_D2",
       "domain": "content",
       "version": 1,
       "schema": "content.event.v1",
@@ -7232,10 +7232,18 @@
       "aggregateIdField": "contentVersionId",
       "x-envelope-required": [
         "eventId",
-        "traceId",
-        "schemaVersion",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
         "aggregateId",
-        "dedupeKey"
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
       ],
       "payloadSchema": {
         "$ref": "#/payloadSchemas/B9ContentVersionSubmitted"
@@ -7244,11 +7252,59 @@
         "strategy": "additive",
         "breakingChange": "publish content.version.submitted.v2",
         "consumerRule": "审核消费者按 contentVersionId/versionNumber 幂等；草稿 payload 不进入事件。"
+      },
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "content-service",
+          "dataOwner": "content-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_content_version_submitted_v1"
+        },
+        "consumers": [
+          {
+            "service": "admin-ops-service",
+            "consumerGroup": "cg.admin-ops-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_submitted_v1_cg_admin_ops_from_content_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_submitted_v1_cg_audit_from_content_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.content.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.contentVersionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "content_version_submitted_v1"
+        },
+        "schema": {
+          "schemaVersion": "content.event.v1",
+          "payloadRef": "#/payloadSchemas/B9ContentVersionSubmitted",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
       }
     },
     {
       "eventName": "content.version.reviewed.v1",
-      "status": "HISTORICAL_CANDIDATE",
+      "status": "CANONICAL_D2",
       "domain": "content",
       "version": 1,
       "schema": "content.event.v1",
@@ -7256,10 +7312,18 @@
       "aggregateIdField": "contentVersionId",
       "x-envelope-required": [
         "eventId",
-        "traceId",
-        "schemaVersion",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
         "aggregateId",
-        "dedupeKey"
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
       ],
       "payloadSchema": {
         "$ref": "#/payloadSchemas/B9ContentVersionReviewed"
@@ -7268,11 +7332,59 @@
         "strategy": "additive",
         "breakingChange": "publish content.version.reviewed.v2",
         "consumerRule": "双审阶段按 contentVersionId/reviewStage/reviewVersion 去重；作者不得作为自己的审核者。"
+      },
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "content-service",
+          "dataOwner": "content-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_content_version_reviewed_v1"
+        },
+        "consumers": [
+          {
+            "service": "admin-ops-service",
+            "consumerGroup": "cg.admin-ops-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_reviewed_v1_cg_admin_ops_from_content_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_reviewed_v1_cg_audit_from_content_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.content.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.contentVersionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "content_version_reviewed_v1"
+        },
+        "schema": {
+          "schemaVersion": "content.event.v1",
+          "payloadRef": "#/payloadSchemas/B9ContentVersionReviewed",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
       }
     },
     {
       "eventName": "content.version.published.v1",
-      "status": "HISTORICAL_CANDIDATE",
+      "status": "CANONICAL_D2",
       "domain": "content",
       "version": 1,
       "schema": "content.event.v1",
@@ -7280,10 +7392,18 @@
       "aggregateIdField": "contentVersionId",
       "x-envelope-required": [
         "eventId",
-        "traceId",
-        "schemaVersion",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
         "aggregateId",
-        "dedupeKey"
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
       ],
       "payloadSchema": {
         "$ref": "#/payloadSchemas/B9ContentVersionPublished"
@@ -7292,11 +7412,74 @@
         "strategy": "additive",
         "breakingChange": "publish content.version.published.v2",
         "consumerRule": "公开投影按 projectionKey/contentEpoch 刷新；事件至少一次投递，消费者必须去重。"
+      },
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "content-service",
+          "dataOwner": "content-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_content_version_published_v1"
+        },
+        "consumers": [
+          {
+            "service": "learner-service",
+            "consumerGroup": "cg.learner-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_published_v1_cg_learner_from_content_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_published_v1_cg_learning_from_content_v1"
+          },
+          {
+            "service": "assessment-service",
+            "consumerGroup": "cg.assessment-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_published_v1_cg_assessment_from_content_v1"
+          },
+          {
+            "service": "admin-ops-service",
+            "consumerGroup": "cg.admin-ops-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_published_v1_cg_admin_ops_from_content_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_published_v1_cg_audit_from_content_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.content.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.contentVersionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "content_version_published_v1"
+        },
+        "schema": {
+          "schemaVersion": "content.event.v1",
+          "payloadRef": "#/payloadSchemas/B9ContentVersionPublished",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
       }
     },
     {
       "eventName": "content.version.unpublished.v1",
-      "status": "HISTORICAL_CANDIDATE",
+      "status": "CANONICAL_D2",
       "domain": "content",
       "version": 1,
       "schema": "content.event.v1",
@@ -7304,10 +7487,18 @@
       "aggregateIdField": "contentVersionId",
       "x-envelope-required": [
         "eventId",
-        "traceId",
-        "schemaVersion",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
         "aggregateId",
-        "dedupeKey"
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
       ],
       "payloadSchema": {
         "$ref": "#/payloadSchemas/B9ContentVersionUnpublished"
@@ -7316,11 +7507,74 @@
         "strategy": "additive",
         "breakingChange": "publish content.version.unpublished.v2",
         "consumerRule": "先失效 public/learner cache，再允许恢复到明确版本；不能把下线伪装为空列表。"
+      },
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "content-service",
+          "dataOwner": "content-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_content_version_unpublished_v1"
+        },
+        "consumers": [
+          {
+            "service": "learner-service",
+            "consumerGroup": "cg.learner-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_learner_from_content_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_learning_from_content_v1"
+          },
+          {
+            "service": "assessment-service",
+            "consumerGroup": "cg.assessment-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_assessment_from_content_v1"
+          },
+          {
+            "service": "admin-ops-service",
+            "consumerGroup": "cg.admin-ops-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_admin_ops_from_content_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_audit_from_content_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.content.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.contentVersionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "content_version_unpublished_v1"
+        },
+        "schema": {
+          "schemaVersion": "content.event.v1",
+          "payloadRef": "#/payloadSchemas/B9ContentVersionUnpublished",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
       }
     },
     {
       "eventName": "content.version.rolled_back.v1",
-      "status": "HISTORICAL_CANDIDATE",
+      "status": "CANONICAL_D2",
       "domain": "content",
       "version": 1,
       "schema": "content.event.v1",
@@ -7328,10 +7582,18 @@
       "aggregateIdField": "contentCode",
       "x-envelope-required": [
         "eventId",
-        "traceId",
-        "schemaVersion",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
         "aggregateId",
-        "dedupeKey"
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
       ],
       "payloadSchema": {
         "$ref": "#/payloadSchemas/B9ContentVersionRolledBack"
@@ -7340,6 +7602,69 @@
         "strategy": "additive",
         "breakingChange": "publish content.version.rolled_back.v2",
         "consumerRule": "只切换到已验证目标版本；按 contentCode/contentEpoch 幂等并保留回滚原因。"
+      },
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "content-service",
+          "dataOwner": "content-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_content_version_rolled_back_v1"
+        },
+        "consumers": [
+          {
+            "service": "learner-service",
+            "consumerGroup": "cg.learner-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_learner_from_content_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_learning_from_content_v1"
+          },
+          {
+            "service": "assessment-service",
+            "consumerGroup": "cg.assessment-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_assessment_from_content_v1"
+          },
+          {
+            "service": "admin-ops-service",
+            "consumerGroup": "cg.admin-ops-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_admin_ops_from_content_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-content.v1",
+            "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_audit_from_content_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.content.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.contentCode",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "content_version_rolled_back_v1"
+        },
+        "schema": {
+          "schemaVersion": "content.event.v1",
+          "payloadRef": "#/payloadSchemas/B9ContentVersionRolledBack",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
       }
     },
     {
@@ -9032,6 +9357,141 @@
     },
     "x-runtime-status": "NOT_RUNTIME_VERIFIED",
     "channels": {
+      "content_version_submitted_v1": {
+        "address": "platform.content.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.content.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "content.version.submitted.v1",
+            "x-event-name": "content.version.submitted.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionSubmitted"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "content_version_reviewed_v1": {
+        "address": "platform.content.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.content.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "content.version.reviewed.v1",
+            "x-event-name": "content.version.reviewed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionReviewed"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "content_version_published_v1": {
+        "address": "platform.content.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.content.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "content.version.published.v1",
+            "x-event-name": "content.version.published.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionPublished"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "content_version_unpublished_v1": {
+        "address": "platform.content.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.content.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "content.version.unpublished.v1",
+            "x-event-name": "content.version.unpublished.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionUnpublished"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "content_version_rolled_back_v1": {
+        "address": "platform.content.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.content.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "content.version.rolled_back.v1",
+            "x-event-name": "content.version.rolled_back.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9ContentVersionRolledBack"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
       "workflow_outbox_published_v1": {
         "address": "platform.workflow.v1",
         "bindings": {
@@ -9223,6 +9683,533 @@
       }
     },
     "operations": {
+      "publish_content_version_submitted_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_submitted_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "content-service",
+        "x-data-owner": "content-service"
+      },
+      "subscribe_content_version_submitted_v1_cg_admin_ops_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_submitted_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.admin-ops-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "admin-ops-service"
+      },
+      "subscribe_content_version_submitted_v1_cg_audit_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_submitted_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_submitted_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_content_version_reviewed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_reviewed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_reviewed_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "content-service",
+        "x-data-owner": "content-service"
+      },
+      "subscribe_content_version_reviewed_v1_cg_admin_ops_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_reviewed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_reviewed_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.admin-ops-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "admin-ops-service"
+      },
+      "subscribe_content_version_reviewed_v1_cg_audit_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_reviewed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_reviewed_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_content_version_published_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_published_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "content-service",
+        "x-data-owner": "content-service"
+      },
+      "subscribe_content_version_published_v1_cg_learner_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_published_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learner-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learner-service"
+      },
+      "subscribe_content_version_published_v1_cg_learning_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_published_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_content_version_published_v1_cg_assessment_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_published_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.assessment-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "assessment-service"
+      },
+      "subscribe_content_version_published_v1_cg_admin_ops_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_published_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.admin-ops-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "admin-ops-service"
+      },
+      "subscribe_content_version_published_v1_cg_audit_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_published_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_published_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_content_version_unpublished_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_unpublished_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_unpublished_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "content-service",
+        "x-data-owner": "content-service"
+      },
+      "subscribe_content_version_unpublished_v1_cg_learner_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_unpublished_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_unpublished_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learner-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learner-service"
+      },
+      "subscribe_content_version_unpublished_v1_cg_learning_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_unpublished_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_unpublished_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_content_version_unpublished_v1_cg_assessment_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_unpublished_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_unpublished_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.assessment-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "assessment-service"
+      },
+      "subscribe_content_version_unpublished_v1_cg_admin_ops_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_unpublished_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_unpublished_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.admin-ops-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "admin-ops-service"
+      },
+      "subscribe_content_version_unpublished_v1_cg_audit_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_unpublished_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_unpublished_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_content_version_rolled_back_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_rolled_back_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "content-service",
+        "x-data-owner": "content-service"
+      },
+      "subscribe_content_version_rolled_back_v1_cg_learner_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_rolled_back_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learner-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learner-service"
+      },
+      "subscribe_content_version_rolled_back_v1_cg_learning_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_rolled_back_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_content_version_rolled_back_v1_cg_assessment_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_rolled_back_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.assessment-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "assessment-service"
+      },
+      "subscribe_content_version_rolled_back_v1_cg_admin_ops_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_rolled_back_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.admin-ops-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "admin-ops-service"
+      },
+      "subscribe_content_version_rolled_back_v1_cg_audit_from_content_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/content_version_rolled_back_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/content_version_rolled_back_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-content.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
       "publish_workflow_outbox_published_v1": {
         "action": "send",
         "channel": {

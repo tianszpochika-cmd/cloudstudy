@@ -23,6 +23,7 @@ test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pen
   assert.equal(result.runtimeGate, 'static-only')
   assert.equal(result.topicCount, 6)
   assert.equal(result.eventCount, 7)
+  assert.equal(result.routeCount, 12)
   assert.equal(result.payloadSchemaCount, 7)
   assert.equal(result.runtimeEvidencePending, true)
 })

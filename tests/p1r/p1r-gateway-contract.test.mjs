@@ -40,9 +40,9 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.summary, {
-    routeRuleCount: 52,
-    publicOperationCount: 326,
-    coveredPublicOperationCount: 326,
+    routeRuleCount: 53,
+    publicOperationCount: 327,
+    coveredPublicOperationCount: 327,
     publicCoverageErrorCount: 0,
     internalOperationCount: 51,
     externalDeniedInternalOperationCount: 51,
@@ -66,6 +66,12 @@ test('every current public operation must retain one owner rule', () => {
   assertMutationFails((document) => {
     rule(document, 'content-domain').match.methods = ['POST'];
   }, /public route has no owner rule/);
+});
+
+test('content publish task reads cannot fall through to the broad admin owner', () => {
+  assertMutationFails((document) => {
+    rule(document, 'admin-content-publish-tasks').upstreamOwner = 'admin-ops-service';
+  }, /content publish task reads must remain.*owned by content-service/);
 });
 
 test('equal-priority Gateway route matches fail closed', () => {

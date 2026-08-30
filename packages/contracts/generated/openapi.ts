@@ -263,32 +263,32 @@ export type B1ContentSource = { sourceCode: string; sourceName: string; sourceKi
 export type B1ContentLicense = { licenseCode: string; licenseName: string; licenseStatus: B1LicenseStatus; copyrightOwner: string; authorizationEvidenceRef?: string; licenseUrl?: string; permittedPlatforms?: ReadonlyArray<string>; allowsLearning: boolean; allowsOffline: boolean; attributionRequired?: boolean; startsAt?: string; expiresAt?: string; };
 
 /**
- * Generated from the contract source.
+ * 旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。
  */
 export type B1CreateContentRequest = { contentCode: string; contentType: B1ContentType; title: string; locale?: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; goalCode: string; parentContentId?: number; sortOrder?: number; payload: Record<string, never>; source: B1ContentSource; license: B1ContentLicense; actorId: string; };
 
 /**
- * Generated from the contract source.
+ * 旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。
  */
 export type B1CreateVersionRequest = { payload: Record<string, never>; source: B1ContentSource; license: B1ContentLicense; releaseNote?: string; rollbackOfVersionId?: number; actorId: string; };
 
 /**
- * Generated from the contract source.
+ * 旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。
  */
 export type B1ActorRequest = { actorId: string; requestId?: string; };
 
 /**
- * Generated from the contract source.
+ * 旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体。
  */
 export type B1ActorReasonRequest = B1ActorRequest & { reasonCode?: string; };
 
 /**
- * Generated from the contract source.
+ * 旧 B1 compatibility request。reviewerId 仅保留用于兼容解析；服务端必须从已验证主体和双审状态派生并校验 reviewer。
  */
 export type B1ReviewDecisionRequest = { stage: B1ReviewStage; decision: B1ReviewDecision; reviewerId: string; reasonCode?: string; note?: string; };
 
 /**
- * Generated from the contract source.
+ * 旧 B1 compatibility request。批量导入迁移为逐内容 B9 draft commands；actorId 仅保留用于兼容解析，不是授权主体。
  */
 export type B1ImportRequest = { batchCode: string; format: "CSV" | "JSON"; payload: string; dryRun?: boolean; actorId: string; };
 
@@ -1263,7 +1263,7 @@ export type B8DeviceId = string;
 export type B8PermissionsResponse = { permissions: ReadonlyArray<string>; roles: ReadonlyArray<string>; policyVersion: string; policy?: B8PolicyVersionContext; authorityProvenance?: B8AuthorityProvenance; };
 
 /**
- * Generated from the contract source.
+ * 内容版本的只读摘要。canonical 持久状态只有 DRAFT、IN_REVIEW、APPROVED、PUBLISHED、ARCHIVED；UNPUBLISHED 和 ROLLED_BACK 仅为旧 v1 响应的 deprecated compatibility aliases，新实现不得产生。
  */
 export type B9ContentVersionSummary = { contentVersionId: B9ContentVersionId; versionNumber: number; status: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; contentHash: string; sourceCode?: string; licenseCode?: string; createdAt: B9DateTime; publishedAt?: B9DateTime; };
 
@@ -1280,12 +1280,12 @@ export type B9ContentDraftInput = { contentType: B9ContentType; title: string; s
 /**
  * 命令只表达意图和资源版本；actor、tenant、owner、role、permission、reviewer 和版权事实均由服务端从已验证上下文与内容记录派生。
  */
-export type B9ContentCommandRequest = { command: "CREATE_DRAFT" | "SAVE_DRAFT" | "VALIDATE_DRAFT" | "SUBMIT_REVIEW" | "REVIEW_FIRST" | "REVIEW_FINAL" | "PUBLISH" | "UNPUBLISH" | "ROLLBACK"; contentCode: B9ContentCode; expectedStateVersion: B9ExpectedStateVersion; targetVersionNumber?: number; reasonCode?: string; content?: B9ContentDraftInput; reviewDecision?: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewNote?: string; };
+export type B9ContentCommandRequest = { command?: "CREATE_DRAFT" | "SAVE_DRAFT"; } | { command?: "VALIDATE_DRAFT"; } | { command?: "SUBMIT_REVIEW"; } | { command?: "REVIEW_FIRST" | "REVIEW_FINAL"; } | { command?: "PUBLISH"; } | { command?: "SCHEDULE_PUBLISH"; } | { command?: "CANCEL_SCHEDULED_PUBLISH"; } | { command?: "UNPUBLISH"; } | { command?: "ROLLBACK"; };
 
 /**
- * Generated from the contract source.
+ * 服务端生成的命令受理结果。排期命令只返回只读任务引用；任务 status 不是 runtime publication proof。
  */
-export type B9ContentCommandAccepted = { commandId: string; command: string; contentCode: B9ContentCode; contentVersionId?: B9ContentVersionId; status: B9CommandStatus; stateVersion: B9StateVersion; outboxEventId?: string; acceptedAt: B9DateTime; };
+export type B9ContentCommandAccepted = { commandId: string; command: "CREATE_DRAFT" | "SAVE_DRAFT" | "VALIDATE_DRAFT" | "SUBMIT_REVIEW" | "REVIEW_FIRST" | "REVIEW_FINAL" | "PUBLISH" | "SCHEDULE_PUBLISH" | "CANCEL_SCHEDULED_PUBLISH" | "UNPUBLISH" | "ROLLBACK"; contentCode: B9ContentCode; contentVersionId?: B9ContentVersionId; status: B9CommandStatus; stateVersion: B9StateVersion; outboxEventId?: string; acceptedAt: B9DateTime; scheduledPublishTask?: B9ScheduledPublishTaskRef; };
 
 /**
  * Generated from the contract source.
@@ -1295,12 +1295,12 @@ export type B9PublicContentItem = { itemCode: string; itemType: B9ContentItemTyp
 /**
  * Generated from the contract source.
  */
-export type B9PublicContentProjection = { projectionKey: B9ProjectionKey; contentCode: B9ContentCode; contentType: B9ContentType; title: string; summary?: string; contentLocale: B9Locale; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; contentVersionId: B9ContentVersionId; versionNumber: number; projectionVersion: B9ProjectionVersion; contentEpoch: B9ContentEpoch; availability: "PUBLISHED"; items: ReadonlyArray<B9PublicContentItem>; publishedAt: B9DateTime; cacheTag: string; };
+export type B9PublicContentProjection = { projectionKey: B9ProjectionKey; contentCode: B9ContentCode; contentType: B9ContentType; title: string; summary?: string; contentLocale: B9Locale; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; contentVersionId: B9ContentVersionId; versionNumber: number; projectionVersion: B9ProjectionVersion; contentEpoch: B9ContentEpoch; availability: "PUBLISHED"; projectionStatus?: "CURRENT" | "STALE" | "PROCESSING"; items: ReadonlyArray<B9PublicContentItem>; publishedAt: B9DateTime; cacheTag: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B9LearnerContentProjection = { content: B9PublicContentProjection; learnerAccess: { available: boolean; offlineAllowed: boolean; reasonCode: "ALLOWED" | "PHASE_RESTRICTED" | "RIGHTS_RESTRICTED" | "DEVICE_RESTRICTED" | "POLICY_DENIED"; }; contentEpoch: B9ContentEpoch; };
+export type B9LearnerContentProjection = { content: B9PublicContentProjection; learnerAccess: { available: boolean; offlineAllowed: boolean; reasonCode: "ALLOWED" | "PHASE_RESTRICTED" | "RIGHTS_RESTRICTED" | "DEVICE_RESTRICTED" | "POLICY_DENIED"; }; contentEpoch: B9ContentEpoch; projectionStatus?: "CURRENT" | "STALE" | "PROCESSING"; sessionPin?: B9SessionContentPin; };
 
 /**
  * Generated from the contract source.
@@ -1348,14 +1348,14 @@ export type B9ComplianceNotice = { noticeCode: string; title: string; body: stri
 export type B9PublicSiteProjection = { projectionVersion: B9ProjectionVersion; contentEpoch: B9ContentEpoch; generatedAt: B9DateTime; courses: ReadonlyArray<B9PublicContentCard>; pricing: ReadonlyArray<B9PriceCard>; downloads: ReadonlyArray<B9DownloadChannel>; announcements: ReadonlyArray<B9PublicAnnouncement>; compliance: ReadonlyArray<B9ComplianceNotice>; };
 
 /**
- * Generated from the contract source.
+ * 公开投影水位状态。STALE/PROCESSING 只表示投影落后或重建中，不能把草稿或未授权版本标成 PUBLISHED。
  */
-export type B9PublicProjectionState = { availability: B9ContentAvailability; projectionVersion: B9ProjectionVersion; contentEpoch: B9ContentEpoch; lastPublishedAt?: B9DateTime; cacheTag?: string; };
+export type B9PublicProjectionState = { availability: B9ContentAvailability; projectionVersion: B9ProjectionVersion; contentEpoch: B9ContentEpoch; projectionStatus?: "CURRENT" | "STALE" | "PROCESSING"; lastPublishedAt?: B9DateTime; cacheTag?: string; };
 
 /**
- * Generated from the contract source.
+ * 内容后台状态。canonical 持久状态为 DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；旧 UNPUBLISHED/ROLLED_BACK 只读兼容且新实现不得产生。排期任务由服务端只读维护。
  */
-export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewStages?: ReadonlyArray<"FIRST_PENDING" | "FIRST_APPROVED" | "FINAL_PENDING" | "FINAL_APPROVED" | "REJECTED">; };
+export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewRecords?: ReadonlyArray<{ reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }>; scheduledPublishTask?: B9ScheduledPublishTaskRef; };
 
 /**
  * Generated from the contract source.
@@ -2682,6 +2682,66 @@ export type B8PdpConsentContext = B8ConsentState & Record<string, never>;
  */
 export type B8PdpAuthorizationDecisionResponse = B8AuthorizationDecisionResponse & Record<string, never>;
 
+/**
+ * 排期发布的乐观绑定快照。客户端只能提交版本、校验报告、双审记录和版权快照的引用及版本；content-service 必须在接收时和到期执行时重新核对 owner facts，绑定字段本身不是授权或运行时事实。
+ */
+export type B9PublishScheduleInput = { contentVersionId: B9ContentVersionId; contentHash: string; validationReportId: B9ContentValidationReportId; validationReportVersion: B9EvidenceVersion; firstReviewVersion: B9EvidenceVersion; finalReviewVersion: B9EvidenceVersion; rightsSnapshotId: B9RightsSnapshotId; rightsSnapshotVersion: B9EvidenceVersion; scheduledAt: B9OffsetDateTime; displayTimeZone: B9DisplayTimeZone; };
+
+/**
+ * 服务端只读的排期发布任务。客户端不能提交、伪造或推进 status，也不能把任务状态当作运行时发布证明；处理、重试、失败和恢复沿用 M1-007 recovery 契约，不在 B9 复制第二套处理状态机。
+ */
+export type B9ScheduledPublishTask = { status?: "SCHEDULED"; } | { status?: "CANCELLED"; } | { status?: "EXECUTED"; } | { status?: "INVALIDATED"; } | { status?: "RECOVERY_REQUIRED"; };
+
+/**
+ * 命令受理或后台状态中的排期任务只读引用。处理、重试和失败恢复由 M1-007 recovery 负责，不在此引用复制第二套状态机。
+ */
+export type B9ScheduledPublishTaskRef = { taskId: B9ScheduledPublishTaskId; contentVersionId: B9ContentVersionId; scheduledAt: B9OffsetDateTime; displayTimeZone: B9DisplayTimeZone; status: "SCHEDULED" | "CANCELLED" | "EXECUTED" | "INVALIDATED" | "RECOVERY_REQUIRED"; };
+
+/**
+ * 学习 session 对内容版本的服务端固定关系。仅表达版本引用和可用性，不返回已移除内容正文、答案或版权证据；UNAVAILABLE 时客户端不得静默回退到其他版本。
+ */
+export type B9SessionContentPin = { status: "AVAILABLE"; } | { status: "UNAVAILABLE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9ScheduledPublishTaskResponse = { data: B9ScheduledPublishTask; };
+
+/**
+ * RFC3339 绝对时间；必须带 Z 或显式 UTC offset，禁止无时区的本地时间。
+ */
+export type B9OffsetDateTime = string;
+
+/**
+ * content-service 服务端生成的排期发布任务 ID。
+ */
+export type B9ScheduledPublishTaskId = string;
+
+/**
+ * IANA tz database 标识，仅用于后台展示和排期解释；实际执行以 scheduledAt 的绝对时间为准。
+ */
+export type B9DisplayTimeZone = string;
+
+/**
+ * 服务端生成的内容校验报告引用；客户端只能提交乐观绑定，不能把它当作授权或运行证明。
+ */
+export type B9ContentValidationReportId = string;
+
+/**
+ * 服务端生成的版权快照引用；客户端只能提交乐观绑定，服务端必须重新核对有效期和 owner。
+ */
+export type B9RightsSnapshotId = string;
+
+/**
+ * 服务端生成的不可变审计记录引用。
+ */
+export type B9AuditId = string;
+
+/**
+ * 校验、审核或版权快照的单调版本；不得由客户端降级或重用旧版本绕过服务端重查。
+ */
+export type B9EvidenceVersion = number;
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -3078,6 +3138,7 @@ export interface ApiOperationRegistry {
   revokeB8PolicyVersion: { method: "POST"; path: "/api/v1/iam/policy-versions/{policyVersionId}/revoke"; request: B8PolicyRevocationRequest; response: unknown; idempotent: true };
   getB8ActivePolicyBundle: { method: "GET"; path: "/internal/v1/iam/policy-bundles/active"; request: never; response: unknown; idempotent: false };
   evaluateB8PdpDecision: { method: "POST"; path: "/internal/v1/iam/pdp/decisions"; request: B8PdpAuthorizationDecisionRequest; response: unknown; idempotent: true };
+  getB9ScheduledPublishTask: { method: "GET"; path: "/api/v1/admin/content-publish-tasks/{taskId}"; request: never; response: B9ScheduledPublishTaskResponse; idempotent: false };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

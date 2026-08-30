@@ -147,7 +147,7 @@
 
 **契约与事实源**：Gateway → admin-ops-service + content-service + commerce-service + analytics-service；content_version、review_task、audit_log、feature_flag、risk_case、export_job、media_asset。内容来源仅限自有、开放许可或合法授权；第三方品牌、教材、词书、释义、例句、音频、题目和统计数据须绑定有效授权凭证及使用范围，缺失或过期不得发布。 默认拒绝；content-editor、review L1、review L2、finance、auditor、客服等为独立 scope；作者不能审自己的版本。
 
-**事件**：content.submitted.v1、content.reviewed.v1、content.published.v1、content.rolled_back.v1、audit.exported.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
+**事件**：content.version.submitted.v1、content.version.reviewed.v1、content.version.published.v1、content.version.unpublished.v1、content.version.rolled_back.v1、audit.exported.v1。内容后台事件只使用服务端生成的 eventId，并沿 requestId、traceId、commandId、auditId 关联到领域事实；clientEventId 不能成为发布、审核或回滚权威输入。
 
 **验收**：双审职责分离；发布/下线/导出/风控/退款均审计；异步任务可查询；租户隔离和脱敏导出可证明。
 

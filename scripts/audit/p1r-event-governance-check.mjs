@@ -25,6 +25,11 @@ const BASE_EVENT_KEYS = [
   'aggregateIdField', 'payloadSchema', 'compatibility',
 ];
 const EXPECTED_CANONICAL_EVENTS = [
+  'content.version.published.v1',
+  'content.version.reviewed.v1',
+  'content.version.rolled_back.v1',
+  'content.version.submitted.v1',
+  'content.version.unpublished.v1',
   'workflow.outbox.published.v1',
   'workflow.event.delivery_failed.v1',
   'workflow.event.dead_lettered.v1',
@@ -33,7 +38,7 @@ const EXPECTED_CANONICAL_EVENTS = [
   'workflow.saga.compensation_requested.v1',
   'workflow.saga.manual_recovery_requested.v1',
 ].sort();
-const EXPECTED_PLANNED_GAP_ORDER = [
+const EXPECTED_GAP_CLOSURE_ORDER = [
   'EVENT-GAP-IAM-001',
   'EVENT-GAP-BIND-IAM-001',
   'EVENT-GAP-BIND-IAM-002',
@@ -51,8 +56,12 @@ const EXPECTED_PLANNED_GAP_ORDER = [
   'EVENT-GAP-USR-DEL-001',
   'EVENT-GAP-BIND',
 ];
-const EXPECTED_PLANNED_GAPS = [...EXPECTED_PLANNED_GAP_ORDER].sort();
-const EXPECTED_PLANNED_CLOSURES = {
+const EXPECTED_GAP_CLOSURES = [...EXPECTED_GAP_CLOSURE_ORDER].sort();
+const D2_CONTRACT_CLOSED_GAPS = new Set([
+  'EVENT-GAP-CONTENT-DUPLICATE',
+  'EVENT-GAP-BIND-CONT-001',
+]);
+const EXPECTED_GAP_CLOSURE_DETAILS = {
   'EVENT-GAP-IAM-001': { family: 'EVENT-GAP-IAM', d2ClosureTasks: ['P1R-M1-003', 'P1R-M1-006'] },
   'EVENT-GAP-BIND-IAM-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006'] },
   'EVENT-GAP-BIND-IAM-002': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006'] },
@@ -98,6 +107,17 @@ function exactKeys(errors, value, expected, label) {
 
 function duplicates(values) {
   return [...new Set(values.filter((value, index) => values.indexOf(value) !== index))].sort();
+}
+
+function countEventGapClosures(closures) {
+  return (closures ?? []).reduce((counts, closure) => {
+    if (closure?.status === 'PLANNED') counts.plannedEventGaps += 1;
+    if (closure?.status === 'D2_CONTRACT_CLOSED') counts.d2ContractClosedEventGaps += 1;
+    return counts;
+  }, {
+    plannedEventGaps: 0,
+    d2ContractClosedEventGaps: 0,
+  });
 }
 
 function stableJson(value) {
@@ -185,17 +205,21 @@ function checkPlatformGovernance(catalog, errors) {
     exactKeys(errors, closure, ['gapId', 'family', 'status', 'd2ClosureTasks'], `plannedClosures[${index}]`);
     gapIds.push(closure?.gapId);
     add(errors, nonEmptyString(closure?.gapId) && nonEmptyString(closure?.family), `plannedClosures[${index}] identifiers are required`);
-    add(errors, closure?.status === 'PLANNED', `plannedClosures[${index}] must remain PLANNED`);
+    const expectedStatus = D2_CONTRACT_CLOSED_GAPS.has(closure?.gapId) ? 'D2_CONTRACT_CLOSED' : 'PLANNED';
+    add(errors, closure?.status === expectedStatus, `plannedClosures[${index}] status must remain ${expectedStatus}`);
     add(errors, Array.isArray(closure?.d2ClosureTasks) && closure.d2ClosureTasks.includes('P1R-M1-006'), `plannedClosures[${index}] must include P1R-M1-006`);
     add(errors, (closure?.d2ClosureTasks ?? []).every((taskId) => /^P1R-M1-\d{3}$/.test(taskId)), `plannedClosures[${index}] has an invalid D2 closure task`);
     add(errors, duplicates(closure?.d2ClosureTasks ?? []).length === 0, `plannedClosures[${index}] duplicates a D2 closure task`);
-    const expected = EXPECTED_PLANNED_CLOSURES[closure?.gapId];
+    const expected = EXPECTED_GAP_CLOSURE_DETAILS[closure?.gapId];
     add(errors, expected?.family === closure?.family, `plannedClosures[${index}] family must match the frozen gap registry`);
     add(errors, JSON.stringify(expected?.d2ClosureTasks) === JSON.stringify(closure?.d2ClosureTasks), `plannedClosures[${index}] D2 closure tasks must match the frozen task mapping`);
   }
   add(errors, duplicates(gapIds).length === 0, `plannedClosures duplicate gap IDs: ${duplicates(gapIds).join(', ')}`);
-  add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_PLANNED_GAPS), 'plannedClosures must cover the exact M1-006 event gap registry');
-  add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_PLANNED_GAP_ORDER), 'plannedClosures must preserve the canonical gap registry order');
+  add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_GAP_CLOSURES), 'plannedClosures must cover the exact M1-006 event gap registry');
+  add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_GAP_CLOSURE_ORDER), 'plannedClosures must preserve the canonical gap registry order');
+  const closureCounts = countEventGapClosures(governance.plannedClosures);
+  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly fourteen PLANNED event gaps');
+  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly two D2_CONTRACT_CLOSED event gaps');
 }
 
 function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors) {
@@ -293,7 +317,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact seven canonical seed events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact twelve canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
   add(errors, duplicates(eventNames).length === 0, `event catalog duplicates event names: ${duplicates(eventNames).join(', ')}`);
@@ -327,8 +351,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact seven B26 governance seed events');
-  add(errors, counts.historical === 147 && counts.deprecated === 0, 'event status counts must be 7 canonical / 147 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact twelve governed events');
+  add(errors, counts.historical === 142 && counts.deprecated === 0, 'event status counts must be 12 canonical / 142 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);
@@ -395,7 +419,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       deprecatedEvents: counts.deprecated,
       canonicalConsumerBindings: (catalog.events ?? []).filter((event) => event.status === CANONICAL_STATUS)
         .reduce((total, event) => total + (event['x-p1r-governance']?.consumers?.length ?? 0), 0),
-      plannedEventGaps: catalog['x-p1r-event-governance']?.plannedClosures?.length ?? 0,
+      ...countEventGapClosures(catalog['x-p1r-event-governance']?.plannedClosures),
       runtimeStatus: catalog['x-p1r-event-governance']?.runtimeStatus,
       asyncApiChannels: Object.keys(catalog.asyncapi?.channels ?? {}).length,
       asyncApiOperations: Object.keys(catalog.asyncapi?.operations ?? {}).length,

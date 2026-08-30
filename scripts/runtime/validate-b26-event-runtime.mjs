@@ -149,12 +149,16 @@ const expectedTopicBindings = [
     ownerService: 'content-service',
     producerPrincipal: 'svc.content-service',
     consumerGroups: [
+      'cg.admin-ops-from-content.v1:admin-ops-service:cg.admin-ops-from-content.v1:true',
       'cg.assessment-from-content.v1:assessment-service:cg.assessment-from-content.v1:true',
+      'cg.audit-from-content.v1:audit-service:cg.audit-from-content.v1:true',
       'cg.learner-from-content.v1:learner-service:cg.learner-from-content.v1:true',
       'cg.learning-from-content.v1:learning-service:cg.learning-from-content.v1:true',
     ],
     acl: [
+      'cg.admin-ops-from-content.v1:READ:ALLOW',
       'cg.assessment-from-content.v1:READ:ALLOW',
+      'cg.audit-from-content.v1:READ:ALLOW',
       'cg.learner-from-content.v1:READ:ALLOW',
       'cg.learning-from-content.v1:READ:ALLOW',
       'svc.content-service:WRITE:ALLOW',
@@ -220,6 +224,11 @@ const expectedTopicBindings = [
   },
 ]
 const expectedEventRoutingBindings = [
+  'content.version.published.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
+  'content.version.reviewed.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
+  'content.version.rolled_back.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
+  'content.version.submitted.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
+  'content.version.unpublished.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'workflow.event.dead_lettered.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
   'workflow.event.delivery_failed.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
   'workflow.event.ordering_deferred.v1|platform.workflow.v1|aggregateId|cg.workflow-manual-recovery.v1,cg.workflow-reliability.v1',
@@ -527,7 +536,7 @@ function validateFragment(manifest, fragment, catalog, errors) {
     .sort()
   requireCondition(
     stableJson(actualRoutingBindings) === stableJson(expectedEventRoutingBindings),
-    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006 policy',
+    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006/M1-008 policy',
     errors,
   )
   const routing = new Map((manifest.eventRouting ?? []).map((item) => [item.eventName, item]))
@@ -566,8 +575,7 @@ function validateFragment(manifest, fragment, catalog, errors) {
   }
   unique(names, 'B26 event names', errors)
   unique(Object.keys(fragment.payloadSchemas ?? {}), 'B26 payload schema names', errors)
-  requireCondition(names.length === (manifest.eventRouting ?? []).length, 'B26 event routing must cover every fragment event', errors)
-  requireCondition(JSON.stringify(manifest.eventRouting.map((item) => item.eventName).sort()) === JSON.stringify(names.sort()), 'B26 event routing set differs from event fragment', errors)
+  requireCondition(names.every((eventName) => routing.has(eventName)), 'B26 event routing must cover every B26 reliability fragment event', errors)
   requireCondition(fragment.asyncapi === undefined, 'B26 fragment must not define a second AsyncAPI source', errors)
 }
 
@@ -624,6 +632,7 @@ export function validateB26EventRuntime(manifest, fragment, {
     runtimeEvidencePending: manifest?.runtimeStatus === 'pending',
     topicCount: manifest?.topics?.length ?? 0,
     eventCount: fragment?.events?.length ?? 0,
+    routeCount: manifest?.eventRouting?.length ?? 0,
     payloadSchemaCount: Object.keys(fragment?.payloadSchemas ?? {}).length,
     consumerGroupCount: (manifest?.topics ?? []).reduce((total, topic) => total + (topic?.consumerGroups?.length ?? 0), 0),
     errors,

@@ -156,7 +156,11 @@ const allowedPayloadSchemaKeywords = new Set([
 ]);
 const allowedPayloadSchemaTypes = new Set(['null', 'boolean', 'object', 'array', 'number', 'integer', 'string']);
 const forbiddenInfrastructureSubject = /\b(?:broker|kafka)\b/i;
-const expectedCanonicalPayloadRefs = {
+// The B26 reliability fragment owns only this frozen seed subset.  M1-008
+// adds content lifecycle facts to the canonical catalog without making them
+// B26 payload definitions, so this mapping must validate the seed subset
+// rather than incorrectly require every current canonical event to be B26.
+export const EXPECTED_B26_CANONICAL_PAYLOAD_REFS = {
   'workflow.outbox.published.v1': '#/payloadSchemas/B26WorkflowOutboxPublished',
   'workflow.event.delivery_failed.v1': '#/payloadSchemas/B26WorkflowDeliveryFailed',
   'workflow.event.dead_lettered.v1': '#/payloadSchemas/B26WorkflowDeadLettered',
@@ -387,10 +391,13 @@ export function validateCanonicalEventPayloadMappings(events, label = 'canonical
   const errors = [];
   if (!Array.isArray(events)) return [`${label} must be an array`];
   const canonicalEvents = events.filter((event) => event?.status === 'CANONICAL_D2');
-  const actualNames = canonicalEvents.map((event) => event?.eventName).sort();
-  const expectedNames = Object.keys(expectedCanonicalPayloadRefs).sort();
+  const expectedNames = Object.keys(EXPECTED_B26_CANONICAL_PAYLOAD_REFS).sort();
+  const actualNames = canonicalEvents
+    .filter((event) => Object.hasOwn(EXPECTED_B26_CANONICAL_PAYLOAD_REFS, event?.eventName))
+    .map((event) => event?.eventName)
+    .sort();
   exact(errors, actualNames, expectedNames, `${label} names`);
-  for (const [eventName, expectedRef] of Object.entries(expectedCanonicalPayloadRefs)) {
+  for (const [eventName, expectedRef] of Object.entries(EXPECTED_B26_CANONICAL_PAYLOAD_REFS)) {
     const matches = canonicalEvents.filter((event) => event?.eventName === eventName);
     if (matches.length === 1 && matches[0]?.payloadSchema?.$ref !== expectedRef) {
       errors.push(`${eventName} payloadSchema.$ref must match the frozen M1-006 event-to-payload mapping`);

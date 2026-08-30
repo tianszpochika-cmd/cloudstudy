@@ -48,14 +48,15 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
     totalEvents: 154,
-    canonicalEvents: 7,
-    historicalCandidates: 147,
+    canonicalEvents: 12,
+    historicalCandidates: 142,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 14,
-    plannedEventGaps: 16,
+    canonicalConsumerBindings: 33,
+    plannedEventGaps: 14,
+    d2ContractClosedEventGaps: 2,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 7,
-    asyncApiOperations: 21,
+    asyncApiChannels: 12,
+    asyncApiOperations: 45,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -65,10 +66,10 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 7);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 7);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 14);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 7, operationCount: 21 });
+  assert.equal(Object.keys(projection.channels).length, 12);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 12);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 33);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 12, operationCount: 45 });
 });
 
 test('generated TypeScript separates canonical publishers from historical catalog candidates', () => {
@@ -81,7 +82,29 @@ test('generated TypeScript separates canonical publishers from historical catalo
   assert.match(generated, /export type EventCatalogCandidate =/);
   assert.match(generated, /@deprecated Use CanonicalPlatformEvent for new v2 event publication/);
   assert.match(generated, /export type CanonicalEventName = keyof typeof canonicalEventGovernance/);
-  assert.match(generated, /export type CanonicalPlatformEvent = WorkflowOutboxPublishedEvent/);
+  const canonicalUnion = generated.match(/export type CanonicalPlatformEvent = ([^;]+);/);
+  assert.ok(canonicalUnion, 'generated TypeScript must declare CanonicalPlatformEvent');
+  assert.deepEqual(canonicalUnion[1].split(' | '), [
+    'ContentVersionSubmittedEvent',
+    'ContentVersionReviewedEvent',
+    'ContentVersionPublishedEvent',
+    'ContentVersionUnpublishedEvent',
+    'ContentVersionRolledBackEvent',
+    'WorkflowOutboxPublishedEvent',
+    'WorkflowEventDeliveryFailedEvent',
+    'WorkflowEventDeadLetteredEvent',
+    'WorkflowEventReplayRequestedEvent',
+    'WorkflowEventOrderingDeferredEvent',
+    'WorkflowSagaCompensationRequestedEvent',
+    'WorkflowSagaManualRecoveryRequestedEvent',
+  ], 'CanonicalPlatformEvent must exactly preserve the twelve canonical event interfaces in catalog order');
+  for (const historicalInterface of [
+    'ContentPublicProjectionInvalidatedEvent',
+    'CmsContentPublishedEvent',
+    'LearningSrsBatchCreatedEvent',
+  ]) {
+    assert.equal(canonicalUnion[1].split(' | ').includes(historicalInterface), false, `${historicalInterface} must remain outside CanonicalPlatformEvent`);
+  }
 
   const eventInterfaces = [...generated.matchAll(/export interface [A-Za-z0-9_]+Event extends PlatformEventEnvelope<[^\n]+> \{\n([\s\S]*?)\n\}/g)];
   assert.equal(eventInterfaces.length, baseline.catalog.events.length, 'every catalog event must have one generated concrete interface');
@@ -156,7 +179,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['topic owner drift', (input) => {
       input.b26Runtime.topics.find((topic) => topic.name === 'platform.workflow.v1').ownerService = 'audit-service';
     }, /producer must match the B26 topic owner/],
-    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact seven canonical seed events/],
+    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact twelve canonical governance events/],
     ['consumer order drift', (input) => { canonical(input)['x-p1r-governance'].consumers.reverse(); }, /consumers and order must match/],
     ['client consumer group', (input) => { canonical(input)['x-p1r-governance'].consumers[0].consumerGroup = 'cg.browser-client.v1'; }, /cannot represent a client/],
     ['duplicate consumer group', (input) => {
@@ -188,8 +211,16 @@ test('event governance fails closed on owner, routing, status, shape, projection
     }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
-    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact seven/],
+    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact twelve/],
     ['wrong planned closure family', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].family = 'WRONG'; }, /family must match the frozen gap registry/],
+    ['closed content gap regresses to planned', (input) => {
+      input.catalog['x-p1r-event-governance'].plannedClosures
+        .find((closure) => closure.gapId === 'EVENT-GAP-CONTENT-DUPLICATE').status = 'PLANNED';
+    }, /status must remain D2_CONTRACT_CLOSED/],
+    ['planned gap is falsely reported closed', (input) => {
+      input.catalog['x-p1r-event-governance'].plannedClosures
+        .find((closure) => closure.gapId === 'EVENT-GAP-IAM-001').status = 'D2_CONTRACT_CLOSED';
+    }, /status must remain PLANNED/],
     ['incomplete planned closure task mapping', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].d2ClosureTasks.shift(); }, /D2 closure tasks must match the frozen task mapping/],
     ['planned closure order drift', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures.reverse(); }, /canonical gap registry order/],
     ['duplicate event name', (input) => { input.catalog.events.push(structuredClone(input.catalog.events[0])); }, /duplicates event names/],

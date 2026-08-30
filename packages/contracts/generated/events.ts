@@ -1534,6 +1534,291 @@ export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyRev
 export type PlatformEvent = EventCatalogCandidate;
 
 export const canonicalEventGovernance = {
+  "content.version.submitted.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "content-service",
+      "dataOwner": "content-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_content_version_submitted_v1"
+    },
+    "consumers": [
+      {
+        "service": "admin-ops-service",
+        "consumerGroup": "cg.admin-ops-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_submitted_v1_cg_admin_ops_from_content_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_submitted_v1_cg_audit_from_content_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.content.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.contentVersionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "content_version_submitted_v1"
+    },
+    "schema": {
+      "schemaVersion": "content.event.v1",
+      "payloadRef": "#/payloadSchemas/B9ContentVersionSubmitted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "content.version.reviewed.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "content-service",
+      "dataOwner": "content-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_content_version_reviewed_v1"
+    },
+    "consumers": [
+      {
+        "service": "admin-ops-service",
+        "consumerGroup": "cg.admin-ops-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_reviewed_v1_cg_admin_ops_from_content_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_reviewed_v1_cg_audit_from_content_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.content.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.contentVersionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "content_version_reviewed_v1"
+    },
+    "schema": {
+      "schemaVersion": "content.event.v1",
+      "payloadRef": "#/payloadSchemas/B9ContentVersionReviewed",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "content.version.published.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "content-service",
+      "dataOwner": "content-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_content_version_published_v1"
+    },
+    "consumers": [
+      {
+        "service": "learner-service",
+        "consumerGroup": "cg.learner-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_published_v1_cg_learner_from_content_v1"
+      },
+      {
+        "service": "learning-service",
+        "consumerGroup": "cg.learning-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_published_v1_cg_learning_from_content_v1"
+      },
+      {
+        "service": "assessment-service",
+        "consumerGroup": "cg.assessment-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_published_v1_cg_assessment_from_content_v1"
+      },
+      {
+        "service": "admin-ops-service",
+        "consumerGroup": "cg.admin-ops-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_published_v1_cg_admin_ops_from_content_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_published_v1_cg_audit_from_content_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.content.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.contentVersionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "content_version_published_v1"
+    },
+    "schema": {
+      "schemaVersion": "content.event.v1",
+      "payloadRef": "#/payloadSchemas/B9ContentVersionPublished",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "content.version.unpublished.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "content-service",
+      "dataOwner": "content-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_content_version_unpublished_v1"
+    },
+    "consumers": [
+      {
+        "service": "learner-service",
+        "consumerGroup": "cg.learner-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_learner_from_content_v1"
+      },
+      {
+        "service": "learning-service",
+        "consumerGroup": "cg.learning-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_learning_from_content_v1"
+      },
+      {
+        "service": "assessment-service",
+        "consumerGroup": "cg.assessment-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_assessment_from_content_v1"
+      },
+      {
+        "service": "admin-ops-service",
+        "consumerGroup": "cg.admin-ops-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_admin_ops_from_content_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_unpublished_v1_cg_audit_from_content_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.content.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.contentVersionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "content_version_unpublished_v1"
+    },
+    "schema": {
+      "schemaVersion": "content.event.v1",
+      "payloadRef": "#/payloadSchemas/B9ContentVersionUnpublished",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "content.version.rolled_back.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "content-service",
+      "dataOwner": "content-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_content_version_rolled_back_v1"
+    },
+    "consumers": [
+      {
+        "service": "learner-service",
+        "consumerGroup": "cg.learner-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_learner_from_content_v1"
+      },
+      {
+        "service": "learning-service",
+        "consumerGroup": "cg.learning-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_learning_from_content_v1"
+      },
+      {
+        "service": "assessment-service",
+        "consumerGroup": "cg.assessment-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_assessment_from_content_v1"
+      },
+      {
+        "service": "admin-ops-service",
+        "consumerGroup": "cg.admin-ops-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_admin_ops_from_content_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-content.v1",
+        "subscriptionOperationId": "subscribe_content_version_rolled_back_v1_cg_audit_from_content_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.content.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.contentCode",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "content_version_rolled_back_v1"
+    },
+    "schema": {
+      "schemaVersion": "content.event.v1",
+      "payloadRef": "#/payloadSchemas/B9ContentVersionRolledBack",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
   "workflow.outbox.published.v1": {
     "status": "CANONICAL_D2",
     "runtimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -1873,4 +2158,4 @@ export const canonicalEventGovernance = {
 } as const;
 
 export type CanonicalEventName = keyof typeof canonicalEventGovernance;
-export type CanonicalPlatformEvent = WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;
+export type CanonicalPlatformEvent = ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;

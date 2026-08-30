@@ -479,6 +479,28 @@
         ],
         "summary": "创建内容身份和首个草稿版本",
         "operationId": "createContentEntity",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将创建意图转换为 B9 CREATE_DRAFT/SAVE_DRAFT command；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-create",
@@ -559,6 +581,28 @@
         ],
         "summary": "为稳定内容身份创建不可变草稿版本",
         "operationId": "createContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将版本草稿转换为 B9 SAVE_DRAFT command；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-version-create",
@@ -773,6 +817,28 @@
         ],
         "summary": "提交草稿进入一审",
         "operationId": "submitContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将提交意图转换为 B9 SUBMIT_REVIEW command；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-submit",
@@ -859,6 +925,28 @@
         ],
         "summary": "提交一审或二审决定",
         "operationId": "decideContentVersionReview",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将审核决定转换为 B9 REVIEW_FIRST/REVIEW_FINAL command；审核主体由服务端验证上下文派生。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-review-decision",
@@ -945,6 +1033,28 @@
         ],
         "summary": "发布通过双审和质量检查的版本",
         "operationId": "publishContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将发布意图转换为 B9 PUBLISH command；排期发布使用 B9 SCHEDULE_PUBLISH。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-publish",
@@ -1031,6 +1141,28 @@
         ],
         "summary": "下线指定已发布版本",
         "operationId": "archiveContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将下线意图转换为 B9 UNPUBLISH command；UNPUBLISH 只清除当前发布指针，不把版本持久状态改写为 UNPUBLISHED；ARCHIVED 仅由独立生命周期退休操作产生。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-archive",
@@ -1114,6 +1246,28 @@
         ],
         "summary": "恢复指定历史版本为学习端当前版本",
         "operationId": "restoreContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将恢复意图转换为 B9 ROLLBACK command；目标版本、版权和 epoch 由服务端核验。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-restore",
@@ -1197,6 +1351,28 @@
         ],
         "summary": "校验并可选应用 CSV/JSON 内容导入批次",
         "operationId": "importContentBatch",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在批量导入拆分为 B9 draft commands、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "批量导入必须拆分为经校验的 B9 CREATE_DRAFT/SAVE_DRAFT commands；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "x-idempotency": {
           "required": true,
           "strategy": "content-import-batch",
@@ -17095,7 +17271,7 @@
           "projection": "cnt_public_projection",
           "tenant": "platform public projection; no client tenant selection",
           "fieldFiltering": "PUBLIC_V1 allow-list only",
-          "cache": "ETag/contentEpoch; invalidated by content.public_projection.invalidated.v1"
+          "cache": "ETag/contentEpoch; content-service owns invalidation/rebuild and consumers use contentEpoch/projectionVersion watermarks; content.public_projection.invalidated.v1 remains historical compatibility only"
         },
         "parameters": [
           {
@@ -25618,6 +25794,67 @@
           }
         }
       }
+    },
+    "/api/v1/admin/content-publish-tasks/{taskId}": {
+      "get": {
+        "tags": [
+          "b9-content-admin"
+        ],
+        "summary": "Read a scheduled content publish task",
+        "operationId": "getB9ScheduledPublishTask",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "content-service",
+          "caller": "admin-ops-service/admin-web",
+          "readOnly": true,
+          "taskStatus": "server-owned; clients cannot submit or transition task status",
+          "fieldFiltering": "admin role-specific task metadata; never expose draft payload, answer rules, reviewer actors or rights evidence"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B9ScheduledPublishTaskId"
+          },
+          {
+            "$ref": "#/components/parameters/B9ScheduledPublishTaskQuery"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scheduled publish task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/B9ScheduledPublishTaskResponse"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -25762,6 +25999,9 @@
         "name": "X-Content-Role",
         "in": "header",
         "required": false,
+        "description": "仅为旧 B1 compatibility 输入；服务端不得将其作为授权事实，授权必须来自已验证 IAM 上下文和资源状态。",
+        "x-compatibility-only": true,
+        "x-authority-input-ignored": true,
         "schema": {
           "type": "string",
           "enum": [
@@ -27164,6 +27404,29 @@
         "schema": {
           "type": "string",
           "format": "uuid"
+        }
+      },
+      "B9ScheduledPublishTaskQuery": {
+        "name": "view",
+        "in": "query",
+        "required": false,
+        "description": "只读任务视图；CURRENT 返回当前任务状态，WITH_RECOVERY 仅在服务端已有恢复关联时返回恢复引用。",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "CURRENT",
+            "WITH_RECOVERY"
+          ],
+          "default": "CURRENT"
+        }
+      },
+      "B9ScheduledPublishTaskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "description": "服务端生成的排期发布任务标识；任务只能通过只读查询读取，不能由客户端改写状态。",
+        "schema": {
+          "$ref": "#/components/schemas/B9ScheduledPublishTaskId"
         }
       }
     },
@@ -30161,6 +30424,13 @@
           "license",
           "actorId"
         ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "properties": {
           "contentCode": {
             "type": "string",
@@ -30216,7 +30486,8 @@
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           }
         }
       },
@@ -30228,6 +30499,13 @@
           "source",
           "license",
           "actorId"
+        ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
         ],
         "properties": {
           "payload": {
@@ -30252,7 +30530,8 @@
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           }
         }
       },
@@ -30262,11 +30541,19 @@
         "required": [
           "actorId"
         ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
+        ],
         "properties": {
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           },
           "requestId": {
             "type": "string",
@@ -30290,6 +30577,13 @@
               }
             }
           }
+        ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
         ]
       },
       "B1ReviewDecisionRequest": {
@@ -30299,6 +30593,13 @@
           "stage",
           "decision",
           "reviewerId"
+        ],
+        "description": "旧 B1 compatibility request。reviewerId 仅保留用于兼容解析；服务端必须从已验证主体和双审状态派生并校验 reviewer。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
         ],
         "properties": {
           "stage": {
@@ -30310,7 +30611,8 @@
           "reviewerId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义，不接受客户端指定审核主体。"
           },
           "reasonCode": {
             "type": "string",
@@ -30330,6 +30632,13 @@
           "format",
           "payload",
           "actorId"
+        ],
+        "description": "旧 B1 compatibility request。批量导入迁移为逐内容 B9 draft commands；actorId 仅保留用于兼容解析，不是授权主体。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": [
+          "actorId",
+          "reviewerId",
+          "X-Content-Role"
         ],
         "properties": {
           "batchCode": {
@@ -30355,7 +30664,8 @@
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           }
         }
       },
@@ -37465,6 +37775,18 @@
           "contentHash",
           "createdAt"
         ],
+        "description": "内容版本的只读摘要。canonical 持久状态只有 DRAFT、IN_REVIEW、APPROVED、PUBLISHED、ARCHIVED；UNPUBLISHED 和 ROLLED_BACK 仅为旧 v1 响应的 deprecated compatibility aliases，新实现不得产生。",
+        "x-canonical-persistent-statuses": [
+          "DRAFT",
+          "IN_REVIEW",
+          "APPROVED",
+          "PUBLISHED",
+          "ARCHIVED"
+        ],
+        "x-deprecated-compatibility-statuses": [
+          "UNPUBLISHED",
+          "ROLLED_BACK"
+        ],
         "properties": {
           "contentVersionId": {
             "$ref": "#/components/schemas/B9ContentVersionId"
@@ -37483,6 +37805,11 @@
               "UNPUBLISHED",
               "ROLLED_BACK",
               "ARCHIVED"
+            ],
+            "description": "UNPUBLISHED/ROLLED_BACK 仅用于读取旧 v1 数据，新实现不得产生。",
+            "x-deprecated-values": [
+              "UNPUBLISHED",
+              "ROLLED_BACK"
             ]
           },
           "contentHash": {
@@ -37642,6 +37969,8 @@
               "REVIEW_FIRST",
               "REVIEW_FINAL",
               "PUBLISH",
+              "SCHEDULE_PUBLISH",
+              "CANCEL_SCHEDULED_PUBLISH",
               "UNPUBLISH",
               "ROLLBACK"
             ]
@@ -37674,8 +38003,530 @@
           "reviewNote": {
             "type": "string",
             "maxLength": 2048
+          },
+          "schedule": {
+            "$ref": "#/components/schemas/B9PublishScheduleInput"
+          },
+          "scheduledPublishTaskId": {
+            "$ref": "#/components/schemas/B9ScheduledPublishTaskId"
           }
-        }
+        },
+        "x-command-field-policy": {
+          "CREATE_DRAFT": {
+            "required": [
+              "content"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "content"
+            ]
+          },
+          "SAVE_DRAFT": {
+            "required": [
+              "content"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "content"
+            ]
+          },
+          "VALIDATE_DRAFT": {
+            "required": [],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion"
+            ]
+          },
+          "SUBMIT_REVIEW": {
+            "required": [],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion"
+            ]
+          },
+          "REVIEW_FIRST": {
+            "required": [
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "REVIEW_FINAL": {
+            "required": [
+              "reviewDecision"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "reviewDecision",
+              "reviewNote"
+            ]
+          },
+          "PUBLISH": {
+            "required": [
+              "targetVersionNumber"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "targetVersionNumber"
+            ]
+          },
+          "SCHEDULE_PUBLISH": {
+            "required": [
+              "schedule"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "schedule"
+            ]
+          },
+          "CANCEL_SCHEDULED_PUBLISH": {
+            "required": [
+              "scheduledPublishTaskId"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "scheduledPublishTaskId",
+              "reasonCode"
+            ]
+          },
+          "UNPUBLISH": {
+            "required": [
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "reasonCode"
+            ]
+          },
+          "ROLLBACK": {
+            "required": [
+              "targetVersionNumber",
+              "reasonCode"
+            ],
+            "allowed": [
+              "command",
+              "contentCode",
+              "expectedStateVersion",
+              "targetVersionNumber",
+              "reasonCode"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "CREATE_DRAFT",
+                  "SAVE_DRAFT"
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "VALIDATE_DRAFT"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "SUBMIT_REVIEW"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "enum": [
+                  "REVIEW_FIRST",
+                  "REVIEW_FINAL"
+                ]
+              }
+            },
+            "required": [
+              "reviewDecision"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "PUBLISH"
+              }
+            },
+            "required": [
+              "targetVersionNumber"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "SCHEDULE_PUBLISH"
+              }
+            },
+            "required": [
+              "schedule"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "CANCEL_SCHEDULED_PUBLISH"
+              }
+            },
+            "required": [
+              "scheduledPublishTaskId"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "UNPUBLISH"
+              }
+            },
+            "required": [
+              "reasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "targetVersionNumber"
+                  ]
+                },
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "command": {
+                "const": "ROLLBACK"
+              }
+            },
+            "required": [
+              "targetVersionNumber",
+              "reasonCode"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "content"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewDecision"
+                  ]
+                },
+                {
+                  "required": [
+                    "reviewNote"
+                  ]
+                },
+                {
+                  "required": [
+                    "schedule"
+                  ]
+                },
+                {
+                  "required": [
+                    "scheduledPublishTaskId"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
       },
       "B9ContentCommandAccepted": {
         "type": "object",
@@ -37688,13 +38539,35 @@
           "stateVersion",
           "acceptedAt"
         ],
+        "description": "服务端生成的命令受理结果。排期命令只返回只读任务引用；任务 status 不是 runtime publication proof。",
+        "x-server-generated-fields": [
+          "commandId",
+          "stateVersion",
+          "outboxEventId",
+          "acceptedAt",
+          "scheduledPublishTask"
+        ],
         "properties": {
           "commandId": {
             "type": "string",
             "pattern": "^cmd_[A-Za-z0-9._:-]{15,127}$"
           },
           "command": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "CREATE_DRAFT",
+              "SAVE_DRAFT",
+              "VALIDATE_DRAFT",
+              "SUBMIT_REVIEW",
+              "REVIEW_FIRST",
+              "REVIEW_FINAL",
+              "PUBLISH",
+              "SCHEDULE_PUBLISH",
+              "CANCEL_SCHEDULED_PUBLISH",
+              "UNPUBLISH",
+              "ROLLBACK"
+            ],
+            "readOnly": true
           },
           "contentCode": {
             "$ref": "#/components/schemas/B9ContentCode"
@@ -37715,6 +38588,11 @@
           },
           "acceptedAt": {
             "$ref": "#/components/schemas/B9DateTime"
+          },
+          "scheduledPublishTask": {
+            "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
+            "readOnly": true,
+            "description": "仅 SCHEDULE_PUBLISH 或其幂等重放结果携带；CANCEL_SCHEDULED_PUBLISH 返回被取消任务的只读引用。"
           }
         }
       },
@@ -37831,7 +38709,18 @@
           },
           "availability": {
             "type": "string",
-            "const": "PUBLISHED"
+            "const": "PUBLISHED",
+            "description": "公开投影只返回已发布版本；投影落后或重建期间通过 projectionStatus 表达，不降级为空列表或草稿。"
+          },
+          "projectionStatus": {
+            "type": "string",
+            "enum": [
+              "CURRENT",
+              "STALE",
+              "PROCESSING"
+            ],
+            "default": "CURRENT",
+            "description": "CURRENT 表示 watermark 已追上；STALE/PROCESSING 表示公开投影暂时落后或重建中，content-service 仍不得返回草稿。"
           },
           "items": {
             "type": "array",
@@ -37891,6 +38780,20 @@
           },
           "contentEpoch": {
             "$ref": "#/components/schemas/B9ContentEpoch"
+          },
+          "projectionStatus": {
+            "type": "string",
+            "enum": [
+              "CURRENT",
+              "STALE",
+              "PROCESSING"
+            ],
+            "default": "CURRENT",
+            "description": "学习投影沿用公开已发布版本；STALE/PROCESSING 只说明 projection watermark，不泄露草稿或答案规则。"
+          },
+          "sessionPin": {
+            "$ref": "#/components/schemas/B9SessionContentPin",
+            "description": "已开始学习 session 的服务端版本 pin；缺失表示当前 session 尚未建立 pin。建立后不得静默切换到其他版本。"
           }
         }
       },
@@ -38260,6 +39163,7 @@
           "projectionVersion",
           "contentEpoch"
         ],
+        "description": "公开投影水位状态。STALE/PROCESSING 只表示投影落后或重建中，不能把草稿或未授权版本标成 PUBLISHED。",
         "properties": {
           "availability": {
             "$ref": "#/components/schemas/B9ContentAvailability"
@@ -38269,6 +39173,15 @@
           },
           "contentEpoch": {
             "$ref": "#/components/schemas/B9ContentEpoch"
+          },
+          "projectionStatus": {
+            "type": "string",
+            "enum": [
+              "CURRENT",
+              "STALE",
+              "PROCESSING"
+            ],
+            "default": "CURRENT"
           },
           "lastPublishedAt": {
             "$ref": "#/components/schemas/B9DateTime"
@@ -38291,6 +39204,18 @@
           "versions",
           "publicProjection",
           "rightsStatus"
+        ],
+        "description": "内容后台状态。canonical 持久状态为 DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；旧 UNPUBLISHED/ROLLED_BACK 只读兼容且新实现不得产生。排期任务由服务端只读维护。",
+        "x-canonical-persistent-statuses": [
+          "DRAFT",
+          "IN_REVIEW",
+          "APPROVED",
+          "PUBLISHED",
+          "ARCHIVED"
+        ],
+        "x-deprecated-compatibility-statuses": [
+          "UNPUBLISHED",
+          "ROLLED_BACK"
         ],
         "properties": {
           "contentCode": {
@@ -38322,6 +39247,11 @@
               "UNPUBLISHED",
               "ROLLED_BACK",
               "ARCHIVED"
+            ],
+            "description": "UNPUBLISHED/ROLLED_BACK 仅为旧 v1 读取兼容值，新实现不得产生。",
+            "x-deprecated-values": [
+              "UNPUBLISHED",
+              "ROLLED_BACK"
             ]
           },
           "versions": {
@@ -38343,19 +39273,54 @@
               "REVOKED"
             ]
           },
-          "reviewStages": {
+          "reviewRecords": {
             "type": "array",
+            "readOnly": true,
             "items": {
-              "type": "string",
-              "enum": [
-                "FIRST_PENDING",
-                "FIRST_APPROVED",
-                "FINAL_PENDING",
-                "FINAL_APPROVED",
-                "REJECTED"
-              ]
+              "type": "object",
+              "readOnly": true,
+              "additionalProperties": false,
+              "required": [
+                "reviewStage",
+                "decision",
+                "reviewVersion",
+                "auditId",
+                "decidedAt"
+              ],
+              "properties": {
+                "reviewStage": {
+                  "type": "string",
+                  "enum": [
+                    "FIRST_REVIEW",
+                    "FINAL_REVIEW"
+                  ]
+                },
+                "decision": {
+                  "type": "string",
+                  "enum": [
+                    "APPROVED",
+                    "REJECTED",
+                    "CHANGES_REQUESTED"
+                  ]
+                },
+                "reviewVersion": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "auditId": {
+                  "$ref": "#/components/schemas/B9AuditId"
+                },
+                "decidedAt": {
+                  "$ref": "#/components/schemas/B9DateTime"
+                }
+              }
             },
-            "maxItems": 4
+            "maxItems": 2
+          },
+          "scheduledPublishTask": {
+            "$ref": "#/components/schemas/B9ScheduledPublishTaskRef",
+            "readOnly": true,
+            "description": "若存在待执行排期则返回只读任务引用；不会改变 publicProjection.availability。"
           }
         }
       },
@@ -46723,6 +47688,554 @@
           }
         ],
         "description": "Strict decision payload for the new PDP; compatibility clients may continue reading the legacy decision schema during migration."
+      },
+      "B9PublishScheduleInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentVersionId",
+          "contentHash",
+          "validationReportId",
+          "validationReportVersion",
+          "firstReviewVersion",
+          "finalReviewVersion",
+          "rightsSnapshotId",
+          "rightsSnapshotVersion",
+          "scheduledAt",
+          "displayTimeZone"
+        ],
+        "description": "排期发布的乐观绑定快照。客户端只能提交版本、校验报告、双审记录和版权快照的引用及版本；content-service 必须在接收时和到期执行时重新核对 owner facts，绑定字段本身不是授权或运行时事实。",
+        "x-client-forbidden-fields": [
+          "actor",
+          "tenant",
+          "owner",
+          "reviewer",
+          "validationStatus",
+          "reviewStatus",
+          "rightsStatus",
+          "status",
+          "runtimeStatus",
+          "runtimeProof",
+          "rightsEvidence"
+        ],
+        "properties": {
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B9ContentVersionId"
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$"
+          },
+          "validationReportId": {
+            "$ref": "#/components/schemas/B9ContentValidationReportId"
+          },
+          "validationReportVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion"
+          },
+          "firstReviewVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion"
+          },
+          "finalReviewVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion"
+          },
+          "rightsSnapshotId": {
+            "$ref": "#/components/schemas/B9RightsSnapshotId"
+          },
+          "rightsSnapshotVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion"
+          },
+          "scheduledAt": {
+            "$ref": "#/components/schemas/B9OffsetDateTime"
+          },
+          "displayTimeZone": {
+            "$ref": "#/components/schemas/B9DisplayTimeZone"
+          }
+        }
+      },
+      "B9ScheduledPublishTask": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "commandId",
+          "requestId",
+          "traceId",
+          "contentCode",
+          "contentVersionId",
+          "contentHash",
+          "validationReportId",
+          "validationReportVersion",
+          "firstReviewVersion",
+          "finalReviewVersion",
+          "rightsSnapshotId",
+          "rightsSnapshotVersion",
+          "scheduledAt",
+          "displayTimeZone",
+          "status",
+          "stateVersion",
+          "auditId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "readOnly": true,
+        "description": "服务端只读的排期发布任务。客户端不能提交、伪造或推进 status，也不能把任务状态当作运行时发布证明；处理、重试、失败和恢复沿用 M1-007 recovery 契约，不在 B9 复制第二套处理状态机。",
+        "x-client-write": false,
+        "x-server-generated-fields": [
+          "taskId",
+          "commandId",
+          "requestId",
+          "traceId",
+          "status",
+          "stateVersion",
+          "auditId",
+          "createdAt",
+          "updatedAt",
+          "startedAt",
+          "completedAt",
+          "failureCode",
+          "recoveryTaskId"
+        ],
+        "properties": {
+          "taskId": {
+            "$ref": "#/components/schemas/B9ScheduledPublishTaskId",
+            "readOnly": true
+          },
+          "commandId": {
+            "type": "string",
+            "pattern": "^cmd_[A-Za-z0-9._:-]{15,127}$",
+            "readOnly": true
+          },
+          "requestId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "readOnly": true,
+            "description": "创建或幂等重放该任务的服务端 request correlation ID；客户端不能伪造。"
+          },
+          "traceId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "readOnly": true,
+            "description": "贯穿命令受理、排期执行和审计记录的服务端 trace correlation ID；客户端不能伪造。"
+          },
+          "contentCode": {
+            "$ref": "#/components/schemas/B9ContentCode",
+            "readOnly": true
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B9ContentVersionId",
+            "readOnly": true
+          },
+          "contentHash": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{64}$",
+            "readOnly": true
+          },
+          "validationReportId": {
+            "$ref": "#/components/schemas/B9ContentValidationReportId",
+            "readOnly": true
+          },
+          "validationReportVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion",
+            "readOnly": true
+          },
+          "firstReviewVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion",
+            "readOnly": true
+          },
+          "finalReviewVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion",
+            "readOnly": true
+          },
+          "rightsSnapshotId": {
+            "$ref": "#/components/schemas/B9RightsSnapshotId",
+            "readOnly": true
+          },
+          "rightsSnapshotVersion": {
+            "$ref": "#/components/schemas/B9EvidenceVersion",
+            "readOnly": true
+          },
+          "scheduledAt": {
+            "$ref": "#/components/schemas/B9OffsetDateTime",
+            "readOnly": true
+          },
+          "displayTimeZone": {
+            "$ref": "#/components/schemas/B9DisplayTimeZone",
+            "readOnly": true
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B9StateVersion",
+            "readOnly": true
+          },
+          "auditId": {
+            "$ref": "#/components/schemas/B9AuditId",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SCHEDULED",
+              "CANCELLED",
+              "EXECUTED",
+              "INVALIDATED",
+              "RECOVERY_REQUIRED"
+            ],
+            "readOnly": true
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime",
+            "readOnly": true
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime",
+            "readOnly": true
+          },
+          "startedAt": {
+            "$ref": "#/components/schemas/B9DateTime",
+            "readOnly": true
+          },
+          "completedAt": {
+            "$ref": "#/components/schemas/B9DateTime",
+            "readOnly": true
+          },
+          "failureCode": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_.-]{1,95}$",
+            "readOnly": true
+          },
+          "recoveryTaskId": {
+            "type": "string",
+            "pattern": "^task_[A-Za-z0-9._:-]{15,127}$",
+            "readOnly": true,
+            "description": "仅为服务端已创建的 workflow 恢复引用；不表示恢复已执行或运行时成功。"
+          }
+        },
+        "x-task-state-field-policy": {
+          "SCHEDULED": {
+            "required": [],
+            "forbidden": [
+              "completedAt",
+              "failureCode",
+              "recoveryTaskId"
+            ]
+          },
+          "CANCELLED": {
+            "required": [
+              "completedAt"
+            ],
+            "forbidden": [
+              "recoveryTaskId"
+            ]
+          },
+          "EXECUTED": {
+            "required": [
+              "completedAt"
+            ],
+            "forbidden": [
+              "failureCode",
+              "recoveryTaskId"
+            ]
+          },
+          "INVALIDATED": {
+            "required": [
+              "failureCode",
+              "completedAt"
+            ],
+            "forbidden": [
+              "recoveryTaskId"
+            ]
+          },
+          "RECOVERY_REQUIRED": {
+            "required": [
+              "failureCode",
+              "recoveryTaskId"
+            ],
+            "forbidden": []
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {
+                "const": "SCHEDULED"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "completedAt"
+                  ]
+                },
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "recoveryTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": "CANCELLED"
+              }
+            },
+            "required": [
+              "completedAt"
+            ],
+            "not": {
+              "required": [
+                "recoveryTaskId"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": "EXECUTED"
+              }
+            },
+            "required": [
+              "completedAt"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "failureCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "recoveryTaskId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": "INVALIDATED"
+              }
+            },
+            "required": [
+              "failureCode",
+              "completedAt"
+            ],
+            "not": {
+              "required": [
+                "recoveryTaskId"
+              ]
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "const": "RECOVERY_REQUIRED"
+              }
+            },
+            "required": [
+              "failureCode",
+              "recoveryTaskId"
+            ]
+          }
+        ]
+      },
+      "B9ScheduledPublishTaskRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "contentVersionId",
+          "scheduledAt",
+          "displayTimeZone",
+          "status"
+        ],
+        "readOnly": true,
+        "description": "命令受理或后台状态中的排期任务只读引用。处理、重试和失败恢复由 M1-007 recovery 负责，不在此引用复制第二套状态机。",
+        "properties": {
+          "taskId": {
+            "$ref": "#/components/schemas/B9ScheduledPublishTaskId",
+            "readOnly": true
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B9ContentVersionId",
+            "readOnly": true
+          },
+          "scheduledAt": {
+            "$ref": "#/components/schemas/B9OffsetDateTime",
+            "readOnly": true
+          },
+          "displayTimeZone": {
+            "$ref": "#/components/schemas/B9DisplayTimeZone",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SCHEDULED",
+              "CANCELLED",
+              "EXECUTED",
+              "INVALIDATED",
+              "RECOVERY_REQUIRED"
+            ],
+            "readOnly": true
+          }
+        }
+      },
+      "B9SessionContentPin": {
+        "type": "object",
+        "readOnly": true,
+        "additionalProperties": false,
+        "required": [
+          "contentVersionId",
+          "versionNumber",
+          "status",
+          "pinnedAt"
+        ],
+        "description": "学习 session 对内容版本的服务端固定关系。仅表达版本引用和可用性，不返回已移除内容正文、答案或版权证据；UNAVAILABLE 时客户端不得静默回退到其他版本。",
+        "x-client-write": false,
+        "properties": {
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B9ContentVersionId"
+          },
+          "versionNumber": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "UNAVAILABLE"
+            ]
+          },
+          "pinnedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "RIGHTS_REMOVED",
+              "SECURITY_REMOVED",
+              "LEGAL_REMOVED"
+            ]
+          },
+          "alternativeAction": {
+            "type": "string",
+            "enum": [
+              "RETURN_TO_CATALOG",
+              "SELECT_ALTERNATIVE_TASK",
+              "CONTACT_SUPPORT"
+            ]
+          },
+          "alternativeContentVersionId": {
+            "$ref": "#/components/schemas/B9ContentVersionId"
+          }
+        },
+        "oneOf": [
+          {
+            "title": "AvailableSessionContentPin",
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "AVAILABLE"
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "reasonCode"
+                  ]
+                },
+                {
+                  "required": [
+                    "alternativeAction"
+                  ]
+                },
+                {
+                  "required": [
+                    "alternativeContentVersionId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "title": "UnavailableSessionContentPin",
+            "required": [
+              "status",
+              "reasonCode",
+              "alternativeAction"
+            ],
+            "properties": {
+              "status": {
+                "const": "UNAVAILABLE"
+              }
+            }
+          }
+        ]
+      },
+      "B9ScheduledPublishTaskResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/B9ScheduledPublishTask"
+          }
+        }
+      },
+      "B9OffsetDateTime": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?(Z|[+-][0-9]{2}:[0-9]{2})$",
+        "description": "RFC3339 绝对时间；必须带 Z 或显式 UTC offset，禁止无时区的本地时间。"
+      },
+      "B9ScheduledPublishTaskId": {
+        "type": "string",
+        "pattern": "^spt_[A-Za-z0-9._:-]{15,127}$",
+        "description": "content-service 服务端生成的排期发布任务 ID。"
+      },
+      "B9DisplayTimeZone": {
+        "type": "string",
+        "pattern": "^(?:UTC|[A-Za-z][A-Za-z0-9._+-]+(?:/[A-Za-z0-9._+-]+)+)$",
+        "maxLength": 128,
+        "description": "IANA tz database 标识，仅用于后台展示和排期解释；实际执行以 scheduledAt 的绝对时间为准。"
+      },
+      "B9ContentValidationReportId": {
+        "type": "string",
+        "pattern": "^vr_[A-Za-z0-9._:-]{15,127}$",
+        "description": "服务端生成的内容校验报告引用；客户端只能提交乐观绑定，不能把它当作授权或运行证明。"
+      },
+      "B9RightsSnapshotId": {
+        "type": "string",
+        "pattern": "^rgt_[A-Za-z0-9._:-]{15,127}$",
+        "description": "服务端生成的版权快照引用；客户端只能提交乐观绑定，服务端必须重新核对有效期和 owner。"
+      },
+      "B9AuditId": {
+        "type": "string",
+        "pattern": "^aud_[A-Za-z0-9._:-]{15,127}$",
+        "description": "服务端生成的不可变审计记录引用。"
+      },
+      "B9EvidenceVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1,
+        "description": "校验、审核或版权快照的单调版本；不得由客户端降级或重用旧版本绕过服务端重查。"
       }
     },
     "requestBodies": {},
@@ -47029,6 +48542,22 @@
           "methods": [
             "GET",
             "POST"
+          ]
+        },
+        "upstreamOwner": "content-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "admin-content-publish-tasks",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/admin/content-publish-tasks",
+          "methods": [
+            "GET"
           ]
         },
         "upstreamOwner": "content-service",

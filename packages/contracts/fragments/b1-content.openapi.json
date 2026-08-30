@@ -17,6 +17,24 @@
         ],
         "summary": "创建内容身份和首个草稿版本",
         "operationId": "createContentEntity",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将创建意图转换为 B9 CREATE_DRAFT/SAVE_DRAFT command；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-create",
@@ -97,6 +115,24 @@
         ],
         "summary": "为稳定内容身份创建不可变草稿版本",
         "operationId": "createContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将版本草稿转换为 B9 SAVE_DRAFT command；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-version-create",
@@ -311,6 +347,24 @@
         ],
         "summary": "提交草稿进入一审",
         "operationId": "submitContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将提交意图转换为 B9 SUBMIT_REVIEW command；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-submit",
@@ -397,6 +451,24 @@
         ],
         "summary": "提交一审或二审决定",
         "operationId": "decideContentVersionReview",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将审核决定转换为 B9 REVIEW_FIRST/REVIEW_FINAL command；审核主体由服务端验证上下文派生。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-review-decision",
@@ -483,6 +555,24 @@
         ],
         "summary": "发布通过双审和质量检查的版本",
         "operationId": "publishContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将发布意图转换为 B9 PUBLISH command；排期发布使用 B9 SCHEDULE_PUBLISH。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-publish",
@@ -569,6 +659,24 @@
         ],
         "summary": "下线指定已发布版本",
         "operationId": "archiveContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将下线意图转换为 B9 UNPUBLISH command；UNPUBLISH 只清除当前发布指针，不把版本持久状态改写为 UNPUBLISHED；ARCHIVED 仅由独立生命周期退休操作产生。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-archive",
@@ -652,6 +760,24 @@
         ],
         "summary": "恢复指定历史版本为学习端当前版本",
         "operationId": "restoreContentVersion",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在 B9 内容生命周期迁移、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "将恢复意图转换为 B9 ROLLBACK command；目标版本、版权和 epoch 由服务端核验。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-restore",
@@ -735,6 +861,24 @@
         ],
         "summary": "校验并可选应用 CSV/JSON 内容导入批次",
         "operationId": "importContentBatch",
+        "deprecated": true,
+        "x-canonical-replacement": {
+          "operationId": "submitB9ContentCommand",
+          "method": "POST",
+          "path": "/api/v1/admin/content-commands"
+        },
+        "x-sunset": {
+          "status": "planned",
+          "afterTask": "P1R-M3-006",
+          "condition": "仅在批量导入拆分为 B9 draft commands、读影子、对账和回滚 Gate 通过后安排日期"
+        },
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/admin/content-commands"
+        },
+        "x-migration": "批量导入必须拆分为经校验的 B9 CREATE_DRAFT/SAVE_DRAFT commands；此旧入口保留仅为兼容。",
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "x-idempotency": {
           "required": true,
           "strategy": "content-import-batch",
@@ -1231,6 +1375,9 @@
         "name": "X-Content-Role",
         "in": "header",
         "required": false,
+        "description": "仅为旧 B1 compatibility 输入；服务端不得将其作为授权事实，授权必须来自已验证 IAM 上下文和资源状态。",
+        "x-compatibility-only": true,
+        "x-authority-input-ignored": true,
         "schema": {
           "type": "string",
           "enum": [
@@ -1530,6 +1677,9 @@
           "license",
           "actorId"
         ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "properties": {
           "contentCode": {
             "type": "string",
@@ -1585,7 +1735,8 @@
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           }
         }
       },
@@ -1598,6 +1749,9 @@
           "license",
           "actorId"
         ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "properties": {
           "payload": {
             "type": "object",
@@ -1621,7 +1775,8 @@
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           }
         }
       },
@@ -1631,11 +1786,15 @@
         "required": [
           "actorId"
         ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "properties": {
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           },
           "requestId": {
             "type": "string",
@@ -1659,7 +1818,10 @@
               }
             }
           }
-        ]
+        ],
+        "description": "旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"]
       },
       "B1ReviewDecisionRequest": {
         "type": "object",
@@ -1669,6 +1831,9 @@
           "decision",
           "reviewerId"
         ],
+        "description": "旧 B1 compatibility request。reviewerId 仅保留用于兼容解析；服务端必须从已验证主体和双审状态派生并校验 reviewer。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "properties": {
           "stage": {
             "$ref": "#/components/schemas/B1ReviewStage"
@@ -1679,7 +1844,8 @@
           "reviewerId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义，不接受客户端指定审核主体。"
           },
           "reasonCode": {
             "type": "string",
@@ -1700,6 +1866,9 @@
           "payload",
           "actorId"
         ],
+        "description": "旧 B1 compatibility request。批量导入迁移为逐内容 B9 draft commands；actorId 仅保留用于兼容解析，不是授权主体。",
+        "x-compatibility-only": true,
+        "x-authority-inputs-ignored": ["actorId", "reviewerId", "X-Content-Role"],
         "properties": {
           "batchCode": {
             "type": "string",
@@ -1724,7 +1893,8 @@
           "actorId": {
             "type": "string",
             "minLength": 2,
-            "maxLength": 128
+            "maxLength": 128,
+            "description": "旧协议字段；服务端忽略其授权含义并从已验证上下文派生 actor。"
           }
         }
       },

@@ -6,7 +6,7 @@
 > 客服/隐私 owner：[ADR-0014：Phase 1 客服与隐私编排事实所有权](../10-decisions/0014-phase1-support-privacy-ownership.md)
 > 实施状态：目标架构已确定；自有 IAM、RS256/JWKS、Gateway 安全边界与服务侧 PEP 已形成代码和契约基线，但完整运行与发布证据仍未齐，不得宣称目标服务集群已经完成。现有 `services/core-api` 仍是迁移中的 v1 兼容实现，不代表目标服务已经全部开发完成。
 > 数据治理状态：[`config/p1r-data-ownership.v1.json`](../../config/p1r-data-ownership.v1.json) 是 P1R-M1-005 的 D2 机器可读事实源；它冻结目标 owner、schema、namespace 和治理责任，状态为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不构成任何运行验收。
-> 事件治理状态：[`packages/contracts/events/v1/catalog.json`](../../packages/contracts/events/v1/catalog.json) 是 P1R-M1-006 的机器可读治理源。当前 154 个条目分为 7 个 `CANONICAL_D2` 与 147 个 `HISTORICAL_CANDIDATE`；AsyncAPI 仅投影已签收的 7 个事件及其 21 个 send/receive operations，状态保持 `NOT_RUNTIME_VERIFIED`，不构成 Kafka 运行验收。
+> 事件治理状态：[`packages/contracts/events/v1/catalog.json`](../../packages/contracts/events/v1/catalog.json) 是 P1R-M1-006 建立、由各领域 M1 任务增量签收的机器可读治理源。M1-008 后的 154 个条目分为 12 个 `CANONICAL_D2` 与 142 个 `HISTORICAL_CANDIDATE`；AsyncAPI 只投影已签收的 7 个 workflow reliability 事件和 5 个 content lifecycle 事件，共 12 个 channel、12 个 send 与 33 个 receive operations。状态保持 `NOT_RUNTIME_VERIFIED`，不构成 Kafka 运行验收。
 
 ## 1. 这份文档解决什么问题
 

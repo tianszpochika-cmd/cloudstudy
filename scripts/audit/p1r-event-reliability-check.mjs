@@ -18,6 +18,11 @@ export const DEFAULT_RELIABILITY_POLICY =
 export const DEFAULT_SAGA_POLICY = "config/p1r-saga-recovery.v1.json";
 
 const CANONICAL_EVENTS = [
+  "content.version.published.v1",
+  "content.version.reviewed.v1",
+  "content.version.rolled_back.v1",
+  "content.version.submitted.v1",
+  "content.version.unpublished.v1",
   "workflow.event.dead_lettered.v1",
   "workflow.event.delivery_failed.v1",
   "workflow.event.ordering_deferred.v1",

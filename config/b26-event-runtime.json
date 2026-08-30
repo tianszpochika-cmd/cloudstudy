@@ -192,13 +192,17 @@
       "consumerGroups": [
         { "name": "cg.learner-from-content.v1", "service": "learner-service", "principal": "cg.learner-from-content.v1", "replayEnabled": true },
         { "name": "cg.learning-from-content.v1", "service": "learning-service", "principal": "cg.learning-from-content.v1", "replayEnabled": true },
-        { "name": "cg.assessment-from-content.v1", "service": "assessment-service", "principal": "cg.assessment-from-content.v1", "replayEnabled": true }
+        { "name": "cg.assessment-from-content.v1", "service": "assessment-service", "principal": "cg.assessment-from-content.v1", "replayEnabled": true },
+        { "name": "cg.admin-ops-from-content.v1", "service": "admin-ops-service", "principal": "cg.admin-ops-from-content.v1", "replayEnabled": true },
+        { "name": "cg.audit-from-content.v1", "service": "audit-service", "principal": "cg.audit-from-content.v1", "replayEnabled": true }
       ],
       "acl": [
         { "principal": "svc.content-service", "operation": "WRITE", "effect": "ALLOW" },
         { "principal": "cg.learner-from-content.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.learning-from-content.v1", "operation": "READ", "effect": "ALLOW" },
-        { "principal": "cg.assessment-from-content.v1", "operation": "READ", "effect": "ALLOW" }
+        { "principal": "cg.assessment-from-content.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.admin-ops-from-content.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-content.v1", "operation": "READ", "effect": "ALLOW" }
       ]
     },
     {
@@ -401,7 +405,12 @@
     { "eventName": "workflow.event.replay_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.workflow-manual-recovery.v1"] },
     { "eventName": "workflow.event.ordering_deferred.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.workflow-manual-recovery.v1"] },
     { "eventName": "workflow.saga.compensation_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
-    { "eventName": "workflow.saga.manual_recovery_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-manual-recovery.v1", "cg.audit-from-workflow.v1"] }
+    { "eventName": "workflow.saga.manual_recovery_requested.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-manual-recovery.v1", "cg.audit-from-workflow.v1"] },
+    { "eventName": "content.version.submitted.v1", "topic": "platform.content.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.admin-ops-from-content.v1", "cg.audit-from-content.v1"] },
+    { "eventName": "content.version.reviewed.v1", "topic": "platform.content.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.admin-ops-from-content.v1", "cg.audit-from-content.v1"] },
+    { "eventName": "content.version.published.v1", "topic": "platform.content.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learner-from-content.v1", "cg.learning-from-content.v1", "cg.assessment-from-content.v1", "cg.admin-ops-from-content.v1", "cg.audit-from-content.v1"] },
+    { "eventName": "content.version.unpublished.v1", "topic": "platform.content.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learner-from-content.v1", "cg.learning-from-content.v1", "cg.assessment-from-content.v1", "cg.admin-ops-from-content.v1", "cg.audit-from-content.v1"] },
+    { "eventName": "content.version.rolled_back.v1", "topic": "platform.content.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learner-from-content.v1", "cg.learning-from-content.v1", "cg.assessment-from-content.v1", "cg.admin-ops-from-content.v1", "cg.audit-from-content.v1"] }
   ],
   "telemetryBridge": {
     "eventContractIsSeparateFromTelemetryEnvelope": true,

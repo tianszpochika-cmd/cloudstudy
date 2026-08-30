@@ -33,6 +33,13 @@
         "required": true,
         "schema": { "$ref": "#/components/schemas/B9ContentVersionId" }
       },
+      "B9ScheduledPublishTaskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "description": "服务端生成的排期发布任务标识；任务只能通过只读查询读取，不能由客户端改写状态。",
+        "schema": { "$ref": "#/components/schemas/B9ScheduledPublishTaskId" }
+      },
       "B9PrincipalId": {
         "name": "principalId",
         "in": "path",
@@ -182,6 +189,44 @@
       "B9DateTime": {
         "type": "string",
         "format": "date-time"
+      },
+      "B9OffsetDateTime": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?(Z|[+-][0-9]{2}:[0-9]{2})$",
+        "description": "RFC3339 绝对时间；必须带 Z 或显式 UTC offset，禁止无时区的本地时间。"
+      },
+      "B9ScheduledPublishTaskId": {
+        "type": "string",
+        "pattern": "^spt_[A-Za-z0-9._:-]{15,127}$",
+        "description": "content-service 服务端生成的排期发布任务 ID。"
+      },
+      "B9DisplayTimeZone": {
+        "type": "string",
+        "pattern": "^(?:UTC|[A-Za-z][A-Za-z0-9._+-]+(?:/[A-Za-z0-9._+-]+)+)$",
+        "maxLength": 128,
+        "description": "IANA tz database 标识，仅用于后台展示和排期解释；实际执行以 scheduledAt 的绝对时间为准。"
+      },
+      "B9ContentValidationReportId": {
+        "type": "string",
+        "pattern": "^vr_[A-Za-z0-9._:-]{15,127}$",
+        "description": "服务端生成的内容校验报告引用；客户端只能提交乐观绑定，不能把它当作授权或运行证明。"
+      },
+      "B9RightsSnapshotId": {
+        "type": "string",
+        "pattern": "^rgt_[A-Za-z0-9._:-]{15,127}$",
+        "description": "服务端生成的版权快照引用；客户端只能提交乐观绑定，服务端必须重新核对有效期和 owner。"
+      },
+      "B9AuditId": {
+        "type": "string",
+        "pattern": "^aud_[A-Za-z0-9._:-]{15,127}$",
+        "description": "服务端生成的不可变审计记录引用。"
+      },
+      "B9EvidenceVersion": {
+        "type": "integer",
+        "format": "int64",
+        "minimum": 1,
+        "description": "校验、审核或版权快照的单调版本；不得由客户端降级或重用旧版本绕过服务端重查。"
       },
       "B9CommandStatus": {
         "type": "string",

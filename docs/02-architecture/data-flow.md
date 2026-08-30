@@ -14,7 +14,9 @@ Outbox、consumer dedupe、重试/DLQ/replay、Saga/补偿、双人审批和人�
 
 ## 内容发布
 
-草稿 -> 审核中 -> 发布 -> 下线。客户端只能读取已发布版本。内容记录来源、版权状态、授权凭证、审核人员、版本与发布时间。
+内容版本持久态为 `DRAFT -> IN_REVIEW -> APPROVED -> PUBLISHED -> ARCHIVED`；`UNPUBLISH` 清除当前发布指针但不把版本写成 `UNPUBLISHED`，`ROLLBACK` 是把指针切回已验证历史版本的审计动作。即时或排期发布都必须在执行时重新检查不可变 content hash、校验报告、L1/L2 review version、版权快照、媒体、Phase/feature Gate 和 expected stateVersion。排期任务与版本状态分离，失败进入统一恢复契约，不能由客户端提交执行结果。
+
+公开与学习投影只包含已发布 allow-list，以 `contentEpoch/projectionVersion` 单调更新；草稿、答案规则、审核者身份和版权凭证原文不得暴露。新 Session 使用当前版本，已开始 Session 固定原 `contentVersionId`；紧急版权、安全或法律下线返回明确 unavailable 和替代路径，不伪装成空列表。五个 `content.version.*` 事实只在 owner 事实成功后进入 D2 Outbox/Kafka 契约，owner 内部缓存失效不晋升为新的跨服务事件；真实发布、调度、Kafka 与投影运行仍分别由 M2/M3 任务验证。
 
 ## 离线下载与同步
 

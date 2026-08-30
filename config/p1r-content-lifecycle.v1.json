@@ -1,0 +1,327 @@
+{
+  "$schema": "p1r.content-lifecycle.v1",
+  "schemaVersion": "p1r.content-lifecycle.v1",
+  "taskId": "P1R-M1-008",
+  "phase": "PHASE_1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "sourceOfTruth": "config/p1r-content-lifecycle.v1.json",
+  "sourceRefs": [
+    "JNY-P1-13",
+    "INT-P1-005",
+    "INT-P1-011",
+    "ADM-0493-ADM-0540",
+    "docs/06-design/v2-980plus/phase1-business-operation/README.md",
+    "packages/contracts/fragments/b9/b9-content.openapi.json"
+  ],
+  "owner": {
+    "service": "content-service",
+    "dataOwner": "content-service",
+    "gatewayDomainWrite": "PROHIBITED",
+    "foreignSchemaWrite": "PROHIBITED",
+    "actorContext": "SERVER_DERIVED",
+    "clientRoleHeader": "PROHIBITED"
+  },
+  "persistentVersionStates": [
+    "DRAFT",
+    "IN_REVIEW",
+    "APPROVED",
+    "PUBLISHED",
+    "ARCHIVED"
+  ],
+  "reviewStages": ["FIRST_REVIEW", "FINAL_REVIEW"],
+  "legacyWireAliases": [
+    {
+      "wireState": "UNPUBLISHED",
+      "semantic": "PUBLICATION_POINTER_UNAVAILABLE",
+      "persistentVersionState": "PUBLISHED"
+    },
+    {
+      "wireState": "ROLLED_BACK",
+      "semantic": "PUBLICATION_POINTER_REPOINTED",
+      "persistentVersionState": "PUBLISHED"
+    }
+  ],
+  "commands": [
+    {
+      "name": "CREATE_DRAFT",
+      "actorClass": "EDITOR",
+      "fromStates": [],
+      "toStates": ["DRAFT"],
+      "idempotencyScope": "contentCode+command+requestDigest",
+      "publicationEffect": "NONE"
+    },
+    {
+      "name": "SAVE_DRAFT",
+      "actorClass": "EDITOR",
+      "fromStates": ["DRAFT"],
+      "toStates": ["DRAFT"],
+      "idempotencyScope": "contentVersionId+command+requestDigest",
+      "publicationEffect": "NONE"
+    },
+    {
+      "name": "VALIDATE_DRAFT",
+      "actorClass": "EDITOR",
+      "fromStates": ["DRAFT"],
+      "toStates": ["DRAFT"],
+      "idempotencyScope": "contentVersionId+command+requestDigest",
+      "publicationEffect": "NONE"
+    },
+    {
+      "name": "SUBMIT_REVIEW",
+      "actorClass": "EDITOR",
+      "fromStates": ["DRAFT"],
+      "toStates": ["IN_REVIEW"],
+      "idempotencyScope": "contentVersionId+command+requestDigest",
+      "publicationEffect": "NONE"
+    },
+    {
+      "name": "REVIEW_FIRST",
+      "actorClass": "FIRST_REVIEWER",
+      "fromStates": ["IN_REVIEW"],
+      "toStates": ["IN_REVIEW", "DRAFT"],
+      "idempotencyScope": "contentVersionId+reviewStage+reviewVersion",
+      "publicationEffect": "NONE"
+    },
+    {
+      "name": "REVIEW_FINAL",
+      "actorClass": "FINAL_REVIEWER",
+      "fromStates": ["IN_REVIEW"],
+      "toStates": ["APPROVED", "DRAFT"],
+      "idempotencyScope": "contentVersionId+reviewStage+reviewVersion",
+      "publicationEffect": "NONE"
+    },
+    {
+      "name": "PUBLISH",
+      "actorClass": "RELEASE_OPERATOR",
+      "fromStates": ["APPROVED"],
+      "toStates": ["PUBLISHED"],
+      "idempotencyScope": "contentCode+targetVersionNumber+command",
+      "publicationEffect": "SET_PUBLIC_POINTER"
+    },
+    {
+      "name": "SCHEDULE_PUBLISH",
+      "actorClass": "RELEASE_OPERATOR",
+      "fromStates": ["APPROVED"],
+      "toStates": ["APPROVED"],
+      "idempotencyScope": "contentVersionId+scheduledAt+command",
+      "publicationEffect": "CREATE_SCHEDULE"
+    },
+    {
+      "name": "CANCEL_SCHEDULED_PUBLISH",
+      "actorClass": "RELEASE_OPERATOR",
+      "fromStates": ["APPROVED"],
+      "toStates": ["APPROVED"],
+      "idempotencyScope": "scheduledPublishTaskId+command",
+      "publicationEffect": "CANCEL_SCHEDULE"
+    },
+    {
+      "name": "UNPUBLISH",
+      "actorClass": "RELEASE_OPERATOR",
+      "fromStates": ["PUBLISHED"],
+      "toStates": ["PUBLISHED"],
+      "idempotencyScope": "contentCode+contentEpoch+command",
+      "publicationEffect": "CLEAR_PUBLIC_POINTER"
+    },
+    {
+      "name": "ROLLBACK",
+      "actorClass": "RELEASE_OPERATOR",
+      "fromStates": ["PUBLISHED"],
+      "toStates": ["PUBLISHED"],
+      "idempotencyScope": "contentCode+targetVersionNumber+contentEpoch+command",
+      "publicationEffect": "REPOINT_PUBLIC_POINTER"
+    }
+  ],
+  "actorClasses": [
+    {
+      "name": "EDITOR",
+      "commands": ["CREATE_DRAFT", "SAVE_DRAFT", "VALIDATE_DRAFT", "SUBMIT_REVIEW"],
+      "separation": ["CANNOT_REVIEW_OWN_SUBMISSION", "CANNOT_RELEASE_OWN_SUBMISSION"]
+    },
+    {
+      "name": "FIRST_REVIEWER",
+      "commands": ["REVIEW_FIRST"],
+      "separation": ["MUST_DIFFER_FROM_EDITOR", "MUST_DIFFER_FROM_FINAL_REVIEWER", "CANNOT_RELEASE_OWN_REVIEW"]
+    },
+    {
+      "name": "FINAL_REVIEWER",
+      "commands": ["REVIEW_FINAL"],
+      "separation": ["MUST_DIFFER_FROM_EDITOR", "MUST_DIFFER_FROM_FIRST_REVIEWER", "CANNOT_RELEASE_OWN_REVIEW"]
+    },
+    {
+      "name": "RELEASE_OPERATOR",
+      "commands": ["PUBLISH", "SCHEDULE_PUBLISH", "CANCEL_SCHEDULED_PUBLISH", "UNPUBLISH", "ROLLBACK"],
+      "separation": ["MUST_DIFFER_FROM_EDITOR", "MUST_DIFFER_FROM_FIRST_REVIEWER", "MUST_DIFFER_FROM_FINAL_REVIEWER"]
+    }
+  ],
+  "schedule": {
+    "states": ["SCHEDULED", "CANCELLED", "EXECUTED", "INVALIDATED", "RECOVERY_REQUIRED"],
+    "clock": {
+      "scheduledAt": "UTC_INSTANT",
+      "displayTimeZone": "IANA_TIME_ZONE",
+      "dueCheck": "SERVER_OWNED_CLOCK"
+    },
+    "bindingFields": ["contentVersionId", "contentHash", "validationReportId", "validationReportVersion", "firstReviewVersion", "finalReviewVersion", "rightsSnapshotId", "rightsSnapshotVersion", "scheduledAt", "displayTimeZone"],
+    "idempotency": {
+      "key": "Idempotency-Key",
+      "scope": "contentVersionId+scheduledAt+command",
+      "duplicate": "RETURN_ORIGINAL_TASK"
+    },
+    "dueRecheck": {
+      "required": ["CONTENT_HASH", "VALIDATION_REPORT", "FIRST_REVIEW", "FINAL_REVIEW", "RIGHTS_SNAPSHOT", "EXPECTED_STATE_VERSION"],
+      "onFailure": "INVALIDATED_OR_RECOVERY_REQUIRED",
+      "directForeignWrite": "PROHIBITED"
+    },
+    "recovery": {
+      "taskId": "P1R-M1-007",
+      "owner": "workflow-service",
+      "mode": "SAGA_COMPENSATION_AND_MANUAL_RECOVERY",
+      "directDomainWrite": "PROHIBITED"
+    }
+  },
+  "projection": {
+    "allowLists": [
+      {
+        "audience": "PUBLIC",
+        "fieldSet": "PUBLIC_V1",
+        "schemaRef": "#/components/schemas/B9PublicContentProjection",
+        "allowedFields": ["projectionKey", "contentCode", "contentType", "title", "summary", "contentLocale", "targetLevel", "contentVersionId", "versionNumber", "projectionVersion", "contentEpoch", "availability", "projectionStatus", "items", "publishedAt", "cacheTag"],
+        "requiredFields": ["projectionKey", "contentCode", "contentType", "title", "contentLocale", "targetLevel", "contentVersionId", "versionNumber", "projectionVersion", "contentEpoch", "availability", "items", "publishedAt", "cacheTag"],
+        "forbiddenFields": ["answerRuleVersion", "answerRuleBody", "draftPayload", "reviewerActors", "sourceLicenseEvidence", "rightsEvidence", "scheduledPublishTask"],
+        "versionPin": "EXACT_OR_NOT_FOUND",
+        "staleEpoch": "REJECT"
+      },
+      {
+        "audience": "LEARNER",
+        "fieldSet": "LEARNER_V1",
+        "schemaRef": "#/components/schemas/B9LearnerContentProjection",
+        "allowedFields": ["content", "learnerAccess", "contentEpoch", "projectionStatus", "sessionPin"],
+        "requiredFields": ["content", "learnerAccess", "contentEpoch"],
+        "forbiddenFields": ["answerRuleVersion", "answerRuleBody", "draftPayload", "reviewerActors", "sourceLicenseEvidence", "rightsEvidence", "scheduledPublishTask"],
+        "versionPin": "EXACT_OR_NOT_FOUND",
+        "staleEpoch": "REJECT"
+      },
+      {
+        "audience": "ASSESSMENT",
+        "fieldSet": "ASSESSMENT_SNAPSHOT_V1",
+        "schemaRef": "#/components/schemas/B9AssessmentContentSnapshot",
+        "allowedFields": ["contentVersionId", "contentCode", "snapshotVersion", "items", "rightsStatus", "expiresAt"],
+        "requiredFields": ["contentVersionId", "contentCode", "snapshotVersion", "items", "rightsStatus"],
+        "forbiddenFields": ["answerRuleBody", "draftPayload", "reviewerActors", "sourceLicenseEvidence", "rightsEvidence", "scheduledPublishTask"],
+        "opaqueReferenceFields": ["answerRuleVersion", "scoringPolicyRef"],
+        "exposure": "INTERNAL_VERSIONED_SNAPSHOT",
+        "externalProjection": false,
+        "versionPin": "EXACT_OR_NOT_FOUND",
+        "staleEpoch": "REJECT"
+      }
+    ],
+    "versionPin": {
+      "source": "contentVersionId+versionNumber",
+      "fallback": "PROHIBITED",
+      "sessionPin": {
+        "field": "contentVersionId",
+        "binding": "SESSION_START",
+        "mutation": "PROHIBITED"
+      },
+      "emergencyRemoval": {
+        "reasons": ["RIGHTS_REMOVED", "SECURITY_REMOVED", "LEGAL_REMOVED"],
+        "result": "UNAVAILABLE",
+        "requiredFields": ["reasonCode", "alternativeAction"],
+        "silentFallback": "PROHIBITED"
+      }
+    },
+    "epoch": {
+      "field": "contentEpoch",
+      "projectionVersionField": "projectionVersion",
+      "consumerRule": "REJECT_OLDER_OR_CROSS_VERSION"
+    },
+    "responseStatus": {
+      "field": "projectionStatus",
+      "enum": ["CURRENT", "STALE", "PROCESSING"],
+      "default": "CURRENT",
+      "publishedOnly": true
+    },
+    "correlation": {
+      "fields": ["commandId", "taskId", "auditId", "requestId", "traceId", "contentVersionId", "contentHash", "stateVersion"],
+      "serverDerived": ["commandId", "taskId", "auditId", "requestId", "traceId", "stateVersion"]
+    }
+  },
+  "legacyB1": {
+    "contractPath": "packages/contracts/fragments/b1-content.openapi.json",
+    "disposition": "HISTORICAL_COMPATIBILITY_ONLY",
+    "newV2Write": "PROHIBITED",
+    "clientAuthorityHeaders": "PROHIBITED",
+    "migration": "USE_B9_CONTENT_COMMANDS",
+    "authorityInputsIgnored": ["actorId", "reviewerId", "X-Content-Role"],
+    "deprecatedLifecycleWrites": [
+      { "method": "POST", "route": "/api/v1/content", "operationId": "createContentEntity" },
+      { "method": "POST", "route": "/api/v1/content/{contentId}/versions", "operationId": "createContentVersion" },
+      { "method": "POST", "route": "/api/v1/content/{contentId}/versions/{versionId}/submit", "operationId": "submitContentVersion" },
+      { "method": "POST", "route": "/api/v1/content/{contentId}/versions/{versionId}/review", "operationId": "decideContentVersionReview" },
+      { "method": "POST", "route": "/api/v1/content/{contentId}/versions/{versionId}/publish", "operationId": "publishContentVersion" },
+      { "method": "POST", "route": "/api/v1/content/{contentId}/versions/{versionId}/archive", "operationId": "archiveContentVersion" },
+      { "method": "POST", "route": "/api/v1/content/{contentId}/versions/{versionId}/restore", "operationId": "restoreContentVersion" },
+      { "method": "POST", "route": "/api/v1/content/imports", "operationId": "importContentBatch" }
+    ]
+  },
+  "eventGovernance": {
+    "catalogPath": "packages/contracts/events/v1/catalog.json",
+    "b26Path": "config/b26-event-runtime.json",
+    "reliabilityPolicyPath": "packages/contracts/events/v1/reliability-policy.json",
+    "canonicalEvents": [
+      "content.version.submitted.v1",
+      "content.version.reviewed.v1",
+      "content.version.published.v1",
+      "content.version.unpublished.v1",
+      "content.version.rolled_back.v1"
+    ],
+    "historicalOnlyEvents": [
+      "content.public_projection.invalidated.v1",
+      "cms.content.submitted.v1",
+      "cms.review.decided.v1",
+      "cms.content.published.v1",
+      "cms.content.rolled_back.v1",
+      "cms.content.version_saved.v1",
+      "cms.import.completed.v1"
+    ],
+    "canonicalTopic": "platform.content.v1",
+    "canonicalProducer": "content-service",
+    "canonicalEnvelope": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+    "canonicalRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "compatibilityPromotion": {
+      "sourceContractBaseline": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+      "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+      "fromStatus": "HISTORICAL_CANDIDATE",
+      "toStatus": "CANONICAL_D2",
+      "eventNames": ["content.version.submitted.v1", "content.version.reviewed.v1", "content.version.published.v1", "content.version.unpublished.v1", "content.version.rolled_back.v1"],
+      "gapIds": ["EVENT-GAP-CONTENT-DUPLICATE", "EVENT-GAP-BIND-CONT-001"],
+      "topic": "platform.content.v1",
+      "addedConsumerGroups": ["cg.admin-ops-from-content.v1", "cg.audit-from-content.v1"],
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    }
+  },
+  "plannedClosureDisposition": [
+    {
+      "gapId": "EVENT-GAP-CONTENT-DUPLICATE",
+      "status": "D2_CONTRACT_CLOSED",
+      "closureTask": "P1R-M1-008",
+      "maturity": "D2_CONTRACT_READY",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+      "remainingRuntimeTasks": ["P1R-M2-005", "P1R-M2-006"]
+    },
+    {
+      "gapId": "EVENT-GAP-BIND-CONT-001",
+      "status": "D2_CONTRACT_CLOSED",
+      "closureTask": "P1R-M1-008",
+      "maturity": "D2_CONTRACT_READY",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+      "remainingRuntimeTasks": ["P1R-M2-005", "P1R-M2-006"]
+    }
+  ],
+  "runtimeEvidenceBoundary": {
+    "staticOnly": true,
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26": { "mode": "static-only", "runtimeStatus": "pending", "defaultDecision": "NO-GO" },
+    "pendingEvidence": ["CONTENT_OUTBOX_DELIVERY", "SCHEDULE_DUE_RECHECK", "PROJECTION_REPLAY", "ROLE_SEPARATION_AUTHORIZATION"]
+  }
+}

@@ -33,8 +33,8 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 ### P1R-M1-006 事件治理 profile
 
 - `events/v1/catalog.json` 是事件状态、producer/data owner、consumer group、topic、partition、schema 与兼容策略的唯一治理源；其中 `fragmentInventory` 冻结 14 个 fragments 及各自的有序事件清单。fragment 删除、重复、未知文件或顺序漂移都会失败；fragments 只能贡献事件和 payload 语义，不得手工声明 `status`、`x-p1r-governance`、`x-kafka` 或 AsyncAPI。
-- 154 个目录条目全部显式分类。当前只有 7 个已具备可信 B26 静态绑定的 workflow reliability 事件进入 `CANONICAL_D2`；其余 147 个保持 `HISTORICAL_CANDIDATE`，在对应领域契约任务签收前不会进入 canonical AsyncAPI，也不能由生成器补默认 owner/consumer。
-- canonical AsyncAPI 3.0 从 catalog 确定性投影为 7 个 channel、7 个 `send` 和 14 个 `receive` operation；Kafka topic、binding `0.5.0`、producer、data owner 与每个 consumer group 必须精确匹配。任何第二事实源、重复 ID、漂移或缺失 receive 都失败关闭。
+- 154 个目录条目全部显式分类。M1-006 首次冻结 7 个 workflow reliability 事件；M1-008 在显式兼容晋升门禁下再冻结 5 个内容生命周期事件。当前共有 12 个 `CANONICAL_D2`，其余 142 个保持 `HISTORICAL_CANDIDATE`，在对应领域契约任务签收前不会进入 canonical AsyncAPI，也不能由生成器补默认 owner/consumer。
+- canonical AsyncAPI 3.0 从 catalog 确定性投影为 12 个 channel、12 个 `send` 和 33 个 `receive` operation；Kafka topic、binding `0.5.0`、producer、data owner 与每个 consumer group 必须精确匹配。任何第二事实源、重复 ID、漂移或缺失 receive 都失败关闭。
 - `envelope.schema=platform.event.v1` 标识共享信封契约本身；每条目录记录的 `event.schema` 标识该事件 schema version。生成的 `PlatformEventEnvelope<TPayload,TEventSchema>` 与每个事件接口保留后者的字面量类型，避免把两者误合并。
 - `pnpm p1r:event-governance:check` 验证治理源、B26 静态 seed、fragment 边界和 AsyncAPI exact projection。它只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；真实 broker/topic/ACL/投递属于 M2-005，完整 Outbox/dedupe/retry/DLQ/replay/Saga 合同属于 M1-007。
 
@@ -45,6 +45,15 @@ API、事件、JSON Schema、AI 输入输出和内容 schema 的共享契约。�
 - 重试预算固定为含首次投递最多 5 次、指数退避加 jitter、1–60 秒；未知错误失败关闭。预算耗尽进入不可变 DLQ，回放保留事件/root/聚合/schema/dedupe/topic/payload digest，使用新的 `replayRunId` 和控制事件 ID，且必须走原 consumer group/path、继续启用去重/顺序检查并经过不同人员审批。
 - `config/p1r-saga-recovery.v1.json` 冻结 workflow Saga、版本化幂等补偿、对账、请求者与独立审批者职责分离、人工恢复状态机和关闭 receipt。workflow/audit 只写各自 schema；领域补偿只能由目标 owner 通过版本化 API 或 canonical event 执行。
 - 8 个新增 JSON Schema 分别约束可靠性上下文、owner-local Outbox record、publish/consumer/DLQ/replay/recovery task/closure receipt，全部拒绝未知字段和敏感凭据字段。`pnpm p1r:event-reliability:check` 与 `pnpm p1r:saga-recovery:check` 只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`。真实 owner 事务/lease 属于 M2-004，Kafka/Outbox/consumer/DLQ/replay 属于 M2-005，Saga/审批/人工恢复运行闭环属于 M2-006；B26 继续为 `static-only` / `pending` / `NO-GO`。
+
+### P1R-M1-008 内容生命周期 profile
+
+- `config/p1r-content-lifecycle.v1.json` 是内容版本状态、职责分离、发布指针、排期任务、投影白名单、版本 pin、B1 迁移和事件晋升的 D2 单一治理源。持久版本状态只允许 `DRAFT / IN_REVIEW / APPROVED / PUBLISHED / ARCHIVED`；`UNPUBLISHED` 与 `ROLLED_BACK` 只表示发布指针或动作结果，不得写成新的版本状态。
+- B9 只接受 11 个具名 command：草稿创建/保存/校验/送审、初审/终审、立即发布、排期发布、取消排期、下线和回滚。客户端提交的角色、审核、校验或版权结论不具有权威性；状态版本、事实快照、requestId/traceId/auditId 和幂等键均由服务端校验或派生。
+- 排期发布是独立任务，状态固定为 `SCHEDULED / CANCELLED / EXECUTED / INVALIDATED / RECOVERY_REQUIRED`，绑定内容 hash、校验报告、两级审核和版权快照版本；到期时必须重新校验，不能把 D2 task 响应当作运行成功证明。
+- public/learner projection 只暴露显式白名单字段，`projectionStatus` 是兼容性的可选只读状态。学习 session 固定精确内容版本；紧急移除只能返回结构化 `UNAVAILABLE` 与替代动作，禁止泄漏被移除正文、答案或版权证据，也禁止静默切换版本。
+- 仅 `content.version.submitted/reviewed/published/unpublished/rolled_back.v1` 从历史候选晋升为 `CANONICAL_D2`，topic 为 `platform.content.v1`；`content.public_projection.invalidated.v1` 仍是 owner 内部历史候选。兼容门禁只允许这一组显式加法，既有 canonical 事件、其他历史事件和 B26 workflow 治理继续冻结。
+- `pnpm p1r:content-lifecycle:check` 以及事件/契约门禁只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`。真实内容库、权限与租户边界属于 M2-004，Kafka/Outbox/消费投影属于 M2-005，排期执行、补偿与人工恢复属于 M2-006；B26 仍为 `static-only` / `pending` / `NO-GO`。
 
 OpenAPI、事件目录和 JSON Schema 分别位于 `openapi/`、`events/` 与 `schemas/`；生成物位于 `generated/`。兼容性检查使用 `scripts/contracts/compatibility-diff.mjs`，删除既有路由/事件/字段、增加必填字段、收窄枚举或改变类型都会被视为破坏性变更。
 

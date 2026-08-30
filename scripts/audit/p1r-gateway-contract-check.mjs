@@ -6,8 +6,22 @@ import { isDeepStrictEqual } from 'node:util';
 const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gateway-boundary.openapi.json');
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
-const EXPECTED_PUBLIC_OPERATION_COUNT = 326;
+const EXPECTED_PUBLIC_OPERATION_COUNT = 327;
 const EXPECTED_INTERNAL_OPERATION_COUNT = 51;
+const EXPECTED_CONTENT_TASK_RULE = {
+  ruleId: 'admin-content-publish-tasks',
+  priority: 800,
+  match: {
+    type: 'PREFIX',
+    path: '/api/v1/admin/content-publish-tasks',
+    methods: ['GET'],
+  },
+  upstreamOwner: 'content-service',
+  internalTargetClass: 'INTERNAL_V1',
+  visibility: 'AUTHENTICATED',
+  authClass: 'HIGH_RISK_ADMIN',
+  compatibilityMode: 'NONE',
+};
 const HTTP_METHODS = new Set(['get', 'put', 'post', 'patch', 'delete', 'head', 'options']);
 const UNSAFE_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const REQUIRED_RULE_FIELDS = [
@@ -172,6 +186,11 @@ function checkRouteRules(policy, canonicalOpenApi, ownerById, errors) {
     const mayWrite = (match?.methods ?? []).some((method) => UNSAFE_METHODS.has(method));
     add(errors, !(rule.upstreamOwner === 'core-api' && mayWrite), `core-api write route is forbidden: ${rule.ruleId ?? '<unknown>'}`);
   }
+  add(
+    errors,
+    isDeepStrictEqual((rules ?? []).find((rule) => rule?.ruleId === EXPECTED_CONTENT_TASK_RULE.ruleId), EXPECTED_CONTENT_TASK_RULE),
+    'content publish task reads must remain an authenticated high-risk admin route owned by content-service',
+  );
 
   const publicOperations = operations(canonicalOpenApi, policy.d2Boundary?.publicPrefix ?? '/api/v1');
   add(errors, publicOperations.length === EXPECTED_PUBLIC_OPERATION_COUNT, `public operation baseline drift: expected ${EXPECTED_PUBLIC_OPERATION_COUNT}, got ${publicOperations.length}`);

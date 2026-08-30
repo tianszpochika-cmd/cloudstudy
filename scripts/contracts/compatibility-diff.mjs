@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +13,160 @@ const defaults = {
   events: path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'catalog.json'),
   schema: path.join(repoRoot, 'packages', 'contracts', 'schemas', 'v1', 'registry.json'),
 };
+
+export const M1008_CONTENT_PROMOTION_ID = 'M1-008_CONTENT_LIFECYCLE_PROMOTION';
+export const M1008_SOURCE_CONTRACT_BASELINE_REF = '6ce98a95b75e7efca05cc511f5f773dbf2be08a4';
+export const M1008_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1008_CONTENT_EVENT_NAMES = Object.freeze([
+  'content.version.submitted.v1',
+  'content.version.reviewed.v1',
+  'content.version.published.v1',
+  'content.version.unpublished.v1',
+  'content.version.rolled_back.v1',
+]);
+export const M1008_CONTENT_AGGREGATE_ID_FIELDS = Object.freeze({
+  'content.version.submitted.v1': 'contentVersionId',
+  'content.version.reviewed.v1': 'contentVersionId',
+  'content.version.published.v1': 'contentVersionId',
+  'content.version.unpublished.v1': 'contentVersionId',
+  'content.version.rolled_back.v1': 'contentCode',
+});
+export const M1008_CONTENT_CONSUMERS = Object.freeze({
+  'content.version.submitted.v1': Object.freeze([
+    Object.freeze({ service: 'admin-ops-service', consumerGroup: 'cg.admin-ops-from-content.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-content.v1' }),
+  ]),
+  'content.version.reviewed.v1': Object.freeze([
+    Object.freeze({ service: 'admin-ops-service', consumerGroup: 'cg.admin-ops-from-content.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-content.v1' }),
+  ]),
+  'content.version.published.v1': Object.freeze([
+    Object.freeze({ service: 'learner-service', consumerGroup: 'cg.learner-from-content.v1' }),
+    Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-content.v1' }),
+    Object.freeze({ service: 'assessment-service', consumerGroup: 'cg.assessment-from-content.v1' }),
+    Object.freeze({ service: 'admin-ops-service', consumerGroup: 'cg.admin-ops-from-content.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-content.v1' }),
+  ]),
+  'content.version.unpublished.v1': Object.freeze([
+    Object.freeze({ service: 'learner-service', consumerGroup: 'cg.learner-from-content.v1' }),
+    Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-content.v1' }),
+    Object.freeze({ service: 'assessment-service', consumerGroup: 'cg.assessment-from-content.v1' }),
+    Object.freeze({ service: 'admin-ops-service', consumerGroup: 'cg.admin-ops-from-content.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-content.v1' }),
+  ]),
+  'content.version.rolled_back.v1': Object.freeze([
+    Object.freeze({ service: 'learner-service', consumerGroup: 'cg.learner-from-content.v1' }),
+    Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-content.v1' }),
+    Object.freeze({ service: 'assessment-service', consumerGroup: 'cg.assessment-from-content.v1' }),
+    Object.freeze({ service: 'admin-ops-service', consumerGroup: 'cg.admin-ops-from-content.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-content.v1' }),
+  ]),
+});
+export const M1008_CANONICAL_ENVELOPE = Object.freeze([
+  'eventId',
+  'eventName',
+  'schema',
+  'version',
+  'occurredAt',
+  'aggregateType',
+  'aggregateId',
+  'actorId',
+  'traceId',
+  'requestId',
+  'schemaVersion',
+  'dedupeKey',
+  'payload',
+]);
+export const M1008_CONTENT_GAP_IDS = Object.freeze([
+  'EVENT-GAP-CONTENT-DUPLICATE',
+  'EVENT-GAP-BIND-CONT-001',
+]);
+export const M1008_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'a873b367761fb59e44ea46181199da1605ba0a124973cface6c035e90291f79b';
+// The projection fingerprint includes the exact post-merge B1/B9 artifact,
+// including additions that the legacy comparator intentionally does not walk
+// (new paths, schemas and operation extensions). This keeps the allowance
+// finite without embedding a megabyte-sized OpenAPI snapshot in this script.
+export const M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'a9f97b3d20e1a539e60494f5508fcfe1396912267a23b70b93260af55abc7736';
+export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["POST /api/v1/content.request.description", "description contract changed"],
+  ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content.request.properties.actorId.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions.request.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions.request.properties.actorId.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/submit.request.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/submit.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/submit.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/submit.request.properties.actorId.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/review.request.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/review.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/review.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/review.request.properties.reviewerId.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/publish.request.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/publish.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/publish.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/publish.request.properties.actorId.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/archive.request.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/archive.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/archive.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/restore.request.description", "description contract changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/restore.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/{contentId}/versions/{versionId}/restore.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/imports.request.description", "description contract changed"],
+  ["POST /api/v1/content/imports.request.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/imports.request.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/content/imports.request.properties.actorId.description", "description contract changed"],
+  ["POST /api/v1/admin/content-commands.request.oneOf", "oneOf contract changed"],
+  ["POST /api/v1/admin/content-commands.request.x-command-field-policy", "unknown schema keyword or extension changed"],
+  ["POST /api/v1/admin/content-commands.request.properties.command.enum", "new enum value added: SCHEDULE_PUBLISH"],
+  ["POST /api/v1/admin/content-commands.request.properties.command.enum", "new enum value added: CANCEL_SCHEDULED_PUBLISH"],
+  ["components.schemas.B1CreateContentRequest.description", "description contract changed"],
+  ["components.schemas.B1CreateContentRequest.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1CreateContentRequest.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1CreateContentRequest.properties.actorId.description", "description contract changed"],
+  ["components.schemas.B1CreateVersionRequest.description", "description contract changed"],
+  ["components.schemas.B1CreateVersionRequest.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1CreateVersionRequest.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1CreateVersionRequest.properties.actorId.description", "description contract changed"],
+  ["components.schemas.B1ActorRequest.description", "description contract changed"],
+  ["components.schemas.B1ActorRequest.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ActorRequest.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ActorRequest.properties.actorId.description", "description contract changed"],
+  ["components.schemas.B1ActorReasonRequest.description", "description contract changed"],
+  ["components.schemas.B1ActorReasonRequest.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ActorReasonRequest.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ReviewDecisionRequest.description", "description contract changed"],
+  ["components.schemas.B1ReviewDecisionRequest.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ReviewDecisionRequest.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ReviewDecisionRequest.properties.reviewerId.description", "description contract changed"],
+  ["components.schemas.B1ImportRequest.description", "description contract changed"],
+  ["components.schemas.B1ImportRequest.x-compatibility-only", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ImportRequest.x-authority-inputs-ignored", "unknown schema keyword or extension changed"],
+  ["components.schemas.B1ImportRequest.properties.actorId.description", "description contract changed"],
+  ["components.schemas.B9ContentVersionSummary.description", "description contract changed"],
+  ["components.schemas.B9ContentVersionSummary.x-canonical-persistent-statuses", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9ContentVersionSummary.x-deprecated-compatibility-statuses", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9ContentVersionSummary.properties.status.description", "description contract changed"],
+  ["components.schemas.B9ContentVersionSummary.properties.status.x-deprecated-values", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9ContentCommandRequest.oneOf", "oneOf contract changed"],
+  ["components.schemas.B9ContentCommandRequest.x-command-field-policy", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9ContentCommandRequest.properties.command.enum", "new enum value added: SCHEDULE_PUBLISH"],
+  ["components.schemas.B9ContentCommandRequest.properties.command.enum", "new enum value added: CANCEL_SCHEDULED_PUBLISH"],
+  ["components.schemas.B9ContentCommandAccepted.description", "description contract changed"],
+  ["components.schemas.B9ContentCommandAccepted.x-server-generated-fields", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9ContentCommandAccepted.properties.command.enum", "enum contract changed from unspecified to specified"],
+  ["components.schemas.B9ContentCommandAccepted.properties.command.readOnly", "readOnly contract changed"],
+  ["components.schemas.B9PublicContentProjection.properties.availability.description", "description contract changed"],
+  ["components.schemas.B9PublicProjectionState.description", "description contract changed"],
+  ["components.schemas.B9AdminContentState.description", "description contract changed"],
+  ["components.schemas.B9AdminContentState.x-canonical-persistent-statuses", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9AdminContentState.x-deprecated-compatibility-statuses", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9AdminContentState.properties.latestStatus.description", "description contract changed"],
+  ["components.schemas.B9AdminContentState.properties.latestStatus.x-deprecated-values", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9AdminContentState.properties.reviewStages", "existing property removed"],
+]);
 
 function parseArgs(argv) {
   const args = { kind: 'openapi', json: false };
@@ -149,7 +304,7 @@ function resolveMaybe(document, value) {
   return isRecord(value) && typeof value.$ref === 'string' ? resolveJsonPointer(document, value.$ref) : value;
 }
 
-function stableGovernanceValue(value) {
+export function stableGovernanceValue(value) {
   if (Array.isArray(value)) {
     return `[${value.map(stableGovernanceValue).join(',')}]`;
   }
@@ -157,6 +312,311 @@ function stableGovernanceValue(value) {
     return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableGovernanceValue(value[key])}`).join(',')}}`;
   }
   return JSON.stringify(value);
+}
+
+export function stableGovernanceSha256(value) {
+  return createHash('sha256').update(stableGovernanceValue(value)).digest('hex');
+}
+
+function m1008ChannelId(eventName) {
+  return eventName.replaceAll('.', '_');
+}
+
+function m1008OperationId(action, eventName, consumerGroup) {
+  const channelId = m1008ChannelId(eventName);
+  if (action === 'send') return `publish_${channelId}`;
+  return `subscribe_${channelId}_${consumerGroup.replace(/[.-]/g, '_')}`;
+}
+
+function buildM1008ContentGovernance(previousEvent, eventName, allowance) {
+  const aggregateIdField = M1008_CONTENT_AGGREGATE_ID_FIELDS[eventName];
+  const consumers = M1008_CONTENT_CONSUMERS[eventName];
+  const channelId = m1008ChannelId(eventName);
+  return {
+    status: allowance.toStatus,
+    runtimeStatus: allowance.runtimeStatus,
+    scope: 'CROSS_SERVICE_INTEGRATION_FACT',
+    producer: {
+      service: 'content-service',
+      dataOwner: 'content-service',
+      outboxRequired: true,
+      publishOperationId: m1008OperationId('send', eventName),
+    },
+    consumers: consumers.map((consumer) => ({
+      service: consumer.service,
+      consumerGroup: consumer.consumerGroup,
+      subscriptionOperationId: m1008OperationId('receive', eventName, consumer.consumerGroup),
+    })),
+    transport: {
+      protocol: 'kafka',
+      topic: allowance.topic,
+      partitionKey: 'aggregateId',
+      aggregateIdSource: `payload.${aggregateIdField}`,
+      delivery: 'at-least-once',
+      bindingVersion: '0.5.0',
+      channelId,
+    },
+    schema: {
+      schemaVersion: 'content.event.v1',
+      payloadRef: previousEvent?.payloadSchema?.$ref,
+      compatibility: 'additive',
+    },
+    correlation: ['eventId', 'aggregateId', 'requestId', 'traceId', 'dedupeKey'],
+    traceability: ['ARCH-EVT-001', 'INT-P1-017'],
+  };
+}
+
+function buildM1008ContentChannel(eventName, previousEvent, allowance) {
+  const channelId = m1008ChannelId(eventName);
+  return {
+    address: allowance.topic,
+    bindings: {
+      kafka: {
+        topic: allowance.topic,
+        bindingVersion: '0.5.0',
+      },
+    },
+    messages: {
+      event: {
+        name: eventName,
+        'x-event-name': eventName,
+        payload: {
+          $ref: previousEvent?.payloadSchema?.$ref,
+        },
+        bindings: {
+          kafka: {
+            key: {
+              type: 'string',
+              description: 'Canonical partition key from envelope.aggregateId.',
+            },
+            bindingVersion: '0.5.0',
+          },
+        },
+      },
+    },
+  };
+}
+
+function buildM1008ContentPublishOperation(eventName, allowance) {
+  const channelId = m1008ChannelId(eventName);
+  return {
+    action: 'send',
+    channel: {
+      $ref: `#/asyncapi/channels/${channelId}`,
+    },
+    messages: [
+      {
+        $ref: `#/asyncapi/channels/${channelId}/messages/event`,
+      },
+    ],
+    bindings: {
+      kafka: {
+        bindingVersion: '0.5.0',
+      },
+    },
+    'x-producer-service': 'content-service',
+    'x-data-owner': 'content-service',
+  };
+}
+
+function buildM1008ContentSubscribeOperation(eventName, consumer) {
+  const channelId = m1008ChannelId(eventName);
+  return {
+    action: 'receive',
+    channel: {
+      $ref: `#/asyncapi/channels/${channelId}`,
+    },
+    messages: [
+      {
+        $ref: `#/asyncapi/channels/${channelId}/messages/event`,
+      },
+    ],
+    bindings: {
+      kafka: {
+        groupId: {
+          type: 'string',
+          enum: [consumer.consumerGroup],
+        },
+        bindingVersion: '0.5.0',
+      },
+    },
+    'x-consumer-service': consumer.service,
+  };
+}
+
+function isValidM1008PromotionAllowance(allowance) {
+  if (!isRecord(allowance) || allowance.id !== M1008_CONTENT_PROMOTION_ID) return false;
+  if (allowance.sourceContractBaseline !== M1008_SOURCE_CONTRACT_BASELINE_REF
+    || allowance.immutableGovernanceBaseline !== M1008_IMMUTABLE_GOVERNANCE_BASELINE_REF) return false;
+  if (allowance.fromStatus !== 'HISTORICAL_CANDIDATE'
+    || allowance.toStatus !== 'CANONICAL_D2'
+    || allowance.runtimeStatus !== 'NOT_RUNTIME_VERIFIED'
+    || allowance.topic !== 'platform.content.v1'
+    || allowance.closureStatus !== 'D2_CONTRACT_CLOSED') return false;
+  if (stableGovernanceValue(allowance.eventNames) !== stableGovernanceValue(M1008_CONTENT_EVENT_NAMES)
+    || stableGovernanceValue(allowance.gapIds) !== stableGovernanceValue(M1008_CONTENT_GAP_IDS)
+    || stableGovernanceValue(allowance.canonicalEnvelope) !== stableGovernanceValue(M1008_CANONICAL_ENVELOPE)) return false;
+  return stableGovernanceValue(allowance.addedConsumerGroups)
+    === stableGovernanceValue(['cg.admin-ops-from-content.v1', 'cg.audit-from-content.v1']);
+}
+
+/**
+ * Build the sole event-catalog shape admitted by the M1-008 compatibility
+ * promotion. Callers must validate the allowance source before using it.
+ */
+export function buildM1008PromotionExpectedCatalog(previous, allowance) {
+  if (!isRecord(previous) || !isValidM1008PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  if (!isRecord(expected.asyncapi)
+    || !isRecord(expected.asyncapi.channels)
+    || !isRecord(expected.asyncapi.operations)) return undefined;
+
+  const eventsByName = new Map((expected.events ?? []).map((event) => [event?.eventName, event]));
+  for (const eventName of allowance.eventNames ?? []) {
+    const event = eventsByName.get(eventName);
+    const consumers = M1008_CONTENT_CONSUMERS[eventName];
+    if (!isRecord(event) || !consumers) return undefined;
+    event.status = allowance.toStatus;
+    event['x-envelope-required'] = [...allowance.canonicalEnvelope];
+    event['x-p1r-governance'] = buildM1008ContentGovernance(event, eventName, allowance);
+
+    const channelId = m1008ChannelId(eventName);
+    expected.asyncapi.channels[channelId] = buildM1008ContentChannel(eventName, event, allowance);
+    expected.asyncapi.operations[m1008OperationId('send', eventName)] = buildM1008ContentPublishOperation(eventName, allowance);
+    for (const consumer of consumers) {
+      expected.asyncapi.operations[m1008OperationId('receive', eventName, consumer.consumerGroup)] = buildM1008ContentSubscribeOperation(eventName, consumer);
+    }
+  }
+
+  const closures = expected['x-p1r-event-governance']?.plannedClosures;
+  if (!Array.isArray(closures)) return undefined;
+  for (const gapId of allowance.gapIds ?? []) {
+    const closure = closures.find((candidate) => candidate?.gapId === gapId);
+    if (!isRecord(closure)) return undefined;
+    closure.status = allowance.closureStatus;
+  }
+  return expected;
+}
+
+/**
+ * Build the sole B26 runtime shape admitted by the M1-008 promotion. Existing
+ * topic settings/groups/routes are copied from the immutable baseline; only
+ * the two named content consumer groups, their READ ACLs and five content
+ * routes are appended.
+ */
+export function buildM1008PromotionExpectedB26(previous, allowance) {
+  if (!isRecord(previous) || !isValidM1008PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const topics = Array.isArray(expected.topics) ? expected.topics : undefined;
+  const contentTopic = topics?.find((topic) => topic?.name === allowance.topic);
+  if (!isRecord(contentTopic)
+    || !Array.isArray(contentTopic.consumerGroups)
+    || !Array.isArray(contentTopic.acl)
+    || !Array.isArray(expected.eventRouting)) return undefined;
+  const addedGroups = [
+    {
+      name: 'cg.admin-ops-from-content.v1',
+      service: 'admin-ops-service',
+      principal: 'cg.admin-ops-from-content.v1',
+      replayEnabled: true,
+    },
+    {
+      name: 'cg.audit-from-content.v1',
+      service: 'audit-service',
+      principal: 'cg.audit-from-content.v1',
+      replayEnabled: true,
+    },
+  ];
+  const currentGroupNames = new Set((contentTopic.consumerGroups ?? []).map((group) => group?.name));
+  for (const group of addedGroups) {
+    if (!currentGroupNames.has(group.name)) contentTopic.consumerGroups.push(group);
+  }
+  const acl = [
+    {
+      principal: 'cg.admin-ops-from-content.v1',
+      operation: 'READ',
+      effect: 'ALLOW',
+    },
+    {
+      principal: 'cg.audit-from-content.v1',
+      operation: 'READ',
+      effect: 'ALLOW',
+    },
+  ];
+  const currentAcl = new Set((contentTopic.acl ?? []).map((entry) => stableGovernanceValue(entry)));
+  for (const entry of acl) {
+    if (!currentAcl.has(stableGovernanceValue(entry))) contentTopic.acl.push(entry);
+  }
+  const existingRoutes = new Set(expected.eventRouting.map((route) => route?.eventName));
+  for (const eventName of allowance.eventNames ?? []) {
+    if (!existingRoutes.has(eventName)) {
+      expected.eventRouting.push({
+        eventName,
+        topic: allowance.topic,
+        partitionKey: 'aggregateId',
+        consumerGroups: M1008_CONTENT_CONSUMERS[eventName].map((consumer) => consumer.consumerGroup),
+      });
+    }
+  }
+  return expected;
+}
+
+function compareM1008Promotion(previous, current, allowance) {
+  const expected = buildM1008PromotionExpectedCatalog(previous, allowance);
+  if (expected === undefined) {
+    return [describeChange(
+      'events',
+      'm1-008.compatibilityPromotion',
+      'M1-008 promotion allowance cannot be applied to this governance baseline',
+    )];
+  }
+  const changes = compareEvents(expected, current);
+  if (stableGovernanceValue(expected) !== stableGovernanceValue(current)) {
+    changes.push(describeChange(
+      'events',
+      'm1-008.compatibilityPromotion',
+      'current event catalog differs from the explicit M1-008 promotion projection',
+    ));
+  }
+  return changes;
+}
+
+function compareM1008OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1008PromotionAllowance(allowance)) {
+    return [describeChange(
+      'openapi',
+      'm1-008.openapiPromotion',
+      'M1-008 promotion allowance cannot be applied without the frozen policy allowance',
+    )];
+  }
+
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1008_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange(
+      'openapi',
+      'm1-008.openapiPromotion.source',
+      'M1-008 OpenAPI promotion source is not the frozen 6ce98a9 source projection',
+    ));
+  }
+
+  const expectedDescriptors = M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS
+    .map(([location, reason]) => describeChange('openapi', location, reason));
+  const actualDescriptors = compareOpenApi(previous, current);
+  if (stableGovernanceValue(actualDescriptors) !== stableGovernanceValue(expectedDescriptors)) {
+    changes.push(describeChange(
+      'openapi',
+      'm1-008.openapiPromotion.change-descriptors',
+      'current OpenAPI changes do not exactly match the frozen M1-008 descriptor set',
+    ));
+  }
+  if (stableGovernanceSha256(current) !== M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+    changes.push(describeChange(
+      'openapi',
+      'm1-008.openapiPromotion.projection',
+      'current OpenAPI is not the frozen M1-008 B1/B9 projection',
+    ));
+  }
+  return changes;
 }
 
 function duplicateEventNames(events) {
@@ -177,13 +637,18 @@ export function hasEventGovernance(catalog) {
         && (event.status !== undefined || event['x-p1r-governance'] !== undefined)));
 }
 
-function compareImmutableEventGovernance(governanceBaseline, current, changes) {
+function compareImmutableEventGovernance(governanceBaseline, current, changes, allowance) {
   if (!hasEventGovernance(governanceBaseline)) {
     changes.push(describeChange(
       'events',
       'x-p1r-event-governance',
       'immutable governance baseline is missing platform or event governance',
     ));
+    return;
+  }
+
+  if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
+    changes.push(...compareM1008Promotion(governanceBaseline, current, allowance));
     return;
   }
 
@@ -253,8 +718,27 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes) {
   }
 }
 
-export function compareB26WorkflowGovernance(governanceBaseline, current) {
+export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
+    const expected = buildM1008PromotionExpectedB26(governanceBaseline, allowance);
+    if (expected === undefined) {
+      return [describeChange(
+        'events',
+        'b26.m1-008.compatibilityPromotion',
+        'M1-008 B26 promotion allowance cannot be applied to this governance baseline',
+      )];
+    }
+    if (stableGovernanceValue(expected) !== stableGovernanceValue(current)) {
+      const strictChanges = compareB26WorkflowGovernance(expected, current);
+      return [...strictChanges, describeChange(
+        'events',
+        'b26.m1-008.compatibilityPromotion',
+        'current B26 runtime policy differs from the explicit M1-008 content-topic promotion',
+      )];
+    }
+    return changes;
+  }
   if (stableGovernanceValue(governanceBaseline?.topics) !== stableGovernanceValue(current?.topics)) {
     changes.push(describeChange(
       'events',
@@ -377,7 +861,10 @@ function compareOpenApi(previous, current) {
   return changes;
 }
 
-function compareEvents(previous, current, { governanceBaseline } = {}) {
+function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
+    return compareM1008Promotion(previous, current, allowance);
+  }
   const changes = [];
   for (const error of validateEventPayloadSchemas(current.payloadSchemas)) {
     changes.push(describeChange('events', 'payloadSchemas', error));
@@ -385,7 +872,7 @@ function compareEvents(previous, current, { governanceBaseline } = {}) {
   const previousHasGovernance = hasEventGovernance(previous);
   const currentHasGovernance = hasEventGovernance(current);
   if (!previousHasGovernance && governanceBaseline !== undefined) {
-    compareImmutableEventGovernance(governanceBaseline, current, changes);
+    compareImmutableEventGovernance(governanceBaseline, current, changes, allowance);
   } else if (!previousHasGovernance && currentHasGovernance) {
     changes.push(describeChange(
       'events',
@@ -490,9 +977,14 @@ function compareSchemaRegistry(previous, current) {
   return changes;
 }
 
-export function compareContracts(kind, previous, current, { governanceBaseline } = {}) {
-  if (kind === 'openapi') return compareOpenApi(previous, current);
-  if (kind === 'events') return compareEvents(previous, current, { governanceBaseline });
+export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
+  if (kind === 'openapi') {
+    if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
+      return compareM1008OpenApiPromotion(previous, current, allowance);
+    }
+    return compareOpenApi(previous, current);
+  }
+  if (kind === 'events') return compareEvents(previous, current, { governanceBaseline, allowance });
   if (kind === 'schema') return compareSchemaRegistry(previous, current);
   throw new Error(`Unsupported contract kind: ${kind}`);
 }

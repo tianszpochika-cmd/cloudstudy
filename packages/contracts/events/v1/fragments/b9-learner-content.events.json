@@ -52,7 +52,7 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
       "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionSubmitted" },
       "compatibility": {
         "strategy": "additive",
@@ -67,7 +67,7 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
       "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionReviewed" },
       "compatibility": {
         "strategy": "additive",
@@ -82,7 +82,7 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
       "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionPublished" },
       "compatibility": {
         "strategy": "additive",
@@ -97,7 +97,7 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentVersionId",
-      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
       "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionUnpublished" },
       "compatibility": {
         "strategy": "additive",
@@ -112,7 +112,7 @@
       "schema": "content.event.v1",
       "aggregateType": "content_version",
       "aggregateIdField": "contentCode",
-      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
       "payloadSchema": { "$ref": "#/payloadSchemas/B9ContentVersionRolledBack" },
       "compatibility": {
         "strategy": "additive",

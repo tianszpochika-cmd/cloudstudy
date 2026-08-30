@@ -25,6 +25,7 @@ const openApiB25FragmentDir = path.join(repoRoot, 'packages', 'contracts', 'frag
 const openApiSharedFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'fragments');
 const eventFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'fragments');
 const canonicalB8AuthFragment = 'packages/contracts/fragments/b8/b8-auth-iam.openapi.json';
+const canonicalB1ContentFragment = 'packages/contracts/fragments/b1-content.openapi.json';
 const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility', 'x-b8-iam-policy-governance'];
 const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';
 const requiredCanonicalGatewayMetadata = ['x-p1r-gateway-boundary'];
@@ -199,13 +200,15 @@ function mergeOpenApi(base, fragment, filePath, canonicalB8MetadataWrites, canon
   for (const [route, pathItem] of Object.entries(fragment.paths ?? {})) {
     const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)(?:[\\/]|-)/i.test(filePath);
     const isB1LegacyAuthRoute = /[\\/]b1(?:[\\/]|-)/i.test(filePath) && route.startsWith('/api/v1/auth/');
-    if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment && !isB1LegacyAuthRoute) {
+    const isCanonicalB1ContentRoute = normalizeRepoPath(filePath) === canonicalB1ContentFragment;
+    if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment && !isB1LegacyAuthRoute && !isCanonicalB1ContentRoute) {
       throw new Error(`${filePath} conflicts with OpenAPI route ${route}; reconcile manually`);
     }
     base.paths[route] = pathItem;
   }
 
-  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|25)(?:[\\/]|-)/i.test(filePath);
+  const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|25)(?:[\\/]|-)/i.test(filePath)
+    || normalizeRepoPath(filePath) === canonicalB1ContentFragment;
   for (const componentGroup of ['schemas', 'parameters', 'responses', 'headers', 'securitySchemes', 'requestBodies', 'examples']) {
     mergeNamedMap(base.components[componentGroup] ??= {}, fragment.components?.[componentGroup], `OpenAPI ${componentGroup}`, { allowOverride: isOverrideFragment });
   }
