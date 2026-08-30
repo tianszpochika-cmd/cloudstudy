@@ -56,6 +56,16 @@
 - 终验结果：tooling `27/27`、lifecycle `6/6`、P1R `296/296`、workspace typecheck `7/7`，contracts merge/generate/validate、event governance/reliability、Gateway、B26 static、CI/plan/diff 和两组固定 compatibility 均 PASS；三位 reviewer 一致接受，P1/P2 `0/0`。
 - D2 边界：B26 仍为 `static-only` / `pending` / `NO-GO`；M2-004 验证真实 owner 数据/事务，M2-005 验证 Kafka/Outbox/consumer，M2-006 验证调度/Saga/人工恢复；M0-006 继续 `BLOCKED`，完整历史 G 仍仅既知 G0/G3 两项失败。
 
+## M1-009 执行轨道
+
+不可变来源检查点：`dev@ca282cd00dabeeb3fafbf6b4570054bd5b9f8549`。
+
+1. 业务与设计边界：映射 SPK `0159…0188`、适用 INF `0405…0460`、`INT-P1-005/006` 和媒体后台/学习旅程，冻结媒体、内容、assessment 的事实 owner 与失败恢复。
+2. 契约与工具：收敛历史 B1/B3/B11 媒体/录音候选，冻结 upload intent、处理任务、rendition、字幕、短时访问、录音与规则化跟读 D2 契约，并建立精确兼容投影。
+3. 安全与对抗：冻结服务端权威身份/同意/版权、对象完整性、短时 URL、录音隐私、保留策略引用、Phase 1 无 ASR/AI/RTC 和 `0.5x–2.0x` 保音高能力；以失败关闭变异测试验证。
+
+统筹 Agent 负责统一模型、公共生成物、状态、Evidence、提交和推送；三条执行轨道仅使用 Terra Ultra 或 Luna Max。M1-009 只允许形成 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不修改或冒充真实对象存储、转码 worker、字幕生成、数据库、Kafka、浏览器/设备和跨进程运行证据。精确保留/删除期限仍由 `P1R-M1-017` 冻结，M2-004/005 继续负责真实 owner 存储与事件运行验证。
+
 ## M1-003 执行轨道
 
 1. IAM 权限契约：只修改 B8 OpenAPI 源，冻结 principal、成人 Gate、consent、tenant、RBAC/ABAC、admin policy 生命周期与内部 PEP/PDP 输入输出。

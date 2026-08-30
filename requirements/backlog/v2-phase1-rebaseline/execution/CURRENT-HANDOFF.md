@@ -22,7 +22,7 @@ M1-007 事件可靠性与人工恢复 D2 契约已接受：原最终源码 `6ce9
 
 M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受：最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，主评审 `agent:m1_008_independent_review:gpt-5.6-luna:max` 与两条 Luna Max 交叉复核绑定同一 SHA 一致 `ACCEPT`，P1/P2 为 `0/0`；canonical manifest 为 `evidence/p1r/m1/P1R-M1-008/manifest.json`。tooling `27/27`、lifecycle `6/6`、P1R `296/296`、typecheck `7/7` 以及 contracts、event、Gateway、B26 static 与固定 compatibility 均 PASS。结论只覆盖 D2 静态契约，真实内容数据/Outbox、Kafka、排期/Saga、投影与 E2E 没有晋升为完成。
 
-M1-008 的源码、canonical Evidence 与台账关闭后，当前台账计数为 `15 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 92 PLANNED`（共 108 项）。接手者必须以远程 `dev` 的集成提交和 Evidence Gate 为准，不从聊天记录推断完成状态。
+M1-008 的源码、canonical Evidence 与台账已关闭；`P1R-M1-009` 已从 `dev@ca282cd00dabeeb3fafbf6b4570054bd5b9f8549` 按状态机启动。当前台账计数为 `15 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 91 PLANNED`（共 108 项）。接手者必须以远程 `dev`、状态轨迹和 Evidence Gate 为准，不从聊天记录推断完成状态。
 
 ## 1. 获取检查点
 

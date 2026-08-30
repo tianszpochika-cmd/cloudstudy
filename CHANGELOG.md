@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-009-START-20260830] 启动 Phase 1 媒体与录音 D2 契约：以已同步的 `dev@ca282cd00dabeeb3fafbf6b4570054bd5b9f8549` 为不可变来源检查点，梳理 B1/B3/B11 历史候选并冻结 upload intent、处理任务/retry、rendition、字幕、短时访问、录音/跟读、服务端权威同意/版权、Phase 1 无 ASR/AI/RTC 与 `0.5x–2.0x` 保音高能力。该条只记录 `IN_PROGRESS`；真实对象存储、转码/字幕 worker、DB、Kafka、浏览器/真机和精确保留期限均未验证，M0-006 继续 `BLOCKED`。
+
 - [P1R-M1-008-CONTENT-LIFECYCLE-20260830] 接受 Phase 1 内容后台 command、双审、排期发布与投影 D2 契约：最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1` 经三条 Luna Max 只读轨道一致 `ACCEPT`，当前源码 P1/P2 为 `0/0`，canonical manifest 位于 `evidence/p1r/m1/P1R-M1-008/manifest.json`。冻结 11 个 B9 command、只读 reviewRecords 版本/hash/阶段集合、5 个排期状态、公开/学习投影 allow-list、B10 active pin/future fallback、5 个 canonical content lifecycle 事件及 composed OpenAPI 的精确 TypeScript 生成。专项 tooling `27/27`、lifecycle `6/6`、P1R `296/296`、workspace typecheck `7/7`、contracts、event、Gateway、B26 static 和两组固定 compatibility 均 PASS。结论只覆盖 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 pending/NO-GO，真实数据/Outbox、Kafka、调度/Saga、投影 E2E 分别留给 M2-004/005/006 与后续实现任务，M0-006 继续 `BLOCKED`。
 
 - [P1R-M1-008-REWORK-20260830] M1-008 经三轮 REWORK 收口：`abcf688` 的 ARCHIVED retirement、B1 replay、到期复核和 B26 文档漂移由 `6e8838d` 修复；`6e8838d` 的 reviewRecords 缺版本/hash/阶段唯一性及 reviewed event 缺 contentHash 由 `6fb785e` 修复；`6fb785e` 的 composed schema 生成 TypeScript 丢失公共字段、分支 required/discriminator 与禁止字段由 `e05c774` 修复，并加入所有 11 个 B9 command 与 B10 pin/recovery 的编译期负例。中间评审精确时刻未单独持久化，不补造时间或运行结论。
