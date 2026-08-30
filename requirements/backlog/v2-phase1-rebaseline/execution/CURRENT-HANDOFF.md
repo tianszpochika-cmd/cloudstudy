@@ -24,7 +24,9 @@ M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受�
 
 M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品最新在 `cd92378` 完成 current-source revalidation，canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。
 
-`P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，raw-answer 脱敏和终态时间 nullability 已在最终源码闭合，复审 `ACCEPT`、P1/P2 为 `0/0`。当前台账计数为 `17 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 90 PLANNED`（共 108 项）；接手者必须以远程 `dev`、状态轨迹和 Evidence Gate 为准，不从聊天记录推断完成状态。
+`P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，raw-answer 脱敏和终态时间 nullability 已在最终源码闭合，复审 `ACCEPT`、P1/P2 为 `0/0`。
+
+`P1R-M1-011` 已从已同步的 `dev@14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1` 按状态机启动。当前台账计数为 `17 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 89 PLANNED`（共 108 项）。本任务只允许形成 learner 目标/画像、5/15/30/45、planning-input pin、首日投影与只读恢复的 D2 契约；接手者必须以远程 `dev`、状态轨迹和 Evidence Gate 为准，不从聊天记录推断完成状态。
 
 ## 1. 获取检查点
 

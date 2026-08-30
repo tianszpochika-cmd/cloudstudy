@@ -177,6 +177,14 @@
       "actor": "root-coordinator",
       "reason": "Initial source 3bfc63dd6303745187bfa62ef5ca3c5ca75c70b4 entered REWORK after independent Luna Max review found incomplete raw-answer audit redaction and nullable ASSESSED assessedAt. Source cd92378bd8ba0c57c920fc6e79db52de717b0b05 closed both findings and was accepted by reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max with zero current-source P1/P2 blockers. The result remains D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; M1-012/M1-013 and M2-004/005/006 retain downstream and runtime ownership, while M0-006 remains BLOCKED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-010/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-011",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-30T19:02:12+08:00",
+      "actor": "root-coordinator",
+      "reason": "Dependencies P1R-M1-003, P1R-M1-005 and P1R-M1-007 are accepted. The coordinator froze 14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1 as the source checkpoint and started the learner target, profile, planning-input and first-day projection D2 contract task without promoting database, Kafka, workflow, browser or E2E runtime evidence.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-011/manifest.json"
     }
   ]
 }

@@ -14,6 +14,7 @@
 - `P1R-M1-008`：`ACCEPTED`；不可变来源检查点 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31`，原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，Evidence `evidence/p1r/m1/P1R-M1-008/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受 D2 内容 lifecycle 契约和失败关闭门禁，不宣称真实发布链路已运行。
 - `P1R-M1-009`：`ACCEPTED`；不可变来源检查点 `ca282cd00dabeeb3fafbf6b4570054bd5b9f8549`，原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，Evidence `evidence/p1r/m1/P1R-M1-009/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation，独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 接受原任务与本轮当前源，保持媒体/录音 D2 边界。
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 复审接受，P1/P2 为 `0/0`，只冻结 assessment session/checkpoint/attempt、确定性判分摘要、报告快照、版本和幂等 D2 契约。
+- `P1R-M1-011`：`IN_PROGRESS`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，只冻结 learner-owned profile/target、5/15/30/45、planning-input pin、首日投影 owner、失败状态和只读恢复查询 D2 契约。
 - M1-010 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-009` 的 manifest 已保留各自原始 provenance，并统一绑定 `cd92378...` 完成 current-source revalidation；这不把旧任务重写为 M1-010 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
@@ -98,6 +99,16 @@
 - 终验结果：assessment `83/83`、CLI `77` cases、P1R `433/433`、tooling `35/35`、workspace typecheck `7/7`，contracts merge/generate/validate 与固定 compatibility 均 PASS；canonical 为 386 operations、601 schemas、154 events、104 payload schemas、12 AsyncAPI channels、45 operations、13 JSON Schemas。
 - 已知非本任务问题：完整历史 G 保持既知 G0/G3 两项 stale marker 失败；direct API audit 保持既存 B9 content-publish-task 200 envelope 缺口。两项均未由 M1-010 引入，也没有被伪装成全绿。
 - D2 边界：`EVENT-GAP-BIND-ASM-001` 仍开放；placement/Saga 归 M1-012，learning SRS/mastery/report watermark 归 M1-013，真实 owner schema/Outbox、Kafka、workflow runtime 分别归 M2-004/005/006；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
+## M1-011 执行轨道
+
+不可变来源检查点：`dev@14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`。
+
+1. 业务与 owner 边界：映射 ONB `0001…0022`、USR、`JNY-P1-03/05` 与 `INT-P1-003`，冻结 learner-service 的 profile/target/首日只读投影、learning-service 的计划输入/计划 owner、workflow-service 的恢复任务边界。
+2. 契约与兼容：收紧 B9 profile/target/first-day 契约，固定 5/15/30/45、target/profile version、CAS/幂等、planning-input pin、水位、失败状态与 learner-safe recovery query；旧 B1 onboarding 只保留结构化 adapter/deprecation。
+3. 事件与失败关闭：先消除 `EVENT-GAP-ONB-001` 的文档复用歧义，再按 M1-006 治理要求决定目标/首日 D2 producer-consumer 绑定；任何未形成完整绑定的历史事件继续 historical-only，placement 完成事件归 M1-012。覆盖客户端 authority 注入、版本错配、空任务伪装成功、恢复任务越权与 D2 runtime 冒充。
+
+统筹 Agent 负责统一模型、公共生成物、状态、Evidence、提交和推送；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-011 不完成 placement manifest/结果及 placement→plan Saga（M1-012）、计划算法/SRS/mastery/watermark（M1-013）、真实 owner 数据与 Outbox（M2-004）、Kafka（M2-005）、Saga/runtime（M2-006）或浏览器/E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，M0-006 继续 `BLOCKED`。
 
 ## M1-003 执行轨道
 
