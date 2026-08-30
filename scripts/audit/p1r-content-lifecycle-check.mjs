@@ -90,6 +90,11 @@ const CANONICAL_CONTENT_EVENTS = [
   'content.version.unpublished.v1',
   'content.version.rolled_back.v1',
 ];
+const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
+  'EVENT-GAP-ONB-001',
+  'EVENT-GAP-CONTENT-DUPLICATE',
+  'EVENT-GAP-BIND-CONT-001',
+];
 const HISTORICAL_CONTENT_EVENTS = [
   'content.public_projection.invalidated.v1',
   'cms.content.submitted.v1',
@@ -911,9 +916,9 @@ function checkEventGovernance(input, errors) {
   const actualClosed = (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
     .filter(function (closure) { return closure.status === 'D2_CONTRACT_CLOSED'; })
     .map(function (closure) { return closure.gapId; });
-  exact(errors, actualClosed, closedIds, 'catalog D2 closed gap set');
+  exact(errors, actualClosed, EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS, 'catalog D2 closed gap set');
   add(errors, (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
-    .filter(function (closure) { return closure.status === 'PLANNED'; }).length === 14, 'exactly fourteen unrelated event gaps must remain PLANNED');
+    .filter(function (closure) { return closure.status === 'PLANNED'; }).length === 13, 'exactly thirteen unrelated event gaps must remain PLANNED');
   for (const eventName of HISTORICAL_CONTENT_EVENTS) {
     const event = eventByName(catalog, eventName);
     add(errors, event && event.status === 'HISTORICAL_CANDIDATE', eventName + ' must remain HISTORICAL_CANDIDATE');

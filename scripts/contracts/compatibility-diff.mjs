@@ -484,6 +484,75 @@ export const M1010_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["assessment.attempt.assessed.v1.payload.properties.scoreBucket.enum","existing enum value removed: PENDING_REVIEW"],
   ["assessment.attempt.assessed.v1.payload.properties.masterySignal","existing property removed"],
 ]);
+
+export const M1011_LEARNER_PLANNING_PROMOTION_ID = 'M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION';
+export const M1011_SOURCE_CONTRACT_BASELINE_REF = 'cd92378bd8ba0c57c920fc6e79db52de717b0b05';
+export const M1011_OPENAPI_SOURCE_SEMANTIC_SHA256 = '55dc56fffdd3f94898e62149b48ac400af5eada2a969c396205939ba41f115ed';
+export const M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '0d000b5230751a508d997bc2af581ab1df71df2ccccc35300d33b633e207791f';
+export const M1011_EVENT_SOURCE_SEMANTIC_SHA256 = 'bba617d505acd04ac14a2c3c5e261c02e6ab8a075c5c551fe05eabe849024470';
+export const M1011_EVENT_EXPECTED_SEMANTIC_SHA256 = '765e95bdcfcd469b9729749b05941247cbc542bc81f4cee8c82d1be76545021b';
+export const M1011_B26_SOURCE_SEMANTIC_SHA256 = '0df8b346a75777a5d75c4370de63a6b8370f640f025252698f1449e1d2b7cb61';
+export const M1011_B26_EXPECTED_SEMANTIC_SHA256 = '8eef8ce82150d5b82a8c2b7e8d0cfbaace0720d684852dae307d5bcd2e334917';
+export const M1011_LEARNER_EVENT_NAMES = Object.freeze([
+  'learner.target.updated.v1',
+  'learner.first_day.projected.v1',
+]);
+const M1011_OPENAPI_APPROVED_PATH_PROJECTIONS = Object.freeze([
+  '/api/v1/learner/first-day/recovery/{recoveryTaskId}',
+  '/api/v1/learner/goal-options',
+  '/api/v1/learner/first-day',
+  '/api/v1/learner/home',
+  '/api/v1/learner/preferences',
+  '/api/v1/learner/profile',
+  '/api/v1/learner/targets',
+  '/api/v1/onboarding/goals/first',
+  '/api/v1/onboarding/options',
+  '/api/v1/onboarding/profile',
+]);
+const M1011_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
+  'B9FirstDayProjectionCommon',
+  'B9FirstDayRecovery',
+  'B9GoalOption',
+  'B9GoalOptions',
+  'B9PlanReference',
+  'B9PlanningInputSnapshot',
+  'B9PlanningJobRef',
+  'B1OnboardingProfileRequest',
+  'B9FirstDayProjection',
+  'B9LearnerPreferences',
+  'B9LearnerPreferencesPatch',
+  'B9LearnerProfile',
+  'B9LearnerProfilePatch',
+  'B9LearnerTarget',
+  'B9LearnerTargetUpsert',
+]);
+const M1011_EVENT_PAYLOAD_SCHEMA_PROJECTIONS = Object.freeze([
+  'B9LearnerFirstDayProjected',
+  'B9LearnerTargetUpdated',
+]);
+const M1011_EVENT_ROOT_PROJECTIONS = Object.freeze([
+  'x-p1r-event-governance',
+]);
+const M1011_ASYNCAPI_CHANNEL_PROJECTIONS = Object.freeze([
+  'learner_target_updated_v1',
+]);
+const M1011_ASYNCAPI_OPERATION_PROJECTIONS = Object.freeze([
+  'publish_learner_target_updated_v1',
+  'subscribe_learner_target_updated_v1_cg_learning_from_learner_v1',
+  'subscribe_learner_target_updated_v1_cg_workflow_from_learner_v1',
+]);
+const M1011_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id',
+  'sourceContractBaseline',
+  'previousPromotion',
+  'runtimeStatus',
+  'scope',
+  'eventCatalogDecision',
+  'canonicalFragment',
+  'legacyAdapterFragment',
+  'historicalEventFragment',
+]);
+
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -594,6 +663,114 @@ export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["components.schemas.B10AssessmentReport.properties.replayable.enum", "enum contract changed from unspecified to specified"],
   ["components.schemas.B10AssessmentReport.properties.replayable.const", "const contract changed"],
   ["components.schemas.B10MasteryProjection.properties.pin.$ref", "$ref contract changed"],
+]);
+
+export const M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["POST /api/v1/onboarding/profile.request.description","description contract changed"],
+  ["POST /api/v1/onboarding/profile.request.x-compatibility-only","unknown schema keyword or extension changed"],
+  ["POST /api/v1/onboarding/profile.request.x-p1r-b9-target-mapping","unknown schema keyword or extension changed"],
+  ["POST /api/v1/onboarding/profile.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["POST /api/v1/onboarding/profile.request.properties.targetGoal.enum","enum contract changed from unspecified to specified"],
+  ["PATCH /api/v1/onboarding/profile.request.description","description contract changed"],
+  ["PATCH /api/v1/onboarding/profile.request.x-compatibility-only","unknown schema keyword or extension changed"],
+  ["PATCH /api/v1/onboarding/profile.request.x-p1r-b9-target-mapping","unknown schema keyword or extension changed"],
+  ["PATCH /api/v1/onboarding/profile.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["PATCH /api/v1/onboarding/profile.request.properties.targetGoal.enum","enum contract changed from unspecified to specified"],
+  ["PATCH /api/v1/learner/profile.request.description","description contract changed"],
+  ["PATCH /api/v1/learner/profile.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["PATCH /api/v1/learner/profile.request.properties.timezone.pattern","pattern contract changed"],
+  ["PATCH /api/v1/learner/profile.request.properties.targetGoal.description","description contract changed"],
+  ["PATCH /api/v1/learner/profile.request.properties.targetGoal.deprecated","deprecated contract changed"],
+  ["PUT /api/v1/learner/targets.request.description","description contract changed"],
+  ["PUT /api/v1/learner/targets.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["PUT /api/v1/learner/targets.request.properties.goalCode.enum","enum contract changed from unspecified to specified"],
+  ["PUT /api/v1/learner/targets.request.properties.goalCode.pattern","pattern contract changed"],
+  ["PATCH /api/v1/learner/preferences.request.description","description contract changed"],
+  ["PATCH /api/v1/learner/preferences.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["PATCH /api/v1/learner/preferences.request.properties.timezone.pattern","pattern contract changed"],
+  ["components.schemas.B1OnboardingProfileRequest.description","description contract changed"],
+  ["components.schemas.B1OnboardingProfileRequest.x-compatibility-only","unknown schema keyword or extension changed"],
+  ["components.schemas.B1OnboardingProfileRequest.x-p1r-b9-target-mapping","unknown schema keyword or extension changed"],
+  ["components.schemas.B1OnboardingProfileRequest.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["components.schemas.B1OnboardingProfileRequest.properties.targetGoal.enum","enum contract changed from unspecified to specified"],
+  ["components.schemas.B9LearnerProfile.required","new required field: profileVersion"],
+  ["components.schemas.B9LearnerProfile.x-version-policy","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerProfile.x-planning-source-policy","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerProfile.properties.targetGoal.description","description contract changed"],
+  ["components.schemas.B9LearnerProfile.properties.targetGoal.deprecated","deprecated contract changed"],
+  ["components.schemas.B9LearnerProfilePatch.description","description contract changed"],
+  ["components.schemas.B9LearnerProfilePatch.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerProfilePatch.properties.timezone.pattern","pattern contract changed"],
+  ["components.schemas.B9LearnerProfilePatch.properties.targetGoal.description","description contract changed"],
+  ["components.schemas.B9LearnerProfilePatch.properties.targetGoal.deprecated","deprecated contract changed"],
+  ["components.schemas.B9LearnerTarget.required","new required field: targetVersion"],
+  ["components.schemas.B9LearnerTarget.x-version-policy","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerTarget.properties.goalCode.enum","enum contract changed from unspecified to specified"],
+  ["components.schemas.B9LearnerTarget.properties.goalCode.pattern","pattern contract changed"],
+  ["components.schemas.B9LearnerTargetUpsert.description","description contract changed"],
+  ["components.schemas.B9LearnerTargetUpsert.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerTargetUpsert.properties.goalCode.enum","enum contract changed from unspecified to specified"],
+  ["components.schemas.B9LearnerTargetUpsert.properties.goalCode.pattern","pattern contract changed"],
+  ["components.schemas.B9LearnerPreferences.required","new required field: weeklyStudyDays"],
+  ["components.schemas.B9LearnerPreferences.required","new required field: preferenceVersion"],
+  ["components.schemas.B9LearnerPreferences.x-version-policy","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerPreferences.x-planning-source-policy","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerPreferences.properties.timezone.pattern","pattern contract changed"],
+  ["components.schemas.B9LearnerPreferencesPatch.description","description contract changed"],
+  ["components.schemas.B9LearnerPreferencesPatch.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerPreferencesPatch.properties.timezone.pattern","pattern contract changed"],
+  ["components.schemas.B9FirstDayProjection","type changed from object to <unspecified>"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: state"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: profileReady"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: targetReady"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: placementStatus"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: taskCount"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: tasks"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: contentEpoch"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: projectionVersion"],
+  ["components.schemas.B9FirstDayProjection.required","existing required field removed: generatedAt"],
+  ["components.schemas.B9FirstDayProjection.additionalProperties","additionalProperties policy changed"],
+  ["components.schemas.B9FirstDayProjection.allOf","allOf contract changed"],
+  ["components.schemas.B9FirstDayProjection.x-state-policy","unknown schema keyword or extension changed"],
+  ["components.schemas.B9FirstDayProjection.properties.state","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.profileReady","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.targetReady","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.placementStatus","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.taskCount","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.tasks","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.contentEpoch","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.projectionVersion","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.generatedAt","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.properties.degradedReason","existing property removed"],
+]);
+
+export const M1011_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["learner.target.updated.v1.compatibility","existing compatibility policy changed"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: eventName"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: schema"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: version"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: occurredAt"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: aggregateType"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: actorId"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: requestId"],
+  ["learner.target.updated.v1.x-envelope-required","new required envelope field: payload"],
+  ["learner.target.updated.v1.payload.required","new required field: profileVersion"],
+  ["learner.target.updated.v1.payload.required","new required field: preferenceVersion"],
+  ["learner.target.updated.v1.payload.required","new required field: timezone"],
+  ["learner.target.updated.v1.payload.required","new required field: weeklyStudyDays"],
+  ["learner.target.updated.v1.payload.required","new required field: contentLocale"],
+  ["learner.target.updated.v1.payload.required","new required field: goalCatalogVersion"],
+  ["learner.target.updated.v1.payload.required","new required field: targetSnapshotDigest"],
+  ["learner.target.updated.v1.payload.required","new required field: inputFactWatermark"],
+  ["learner.target.updated.v1.payload.required","new required field: sourceEventId"],
+  ["learner.target.updated.v1.payload.required","new required field: rootEventId"],
+  ["learner.target.updated.v1.payload.properties.goalCode.enum","enum contract changed from unspecified to specified"],
+  ["learner.target.updated.v1.payload.properties.goalCode.maxLength","maxLength contract changed"],
+  ["learner.target.updated.v1.status","event governance status changed from HISTORICAL_CANDIDATE to CANONICAL_D2"],
+  ["learner.first_day.projected.v1.compatibility","existing compatibility policy changed"],
+  ["learner.first_day.projected.v1.payload.properties.readiness.enum","new enum value added: PROCESSING"],
+  ["x-p1r-event-governance","established platform event governance changed"],
+  ["asyncapi","established canonical AsyncAPI projection changed"],
 ]);
 
 function parseArgs(argv) {
@@ -864,6 +1041,72 @@ export function buildM1010EventExpectedProjection(previous, approved, allowance)
   const expected = structuredClone(previous);
   const projected = applyApprovedEventEntries(expected.events, approved.events, M1010_ASSESSMENT_EVENT_NAMES)
     && applyApprovedOpenApiProjection(expected.payloadSchemas, approved.payloadSchemas, M1010_EVENT_PAYLOAD_SCHEMA_PROJECTIONS);
+  return projected ? expected : undefined;
+}
+
+function isValidM1011PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1011_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1011_LEARNER_PLANNING_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1011_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1010_ASSESSMENT_PROMOTION_ID
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC'
+    && allowance.eventCatalogDecision === 'TARGET_CANONICAL_D2_PROFILE_AND_FIRST_DAY_HISTORICAL'
+    && allowance.canonicalFragment === 'packages/contracts/fragments/b9/b9-learner.openapi.json'
+    && allowance.legacyAdapterFragment === 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json'
+    && allowance.historicalEventFragment === 'packages/contracts/events/v1/fragments/b9-learner-content.events.json';
+}
+
+/**
+ * Rebuild the only approved M1-011 OpenAPI projection from the immutable
+ * cd923 M1-010 checkpoint. The B1 compatibility adapter and B9 learner
+ * planning surface are copied only at this fixed path/schema allowlist.
+ */
+export function buildM1011OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1011PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = applyApprovedOpenApiProjection(expected.paths, approved.paths, M1011_OPENAPI_APPROVED_PATH_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.schemas, approved.components?.schemas, M1011_OPENAPI_APPROVED_SCHEMA_PROJECTIONS);
+  return projected ? expected : undefined;
+}
+
+/**
+ * M1-011 promotes only learner.target.updated.v1 to CANONICAL_D2. The
+ * first-day payload remains historical compatibility data; its bounded schema
+ * evolution and the ONB-001 governance closure are nevertheless frozen here.
+ */
+export function buildM1011EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1011PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = applyApprovedEventEntries(expected.events, approved.events, M1011_LEARNER_EVENT_NAMES)
+    && applyApprovedOpenApiProjection(expected.payloadSchemas, approved.payloadSchemas, M1011_EVENT_PAYLOAD_SCHEMA_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected, approved, M1011_EVENT_ROOT_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.asyncapi?.channels, approved.asyncapi?.channels, M1011_ASYNCAPI_CHANNEL_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.asyncapi?.operations, approved.asyncapi?.operations, M1011_ASYNCAPI_OPERATION_PROJECTIONS);
+  return projected ? expected : undefined;
+}
+
+function insertM1011B26Entry(target, approved, key, value) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const approvedEntries = approved.filter((entry) => entry?.[key] === value);
+  if (approvedEntries.length !== 1 || target.some((entry) => entry?.[key] === value)) return false;
+  const insertionIndex = approved.findIndex((entry) => entry?.[key] === value);
+  if (insertionIndex < 0) return false;
+  target.splice(insertionIndex, 0, structuredClone(approvedEntries[0]));
+  return true;
+}
+
+/**
+ * The B26 change is static-contract only: it inserts exactly the learner topic
+ * and target route at their canonical positions. Its frozen digest prevents a
+ * mutable runtime policy from broadening the projected values.
+ */
+export function buildM1011B26ExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1011PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = insertM1011B26Entry(expected.topics, approved.topics, 'name', 'platform.learner.v1')
+    && insertM1011B26Entry(expected.eventRouting, approved.eventRouting, 'eventName', 'learner.target.updated.v1');
   return projected ? expected : undefined;
 }
 
@@ -1323,6 +1566,89 @@ function compareM1010EventPromotion(previous, current, allowance) {
   return changes;
 }
 
+function compareM1011OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1011PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-011.openapiPromotion', 'M1-011 promotion allowance cannot be applied without the frozen learner-planning policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1011_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-011.openapiPromotion.source', 'M1-011 OpenAPI promotion source is not the frozen cd923 M1-010 evidence projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'openapi',
+    previous,
+    current,
+    M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-011.openapiPromotion.change-descriptors',
+    'current OpenAPI changes do not exactly match the frozen M1-011 descriptor set',
+  ));
+  const expectedProjection = buildM1011OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-011.openapiPromotion.projection', 'the approved B1/B9 learner-planning projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-011.openapiPromotion.expected-projection', 'the allowlisted M1-011 OpenAPI projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-011.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source learner-planning projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1011EventPromotion(previous, current, allowance) {
+  if (!isValidM1011PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-011.eventPromotion', 'M1-011 event allowance cannot be applied without the frozen learner-planning policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1011_EVENT_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'm1-011.eventPromotion.source', 'M1-011 event source is not the frozen cd923 M1-010 evidence projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1011_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-011.eventPromotion.change-descriptors',
+    'current event changes do not exactly match the frozen M1-011 descriptor set',
+  ));
+  const expectedProjection = buildM1011EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-011.eventPromotion.projection', 'the approved learner canonical-event and historical first-day projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1011_EVENT_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'm1-011.eventPromotion.expected-projection', 'the allowlisted M1-011 event projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'm1-011.eventPromotion.projection', 'current event catalog is not the unique frozen-source learner canonical-event projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1011B26Promotion(previous, current, allowance) {
+  if (!isValidM1011PromotionAllowance(allowance)) {
+    return [describeChange('events', 'b26.m1-011.compatibilityPromotion', 'M1-011 B26 allowance cannot be applied without the frozen learner-planning policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1011_B26_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'b26.m1-011.source', 'M1-011 B26 promotion source is not the frozen cd923 M1-010 evidence projection'));
+  }
+  const expectedProjection = buildM1011B26ExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'b26.m1-011.projection', 'the approved platform.learner.v1 topic and target route cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1011_B26_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'b26.m1-011.expected-projection', 'the allowlisted M1-011 B26 projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(...compareB26WorkflowGovernance(expectedProjection, current));
+      changes.push(describeChange('events', 'b26.m1-011.projection', 'current B26 runtime policy differs from the explicit static M1-011 learner-topic promotion'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -1424,6 +1750,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1011_LEARNER_PLANNING_PROMOTION_ID) {
+    return compareM1011B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1008_CONTENT_PROMOTION_ID) {
     const expected = buildM1008PromotionExpectedB26(governanceBaseline, allowance);
     if (expected === undefined) {
@@ -1576,6 +1905,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1011_LEARNER_PLANNING_PROMOTION_ID) {
+    return compareM1011EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1010_ASSESSMENT_PROMOTION_ID) {
     return compareM1010EventPromotion(previous, current, allowance);
   }
@@ -1696,6 +2028,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1011_LEARNER_PLANNING_PROMOTION_ID) {
+      return compareM1011OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1010_ASSESSMENT_PROMOTION_ID) {
       return compareM1010OpenApiPromotion(previous, current, allowance);
     }

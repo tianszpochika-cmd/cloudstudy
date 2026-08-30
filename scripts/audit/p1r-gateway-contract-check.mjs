@@ -6,7 +6,7 @@ import { isDeepStrictEqual } from 'node:util';
 const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gateway-boundary.openapi.json');
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
-const EXPECTED_PUBLIC_OPERATION_COUNT = 335;
+const EXPECTED_PUBLIC_OPERATION_COUNT = 337;
 const EXPECTED_INTERNAL_OPERATION_COUNT = 51;
 const EXPECTED_CONTENT_TASK_RULE = {
   ruleId: 'admin-content-publish-tasks',

@@ -1,0 +1,248 @@
+{
+  "$schema": "p1r.learner-planning-contract.v1",
+  "schemaVersion": "p1r.learner-planning-contract.v1",
+  "task": "P1R-M1-011",
+  "phase": "P1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "canonicalSources": {
+    "b9Fragment": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+    "b1LegacyFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
+    "openApi": "packages/contracts/openapi/v1/openapi.json",
+    "historicalEventFragment": "packages/contracts/events/v1/fragments/b9-learner-content.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "gapRegistry": "config/p1r-gap-registry.v1.json",
+    "dataOwnership": "config/p1r-data-ownership.v1.json",
+    "sagaRecovery": "config/p1r-saga-recovery.v1.json",
+    "eventReliability": "packages/contracts/events/v1/reliability-policy.json",
+    "b26Runtime": "config/b26-event-runtime.json"
+  },
+  "compatibilityPromotion": {
+    "id": "M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION",
+    "sourceContractBaseline": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+    "previousPromotion": "M1-010_ASSESSMENT_CONTRACT_PROMOTION",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_EVENT_GOVERNANCE_B26_STATIC",
+    "eventCatalogDecision": "TARGET_CANONICAL_D2_PROFILE_AND_FIRST_DAY_HISTORICAL",
+    "canonicalFragment": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+    "legacyAdapterFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
+    "historicalEventFragment": "packages/contracts/events/v1/fragments/b9-learner-content.events.json"
+  },
+  "runtimeBoundary": {
+    "staticContractOnly": true,
+    "prohibitedRuntimeClaims": [
+      "learner-service-http-executed",
+      "learning-service-plan-persisted",
+      "mysql-target-profile-projection-persisted",
+      "outbox-or-kafka-delivery-verified",
+      "gateway-or-resource-server-pep-verified",
+      "workflow-recovery-executed",
+      "browser-or-device-e2e-verified"
+    ]
+  },
+  "canonicalRoutes": [
+    {"id":"learner-goal-options-read","path":"/api/v1/learner/goal-options","method":"GET","operationId":"getB9LearnerGoalOptions","requestSchema":null,"responseSchema":"B9GoalOptions","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.goal-options.read"},
+    {"id":"learner-profile-read","path":"/api/v1/learner/profile","method":"GET","operationId":"getB9LearnerProfile","requestSchema":null,"responseSchema":"B9LearnerProfile","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.profile.read"},
+    {"id":"learner-profile-patch","path":"/api/v1/learner/profile","method":"PATCH","operationId":"patchB9LearnerProfile","requestSchema":"B9LearnerProfilePatch","responseSchema":"B9LearnerProfile","idempotencyRequired":true,"owner":"learner-service","requiredPermission":"learner.profile.write"},
+    {"id":"learner-target-read","path":"/api/v1/learner/targets","method":"GET","operationId":"getB9LearnerTarget","requestSchema":null,"responseSchema":"B9LearnerTarget","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.target.read"},
+    {"id":"learner-target-put","path":"/api/v1/learner/targets","method":"PUT","operationId":"putB9LearnerTarget","requestSchema":"B9LearnerTargetUpsert","responseSchema":"B9LearnerTarget","idempotencyRequired":true,"owner":"learner-service","requiredPermission":"learner.target.write"},
+    {"id":"learner-preferences-read","path":"/api/v1/learner/preferences","method":"GET","operationId":"getB9LearnerPreferences","requestSchema":null,"responseSchema":"B9LearnerPreferences","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.preference.read"},
+    {"id":"learner-preferences-patch","path":"/api/v1/learner/preferences","method":"PATCH","operationId":"patchB9LearnerPreferences","requestSchema":"B9LearnerPreferencesPatch","responseSchema":"B9LearnerPreferences","idempotencyRequired":true,"owner":"learner-service","requiredPermission":"learner.preference.write"},
+    {"id":"learner-first-day-read","path":"/api/v1/learner/first-day","method":"GET","operationId":"getB9FirstDayProjection","requestSchema":null,"responseSchema":"B9FirstDayProjection","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.first-day.read"},
+    {"id":"learner-home-read","path":"/api/v1/learner/home","method":"GET","operationId":"getB9LearnerHomeProjection","requestSchema":null,"responseSchema":"B9HomeProjection","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.home.read"},
+    {"id":"learner-first-day-recovery-read","path":"/api/v1/learner/first-day/recovery/{recoveryTaskId}","method":"GET","operationId":"getB9FirstDayRecovery","requestSchema":null,"responseSchema":"B9FirstDayRecovery","idempotencyRequired":false,"owner":"learner-service","requiredPermission":"learner.first-day.recovery.read"}
+  ],
+  "authorization": {
+    "defaultDecision": "DENY",
+    "pep": "learner-service-local",
+    "bearerSecurity": [{"bearerAuth":[]}],
+    "trustedFacts": ["subject","tenant","resourceOwner","roles","permissions","phase","adultGate","consent","contentRights","policyVersion"],
+    "genericClientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW",
+    "recoveryClientAuthority": "none; task ownership and status are server-derived",
+    "forbiddenClientFieldsBySchema": [
+      {"schema":"B9LearnerProfilePatch","fields":["principalId","tenantId","ownerId","role","permissions","adultGate","consent","policyVersion","contentRights","profileVersion","stateVersion"]},
+      {"schema":"B9LearnerTargetUpsert","fields":["principalId","tenantId","targetId","ownerId","role","permissions","adultGate","consent","policyVersion","contentRights","targetVersion","stateVersion"]},
+      {"schema":"B9LearnerPreferencesPatch","fields":["principalId","tenantId","ownerId","role","permissions","adultGate","consent","policyVersion","contentRights","preferenceVersion","stateVersion"]}
+    ]
+  },
+  "goalCatalog": {
+    "responseSchema": "B9GoalOptions",
+    "optionSchema": "B9GoalOption",
+    "requiredFields": ["goalCatalogVersion","contentLocale","options","generatedAt"],
+    "optionRequiredFields": ["goalCode","label","targetLevels","dailyQuotaMinutes"],
+    "goalCodes": ["FOUNDATION","COLLEGE_CET","POSTGRADUATE_ENGLISH","WORKPLACE_DAILY"],
+    "dailyQuotaMinutes": [5,15,30,45],
+    "unknownCodeDecision": "DENY",
+    "coverage": "EXACTLY_ONCE",
+    "uniqueBy": "goalCode",
+    "optionsUniqueBy": "goalCode",
+    "timezonePattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
+    "clientSuppliedFreeformGoal": false,
+    "legacyDailyQuotaMinutesRejected": [10,20],
+    "legacyB1TargetMapping": {
+      "schema": "B1OnboardingProfileRequest",
+      "extension": "x-p1r-b9-target-mapping",
+      "sourceField": "targetGoal",
+      "dailyQuotaField": "dailyQuotaMinutes",
+      "expectedStateVersionField": "expectedVersion",
+      "missingOrUnknownDecision": "DENY_WITH_422",
+      "dailyQuotaMinutes": [5,15,30,45],
+      "legacyGoalCodes": ["ZERO_BASIS","CET_4_6","POSTGRADUATE","WORKPLACE_DAILY"],
+      "mappings": [
+        {"legacyTargetGoal":"ZERO_BASIS","goalCode":"FOUNDATION","targetLevel":"A1"},
+        {"legacyTargetGoal":"CET_4_6","goalCode":"COLLEGE_CET","targetLevel":"B1"},
+        {"legacyTargetGoal":"POSTGRADUATE","goalCode":"POSTGRADUATE_ENGLISH","targetLevel":"B2"},
+        {"legacyTargetGoal":"WORKPLACE_DAILY","goalCode":"WORKPLACE_DAILY","targetLevel":"B2"}
+      ]
+    },
+    "profileTargetGoal": {"schema":"B9LearnerProfile","field":"targetGoal","deprecated":true,"planningAuthority":false},
+    "planningSourcePolicies": {
+      "profile": {"profileVersion":"PINNED","proficiencyLevel":"PROFILE_FACT","timezone":"COMPATIBILITY_SHADOW_USE_PREFERENCES","contentLocale":"COMPATIBILITY_SHADOW_USE_PREFERENCES","targetGoal":"COMPATIBILITY_ONLY_NEVER_PLANNING_AUTHORITY"},
+      "preferences": {"preferenceVersion":"PINNED","timezone":"AUTHORITATIVE","weeklyStudyDays":"AUTHORITATIVE","contentLocale":"AUTHORITATIVE","uiLocale":"NOT_A_PLANNING_FACT"}
+    }
+  },
+  "versionEquivalence": [
+    {"schema":"B9LearnerProfile","versionField":"profileVersion","stateVersionField":"stateVersion","requestSchema":"B9LearnerProfilePatch","expectedStateVersionField":"expectedStateVersion"},
+    {"schema":"B9LearnerTarget","versionField":"targetVersion","stateVersionField":"stateVersion","requestSchema":"B9LearnerTargetUpsert","expectedStateVersionField":"expectedStateVersion"},
+    {"schema":"B9LearnerPreferences","versionField":"preferenceVersion","stateVersionField":"stateVersion","requestSchema":"B9LearnerPreferencesPatch","expectedStateVersionField":"expectedStateVersion"}
+  ],
+  "planningInput": {
+    "schema": "B9PlanningInputSnapshot",
+    "owner": "learning-service",
+    "projectionOwner": "learner-service",
+    "requiredFields": ["pinId","pinVersion","pinDigest","targetId","targetVersion","profileVersion","preferenceVersion","goalCatalogVersion","dailyQuotaMinutes","timezone","weeklyStudyDays","contentLocale","contentEpoch","projectionVersion","rightsSnapshotVersion","planningRuleVersion","inputFactWatermark","sourceEventId","rootEventId"],
+    "forbiddenFields": ["placementRaw","placementScore","placementAlgorithm","srsState","mastery"],
+    "positiveIntegerFields": ["pinVersion","targetId","targetVersion","profileVersion","preferenceVersion","contentEpoch","projectionVersion","rightsSnapshotVersion"],
+    "pinnedStringFields": ["pinId","pinDigest","goalCatalogVersion","planningRuleVersion","inputFactWatermark","sourceEventId","rootEventId"],
+    "opaqueStringFields": ["pinId","pinDigest","inputFactWatermark","sourceEventId","rootEventId"],
+    "pinDigest": {"minLength":64,"maxLength":64,"pattern":"^[A-Fa-f0-9]{64}$"},
+    "sourceMapping": {
+      "learnerTarget":["targetId","targetVersion","dailyQuotaMinutes","goalCatalogVersion"],
+      "learnerProfile":["profileVersion"],
+      "learnerPreferences":["preferenceVersion","timezone","weeklyStudyDays","contentLocale"],
+      "contentProjection":["contentEpoch","projectionVersion","rightsSnapshotVersion"],
+      "learningPolicy":["planningRuleVersion"],
+      "learningOwner":["pinId","pinVersion","pinDigest","inputFactWatermark","sourceEventId","rootEventId"]
+    },
+    "referenceBindings": {
+      "job": {
+        "schema":"B9PlanningJobRef",
+        "requiredFields":["jobId","status","inputPinId","inputPinVersion","inputFactWatermark","retryable","attemptCount","lastErrorCode","createdAt","updatedAt"],
+        "inputBinding":{"inputPinId":"MUST_EQUAL_PLANNING_INPUT_PIN_ID","inputPinVersion":"MUST_EQUAL_PLANNING_INPUT_PIN_VERSION","inputFactWatermark":"MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK"},
+        "positiveIntegerFields":["inputPinVersion"],
+        "nonEmptyStringFields":["inputPinId","inputFactWatermark"]
+      },
+      "plan": {
+        "schema":"B9PlanReference",
+        "requiredFields":["planId","planVersion","planningInputPinId","planningInputPinVersion","planningInputDigest","inputFactWatermark","contentEpoch","projectionVersion","generatedAt"],
+        "inputBinding":{"planningInputPinId":"MUST_EQUAL_PLANNING_INPUT_PIN_ID","planningInputPinVersion":"MUST_EQUAL_PLANNING_INPUT_PIN_VERSION","planningInputDigest":"MUST_EQUAL_PLANNING_INPUT_PIN_DIGEST","inputFactWatermark":"MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK","contentEpoch":"MUST_EQUAL_PLANNING_INPUT_CONTENT_EPOCH","projectionVersion":"MUST_EQUAL_PLANNING_INPUT_PROJECTION_VERSION"},
+        "positiveIntegerFields":["planVersion","planningInputPinVersion","contentEpoch","projectionVersion"],
+        "nonEmptyStringFields":["planId","planningInputPinId","planningInputDigest","inputFactWatermark"],
+        "opaqueStringFields":["planId","inputFactWatermark"],
+        "sha256Field":"planningInputDigest"
+      }
+    },
+    "placementBinding": "M1-012_OWNED_NOT_IN_M1-011",
+    "planAndSrsBinding": "M1-013_OWNED_NOT_IN_M1-011"
+  },
+  "firstDay": {
+    "schema": "B9FirstDayProjection",
+    "commonSchema": "B9FirstDayProjectionCommon",
+    "owner": "learner-service",
+    "planOwner": "learning-service",
+    "stateField": "state",
+    "states": ["NOT_READY","PROCESSING","READY","DEGRADED"],
+    "baseRequiredFields": ["state","profileReady","targetReady","placementStatus","taskCount","tasks","contentEpoch","projectionVersion","projectionWatermark","generatedAt"],
+    "consistency": [
+      "state=NOT_READY implies taskCount=0 and blocker is present",
+      "state=PROCESSING implies taskCount=0 and planningInput/job are present",
+      "state=READY implies planningInput/plan are present and taskCount>=1",
+      "state=DEGRADED implies planningInput/degradedReason/recovery are present and state is never READY",
+      "taskCount MUST equal tasks.length",
+      "job and recovery input pin fields MUST equal the embedded planningInput pin fields",
+      "plan input pin, digest, watermark, content epoch and projection version MUST equal the embedded planningInput fields"
+    ],
+    "statePolicy": {
+      "failureCannotMasqueradeAsEmptySuccess": true,
+      "notReady": "empty tasks plus an explicit blocker; no planning, plan, failure or recovery fields",
+      "processing": "empty tasks plus immutable planningInput and job; no plan, failure or recovery fields",
+      "ready": "at least one task plus immutable planningInput and plan; no blocker, job, failure or recovery fields",
+      "degraded": "empty tasks plus immutable planningInput, safe reason and read-only recovery; never a READY result"
+    },
+    "statePolicies": [
+      {"state":"NOT_READY","required":["state","tasks","blocker"],"forbidden":["planningInput","job","plan","degradedReason","recovery"],"taskCount":{"const":0},"tasks":{"maxItems":0},"constants":{}},
+      {"state":"PROCESSING","required":["state","tasks","planningInput","job"],"forbidden":["blocker","plan","degradedReason","recovery"],"taskCount":{"const":0},"tasks":{"maxItems":0},"constants":{"profileReady":true,"targetReady":true},"inputReference":{"field":"job","schema":"B9PlanningJobRef","statuses":["QUEUED","PROCESSING","RETRYABLE"]}},
+      {"state":"READY","required":["state","tasks","planningInput","plan"],"forbidden":["blocker","job","degradedReason","recovery"],"taskCount":{"minimum":1},"tasks":{"minItems":1},"constants":{"profileReady":true,"targetReady":true}},
+      {"state":"DEGRADED","required":["state","tasks","planningInput","degradedReason","recovery"],"forbidden":["blocker","job","plan"],"taskCount":{"const":0},"tasks":{"maxItems":0},"constants":{"profileReady":true,"targetReady":true},"inputReference":{"field":"recovery","schema":"B9FirstDayRecovery","statuses":["QUEUED","PROCESSING","RETRYABLE","FAILED"]}}
+    ]
+  },
+  "recovery": {
+    "operationId":"getB9FirstDayRecovery",
+    "path":"/api/v1/learner/first-day/recovery/{recoveryTaskId}",
+    "method":"GET",
+    "requestSchema":null,
+    "responseSchema":"B9FirstDayRecovery",
+    "owner":"learner-service",
+    "workflowOwner":"workflow-service",
+    "readOnly":true,
+    "pathParameter":{"name":"recoveryTaskId","in":"path","required":true,"schema":{"type":"string","minLength":1,"maxLength":128,"pattern":"^[A-Za-z0-9._:-]+$"}},
+    "requiredFields":["recoveryTaskId","status","planningInput","job","retryable","safeFailureCode","projectionVersion","projectionWatermark","createdAt","updatedAt"],
+    "statuses":["QUEUED","PROCESSING","RETRYABLE","FAILED","COMPLETED","CANCELLED"],
+    "safeFailureCodes":["NONE","DEPENDENCY_UNAVAILABLE","CONTENT_UNAVAILABLE","RIGHTS_DENIED","STALE_INPUT","POLICY_DENIED","MANUAL_RECOVERY_REQUIRED"],
+    "jobRequiredFields":["jobId","status","inputPinId","inputPinVersion","inputFactWatermark","retryable","attemptCount","lastErrorCode","createdAt","updatedAt"],
+    "inputBinding":{"job.inputPinId":"MUST_EQUAL_PLANNING_INPUT_PIN_ID","job.inputPinVersion":"MUST_EQUAL_PLANNING_INPUT_PIN_VERSION","job.inputFactWatermark":"MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK"},
+    "forbiddenFields":["tenantId","principalId","ownerId","approvalId","auditId","rawError","stackTrace","actionDigest","closureReceiptId","operatorCommand","retryCommand","approveCommand","closeCommand"],
+    "workflowStatePolicies":[
+      {"statuses":["QUEUED","PROCESSING","COMPLETED","CANCELLED"],"retryable":false,"safeFailureCodes":["NONE"]},
+      {"statuses":["RETRYABLE"],"retryable":true,"safeFailureCodes":["DEPENDENCY_UNAVAILABLE","CONTENT_UNAVAILABLE","RIGHTS_DENIED","STALE_INPUT","POLICY_DENIED","MANUAL_RECOVERY_REQUIRED"]},
+      {"statuses":["FAILED"],"retryable":false,"safeFailureCodes":["DEPENDENCY_UNAVAILABLE","CONTENT_UNAVAILABLE","RIGHTS_DENIED","STALE_INPUT","POLICY_DENIED","MANUAL_RECOVERY_REQUIRED"]}
+    ],
+    "contract":{"owner":"learner-service","projection":"learner first-day recovery read model","workflowOwner":"workflow-service","readOnly":true,"subjectBinding":"recoveryTaskId is resolved against the authenticated principal; cross-subject reads are denied","commands":"retry, approve and close are not exposed by this contract"},
+    "clientMayExecuteRecovery":false
+  },
+  "ownership": {
+    "profileAndTargetOwner":"learner-service",
+    "planningInputAndPlanOwner":"learning-service",
+    "firstDayProjectionOwner":"learner-service",
+    "recoveryTaskOwner":"workflow-service",
+    "forbiddenCrossOwnerWrites":["learner-service->learning-plan","learning-service->learner-profile","workflow-service->learner-target","gateway->domain-fact","bff->cross-domain-double-write"]
+  },
+  "legacyCompatibility": [
+    {"path":"/api/v1/onboarding/options","method":"GET","operationId":"getB1OnboardingOptions","adapterOnly":true,"replacementOperationIds":["getB9LearnerGoalOptions"],"requiredPermission":"learner.goal-options.read","responseStatuses":["200","401","403"],"missingCanonicalFactsDecision":null,"adapterPolicy":{"adapterOnly":true,"replacementOperationId":"getB9LearnerGoalOptions","wireShapeRetained":true}},
+    {"path":"/api/v1/onboarding/profile","method":"GET","operationId":"getB1OnboardingProfile","adapterOnly":true,"replacementOperationIds":["getB9LearnerProfile"],"requiredPermission":"learner.profile.read","responseStatuses":["200","401","403"],"missingCanonicalFactsDecision":null,"adapterPolicy":{"adapterOnly":true,"replacementOperationId":"getB9LearnerProfile","wireShapeRetained":true}},
+    {"path":"/api/v1/onboarding/profile","method":"POST","operationId":"saveB1OnboardingProfile","adapterOnly":true,"replacementOperationIds":["patchB9LearnerProfile","putB9LearnerTarget"],"requiredPermission":"learner.profile.write","responseStatuses":["200","400","401","403","409","422"],"missingCanonicalFactsDecision":"DENY_WITH_422","adapterPolicy":{"adapterOnly":true,"replacementOperationIds":["patchB9LearnerProfile","putB9LearnerTarget"],"wireShapeRetained":true,"missingCanonicalFactsDecision":"DENY_WITH_422","targetMappingPolicy":"B1OnboardingProfileRequest.x-p1r-b9-target-mapping"}},
+    {"path":"/api/v1/onboarding/profile","method":"PATCH","operationId":"patchB1OnboardingProfile","adapterOnly":true,"replacementOperationIds":["patchB9LearnerProfile","putB9LearnerTarget"],"requiredPermission":"learner.profile.write","responseStatuses":["200","400","401","403","409","422"],"missingCanonicalFactsDecision":"DENY_WITH_422","adapterPolicy":{"adapterOnly":true,"replacementOperationIds":["patchB9LearnerProfile","putB9LearnerTarget"],"wireShapeRetained":true,"missingCanonicalFactsDecision":"DENY_WITH_422","targetMappingPolicy":"B1OnboardingProfileRequest.x-p1r-b9-target-mapping"}},
+    {"path":"/api/v1/onboarding/goals/first","method":"POST","operationId":"createB1FirstGoal","adapterOnly":true,"replacementOperationIds":["putB9LearnerTarget"],"requiredPermission":"learner.target.write","responseStatuses":["200","401","403","409","422"],"missingCanonicalFactsDecision":"DENY_WITH_422","adapterPolicy":{"adapterOnly":true,"replacementOperationId":"putB9LearnerTarget","wireShapeRetained":true,"missingCanonicalFactsDecision":"DENY_WITH_422","requestBodyPolicy":"FORBIDDEN_USE_SERVER_OWNED_LEGACY_PROFILE_SNAPSHOT","sourceSnapshotSchema":"B1OnboardingProfileRequest","targetMappingPolicy":"B1OnboardingProfileRequest.x-p1r-b9-target-mapping","expectedStateVersionSource":"SERVER_READ_CURRENT_TARGET_VERSION_OR_ZERO"}}
+  ],
+  "events": {
+    "eventPolicies": [
+      {"eventName":"learner.profile.updated.v1","payloadSchema":"B9LearnerProfileUpdated","catalogStatus":"HISTORICAL_CANDIDATE","requiredFields":["tenantId","principalId","profileVersion","changedFieldCodes","updatedAt"],"historicalPinFields":[],"canonicalRequiredFields":[],"canonicalForbiddenFields":[],"prohibitedProperties":["profile","rawProfile","timezone","targetDate","planningInput","tasks","recovery","rawError","stackTrace","approvalId","auditId"]},
+      {"eventName":"learner.target.updated.v1","payloadSchema":"B9LearnerTargetUpdated","catalogStatus":"CANONICAL_D2","requiredFields":["tenantId","principalId","targetId","targetVersion","goalCode","targetLevel","dailyQuotaMinutes","profileVersion","preferenceVersion","timezone","weeklyStudyDays","contentLocale","goalCatalogVersion","targetSnapshotDigest","inputFactWatermark","sourceEventId","rootEventId","updatedAt"],"historicalPinFields":[],"canonicalRequiredFields":[],"canonicalForbiddenFields":[],"prohibitedProperties":["profile","rawProfile","targetDate","planningInput","tasks","recovery","rawError","stackTrace","approvalId","auditId"]},
+      {"eventName":"learner.first_day.projected.v1","payloadSchema":"B9LearnerFirstDayProjected","catalogStatus":"HISTORICAL_CANDIDATE","requiredFields":["tenantId","principalId","projectionVersion","contentEpoch","readiness","taskCount","projectedAt"],"historicalPinFields":["profileVersion","targetVersion","preferenceVersion","planningInputPinId","planningInputVersion","planningInputDigest","planVersion","inputFactWatermark","sourceEventId","rootEventId","failureCode"],"canonicalRequiredFields":[],"canonicalForbiddenFields":[],"prohibitedProperties":["profile","rawProfile","timezone","targetDate","planningInput","tasks","taskRefs","recovery","rawError","stackTrace","approvalId","auditId"]}
+    ],
+    "firstDaySafeFailurePolicy": {
+      "failureCodeEnum": ["NONE","PROFILE_INCOMPLETE","TARGET_INCOMPLETE","PLAN_PENDING","PLAN_FAILED","CONTENT_UNAVAILABLE","RIGHTS_DENIED","DEPENDENCY_UNAVAILABLE","POLICY_DENIED","MANUAL_RECOVERY_REQUIRED"],
+      "rawFailureDetailsAllowed": false,
+      "readyRequiresFailureCode": "NONE"
+    },
+    "targetGovernance": {
+      "status":"CANONICAL_D2",
+      "runtimeStatus":"NOT_RUNTIME_VERIFIED",
+      "scope":"CROSS_SERVICE_INTEGRATION_FACT",
+      "producer":{"service":"learner-service","dataOwner":"learner-service","outboxRequired":true,"publishOperationId":"publish_learner_target_updated_v1"},
+      "consumers":[{"service":"learning-service","consumerGroup":"cg.learning-from-learner.v1","subscriptionOperationId":"subscribe_learner_target_updated_v1_cg_learning_from_learner_v1"},{"service":"workflow-service","consumerGroup":"cg.workflow-from-learner.v1","subscriptionOperationId":"subscribe_learner_target_updated_v1_cg_workflow_from_learner_v1"}],
+      "transport":{"protocol":"kafka","topic":"platform.learner.v1","partitionKey":"aggregateId","aggregateIdSource":"payload.targetId","delivery":"at-least-once","bindingVersion":"0.5.0","channelId":"learner_target_updated_v1"}
+    },
+    "gap":{"id":"EVENT-GAP-ONB-001","catalogStatus":"D2_CONTRACT_CLOSED","registryStatus":"OPEN","closureTasks":["P1R-M1-006","P1R-M1-011"],"closureEvidence":null}
+  },
+  "b26Static": {
+    "runtimeStatus":"pending",
+    "mode":"static-only",
+    "staticDecision":"PASS",
+    "defaultDecision":"NO-GO",
+    "topic":{"name":"platform.learner.v1","ownerService":"learner-service","producerPrincipal":"svc.learner-service","partitionKey":"aggregateId","consumerGroups":[{"name":"cg.learning-from-learner.v1","service":"learning-service","principal":"cg.learning-from-learner.v1","replayEnabled":true},{"name":"cg.workflow-from-learner.v1","service":"workflow-service","principal":"cg.workflow-from-learner.v1","replayEnabled":true}]},
+    "routing":{"eventName":"learner.target.updated.v1","topic":"platform.learner.v1","partitionKey":"aggregateId","consumerGroups":["cg.learning-from-learner.v1","cg.workflow-from-learner.v1"]}
+  },
+  "phase1Prohibitions":["client-plan-authority","client-recovery-authority","cross-owner-domain-write","unbounded-duration-input","legacy-duration-auto-mapping","canonical-event-promotion-outside-target","runtime-promotion"],
+  "adversarialCases":["CONFIG_UNKNOWN_FIELD","CONFIG_NESTED_UNKNOWN_FIELD","CONFIG_TYPE_DRIFT","CONFIG_REQUIRED_FIELD_REMOVAL","CONFIG_DUPLICATE_ROUTE","COMPATIBILITY_BASELINE_DRIFT","COMPATIBILITY_SCOPE_DRIFT","RUNTIME_STATUS_PROMOTION","RUNTIME_CLAIM_REMOVAL","GOAL_CODE_ENUM_DRIFT","GOAL_CODE_FREEFORM_ACCEPTED","GOAL_OPTION_LABEL_REMOVAL","GOAL_OPTIONS_UNIQUE_BY_DRIFT","GOAL_OPTION_DUPLICATE_GOVERNANCE_WEAKENED","GOAL_PROFILE_COMPATIBILITY_AUTHORITY","PROFILE_TIMEZONE_PATTERN_DRIFT","PREFERENCE_PLANNING_SOURCE_DRIFT","PREFERENCE_TIMEZONE_PATTERN_REMOVAL","PREFERENCE_WEEKLY_DAYS_REMOVAL","DAILY_QUOTA_10_ACCEPTED","DAILY_QUOTA_20_ACCEPTED","DAILY_QUOTA_ENUM_REMOVAL","DAILY_QUOTA_DUPLICATE","B1_LEGACY_UNKNOWN_GOAL","B1_LEGACY_MAPPING_DRIFT","B1_BODYLESS_SOURCE_POLICY_REMOVAL","B1_BODYLESS_VERSION_POLICY_REMOVAL","B1_BODYLESS_TARGET_MAPPING_POLICY_REMOVAL","B1_BODYLESS_REQUEST_BODY_EXPOSED","PROFILE_VERSION_REMOVAL","PROFILE_VERSION_NULLABLE","PROFILE_VERSION_ZERO","PROFILE_STATE_VERSION_MISMATCH","TARGET_VERSION_REMOVAL","TARGET_VERSION_NULLABLE","TARGET_VERSION_ZERO","TARGET_STATE_VERSION_MISMATCH","PREFERENCE_VERSION_MISMATCH","PROFILE_EXPECTED_VERSION_REMOVAL","TARGET_EXPECTED_VERSION_REMOVAL","PREFERENCE_EXPECTED_VERSION_REMOVAL","AUTHZ_DEFAULT_ALLOW","AUTHZ_TRUSTED_FACT_REMOVAL","AUTHZ_PEP_DRIFT","AUTHZ_CLIENT_AUTHORITY_WEAKENED","B9_BEARER_SECURITY_MISSING","B9_BEARER_SECURITY_EMPTY","CLIENT_TENANT_INJECTION","CLIENT_SUBJECT_INJECTION","CLIENT_OWNER_INJECTION","CLIENT_ADULT_GATE_INJECTION","CLIENT_POLICY_VERSION_INJECTION","CLIENT_TARGET_VERSION_INJECTION","PLANNING_INPUT_UNKNOWN_FIELD","PLANNING_INPUT_PIN_REMOVAL","PLANNING_INPUT_VERSION_NULLABLE","PLANNING_INPUT_DIGEST_REMOVAL","PLANNING_INPUT_DIGEST_WEAKENED","PLANNING_INPUT_WATERMARK_REMOVAL","PLANNING_INPUT_SOURCE_MAPPING_DRIFT","PLANNING_INPUT_PLACEMENT_LEAK","PLANNING_INPUT_MASTERY_LEAK","JOB_INPUT_BINDING_DRIFT","PLAN_REQUIRED_PIN_VERSION_REMOVAL","PLAN_PIN_VERSION_NULLABLE","PLAN_WATERMARK_SHAPE_WEAKENED","PLAN_INPUT_BINDING_DRIFT","RECOVERY_INPUT_BINDING_DRIFT","PROJECTION_WATERMARK_REMOVAL","PROJECTION_WATERMARK_NULLABLE","FIRST_DAY_STATE_ENUM_DRIFT","FIRST_DAY_ONEOF_REMOVAL","FIRST_DAY_NOT_READY_PLAN_LEAK","FIRST_DAY_PROCESSING_RECOVERY_LEAK","FIRST_DAY_READY_PIN_REMOVAL","FIRST_DAY_READY_TASKCOUNT_WEAKENED","FIRST_DAY_DEGRADED_REASON_REMOVAL","FIRST_DAY_DEGRADED_RECOVERY_REMOVAL","FIRST_DAY_DEGRADED_TASK_LEAK","STATE_NOT_GUARD_WEAKENED","FIRST_DAY_INPUT_CONSISTENCY_REMOVAL","PROCESSING_JOB_STATUS_SCOPE_DRIFT","DEGRADED_RECOVERY_STATUS_SCOPE_DRIFT","RECOVERY_PATH_PARAM_REMOVAL","RECOVERY_POST_EXPOSED","RECOVERY_REQUEST_BODY_EXPOSED","RECOVERY_CROSS_SUBJECT_BINDING_DRIFT","RECOVERY_OPERATOR_FIELD_LEAK","RECOVERY_CLIENT_EXECUTION_ENABLED","RECOVERY_PROJECTION_WATERMARK_REMOVAL","RECOVERY_RETRYABLE_STATE_DRIFT","JOB_RETRYABLE_STATE_DRIFT","B1_LEGACY_NOT_DEPRECATED","B1_LEGACY_NOT_ADAPTER_ONLY","B1_LEGACY_REPLACEMENT_DRIFT","B1_LEGACY_AUTHZ_ALLOW","B1_LEGACY_TRUSTED_FACT_REMOVAL","B1_LEGACY_RESPONSE_422_REMOVAL","B1_BEARER_SECURITY_MISSING","B1_BEARER_SECURITY_EMPTY","EVENT_PROFILE_PAYLOAD_LEAK","EVENT_TARGET_REQUIRED_PIN_REMOVAL","EVENT_TARGET_GOAL_ENUM_DRIFT","EVENT_TARGET_SELF_CONTAINED_PREFERENCE_REMOVAL","EVENT_TARGET_DIGEST_WEAKENED","EVENT_TARGET_HISTORICAL_DEMOTION","EVENT_FIRST_DAY_PIN_REMOVAL","EVENT_FIRST_DAY_FAILURE_RAW_LEAK","EVENT_GOVERNANCE_RUNTIME_PROMOTION","EVENT_GAP_D2_STATUS_DRIFT","EVENT_GAP_REGISTRY_CLOSED","B26_TOPIC_OWNER_DRIFT","B26_CONSUMER_DRIFT","B26_RUNTIME_PROMOTION","DATA_OWNER_DRIFT","CROSS_OWNER_WRITE_ALLOWED","M1_012_PLACEMENT_SCOPE_LEAK","M1_013_PLAN_SRS_SCOPE_LEAK"]
+}

@@ -372,17 +372,17 @@ test('content lifecycle rejects canonical owner, topic, group, binding, fragment
     ['unrelated event gap is falsely marked D2 closed', (input) => {
       const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-IAM-001');
       closure.status = 'D2_CONTRACT_CLOSED';
-    }, /catalog D2 closed gap set|exactly fourteen unrelated event gaps/],
+    }, /catalog D2 closed gap set|exactly thirteen unrelated event gaps/],
     ['fragment envelope stale', (input) => {
       const fragment = input.eventFragments.find((item) => item.path.endsWith('b9-learner-content.events.json'));
       fragment.data.events.find((event) => event.eventName === 'content.version.submitted.v1')['x-envelope-required'].pop();
     }, /fragment canonical envelope/],
     ['invalidated event promoted', (input) => {
       catalogEvent(input, 'content.public_projection.invalidated.v1').status = 'CANONICAL_D2';
-    }, /must remain HISTORICAL_CANDIDATE|exact twelve/],
+    }, /must remain HISTORICAL_CANDIDATE|exact thirteen/],
     ['cms event promoted', (input) => {
       catalogEvent(input, 'cms.content.published.v1').status = 'CANONICAL_D2';
-    }, /must remain HISTORICAL_CANDIDATE|exact twelve/],
+    }, /must remain HISTORICAL_CANDIDATE|exact thirteen/],
     ['historical invalidated Kafka binding', (input) => {
       catalogEvent(input, 'content.public_projection.invalidated.v1')['x-kafka'] = { topic: 'platform.content.v1' };
     }, /historical event must not carry|historical candidate/],
@@ -393,7 +393,7 @@ test('content lifecycle rejects canonical owner, topic, group, binding, fragment
         partitionKey: 'aggregateId',
         consumerGroups: ['cg.learner-from-content.v1'],
       });
-    }, /must not gain a B26 Kafka route|exact twelve/],
+    }, /must not gain a B26 Kafka route|exact thirteen/],
     ['reliability omits canonical content event', (input) => {
       input.reliabilityPolicy.catalog.currentCanonicalEvents = input.reliabilityPolicy.catalog.currentCanonicalEvents.filter((eventName) => eventName !== 'content.version.published.v1');
     }, /must be covered by reliability policy|canonical event set/],

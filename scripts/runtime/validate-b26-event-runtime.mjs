@@ -177,6 +177,20 @@ const expectedTopicBindings = [
     ],
   },
   {
+    name: 'platform.learner.v1',
+    ownerService: 'learner-service',
+    producerPrincipal: 'svc.learner-service',
+    consumerGroups: [
+      'cg.learning-from-learner.v1:learning-service:cg.learning-from-learner.v1:true',
+      'cg.workflow-from-learner.v1:workflow-service:cg.workflow-from-learner.v1:true',
+    ],
+    acl: [
+      'cg.learning-from-learner.v1:READ:ALLOW',
+      'cg.workflow-from-learner.v1:READ:ALLOW',
+      'svc.learner-service:WRITE:ALLOW',
+    ],
+  },
+  {
     name: 'platform.learning.v1',
     ownerService: 'learning-service',
     producerPrincipal: 'svc.learning-service',
@@ -229,6 +243,7 @@ const expectedEventRoutingBindings = [
   'content.version.rolled_back.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.submitted.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.unpublished.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
+  'learner.target.updated.v1|platform.learner.v1|aggregateId|cg.learning-from-learner.v1,cg.workflow-from-learner.v1',
   'workflow.event.dead_lettered.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
   'workflow.event.delivery_failed.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
   'workflow.event.ordering_deferred.v1|platform.workflow.v1|aggregateId|cg.workflow-manual-recovery.v1,cg.workflow-reliability.v1',
@@ -395,7 +410,7 @@ function validateBroker(manifest, localPorts, errors) {
 
 function validateTopics(manifest, errors) {
   const topics = manifest.topics ?? []
-  requireArray(topics, 'topics', errors, 6)
+  requireArray(topics, 'topics', errors, 7)
   unique(topics.map((topic) => topic?.name), 'topic names', errors)
   const actualTopicBindings = topics
     .map((topic) => ({

@@ -281,7 +281,7 @@
       {
         "gapId": "EVENT-GAP-ONB-001",
         "family": "EVENT-GAP-ONB",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-011",
           "P1R-M1-006"
@@ -2852,6 +2852,16 @@
         "goalCode",
         "targetLevel",
         "dailyQuotaMinutes",
+        "profileVersion",
+        "preferenceVersion",
+        "timezone",
+        "weeklyStudyDays",
+        "contentLocale",
+        "goalCatalogVersion",
+        "targetSnapshotDigest",
+        "inputFactWatermark",
+        "sourceEventId",
+        "rootEventId",
         "updatedAt"
       ],
       "properties": {
@@ -2873,7 +2883,12 @@
         },
         "goalCode": {
           "type": "string",
-          "maxLength": 96
+          "enum": [
+            "FOUNDATION",
+            "COLLEGE_CET",
+            "POSTGRADUATE_ENGLISH",
+            "WORKPLACE_DAILY"
+          ]
         },
         "targetLevel": {
           "type": "string",
@@ -2894,6 +2909,65 @@
             30,
             45
           ]
+        },
+        "profileVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "preferenceVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timezone": {
+          "type": "string",
+          "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
+          "maxLength": 64
+        },
+        "weeklyStudyDays": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 7
+          }
+        },
+        "contentLocale": {
+          "type": "string",
+          "pattern": "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-[A-Z]{2})?$",
+          "minLength": 2,
+          "maxLength": 16
+        },
+        "goalCatalogVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "targetSnapshotDigest": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "inputFactWatermark": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "sourceEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
         },
         "updatedAt": {
           "type": "string",
@@ -2923,6 +2997,38 @@
           "type": "string",
           "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
         },
+        "profileVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "targetVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "preferenceVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "planningInputPinId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "planningInputVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "planningInputDigest": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 128,
+          "pattern": "^[A-Fa-f0-9]+$"
+        },
+        "planVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
         "projectionVersion": {
           "type": "integer",
           "minimum": 1
@@ -2935,6 +3041,7 @@
           "type": "string",
           "enum": [
             "NOT_READY",
+            "PROCESSING",
             "READY",
             "DEGRADED"
           ]
@@ -2942,6 +3049,45 @@
         "taskCount": {
           "type": "integer",
           "minimum": 0
+        },
+        "inputFactWatermark": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "sourceEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "rootEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "failureCode": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "PROFILE_INCOMPLETE",
+            "TARGET_INCOMPLETE",
+            "PLAN_PENDING",
+            "PLAN_FAILED",
+            "CONTENT_UNAVAILABLE",
+            "RIGHTS_DENIED",
+            "DEPENDENCY_UNAVAILABLE",
+            "POLICY_DENIED",
+            "MANUAL_RECOVERY_REQUIRED"
+          ]
+        },
+        "recoveryTaskId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
         },
         "projectedAt": {
           "type": "string",
@@ -7449,7 +7595,6 @@
     },
     {
       "eventName": "learner.target.updated.v1",
-      "status": "HISTORICAL_CANDIDATE",
       "domain": "learner",
       "version": 1,
       "schema": "learner.event.v1",
@@ -7457,10 +7602,18 @@
       "aggregateIdField": "targetId",
       "x-envelope-required": [
         "eventId",
-        "traceId",
-        "schemaVersion",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
         "aggregateId",
-        "dedupeKey"
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
       ],
       "payloadSchema": {
         "$ref": "#/payloadSchemas/B9LearnerTargetUpdated"
@@ -7468,12 +7621,60 @@
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish learner.target.updated.v2",
-        "consumerRule": "按 targetId/targetVersion 幂等；tenantId 由服务端派生并用于消费侧隔离。"
+        "consumerRule": "按 targetId/targetVersion 幂等；tenantId 由服务端派生并用于消费侧隔离；canonical v1 必须携带完整 profile/preference/catalog/digest/watermark/source/root 版本链。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "learner-service",
+          "dataOwner": "learner-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_learner_target_updated_v1"
+        },
+        "consumers": [
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-learner.v1",
+            "subscriptionOperationId": "subscribe_learner_target_updated_v1_cg_learning_from_learner_v1"
+          },
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-learner.v1",
+            "subscriptionOperationId": "subscribe_learner_target_updated_v1_cg_workflow_from_learner_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.learner.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.targetId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "learner_target_updated_v1"
+        },
+        "schema": {
+          "schemaVersion": "learner.event.v1",
+          "payloadRef": "#/payloadSchemas/B9LearnerTargetUpdated",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
       }
     },
     {
       "eventName": "learner.first_day.projected.v1",
-      "status": "HISTORICAL_CANDIDATE",
       "domain": "learner",
       "version": 1,
       "schema": "learner.event.v1",
@@ -7492,8 +7693,9 @@
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish learner.first_day.projected.v2",
-        "consumerRule": "按 principalId/projectionVersion 处理；projection 只含任务引用和内容 epoch。"
-      }
+        "consumerRule": "按 principalId/projectionVersion 处理；projection 只含任务引用和内容 epoch，不传播 placement raw/score、algorithm、SRS 或 mastery。历史 v1 可缺少新增链路字段；canonical promotion 前必须提供失败安全链。"
+      },
+      "status": "HISTORICAL_CANDIDATE"
     },
     {
       "eventName": "content.version.submitted.v1",
@@ -9630,6 +9832,33 @@
     },
     "x-runtime-status": "NOT_RUNTIME_VERIFIED",
     "channels": {
+      "learner_target_updated_v1": {
+        "address": "platform.learner.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.learner.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "learner.target.updated.v1",
+            "x-event-name": "learner.target.updated.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B9LearnerTargetUpdated"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
       "content_version_submitted_v1": {
         "address": "platform.content.v1",
         "bindings": {
@@ -9956,6 +10185,70 @@
       }
     },
     "operations": {
+      "publish_learner_target_updated_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learner_target_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learner_target_updated_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "learner-service",
+        "x-data-owner": "learner-service"
+      },
+      "subscribe_learner_target_updated_v1_cg_learning_from_learner_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learner_target_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learner_target_updated_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-learner.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_learner_target_updated_v1_cg_workflow_from_learner_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learner_target_updated_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learner_target_updated_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-learner.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
       "publish_content_version_submitted_v1": {
         "action": "send",
         "channel": {

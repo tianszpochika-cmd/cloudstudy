@@ -2617,6 +2617,47 @@
           "B1 Onboarding"
         ],
         "operationId": "getB1OnboardingOptions",
+        "summary": "Deprecated compatibility adapter for the B9 learner goal catalog",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/goal-options"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "getB9LearnerGoalOptions",
+          "authority": "legacy response is translated from the server-owned B9 goal catalog; B1AnyData is not an authorization or persistence fact"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationId": "getB9LearnerGoalOptions",
+          "wireShapeRetained": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.goal-options.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; the compatibility route cannot expand the canonical B9 authorization decision"
+        },
         "responses": {
           "200": {
             "description": "Supported onboarding options",
@@ -2653,6 +2694,12 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
@@ -2663,6 +2710,47 @@
           "B1 Onboarding"
         ],
         "operationId": "getB1OnboardingProfile",
+        "summary": "Deprecated compatibility adapter for the B9 learner profile",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/profile"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "getB9LearnerProfile",
+          "authority": "legacy response is translated from the authenticated B9 profile; B1AnyData is not authoritative"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationId": "getB9LearnerProfile",
+          "wireShapeRetained": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; the compatibility route cannot expand the canonical B9 authorization decision"
+        },
         "responses": {
           "200": {
             "description": "Current learner profile",
@@ -2699,6 +2787,12 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       },
@@ -2707,6 +2801,55 @@
           "B1 Onboarding"
         ],
         "operationId": "saveB1OnboardingProfile",
+        "summary": "Deprecated compatibility adapter for B9 profile and target writes",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/profile"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTargets": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "authority": "legacy request is translated only after server-side validation; tenant, owner, identity and versions are never taken from the legacy body"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationIds": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "wireShapeRetained": true,
+          "missingCanonicalFactsDecision": "DENY_WITH_422",
+          "targetMappingPolicy": "B1OnboardingProfileRequest.x-p1r-b9-target-mapping"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.write",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; identity, tenant, owner, versions and policy facts are server-derived before adapter translation"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -2765,8 +2908,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       },
@@ -2775,6 +2930,55 @@
           "B1 Onboarding"
         ],
         "operationId": "patchB1OnboardingProfile",
+        "summary": "Deprecated compatibility adapter for B9 profile and target writes",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/profile"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTargets": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "authority": "legacy request is translated only after server-side validation; tenant, owner, identity and versions are never taken from the legacy body"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationIds": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "wireShapeRetained": true,
+          "missingCanonicalFactsDecision": "DENY_WITH_422",
+          "targetMappingPolicy": "B1OnboardingProfileRequest.x-p1r-b9-target-mapping"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.write",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; identity, tenant, owner, versions and policy facts are server-derived before adapter translation"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -2833,8 +3037,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -2845,6 +3061,52 @@
           "B1 Onboarding"
         ],
         "operationId": "createB1FirstGoal",
+        "summary": "Deprecated compatibility adapter for the B9 learner target",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/targets"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "putB9LearnerTarget",
+          "authority": "this bodyless legacy operation reads the authenticated subject's server-owned legacy profile snapshot, translates only the frozen mapping to a B9 target command, and fails closed when any canonical fact is missing or unknown"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationId": "putB9LearnerTarget",
+          "wireShapeRetained": true,
+          "missingCanonicalFactsDecision": "DENY_WITH_422",
+          "requestBodyPolicy": "FORBIDDEN_USE_SERVER_OWNED_LEGACY_PROFILE_SNAPSHOT",
+          "sourceSnapshotSchema": "B1OnboardingProfileRequest",
+          "targetMappingPolicy": "B1OnboardingProfileRequest.x-p1r-b9-target-mapping",
+          "expectedStateVersionSource": "SERVER_READ_CURRENT_TARGET_VERSION_OR_ZERO"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.target.write",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; the legacy request cannot establish target identity, goal authority, versions or policy facts"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -2892,6 +3154,18 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -18705,6 +18979,24 @@
           "readModel": "lrn_profile",
           "fieldFiltering": "self profile only; no IAM identity or private audit fields"
         },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
+        },
         "responses": {
           "200": {
             "description": "Learner profile",
@@ -18765,6 +19057,24 @@
           "owner": "learner-service",
           "command": "learner.profile.update",
           "tenantAndOwner": "derived from verified token and resource row; never accepted from request body"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.write",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
         "x-idempotency": {
           "required": true,
@@ -18859,6 +19169,24 @@
           "readModel": "lrn_learning_target",
           "fieldFiltering": "self target only"
         },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.target.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
+        },
         "responses": {
           "200": {
             "description": "Learning target",
@@ -18922,6 +19250,24 @@
           "owner": "learner-service",
           "command": "learner.target.upsert",
           "tenantAndOwner": "server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.target.write",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
         "x-idempotency": {
           "required": true,
@@ -19016,6 +19362,24 @@
           "readModel": "lrn_preference",
           "fieldFiltering": "self preference only; uiLocale and contentLocale remain separate"
         },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.preference.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
+        },
         "responses": {
           "200": {
             "description": "Learner preferences",
@@ -19076,6 +19440,24 @@
           "owner": "learner-service",
           "command": "learner.preference.update",
           "tenantAndOwner": "server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.preference.write",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
         "x-idempotency": {
           "required": true,
@@ -19173,6 +19555,24 @@
           ],
           "fieldFiltering": "self projection; task refs contain no answer rules"
         },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.first-day.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
+        },
         "responses": {
           "200": {
             "description": "First-day projection",
@@ -19238,6 +19638,24 @@
           "owner": "learner-service",
           "projection": "lrn_first_day_projection + learner home read model",
           "fieldFiltering": "self projection; content data is read-only and version-pinned"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.home.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
         "responses": {
           "200": {
@@ -27686,6 +28104,191 @@
           }
         }
       }
+    },
+    "/api/v1/learner/goal-options": {
+      "get": {
+        "tags": [
+          "b9-learner"
+        ],
+        "summary": "Read the server-owned learner goal catalog",
+        "operationId": "getB9LearnerGoalOptions",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "readModel": "lrn_goal_catalog",
+          "fieldFiltering": "server-owned catalog; labels are locale projections",
+          "catalogAuthority": "learner-service publishes the immutable catalog version"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.goal-options.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
+        },
+        "responses": {
+          "200": {
+            "description": "Learner goal catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B9GoalOptions"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learner/first-day/recovery/{recoveryTaskId}": {
+      "get": {
+        "tags": [
+          "b9-learner"
+        ],
+        "summary": "Read a subject-bound first-day recovery task",
+        "operationId": "getB9FirstDayRecovery",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "projection": "learner first-day recovery read model",
+          "workflowOwner": "workflow-service",
+          "readOnly": true,
+          "subjectBinding": "recoveryTaskId is resolved against the authenticated principal; cross-subject reads are denied",
+          "commands": "retry, approve and close are not exposed by this contract"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.first-day.recovery.read",
+          "pep": "learner-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; task ownership and status are server-derived"
+        },
+        "parameters": [
+          {
+            "name": "recoveryTaskId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9._:-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "First-day recovery task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B9FirstDayRecovery"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -33613,6 +34216,57 @@
       "B1OnboardingProfileRequest": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Legacy wire shape retained only for the B9 adapter; the request cannot establish identity, ownership, tenant, gate, consent, policy or server versions.",
+        "x-compatibility-only": true,
+        "x-p1r-b9-target-mapping": {
+          "sourceField": "targetGoal",
+          "dailyQuotaField": "dailyQuotaMinutes",
+          "expectedStateVersionField": "expectedVersion",
+          "missingOrUnknownDecision": "DENY_WITH_422",
+          "dailyQuotaMinutes": [
+            5,
+            15,
+            30,
+            45
+          ],
+          "mappings": [
+            {
+              "legacyTargetGoal": "ZERO_BASIS",
+              "goalCode": "FOUNDATION",
+              "targetLevel": "A1"
+            },
+            {
+              "legacyTargetGoal": "CET_4_6",
+              "goalCode": "COLLEGE_CET",
+              "targetLevel": "B1"
+            },
+            {
+              "legacyTargetGoal": "POSTGRADUATE",
+              "goalCode": "POSTGRADUATE_ENGLISH",
+              "targetLevel": "B2"
+            },
+            {
+              "legacyTargetGoal": "WORKPLACE_DAILY",
+              "goalCode": "WORKPLACE_DAILY",
+              "targetLevel": "B2"
+            }
+          ]
+        },
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "role",
+          "permissions",
+          "adultGate",
+          "consent",
+          "policyVersion",
+          "contentRights",
+          "profileVersion",
+          "targetVersion",
+          "preferenceVersion",
+          "stateVersion"
+        ],
         "required": [
           "targetGoal",
           "dailyQuotaMinutes"
@@ -33622,7 +34276,13 @@
             "type": "string"
           },
           "targetGoal": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "ZERO_BASIS",
+              "CET_4_6",
+              "POSTGRADUATE",
+              "WORKPLACE_DAILY"
+            ]
           },
           "examType": {
             "type": "string"
@@ -41612,9 +42272,25 @@
           "uiLocale",
           "contentLocale",
           "timezone",
+          "profileVersion",
           "stateVersion",
           "updatedAt"
         ],
+        "x-version-policy": {
+          "serverOwned": [
+            "profileVersion",
+            "stateVersion"
+          ],
+          "equality": "profileVersion MUST equal stateVersion in every response; stateVersion is retained as a compatibility alias",
+          "clientMaySubmit": false
+        },
+        "x-planning-source-policy": {
+          "profileVersion": "PINNED",
+          "proficiencyLevel": "PROFILE_FACT",
+          "timezone": "COMPATIBILITY_SHADOW_USE_PREFERENCES",
+          "contentLocale": "COMPATIBILITY_SHADOW_USE_PREFERENCES",
+          "targetGoal": "COMPATIBILITY_ONLY_NEVER_PLANNING_AUTHORITY"
+        },
         "properties": {
           "principalId": {
             "$ref": "#/components/schemas/B9PrincipalId"
@@ -41644,9 +42320,15 @@
             "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
             "maxLength": 64
           },
+          "profileVersion": {
+            "$ref": "#/components/schemas/B9StateVersion",
+            "description": "Server-owned profile aggregate version; equals stateVersion."
+          },
           "targetGoal": {
             "type": "string",
-            "maxLength": 96
+            "maxLength": 96,
+            "deprecated": true,
+            "description": "Compatibility-only profile shadow. It never selects a goal or contributes to planning input; use B9LearnerTarget.goalCode."
           },
           "proficiencyLevel": {
             "type": "string",
@@ -41674,7 +42356,20 @@
         "required": [
           "expectedStateVersion"
         ],
-        "description": "只提交可由学习者修改的字段；principalId、tenantId、role、owner 和权限事实由服务端派生。",
+        "description": "只提交可由学习者修改的字段；principalId、tenantId、role、owner、server versions 和权限事实由服务端派生。",
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "role",
+          "permissions",
+          "adultGate",
+          "consent",
+          "policyVersion",
+          "contentRights",
+          "profileVersion",
+          "stateVersion"
+        ],
         "properties": {
           "expectedStateVersion": {
             "$ref": "#/components/schemas/B9ExpectedStateVersion"
@@ -41687,12 +42382,15 @@
           },
           "timezone": {
             "type": "string",
+            "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
             "maxLength": 64
           },
           "targetGoal": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 96
+            "maxLength": 96,
+            "deprecated": true,
+            "description": "Compatibility-only profile shadow. The server must not treat this field as planning authority; use PUT /api/v1/learner/targets."
           },
           "proficiencyLevel": {
             "type": "string",
@@ -41717,9 +42415,18 @@
           "targetLevel",
           "dailyQuotaMinutes",
           "status",
+          "targetVersion",
           "stateVersion",
           "updatedAt"
         ],
+        "x-version-policy": {
+          "serverOwned": [
+            "targetVersion",
+            "stateVersion"
+          ],
+          "equality": "targetVersion MUST equal stateVersion in every response; stateVersion is retained as a compatibility alias",
+          "clientMaySubmit": false
+        },
         "properties": {
           "targetId": {
             "type": "integer",
@@ -41728,7 +42435,12 @@
           },
           "goalCode": {
             "type": "string",
-            "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
+            "enum": [
+              "FOUNDATION",
+              "COLLEGE_CET",
+              "POSTGRADUATE_ENGLISH",
+              "WORKPLACE_DAILY"
+            ]
           },
           "targetLevel": {
             "type": "string",
@@ -41767,6 +42479,10 @@
               "ARCHIVED"
             ]
           },
+          "targetVersion": {
+            "$ref": "#/components/schemas/B9StateVersion",
+            "description": "Server-owned learner target aggregate version; equals stateVersion."
+          },
           "stateVersion": {
             "$ref": "#/components/schemas/B9StateVersion"
           },
@@ -41784,14 +42500,33 @@
           "targetLevel",
           "dailyQuotaMinutes"
         ],
-        "description": "目标命令不接受 tenantId 或 owner/principal 字段；目标始终绑定到已验证主体。",
+        "description": "目标命令不接受 tenantId、owner/principal 或 server version 字段；目标始终绑定到已验证主体。",
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "targetId",
+          "ownerId",
+          "role",
+          "permissions",
+          "adultGate",
+          "consent",
+          "policyVersion",
+          "contentRights",
+          "targetVersion",
+          "stateVersion"
+        ],
         "properties": {
           "expectedStateVersion": {
             "$ref": "#/components/schemas/B9ExpectedStateVersion"
           },
           "goalCode": {
             "type": "string",
-            "pattern": "^[a-z][a-z0-9._:-]{1,95}$"
+            "enum": [
+              "FOUNDATION",
+              "COLLEGE_CET",
+              "POSTGRADUATE_ENGLISH",
+              "WORKPLACE_DAILY"
+            ]
           },
           "targetLevel": {
             "type": "string",
@@ -41837,12 +42572,29 @@
           "uiLocale",
           "contentLocale",
           "timezone",
+          "weeklyStudyDays",
           "themeMode",
           "highContrast",
           "motionMode",
+          "preferenceVersion",
           "stateVersion",
           "updatedAt"
         ],
+        "x-version-policy": {
+          "serverOwned": [
+            "preferenceVersion",
+            "stateVersion"
+          ],
+          "equality": "preferenceVersion MUST equal stateVersion in every response; stateVersion is retained as a compatibility alias",
+          "clientMaySubmit": false
+        },
+        "x-planning-source-policy": {
+          "preferenceVersion": "PINNED",
+          "timezone": "AUTHORITATIVE",
+          "weeklyStudyDays": "AUTHORITATIVE",
+          "contentLocale": "AUTHORITATIVE",
+          "uiLocale": "NOT_A_PLANNING_FACT"
+        },
         "properties": {
           "uiLocale": {
             "$ref": "#/components/schemas/B9Locale"
@@ -41852,7 +42604,19 @@
           },
           "timezone": {
             "type": "string",
+            "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
             "maxLength": 64
+          },
+          "weeklyStudyDays": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 7
+            }
           },
           "themeMode": {
             "type": "string",
@@ -41873,6 +42637,10 @@
               "OFF"
             ]
           },
+          "preferenceVersion": {
+            "$ref": "#/components/schemas/B9StateVersion",
+            "description": "Server-owned learner preference aggregate version; equals stateVersion."
+          },
           "stateVersion": {
             "$ref": "#/components/schemas/B9StateVersion"
           },
@@ -41887,7 +42655,20 @@
         "required": [
           "expectedStateVersion"
         ],
-        "description": "UI locale、content locale、主题和无障碍设置分开持久化；contentLocale 不得覆盖 UI locale。",
+        "description": "UI locale、content locale、主题和无障碍设置分开持久化；contentLocale 不得覆盖 UI locale；server versions and identity are never accepted.",
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "role",
+          "permissions",
+          "adultGate",
+          "consent",
+          "policyVersion",
+          "contentRights",
+          "preferenceVersion",
+          "stateVersion"
+        ],
         "properties": {
           "expectedStateVersion": {
             "$ref": "#/components/schemas/B9ExpectedStateVersion"
@@ -41900,7 +42681,19 @@
           },
           "timezone": {
             "type": "string",
+            "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
             "maxLength": 64
+          },
+          "weeklyStudyDays": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 7
+            }
           },
           "themeMode": {
             "type": "string",
@@ -41981,73 +42774,287 @@
         }
       },
       "B9FirstDayProjection": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "state",
-          "profileReady",
-          "targetReady",
-          "placementStatus",
-          "taskCount",
-          "tasks",
-          "contentEpoch",
-          "projectionVersion",
-          "generatedAt"
-        ],
-        "properties": {
-          "state": {
-            "type": "string",
-            "enum": [
-              "NOT_READY",
-              "READY",
-              "DEGRADED"
-            ]
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B9FirstDayProjectionCommon"
           },
-          "profileReady": {
-            "type": "boolean"
-          },
-          "targetReady": {
-            "type": "boolean"
-          },
-          "placementStatus": {
-            "type": "string",
-            "enum": [
-              "NOT_STARTED",
-              "IN_PROGRESS",
-              "SKIPPED",
-              "COMPLETED",
-              "UNAVAILABLE"
-            ]
-          },
-          "taskCount": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "tasks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/B9TaskRef"
-            },
-            "maxItems": 100
-          },
-          "contentEpoch": {
-            "$ref": "#/components/schemas/B9ContentEpoch"
-          },
-          "projectionVersion": {
-            "$ref": "#/components/schemas/B9ProjectionVersion"
-          },
-          "generatedAt": {
-            "$ref": "#/components/schemas/B9DateTime"
-          },
-          "degradedReason": {
-            "type": "string",
-            "enum": [
-              "NONE",
-              "CONTENT_PROJECTION_STALE",
-              "LEGACY_SHADOW_ONLY",
-              "DEPENDENCY_UNAVAILABLE"
+          {
+            "oneOf": [
+              {
+                "required": [
+                  "state",
+                  "tasks",
+                  "blocker"
+                ],
+                "properties": {
+                  "state": {
+                    "const": "NOT_READY"
+                  },
+                  "taskCount": {
+                    "const": 0
+                  },
+                  "tasks": {
+                    "maxItems": 0
+                  },
+                  "blocker": {
+                    "type": "string",
+                    "enum": [
+                      "PROFILE_INCOMPLETE",
+                      "TARGET_INCOMPLETE",
+                      "PLACEMENT_REQUIRED",
+                      "CONSENT_REQUIRED",
+                      "POLICY_DENIED"
+                    ]
+                  }
+                },
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "planningInput"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "job"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "plan"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "degradedReason"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "recovery"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "state",
+                  "tasks",
+                  "planningInput",
+                  "job"
+                ],
+                "properties": {
+                  "state": {
+                    "const": "PROCESSING"
+                  },
+                  "profileReady": {
+                    "const": true
+                  },
+                  "targetReady": {
+                    "const": true
+                  },
+                  "taskCount": {
+                    "const": 0
+                  },
+                  "tasks": {
+                    "maxItems": 0
+                  },
+                  "planningInput": {
+                    "$ref": "#/components/schemas/B9PlanningInputSnapshot"
+                  },
+                  "job": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/B9PlanningJobRef"
+                      },
+                      {
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "QUEUED",
+                              "PROCESSING",
+                              "RETRYABLE"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "blocker"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "plan"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "degradedReason"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "recovery"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "state",
+                  "tasks",
+                  "planningInput",
+                  "plan"
+                ],
+                "properties": {
+                  "state": {
+                    "const": "READY"
+                  },
+                  "profileReady": {
+                    "const": true
+                  },
+                  "targetReady": {
+                    "const": true
+                  },
+                  "taskCount": {
+                    "minimum": 1
+                  },
+                  "tasks": {
+                    "minItems": 1
+                  },
+                  "planningInput": {
+                    "$ref": "#/components/schemas/B9PlanningInputSnapshot"
+                  },
+                  "plan": {
+                    "$ref": "#/components/schemas/B9PlanReference"
+                  }
+                },
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "blocker"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "job"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "degradedReason"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "recovery"
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "required": [
+                  "state",
+                  "tasks",
+                  "planningInput",
+                  "degradedReason",
+                  "recovery"
+                ],
+                "properties": {
+                  "state": {
+                    "const": "DEGRADED"
+                  },
+                  "profileReady": {
+                    "const": true
+                  },
+                  "targetReady": {
+                    "const": true
+                  },
+                  "taskCount": {
+                    "const": 0
+                  },
+                  "tasks": {
+                    "maxItems": 0
+                  },
+                  "planningInput": {
+                    "$ref": "#/components/schemas/B9PlanningInputSnapshot"
+                  },
+                  "degradedReason": {
+                    "type": "string",
+                    "enum": [
+                      "CONTENT_PROJECTION_STALE",
+                      "LEGACY_SHADOW_ONLY",
+                      "DEPENDENCY_UNAVAILABLE",
+                      "PLAN_FAILED",
+                      "RIGHTS_DENIED",
+                      "POLICY_DENIED"
+                    ]
+                  },
+                  "recovery": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/B9FirstDayRecovery"
+                      },
+                      {
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "enum": [
+                              "QUEUED",
+                              "PROCESSING",
+                              "RETRYABLE",
+                              "FAILED"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "blocker"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "job"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "plan"
+                      ]
+                    }
+                  ]
+                }
+              }
             ]
           }
+        ],
+        "x-state-policy": {
+          "failureCannotMasqueradeAsEmptySuccess": true,
+          "notReady": "empty tasks plus an explicit blocker; no planning, plan, failure or recovery fields",
+          "processing": "empty tasks plus immutable planningInput and job; no plan, failure or recovery fields",
+          "ready": "at least one task plus immutable planningInput and plan; no blocker, job, failure or recovery fields",
+          "degraded": "empty tasks plus immutable planningInput, safe reason and read-only recovery; never a READY result"
         }
       },
       "B9HomeProjection": {
@@ -53714,6 +54721,770 @@
             "$ref": "#/components/schemas/B10DateTime"
           }
         }
+      },
+      "B9GoalOption": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "goalCode",
+          "label",
+          "targetLevels",
+          "dailyQuotaMinutes"
+        ],
+        "properties": {
+          "goalCode": {
+            "type": "string",
+            "enum": [
+              "FOUNDATION",
+              "COLLEGE_CET",
+              "POSTGRADUATE_ENGLISH",
+              "WORKPLACE_DAILY"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Localized display label for the enclosing B9GoalOptions.contentLocale."
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "targetLevels": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+              ]
+            }
+          },
+          "dailyQuotaMinutes": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "enum": [
+                5,
+                15,
+                30,
+                45
+              ]
+            }
+          }
+        }
+      },
+      "B9GoalOptions": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "goalCatalogVersion",
+          "contentLocale",
+          "options",
+          "generatedAt"
+        ],
+        "x-goal-catalog-policy": {
+          "codes": [
+            "FOUNDATION",
+            "COLLEGE_CET",
+            "POSTGRADUATE_ENGLISH",
+            "WORKPLACE_DAILY"
+          ],
+          "coverage": "EXACTLY_ONCE",
+          "uniqueBy": "goalCode",
+          "dailyQuotaMinutes": [
+            5,
+            15,
+            30,
+            45
+          ],
+          "unknownCodeDecision": "DENY"
+        },
+        "properties": {
+          "goalCatalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "contentLocale": {
+            "$ref": "#/components/schemas/B9Locale"
+          },
+          "options": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "x-unique-by": "goalCode",
+            "items": {
+              "$ref": "#/components/schemas/B9GoalOption"
+            }
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
+      "B9PlanningInputSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pinId",
+          "pinVersion",
+          "pinDigest",
+          "targetId",
+          "targetVersion",
+          "profileVersion",
+          "preferenceVersion",
+          "goalCatalogVersion",
+          "dailyQuotaMinutes",
+          "timezone",
+          "weeklyStudyDays",
+          "contentLocale",
+          "contentEpoch",
+          "projectionVersion",
+          "rightsSnapshotVersion",
+          "planningRuleVersion",
+          "inputFactWatermark",
+          "sourceEventId",
+          "rootEventId"
+        ],
+        "description": "Immutable, server-assembled planning facts. Placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.",
+        "x-source-mapping": {
+          "learnerTarget": [
+            "targetId",
+            "targetVersion",
+            "dailyQuotaMinutes",
+            "goalCatalogVersion"
+          ],
+          "learnerProfile": [
+            "profileVersion"
+          ],
+          "learnerPreferences": [
+            "preferenceVersion",
+            "timezone",
+            "weeklyStudyDays",
+            "contentLocale"
+          ],
+          "contentProjection": [
+            "contentEpoch",
+            "projectionVersion",
+            "rightsSnapshotVersion"
+          ],
+          "learningPolicy": [
+            "planningRuleVersion"
+          ],
+          "learningOwner": [
+            "pinId",
+            "pinVersion",
+            "pinDigest",
+            "inputFactWatermark",
+            "sourceEventId",
+            "rootEventId"
+          ]
+        },
+        "x-forbidden-fields": [
+          "placementRaw",
+          "placementScore",
+          "placementAlgorithm",
+          "srsState",
+          "mastery"
+        ],
+        "properties": {
+          "pinId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "pinVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pinDigest": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "targetId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "targetVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "profileVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "preferenceVersion": {
+            "$ref": "#/components/schemas/B9StateVersion"
+          },
+          "goalCatalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "dailyQuotaMinutes": {
+            "type": "integer",
+            "enum": [
+              5,
+              15,
+              30,
+              45
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
+            "maxLength": 64
+          },
+          "weeklyStudyDays": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 7
+            }
+          },
+          "contentLocale": {
+            "$ref": "#/components/schemas/B9Locale"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B9ContentEpoch"
+          },
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B9ProjectionVersion"
+          },
+          "rightsSnapshotVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "planningRuleVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "inputFactWatermark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "sourceEventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "rootEventId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          }
+        }
+      },
+      "B9PlanningJobRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "x-input-binding": {
+          "inputPinId": "MUST_EQUAL_PLANNING_INPUT_PIN_ID",
+          "inputPinVersion": "MUST_EQUAL_PLANNING_INPUT_PIN_VERSION",
+          "inputFactWatermark": "MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK"
+        },
+        "required": [
+          "jobId",
+          "status",
+          "inputPinId",
+          "inputPinVersion",
+          "inputFactWatermark",
+          "retryable",
+          "attemptCount",
+          "lastErrorCode",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "jobId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSING",
+              "RETRYABLE",
+              "FAILED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "inputPinId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "inputPinVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "inputFactWatermark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "attemptCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "nextAttemptAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "lastErrorCode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "DEPENDENCY_UNAVAILABLE",
+              "CONTENT_UNAVAILABLE",
+              "RIGHTS_DENIED",
+              "STALE_INPUT",
+              "POLICY_DENIED",
+              "MANUAL_RECOVERY_REQUIRED"
+            ]
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "status",
+              "retryable",
+              "lastErrorCode"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "QUEUED",
+                  "PROCESSING",
+                  "COMPLETED",
+                  "CANCELLED"
+                ]
+              },
+              "retryable": {
+                "const": false
+              },
+              "lastErrorCode": {
+                "const": "NONE"
+              }
+            }
+          },
+          {
+            "required": [
+              "status",
+              "retryable",
+              "lastErrorCode"
+            ],
+            "properties": {
+              "status": {
+                "const": "RETRYABLE"
+              },
+              "retryable": {
+                "const": true
+              },
+              "lastErrorCode": {
+                "enum": [
+                  "DEPENDENCY_UNAVAILABLE",
+                  "CONTENT_UNAVAILABLE",
+                  "RIGHTS_DENIED",
+                  "STALE_INPUT",
+                  "POLICY_DENIED",
+                  "MANUAL_RECOVERY_REQUIRED"
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "status",
+              "retryable",
+              "lastErrorCode"
+            ],
+            "properties": {
+              "status": {
+                "const": "FAILED"
+              },
+              "retryable": {
+                "const": false
+              },
+              "lastErrorCode": {
+                "enum": [
+                  "DEPENDENCY_UNAVAILABLE",
+                  "CONTENT_UNAVAILABLE",
+                  "RIGHTS_DENIED",
+                  "STALE_INPUT",
+                  "POLICY_DENIED",
+                  "MANUAL_RECOVERY_REQUIRED"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "B9PlanReference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "planVersion",
+          "planningInputPinId",
+          "planningInputPinVersion",
+          "planningInputDigest",
+          "inputFactWatermark",
+          "contentEpoch",
+          "projectionVersion",
+          "generatedAt"
+        ],
+        "x-input-binding": {
+          "planningInputPinId": "MUST_EQUAL_PLANNING_INPUT_PIN_ID",
+          "planningInputPinVersion": "MUST_EQUAL_PLANNING_INPUT_PIN_VERSION",
+          "planningInputDigest": "MUST_EQUAL_PLANNING_INPUT_PIN_DIGEST",
+          "inputFactWatermark": "MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK",
+          "contentEpoch": "MUST_EQUAL_PLANNING_INPUT_CONTENT_EPOCH",
+          "projectionVersion": "MUST_EQUAL_PLANNING_INPUT_PROJECTION_VERSION"
+        },
+        "properties": {
+          "planId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "planVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "planningInputPinId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "planningInputPinVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "planningInputDigest": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "inputFactWatermark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B9ContentEpoch"
+          },
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B9ProjectionVersion"
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        }
+      },
+      "B9FirstDayRecovery": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "recoveryTaskId",
+          "status",
+          "planningInput",
+          "job",
+          "retryable",
+          "safeFailureCode",
+          "projectionVersion",
+          "projectionWatermark",
+          "createdAt",
+          "updatedAt"
+        ],
+        "description": "Read-only subject-bound recovery projection. No retry, approve or close command is represented here.",
+        "x-input-binding": {
+          "job.inputPinId": "MUST_EQUAL_PLANNING_INPUT_PIN_ID",
+          "job.inputPinVersion": "MUST_EQUAL_PLANNING_INPUT_PIN_VERSION",
+          "job.inputFactWatermark": "MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK"
+        },
+        "properties": {
+          "recoveryTaskId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "PROCESSING",
+              "RETRYABLE",
+              "FAILED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "planningInput": {
+            "$ref": "#/components/schemas/B9PlanningInputSnapshot"
+          },
+          "job": {
+            "$ref": "#/components/schemas/B9PlanningJobRef"
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "safeFailureCode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "DEPENDENCY_UNAVAILABLE",
+              "CONTENT_UNAVAILABLE",
+              "RIGHTS_DENIED",
+              "STALE_INPUT",
+              "POLICY_DENIED",
+              "MANUAL_RECOVERY_REQUIRED"
+            ]
+          },
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B9ProjectionVersion"
+          },
+          "projectionWatermark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "status",
+              "retryable",
+              "safeFailureCode"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "QUEUED",
+                  "PROCESSING",
+                  "COMPLETED",
+                  "CANCELLED"
+                ]
+              },
+              "retryable": {
+                "const": false
+              },
+              "safeFailureCode": {
+                "const": "NONE"
+              }
+            }
+          },
+          {
+            "required": [
+              "status",
+              "retryable",
+              "safeFailureCode"
+            ],
+            "properties": {
+              "status": {
+                "const": "RETRYABLE"
+              },
+              "retryable": {
+                "const": true
+              },
+              "safeFailureCode": {
+                "enum": [
+                  "DEPENDENCY_UNAVAILABLE",
+                  "CONTENT_UNAVAILABLE",
+                  "RIGHTS_DENIED",
+                  "STALE_INPUT",
+                  "POLICY_DENIED",
+                  "MANUAL_RECOVERY_REQUIRED"
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "status",
+              "retryable",
+              "safeFailureCode"
+            ],
+            "properties": {
+              "status": {
+                "const": "FAILED"
+              },
+              "retryable": {
+                "const": false
+              },
+              "safeFailureCode": {
+                "enum": [
+                  "DEPENDENCY_UNAVAILABLE",
+                  "CONTENT_UNAVAILABLE",
+                  "RIGHTS_DENIED",
+                  "STALE_INPUT",
+                  "POLICY_DENIED",
+                  "MANUAL_RECOVERY_REQUIRED"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "B9FirstDayProjectionCommon": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "state",
+          "profileReady",
+          "targetReady",
+          "placementStatus",
+          "taskCount",
+          "tasks",
+          "contentEpoch",
+          "projectionVersion",
+          "projectionWatermark",
+          "generatedAt"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "NOT_READY",
+              "PROCESSING",
+              "READY",
+              "DEGRADED"
+            ]
+          },
+          "profileReady": {
+            "type": "boolean"
+          },
+          "targetReady": {
+            "type": "boolean"
+          },
+          "placementStatus": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "IN_PROGRESS",
+              "SKIPPED",
+              "COMPLETED",
+              "UNAVAILABLE"
+            ]
+          },
+          "taskCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B9TaskRef"
+            },
+            "maxItems": 100
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B9ContentEpoch"
+          },
+          "projectionVersion": {
+            "$ref": "#/components/schemas/B9ProjectionVersion"
+          },
+          "projectionWatermark": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$",
+            "description": "Monotonic opaque learner projection watermark used to reject stale or mixed first-day reads."
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B9DateTime"
+          },
+          "planningInput": {
+            "$ref": "#/components/schemas/B9PlanningInputSnapshot"
+          },
+          "job": {
+            "$ref": "#/components/schemas/B9PlanningJobRef"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/B9PlanReference"
+          },
+          "blocker": {
+            "type": "string",
+            "enum": [
+              "PROFILE_INCOMPLETE",
+              "TARGET_INCOMPLETE",
+              "PLACEMENT_REQUIRED",
+              "CONSENT_REQUIRED",
+              "POLICY_DENIED"
+            ]
+          },
+          "degradedReason": {
+            "type": "string",
+            "enum": [
+              "CONTENT_PROJECTION_STALE",
+              "LEGACY_SHADOW_ONLY",
+              "DEPENDENCY_UNAVAILABLE",
+              "PLAN_FAILED",
+              "RIGHTS_DENIED",
+              "POLICY_DENIED"
+            ]
+          },
+          "recovery": {
+            "$ref": "#/components/schemas/B9FirstDayRecovery"
+          }
+        },
+        "x-consistency": [
+          "state=NOT_READY implies taskCount=0 and blocker is present",
+          "state=PROCESSING implies taskCount=0 and planningInput/job are present",
+          "state=READY implies planningInput/plan are present and taskCount>=1",
+          "state=DEGRADED implies planningInput/degradedReason/recovery are present and state is never READY",
+          "taskCount MUST equal tasks.length",
+          "job and recovery input pin fields MUST equal the embedded planningInput pin fields",
+          "plan input pin, digest, watermark, content epoch and projection version MUST equal the embedded planningInput fields"
+        ]
       }
     },
     "requestBodies": {},

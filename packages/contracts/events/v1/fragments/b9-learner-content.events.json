@@ -22,12 +22,12 @@
       "schema": "learner.event.v1",
       "aggregateType": "learner_target",
       "aggregateIdField": "targetId",
-      "x-envelope-required": ["eventId", "traceId", "schemaVersion", "aggregateId", "dedupeKey"],
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
       "payloadSchema": { "$ref": "#/payloadSchemas/B9LearnerTargetUpdated" },
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish learner.target.updated.v2",
-        "consumerRule": "按 targetId/targetVersion 幂等；tenantId 由服务端派生并用于消费侧隔离。"
+        "consumerRule": "按 targetId/targetVersion 幂等；tenantId 由服务端派生并用于消费侧隔离；canonical v1 必须携带完整 profile/preference/catalog/digest/watermark/source/root 版本链。"
       }
     },
     {
@@ -42,7 +42,7 @@
       "compatibility": {
         "strategy": "additive",
         "breakingChange": "publish learner.first_day.projected.v2",
-        "consumerRule": "按 principalId/projectionVersion 处理；projection 只含任务引用和内容 epoch。"
+        "consumerRule": "按 principalId/projectionVersion 处理；projection 只含任务引用和内容 epoch，不传播 placement raw/score、algorithm、SRS 或 mastery。历史 v1 可缺少新增链路字段；canonical promotion 前必须提供失败安全链。"
       }
     },
     {
@@ -154,15 +154,47 @@
       "$id": "platform.events.learner.target.updated.v1.payload",
       "type": "object",
       "additionalProperties": false,
-      "required": ["tenantId", "principalId", "targetId", "targetVersion", "goalCode", "targetLevel", "dailyQuotaMinutes", "updatedAt"],
+      "required": [
+        "tenantId",
+        "principalId",
+        "targetId",
+        "targetVersion",
+        "goalCode",
+        "targetLevel",
+        "dailyQuotaMinutes",
+        "profileVersion",
+        "preferenceVersion",
+        "timezone",
+        "weeklyStudyDays",
+        "contentLocale",
+        "goalCatalogVersion",
+        "targetSnapshotDigest",
+        "inputFactWatermark",
+        "sourceEventId",
+        "rootEventId",
+        "updatedAt"
+      ],
       "properties": {
         "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
         "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
         "targetId": { "type": "integer", "minimum": 1 },
         "targetVersion": { "type": "integer", "minimum": 1 },
-        "goalCode": { "type": "string", "maxLength": 96 },
+        "goalCode": {
+          "type": "string",
+          "enum": ["FOUNDATION", "COLLEGE_CET", "POSTGRADUATE_ENGLISH", "WORKPLACE_DAILY"]
+        },
         "targetLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
         "dailyQuotaMinutes": { "type": "integer", "enum": [5, 15, 30, 45] },
+        "profileVersion": { "type": "integer", "minimum": 1 },
+        "preferenceVersion": { "type": "integer", "minimum": 1 },
+        "timezone": { "type": "string", "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$", "maxLength": 64 },
+        "weeklyStudyDays": { "type": "array", "minItems": 1, "maxItems": 7, "uniqueItems": true, "items": { "type": "integer", "minimum": 1, "maximum": 7 } },
+        "contentLocale": { "type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-[A-Z]{2})?$", "minLength": 2, "maxLength": 16 },
+        "goalCatalogVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "targetSnapshotDigest": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[A-Fa-f0-9]{64}$" },
+        "inputFactWatermark": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "sourceEventId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "rootEventId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
         "updatedAt": { "type": "string", "format": "date-time" }
       }
     },
@@ -174,10 +206,22 @@
       "properties": {
         "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
         "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "profileVersion": { "type": "integer", "minimum": 1 },
+        "targetVersion": { "type": "integer", "minimum": 1 },
+        "preferenceVersion": { "type": "integer", "minimum": 1 },
+        "planningInputPinId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "planningInputVersion": { "type": "integer", "minimum": 1 },
+        "planningInputDigest": { "type": "string", "minLength": 32, "maxLength": 128, "pattern": "^[A-Fa-f0-9]+$" },
+        "planVersion": { "type": "integer", "minimum": 1 },
         "projectionVersion": { "type": "integer", "minimum": 1 },
         "contentEpoch": { "type": "integer", "minimum": 1 },
-        "readiness": { "type": "string", "enum": ["NOT_READY", "READY", "DEGRADED"] },
+        "readiness": { "type": "string", "enum": ["NOT_READY", "PROCESSING", "READY", "DEGRADED"] },
         "taskCount": { "type": "integer", "minimum": 0 },
+        "inputFactWatermark": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "sourceEventId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "rootEventId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "failureCode": { "type": "string", "enum": ["NONE", "PROFILE_INCOMPLETE", "TARGET_INCOMPLETE", "PLAN_PENDING", "PLAN_FAILED", "CONTENT_UNAVAILABLE", "RIGHTS_DENIED", "DEPENDENCY_UNAVAILABLE", "POLICY_DENIED", "MANUAL_RECOVERY_REQUIRED"] },
+        "recoveryTaskId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
         "projectedAt": { "type": "string", "format": "date-time" }
       }
     },

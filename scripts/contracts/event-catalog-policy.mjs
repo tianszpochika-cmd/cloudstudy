@@ -152,7 +152,7 @@ const allowedRuntimeClaimKeys = [
 const allowedPayloadSchemaKeywords = new Set([
   '$id', 'additionalProperties', 'const', 'enum', 'format', 'items',
   'maxItems', 'maxLength', 'maximum', 'minItems', 'minLength', 'minimum',
-  'nullable', 'pattern', 'properties', 'required', 'type',
+  'nullable', 'pattern', 'properties', 'required', 'type', 'uniqueItems',
 ]);
 const allowedPayloadSchemaTypes = new Set(['null', 'boolean', 'object', 'array', 'number', 'integer', 'string']);
 const forbiddenInfrastructureSubject = /\b(?:broker|kafka)\b/i;
@@ -317,6 +317,7 @@ function validatePayloadSchemaNode(schema, location, errors) {
     if (!validType) errors.push(`${location}.type must contain only duplicate-free JSON Schema primitive types`);
   }
   if (schema.nullable !== undefined && typeof schema.nullable !== 'boolean') errors.push(`${location}.nullable must be boolean`);
+  if (schema.uniqueItems !== undefined && typeof schema.uniqueItems !== 'boolean') errors.push(`${location}.uniqueItems must be boolean`);
   for (const key of ['format', 'pattern']) {
     if (schema[key] !== undefined && typeof schema[key] !== 'string') errors.push(`${location}.${key} must be a string`);
   }

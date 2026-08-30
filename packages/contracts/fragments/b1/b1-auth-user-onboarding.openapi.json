@@ -205,6 +205,36 @@
           "B1 Onboarding"
         ],
         "operationId": "getB1OnboardingOptions",
+        "summary": "Deprecated compatibility adapter for the B9 learner goal catalog",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/goal-options"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "getB9LearnerGoalOptions",
+          "authority": "legacy response is translated from the server-owned B9 goal catalog; B1AnyData is not an authorization or persistence fact"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationId": "getB9LearnerGoalOptions",
+          "wireShapeRetained": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.goal-options.read",
+          "pep": "learner-service-local",
+          "trustedFacts": ["subject", "tenant", "resourceOwner", "roles", "permissions", "phase", "adultGate", "consent", "contentRights", "policyVersion"],
+          "clientAuthority": "none; the compatibility route cannot expand the canonical B9 authorization decision"
+        },
         "responses": {
           "200": {
             "description": "Supported onboarding options",
@@ -241,6 +271,12 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
@@ -251,6 +287,36 @@
           "B1 Onboarding"
         ],
         "operationId": "getB1OnboardingProfile",
+        "summary": "Deprecated compatibility adapter for the B9 learner profile",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/profile"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "getB9LearnerProfile",
+          "authority": "legacy response is translated from the authenticated B9 profile; B1AnyData is not authoritative"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationId": "getB9LearnerProfile",
+          "wireShapeRetained": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.read",
+          "pep": "learner-service-local",
+          "trustedFacts": ["subject", "tenant", "resourceOwner", "roles", "permissions", "phase", "adultGate", "consent", "contentRights", "policyVersion"],
+          "clientAuthority": "none; the compatibility route cannot expand the canonical B9 authorization decision"
+        },
         "responses": {
           "200": {
             "description": "Current learner profile",
@@ -287,6 +353,12 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       },
@@ -295,6 +367,44 @@
           "B1 Onboarding"
         ],
         "operationId": "saveB1OnboardingProfile",
+        "summary": "Deprecated compatibility adapter for B9 profile and target writes",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/profile"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTargets": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "authority": "legacy request is translated only after server-side validation; tenant, owner, identity and versions are never taken from the legacy body"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationIds": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "wireShapeRetained": true,
+          "missingCanonicalFactsDecision": "DENY_WITH_422",
+          "targetMappingPolicy": "B1OnboardingProfileRequest.x-p1r-b9-target-mapping"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.write",
+          "pep": "learner-service-local",
+          "trustedFacts": ["subject", "tenant", "resourceOwner", "roles", "permissions", "phase", "adultGate", "consent", "contentRights", "policyVersion"],
+          "clientAuthority": "none; identity, tenant, owner, versions and policy facts are server-derived before adapter translation"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -353,8 +463,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       },
@@ -363,6 +485,44 @@
           "B1 Onboarding"
         ],
         "operationId": "patchB1OnboardingProfile",
+        "summary": "Deprecated compatibility adapter for B9 profile and target writes",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/profile"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTargets": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "authority": "legacy request is translated only after server-side validation; tenant, owner, identity and versions are never taken from the legacy body"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationIds": [
+            "patchB9LearnerProfile",
+            "putB9LearnerTarget"
+          ],
+          "wireShapeRetained": true,
+          "missingCanonicalFactsDecision": "DENY_WITH_422",
+          "targetMappingPolicy": "B1OnboardingProfileRequest.x-p1r-b9-target-mapping"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.profile.write",
+          "pep": "learner-service-local",
+          "trustedFacts": ["subject", "tenant", "resourceOwner", "roles", "permissions", "phase", "adultGate", "consent", "contentRights", "policyVersion"],
+          "clientAuthority": "none; identity, tenant, owner, versions and policy facts are server-derived before adapter translation"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -421,8 +581,20 @@
               }
             }
           },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -433,6 +605,41 @@
           "B1 Onboarding"
         ],
         "operationId": "createB1FirstGoal",
+        "summary": "Deprecated compatibility adapter for the B9 learner target",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/learner/targets"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-contract": {
+          "owner": "learner-service",
+          "compatibility": "ADAPTER_ONLY",
+          "canonicalTarget": "putB9LearnerTarget",
+          "authority": "this bodyless legacy operation reads the authenticated subject's server-owned legacy profile snapshot, translates only the frozen mapping to a B9 target command, and fails closed when any canonical fact is missing or unknown"
+        },
+        "x-p1r-b9-adapter": {
+          "adapterOnly": true,
+          "replacementOperationId": "putB9LearnerTarget",
+          "wireShapeRetained": true,
+          "missingCanonicalFactsDecision": "DENY_WITH_422",
+          "requestBodyPolicy": "FORBIDDEN_USE_SERVER_OWNED_LEGACY_PROFILE_SNAPSHOT",
+          "sourceSnapshotSchema": "B1OnboardingProfileRequest",
+          "targetMappingPolicy": "B1OnboardingProfileRequest.x-p1r-b9-target-mapping",
+          "expectedStateVersionSource": "SERVER_READ_CURRENT_TARGET_VERSION_OR_ZERO"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learner.target.write",
+          "pep": "learner-service-local",
+          "trustedFacts": ["subject", "tenant", "resourceOwner", "roles", "permissions", "phase", "adultGate", "consent", "contentRights", "policyVersion"],
+          "clientAuthority": "none; the legacy request cannot establish target identity, goal authority, versions or policy facts"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -480,6 +687,18 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -1038,6 +1257,57 @@
       "B1OnboardingProfileRequest": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Legacy wire shape retained only for the B9 adapter; the request cannot establish identity, ownership, tenant, gate, consent, policy or server versions.",
+        "x-compatibility-only": true,
+        "x-p1r-b9-target-mapping": {
+          "sourceField": "targetGoal",
+          "dailyQuotaField": "dailyQuotaMinutes",
+          "expectedStateVersionField": "expectedVersion",
+          "missingOrUnknownDecision": "DENY_WITH_422",
+          "dailyQuotaMinutes": [
+            5,
+            15,
+            30,
+            45
+          ],
+          "mappings": [
+            {
+              "legacyTargetGoal": "ZERO_BASIS",
+              "goalCode": "FOUNDATION",
+              "targetLevel": "A1"
+            },
+            {
+              "legacyTargetGoal": "CET_4_6",
+              "goalCode": "COLLEGE_CET",
+              "targetLevel": "B1"
+            },
+            {
+              "legacyTargetGoal": "POSTGRADUATE",
+              "goalCode": "POSTGRADUATE_ENGLISH",
+              "targetLevel": "B2"
+            },
+            {
+              "legacyTargetGoal": "WORKPLACE_DAILY",
+              "goalCode": "WORKPLACE_DAILY",
+              "targetLevel": "B2"
+            }
+          ]
+        },
+        "x-forbidden-client-fields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "role",
+          "permissions",
+          "adultGate",
+          "consent",
+          "policyVersion",
+          "contentRights",
+          "profileVersion",
+          "targetVersion",
+          "preferenceVersion",
+          "stateVersion"
+        ],
         "required": [
           "targetGoal",
           "dailyQuotaMinutes"
@@ -1047,7 +1317,13 @@
             "type": "string"
           },
           "targetGoal": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "ZERO_BASIS",
+              "CET_4_6",
+              "POSTGRADUATE",
+              "WORKPLACE_DAILY"
+            ]
           },
           "examType": {
             "type": "string"

@@ -14,7 +14,7 @@ B26 的代码和静态验收基础已完成：Kafka/Outbox 可靠性边界、跨
 
 | 任务 | 代码/静态状态 | 运行态剩余 |
 |---|---|---|
-| EVT-001 | 六个 Topic、固定 Kafka 端口 `19092`、aggregateId 分区、16 个 consumer group、ACL、retention 和健康边界已配置 | 创建 Topic、producer/consumer、权限、重启和健康证据 |
+| EVT-001 | 七个 Topic、固定 Kafka 端口 `19092`、aggregateId 分区、18 个 consumer group、ACL、retention 和健康边界已配置 | 创建 Topic、producer/consumer、权限、重启和健康证据 |
 | EVT-002 | Outbox、至少一次、幂等、retry/DLQ/replay、乱序、Saga 补偿和人工恢复策略已配置并测试 | 真实 publish/consume、重复投递、失败重试、DLQ 回放和 offset 对账 |
 | EVT-003 | 十步旅程静态回放和 owner/schema/table/API/DB/Kafka 对账点已实现 | 有效 JWT 下跨进程执行并核对 MySQL 与事件事实 |
 | BRW-004 | 四端真实入口矩阵和认证后完整旅程契约已实现 | 注册、登录、成人 Gate、内容读取、练习写入、刷新、登出和重新登录 |
@@ -27,10 +27,10 @@ B26 的代码和静态验收基础已完成：Kafka/Outbox 可靠性边界、跨
 |---|---|
 | `pnpm b26:static` | PASS；浏览器矩阵、事件基线、旅程预览、B26 测试、契约、端口、B25 静态前置和基础设施静态校验全部通过 |
 | `pnpm test:b26` | PASS；26/26 |
-| `node scripts/runtime/validate-b26-event-runtime.mjs` | PASS；6 topics、`fragmentEventCount=7` 个可靠性 seed、`routedCanonicalEventCount=12` 条 canonical 路由、`fragmentPayloadSchemaCount=7`、16 consumer groups；`runtimeStatus=pending`。兼容字段 `eventCount/routeCount/payloadSchemaCount` 仍保留，但不再作为含混口径。 |
+| `node scripts/runtime/validate-b26-event-runtime.mjs` | PASS；7 topics、`fragmentEventCount=7` 个可靠性 seed、`routedCanonicalEventCount=13` 条 canonical 路由、`fragmentPayloadSchemaCount=7`、18 consumer groups；`runtimeStatus=pending`。兼容字段 `eventCount/routeCount/payloadSchemaCount` 仍保留，但不再作为含混口径。 |
 | `node scripts/runtime/validate-b26-browser-test.mjs` | PASS；4 applications、3 scenarios、4 viewports；runtime evidence blocked |
 | `node scripts/runtime/replay-b26-journey.mjs --mode=preview --summary` | PASS；10 steps、4 planned events，network/database/Kafka effects 均为 0，`decision=DENY_RUNTIME_CLAIM` |
-| `pnpm contracts:merge` / `contracts:validate` / `contracts:generate` | PASS；14 event fragments、154 events、104 event payload schemas、378 operations、549 OpenAPI schemas、5 generated files |
+| `pnpm contracts:merge` / `contracts:validate` / `contracts:generate` | PASS；14 event fragments、154 events、104 event payload schemas、388 operations、608 OpenAPI schemas、5 generated files |
 | 本地浏览器页面检查 | 四端固定端口均 HTTP 200；learner-web、admin-web、Mobile H5 未登录进入登录边界，official-site 公开页/课程页可访问；浏览器 Console/页面错误为 0 |
 | Mobile H5 `390×844` 检查 | PASS；登录边界、页面标题和无 Console/页面错误均符合矩阵 |
 

@@ -39,6 +39,7 @@
     "p1r:content-lifecycle:check": "node scripts/audit/p1r-content-lifecycle-check.mjs",
     "p1r:media-contract:check": "node scripts/audit/p1r-media-contract-check.mjs",
     "p1r:assessment-contract:check": "node scripts/audit/p1r-assessment-contract-check.mjs",
+    "p1r:learner-planning-contract:check": "node scripts/audit/p1r-learner-planning-contract-check.mjs",
     "test:p1r": "node scripts/dev/run-node-tests.mjs tests/p1r",
     "services:build": "node scripts/runtime/build-v2-services.mjs",
     "services:run": "node scripts/runtime/run-v2-services.mjs",

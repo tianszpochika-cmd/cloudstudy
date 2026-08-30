@@ -26,6 +26,13 @@ const openApiSharedFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'f
 const eventFragmentDir = path.join(repoRoot, 'packages', 'contracts', 'events', 'v1', 'fragments');
 const canonicalB8AuthFragment = 'packages/contracts/fragments/b8/b8-auth-iam.openapi.json';
 const canonicalB1ContentFragment = 'packages/contracts/fragments/b1-content.openapi.json';
+const canonicalB1OnboardingAdapterFragment = 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json';
+const canonicalB1OnboardingAdapterRoutes = new Set([
+  '/api/v1/onboarding/options',
+  '/api/v1/onboarding/profile',
+  '/api/v1/onboarding/goals/first',
+]);
+const canonicalB1OnboardingAdapterSchemas = new Set(['B1OnboardingProfileRequest']);
 const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility', 'x-b8-iam-policy-governance'];
 const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';
 const requiredCanonicalGatewayMetadata = ['x-p1r-gateway-boundary'];
@@ -177,9 +184,10 @@ function listEventJsonFiles(directory) {
   return files.sort();
 }
 
-function mergeNamedMap(target, source, label, { allowOverride = false } = {}) {
+function mergeNamedMap(target, source, label, { allowOverride = false, allowOverrideNames = new Set() } = {}) {
   for (const [name, value] of Object.entries(source ?? {})) {
-    if (target[name] !== undefined && stableJson(target[name]) !== stableJson(value) && !allowOverride) {
+    if (target[name] !== undefined && stableJson(target[name]) !== stableJson(value)
+      && !allowOverride && !allowOverrideNames.has(name)) {
       throw new Error(`${label} duplicate with different definitions: ${name}`);
     }
     target[name] = value;
@@ -207,7 +215,11 @@ function mergeOpenApi(
   }
 
   for (const [route, pathItem] of Object.entries(fragment.paths ?? {})) {
-    const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)(?:[\\/]|-)/i.test(filePath);
+    const normalizedFilePath = normalizeRepoPath(filePath);
+    const isCanonicalB1OnboardingAdapterRoute = normalizedFilePath === canonicalB1OnboardingAdapterFragment
+      && canonicalB1OnboardingAdapterRoutes.has(route);
+    const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)(?:[\\/]|-)/i.test(filePath)
+      || isCanonicalB1OnboardingAdapterRoute;
     const isB1LegacyAuthRoute = /[\\/]b1(?:[\\/]|-)/i.test(filePath) && route.startsWith('/api/v1/auth/');
     const isCanonicalB1ContentRoute = normalizeRepoPath(filePath) === canonicalB1ContentFragment;
     if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment && !isB1LegacyAuthRoute && !isCanonicalB1ContentRoute) {
@@ -216,10 +228,17 @@ function mergeOpenApi(
     base.paths[route] = pathItem;
   }
 
+  const normalizedFilePath = normalizeRepoPath(filePath);
   const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|25)(?:[\\/]|-)/i.test(filePath)
-    || normalizeRepoPath(filePath) === canonicalB1ContentFragment;
+    || normalizedFilePath === canonicalB1ContentFragment;
   for (const componentGroup of ['schemas', 'parameters', 'responses', 'headers', 'securitySchemes', 'requestBodies', 'examples']) {
-    mergeNamedMap(base.components[componentGroup] ??= {}, fragment.components?.[componentGroup], `OpenAPI ${componentGroup}`, { allowOverride: isOverrideFragment });
+    const allowOverrideNames = normalizedFilePath === canonicalB1OnboardingAdapterFragment && componentGroup === 'schemas'
+      ? canonicalB1OnboardingAdapterSchemas
+      : new Set();
+    mergeNamedMap(base.components[componentGroup] ??= {}, fragment.components?.[componentGroup], `OpenAPI ${componentGroup}`, {
+      allowOverride: isOverrideFragment,
+      allowOverrideNames,
+    });
   }
 
   for (const metadataKey of requiredCanonicalB8Metadata) {

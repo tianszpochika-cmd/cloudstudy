@@ -286,12 +286,12 @@ export type B9LearnerProfileUpdated = { tenantId: string; principalId: string; p
 /**
  * Generated from the contract source.
  */
-export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45; updatedAt: string; };
+export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45; profileVersion: number; preferenceVersion: number; timezone: string; weeklyStudyDays: ReadonlyArray<number>; contentLocale: string; goalCatalogVersion: string; targetSnapshotDigest: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; updatedAt: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B9LearnerFirstDayProjected = { tenantId: string; principalId: string; projectionVersion: number; contentEpoch: number; readiness: "NOT_READY" | "READY" | "DEGRADED"; taskCount: number; projectedAt: string; };
+export type B9LearnerFirstDayProjected = { tenantId: string; principalId: string; profileVersion?: number; targetVersion?: number; preferenceVersion?: number; planningInputPinId?: string; planningInputVersion?: number; planningInputDigest?: string; planVersion?: number; projectionVersion: number; contentEpoch: number; readiness: "NOT_READY" | "PROCESSING" | "READY" | "DEGRADED"; taskCount: number; inputFactWatermark?: string; sourceEventId?: string; rootEventId?: string; failureCode?: "NONE" | "PROFILE_INCOMPLETE" | "TARGET_INCOMPLETE" | "PLAN_PENDING" | "PLAN_FAILED" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "DEPENDENCY_UNAVAILABLE" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; recoveryTaskId?: string; projectedAt: string; };
 
 /**
  * Generated from the contract source.
@@ -1534,6 +1534,54 @@ export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyRev
 export type PlatformEvent = EventCatalogCandidate;
 
 export const canonicalEventGovernance = {
+  "learner.target.updated.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "learner-service",
+      "dataOwner": "learner-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_learner_target_updated_v1"
+    },
+    "consumers": [
+      {
+        "service": "learning-service",
+        "consumerGroup": "cg.learning-from-learner.v1",
+        "subscriptionOperationId": "subscribe_learner_target_updated_v1_cg_learning_from_learner_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-learner.v1",
+        "subscriptionOperationId": "subscribe_learner_target_updated_v1_cg_workflow_from_learner_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.learner.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.targetId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "learner_target_updated_v1"
+    },
+    "schema": {
+      "schemaVersion": "learner.event.v1",
+      "payloadRef": "#/payloadSchemas/B9LearnerTargetUpdated",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
   "content.version.submitted.v1": {
     "status": "CANONICAL_D2",
     "runtimeStatus": "NOT_RUNTIME_VERIFIED",
@@ -2158,4 +2206,4 @@ export const canonicalEventGovernance = {
 } as const;
 
 export type CanonicalEventName = keyof typeof canonicalEventGovernance;
-export type CanonicalPlatformEvent = ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;
+export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;

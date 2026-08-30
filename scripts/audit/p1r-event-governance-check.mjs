@@ -30,6 +30,7 @@ const EXPECTED_CANONICAL_EVENTS = [
   'content.version.rolled_back.v1',
   'content.version.submitted.v1',
   'content.version.unpublished.v1',
+  'learner.target.updated.v1',
   'workflow.outbox.published.v1',
   'workflow.event.delivery_failed.v1',
   'workflow.event.dead_lettered.v1',
@@ -58,6 +59,7 @@ const EXPECTED_GAP_CLOSURE_ORDER = [
 ];
 const EXPECTED_GAP_CLOSURES = [...EXPECTED_GAP_CLOSURE_ORDER].sort();
 const D2_CONTRACT_CLOSED_GAPS = new Set([
+  'EVENT-GAP-ONB-001',
   'EVENT-GAP-CONTENT-DUPLICATE',
   'EVENT-GAP-BIND-CONT-001',
 ]);
@@ -218,8 +220,8 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_GAP_CLOSURES), 'plannedClosures must cover the exact M1-006 event gap registry');
   add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_GAP_CLOSURE_ORDER), 'plannedClosures must preserve the canonical gap registry order');
   const closureCounts = countEventGapClosures(governance.plannedClosures);
-  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly fourteen PLANNED event gaps');
-  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly two D2_CONTRACT_CLOSED event gaps');
+  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly thirteen PLANNED event gaps');
+  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly three D2_CONTRACT_CLOSED event gaps');
 }
 
 function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors) {
@@ -317,7 +319,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact twelve canonical governance events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact thirteen canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
   add(errors, duplicates(eventNames).length === 0, `event catalog duplicates event names: ${duplicates(eventNames).join(', ')}`);
@@ -351,8 +353,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact twelve governed events');
-  add(errors, counts.historical === 142 && counts.deprecated === 0, 'event status counts must be 12 canonical / 142 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact thirteen governed events');
+  add(errors, counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 13 canonical / 141 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);

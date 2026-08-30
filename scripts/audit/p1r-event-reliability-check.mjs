@@ -23,6 +23,7 @@ const CANONICAL_EVENTS = [
   "content.version.rolled_back.v1",
   "content.version.submitted.v1",
   "content.version.unpublished.v1",
+  "learner.target.updated.v1",
   "workflow.event.dead_lettered.v1",
   "workflow.event.delivery_failed.v1",
   "workflow.event.ordering_deferred.v1",

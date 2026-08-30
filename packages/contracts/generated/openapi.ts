@@ -453,9 +453,9 @@ export type B1RefreshRequest = { refreshToken: string; deviceId?: string; };
 export type B1LogoutRequest = { allDevices?: boolean; };
 
 /**
- * Generated from the contract source.
+ * Legacy wire shape retained only for the B9 adapter; the request cannot establish identity, ownership, tenant, gate, consent, policy or server versions.
  */
-export type B1OnboardingProfileRequest = { language?: string; targetGoal: string; examType?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; preferenceTags?: ReadonlyArray<string>; accentPreference?: string; customHomeLayout?: boolean; customHomeLayoutOrder?: ReadonlyArray<string>; expectedVersion?: number; };
+export type B1OnboardingProfileRequest = { language?: string; targetGoal: "ZERO_BASIS" | "CET_4_6" | "POSTGRADUATE" | "WORKPLACE_DAILY"; examType?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; preferenceTags?: ReadonlyArray<string>; accentPreference?: string; customHomeLayout?: boolean; customHomeLayoutOrder?: ReadonlyArray<string>; expectedVersion?: number; };
 
 /**
  * Generated from the contract source.
@@ -1415,32 +1415,32 @@ export type B9AssessmentContentSnapshotResponse = { data: B9AssessmentContentSna
 /**
  * Generated from the contract source.
  */
-export type B9LearnerProfile = { principalId: B9PrincipalId; tenantId: "platform"; status: "ONBOARDING" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; targetGoal?: string; proficiencyLevel?: "UNKNOWN" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
+export type B9LearnerProfile = { principalId: B9PrincipalId; tenantId: "platform"; status: "ONBOARDING" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; profileVersion: B9StateVersion; targetGoal?: string; proficiencyLevel?: "UNKNOWN" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
 
 /**
- * 只提交可由学习者修改的字段；principalId、tenantId、role、owner 和权限事实由服务端派生。
+ * 只提交可由学习者修改的字段；principalId、tenantId、role、owner、server versions 和权限事实由服务端派生。
  */
 export type B9LearnerProfilePatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; targetGoal?: string; proficiencyLevel?: "UNKNOWN" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; };
 
 /**
  * Generated from the contract source.
  */
-export type B9LearnerTarget = { targetId: number; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; targetDate?: string; status: "ACTIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
+export type B9LearnerTarget = { targetId: number; goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; targetDate?: string; status: "ACTIVE" | "PAUSED" | "COMPLETED" | "ARCHIVED"; targetVersion: B9StateVersion; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
 
 /**
- * 目标命令不接受 tenantId 或 owner/principal 字段；目标始终绑定到已验证主体。
+ * 目标命令不接受 tenantId、owner/principal 或 server version 字段；目标始终绑定到已验证主体。
  */
-export type B9LearnerTargetUpsert = { expectedStateVersion: B9ExpectedStateVersion; goalCode: string; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; targetDate?: string; status?: "ACTIVE" | "PAUSED"; };
+export type B9LearnerTargetUpsert = { expectedStateVersion: B9ExpectedStateVersion; goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; examCode?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; targetDate?: string; status?: "ACTIVE" | "PAUSED"; };
 
 /**
  * Generated from the contract source.
  */
-export type B9LearnerPreferences = { uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; themeMode: "LIGHT" | "DARK" | "SYSTEM"; highContrast: boolean; motionMode: "FULL" | "REDUCED" | "OFF"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
+export type B9LearnerPreferences = { uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; weeklyStudyDays: ReadonlyArray<number>; themeMode: "LIGHT" | "DARK" | "SYSTEM"; highContrast: boolean; motionMode: "FULL" | "REDUCED" | "OFF"; preferenceVersion: B9StateVersion; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
 
 /**
- * UI locale、content locale、主题和无障碍设置分开持久化；contentLocale 不得覆盖 UI locale。
+ * UI locale、content locale、主题和无障碍设置分开持久化；contentLocale 不得覆盖 UI locale；server versions and identity are never accepted.
  */
-export type B9LearnerPreferencesPatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; themeMode?: "LIGHT" | "DARK" | "SYSTEM"; highContrast?: boolean; motionMode?: "FULL" | "REDUCED" | "OFF"; };
+export type B9LearnerPreferencesPatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; weeklyStudyDays?: ReadonlyArray<number>; themeMode?: "LIGHT" | "DARK" | "SYSTEM"; highContrast?: boolean; motionMode?: "FULL" | "REDUCED" | "OFF"; };
 
 /**
  * Generated from the contract source.
@@ -1450,7 +1450,7 @@ export type B9TaskRef = { taskId: string; taskType: "GOAL_SETUP" | "PLACEMENT" |
 /**
  * Generated from the contract source.
  */
-export type B9FirstDayProjection = { state: "NOT_READY" | "READY" | "DEGRADED"; profileReady: boolean; targetReady: boolean; placementStatus: "NOT_STARTED" | "IN_PROGRESS" | "SKIPPED" | "COMPLETED" | "UNAVAILABLE"; taskCount: number; tasks: ReadonlyArray<B9TaskRef>; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; generatedAt: B9DateTime; degradedReason?: "NONE" | "CONTENT_PROJECTION_STALE" | "LEGACY_SHADOW_ONLY" | "DEPENDENCY_UNAVAILABLE"; };
+export type B9FirstDayProjection = B9FirstDayProjectionCommon & ({ state: "NOT_READY"; taskCount?: 0; tasks: unknown; blocker: "PROFILE_INCOMPLETE" | "TARGET_INCOMPLETE" | "PLACEMENT_REQUIRED" | "CONSENT_REQUIRED" | "POLICY_DENIED"; planningInput?: never; job?: never; plan?: never; degradedReason?: never; recovery?: never; } | { state: "PROCESSING"; profileReady?: true; targetReady?: true; taskCount?: 0; tasks: unknown; planningInput: B9PlanningInputSnapshot; job: B9PlanningJobRef & ({ status: "QUEUED" | "PROCESSING" | "RETRYABLE"; }); blocker?: never; plan?: never; degradedReason?: never; recovery?: never; } | { state: "READY"; profileReady?: true; targetReady?: true; taskCount?: unknown; tasks: unknown; planningInput: B9PlanningInputSnapshot; plan: B9PlanReference; blocker?: never; job?: never; degradedReason?: never; recovery?: never; } | { state: "DEGRADED"; profileReady?: true; targetReady?: true; taskCount?: 0; tasks: unknown; planningInput: B9PlanningInputSnapshot; degradedReason: "CONTENT_PROJECTION_STALE" | "LEGACY_SHADOW_ONLY" | "DEPENDENCY_UNAVAILABLE" | "PLAN_FAILED" | "RIGHTS_DENIED" | "POLICY_DENIED"; recovery: B9FirstDayRecovery & ({ status: "QUEUED" | "PROCESSING" | "RETRYABLE" | "FAILED"; }); blocker?: never; job?: never; plan?: never; });
 
 /**
  * Generated from the contract source.
@@ -3007,6 +3007,41 @@ export type B10AssessmentSessionCheckpointRequest = { baseStateVersion: B10State
  */
 export type B10AssessmentCheckpoint = { sessionId: B10SessionId; checkpointVersion: number; clientEventId: string; clientSeq: number; checkpointDigest: B10Sha256; stateVersion: B10StateVersion; replayed: boolean; savedAt: B10DateTime; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B9GoalOption = { goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; label: string; description?: string; targetLevels: ReadonlyArray<"A1" | "A2" | "B1" | "B2" | "C1" | "C2">; dailyQuotaMinutes: ReadonlyArray<5 | 15 | 30 | 45>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9GoalOptions = { goalCatalogVersion: string; contentLocale: B9Locale; options: ReadonlyArray<B9GoalOption>; generatedAt: B9DateTime; };
+
+/**
+ * Immutable, server-assembled planning facts. Placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.
+ */
+export type B9PlanningInputSnapshot = { pinId: string; pinVersion: number; pinDigest: string; targetId: number; targetVersion: B9StateVersion; profileVersion: B9StateVersion; preferenceVersion: B9StateVersion; goalCatalogVersion: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; timezone: string; weeklyStudyDays: ReadonlyArray<number>; contentLocale: B9Locale; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; rightsSnapshotVersion: number; planningRuleVersion: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B9PlanningJobRef = ({ jobId: string; status: "QUEUED" | "PROCESSING" | "RETRYABLE" | "FAILED" | "COMPLETED" | "CANCELLED"; inputPinId: string; inputPinVersion: number; inputFactWatermark: string; retryable: boolean; attemptCount: number; nextAttemptAt?: B9DateTime; lastErrorCode: "NONE" | "DEPENDENCY_UNAVAILABLE" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "STALE_INPUT" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; createdAt: B9DateTime; updatedAt: B9DateTime; }) & ({ status: "QUEUED" | "PROCESSING" | "COMPLETED" | "CANCELLED"; retryable: false; lastErrorCode: "NONE"; } | { status: "RETRYABLE"; retryable: true; lastErrorCode: "DEPENDENCY_UNAVAILABLE" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "STALE_INPUT" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; } | { status: "FAILED"; retryable: false; lastErrorCode: "DEPENDENCY_UNAVAILABLE" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "STALE_INPUT" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type B9PlanReference = { planId: string; planVersion: number; planningInputPinId: string; planningInputPinVersion: number; planningInputDigest: string; inputFactWatermark: string; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; generatedAt: B9DateTime; };
+
+/**
+ * Read-only subject-bound recovery projection. No retry, approve or close command is represented here.
+ */
+export type B9FirstDayRecovery = ({ recoveryTaskId: string; status: "QUEUED" | "PROCESSING" | "RETRYABLE" | "FAILED" | "COMPLETED" | "CANCELLED"; planningInput: B9PlanningInputSnapshot; job: B9PlanningJobRef; retryable: boolean; safeFailureCode: "NONE" | "DEPENDENCY_UNAVAILABLE" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "STALE_INPUT" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; projectionVersion: B9ProjectionVersion; projectionWatermark: string; createdAt: B9DateTime; updatedAt: B9DateTime; }) & ({ status: "QUEUED" | "PROCESSING" | "COMPLETED" | "CANCELLED"; retryable: false; safeFailureCode: "NONE"; } | { status: "RETRYABLE"; retryable: true; safeFailureCode: "DEPENDENCY_UNAVAILABLE" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "STALE_INPUT" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; } | { status: "FAILED"; retryable: false; safeFailureCode: "DEPENDENCY_UNAVAILABLE" | "CONTENT_UNAVAILABLE" | "RIGHTS_DENIED" | "STALE_INPUT" | "POLICY_DENIED" | "MANUAL_RECOVERY_REQUIRED"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type B9FirstDayProjectionCommon = { state: "NOT_READY" | "PROCESSING" | "READY" | "DEGRADED"; profileReady: boolean; targetReady: boolean; placementStatus: "NOT_STARTED" | "IN_PROGRESS" | "SKIPPED" | "COMPLETED" | "UNAVAILABLE"; taskCount: number; tasks: ReadonlyArray<B9TaskRef>; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; projectionWatermark: string; generatedAt: B9DateTime; planningInput?: B9PlanningInputSnapshot; job?: B9PlanningJobRef; plan?: B9PlanReference; blocker?: "PROFILE_INCOMPLETE" | "TARGET_INCOMPLETE" | "PLACEMENT_REQUIRED" | "CONSENT_REQUIRED" | "POLICY_DENIED"; degradedReason?: "CONTENT_PROJECTION_STALE" | "LEGACY_SHADOW_ONLY" | "DEPENDENCY_UNAVAILABLE" | "PLAN_FAILED" | "RIGHTS_DENIED" | "POLICY_DENIED"; recovery?: B9FirstDayRecovery; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -3412,6 +3447,8 @@ export interface ApiOperationRegistry {
   createSpeakingRecordingUploadIntent: { method: "POST"; path: "/api/v1/speaking/recordings/upload-intents"; request: SpeakingRecordingUploadIntentRequest; response: ApiSuccessEnvelope & { data: SpeakingRecordingUploadIntent; }; idempotent: true };
   completeSpeakingRecording: { method: "POST"; path: "/api/v1/speaking/recordings/{recordingId}/complete"; request: SpeakingRecordingCompleteRequest; response: ApiSuccessEnvelope & { data: SpeakingRecording; }; idempotent: true };
   completeSpeakingShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete"; request: SpeakingShadowingCompletionRequest; response: ApiSuccessEnvelope & { data: SpeakingShadowingCompletionReceipt; }; idempotent: true };
+  getB9LearnerGoalOptions: { method: "GET"; path: "/api/v1/learner/goal-options"; request: never; response: ApiSuccessEnvelope & { data: B9GoalOptions; }; idempotent: false };
+  getB9FirstDayRecovery: { method: "GET"; path: "/api/v1/learner/first-day/recovery/{recoveryTaskId}"; request: never; response: ApiSuccessEnvelope & { data: B9FirstDayRecovery; }; idempotent: false };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;
