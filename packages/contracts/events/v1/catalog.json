@@ -55,6 +55,7 @@
         "eventNames": [
           "assessment.attempt.submitted.v1",
           "assessment.attempt.assessed.v1",
+          "assessment.placement.completed.v1",
           "learning.mastery.projected.v1",
           "learning.review.scheduled.v1",
           "workflow.assessment_learning.saga_started.v1",
@@ -290,7 +291,7 @@
       {
         "gapId": "EVENT-GAP-ONB-002",
         "family": "EVENT-GAP-ONB",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-012",
           "P1R-M1-006"
@@ -299,7 +300,7 @@
       {
         "gapId": "EVENT-GAP-PLACEMENT-PLAN",
         "family": "EVENT-GAP-PLACEMENT",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-012",
           "P1R-M1-006"
@@ -3845,6 +3846,429 @@
           "format": "date-time"
         }
       }
+    },
+    "B10PlacementCompleted": {
+      "$id": "platform.events.assessment.placement.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tenantId",
+        "principalId",
+        "sessionId",
+        "stateVersion",
+        "sessionSnapshotDigest",
+        "placementResultId",
+        "resultVersion",
+        "reportId",
+        "reportVersion",
+        "resultDigest",
+        "reportDigest",
+        "placementManifestId",
+        "placementManifestVersion",
+        "placementManifestDigest",
+        "dimensionSetDigest",
+        "totalItemCount",
+        "contentVersionId",
+        "contentEpoch",
+        "snapshotId",
+        "snapshotHash",
+        "answerRuleSetVersion",
+        "answerRuleVersion",
+        "ruleDigest",
+        "completionRuleVersion",
+        "targetId",
+        "targetVersion",
+        "targetSnapshotDigest",
+        "resultKind",
+        "completionStatus",
+        "aggregateScore",
+        "referenceLevel",
+        "confidence",
+        "coverageRatio",
+        "completedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "stateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sessionSnapshotDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "placementResultId": {
+          "type": "string",
+          "pattern": "^plr_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "resultVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reportId": {
+          "type": "string",
+          "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "reportVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resultDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reportDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "placementManifestId": {
+          "type": "string",
+          "const": "P1_PLACEMENT_V1"
+        },
+        "placementManifestVersion": {
+          "type": "string",
+          "const": "P1_PLACEMENT_V1"
+        },
+        "placementManifestDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dimensionSetDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "totalItemCount": {
+          "type": "integer",
+          "const": 10
+        },
+        "contentVersionId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "contentEpoch": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
+        },
+        "snapshotId": {
+          "type": "string",
+          "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "snapshotHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "answerRuleSetVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "answerRuleVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "ruleDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "completionRuleVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "targetId": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "targetVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "targetSnapshotDigest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "resultKind": {
+          "type": "string",
+          "enum": [
+            "ASSESSED",
+            "SKIPPED"
+          ]
+        },
+        "completionStatus": {
+          "type": "string",
+          "enum": [
+            "COMPLETED",
+            "SKIPPED"
+          ]
+        },
+        "aggregateScore": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "referenceLevel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW",
+            "UNVERIFIED"
+          ]
+        },
+        "coverageRatio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dimensionSummaries": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "dimensionId",
+                "dimensionPercent",
+                "coverageRatio"
+              ],
+              "properties": {
+                "dimensionId": {
+                  "type": "string",
+                  "const": "VOCABULARY"
+                },
+                "dimensionPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "coverageRatio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "dimensionId",
+                "dimensionPercent",
+                "coverageRatio"
+              ],
+              "properties": {
+                "dimensionId": {
+                  "type": "string",
+                  "const": "BASIC_GRAMMAR"
+                },
+                "dimensionPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "coverageRatio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "dimensionId",
+                "dimensionPercent",
+                "coverageRatio"
+              ],
+              "properties": {
+                "dimensionId": {
+                  "type": "string",
+                  "const": "READING"
+                },
+                "dimensionPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "coverageRatio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "dimensionId",
+                "dimensionPercent",
+                "coverageRatio"
+              ],
+              "properties": {
+                "dimensionId": {
+                  "type": "string",
+                  "const": "LISTENING"
+                },
+                "dimensionPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                "coverageRatio": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          ],
+          "items": false
+        },
+        "requestedStartingLevel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "level",
+            "authority"
+          ],
+          "properties": {
+            "level": {
+              "type": "string",
+              "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+              ]
+            },
+            "authority": {
+              "type": "string",
+              "const": "USER_SELECTED_NON_AUTHORITATIVE"
+            }
+          }
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "resultKind",
+            "completionStatus",
+            "aggregateScore",
+            "referenceLevel",
+            "confidence",
+            "coverageRatio",
+            "dimensionSummaries"
+          ],
+          "properties": {
+            "resultKind": {
+              "const": "ASSESSED"
+            },
+            "completionStatus": {
+              "const": "COMPLETED"
+            },
+            "aggregateScore": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "referenceLevel": {
+              "type": "string",
+              "enum": [
+                "A1",
+                "A2",
+                "B1",
+                "B2",
+                "C1",
+                "C2"
+              ]
+            },
+            "confidence": {
+              "type": "string",
+              "enum": [
+                "HIGH",
+                "MEDIUM",
+                "LOW"
+              ]
+            },
+            "coverageRatio": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            }
+          },
+          "not": {
+            "required": [
+              "requestedStartingLevel"
+            ]
+          }
+        },
+        {
+          "required": [
+            "resultKind",
+            "completionStatus",
+            "aggregateScore",
+            "referenceLevel",
+            "confidence",
+            "coverageRatio"
+          ],
+          "properties": {
+            "resultKind": {
+              "const": "SKIPPED"
+            },
+            "completionStatus": {
+              "const": "SKIPPED"
+            },
+            "aggregateScore": {
+              "type": "null"
+            },
+            "referenceLevel": {
+              "type": "null"
+            },
+            "confidence": {
+              "const": "UNVERIFIED"
+            },
+            "coverageRatio": {
+              "const": 0
+            }
+          },
+          "not": {
+            "required": [
+              "dimensionSummaries"
+            ]
+          }
+        }
+      ]
     },
     "B10LearningMasteryProjected": {
       "$id": "platform.events.learning.mastery.projected.v1.payload",
@@ -8231,6 +8655,86 @@
       "status": "HISTORICAL_CANDIDATE"
     },
     {
+      "eventName": "assessment.placement.completed.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "placement_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10PlacementCompleted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.placement.completed.v2",
+        "consumerRule": "按 sessionId/placementResultId/resultVersion 去重；仅首个持久化的 ASSESSED 或 SKIPPED placement 结果可发布。SKIPPED 仅携带 UNVERIFIED 保守 baseline，requestedStartingLevel 仅是 USER_SELECTED_NON_AUTHORITATIVE；payload 不含原始作答、答案规则、录音或权限事实。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "assessment-service",
+          "dataOwner": "assessment-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_assessment_placement_completed_v1"
+        },
+        "consumers": [
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-assessment.v1",
+            "subscriptionOperationId": "subscribe_assessment_placement_completed_v1_cg_learning_from_assessment_v1"
+          },
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-assessment.v1",
+            "subscriptionOperationId": "subscribe_assessment_placement_completed_v1_cg_workflow_from_assessment_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.assessment.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.sessionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "assessment_placement_completed_v1"
+        },
+        "schema": {
+          "schemaVersion": "assessment.event.v1",
+          "payloadRef": "#/payloadSchemas/B10PlacementCompleted",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
       "eventName": "learning.mastery.projected.v1",
       "status": "HISTORICAL_CANDIDATE",
       "domain": "learning",
@@ -9994,6 +10498,33 @@
           }
         }
       },
+      "assessment_placement_completed_v1": {
+        "address": "platform.assessment.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.assessment.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "assessment.placement.completed.v1",
+            "x-event-name": "assessment.placement.completed.v1",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10PlacementCompleted"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
       "workflow_outbox_published_v1": {
         "address": "platform.workflow.v1",
         "bindings": {
@@ -10775,6 +11306,70 @@
           }
         },
         "x-consumer-service": "audit-service"
+      },
+      "publish_assessment_placement_completed_v1": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/assessment_placement_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/assessment_placement_completed_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "assessment-service",
+        "x-data-owner": "assessment-service"
+      },
+      "subscribe_assessment_placement_completed_v1_cg_learning_from_assessment_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/assessment_placement_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/assessment_placement_completed_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-assessment.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_assessment_placement_completed_v1_cg_workflow_from_assessment_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/assessment_placement_completed_v1"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/assessment_placement_completed_v1/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-assessment.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
       },
       "publish_workflow_outbox_published_v1": {
         "action": "send",

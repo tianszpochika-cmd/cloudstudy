@@ -260,7 +260,7 @@ export type B1ContentSource = { sourceCode: string; sourceName: string; sourceKi
 /**
  * Generated from the contract source.
  */
-export type B1ContentLicense = { licenseCode: string; licenseName: string; licenseStatus: B1LicenseStatus; copyrightOwner: string; authorizationEvidenceRef?: string; licenseUrl?: string; permittedPlatforms?: ReadonlyArray<string>; allowsLearning: boolean; allowsOffline: boolean; attributionRequired?: boolean; startsAt?: string; expiresAt?: string; };
+export type B1ContentLicense = { licenseCode: string; licenseName: string; licenseStatus: B1LicenseStatus; copyrightOwner: string; authorizationEvidenceRef?: string; licenseUrl?: string; permittedPlatforms?: readonly [string, ...Array<string>]; allowsLearning: boolean; allowsOffline: boolean; attributionRequired?: boolean; startsAt?: string; expiresAt?: string; };
 
 /**
  * 旧 B1 compatibility request。actorId 仅保留用于兼容解析，不是授权主体；新实现使用 submitB9ContentCommand。
@@ -455,7 +455,7 @@ export type B1LogoutRequest = { allDevices?: boolean; };
 /**
  * Legacy wire shape retained only for the B9 adapter; the request cannot establish identity, ownership, tenant, gate, consent, policy or server versions.
  */
-export type B1OnboardingProfileRequest = { language?: string; targetGoal: "ZERO_BASIS" | "CET_4_6" | "POSTGRADUATE" | "WORKPLACE_DAILY"; examType?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; preferenceTags?: ReadonlyArray<string>; accentPreference?: string; customHomeLayout?: boolean; customHomeLayoutOrder?: ReadonlyArray<string>; expectedVersion?: number; };
+export type B1OnboardingProfileRequest = { language?: string; targetGoal: "ZERO_BASIS" | "CET_4_6" | "POSTGRADUATE" | "WORKPLACE_DAILY"; examType?: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; preferenceTags?: readonly [] | readonly [string] | readonly [string, string] | readonly [string, string, string]; accentPreference?: string; customHomeLayout?: boolean; customHomeLayoutOrder?: ReadonlyArray<string>; expectedVersion?: number; };
 
 /**
  * Generated from the contract source.
@@ -850,7 +850,7 @@ export type B3MasterySnapshot = { dimensions: { [key: string]: number; }; overal
 /**
  * Generated from the contract source.
  */
-export type B3SentenceBlockRequest = { blockOrder: ReadonlyArray<string>; clientEventId: string; contentVersionId: B3Id; };
+export type B3SentenceBlockRequest = { blockOrder: readonly [string, ...Array<string>]; clientEventId: string; contentVersionId: B3Id; };
 
 /**
  * Generated from the contract source.
@@ -880,7 +880,7 @@ export type B3LanguageClip = { clipId: B3Id; title: string; startMs: number; end
 /**
  * Generated from the contract source.
  */
-export type B3OfflinePackageRequest = { contentVersionId: B3Id; materialIds: ReadonlyArray<B3Id>; deviceId: string; };
+export type B3OfflinePackageRequest = { contentVersionId: B3Id; materialIds: readonly [B3Id, ...Array<B3Id>]; deviceId: string; };
 
 /**
  * Generated from the contract source.
@@ -1115,7 +1115,7 @@ export type B5InvoiceRequest = { orderId: string; invoiceType: "PERSONAL" | "ORG
 /**
  * Generated from the contract source.
  */
-export type B5SupportTicketRequest = { ticketType: "CONTENT_CORRECTION" | "PAYMENT" | "ACCOUNT" | "OTHER"; resourceRef: string; descriptionHash: string; attachmentRefs?: ReadonlyArray<string>; };
+export type B5SupportTicketRequest = { ticketType: "CONTENT_CORRECTION" | "PAYMENT" | "ACCOUNT" | "OTHER"; resourceRef: string; descriptionHash: string; attachmentRefs?: readonly [] | readonly [string] | readonly [string, string] | readonly [string, string, string] | readonly [string, string, string, string] | readonly [string, string, string, string, string]; };
 
 /**
  * Generated from the contract source.
@@ -1170,7 +1170,7 @@ export type B6DrillRequest = { drillType: "MIGRATION_ROLLBACK" | "MYSQL_RESTORE"
 /**
  * Generated from the contract source.
  */
-export type B6ReleaseGateRequest = { releaseVersion: string; candidateBuildIds: ReadonlyArray<string>; requiredChecks: ReadonlyArray<"COMPATIBILITY" | "E2E" | "SECURITY" | "RELIABILITY" | "BACKUP">; privacyStatus: "PASS" | "FAIL" | "PENDING"; copyrightStatus: "PASS" | "FAIL" | "PENDING"; merchantStatus: "PASS" | "FAIL" | "PENDING"; platformReviewStatus: "PASS" | "FAIL" | "PENDING" | "NOT_REQUIRED"; rollbackPlanRef: string; };
+export type B6ReleaseGateRequest = { releaseVersion: string; candidateBuildIds: readonly [string, ...Array<string>]; requiredChecks: readonly ["COMPATIBILITY" | "E2E" | "SECURITY" | "RELIABILITY" | "BACKUP", ...Array<"COMPATIBILITY" | "E2E" | "SECURITY" | "RELIABILITY" | "BACKUP">]; privacyStatus: "PASS" | "FAIL" | "PENDING"; copyrightStatus: "PASS" | "FAIL" | "PENDING"; merchantStatus: "PASS" | "FAIL" | "PENDING"; platformReviewStatus: "PASS" | "FAIL" | "PENDING" | "NOT_REQUIRED"; rollbackPlanRef: string; };
 
 /**
  * Compatibility error shape for existing IAM operations. New or migrated operations use ApiErrorEnvelope.
@@ -1275,7 +1275,7 @@ export type B9ContentItemDefinition = { itemCode: string; itemType: B9ContentIte
 /**
  * Generated from the contract source.
  */
-export type B9ContentDraftInput = { contentType: B9ContentType; title: string; summary?: string; contentLocale: B9Locale; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; sourceCode: string; licenseCode: string; contentHash: string; items: ReadonlyArray<B9ContentItemDefinition>; };
+export type B9ContentDraftInput = { contentType: B9ContentType; title: string; summary?: string; contentLocale: B9Locale; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; sourceCode: string; licenseCode: string; contentHash: string; items: readonly [B9ContentItemDefinition, ...Array<B9ContentItemDefinition>]; };
 
 /**
  * 命令只表达意图和资源版本；actor、tenant、owner、role、permission、reviewer 和版权事实均由服务端从已验证上下文与内容记录派生。
@@ -1355,7 +1355,7 @@ export type B9PublicProjectionState = { availability: B9ContentAvailability; pro
 /**
  * 内容后台状态。canonical 持久状态为 DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；旧 UNPUBLISHED/ROLLED_BACK 只读兼容且新实现不得产生。排期任务由服务端只读维护。
  */
-export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewRecords?: ReadonlyArray<({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })>; scheduledPublishTask?: B9ScheduledPublishTaskRef; };
+export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewRecords?: (readonly [] | readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })] | readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; }), ({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })]) & (readonly [] | readonly [{ reviewStage: "FIRST_REVIEW"; }] | (readonly [({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; }), ({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })])); scheduledPublishTask?: B9ScheduledPublishTaskRef; };
 
 /**
  * Generated from the contract source.
@@ -1435,12 +1435,12 @@ export type B9LearnerTargetUpsert = { expectedStateVersion: B9ExpectedStateVersi
 /**
  * Generated from the contract source.
  */
-export type B9LearnerPreferences = { uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; weeklyStudyDays: ReadonlyArray<number>; themeMode: "LIGHT" | "DARK" | "SYSTEM"; highContrast: boolean; motionMode: "FULL" | "REDUCED" | "OFF"; preferenceVersion: B9StateVersion; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
+export type B9LearnerPreferences = { uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; weeklyStudyDays: readonly [number] | readonly [number, number] | readonly [number, number, number] | readonly [number, number, number, number] | readonly [number, number, number, number, number] | readonly [number, number, number, number, number, number] | readonly [number, number, number, number, number, number, number]; themeMode: "LIGHT" | "DARK" | "SYSTEM"; highContrast: boolean; motionMode: "FULL" | "REDUCED" | "OFF"; preferenceVersion: B9StateVersion; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
 
 /**
  * UI locale、content locale、主题和无障碍设置分开持久化；contentLocale 不得覆盖 UI locale；server versions and identity are never accepted.
  */
-export type B9LearnerPreferencesPatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; weeklyStudyDays?: ReadonlyArray<number>; themeMode?: "LIGHT" | "DARK" | "SYSTEM"; highContrast?: boolean; motionMode?: "FULL" | "REDUCED" | "OFF"; };
+export type B9LearnerPreferencesPatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; weeklyStudyDays?: readonly [number] | readonly [number, number] | readonly [number, number, number] | readonly [number, number, number, number] | readonly [number, number, number, number, number] | readonly [number, number, number, number, number, number] | readonly [number, number, number, number, number, number, number]; themeMode?: "LIGHT" | "DARK" | "SYSTEM"; highContrast?: boolean; motionMode?: "FULL" | "REDUCED" | "OFF"; };
 
 /**
  * Generated from the contract source.
@@ -1450,7 +1450,7 @@ export type B9TaskRef = { taskId: string; taskType: "GOAL_SETUP" | "PLACEMENT" |
 /**
  * Generated from the contract source.
  */
-export type B9FirstDayProjection = B9FirstDayProjectionCommon & ({ state: "NOT_READY"; taskCount?: 0; tasks: unknown; blocker: "PROFILE_INCOMPLETE" | "TARGET_INCOMPLETE" | "PLACEMENT_REQUIRED" | "CONSENT_REQUIRED" | "POLICY_DENIED"; planningInput?: never; job?: never; plan?: never; degradedReason?: never; recovery?: never; } | { state: "PROCESSING"; profileReady?: true; targetReady?: true; taskCount?: 0; tasks: unknown; planningInput: B9PlanningInputSnapshot; job: B9PlanningJobRef & ({ status: "QUEUED" | "PROCESSING" | "RETRYABLE"; }); blocker?: never; plan?: never; degradedReason?: never; recovery?: never; } | { state: "READY"; profileReady?: true; targetReady?: true; taskCount?: unknown; tasks: unknown; planningInput: B9PlanningInputSnapshot; plan: B9PlanReference; blocker?: never; job?: never; degradedReason?: never; recovery?: never; } | { state: "DEGRADED"; profileReady?: true; targetReady?: true; taskCount?: 0; tasks: unknown; planningInput: B9PlanningInputSnapshot; degradedReason: "CONTENT_PROJECTION_STALE" | "LEGACY_SHADOW_ONLY" | "DEPENDENCY_UNAVAILABLE" | "PLAN_FAILED" | "RIGHTS_DENIED" | "POLICY_DENIED"; recovery: B9FirstDayRecovery & ({ status: "QUEUED" | "PROCESSING" | "RETRYABLE" | "FAILED"; }); blocker?: never; job?: never; plan?: never; });
+export type B9FirstDayProjection = B9FirstDayProjectionCommon & ({ state: "NOT_READY"; taskCount: 0; tasks: readonly []; blocker: "PROFILE_INCOMPLETE" | "TARGET_INCOMPLETE" | "PLACEMENT_REQUIRED" | "CONSENT_REQUIRED" | "POLICY_DENIED"; planningInput?: never; job?: never; plan?: never; degradedReason?: never; recovery?: never; } | { state: "PROCESSING"; profileReady: true; targetReady: true; taskCount: 0; tasks: readonly []; planningInput: B9PlanningInputSnapshot; job: B9PlanningJobRef & ({ status: "QUEUED" | "PROCESSING" | "RETRYABLE"; }); blocker?: never; plan?: never; degradedReason?: never; recovery?: never; } | { state: "READY"; profileReady: true; targetReady: true; taskCount: number; tasks: readonly [B9TaskRef, ...Array<B9TaskRef>]; planningInput: B9PlanningInputSnapshot; plan: B9PlanReference; blocker?: never; job?: never; degradedReason?: never; recovery?: never; } | { state: "DEGRADED"; profileReady: true; targetReady: true; taskCount: 0; tasks: readonly []; planningInput: B9PlanningInputSnapshot; degradedReason: "CONTENT_PROJECTION_STALE" | "LEGACY_SHADOW_ONLY" | "DEPENDENCY_UNAVAILABLE" | "PLAN_FAILED" | "RIGHTS_DENIED" | "POLICY_DENIED"; recovery: B9FirstDayRecovery & ({ status: "QUEUED" | "PROCESSING" | "RETRYABLE" | "FAILED"; }); blocker?: never; job?: never; plan?: never; });
 
 /**
  * Generated from the contract source.
@@ -1740,27 +1740,27 @@ export type B10ContentRecovery = ({ usageScope: "FUTURE_READ_ONLY"; requestedVer
 /**
  * The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.
  */
-export type B10CreateAssessmentSessionRequest = { contentVersionId: B10Int64Id; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; itemIds?: ReadonlyArray<B10Int64Id>; clientSessionRef?: string; };
+export type B10CreateAssessmentSessionRequest = { contentVersionId: B10Int64Id; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; itemIds?: readonly [B10Int64Id, ...Array<B10Int64Id>]; clientSessionRef?: string; };
 
 /**
  * Session lifecycle only. Attempt and report lifecycles are distinct aggregates and cannot be inferred from this status.
  */
-export type B10AssessmentSession = { sessionId: B10SessionId; status: B10SessionStatus; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; pin: B10ActiveSessionAttemptPin; items: ReadonlyArray<B10LearnerContentItem>; itemRulePins: ReadonlyArray<B10AssessmentItemRulePin>; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; attemptCount?: number; stateVersion: B10StateVersion; startedAt: B10DateTime; expiresAt?: B10DateTime | null; reportId?: B10ReportId | null; lastAttemptId?: B10AttemptId | null; };
+export type B10AssessmentSession = { sessionId: B10SessionId; status: B10SessionStatus; mode: "PRACTICE" | "REVIEW" | "PLACEMENT" | "MOCK"; pin: B10ActiveSessionAttemptPin; items: ReadonlyArray<B10LearnerContentItem>; itemRulePins: readonly [B10AssessmentItemRulePin, ...Array<B10AssessmentItemRulePin>]; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; attemptCount?: number; stateVersion: B10StateVersion; startedAt: B10DateTime; expiresAt?: B10DateTime | null; reportId?: B10ReportId | null; lastAttemptId?: B10AttemptId | null; };
 
 /**
  * Closed protected candidate-response union. The scoring boundary receives one explicit response shape and a digest; client score/rule authority is rejected.
  */
-export type B10AttemptSubmission = ({ itemId: B10Int64Id; sequence: number; responseType: "CHOICE" | "MATCHING" | "ORDERING" | "CLOZE" | "TEXT" | "UNANSWERED"; responseDigest: B10Sha256; selectedOptionIds?: ReadonlyArray<string>; pairs?: ReadonlyArray<B10MatchingPair>; orderedTokenIds?: ReadonlyArray<string>; blanks?: ReadonlyArray<B10ClozeEntry>; text?: string; score?: never; scoreBucket?: never; isCorrect?: never; correct?: never; answerRule?: never; answerRuleVersion?: never; ruleDigest?: never; gradingRuleVersion?: never; }) & ({ itemId: B10Int64Id; sequence: number; responseType: "CHOICE"; responseDigest: B10Sha256; selectedOptionIds: ReadonlyArray<string>; pairs?: never; orderedTokenIds?: never; blanks?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "MATCHING"; responseDigest: B10Sha256; pairs: ReadonlyArray<B10MatchingPair>; selectedOptionIds?: never; orderedTokenIds?: never; blanks?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "ORDERING"; responseDigest: B10Sha256; orderedTokenIds: ReadonlyArray<string>; selectedOptionIds?: never; pairs?: never; blanks?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "CLOZE"; responseDigest: B10Sha256; blanks: ReadonlyArray<B10ClozeEntry>; selectedOptionIds?: never; pairs?: never; orderedTokenIds?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "TEXT"; responseDigest: B10Sha256; text: string; selectedOptionIds?: never; pairs?: never; orderedTokenIds?: never; blanks?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "UNANSWERED"; responseDigest: B10Sha256; selectedOptionIds?: never; pairs?: never; orderedTokenIds?: never; blanks?: never; text?: never; });
+export type B10AttemptSubmission = ({ itemId: B10Int64Id; sequence: number; responseType: "CHOICE" | "MATCHING" | "ORDERING" | "CLOZE" | "TEXT" | "UNANSWERED"; responseDigest: B10Sha256; selectedOptionIds?: readonly [string, ...Array<string>]; pairs?: readonly [B10MatchingPair, ...Array<B10MatchingPair>]; orderedTokenIds?: readonly [string, ...Array<string>]; blanks?: readonly [B10ClozeEntry, ...Array<B10ClozeEntry>]; text?: string; score?: never; scoreBucket?: never; isCorrect?: never; correct?: never; answerRule?: never; answerRuleVersion?: never; ruleDigest?: never; gradingRuleVersion?: never; }) & ({ itemId: B10Int64Id; sequence: number; responseType: "CHOICE"; responseDigest: B10Sha256; selectedOptionIds: readonly [string, ...Array<string>]; pairs?: never; orderedTokenIds?: never; blanks?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "MATCHING"; responseDigest: B10Sha256; pairs: readonly [B10MatchingPair, ...Array<B10MatchingPair>]; selectedOptionIds?: never; orderedTokenIds?: never; blanks?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "ORDERING"; responseDigest: B10Sha256; orderedTokenIds: readonly [string, ...Array<string>]; selectedOptionIds?: never; pairs?: never; blanks?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "CLOZE"; responseDigest: B10Sha256; blanks: readonly [B10ClozeEntry, ...Array<B10ClozeEntry>]; selectedOptionIds?: never; pairs?: never; orderedTokenIds?: never; text?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "TEXT"; responseDigest: B10Sha256; text: string; selectedOptionIds?: never; pairs?: never; orderedTokenIds?: never; blanks?: never; } | { itemId: B10Int64Id; sequence: number; responseType: "UNANSWERED"; responseDigest: B10Sha256; selectedOptionIds?: never; pairs?: never; orderedTokenIds?: never; blanks?: never; text?: never; });
 
 /**
  * Generated from the contract source.
  */
-export type B10SubmitAttemptRequest = { expectedStateVersion: B10StateVersion; submissionId: string; submissionDigest: B10Sha256; items: ReadonlyArray<B10AttemptSubmission>; clientEventId?: string; };
+export type B10SubmitAttemptRequest = { expectedStateVersion: B10StateVersion; submissionId: string; submissionDigest: B10Sha256; items: readonly [B10AttemptSubmission, ...Array<B10AttemptSubmission>]; clientEventId?: string; };
 
 /**
  * Assessment attempt lifecycle only. It does not own learning mastery, SRS, reward or progression state.
  */
-export type B10Attempt = ({ attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; status: B10AttemptStatus; itemCount: number; submissionDigest: B10Sha256; submissionId: string; pin: B10ActiveSessionAttemptPin; itemRulePins: ReadonlyArray<B10AssessmentItemRulePin>; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; assessmentVersion?: B10RuleVersion; outcome?: B10AssessmentOutcome; createdAt: B10DateTime; assessedAt?: B10DateTime | null; reportId?: B10ReportId; rejectionCode?: string; }) & ({ status: "ACCEPTED" | "ASSESSING"; assessmentVersion?: never; outcome?: never; reportId?: never; assessedAt?: never; rejectionCode?: never; } | { assessmentVersion: B10RuleVersion; outcome: B10AssessmentOutcome; reportId: B10ReportId; status: "ASSESSED"; assessedAt: string; rejectionCode?: never; } | { rejectionCode: string; status: "REJECTED"; assessmentVersion?: never; outcome?: never; reportId?: never; assessedAt?: never; });
+export type B10Attempt = ({ attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; status: B10AttemptStatus; itemCount: number; submissionDigest: B10Sha256; submissionId: string; pin: B10ActiveSessionAttemptPin; itemRulePins: readonly [B10AssessmentItemRulePin, ...Array<B10AssessmentItemRulePin>]; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; assessmentVersion?: B10RuleVersion; outcome?: B10AssessmentOutcome; createdAt: B10DateTime; assessedAt?: B10DateTime | null; reportId?: B10ReportId; rejectionCode?: string; }) & ({ status: "ACCEPTED" | "ASSESSING"; assessmentVersion?: never; outcome?: never; reportId?: never; assessedAt?: never; rejectionCode?: never; } | { assessmentVersion: B10RuleVersion; outcome: B10AssessmentOutcome; reportId: B10ReportId; status: "ASSESSED"; assessedAt: string; rejectionCode?: never; } | { rejectionCode: string; status: "REJECTED"; assessmentVersion?: never; outcome?: never; reportId?: never; assessedAt?: never; });
 
 /**
  * Deprecated attempt-scoped checkpoint adapter request. New callers use B10AssessmentSessionCheckpointRequest.
@@ -1775,7 +1775,7 @@ export type B10Checkpoint = { attemptId: B10AttemptId; checkpointVersion: number
 /**
  * Versioned assessment report. It is bound to one session, attempt and submission, and never owns mastery/SRS facts.
  */
-export type B10AssessmentReport = { reportId: B10ReportId; attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; submissionId: string; submissionDigest: B10Sha256; reportVersion: number; reportRuleVersion: B10RuleVersion; assessmentVersion: B10RuleVersion; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; itemRulePins: ReadonlyArray<B10AssessmentItemRulePin>; asOf: B10DateTime; assessmentFactWatermark: string; status: B10ReportStatus; outcome?: B10AssessmentOutcome; mistakeCodes?: ReadonlyArray<string>; pin: B10ActiveSessionAttemptPin; generatedAt: B10DateTime; replayable: true; partialReasonCodes?: ReadonlyArray<string>; failureCode?: string; retryable?: boolean; } & ({ status: "GENERATING"; outcome?: never; mistakeCodes?: never; partialReasonCodes?: never; failureCode?: never; retryable?: never; } | { outcome: B10AssessmentOutcome; mistakeCodes: ReadonlyArray<string>; status: "READY"; partialReasonCodes?: never; failureCode?: never; retryable?: never; } | { outcome: B10AssessmentOutcome; partialReasonCodes: ReadonlyArray<string>; status: "PARTIAL"; failureCode?: never; retryable?: never; } | { failureCode: string; retryable: boolean; status: "FAILED"; outcome?: never; mistakeCodes?: never; partialReasonCodes?: never; });
+export type B10AssessmentReport = { reportId: B10ReportId; attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; submissionId: string; submissionDigest: B10Sha256; reportVersion: number; reportRuleVersion: B10RuleVersion; assessmentVersion: B10RuleVersion; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; itemRulePins: readonly [B10AssessmentItemRulePin, ...Array<B10AssessmentItemRulePin>]; asOf: B10DateTime; assessmentFactWatermark: string; status: B10ReportStatus; outcome?: B10AssessmentOutcome; mistakeCodes?: ReadonlyArray<string>; pin: B10ActiveSessionAttemptPin; generatedAt: B10DateTime; replayable: true; partialReasonCodes?: readonly [string, ...Array<string>]; failureCode?: string; retryable?: boolean; } & ({ status: "GENERATING"; outcome?: never; mistakeCodes?: never; partialReasonCodes?: never; failureCode?: never; retryable?: never; } | { outcome: B10AssessmentOutcome; mistakeCodes: ReadonlyArray<string>; status: "READY"; partialReasonCodes?: never; failureCode?: never; retryable?: never; } | { outcome: B10AssessmentOutcome; partialReasonCodes: readonly [string, ...Array<string>]; status: "PARTIAL"; failureCode?: never; retryable?: never; } | { failureCode: string; retryable: boolean; status: "FAILED"; outcome?: never; mistakeCodes?: never; partialReasonCodes?: never; });
 
 /**
  * Generated from the contract source.
@@ -1990,7 +1990,7 @@ export type B12RewardPage = { items: ReadonlyArray<B12RewardGrant>; };
 /**
  * Generated from the contract source.
  */
-export type B12RewardProbability = { probabilityVersion: string; tiers: ReadonlyArray<{ tierCode: string; basisPoints: number; }>; disclosedAt: string; };
+export type B12RewardProbability = { probabilityVersion: string; tiers: readonly [{ tierCode: string; basisPoints: number; }, ...Array<{ tierCode: string; basisPoints: number; }>]; disclosedAt: string; };
 
 /**
  * Generated from the contract source.
@@ -2155,7 +2155,7 @@ export type B13PublicCatalog = { catalogVersion: string; uiLocale: string; conte
 /**
  * Generated from the contract source.
  */
-export type B13PublicPlan = { planId: string; name: string; displayPrice: string; unit: string; features: ReadonlyArray<string>; availability: "available" | "coming-soon" | "unavailable"; entitlementCode: string; };
+export type B13PublicPlan = { planId: string; name: string; displayPrice: string; unit: string; features: readonly [] | readonly [string] | readonly [string, string] | readonly [string, string, string] | readonly [string, string, string, string] | readonly [string, string, string, string, string] | readonly [string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string] | readonly [string, string, string, string, string, string, string, string, string, string, string, string]; availability: "available" | "coming-soon" | "unavailable"; entitlementCode: string; };
 
 /**
  * Generated from the contract source.
@@ -2245,7 +2245,7 @@ export type B13AdminOrderPage = { items: ReadonlyArray<B13AdminOrderView>; nextC
 /**
  * Generated from the contract source.
  */
-export type B13SupportTicketCreateRequest = { categoryCode: string; resourceRef: string; descriptionFingerprint: string; priority: "LOW" | "NORMAL" | "HIGH" | "URGENT"; attachments?: ReadonlyArray<B13MediaObjectRef>; };
+export type B13SupportTicketCreateRequest = { categoryCode: string; resourceRef: string; descriptionFingerprint: string; priority: "LOW" | "NORMAL" | "HIGH" | "URGENT"; attachments?: readonly [] | readonly [B13MediaObjectRef] | readonly [B13MediaObjectRef, B13MediaObjectRef] | readonly [B13MediaObjectRef, B13MediaObjectRef, B13MediaObjectRef] | readonly [B13MediaObjectRef, B13MediaObjectRef, B13MediaObjectRef, B13MediaObjectRef] | readonly [B13MediaObjectRef, B13MediaObjectRef, B13MediaObjectRef, B13MediaObjectRef, B13MediaObjectRef]; };
 
 /**
  * Generated from the contract source.
@@ -2280,7 +2280,7 @@ export type B13MetricProjection = { metricCode: string; metricVersion: string; p
 /**
  * Generated from the contract source.
  */
-export type B13AnalyticsEvent = { eventId: string; eventName: string; schemaVersion: string; aggregateType: string; aggregateRef: string; occurredAt: string; redactionVersion: string; dimensions: ReadonlyArray<B13MetricDimension>; };
+export type B13AnalyticsEvent = { eventId: string; eventName: string; schemaVersion: string; aggregateType: string; aggregateRef: string; occurredAt: string; redactionVersion: string; dimensions: readonly [] | readonly [B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension] | readonly [B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension, B13MetricDimension]; };
 
 /**
  * Generated from the contract source.
@@ -2585,17 +2585,17 @@ export type B8AuthorizationDecisionEnvelope = ApiSuccessEnvelope & { data: B8Pdp
 /**
  * Versioned RBAC binding. It becomes authoritative only after independent approval and activation of the containing policy version; request payloads never change the caller's current authority.
  */
-export type B8RolePermissionBinding = { roleCode: string; permissions: ReadonlyArray<string>; assignmentScope: "SERVER_DERIVED_PLATFORM_TENANT" | "SERVER_DERIVED_RESOURCE_TENANT"; };
+export type B8RolePermissionBinding = { roleCode: string; permissions: readonly [string, ...Array<string>]; assignmentScope: "SERVER_DERIVED_PLATFORM_TENANT" | "SERVER_DERIVED_RESOURCE_TENANT"; };
 
 /**
  * Generated from the contract source.
  */
-export type B8PolicyRule = { effect: "ALLOW" | "DENY"; requiredPermissions: ReadonlyArray<string>; actions: ReadonlyArray<string>; resourceTypes: ReadonlyArray<string>; conditions: { phases?: ReadonlyArray<"P1" | "P2" | "P3">; requiresAdultEligibility?: boolean; requiredConsentPurposes?: ReadonlyArray<string>; minimumDeviceTrust?: "REGISTERED" | "VERIFIED"; contentRights?: ReadonlyArray<"VALID" | "NOT_APPLICABLE">; ownerMatchRequired?: boolean; tenantMatchRequired?: boolean; }; };
+export type B8PolicyRule = { effect: "ALLOW" | "DENY"; requiredPermissions: readonly [string, ...Array<string>]; actions: readonly [string, ...Array<string>]; resourceTypes: readonly [string, ...Array<string>]; conditions: { phases?: ReadonlyArray<"P1" | "P2" | "P3">; requiresAdultEligibility?: boolean; requiredConsentPurposes?: ReadonlyArray<string>; minimumDeviceTrust?: "REGISTERED" | "VERIFIED"; contentRights?: ReadonlyArray<"VALID" | "NOT_APPLICABLE">; ownerMatchRequired?: boolean; tenantMatchRequired?: boolean; }; };
 
 /**
  * Generated from the contract source.
  */
-export type B8PolicyDocument = { name: string; description?: string; roleBindings: ReadonlyArray<B8RolePermissionBinding>; rules: ReadonlyArray<B8PolicyRule>; };
+export type B8PolicyDocument = { name: string; description?: string; roleBindings: readonly [B8RolePermissionBinding, ...Array<B8RolePermissionBinding>]; rules: readonly [B8PolicyRule, ...Array<B8PolicyRule>]; };
 
 /**
  * Generated from the contract source.
@@ -2605,7 +2605,7 @@ export type B8PolicyCacheInvalidationReceipt = { invalidationId?: string; requir
 /**
  * Generated from the contract source.
  */
-export type B8PolicyVersion = { policyVersionId: string; version: string; status: "DRAFT" | "SUBMITTED" | "APPROVED" | "ACTIVE" | "REVOKED"; revision: number; tenant: B8ServerDerivedTenant; document: B8PolicyDocument; artifactDigest: string; createdAt: string; updatedAt: string; createdBy: B8ServerDerivedSubject; submittedBy?: B8ServerDerivedSubject; approvedBy?: B8ServerDerivedSubject; activatedBy?: B8ServerDerivedSubject; revokedBy?: B8ServerDerivedSubject; separationOfDuties: { independentApprovalRequired: true; authorMayApprove: false; submitterMayApprove: false; satisfied: boolean; }; auditLinks: ReadonlyArray<B8AuditLink>; cacheInvalidation: B8PolicyCacheInvalidationReceipt; };
+export type B8PolicyVersion = { policyVersionId: string; version: string; status: "DRAFT" | "SUBMITTED" | "APPROVED" | "ACTIVE" | "REVOKED"; revision: number; tenant: B8ServerDerivedTenant; document: B8PolicyDocument; artifactDigest: string; createdAt: string; updatedAt: string; createdBy: B8ServerDerivedSubject; submittedBy?: B8ServerDerivedSubject; approvedBy?: B8ServerDerivedSubject; activatedBy?: B8ServerDerivedSubject; revokedBy?: B8ServerDerivedSubject; separationOfDuties: { independentApprovalRequired: true; authorMayApprove: false; submitterMayApprove: false; satisfied: boolean; }; auditLinks: readonly [B8AuditLink, ...Array<B8AuditLink>]; cacheInvalidation: B8PolicyCacheInvalidationReceipt; };
 
 /**
  * Generated from the contract source.
@@ -2815,12 +2815,12 @@ export type MediaSubtitleTrack = { subtitleTrackId: string; contentVersionId: st
 /**
  * Generated from the contract source.
  */
-export type MediaPlaybackCapability = { minimumRate: 0.5; maximumRate: 2; continuous: true; presets: ReadonlyArray<0.5 | 0.75 | 1 | 1.25 | 1.5 | 2>; pitchPreservationRequired: true; timelineUnit: "MILLISECONDS"; fallback: "EXPLICIT_DISABLE_OR_UNSUPPORTED"; };
+export type MediaPlaybackCapability = { minimumRate: 0.5; maximumRate: 2; continuous: true; presets: readonly [0.5 | 0.75 | 1 | 1.25 | 1.5 | 2, 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2, 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2, 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2, 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2, 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2]; pitchPreservationRequired: true; timelineUnit: "MILLISECONDS"; fallback: "EXPLICIT_DISABLE_OR_UNSUPPORTED"; };
 
 /**
  * Generated from the contract source.
  */
-export type MediaManifest = { assetId: string; assetVersion: number; sourceContentVersionId: string; integrity: MediaIntegrity; malwareStatus: "PENDING" | "CLEAN" | "INFECTED" | "ERROR"; renditions: ReadonlyArray<MediaRendition>; subtitleTracks: ReadonlyArray<MediaSubtitleTrack>; fallbackAlternatives: ReadonlyArray<MediaFallbackAlternative>; playbackCapabilities: MediaPlaybackCapability; status: "PROCESSING" | "READY" | "FAILED" | "QUARANTINED" | "REVOKED"; };
+export type MediaManifest = { assetId: string; assetVersion: number; sourceContentVersionId: string; integrity: MediaIntegrity; malwareStatus: "PENDING" | "CLEAN" | "INFECTED" | "ERROR"; renditions: ReadonlyArray<MediaRendition>; subtitleTracks: ReadonlyArray<MediaSubtitleTrack>; fallbackAlternatives: readonly [MediaFallbackAlternative, MediaFallbackAlternative]; playbackCapabilities: MediaPlaybackCapability; status: "PROCESSING" | "READY" | "FAILED" | "QUARANTINED" | "REVOKED"; };
 
 /**
  * Generated from the contract source.
@@ -2950,7 +2950,7 @@ export type B10AssessmentOutcome = B10ObjectiveOutcome | B10SelfRatingOutcome | 
 /**
  * Generated from the contract source.
  */
-export type B10ChoiceResponse = { responseType: "CHOICE"; selectedOptionIds: ReadonlyArray<string>; };
+export type B10ChoiceResponse = { responseType: "CHOICE"; selectedOptionIds: readonly [string, ...Array<string>]; };
 
 /**
  * Generated from the contract source.
@@ -2960,12 +2960,12 @@ export type B10MatchingPair = { leftId: string; rightId: string; };
 /**
  * Generated from the contract source.
  */
-export type B10MatchingResponse = { responseType: "MATCHING"; pairs: ReadonlyArray<B10MatchingPair>; };
+export type B10MatchingResponse = { responseType: "MATCHING"; pairs: readonly [B10MatchingPair, ...Array<B10MatchingPair>]; };
 
 /**
  * Generated from the contract source.
  */
-export type B10OrderingResponse = { responseType: "ORDERING"; orderedTokenIds: ReadonlyArray<string>; };
+export type B10OrderingResponse = { responseType: "ORDERING"; orderedTokenIds: readonly [string, ...Array<string>]; };
 
 /**
  * Generated from the contract source.
@@ -2975,7 +2975,7 @@ export type B10ClozeEntry = { blankId: string; text: string; };
 /**
  * Generated from the contract source.
  */
-export type B10ClozeResponse = { responseType: "CLOZE"; blanks: ReadonlyArray<B10ClozeEntry>; };
+export type B10ClozeResponse = { responseType: "CLOZE"; blanks: readonly [B10ClozeEntry, ...Array<B10ClozeEntry>]; };
 
 /**
  * Generated from the contract source.
@@ -3010,17 +3010,17 @@ export type B10AssessmentCheckpoint = { sessionId: B10SessionId; checkpointVersi
 /**
  * Generated from the contract source.
  */
-export type B9GoalOption = { goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; label: string; description?: string; targetLevels: ReadonlyArray<"A1" | "A2" | "B1" | "B2" | "C1" | "C2">; dailyQuotaMinutes: ReadonlyArray<5 | 15 | 30 | 45>; };
+export type B9GoalOption = { goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; label: string; description?: string; targetLevels: readonly ["A1" | "A2" | "B1" | "B2" | "C1" | "C2"] | readonly ["A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2"] | readonly ["A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2"] | readonly ["A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2"] | readonly ["A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2"] | readonly ["A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2", "A1" | "A2" | "B1" | "B2" | "C1" | "C2"]; dailyQuotaMinutes: readonly [5 | 15 | 30 | 45] | readonly [5 | 15 | 30 | 45, 5 | 15 | 30 | 45] | readonly [5 | 15 | 30 | 45, 5 | 15 | 30 | 45, 5 | 15 | 30 | 45] | readonly [5 | 15 | 30 | 45, 5 | 15 | 30 | 45, 5 | 15 | 30 | 45, 5 | 15 | 30 | 45]; };
 
 /**
  * Generated from the contract source.
  */
-export type B9GoalOptions = { goalCatalogVersion: string; contentLocale: B9Locale; options: ReadonlyArray<B9GoalOption>; generatedAt: B9DateTime; };
+export type B9GoalOptions = { goalCatalogVersion: string; contentLocale: B9Locale; options: readonly [B9GoalOption, B9GoalOption, B9GoalOption, B9GoalOption]; generatedAt: B9DateTime; };
 
 /**
- * Immutable, server-assembled planning facts. Eligibility is pinned only as a server-derived digest of adult gate, required consents, phase and policy; raw authority facts, placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.
+ * Immutable, server-assembled planning facts. Eligibility is pinned only as a server-derived digest of adult gate, required consents, phase and policy; the placement baseline is a closed canonical result reference. Raw authority facts, placement raw answers, scores, algorithm, SRS and mastery facts are never part of this snapshot.
  */
-export type B9PlanningInputSnapshot = { pinId: string; pinVersion: number; pinDigest: string; targetId: number; targetVersion: B9StateVersion; profileVersion: B9StateVersion; preferenceVersion: B9StateVersion; goalCatalogVersion: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; timezone: string; weeklyStudyDays: ReadonlyArray<number>; contentLocale: B9Locale; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; rightsSnapshotVersion: number; eligibilitySnapshotVersion: number; eligibilitySnapshotDigest: string; planningRuleVersion: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; };
+export type B9PlanningInputSnapshot = { pinId: string; pinVersion: number; pinDigest: string; targetId: number; targetVersion: B9StateVersion; profileVersion: B9StateVersion; preferenceVersion: B9StateVersion; goalCatalogVersion: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; timezone: string; weeklyStudyDays: readonly [number] | readonly [number, number] | readonly [number, number, number] | readonly [number, number, number, number] | readonly [number, number, number, number, number] | readonly [number, number, number, number, number, number] | readonly [number, number, number, number, number, number, number]; contentLocale: B9Locale; contentVersionId: B10Int64Id; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; rightsSnapshotVersion: number; eligibilitySnapshotVersion: number; eligibilitySnapshotDigest: string; placementBaseline: B9PlacementBaseline; planningRuleVersion: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; };
 
 /**
  * Generated from the contract source.
@@ -3041,6 +3041,86 @@ export type B9FirstDayRecovery = ({ recoveryTaskId: string; status: "QUEUED" | "
  * Generated from the contract source.
  */
 export type B9FirstDayProjectionCommon = { state: "NOT_READY" | "PROCESSING" | "READY" | "DEGRADED"; profileReady: boolean; targetReady: boolean; placementStatus: "NOT_STARTED" | "IN_PROGRESS" | "SKIPPED" | "COMPLETED" | "UNAVAILABLE"; taskCount: number; tasks: ReadonlyArray<B9TaskRef>; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; projectionWatermark: string; generatedAt: B9DateTime; planningInput?: B9PlanningInputSnapshot; job?: B9PlanningJobRef; plan?: B9PlanReference; blocker?: "PROFILE_INCOMPLETE" | "TARGET_INCOMPLETE" | "PLACEMENT_REQUIRED" | "CONSENT_REQUIRED" | "POLICY_DENIED"; degradedReason?: "CONTENT_PROJECTION_STALE" | "LEGACY_SHADOW_ONLY" | "DEPENDENCY_UNAVAILABLE" | "PLAN_FAILED" | "RIGHTS_DENIED" | "POLICY_DENIED"; recovery?: B9FirstDayRecovery; };
+
+/**
+ * Closed, learner-safe assessment reference assembled by learning-service from the canonical durable placement completion fact. It is a binding reference, not raw responses, scores, an algorithm, SRS or mastery input.
+ */
+export type B9PlacementBaseline = ({ resultKind: "ASSESSED" | "SKIPPED"; placementSessionId: B10SessionId; sessionStateVersion: B10StateVersion; sessionSnapshotDigest: B10PlacementDigest; placementResultId: string; resultVersion: number; resultDigest: B10PlacementDigest; reportId: B10ReportId; reportVersion: number; reportDigest: B10PlacementDigest; baselineConfidence: "HIGH" | "MEDIUM" | "LOW" | "UNVERIFIED"; referenceLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null; requestedStartingLevel?: B10RequestedStartingLevel; completionStatus: "COMPLETED" | "SKIPPED"; manifest: B10PlacementManifestPin; contentPin: B10PlacementContentPin; answerRulePin: B10PlacementAnswerRulePin; targetPin: B10PlacementTargetPin; completedAt: B10DateTime; sourceEventId: string; rootEventId: string; placementFactWatermark: string; }) & ({ resultKind: "ASSESSED"; completionStatus: "COMPLETED"; baselineConfidence: "HIGH" | "MEDIUM" | "LOW"; referenceLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; requestedStartingLevel?: never; } | { resultKind: "SKIPPED"; completionStatus: "SKIPPED"; baselineConfidence: "UNVERIFIED"; referenceLevel: null; });
+
+/**
+ * Lowercase SHA-256 digest pinned by the assessment owner; it is not client authority.
+ */
+export type B10PlacementDigest = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementManifestDimension = { dimension: "VOCABULARY" | "BASIC_GRAMMAR" | "READING" | "LISTENING"; weight: 25; requiredItemCount: 2 | 3; displayOrder: number; };
+
+/**
+ * Assessment-owned immutable P1_PLACEMENT_V1 manifest. It freezes the ten-item, four-dimension scoring set for one placement session.
+ */
+export type B10PlacementManifest = { placementManifestId: "P1_PLACEMENT_V1"; placementManifestVersion: "P1_PLACEMENT_V1"; placementManifestDigest: B10PlacementDigest; dimensionSetDigest: B10PlacementDigest; totalItemCount: 10; dimensions: readonly [B10PlacementManifestDimension, B10PlacementManifestDimension, B10PlacementManifestDimension, B10PlacementManifestDimension]; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementManifestPin = { placementManifestId: "P1_PLACEMENT_V1"; placementManifestVersion: "P1_PLACEMENT_V1"; placementManifestDigest: B10PlacementDigest; dimensionSetDigest: B10PlacementDigest; totalItemCount: 10; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementContentPin = { contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; snapshotId: B10SnapshotId; snapshotHash: B10PlacementDigest; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementAnswerRulePin = { answerRuleSetVersion: B10RuleVersion; answerRuleVersion: B10RuleVersion; ruleDigest: B10PlacementDigest; completionRuleVersion: B10RuleVersion; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementTargetPin = { targetId: B10Int64Id; targetVersion: number; targetSnapshotDigest: B10PlacementDigest; };
+
+/**
+ * One assessment-owned placement session. B10 session status remains the only session state machine; placement result kind is a separate immutable result fact.
+ */
+export type B10PlacementSession = { sessionId: B10SessionId; status: B10SessionStatus; stateVersion: B10StateVersion; sessionSnapshotDigest: B10PlacementDigest; manifest: B10PlacementManifest; contentPin: B10PlacementContentPin; answerRulePin: B10PlacementAnswerRulePin; targetPin: B10PlacementTargetPin; currentItem?: B10LearnerContentItem; completedResult?: B10PlacementResult; startedAt: B10DateTime; updatedAt?: B10DateTime; };
+
+/**
+ * Closed candidate placement response. Client score, level, confidence, recommendation, pin, tenant and authority facts are rejected.
+ */
+export type B10PlacementResponseSubmitRequest = { expectedStateVersion: B10StateVersion; itemId: B10Int64Id; itemSequence: number; candidateResponse: B10CandidateResponse; responseDigest: B10PlacementDigest; timeSpentSec: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementDimensionSummary = { dimension: "VOCABULARY" | "BASIC_GRAMMAR" | "READING" | "LISTENING"; validItemCount: number; earnedItemCount: number; dimensionPercent: number; };
+
+/**
+ * User-selected historical fast-track hint only. It is never an assessed score, reference level or policy authority.
+ */
+export type B10RequestedStartingLevel = { level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; authority: "USER_SELECTED_NON_AUTHORITATIVE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementResult = ({ placementResultId: string; sessionId: B10SessionId; resultVersion: number; resultDigest: B10PlacementDigest; reportId: B10ReportId; reportVersion: number; reportDigest: B10PlacementDigest; resultKind: "ASSESSED" | "SKIPPED"; confidence: "HIGH" | "MEDIUM" | "LOW" | "UNVERIFIED"; coverageRatio: number; completionStatus: "COMPLETED" | "SKIPPED"; aggregateScore?: number | null; referenceLevel?: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null; dimensionSummaries?: readonly [B10PlacementDimensionSummary, B10PlacementDimensionSummary, B10PlacementDimensionSummary, B10PlacementDimensionSummary]; requestedStartingLevel?: B10RequestedStartingLevel; manifest: B10PlacementManifestPin; contentPin: B10PlacementContentPin; answerRulePin: B10PlacementAnswerRulePin; targetPin: B10PlacementTargetPin; completedAt: B10DateTime; }) & ({ dimensionSummaries: readonly [B10PlacementDimensionSummary, B10PlacementDimensionSummary, B10PlacementDimensionSummary, B10PlacementDimensionSummary]; resultKind: "ASSESSED"; completionStatus: "COMPLETED"; confidence: "HIGH" | "MEDIUM" | "LOW"; aggregateScore: number; referenceLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; requestedStartingLevel?: never; } | { resultKind: "SKIPPED"; completionStatus: "SKIPPED"; confidence: "UNVERIFIED"; coverageRatio: 0; aggregateScore: null; referenceLevel: null; dimensionSummaries?: never; });
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementResponseReceipt = { sessionId: B10SessionId; stateVersion: B10StateVersion; status: B10SessionStatus; nextItem?: B10LearnerContentItem; finalResult?: B10PlacementResult; acceptedAt: B10DateTime; } & ({ nextItem: B10LearnerContentItem; status: "CREATED" | "IN_PROGRESS" | "INTERRUPTED"; finalResult?: never; } | { finalResult: B10PlacementResult; status: "COMPLETED" | "AUTO_SUBMITTED"; nextItem?: never; });
+
+/**
+ * Optional user-selected starting-level hint. It cannot establish a measured level, score, recommendation, owner, tenant or policy fact.
+ */
+export type B10PlacementSkipBaselineRequest = { requestedStartingLevel?: B10RequestedStartingLevel; };
+
+/**
+ * Immutable learner-safe placement report. It is a non-official reference and is not a learning mastery, SRS or certification fact.
+ */
+export type B10PlacementReport = { result: B10PlacementResult; manifest: B10PlacementManifest; contentPin: B10PlacementContentPin; answerRulePin: B10PlacementAnswerRulePin; targetPin: B10PlacementTargetPin; generatedAt: B10DateTime; };
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
@@ -3142,7 +3222,7 @@ export interface ApiOperationRegistry {
   createSrsBatch: { method: "POST"; path: "/api/v1/learning/srs/batches"; request: SrsBatchCreateRequest; response: ApiSuccessEnvelope & { data: { snapshotId: number; localDate: string; timezone?: string; status: string; algorithmVersion?: string; rulesVersion?: string; items: ReadonlyArray<SrsBatchItem>; }; }; idempotent: true };
   getSrsBatch: { method: "GET"; path: "/api/v1/learning/srs/batches/{snapshotId}"; request: never; response: ApiSuccessEnvelope & { data: { snapshotId: number; localDate: string; timezone?: string; status: string; algorithmVersion?: string; rulesVersion?: string; items: ReadonlyArray<SrsBatchItem>; }; }; idempotent: false };
   submitReviewEvent: { method: "POST"; path: "/api/v1/learning/srs/reviews"; request: ReviewEventRequest; response: ApiSuccessEnvelope & { data: ReviewEventResponse; }; idempotent: true };
-  syncReviewEvents: { method: "POST"; path: "/api/v1/learning/srs/reviews:sync"; request: { events: ReadonlyArray<ReviewEventRequest>; }; response: ApiSuccessEnvelope & { data: { results: ReadonlyArray<Record<string, never>>; }; }; idempotent: true };
+  syncReviewEvents: { method: "POST"; path: "/api/v1/learning/srs/reviews:sync"; request: { events: readonly [ReviewEventRequest, ...Array<ReviewEventRequest>]; }; response: ApiSuccessEnvelope & { data: { results: ReadonlyArray<Record<string, never>>; }; }; idempotent: true };
   listSrsStates: { method: "GET"; path: "/api/v1/learning/srs/states"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<SrsState>; }; idempotent: false };
   getSrsOverview: { method: "GET"; path: "/api/v1/learning/srs/overview"; request: never; response: ApiSuccessEnvelope & { data: SrsOverview; }; idempotent: false };
   getCurrentLearningPlan: { method: "GET"; path: "/api/v1/learning/plan/current"; request: never; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: false };
@@ -3449,6 +3529,11 @@ export interface ApiOperationRegistry {
   completeSpeakingShadowingSession: { method: "POST"; path: "/api/v1/speaking/shadowing/sessions/{shadowingSessionId}/complete"; request: SpeakingShadowingCompletionRequest; response: ApiSuccessEnvelope & { data: SpeakingShadowingCompletionReceipt; }; idempotent: true };
   getB9LearnerGoalOptions: { method: "GET"; path: "/api/v1/learner/goal-options"; request: never; response: ApiSuccessEnvelope & { data: B9GoalOptions; }; idempotent: false };
   getB9FirstDayRecovery: { method: "GET"; path: "/api/v1/learner/first-day/recovery/{recoveryTaskId}"; request: never; response: ApiSuccessEnvelope & { data: B9FirstDayRecovery; }; idempotent: false };
+  createB10PlacementSession: { method: "POST"; path: "/api/v1/assessment/placement/sessions"; request: never; response: ApiSuccessEnvelope & { data: B10PlacementSession; }; idempotent: true };
+  getB10PlacementSession: { method: "GET"; path: "/api/v1/assessment/placement/sessions/{sessionId}"; request: never; response: ApiSuccessEnvelope & { data: B10PlacementSession; }; idempotent: false };
+  submitB10PlacementResponse: { method: "POST"; path: "/api/v1/assessment/placement/sessions/{sessionId}/responses"; request: B10PlacementResponseSubmitRequest; response: ApiSuccessEnvelope & { data: B10PlacementResponseReceipt; }; idempotent: true };
+  createB10PlacementSkipBaseline: { method: "POST"; path: "/api/v1/assessment/placement/baselines/skip"; request: B10PlacementSkipBaselineRequest; response: ApiSuccessEnvelope & { data: B10PlacementResult; }; idempotent: true };
+  getB10PlacementReport: { method: "GET"; path: "/api/v1/assessment/placement/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: B10PlacementReport; }; idempotent: false };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

@@ -156,9 +156,9 @@
 |---|---|---:|---:|---:|---:|---|---|---|---|---|
 | FEAT-ONB-001 | 学习目标选择器 | ✓ | ✓ | — | — | welcome/age → onboarding/goal | ST-B | onboarding/goal | E-ONB | A1：四类目标可选、保存、恢复，影响计划与首页排序 |
 | FEAT-ONB-002 | 每日学习时长设定 | ✓ | ✓ | — | — | onboarding/goal 内日程区 | ST-B | onboarding/goal?duration=5/15/30/45 | E-ONB | A1：仅允许 5/15/30/45，显示预期天数并可改计划 |
-| FEAT-ONB-003 | 非 AI 规则化自适应定级 | ✓ | ✓ | — | — | onboarding/assessment | ST-B/E | onboarding/assessment?mode=adaptive | E-ONB | A1/A3：词汇4+语法3+听力3，动态难度、自动保存、可恢复 |
-| FEAT-ONB-004 | 测评报告与 CEFR 等级判定 | ✓ | ✓ | — | — | onboarding/assessment → onboarding/result | ST-B/F | onboarding/result?assessmentId=... | E-ONB | A1/A4：等级、词汇估计、首周建议和可解释依据可查看 |
-| FEAT-ONB-005 | 免测跳过与快速定级 | ✓ | ✓ | — | — | onboarding/assessment 次按钮 | ST-B | onboarding/assessment?mode=skip | E-ONB | A1：资质/等级选择有确认和审计，跳过后仍生成可继续计划 |
+| FEAT-ONB-003 | 非 AI 规则化定级 | ✓ | ✓ | — | — | onboarding/assessment | ST-B/E | onboarding/assessment?mode=adaptive | E-ONB | A1/A3：`P1_PLACEMENT_V1` 词汇3+基础语法3+阅读2+听力2，服务端规则判定、自动保存、同一 session 可恢复 |
+| FEAT-ONB-004 | 测评报告与 CEFR 参考等级 | ✓ | ✓ | — | — | onboarding/assessment → onboarding/result | ST-B/F | onboarding/result?assessmentId=... | E-ONB | A1/A4：参考等级、置信度、覆盖率、四维规则分、首周建议和可解释依据可查看；不展示精确词汇量或认证结论 |
+| FEAT-ONB-005 | 免测跳过与保守起点 | ✓ | ✓ | — | — | onboarding/assessment 次按钮 | ST-B | onboarding/assessment?mode=skip | E-ONB | A1：可选填非权威期望起始等级；确认和审计后只生成 `SKIPPED + UNVERIFIED + coverage=0` baseline，不授予测得等级、通关或星级 |
 | FEAT-ONB-006 | 沉浸主地图拓扑渲染 | ✓ | ✓ | — | — | learn/home → learn/map | ST-C | learn/map?region=... | E-UI | A1：3D/2.5D/2D 画质降级，地图节点路径与服务端拓扑一致 |
 | FEAT-ONB-007 | 关卡迷雾与解锁机制 | ✓ | ✓ | — | — | learn/map → learn/node/:id | ST-C | learn/node/:id | E-UI | A6：锁定态展示前置条件；完成前置后可恢复解锁，不以客户端判定奖励 |
 | FEAT-ONB-008 | 节点星级评价体系 | ✓ | ✓ | — | — | learn/node/:id / practice/result/:id | ST-C/F | learn/node/:id?result=... | E-UI | A4/A6：1~3 星依据正确率与用时，满星宝箱入口可追溯 |

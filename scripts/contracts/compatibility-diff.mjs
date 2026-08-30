@@ -556,6 +556,73 @@ const M1011_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
   'historicalEventFragment',
 ]);
 
+export const M1012_PLACEMENT_PROMOTION_ID = 'P1R-M1-012';
+export const M1012_SOURCE_CONTRACT_BASELINE_REF = '270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3';
+export const M1012_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1012_OPENAPI_SOURCE_SEMANTIC_SHA256 = '7b0fef0a9bd909af9731d8cb267ae75e5c497af6115c62af8fe135c290ff87fa';
+export const M1012_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '651e76fc53f921536687b37d8a961eacb8216912f185ae42f60026e28979eabd';
+export const M1012_EVENT_SOURCE_SEMANTIC_SHA256 = '765e95bdcfcd469b9729749b05941247cbc542bc81f4cee8c82d1be76545021b';
+export const M1012_EVENT_EXPECTED_SEMANTIC_SHA256 = '9f9767cbca34b9793e3477691d78d5d6759b357adf5c8ec62f376a0f539caa2e';
+export const M1012_B26_SOURCE_SEMANTIC_SHA256 = '8eef8ce82150d5b82a8c2b7e8d0cfbaace0720d684852dae307d5bcd2e334917';
+export const M1012_B26_EXPECTED_SEMANTIC_SHA256 = '599058853cbd9c829ca5b8addba6434c61d0593e5ea62d5585b2c8fa9904b620';
+export const M1012_PLACEMENT_EVENT_NAME = 'assessment.placement.completed.v1';
+
+const M1012_OPENAPI_ADDED_PATH_PROJECTIONS = Object.freeze([
+  '/api/v1/assessment/placement/sessions',
+  '/api/v1/assessment/placement/sessions/{sessionId}',
+  '/api/v1/assessment/placement/sessions/{sessionId}/responses',
+  '/api/v1/assessment/placement/baselines/skip',
+  '/api/v1/assessment/placement/reports/{reportId}',
+]);
+const M1012_OPENAPI_CHANGED_PATH_PROJECTIONS = Object.freeze([
+  '/api/v1/assessment/placement/start',
+  '/api/v1/assessment/placement/submit-step',
+  '/api/v1/assessment/placement/skip',
+  '/api/v1/assessment/placement/report/{sessionId}',
+]);
+const M1012_OPENAPI_ADDED_SCHEMA_PROJECTIONS = Object.freeze([
+  'B9PlacementBaseline',
+  'B10PlacementDigest',
+  'B10PlacementManifestDimension',
+  'B10PlacementManifest',
+  'B10PlacementManifestPin',
+  'B10PlacementContentPin',
+  'B10PlacementAnswerRulePin',
+  'B10PlacementTargetPin',
+  'B10PlacementSession',
+  'B10PlacementResponseSubmitRequest',
+  'B10PlacementDimensionSummary',
+  'B10RequestedStartingLevel',
+  'B10PlacementResult',
+  'B10PlacementResponseReceipt',
+  'B10PlacementSkipBaselineRequest',
+  'B10PlacementReport',
+]);
+const M1012_OPENAPI_CHANGED_SCHEMA_PROJECTIONS = Object.freeze([
+  'B9PlanningInputSnapshot',
+  'B9FirstDayProjectionCommon',
+]);
+const M1012_EVENT_PAYLOAD_SCHEMA = 'B10PlacementCompleted';
+const M1012_ASYNCAPI_CHANNEL = 'assessment_placement_completed_v1';
+const M1012_ASYNCAPI_OPERATIONS = Object.freeze([
+  'publish_assessment_placement_completed_v1',
+  'subscribe_assessment_placement_completed_v1_cg_learning_from_assessment_v1',
+  'subscribe_assessment_placement_completed_v1_cg_workflow_from_assessment_v1',
+]);
+const M1012_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id',
+  'sourceContractBaseline',
+  'previousPromotion',
+  'immutableGovernanceBaseline',
+  'runtimeStatus',
+  'scope',
+  'canonicalFragment',
+  'legacyAdapterFragments',
+  'planningFragment',
+  'eventFragment',
+  'b26StaticPolicy',
+]);
+
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -795,6 +862,58 @@ export const M1011_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["learner.first_day.projected.v1.payload.properties.readiness.enum","new enum value added: PROCESSING"],
   ["x-p1r-event-governance","established platform event governance changed"],
   ["asyncapi","established canonical AsyncAPI projection changed"],
+]);
+
+export const M1012_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["GET /api/v1/assessment/placement/start.security", "existing security scheme requirement removed: B1ContentBearerAuth"],
+  ["POST /api/v1/assessment/placement/start.security", "existing security scheme requirement removed: B1ContentBearerAuth"],
+  ["POST /api/v1/assessment/placement/submit-step.security", "existing security scheme requirement removed: B1ContentBearerAuth"],
+  ["components.schemas.B9PlanningInputSnapshot.required", "new required field: contentVersionId"],
+  ["components.schemas.B9PlanningInputSnapshot.required", "new required field: placementBaseline"],
+  ["components.schemas.B9PlanningInputSnapshot.description", "description contract changed"],
+  ["components.schemas.B9PlanningInputSnapshot.x-source-mapping", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9PlanningInputSnapshot.x-forbidden-fields", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9PlanningInputSnapshot.x-p1r-placement-plan-saga", "unknown schema keyword or extension changed"],
+  ["components.schemas.B9FirstDayProjectionCommon.x-consistency", "unknown schema keyword or extension changed"],
+  ["GET /api/v1/assessment/placement/start", "approved deprecated B1 placement adapter operation changed"],
+  ["POST /api/v1/assessment/placement/start", "approved deprecated B1 placement adapter operation changed"],
+  ["POST /api/v1/assessment/placement/submit-step", "approved deprecated B1 placement adapter operation changed"],
+  ["POST /api/v1/assessment/placement/skip", "approved deprecated B1 placement adapter operation changed"],
+  ["GET /api/v1/assessment/placement/report/{sessionId}", "approved deprecated B1 placement adapter operation changed"],
+  ["paths./api/v1/assessment/placement/sessions", "approved canonical B10 placement operation added"],
+  ["paths./api/v1/assessment/placement/sessions/{sessionId}", "approved canonical B10 placement operation added"],
+  ["paths./api/v1/assessment/placement/sessions/{sessionId}/responses", "approved canonical B10 placement operation added"],
+  ["paths./api/v1/assessment/placement/baselines/skip", "approved canonical B10 placement operation added"],
+  ["paths./api/v1/assessment/placement/reports/{reportId}", "approved canonical B10 placement operation added"],
+  ["components.schemas.B9PlacementBaseline", "approved closed placement baseline schema added"],
+  ["components.schemas.B10PlacementDigest", "approved placement schema added"],
+  ["components.schemas.B10PlacementManifestDimension", "approved placement schema added"],
+  ["components.schemas.B10PlacementManifest", "approved placement schema added"],
+  ["components.schemas.B10PlacementManifestPin", "approved placement schema added"],
+  ["components.schemas.B10PlacementContentPin", "approved placement schema added"],
+  ["components.schemas.B10PlacementAnswerRulePin", "approved placement schema added"],
+  ["components.schemas.B10PlacementTargetPin", "approved placement schema added"],
+  ["components.schemas.B10PlacementSession", "approved placement schema added"],
+  ["components.schemas.B10PlacementResponseSubmitRequest", "approved placement schema added"],
+  ["components.schemas.B10PlacementDimensionSummary", "approved placement schema added"],
+  ["components.schemas.B10RequestedStartingLevel", "approved placement schema added"],
+  ["components.schemas.B10PlacementResult", "approved placement schema added"],
+  ["components.schemas.B10PlacementResponseReceipt", "approved placement schema added"],
+  ["components.schemas.B10PlacementSkipBaselineRequest", "approved placement schema added"],
+  ["components.schemas.B10PlacementReport", "approved placement schema added"],
+  ["components.schemas.B9PlanningInputSnapshot", "approved placement-bound planning-input schema changed"],
+  ["components.schemas.B9FirstDayProjectionCommon", "approved placement baseline first-day consistency changed"],
+]);
+
+export const M1012_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["x-p1r-event-governance", "established platform event governance changed"],
+  ["asyncapi", "established canonical AsyncAPI projection changed"],
+  ["assessment.placement.completed.v1", "approved canonical placement completion event added"],
+  ["payloadSchemas.B10PlacementCompleted", "approved closed placement completion payload added"],
+  ["asyncapi.channels.assessment_placement_completed_v1", "approved placement completion AsyncAPI channel added"],
+  ["asyncapi.operations.publish_assessment_placement_completed_v1", "approved placement completion AsyncAPI operation added"],
+  ["asyncapi.operations.subscribe_assessment_placement_completed_v1_cg_learning_from_assessment_v1", "approved placement completion AsyncAPI operation added"],
+  ["asyncapi.operations.subscribe_assessment_placement_completed_v1_cg_workflow_from_assessment_v1", "approved placement completion AsyncAPI operation added"],
 ]);
 
 function parseArgs(argv) {
@@ -1133,6 +1252,98 @@ export function buildM1011B26ExpectedProjection(previous, approved, allowance) {
   const projected = insertM1011B26Entry(expected.topics, approved.topics, 'name', 'platform.learner.v1')
     && insertM1011B26Entry(expected.eventRouting, approved.eventRouting, 'eventName', 'learner.target.updated.v1');
   return projected ? expected : undefined;
+}
+
+function isValidM1012PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1012_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1012_PLACEMENT_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1012_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1011_LEARNER_PLANNING_PROMOTION_ID
+    && allowance.immutableGovernanceBaseline === M1012_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC'
+    && allowance.canonicalFragment === 'packages/contracts/fragments/b10/b10-placement.openapi.json'
+    && stableGovernanceValue(allowance.legacyAdapterFragments) === stableGovernanceValue([
+      'packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json',
+      'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json',
+    ])
+    && allowance.planningFragment === 'packages/contracts/fragments/b9/b9-learner.openapi.json'
+    && allowance.eventFragment === 'packages/contracts/events/v1/fragments/b10-learning-assessment.events.json'
+    && allowance.b26StaticPolicy === 'config/b26-event-runtime.json';
+}
+
+function applyM1012OpenApiProjection(previous, expected, approved) {
+  if (!isRecord(previous?.paths) || !isRecord(expected?.paths) || !isRecord(approved?.paths)
+    || !isRecord(previous?.components?.schemas) || !isRecord(expected?.components?.schemas)
+    || !isRecord(approved?.components?.schemas)) return false;
+  if (M1012_OPENAPI_ADDED_PATH_PROJECTIONS.some((name) => Object.hasOwn(previous.paths, name))
+    || M1012_OPENAPI_CHANGED_PATH_PROJECTIONS.some((name) => !Object.hasOwn(previous.paths, name))
+    || M1012_OPENAPI_ADDED_SCHEMA_PROJECTIONS.some((name) => Object.hasOwn(previous.components.schemas, name))
+    || M1012_OPENAPI_CHANGED_SCHEMA_PROJECTIONS.some((name) => !Object.hasOwn(previous.components.schemas, name))) return false;
+  return applyApprovedOpenApiProjection(expected.paths, approved.paths, [
+    ...M1012_OPENAPI_ADDED_PATH_PROJECTIONS,
+    ...M1012_OPENAPI_CHANGED_PATH_PROJECTIONS,
+  ]) && applyApprovedOpenApiProjection(expected.components.schemas, approved.components.schemas, [
+    ...M1012_OPENAPI_ADDED_SCHEMA_PROJECTIONS,
+    ...M1012_OPENAPI_CHANGED_SCHEMA_PROJECTIONS,
+  ]);
+}
+
+function insertM1012ArrayEntry(target, approved, key, value) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const approvedEntries = approved.filter((entry) => entry?.[key] === value);
+  if (approvedEntries.length !== 1 || target.some((entry) => entry?.[key] === value)) return false;
+  const insertionIndex = approved.findIndex((entry) => entry?.[key] === value);
+  if (insertionIndex < 0) return false;
+  target.splice(insertionIndex, 0, structuredClone(approvedEntries[0]));
+  return true;
+}
+
+function insertM1012NamedProjection(target, approved, name) {
+  if (!isRecord(target) || !isRecord(approved) || Object.hasOwn(target, name) || !Object.hasOwn(approved, name)) return false;
+  target[name] = structuredClone(approved[name]);
+  return true;
+}
+
+/**
+ * Rebuilds the sole approved M1-012 placement OpenAPI projection from the
+ * immutable 270b0df M1-011 snapshot. Every changed B1/B9 path/schema and each
+ * added B10 node is named above; no fragment-, tag-, or schema-family-wide
+ * allowance is accepted.
+ */
+export function buildM1012OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1012PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  return applyM1012OpenApiProjection(previous, expected, approved) ? expected : undefined;
+}
+
+/**
+ * Adds exactly one canonical placement completion fact and its generated
+ * AsyncAPI projection. Envelope identity remains outside its closed payload.
+ */
+export function buildM1012EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1012PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const projected = insertM1012ArrayEntry(expected.events, approved.events, 'eventName', M1012_PLACEMENT_EVENT_NAME)
+    && insertM1012NamedProjection(expected.payloadSchemas, approved.payloadSchemas, M1012_EVENT_PAYLOAD_SCHEMA)
+    && applyApprovedOpenApiProjection(expected, approved, ['x-p1r-event-governance'])
+    && insertM1012NamedProjection(expected.asyncapi?.channels, approved.asyncapi?.channels, M1012_ASYNCAPI_CHANNEL)
+    && M1012_ASYNCAPI_OPERATIONS.every((name) => insertM1012NamedProjection(expected.asyncapi?.operations, approved.asyncapi?.operations, name));
+  return projected ? expected : undefined;
+}
+
+/**
+ * B26 remains static-only. M1-012 may insert the placement route into the
+ * pre-existing assessment topic, but it cannot alter topics, ACLs or any
+ * other route.
+ */
+export function buildM1012B26ExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1012PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  return insertM1012ArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', M1012_PLACEMENT_EVENT_NAME)
+    ? expected
+    : undefined;
 }
 
 function m1008ChannelId(eventName) {
@@ -1575,6 +1786,117 @@ export function compareM1011OpenApiDescriptors(previous, current) {
   return changes;
 }
 
+function compareM1012Value(changes, kind, previousValue, currentValue, location, reason) {
+  if (stableGovernanceValue(previousValue) !== stableGovernanceValue(currentValue)) {
+    changes.push(describeChange(kind, location, reason));
+  }
+}
+
+/**
+ * Emits the generic backwards-compatibility differences plus a named
+ * descriptor for every exact M1-012 projection node.  The whole-node
+ * descriptors are deliberately finite: semantic changes are additionally
+ * pinned by the rebuilt projection digest below, rather than allowing a B1,
+ * B9 or B10 family wholesale.
+ */
+export function compareM1012OpenApiDescriptors(previous, current) {
+  const changes = compareOpenApi(previous, current);
+  for (const [method, route] of [
+    ['GET', '/api/v1/assessment/placement/start'],
+    ['POST', '/api/v1/assessment/placement/start'],
+    ['POST', '/api/v1/assessment/placement/submit-step'],
+    ['POST', '/api/v1/assessment/placement/skip'],
+    ['GET', '/api/v1/assessment/placement/report/{sessionId}'],
+  ]) {
+    compareM1012Value(
+      changes,
+      'openapi',
+      previous?.paths?.[route]?.[method.toLowerCase()],
+      current?.paths?.[route]?.[method.toLowerCase()],
+      `${method} ${route}`,
+      'approved deprecated B1 placement adapter operation changed',
+    );
+  }
+  for (const route of M1012_OPENAPI_ADDED_PATH_PROJECTIONS) {
+    compareM1012Value(
+      changes,
+      'openapi',
+      previous?.paths?.[route],
+      current?.paths?.[route],
+      `paths.${route}`,
+      'approved canonical B10 placement operation added',
+    );
+  }
+  for (const schemaName of M1012_OPENAPI_ADDED_SCHEMA_PROJECTIONS) {
+    compareM1012Value(
+      changes,
+      'openapi',
+      previous?.components?.schemas?.[schemaName],
+      current?.components?.schemas?.[schemaName],
+      `components.schemas.${schemaName}`,
+      schemaName === 'B9PlacementBaseline'
+        ? 'approved closed placement baseline schema added'
+        : 'approved placement schema added',
+    );
+  }
+  compareM1012Value(
+    changes,
+    'openapi',
+    previous?.components?.schemas?.B9PlanningInputSnapshot,
+    current?.components?.schemas?.B9PlanningInputSnapshot,
+    'components.schemas.B9PlanningInputSnapshot',
+    'approved placement-bound planning-input schema changed',
+  );
+  compareM1012Value(
+    changes,
+    'openapi',
+    previous?.components?.schemas?.B9FirstDayProjectionCommon,
+    current?.components?.schemas?.B9FirstDayProjectionCommon,
+    'components.schemas.B9FirstDayProjectionCommon',
+    'approved placement baseline first-day consistency changed',
+  );
+  return changes;
+}
+
+export function compareM1012EventDescriptors(previous, current) {
+  const changes = compareEvents(previous, current);
+  compareM1012Value(
+    changes,
+    'events',
+    (previous?.events ?? []).find((event) => event?.eventName === M1012_PLACEMENT_EVENT_NAME),
+    (current?.events ?? []).find((event) => event?.eventName === M1012_PLACEMENT_EVENT_NAME),
+    M1012_PLACEMENT_EVENT_NAME,
+    'approved canonical placement completion event added',
+  );
+  compareM1012Value(
+    changes,
+    'events',
+    previous?.payloadSchemas?.[M1012_EVENT_PAYLOAD_SCHEMA],
+    current?.payloadSchemas?.[M1012_EVENT_PAYLOAD_SCHEMA],
+    `payloadSchemas.${M1012_EVENT_PAYLOAD_SCHEMA}`,
+    'approved closed placement completion payload added',
+  );
+  compareM1012Value(
+    changes,
+    'events',
+    previous?.asyncapi?.channels?.[M1012_ASYNCAPI_CHANNEL],
+    current?.asyncapi?.channels?.[M1012_ASYNCAPI_CHANNEL],
+    `asyncapi.channels.${M1012_ASYNCAPI_CHANNEL}`,
+    'approved placement completion AsyncAPI channel added',
+  );
+  for (const operationName of M1012_ASYNCAPI_OPERATIONS) {
+    compareM1012Value(
+      changes,
+      'events',
+      previous?.asyncapi?.operations?.[operationName],
+      current?.asyncapi?.operations?.[operationName],
+      `asyncapi.operations.${operationName}`,
+      'approved placement completion AsyncAPI operation added',
+    );
+  }
+  return changes;
+}
+
 function compareFrozenDescriptorSet(kind, previous, current, expected, location, message, compare = undefined) {
   const comparator = compare ?? (kind === 'openapi' ? compareOpenApi : compareEvents);
   const actual = comparator(previous, current)
@@ -1731,6 +2053,91 @@ function compareM1011B26Promotion(previous, current, allowance) {
   return changes;
 }
 
+function compareM1012OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1012PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-012.openapiPromotion', 'M1-012 promotion allowance cannot be applied without the frozen placement policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1012_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-012.openapiPromotion.source', 'M1-012 OpenAPI promotion source is not the frozen 270b0df M1-011 evidence projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'openapi',
+    previous,
+    current,
+    M1012_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-012.openapiPromotion.change-descriptors',
+    'current OpenAPI changes do not exactly match the frozen M1-012 descriptor set',
+    compareM1012OpenApiDescriptors,
+  ));
+  const expectedProjection = buildM1012OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-012.openapiPromotion.projection', 'the approved B10 placement, B1 adapter and B9 placement-binding projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1012_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-012.openapiPromotion.expected-projection', 'the allowlisted M1-012 OpenAPI projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-012.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source placement projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1012EventPromotion(previous, current, allowance) {
+  if (!isValidM1012PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-012.eventPromotion', 'M1-012 event allowance cannot be applied without the frozen placement policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1012_EVENT_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'm1-012.eventPromotion.source', 'M1-012 event promotion source is not the frozen 270b0df M1-011 evidence projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1012_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-012.eventPromotion.change-descriptors',
+    'current event changes do not exactly match the frozen M1-012 descriptor set',
+    compareM1012EventDescriptors,
+  ));
+  const expectedProjection = buildM1012EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-012.eventPromotion.projection', 'the approved canonical placement-completion event projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1012_EVENT_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'm1-012.eventPromotion.expected-projection', 'the allowlisted M1-012 event projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'm1-012.eventPromotion.projection', 'current event catalog is not the unique frozen-source placement-completion projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1012B26Promotion(previous, current, allowance) {
+  if (!isValidM1012PromotionAllowance(allowance)) {
+    return [describeChange('events', 'b26.m1-012.compatibilityPromotion', 'M1-012 B26 allowance cannot be applied without the frozen placement policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1012_B26_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'b26.m1-012.source', 'M1-012 B26 promotion source is not the frozen 270b0df M1-011 evidence projection'));
+  }
+  const expectedProjection = buildM1012B26ExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'b26.m1-012.projection', 'the approved platform.assessment.v1 placement route cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1012_B26_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'b26.m1-012.expected-projection', 'the allowlisted M1-012 B26 projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(...compareB26WorkflowGovernance(expectedProjection, current));
+      changes.push(describeChange('events', 'b26.m1-012.projection', 'current B26 runtime policy differs from the explicit static M1-012 placement-route promotion'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -1832,6 +2239,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1012_PLACEMENT_PROMOTION_ID) {
+    return compareM1012B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1011_LEARNER_PLANNING_PROMOTION_ID) {
     return compareM1011B26Promotion(governanceBaseline, current, allowance);
   }
@@ -1987,6 +2397,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1012_PLACEMENT_PROMOTION_ID) {
+    return compareM1012EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1011_LEARNER_PLANNING_PROMOTION_ID) {
     return compareM1011EventPromotion(previous, current, allowance);
   }
@@ -2110,6 +2523,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1012_PLACEMENT_PROMOTION_ID) {
+      return compareM1012OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1011_LEARNER_PLANNING_PROMOTION_ID) {
       return compareM1011OpenApiPromotion(previous, current, allowance);
     }

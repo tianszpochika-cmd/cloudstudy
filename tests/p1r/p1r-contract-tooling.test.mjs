@@ -15,7 +15,12 @@ import {
   buildM1011B26ExpectedProjection,
   buildM1011EventExpectedProjection,
   buildM1011OpenApiExpectedProjection,
+  buildM1012B26ExpectedProjection,
+  buildM1012EventExpectedProjection,
+  buildM1012OpenApiExpectedProjection,
   compareM1011OpenApiDescriptors,
+  compareM1012EventDescriptors,
+  compareM1012OpenApiDescriptors,
   compareB26WorkflowGovernance,
   compareContracts,
   M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256,
@@ -34,6 +39,13 @@ import {
   M1011_LEARNER_PLANNING_PROMOTION_ID,
   M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
   M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256,
+  M1012_B26_EXPECTED_SEMANTIC_SHA256,
+  M1012_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+  M1012_EVENT_EXPECTED_SEMANTIC_SHA256,
+  M1012_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+  M1012_OPENAPI_EXPECTED_SEMANTIC_SHA256,
+  M1012_PLACEMENT_PROMOTION_ID,
+  M1012_SOURCE_CONTRACT_BASELINE_REF,
   runCompatibilityDiff,
   stableGovernanceSha256,
 } from '../../scripts/contracts/compatibility-diff.mjs';
@@ -44,6 +56,7 @@ import {
   REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
   REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
   REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+  REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
   REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND,
   REQUIRED_CI_CONTRACT_BASELINE_REF,
   REQUIRED_EVENT_GOVERNANCE_BASELINE_REF,
@@ -51,6 +64,7 @@ import {
   validateM1009CompatibilityPolicy,
   validateM1010CompatibilityPolicy,
   validateM1011CompatibilityPolicy,
+  validateM1012CompatibilityPolicy,
 } from '../../scripts/contracts/compatibility-git-baseline.mjs';
 import { validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
 import { schemaToTs } from '../../scripts/contracts/schema-utils.mjs';
@@ -63,6 +77,7 @@ const contentLifecyclePolicyPath = path.join(root, 'config', 'p1r-content-lifecy
 const mediaContractPolicyPath = path.join(root, 'config', 'p1r-media-contract.v1.json');
 const assessmentContractPolicyPath = path.join(root, 'config', 'p1r-assessment-contract.v1.json');
 const learnerPlanningContractPolicyPath = path.join(root, 'config', 'p1r-learner-planning-contract.v1.json');
+const placementContractPolicyPath = path.join(root, 'config', 'p1r-placement-contract.v1.json');
 const openApi = JSON.parse(fs.readFileSync(openApiPath, 'utf8'));
 const eventCatalog = JSON.parse(fs.readFileSync(eventCatalogPath, 'utf8'));
 const b26Runtime = JSON.parse(fs.readFileSync(b26RuntimePath, 'utf8'));
@@ -105,11 +120,178 @@ test('generated TypeScript preserves shared fields around oneOf constraints', ()
 
   const reviewRecords = schemas.B9AdminContentState.properties.reviewRecords;
   const generatedReviewRecords = schemaToTs(openApi, reviewRecords);
-  assert.match(generatedReviewRecords, /^ReadonlyArray</);
+  assert.match(generatedReviewRecords, /readonly \[\]/);
+  assert.match(generatedReviewRecords, /readonly \[[^\]]*contentVersionId:/);
   assert.doesNotMatch(generatedReviewRecords, /(?:^|[< &(])unknown(?:$|[> )|&])/);
   for (const field of ['contentVersionId', 'contentHash', 'reviewStage', 'decision', 'reviewVersion', 'auditId', 'decidedAt']) {
     assert.match(generatedReviewRecords, new RegExp(`(?:^|[ {])${field}:`));
   }
+});
+
+test('generated TypeScript carries allOf common item types into cardinality-only branches', () => {
+  const document = {
+    components: {
+      schemas: {
+        Task: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['taskId'],
+          properties: { taskId: { type: 'string' } },
+        },
+        Common: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['state', 'taskCount', 'tasks'],
+          properties: {
+            state: { type: 'string', enum: ['READY', 'EMPTY'] },
+            taskCount: { type: 'integer', minimum: 0 },
+            tasks: { type: 'array', items: { $ref: '#/components/schemas/Task' } },
+          },
+        },
+      },
+    },
+  };
+  const generated = schemaToTs(document, {
+    allOf: [
+      { $ref: '#/components/schemas/Common' },
+      {
+        oneOf: [
+          {
+            required: ['state', 'tasks'],
+            properties: {
+              state: { const: 'READY' },
+              taskCount: { minimum: 1 },
+              tasks: { minItems: 1 },
+            },
+          },
+          {
+            required: ['state', 'tasks'],
+            properties: {
+              state: { const: 'EMPTY' },
+              taskCount: { const: 0 },
+              tasks: { maxItems: 0 },
+            },
+          },
+        ],
+      },
+    ],
+  });
+
+  assert.match(generated, /state: \"READY\"/);
+  assert.match(generated, /taskCount: number/);
+  assert.match(generated, /tasks: readonly \[Task, \.\.\.Array<Task>\]/);
+  assert.match(generated, /state: \"EMPTY\"/);
+  assert.match(generated, /taskCount: 0/);
+  assert.match(generated, /tasks: readonly \[\]/);
+  assert.doesNotMatch(generated, /tasks: readonly \[unknown/);
+});
+
+test('generated TypeScript lets oneOf branches narrow a referenced common discriminator', () => {
+  const document = {
+    components: {
+      schemas: {
+        State: { type: 'string', enum: ['OPEN', 'CLOSED'] },
+      },
+    },
+  };
+  const generated = schemaToTs(document, {
+    type: 'object',
+    additionalProperties: false,
+    required: ['state'],
+    properties: {
+      state: { $ref: '#/components/schemas/State' },
+      result: { type: 'string' },
+    },
+    oneOf: [
+      {
+        required: ['state'],
+        properties: { state: { type: 'string', enum: ['OPEN'] } },
+        not: { required: ['result'] },
+      },
+      {
+        required: ['state', 'result'],
+        properties: { state: { type: 'string', enum: ['CLOSED'] } },
+      },
+    ],
+  });
+
+  assert.match(generated, /state: "OPEN"/);
+  assert.match(generated, /state: "CLOSED"/);
+  assert.match(generated, /result\?: never/);
+});
+
+test('generated TypeScript preserves closed JSON Schema prefixItems tuples', () => {
+  const generated = schemaToTs({}, {
+    type: 'array',
+    minItems: 2,
+    maxItems: 2,
+    prefixItems: [
+      {
+        type: 'object',
+        additionalProperties: false,
+        required: ['dimensionId', 'coverageRatio'],
+        properties: {
+          dimensionId: { const: 'VOCABULARY' },
+          coverageRatio: { type: 'number', minimum: 0, maximum: 1 },
+        },
+      },
+      {
+        type: 'object',
+        additionalProperties: false,
+        required: ['dimensionId', 'coverageRatio'],
+        properties: {
+          dimensionId: { const: 'READING' },
+          coverageRatio: { type: 'number', minimum: 0, maximum: 1 },
+        },
+      },
+    ],
+    items: false,
+  });
+
+  assert.match(generated, /^readonly \[/);
+  assert.match(generated, /dimensionId: \"VOCABULARY\"/);
+  assert.match(generated, /dimensionId: \"READING\"/);
+  assert.match(generated, /coverageRatio: number/);
+  assert.doesNotMatch(generated, /unknown/);
+  assert.doesNotMatch(generated, /\.\.\.Array/);
+});
+
+test('generated TypeScript lets an allOf branch narrow a nullable common property', () => {
+  const generated = schemaToTs({}, {
+    allOf: [
+      {
+        type: 'object',
+        additionalProperties: false,
+        required: ['kind', 'score'],
+        properties: {
+          kind: { type: 'string', enum: ['ASSESSED', 'SKIPPED'] },
+          score: { type: 'integer', nullable: true },
+        },
+      },
+      {
+        oneOf: [
+          {
+            required: ['kind', 'score'],
+            properties: {
+              kind: { const: 'ASSESSED' },
+              score: { type: 'integer', minimum: 0 },
+            },
+          },
+          {
+            required: ['kind', 'score'],
+            properties: {
+              kind: { const: 'SKIPPED' },
+              score: { const: null },
+            },
+          },
+        ],
+      },
+    ],
+  });
+
+  assert.match(generated, /kind: \"ASSESSED\"; score: number/);
+  assert.doesNotMatch(generated, /kind: \"ASSESSED\"; score: number \| null/);
+  assert.match(generated, /kind: \"SKIPPED\"; score: null/);
 });
 
 test('generated TypeScript preserves nullable JSON Schema type arrays', () => {
@@ -578,11 +760,11 @@ test('Git compatibility adds the fixed governance freeze when the historical bas
   assert.equal(deletedGovernance.compatible, false);
   assert.equal(deletedGovernance.governanceBaseline.ref, EXPECTED_EVENT_GOVERNANCE_BASELINE_REF);
   assert.ok(deletedGovernance.results[0].breakingChanges
-    .some((change) => change.location.startsWith('m1-011.eventPromotion')));
+    .some((change) => change.location.startsWith('m1-012.eventPromotion')));
 
   const synchronizedCatalogDrift = structuredClone(eventCatalog);
   const canonicalEvents = synchronizedCatalogDrift.events.filter((event) => event.status === 'CANONICAL_D2');
-  assert.equal(canonicalEvents.length, 7 + M1008_CONTENT_EVENT_NAMES.length + 1);
+  assert.equal(canonicalEvents.length, 7 + M1008_CONTENT_EVENT_NAMES.length + 2);
   for (const canonical of canonicalEvents) {
     canonical['x-p1r-governance'].producer.service = 'audit-service';
     canonical['x-p1r-governance'].producer.dataOwner = 'audit-service';
@@ -609,7 +791,7 @@ test('Git compatibility adds the fixed governance freeze when the historical bas
   });
   assert.equal(synchronizedDrift.compatible, false);
   const locations = synchronizedDrift.results[0].breakingChanges.map((change) => change.location);
-  assert.ok(locations.some((location) => location.startsWith('m1-011.eventPromotion')));
+  assert.ok(locations.some((location) => location.startsWith('m1-012.eventPromotion')));
   assert.ok(locations.includes('b26.topics.platform.workflow.v1.ownerService'));
   assert.ok(locations.includes('b26.topics.platform.workflow.v1.consumerGroups'));
   assert.ok(locations.includes('b26.topics.platform.workflow.v1.acl'));
@@ -653,12 +835,25 @@ test('git baseline compatibility reads immutable baseline blobs and rejects a tr
     REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
     'config/b26-event-runtime.json',
   ));
+  const m1012SourceText = JSON.stringify(gitJson(
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    'packages/contracts/openapi/v1/openapi.json',
+  ));
+  const m1012SourceEventsText = JSON.stringify(gitJson(
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    'packages/contracts/events/v1/catalog.json',
+  ));
+  const m1012SourceB26Text = JSON.stringify(gitJson(
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    'config/b26-event-runtime.json',
+  ));
   const git = (args) => {
     if (args[0] === 'rev-parse' && args[2] === 'HEAD^{commit}') return 'current-commit';
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF;
+    if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse') return 'baseline-commit';
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1009SourceText;
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1010SourceText;
@@ -666,6 +861,9 @@ test('git baseline compatibility reads immutable baseline blobs and rejects a tr
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1011SourceText;
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return m1011SourceEventsText;
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:config/b26-event-runtime.json`) return m1011SourceB26Text;
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1012SourceText;
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return m1012SourceEventsText;
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:config/b26-event-runtime.json`) return m1012SourceB26Text;
     if (args[0] === 'show') return currentText;
     throw new Error(`Unexpected git invocation: ${args.join(' ')}`);
   };
@@ -678,6 +876,7 @@ test('git baseline compatibility reads immutable baseline blobs and rejects a tr
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF;
+    if (args[0] === 'rev-parse' && args[2] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF;
     if (args[0] === 'rev-parse') return 'current-commit';
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1009SourceText;
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1010SourceText;
@@ -685,6 +884,9 @@ test('git baseline compatibility reads immutable baseline blobs and rejects a tr
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1011SourceText;
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return m1011SourceEventsText;
     if (args[0] === 'show' && args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:config/b26-event-runtime.json`) return m1011SourceB26Text;
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return m1012SourceText;
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return m1012SourceEventsText;
+    if (args[0] === 'show' && args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:config/b26-event-runtime.json`) return m1012SourceB26Text;
     if (args[0] === 'show') return currentText;
     throw new Error(`Unexpected git invocation: ${args.join(' ')}`);
   };
@@ -945,7 +1147,7 @@ test('M1-009 promotion rejects unapproved routes, schemas, owner, consent, retry
   }
 });
 
-test('M1-009 policy remains frozen inside the full M1-011 fixed-baseline chain', () => {
+test('M1-009 policy remains frozen inside the full M1-012 fixed-baseline chain', () => {
   for (const mutate of [
     (policy) => { policy.compatibilityPromotion.sourceContractBaseline = 'f'.repeat(40); },
     (policy) => { policy.compatibilityPromotion.previousPromotion = 'M1-007_EVENT_RELIABILITY_PROMOTION'; },
@@ -964,7 +1166,7 @@ test('M1-009 policy remains frozen inside the full M1-011 fixed-baseline chain',
     kind: 'all',
   });
   assert.equal(result.compatible, true);
-  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
+  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
   assert.deepEqual(result.results.flatMap((entry) => entry.breakingChanges), []);
 });
 
@@ -1088,7 +1290,7 @@ test('M1-010 promotion rejects unapproved assessment, authority, event-governanc
   }
 });
 
-test('M1-010 policy remains frozen inside the full M1-011 fixed-baseline chain', () => {
+test('M1-010 policy remains frozen inside the full M1-012 fixed-baseline chain', () => {
   for (const mutate of [
     (policy) => { policy.compatibilityPromotion.sourceContractBaseline = 'f'.repeat(40); },
     (policy) => { policy.compatibilityPromotion.previousPromotion = 'M1-008_CONTENT_LIFECYCLE_PROMOTION'; },
@@ -1107,10 +1309,10 @@ test('M1-010 policy remains frozen inside the full M1-011 fixed-baseline chain',
     kind: 'all',
   });
   assert.equal(result.compatible, true);
-  assert.equal(result.promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
+  assert.equal(result.promotion.id, M1012_PLACEMENT_PROMOTION_ID);
   assert.equal(result.promotion.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
-  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
-  assert.equal(result.results.find((entry) => entry.kind === 'events').promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
+  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.equal(result.results.find((entry) => entry.kind === 'events').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
   assert.deepEqual(result.results.flatMap((entry) => entry.breakingChanges), []);
 
   const mutatedB26 = structuredClone(b26Runtime);
@@ -1140,22 +1342,34 @@ const m1011SourceB26 = gitJson(
   REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
   'config/b26-event-runtime.json',
 );
+const m1012SourceOpenApi = gitJson(
+  REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+  'packages/contracts/openapi/v1/openapi.json',
+);
+const m1012SourceEventCatalog = gitJson(
+  REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+  'packages/contracts/events/v1/catalog.json',
+);
+const m1012SourceB26 = gitJson(
+  REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+  'config/b26-event-runtime.json',
+);
 const learnerPlanningContractPolicy = JSON.parse(fs.readFileSync(learnerPlanningContractPolicyPath, 'utf8'));
 const m1011Allowance = learnerPlanningContractPolicy.compatibilityPromotion;
 
-function m1011ExpectedOpenApiProjection(approved = openApi) {
+function m1011ExpectedOpenApiProjection(approved = m1012SourceOpenApi) {
   const projection = buildM1011OpenApiExpectedProjection(m1011SourceOpenApi, approved, m1011Allowance);
   assert.ok(projection, 'frozen-source M1-011 OpenAPI projection must be constructible');
   return projection;
 }
 
-function m1011ExpectedEventProjection(approved = eventCatalog) {
+function m1011ExpectedEventProjection(approved = m1012SourceEventCatalog) {
   const projection = buildM1011EventExpectedProjection(m1011SourceEventCatalog, approved, m1011Allowance);
   assert.ok(projection, 'frozen-source M1-011 event projection must be constructible');
   return projection;
 }
 
-function m1011ExpectedB26Projection(approved = b26Runtime) {
+function m1011ExpectedB26Projection(approved = m1012SourceB26) {
   const projection = buildM1011B26ExpectedProjection(m1011SourceB26, approved, m1011Allowance);
   assert.ok(projection, 'frozen-source M1-011 B26 projection must be constructible');
   return projection;
@@ -1191,28 +1405,28 @@ test('M1-011 exact static contract promotion has frozen source, descriptors and 
   assert.equal(m1011Allowance.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
 
   const openApiProjection = m1011ExpectedOpenApiProjection();
-  assert.deepEqual(openApiProjection, openApi);
+  assert.deepEqual(openApiProjection, m1012SourceOpenApi);
   assert.equal(stableGovernanceSha256(openApiProjection), M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256);
   assert.equal(M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256.length, 64);
   const sortDescriptor = (left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right));
   assert.deepEqual(
-    compareM1011OpenApiDescriptors(m1011SourceOpenApi, openApi)
+    compareM1011OpenApiDescriptors(m1011SourceOpenApi, m1012SourceOpenApi)
       .map((change) => [change.location, change.reason])
       .sort(sortDescriptor),
     [...M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS].sort(sortDescriptor),
   );
 
   const eventProjection = m1011ExpectedEventProjection();
-  assert.deepEqual(eventProjection, eventCatalog);
+  assert.deepEqual(eventProjection, m1012SourceEventCatalog);
   assert.equal(stableGovernanceSha256(eventProjection), M1011_EVENT_EXPECTED_SEMANTIC_SHA256);
   assert.equal(M1011_EVENT_EXPECTED_SEMANTIC_SHA256.length, 64);
   assert.deepEqual(
-    compareContracts('events', m1011SourceEventCatalog, eventCatalog).map((change) => [change.location, change.reason]),
+    compareContracts('events', m1011SourceEventCatalog, m1012SourceEventCatalog).map((change) => [change.location, change.reason]),
     M1011_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
   );
 
   const b26Projection = m1011ExpectedB26Projection();
-  assert.deepEqual(b26Projection, b26Runtime);
+  assert.deepEqual(b26Projection, m1012SourceB26);
   assert.equal(stableGovernanceSha256(b26Projection), M1011_B26_EXPECTED_SEMANTIC_SHA256);
   assert.equal(M1011_B26_EXPECTED_SEMANTIC_SHA256.length, 64);
   assert.deepEqual(runM1011PromotionWithMutation(), {
@@ -1224,8 +1438,8 @@ test('M1-011 exact static contract promotion has frozen source, descriptors and 
 });
 
 test('default compatibility remains strict for M1-011 OpenAPI and event changes', () => {
-  assert.ok(compareContracts('openapi', m1011SourceOpenApi, openApi).length > 0);
-  assert.ok(compareContracts('events', m1011SourceEventCatalog, eventCatalog).length > 0);
+  assert.ok(compareContracts('openapi', m1011SourceOpenApi, m1012SourceOpenApi).length > 0);
+  assert.ok(compareContracts('events', m1011SourceEventCatalog, m1012SourceEventCatalog).length > 0);
 });
 
 test('M1-011 promotion rejects unapproved learner-planning, canonical-event and B26 drift', () => {
@@ -1389,23 +1603,236 @@ test('M1-011 policy and full fixed-baseline chain fail closed while remaining st
     kind: 'all',
   });
   assert.equal(result.compatible, true);
-  assert.equal(result.promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
-  assert.equal(result.promotion.sourceContractBaseline, REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF);
+  assert.equal(result.promotion.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.equal(result.promotion.sourceContractBaseline, REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF);
   assert.equal(result.promotion.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
-  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
-  assert.equal(result.results.find((entry) => entry.kind === 'events').promotion.id, M1011_LEARNER_PLANNING_PROMOTION_ID);
+  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.equal(result.results.find((entry) => entry.kind === 'events').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
   assert.deepEqual(result.results.flatMap((entry) => entry.breakingChanges), []);
 });
 
-test('M1-008 source baseline reaches the current M1-011 projection with immutable governance attached', () => {
+const placementContractPolicy = JSON.parse(fs.readFileSync(placementContractPolicyPath, 'utf8'));
+const m1012Allowance = placementContractPolicy.compatibilityPromotion;
+
+function m1012ExpectedOpenApiProjection(approved = openApi) {
+  const projection = buildM1012OpenApiExpectedProjection(m1012SourceOpenApi, approved, m1012Allowance);
+  assert.ok(projection, 'frozen-source M1-012 OpenAPI projection must be constructible');
+  return projection;
+}
+
+function m1012ExpectedEventProjection(approved = eventCatalog) {
+  const projection = buildM1012EventExpectedProjection(m1012SourceEventCatalog, approved, m1012Allowance);
+  assert.ok(projection, 'frozen-source M1-012 event projection must be constructible');
+  return projection;
+}
+
+function m1012ExpectedB26Projection(approved = b26Runtime) {
+  const projection = buildM1012B26ExpectedProjection(m1012SourceB26, approved, m1012Allowance);
+  assert.ok(projection, 'frozen-source M1-012 B26 projection must be constructible');
+  return projection;
+}
+
+function runM1012PromotionWithMutation({ mutateOpenApi, mutateCatalog, mutateB26 } = {}) {
+  const mutatedOpenApi = m1012ExpectedOpenApiProjection();
+  const mutatedCatalog = m1012ExpectedEventProjection();
+  const mutatedB26 = m1012ExpectedB26Projection();
+  mutateOpenApi?.(mutatedOpenApi);
+  mutateCatalog?.(mutatedCatalog);
+  mutateB26?.(mutatedB26);
+  const openApiChanges = compareContracts('openapi', m1012SourceOpenApi, mutatedOpenApi, {
+    allowance: m1012Allowance,
+  });
+  const eventChanges = compareContracts('events', m1012SourceEventCatalog, mutatedCatalog, {
+    allowance: m1012Allowance,
+  });
+  const b26Changes = compareB26WorkflowGovernance(m1012SourceB26, mutatedB26, {
+    allowance: m1012Allowance,
+  });
+  return {
+    openApiChanges,
+    eventChanges,
+    b26Changes,
+    compatible: openApiChanges.length === 0 && eventChanges.length === 0 && b26Changes.length === 0,
+  };
+}
+
+test('M1-012 exact placement promotion rebuilds the only approved source-derived projection', () => {
+  assert.deepEqual(validateM1012CompatibilityPolicy(placementContractPolicy), []);
+  assert.equal(m1012Allowance.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.equal(m1012Allowance.sourceContractBaseline, REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF);
+  assert.equal(m1012Allowance.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
+
+  const sortDescriptor = (left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right));
+  const openApiProjection = m1012ExpectedOpenApiProjection();
+  assert.deepEqual(openApiProjection, openApi);
+  assert.equal(stableGovernanceSha256(openApiProjection), M1012_OPENAPI_EXPECTED_SEMANTIC_SHA256);
+  assert.equal(M1012_OPENAPI_EXPECTED_SEMANTIC_SHA256.length, 64);
+  assert.deepEqual(
+    compareM1012OpenApiDescriptors(m1012SourceOpenApi, openApi)
+      .map((change) => [change.location, change.reason])
+      .sort(sortDescriptor),
+    [...M1012_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS].sort(sortDescriptor),
+  );
+
+  const eventProjection = m1012ExpectedEventProjection();
+  assert.deepEqual(eventProjection, eventCatalog);
+  assert.equal(stableGovernanceSha256(eventProjection), M1012_EVENT_EXPECTED_SEMANTIC_SHA256);
+  assert.equal(M1012_EVENT_EXPECTED_SEMANTIC_SHA256.length, 64);
+  assert.deepEqual(
+    compareM1012EventDescriptors(m1012SourceEventCatalog, eventCatalog)
+      .map((change) => [change.location, change.reason])
+      .sort(sortDescriptor),
+    [...M1012_EVENT_EXPECTED_CHANGE_DESCRIPTORS].sort(sortDescriptor),
+  );
+
+  const b26Projection = m1012ExpectedB26Projection();
+  assert.deepEqual(b26Projection, b26Runtime);
+  assert.equal(stableGovernanceSha256(b26Projection), M1012_B26_EXPECTED_SEMANTIC_SHA256);
+  assert.equal(M1012_B26_EXPECTED_SEMANTIC_SHA256.length, 64);
+  assert.deepEqual(runM1012PromotionWithMutation(), {
+    openApiChanges: [],
+    eventChanges: [],
+    b26Changes: [],
+    compatible: true,
+  });
+});
+
+test('M1-012 promotion rejects non-allowlisted placement OpenAPI, event and B26 drift', () => {
+  const openApiMutations = [
+    ['extra placement route', (document) => {
+      document.paths['/api/v1/assessment/placement/injected'] = { get: { responses: { 200: { description: 'injected' } } } };
+    }],
+    ['extra placement schema', (document) => {
+      document.components.schemas.B10PlacementInjected = { type: 'object', additionalProperties: false };
+    }],
+    ['canonical placement route operation drift', (document) => {
+      document.paths['/api/v1/assessment/placement/sessions'].post.operationId = 'injectedPlacementSession';
+    }],
+    ['B1 adapter deprecation removed', (document) => {
+      document.paths['/api/v1/assessment/placement/skip'].post.deprecated = false;
+    }],
+    ['B1 adapter service-side deny drift', (document) => {
+      document.paths['/api/v1/assessment/placement/submit-step'].post['x-authorization'].defaultDecision = 'ALLOW';
+    }],
+    ['B10 requested-level authority drift', (document) => {
+      document.components.schemas.B10RequestedStartingLevel.properties.authority.const = 'AUTHORITATIVE';
+    }],
+    ['B10 plan-effect key drift', (document) => {
+      document.components.schemas.B10PlacementResult.allOf[0]['x-p1r-placement-plan-saga'].effectDedupeKey.pop();
+    }],
+    ['placement dimension order drift', (document) => {
+      document.components.schemas.B10PlacementResult.allOf[0].properties.dimensionSummaries['x-p1r-exact-order'].reverse();
+    }],
+    ['placement dimension uniqueness drift', (document) => {
+      delete document.components.schemas.B10PlacementResult.allOf[0].properties.dimensionSummaries['x-unique-by'];
+    }],
+    ['planning raw authority leak', (document) => {
+      document.components.schemas.B9PlanningInputSnapshot['x-forbidden-fields'] = document.components.schemas.B9PlanningInputSnapshot['x-forbidden-fields']
+        .filter((field) => field !== 'placementRaw');
+    }],
+    ['first-day degradedReason alias injected', (document) => {
+      document.components.schemas.B9FirstDayProjection.allOf[1].oneOf[3].properties.reason = { type: 'string' };
+    }],
+  ];
+  for (const [label, mutateOpenApi] of openApiMutations) {
+    const result = runM1012PromotionWithMutation({ mutateOpenApi });
+    assert.equal(result.compatible, false, `${label} unexpectedly passed`);
+    assert.ok(result.openApiChanges.length > 0, `${label} produced no OpenAPI evidence`);
+  }
+
+  const eventMutations = [
+    ['extra event', (catalog) => {
+      catalog.events.push({ eventName: 'assessment.placement.injected.v1', version: 1 });
+    }],
+    ['payload lineage leak', (catalog) => {
+      catalog.payloadSchemas.B10PlacementCompleted.properties.sourceEventId = { type: 'string' };
+    }],
+    ['SKIPPED score leak', (catalog) => {
+      const skipped = catalog.payloadSchemas.B10PlacementCompleted.oneOf
+        .find((branch) => branch.properties?.resultKind?.const === 'SKIPPED');
+      skipped.properties.aggregateScore = { type: 'integer', minimum: 0, maximum: 100 };
+    }],
+    ['LOW dimension zero coverage rejected', (catalog) => {
+      const coverage = catalog.payloadSchemas.B10PlacementCompleted.properties.dimensionSummaries
+        .prefixItems[0].properties.coverageRatio;
+      delete coverage.minimum;
+      coverage.exclusiveMinimum = 0;
+    }],
+    ['AsyncAPI channel injection', (catalog) => {
+      catalog.asyncapi.channels.m1012Injected = { address: 'assessment.placement.injected.v1', messages: {} };
+    }],
+    ['AsyncAPI operation injection', (catalog) => {
+      catalog.asyncapi.operations.m1012Injected = structuredClone(catalog.asyncapi.operations.publish_assessment_placement_completed_v1);
+    }],
+  ];
+  for (const [label, mutateCatalog] of eventMutations) {
+    const result = runM1012PromotionWithMutation({ mutateCatalog });
+    assert.equal(result.compatible, false, `${label} unexpectedly passed`);
+    assert.ok(result.eventChanges.length > 0, `${label} produced no event evidence`);
+  }
+
+  for (const [label, mutateB26] of [
+    ['assessment topic owner drift', (runtime) => {
+      runtime.topics.find((topic) => topic.name === 'platform.assessment.v1').ownerService = 'workflow-service';
+    }],
+    ['placement route consumer drift', (runtime) => {
+      runtime.eventRouting.find((route) => route.eventName === 'assessment.placement.completed.v1').consumerGroups.pop();
+    }],
+    ['extra placement route', (runtime) => {
+      runtime.eventRouting.push({
+        eventName: 'assessment.placement.injected.v1',
+        topic: 'platform.assessment.v1',
+        partitionKey: 'aggregateId',
+        consumerGroups: ['cg.learning-from-assessment.v1'],
+      });
+    }],
+  ]) {
+    const result = runM1012PromotionWithMutation({ mutateB26 });
+    assert.equal(result.compatible, false, `${label} unexpectedly passed`);
+    assert.ok(result.b26Changes.length > 0, `${label} produced no B26 evidence`);
+  }
+});
+
+test('M1-012 policy and full fixed-baseline chain remain fail-closed and static-only', () => {
+  for (const mutate of [
+    (policy) => { policy.compatibilityPromotion.sourceContractBaseline = 'f'.repeat(40); },
+    (policy) => { policy.compatibilityPromotion.previousPromotion = 'M1-010_ASSESSMENT_CONTRACT_PROMOTION'; },
+    (policy) => { policy.compatibilityPromotion.runtimeStatus = 'RUNTIME_VERIFIED'; },
+    (policy) => { policy.compatibilityPromotion.eventFragment = 'packages/contracts/events/v1/catalog.json'; },
+    (policy) => { policy.compatibilityPromotion.unexpectedPromotionFlag = true; },
+    (policy) => { policy.completionEvent.status = 'RUNTIME_VERIFIED'; },
+    (policy) => { policy.contractIntegration.canonicalRoutes[0].operationId = 'injectedPlacementRoute'; },
+    (policy) => { policy.learnerPlanningSuccessor.placementBaselineSchema = 'UnpinnedPlacementBaseline'; },
+  ]) {
+    const mutated = structuredClone(placementContractPolicy);
+    mutate(mutated);
+    assert.ok(validateM1012CompatibilityPolicy(mutated).length > 0);
+  }
+
+  const result = runGitBaselineCompatibility({
+    ref: REQUIRED_CI_CONTRACT_BASELINE_REF,
+    governanceRef: EXPECTED_EVENT_GOVERNANCE_BASELINE_REF,
+    kind: 'all',
+  });
+  assert.equal(result.compatible, true);
+  assert.equal(result.promotion.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.equal(result.promotion.sourceContractBaseline, REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF);
+  assert.equal(result.promotion.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
+  assert.equal(result.results.find((entry) => entry.kind === 'openapi').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.equal(result.results.find((entry) => entry.kind === 'events').promotion.id, M1012_PLACEMENT_PROMOTION_ID);
+  assert.deepEqual(result.results.flatMap((entry) => entry.breakingChanges), []);
+});
+
+test('M1-008 source baseline reaches the current M1-012 projection with immutable governance attached', () => {
   const result = runM1008PromotionWithMutation();
   assert.equal(result.compatible, true);
   assert.equal(result.governanceBaseline.commit, EXPECTED_EVENT_GOVERNANCE_BASELINE_REF);
   assert.deepEqual(result.promotion, {
-    id: M1011_LEARNER_PLANNING_PROMOTION_ID,
-    sourceContractBaseline: REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
-    previousPromotion: M1010_ASSESSMENT_PROMOTION_ID,
-    previousPromotionSource: REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    id: M1012_PLACEMENT_PROMOTION_ID,
+    sourceContractBaseline: REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    previousPromotion: M1011_LEARNER_PLANNING_PROMOTION_ID,
+    previousPromotionSource: REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    immutableGovernanceBaseline: EXPECTED_EVENT_GOVERNANCE_BASELINE_REF,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
     scope: 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC',
   });
@@ -1513,7 +1940,7 @@ test('M1-008 immutable governance is still compared when the requested baseline 
     mutateCatalog: (catalog) => Object.assign(catalog, mutatedWorkflowCatalog),
   });
   assert.equal(result.compatible, false);
-  assert.ok(result.results[0].breakingChanges.some((change) => change.location.startsWith('m1-011.eventPromotion')));
+  assert.ok(result.results[0].breakingChanges.some((change) => change.location.startsWith('m1-012.eventPromotion')));
 
   const b26Result = runM1008PromotionWithMutation({
     mutateB26: (runtime) => {
@@ -1561,6 +1988,18 @@ test('M1-008 immutable baseline integrity cannot be replaced by a mutable govern
     REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
     'config/b26-event-runtime.json',
   );
+  const placementSourceOpenApi = gitJson(
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    'packages/contracts/openapi/v1/openapi.json',
+  );
+  const placementSourceCatalog = gitJson(
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    'packages/contracts/events/v1/catalog.json',
+  );
+  const placementSourceB26 = gitJson(
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    'config/b26-event-runtime.json',
+  );
   const mutatedImmutableCatalog = structuredClone(sourceCatalog);
   mutatedImmutableCatalog.events.find((event) => event.eventName === 'workflow.outbox.published.v1')['x-p1r-governance'].producer.service = 'audit-service';
   const git = (args) => {
@@ -1570,6 +2009,7 @@ test('M1-008 immutable baseline integrity cannot be replaced by a mutable govern
       if (args[2] === `${REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF;
       if (args[2] === `${REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF;
       if (args[2] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF;
+      if (args[2] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}^{commit}`) return REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF;
       if (args[2] === `${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF}^{commit}`) return EXPECTED_EVENT_GOVERNANCE_BASELINE_REF;
     }
     if (args[0] === 'show') {
@@ -1582,6 +2022,9 @@ test('M1-008 immutable baseline integrity cannot be replaced by a mutable govern
       if (args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return JSON.stringify(learnerPlanningSourceOpenApi);
       if (args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return JSON.stringify(learnerPlanningSourceCatalog);
       if (args[1] === `${REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF}:config/b26-event-runtime.json`) return JSON.stringify(learnerPlanningSourceB26);
+      if (args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/openapi/v1/openapi.json`) return JSON.stringify(placementSourceOpenApi);
+      if (args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return JSON.stringify(placementSourceCatalog);
+      if (args[1] === `${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF}:config/b26-event-runtime.json`) return JSON.stringify(placementSourceB26);
       if (args[1] === `${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF}:packages/contracts/events/v1/catalog.json`) return JSON.stringify(mutatedImmutableCatalog);
       if (args[1] === `${EXPECTED_EVENT_GOVERNANCE_BASELINE_REF}:config/b26-event-runtime.json`) return JSON.stringify(sourceB26);
     }

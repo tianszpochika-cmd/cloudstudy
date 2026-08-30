@@ -31,6 +31,21 @@
       }
     },
     {
+      "eventName": "assessment.placement.completed.v1",
+      "domain": "assessment",
+      "version": 1,
+      "schema": "assessment.event.v1",
+      "aggregateType": "placement_session",
+      "aggregateIdField": "sessionId",
+      "x-envelope-required": ["eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId", "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"],
+      "payloadSchema": { "$ref": "#/payloadSchemas/B10PlacementCompleted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.placement.completed.v2",
+        "consumerRule": "按 sessionId/placementResultId/resultVersion 去重；仅首个持久化的 ASSESSED 或 SKIPPED placement 结果可发布。SKIPPED 仅携带 UNVERIFIED 保守 baseline，requestedStartingLevel 仅是 USER_SELECTED_NON_AUTHORITATIVE；payload 不含原始作答、答案规则、录音或权限事实。"
+      }
+    },
+    {
       "eventName": "learning.mastery.projected.v1",
       "domain": "learning",
       "version": 1,
@@ -212,6 +227,131 @@
         "mistakeCodes": { "type": "array", "items": { "type": "string", "maxLength": 96 }, "maxItems": 64 },
         "assessedAt": { "type": "string", "format": "date-time" }
       }
+    },
+    "B10PlacementCompleted": {
+      "$id": "platform.events.assessment.placement.completed.v1.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "principalId", "sessionId", "stateVersion", "sessionSnapshotDigest", "placementResultId", "resultVersion", "reportId", "reportVersion", "resultDigest", "reportDigest", "placementManifestId", "placementManifestVersion", "placementManifestDigest", "dimensionSetDigest", "totalItemCount", "contentVersionId", "contentEpoch", "snapshotId", "snapshotHash", "answerRuleSetVersion", "answerRuleVersion", "ruleDigest", "completionRuleVersion", "targetId", "targetVersion", "targetSnapshotDigest", "resultKind", "completionStatus", "aggregateScore", "referenceLevel", "confidence", "coverageRatio", "completedAt"],
+      "properties": {
+        "tenantId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{1,63}$" },
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "sessionId": { "type": "string", "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$" },
+        "stateVersion": { "type": "integer", "minimum": 1 },
+        "sessionSnapshotDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "placementResultId": { "type": "string", "pattern": "^plr_[A-Za-z0-9._:-]{8,127}$" },
+        "resultVersion": { "type": "integer", "minimum": 1 },
+        "reportId": { "type": "string", "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$" },
+        "reportVersion": { "type": "integer", "minimum": 1 },
+        "resultDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "reportDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "placementManifestId": { "type": "string", "const": "P1_PLACEMENT_V1" },
+        "placementManifestVersion": { "type": "string", "const": "P1_PLACEMENT_V1" },
+        "placementManifestDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "dimensionSetDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "totalItemCount": { "type": "integer", "const": 10 },
+        "contentVersionId": { "type": "integer", "format": "int64", "minimum": 1 },
+        "contentEpoch": { "type": "integer", "format": "int64", "minimum": 0 },
+        "snapshotId": { "type": "string", "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$" },
+        "snapshotHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "answerRuleSetVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "answerRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "ruleDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "completionRuleVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "targetId": { "type": "integer", "minimum": 1 },
+        "targetVersion": { "type": "integer", "minimum": 1 },
+        "targetSnapshotDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "resultKind": { "type": "string", "enum": ["ASSESSED", "SKIPPED"] },
+        "completionStatus": { "type": "string", "enum": ["COMPLETED", "SKIPPED"] },
+        "aggregateScore": { "type": ["integer", "null"] },
+        "referenceLevel": { "type": ["string", "null"] },
+        "confidence": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW", "UNVERIFIED"] },
+        "coverageRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+        "dimensionSummaries": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "prefixItems": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["dimensionId", "dimensionPercent", "coverageRatio"],
+              "properties": {
+                "dimensionId": { "type": "string", "const": "VOCABULARY" },
+                "dimensionPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+                "coverageRatio": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["dimensionId", "dimensionPercent", "coverageRatio"],
+              "properties": {
+                "dimensionId": { "type": "string", "const": "BASIC_GRAMMAR" },
+                "dimensionPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+                "coverageRatio": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["dimensionId", "dimensionPercent", "coverageRatio"],
+              "properties": {
+                "dimensionId": { "type": "string", "const": "READING" },
+                "dimensionPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+                "coverageRatio": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["dimensionId", "dimensionPercent", "coverageRatio"],
+              "properties": {
+                "dimensionId": { "type": "string", "const": "LISTENING" },
+                "dimensionPercent": { "type": "number", "minimum": 0, "maximum": 100 },
+                "coverageRatio": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          ],
+          "items": false
+        },
+        "requestedStartingLevel": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["level", "authority"],
+          "properties": {
+            "level": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+            "authority": { "type": "string", "const": "USER_SELECTED_NON_AUTHORITATIVE" }
+          }
+        },
+        "completedAt": { "type": "string", "format": "date-time" }
+      },
+      "oneOf": [
+        {
+          "required": ["resultKind", "completionStatus", "aggregateScore", "referenceLevel", "confidence", "coverageRatio", "dimensionSummaries"],
+          "properties": {
+            "resultKind": { "const": "ASSESSED" },
+            "completionStatus": { "const": "COMPLETED" },
+            "aggregateScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "referenceLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+            "confidence": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW"] },
+            "coverageRatio": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+          },
+          "not": { "required": ["requestedStartingLevel"] }
+        },
+        {
+          "required": ["resultKind", "completionStatus", "aggregateScore", "referenceLevel", "confidence", "coverageRatio"],
+          "properties": {
+            "resultKind": { "const": "SKIPPED" },
+            "completionStatus": { "const": "SKIPPED" },
+            "aggregateScore": { "type": "null" },
+            "referenceLevel": { "type": "null" },
+            "confidence": { "const": "UNVERIFIED" },
+            "coverageRatio": { "const": 0 }
+          },
+          "not": { "required": ["dimensionSummaries"] }
+        }
+      ]
     },
     "B10LearningMasteryProjected": {
       "$id": "platform.events.learning.mastery.projected.v1.payload",

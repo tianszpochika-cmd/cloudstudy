@@ -246,6 +246,22 @@ test('repository learner planning contract remains a static D2 policy boundary',
   assert.equal(report.summary.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
 });
 
+test('M1-012 placement successor policy is an immutable current-source trust anchor', () => {
+  const fixture = makeSyntheticFixture();
+  fixture.placementPolicy.learnerPlanningSuccessor.firstDay.addedConsistency.pop();
+  const report = validateLearnerPlanningContractData(fixture);
+  assert.equal(report.result, 'FAIL');
+  assert.match(report.errors.join('\n'), /M1-012 placement successor policy digest drift/);
+});
+
+test('M1-012 B9 placement-to-plan binding cannot drift from the frozen successor', () => {
+  const fixture = makeSyntheticFixture();
+  b9Schema(fixture, 'B9PlanningInputSnapshot')['x-p1r-placement-plan-saga'].effectDedupeKey.pop();
+  const report = validateLearnerPlanningContractData(fixture);
+  assert.equal(report.result, 'FAIL');
+  assert.match(report.errors.join('\n'), /placement-to-plan saga binding/);
+});
+
 test('learner planning contract CLI emits a passing machine-readable report', () => {
   const result = spawnSync(process.execPath, ['scripts/audit/p1r-learner-planning-contract-check.mjs', '--json'], {
     cwd: root,

@@ -16,7 +16,7 @@
 ### 1.1 业务目标与价值定位
 Onboarding（新手引导与定级）与 Adaptive Home（自适应首屏）是语学星 (EnglishFlow) 链接用户“从注册到进入沉浸式学习状态”的第一道核心转化通道。其根本业务目标为：
 1. **秒级建立学习锚点**：在 60 秒内通过零门槛的目标与强度选择，精准捕获 18 岁以上成人用户的学习动机。
-2. **5 分钟科学定级与建立信任**：摒弃传统耗时且冗长的分级考试，通过 10 道规则化题目的快速自适应推断，在 3~5 分钟内测出学员基线（CEFR 等级与词汇量预估），建立专业教学信任。
+2. **5 分钟规则化定级与建立信任**：通过 `P1_PLACEMENT_V1` 的 10 道四维规则题生成 A1-C2 参考等级、置信度、覆盖率与四维规则分；不输出精确词汇量，也不宣称官方 CEFR 认证。
 3. **沉浸式语言世界探索**：打破传统背单词/刷题软件枯燥的列表排版，通过星系/岛屿形态的“语言世界 (Language World)”拓扑大地图，为学员提供具备游戏化驱动力与清晰掌握感的学习路线。
 4. **千人千面的首屏自适应重排 (Adaptive Home)**：基于成人目标画像与学习进展，动态组装最高效的首屏组件流，让备考四六级/考研的学员直接面对真题与模考，让零基础学员聚焦音标与核心词，让职场学员快速切入场景会话。
 5. **极速无缝的断点续学 (Continue Learning)**：实现跨端（Mobile/iPad/Web）毫秒级上下文存储与 1 秒无感恢复，极大降低学员重新开始的学习摩擦成本。
@@ -94,41 +94,33 @@ Onboarding 与自适应首屏 (ONB 域)
 - **后置条件**：弹出水平测试邀请，流转至 FEAT-ONB-003 或 FEAT-ONB-005。
 
 #### 【FEAT-ONB-003】非 AI 规则化自适应定级 (Deterministic Adaptive Placement)
-- **功能目的**：在 3~5 分钟内通过 10 道题目精准测出用户的真实英文能力，杜绝大模型随机波动与幻觉。
+- **功能目的**：通过 10 道固定四维规则题生成可解释的初始参考等级与置信度，避免大模型随机波动与幻觉；结果不等同于官方能力认证。
 - **业务规则**：
-  1. 题库配比：词汇识别题 4 道 + 基础语法题 3 道 + 听力理解题 3 道，共 10 题。
-  2. 初始题难度设定为 A2 (CET-4 基础水平)。
-  3. **实时难度升降阶梯**：
-     - 若当前题目作答正确且耗时在标准时长内 $\rightarrow$ 下一题难度上升 1 阶 ($L_{i+1} = L_i + 1$)；
-     - 若当前题目作答错误或超时 $\rightarrow$ 下一题难度下降 1 阶 ($L_{i+1} = \max(1, L_i - 1)$)；
-     - 连续 2 题作答正确，下一题触发跳阶上升 ($L_{i+1} = L_i + 2$)；
-     - 难度梯度定义：1(A1) -> 2(A2) -> 3(B1) -> 4(B2) -> 5(C1) -> 6(C2)。
-  4. 支持倒计时机制：每题限定 25 秒，超时自动判错并提交。
+  1. 题库配比：以当前 `P1_PLACEMENT_V1` 为准，词汇识别 3 道 + 基础语法 3 道 + 阅读理解 2 道 + 听力理解 2 道，共 10 题；旧的 4/3/3 示例已废止。
+  2. 每题的内容、难度、维度、答案规则与完成规则均由服务端不可变 manifest/content/answer-rule pins 决定；本文不另行定义客户端升降级算法。
+  3. 服务端若按既有作答选择清单内下一候选题，必须记录规则版本并可回放，且不得改变 3/3/2/2 题量或四维各 25% 权重。
+  4. 若清单定义题目截止时间，过期作答按固定完成规则记为“未作答”并得 0；已被服务端答案规则接受为正确的答案，不得再因耗时被降权或翻转。
 - **前置条件**：用户选择进入“5分钟水平测评”。
 - **后置条件**：完成 10 题后触发结算引擎，流转至 FEAT-ONB-004。
 
 #### 【FEAT-ONB-004】测评报告与 CEFR 等级判定 (Assessment Report & Radar)
-- **功能目的**：向学员输出权威、可信、可视化且解释性极强的测评成绩单。
+- **功能目的**：向学员输出可信、可视化、可解释但非官方认证的规则测评报告。
 - **业务规则**：
-  1. **能力等级映射**：输出初始参考等级（语学星 L1~L6，对应 CEFR A1~C2），并在界面明确注明“根据答题正确率与用时综合推算，非官方 CEFR 考试认证”。
-  2. **词汇量预估算式**：结合最终难度收敛值与词汇题得分，计算预估词汇量 $V = \text{BaseVocabulary}(L_{\text{final}}) + \Delta V$（例如 L2 对应 1500~2500 词）。
-  3. **五维能力雷达图**：展示“词汇广度”、“语法准确度”、“听力敏感度”、“答题反应速度”、“场景理解度”五维得分 (0~100 分)。
-  4. **首周定制学习建议**：根据薄弱项自动输出确定性规则建议卡（如：“听力敏感度较低，已为你将首周学习流中的‘慢速精听’比重上调 30%”）。
+  1. **能力等级映射**：输出初始参考等级（语学星 L1~L6，对应 CEFR A1~C2 参考标签），并在界面明确注明“根据服务端答案规则、答题正误和固定四维权重计算；耗时仅用于解释或同分参考，非官方 CEFR 考试认证”。
+  2. **词汇维度规则分**：只展示 `VOCABULARY` 的 0~100 规则分与有效覆盖率，不换算词数区间。
+  3. **四维能力摘要**：按固定顺序展示词汇、基础语法、阅读、听力四维得分与覆盖；反应时间只用于解释或同分参考，不能翻转正误。
+  4. **首日衔接**：计划编排只消费闭合的参考等级、置信度和 immutable pins，不把 aggregate score、四维明细或原始作答作为跨域权威输入。
 - **前置条件**：FEAT-ONB-003 作答数据上报完成。
 - **后置条件**：用户点击“进入语言世界”，数据入库并跳转至语言世界主地图。
 
-#### 【FEAT-ONB-005】免测跳过与快速定级 (Placement Skip & Fast-Track)
-- **功能目的**：针对已有明确考试成绩或急于体验的用户，提供 0 门槛快速准入通道。
+#### 【FEAT-ONB-005】免测跳过与保守起点 (Placement Skip Baseline)
+- **功能目的**：为暂不参加测评的用户提供可继续学习的保守入口，同时避免把自报成绩或客户端选项冒充测得能力。
 - **业务规则**：
-  1. 在测评引导页提供“已有英语成绩，直接定级”与“零基础，直接从头学”两个快捷入口。
-  2. 选项映射规则：
-     - “已过英语四级 (CET-4 425+)” $\rightarrow$ 直接赋予 CEFR B1 (语学星 L3) 初始档案；
-     - “已过英语六级 (CET-6 425+)” $\rightarrow$ 直接赋予 CEFR B2 (语学星 L4) 初始档案；
-     - “考研英语 60+ / 雅思 6.0+” $\rightarrow$ 直接赋予 CEFR B2+ (语学星 L4.5) 初始档案；
-     - “从零学起 / 没底子” $\rightarrow$ 直接赋予 CEFR A1 (语学星 L1) 初始档案。
-  3. 选择后直接解锁对应等级之前的所有主地图关卡，前置关卡标记为“免测通关（默认 2 星）”。
-- **前置条件**：用户在测评邀请弹窗中点击“跳过测评/选择已有成绩”。
-- **后置条件**：生成用户能力档案并直达语言世界主地图。
+  1. 测评引导页提供“跳过，先开始学习”；用户可选填 A1~C2 的期望起始等级，但必须标记为 `USER_SELECTED_NON_AUTHORITATIVE`。
+  2. 服务端生成唯一持久化的 `SKIPPED` baseline：`confidence=UNVERIFIED`、`coverageRatio=0`、`aggregateScore=null`、`referenceLevel=null`，不得由自报 CET/考研/雅思成绩换算或授予参考等级。
+  3. 跳过不会自动标记历史关卡通关、发放星级或写入掌握度；learning-service 只能以该保守 baseline 编排可调整的首日计划。
+- **前置条件**：用户在测评邀请页确认跳过；tenant、owner、阶段和内容权利仍由服务端派生并校验。
+- **后置条件**：生成可审计、可幂等重放的保守 baseline，并进入首日计划编排；页面明确提示“尚未完成测评”。
 
 #### 【FEAT-ONB-006】沉浸主地图拓扑渲染 (World Map Topology Rendering)
 - **功能目的**：以星球、星系、大陆与探索路径为视觉核心，提供清晰、具象的掌握进阶感知。
@@ -316,87 +308,53 @@ Onboarding 与自适应首屏 (ONB 域)
 ## 3. 5 分钟非 AI 自适应测评算法数学模型与规则设计
 
 ### 3.1 核心算法设计思想
-Phase 1 严格遵循**确定性数学统计与规则自适应模型**，坚决不使用大语言模型进行主观打分。测评引擎在用户答题过程中，基于**项目反应理论 (Item Response Theory, IRT) 的简化状态机**结合**动态阶梯算法 (Staircase Method)**，实时根据题目的难易度、学员作答正误与作答耗时，在 10 道题内快速收敛学员的能力值 $\theta$。
+Phase 1 严格遵循服务端固定的 `P1_PLACEMENT_V1` manifest、答案规则和四维计分边界，不使用大语言模型主观打分，也不把历史 IRT/动态阶梯公式视为 canonical 规则。服务端可以在不可变清单允许的候选范围内依据已接受的正误选择后续题目，但必须可回放，且耗时不得参与正误、维度分、总分、置信度或参考等级计算。
 
 ### 3.2 难度阶梯定义与题库配比
-难度等级划分为 6 阶，对应国际 CEFR 标准与国内备考标准：
-- **Level 1 ($L_1$)**：CEFR A1 (入门级，词汇量 $\le 1000$，基础字母与简单高频词)
-- **Level 2 ($L_2$)**：CEFR A2 (初级，词汇量 $1000\sim 2200$，日常简单句与初级听力)
-- **Level 3 ($L_3$)**：CEFR B1 (中级 / CET-4 基线，词汇量 $2200\sim 4500$，四级核心词与复合句)
-- **Level 4 ($L_4$)**：CEFR B2 (中高级 / CET-6 基线，词汇量 $4500\sim 6500$，六级词汇与长难句)
-- **Level 5 ($L_5$)**：CEFR C1 (高级 / 考研英语与雅思 7.0+，词汇量 $6500\sim 9000$)
-- **Level 6 ($L_6$)**：CEFR C2 (精通级，词汇量 $9000+$，专业学术与高级修辞)
+难度标签使用 A1、A2、B1、B2、C1、C2 作为非官方参考刻度；不据此输出精确词汇量、国内考试等价结论或官方认证。每题的内容、难度、答案规则和可解释时间基准都必须由不可变测评清单与内容快照固定。
 
-**10 道自适应测评题题型结构配比**：
-| 题号 | 考查维度 | 题型类型 | 初始/动态难度范围 | 答题时限 |
-|---|---|---|---|---|
-| Q1 | 词汇识别 (Vocabulary) | 核心词义 4 选 1 | 固定 $L_2$ (A2) 初始锚点题 | 20s |
-| Q2 | 词汇辨析 (Vocabulary) | 语境填空 4 选 1 | 动态 $L_1 \sim L_3$ | 20s |
-| Q3 | 基础语法 (Grammar) | 时态与语态单选 | 动态 $L_1 \sim L_4$ | 25s |
-| Q4 | 听力理解 (Listening) | 短句听音辨义 4 选 1 | 动态 $L_1 \sim L_4$ | 25s |
-| Q5 | 词汇搭配 (Vocabulary) | 介词/动词短语搭配 | 动态 $L_2 \sim L_5$ | 20s |
-| Q6 | 句法结构 (Grammar) | 定语/状语从句连接词 | 动态 $L_2 \sim L_5$ | 25s |
-| Q7 | 听力反应 (Listening) | 场景对话问答单选 | 动态 $L_2 \sim L_6$ | 25s |
-| Q8 | 复杂词汇 (Vocabulary) | 考研/六级高频词义 | 动态 $L_3 \sim L_6$ | 20s |
-| Q9 | 长难句理解 (Grammar) | 倒装/虚拟语气/主干识别 | 动态 $L_3 \sim L_6$ | 30s |
-| Q10 | 综合听力 (Listening) | 语篇细节推断选择 | 动态 $L_3 \sim L_6$ 终极收敛题 | 30s |
+**`P1_PLACEMENT_V1` 10 题维度配比**：
+| 题位 | 考查维度 | 数量 | 权重 | 题目与难度来源 |
+|---|---|---:|---:|---|
+| Q1–Q3 | 词汇 (VOCABULARY) | 3 | 25% | 服务端不可变 manifest/content/answer-rule pins |
+| Q4–Q6 | 基础语法 (BASIC_GRAMMAR) | 3 | 25% | 服务端不可变 manifest/content/answer-rule pins |
+| Q7–Q8 | 阅读 (READING) | 2 | 25% | 服务端不可变 manifest/content/answer-rule pins |
+| Q9–Q10 | 听力 (LISTENING) | 2 | 25% | 服务端不可变 manifest/content/answer-rule pins |
 
 ---
 
-### 3.3 动态难度升降算法状态机与公式
-令 $i \in [1, 10]$ 为当前题号，$L_i \in [1, 6]$ 为第 $i$ 题的难度等级。学员第 $i$ 题的作答结果为 $R_i \in \{0, 1\}$（0 表示错误或超时，1 表示正确），作答耗时为 $t_i$（秒），该题标准期望耗时为 $T_{\text{std}}(i)$。
+### 3.3 正误、耗时与选题边界
+令 $i \in [1, 10]$ 为当前题号，服务端依据固定答案规则得到 $c_i \in \{0,1\}$：正确为 1，错误或未作答为 0。客户端不得提交或覆盖 `correctness`、答案键、答案规则、得分或等级。
 
-#### 1. 速度惩罚与加权系数 $W(R_i, t_i)$
-为防止盲猜或极速碰运气，定义时间加权系数：
-$$
-W(R_i, t_i) = \begin{cases}
-1.2, & \text{若 } R_i = 1 \text{ 且 } t_i \le 0.5 \times T_{\text{std}} \text{ (极速且正确)} \\
-1.0, & \text{若 } R_i = 1 \text{ 且 } 0.5 \times T_{\text{std}} < t_i \le T_{\text{std}} \text{ (正常正确)} \\
-0.8, & \text{若 } R_i = 1 \text{ 且 } t_i > T_{\text{std}} \text{ (超时勉强答对)} \\
-0.0, & \text{若 } R_i = 0 \text{ (答错或未作答)}
-\end{cases}
-$$
-
-#### 2. 下一道题目难度 $L_{i+1}$ 转移方程
-$$
-L_{i+1} = \text{Clamp}\left( L_i + \Delta L_i, 1, 6 \right)
-$$
-其中增量 $\Delta L_i$ 的判定规则如下：
-- 若 $R_i = 1$ 且 $R_{i-1} = 1$（连续两题答对且 $W \ge 1.0$）：$\Delta L_i = +2$（触发跳跃晋级）；
-- 若 $R_i = 1$（单题答对）：$\Delta L_i = +1$；
-- 若 $R_i = 0$ 且 $R_{i-1} = 0$（连续两题答错）：$\Delta L_i = -2$（触发快速降级保护）；
-- 若 $R_i = 0$（单题答错）：$\Delta L_i = -1$。
+- 作答耗时只可用于报告解释，或在同一维度且正误相同的候选之间作为清单允许的同分参考；不得翻转 $c_i$，不得改变四维权重、维度分、总分、置信度或参考等级。
+- 当前契约不定义速度加权系数 $W$，也不以耗时驱动 $\Delta L$。旧版速度惩罚和升降公式不再是 canonical 规则。
+- 若服务端清单允许按既有作答选择下一候选题，选择逻辑及其版本必须被 manifest/answer-rule pins 固定并可回放；无论如何都不得改变 3/3/2/2 的题量和四维各 25% 权重。
+- 超时是否形成“未作答”由固定完成规则决定；一旦服务端接受为正确答案，耗时不能再把它降权为“部分正确”。
 
 ---
 
-### 3.4 最终能力评定与词汇量预估回归模型
+### 3.4 `P1_PLACEMENT_V1` 最终能力评定
 
-#### 1. 综合能力得分 $\Theta$ 算式 (0~100 分)
-$$
-\Theta = \sum_{i=1}^{10} \left( L_i \times 10 \times W(R_i, t_i) \times k_i \right) \times \frac{1}{\sum_{i=1}^{10} k_i}
-$$
-其中 $k_i$ 为题目权重系数（Q1~Q3 基础题 $k=0.8$，Q4~Q7 进阶题 $k=1.0$，Q8~Q10 冲刺题 $k=1.2$）。
+#### 1. 四维与综合得分 (0~100 分)
+
+词汇 3 题、基础语法 3 题、阅读 2 题、听力 2 题；答对记 1，答错或未答记 0。每个维度先按 `ROUND_HALF_UP` 保留 2 位小数，四维各按 25% 聚合，再以 `ROUND_HALF_UP` 取 0 位整数。耗时不进入正误和得分，只作解释或同分参考。
 
 #### 2. CEFR 判定映射表
-- $\Theta \in [0, 25)$ $\rightarrow$ **Level 1 (CEFR A1)**
-- $\Theta \in [25, 45)$ $\rightarrow$ **Level 2 (CEFR A2)**
-- $\Theta \in [45, 65)$ $\rightarrow$ **Level 3 (CEFR B1 - 四级水平)**
-- $\Theta \in [65, 80)$ $\rightarrow$ **Level 4 (CEFR B2 - 六级水平)**
-- $\Theta \in [80, 92)$ $\rightarrow$ **Level 5 (CEFR C1 - 考研/雅思高分)**
-- $\Theta \in [92, 100]$ $\rightarrow$ **Level 6 (CEFR C2 - 精通)**
+- $\Theta \in [0, 39]$ $\rightarrow$ **CEFR 参考 A1**
+- $\Theta \in [40, 59]$ $\rightarrow$ **CEFR 参考 A2**
+- $\Theta \in [60, 74]$ $\rightarrow$ **CEFR 参考 B1**
+- $\Theta \in [75, 84]$ $\rightarrow$ **CEFR 参考 B2**
+- $\Theta \in [85, 92]$ $\rightarrow$ **CEFR 参考 C1**
+- $\Theta \in [93, 100]$ $\rightarrow$ **CEFR 参考 C2**
 
-#### 3. 词汇量预估分确定性回归方程
-词汇量预估值 $V_{\text{estimate}}$ 由最终收敛等级与词汇分项得分 $S_{\text{vocab}}$ 共同决定：
-$$
-V_{\text{estimate}} = V_{\text{base}}(\text{Level}) + \left( \frac{S_{\text{vocab}}}{100} \times \Delta V_{\text{range}}(\text{Level}) \right)
-$$
-基线参数表：
-- **A1**: $V_{\text{base}} = 500, \Delta V = 500$ (预估区间 500~1000)
-- **A2**: $V_{\text{base}} = 1000, \Delta V = 1200$ (预估区间 1000~2200)
-- **B1**: $V_{\text{base}} = 2200, \Delta V = 2300$ (预估区间 2200~4500)
-- **B2**: $V_{\text{base}} = 4500, \Delta V = 2000$ (预估区间 4500~6500)
-- **C1**: $V_{\text{base}} = 6500, \Delta V = 2500$ (预估区间 6500~9000)
-- **C2**: $V_{\text{base}} = 9000, \Delta V = 3000$ (预估区间 9000~12000)
+#### 3. 置信度与覆盖率
+
+- `HIGH`：10/10 有效覆盖且四维达到目标；
+- `MEDIUM`：总体覆盖率至少 0.8 且每维至少 1 个有效题；
+- `LOW`：总体覆盖率大于 0，但未满足 `MEDIUM/HIGH`；
+- `UNVERIFIED`：跳过或零有效覆盖。
+
+本规则不计算、存储或展示精确词汇量估算。
 
 ---
 
@@ -650,7 +608,7 @@ CREATE TABLE IF NOT EXISTS `usr_learning_profile` (
   `daily_quota_xp` INT UNSIGNED NOT NULL DEFAULT 30 COMMENT '每日目标经验值配额',
   `initial_cefr_level` VARCHAR(8) NOT NULL DEFAULT 'A1' COMMENT '初始判定等级: A1, A2, B1, B2, C1, C2',
   `current_cefr_level` VARCHAR(8) NOT NULL DEFAULT 'A1' COMMENT '当前实时动态评定等级',
-  `estimated_vocabulary` INT UNSIGNED NOT NULL DEFAULT 800 COMMENT '预估词汇量',
+  `placement_reference_level` VARCHAR(8) NULL COMMENT 'assessment 参考等级只读投影，非 learner owner 判定',
   `is_placement_skipped` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否跳过定级测评: 0-未跳过, 1-免测跳过',
   `is_custom_layout` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否启用自定义首屏布局: 0-自适应重排, 1-固定用户自定义',
   `custom_home_layout` JSON NULL COMMENT '用户自定义首屏组件排列顺序',
@@ -666,7 +624,7 @@ CREATE TABLE IF NOT EXISTS `usr_learning_profile` (
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS `asm_placement_item` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '题目ID',
-  `dimension` VARCHAR(32) NOT NULL COMMENT '评测维度: VOCABULARY, GRAMMAR, LISTENING',
+  `dimension` VARCHAR(32) NOT NULL COMMENT '评测维度: VOCABULARY, BASIC_GRAMMAR, READING, LISTENING',
   `difficulty_level` TINYINT UNSIGNED NOT NULL COMMENT '题目难度阶梯: 1-A1, 2-A2, 3-B1, 4-B2, 5-C1, 6-C2',
   `stem_text` TEXT NOT NULL COMMENT '题干文本',
   `audio_url` VARCHAR(512) NULL COMMENT '听力音频URL(合法版权素材)',
@@ -689,8 +647,8 @@ CREATE TABLE IF NOT EXISTS `asm_placement_session` (
   `current_step` INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '当前作答步长',
   `final_score` DECIMAL(5,2) NULL COMMENT '最终综合能力分 (0~100)',
   `final_level` VARCHAR(8) NULL COMMENT '判定级别: A1-C2',
-  `estimated_vocab` INT UNSIGNED NULL COMMENT '最终预估词汇量',
-  `radar_scores_json` JSON NULL COMMENT '五维雷达得分: {"vocab":80, "grammar":75, "listening":60, "speed":85, "scenario":70}',
+  `confidence` VARCHAR(16) NULL COMMENT 'HIGH, MEDIUM, LOW, UNVERIFIED',
+  `dimension_scores_json` JSON NULL COMMENT '四维 learner-safe 规则分与覆盖率；不含原始作答或精确词汇量',
   `step_records_json` JSON NULL COMMENT '每题作答详情列表(题目ID、正误、耗时、难度阶梯)',
   `status` VARCHAR(16) NOT NULL DEFAULT 'IN_PROGRESS' COMMENT '状态: IN_PROGRESS, COMPLETED, ABANDONED',
   `completed_at` DATETIME NULL COMMENT '完成时间',
@@ -816,76 +774,55 @@ paths:
   # ---------------------------------------------------------------------------
   # 2. 5 分钟规则化自适应测评引擎
   # ---------------------------------------------------------------------------
-  /api/v1/assessment/placement/start:
+  /api/v1/assessment/placement/sessions:
     post:
-      summary: 启动自适应定级测评会话，获取第 1 道锚点题
-      operationId: startPlacementSession
+      summary: 创建由服务端固定 manifest、内容与答案规则版本的测评会话
+      operationId: createB10PlacementSession
       tags: [Assessment]
       responses:
-        '200':
-          description: 会话创建成功，返回首题
+        '201':
+          description: 会话创建成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlacementNextQuestionResponse'
+                $ref: '#/components/schemas/B10PlacementSession'
 
-  /api/v1/assessment/placement/submit-step:
+  /api/v1/assessment/placement/sessions/{sessionId}/responses:
     post:
-      summary: 提交单题答案，动态获取下一题或完成测评
-      operationId: submitPlacementStep
+      summary: 提交一条候选作答；正误、得分、等级与 pins 均由服务端派生
+      operationId: submitB10PlacementResponse
       tags: [Assessment]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [sessionUuid, questionId, selectedAnswer, timeSpentSec]
-              properties:
-                sessionUuid:
-                  type: string
-                  example: "ses_onb_98721389"
-                questionId:
-                  type: integer
-                  example: 1042
-                selectedAnswer:
-                  type: string
-                  example: "B"
-                timeSpentSec:
-                  type: integer
-                  example: 12
+              $ref: '#/components/schemas/B10PlacementResponseSubmitRequest'
       responses:
         '200':
-          description: 判定成功，返回下一题或测评报告
+          description: 作答已按 session 状态版本幂等接收
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PlacementStepResultResponse'
+                $ref: '#/components/schemas/B10PlacementResponseReceipt'
 
-  /api/v1/assessment/placement/skip:
+  /api/v1/assessment/placement/baselines/skip:
     post:
-      summary: 免测跳过与快速定级
-      operationId: skipPlacement
+      summary: 生成 SKIPPED + UNVERIFIED 保守 baseline，不形成测得等级
+      operationId: createB10PlacementSkipBaseline
       tags: [Assessment]
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [fastTrackLevel]
-              properties:
-                fastTrackLevel:
-                  type: string
-                  enum: [ZERO_A1, CET4_B1, CET6_B2, POSTGRAD_B2_PLUS]
-                  example: CET4_B1
+              $ref: '#/components/schemas/B10PlacementSkipBaselineRequest'
       responses:
-        '200':
-          description: 免测定级完成
+        '201':
+          description: 保守 baseline 已创建；期望起点仍为非权威用户提示
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfileResponse'
+                $ref: '#/components/schemas/B10PlacementResult'
 
   # ---------------------------------------------------------------------------
   # 3. 自适应首屏与断点续学
@@ -965,8 +902,6 @@ components:
           type: integer
         currentCefrLevel:
           type: string
-        estimatedVocabulary:
-          type: integer
 
     PlacementNextQuestionResponse:
       type: object
@@ -1014,20 +949,26 @@ components:
           type: object
           nullable: true
           properties:
-            score:
+            aggregateScore:
               type: number
-            cefrLevel:
+            referenceLevel:
               type: string
-            estimatedVocabulary:
-              type: integer
-            radarScores:
-              type: object
-              properties:
-                vocab: { type: integer }
-                grammar: { type: integer }
-                listening: { type: integer }
-                speed: { type: integer }
-                scenario: { type: integer }
+            confidence:
+              type: string
+              enum: [HIGH, MEDIUM, LOW, UNVERIFIED]
+            coverageRatio:
+              type: number
+            dimensionSummaries:
+              type: array
+              minItems: 4
+              maxItems: 4
+              description: 固定顺序 VOCABULARY、BASIC_GRAMMAR、READING、LISTENING；不得包含速度或场景伪维度。
+              items:
+                type: object
+                properties:
+                  dimension: { type: string }
+                  dimensionPercent: { type: number }
+                  coverageRatio: { type: number }
             recommendedAdvice:
               type: string
 

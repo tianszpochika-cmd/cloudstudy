@@ -76,7 +76,7 @@ const fragmentInventory = (path, eventNames) => ({ path, eventNames: eventNames.
 // edit cannot hide a rename, nested file, or cross-fragment move.
 export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json', 'assessment.item.submitted.v1 auth.device.kicked.v1 privacy.export.requested.v1 privacy.export.completed.v1'),
-  fragmentInventory('packages/contracts/events/v1/fragments/b10-learning-assessment.events.json', 'assessment.attempt.submitted.v1 assessment.attempt.assessed.v1 learning.mastery.projected.v1 learning.review.scheduled.v1 workflow.assessment_learning.saga_started.v1 workflow.assessment_learning.saga_compensated.v1 workflow.event.replayed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b10-learning-assessment.events.json', 'assessment.attempt.submitted.v1 assessment.attempt.assessed.v1 assessment.placement.completed.v1 learning.mastery.projected.v1 learning.review.scheduled.v1 workflow.assessment_learning.saga_started.v1 workflow.assessment_learning.saga_compensated.v1 workflow.event.replayed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json', 'media.started.v1 media.segment_completed.v1 media.downloaded.v1 media.revoked.v1 notification.delivered.v1 sync.enqueued.v1 sync.conflict_detected.v1 sync.recovered.v1 recording.saved.v1 speaking.permission_requested.v1 shadowing.completed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json', 'gamification.session_started.v1 gamification.xp.ledger_posted.v1 gamification.reward.granted.v1 gamification.avatar.equipped.v1 study_room.joined.v1 study_room.focus_started.v1 study_room.left.v1 leaderboard.refreshed.v1 social.report.created.v1 notification.requested.v1 notification.retry_scheduled.v1 notification.recovery.completed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json', 'commerce.order.created.v1 commerce.payment.callback_received.v1 commerce.entitlement.activated.v1 commerce.refund.completed.v1 commerce.order.reconciled.v1 support.ticket.created.v1 analytics.metric.projected.v1 analytics.recompute.requested.v1'),
@@ -151,8 +151,8 @@ const allowedRuntimeClaimKeys = [
 ];
 const allowedPayloadSchemaKeywords = new Set([
   '$id', 'additionalProperties', 'const', 'enum', 'format', 'items',
-  'maxItems', 'maxLength', 'maximum', 'minItems', 'minLength', 'minimum',
-  'nullable', 'pattern', 'properties', 'required', 'type', 'uniqueItems',
+  'exclusiveMinimum', 'maxItems', 'maxLength', 'maximum', 'minItems', 'minLength', 'minimum',
+  'not', 'nullable', 'oneOf', 'pattern', 'prefixItems', 'properties', 'required', 'type', 'uniqueItems',
 ]);
 const allowedPayloadSchemaTypes = new Set(['null', 'boolean', 'object', 'array', 'number', 'integer', 'string']);
 const forbiddenInfrastructureSubject = /\b(?:broker|kafka)\b/i;
@@ -298,7 +298,7 @@ function normalizedIdentifier(value) {
   return String(value).replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[^a-z0-9]+/gi, ' ');
 }
 
-function validatePayloadSchemaNode(schema, location, errors) {
+function validatePayloadSchemaNode(schema, location, errors, inheritedProperties = undefined) {
   if (!isRecord(schema)) {
     errors.push(`${location} must be a JSON Schema object`);
     return;
@@ -321,7 +321,7 @@ function validatePayloadSchemaNode(schema, location, errors) {
   for (const key of ['format', 'pattern']) {
     if (schema[key] !== undefined && typeof schema[key] !== 'string') errors.push(`${location}.${key} must be a string`);
   }
-  for (const key of ['minimum', 'maximum']) {
+  for (const key of ['minimum', 'maximum', 'exclusiveMinimum']) {
     if (schema[key] !== undefined && (typeof schema[key] !== 'number' || !Number.isFinite(schema[key]))) errors.push(`${location}.${key} must be a finite number`);
   }
   for (const key of ['minLength', 'maxLength', 'minItems', 'maxItems']) {
@@ -350,6 +350,10 @@ function validatePayloadSchemaNode(schema, location, errors) {
       errors.push(`${location}.required must be a duplicate-free string array`);
     }
   }
+  const localProperties = isRecord(schema.properties) ? schema.properties : undefined;
+  const availableProperties = isRecord(inheritedProperties) || localProperties
+    ? { ...(isRecord(inheritedProperties) ? inheritedProperties : {}), ...(localProperties ?? {}) }
+    : undefined;
   if (schema.properties !== undefined) {
     if (!isRecord(schema.properties)) {
       errors.push(`${location}.properties must be an object`);
@@ -364,12 +368,32 @@ function validatePayloadSchemaNode(schema, location, errors) {
         }
         validatePayloadSchemaNode(propertySchema, `${location}.properties.${propertyName}`, errors);
       }
-      for (const requiredField of schema.required ?? []) {
-        if (!Object.hasOwn(schema.properties, requiredField)) errors.push(`${location}.required references unknown property ${requiredField}`);
-      }
     }
   }
-  if (schema.items !== undefined) validatePayloadSchemaNode(schema.items, `${location}.items`, errors);
+  if (isRecord(availableProperties)) {
+    for (const requiredField of schema.required ?? []) {
+      if (!Object.hasOwn(availableProperties, requiredField)) errors.push(`${location}.required references unknown property ${requiredField}`);
+    }
+  }
+  if (schema.items !== undefined) {
+    if (isRecord(schema.items)) validatePayloadSchemaNode(schema.items, `${location}.items`, errors);
+    else if (typeof schema.items !== 'boolean') errors.push(`${location}.items must be a JSON Schema object or boolean`);
+  }
+  if (schema.prefixItems !== undefined) {
+    if (!Array.isArray(schema.prefixItems) || schema.prefixItems.length === 0) {
+      errors.push(`${location}.prefixItems must contain at least one JSON Schema branch`);
+    } else {
+      schema.prefixItems.forEach((branch, index) => validatePayloadSchemaNode(branch, `${location}.prefixItems[${index}]`, errors));
+    }
+  }
+  if (schema.oneOf !== undefined) {
+    if (!Array.isArray(schema.oneOf) || schema.oneOf.length < 2) {
+      errors.push(`${location}.oneOf must contain at least two JSON Schema branches`);
+    } else {
+      schema.oneOf.forEach((branch, index) => validatePayloadSchemaNode(branch, `${location}.oneOf[${index}]`, errors, availableProperties));
+    }
+  }
+  if (schema.not !== undefined) validatePayloadSchemaNode(schema.not, `${location}.not`, errors, availableProperties);
   if (isRecord(schema.additionalProperties)) validatePayloadSchemaNode(schema.additionalProperties, `${location}.additionalProperties`, errors);
   else if (schema.additionalProperties !== undefined && typeof schema.additionalProperties !== 'boolean') errors.push(`${location}.additionalProperties must be boolean or a JSON Schema object`);
 }

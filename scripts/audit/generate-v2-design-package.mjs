@@ -41,7 +41,7 @@ const domains = {
     states: 'ST-B/ST-C；测评会话 CREATED/IN_PROGRESS/INTERRUPTED/COMPLETED；未解锁、无推荐和弱网必须可解释',
     contract: 'Gateway → learner-service + learning-service；usr_learning_profile、learning_plan、learning_session、content_version',
     permission: '公开内容可浏览；学习画像和计划仅本人可读写；阶段、内容版本和年龄 Gate 由服务端校验',
-    event: 'onboarding.goal_selected.v1、onboarding.assessment_completed.v1、learning.plan_resumed.v1',
+    event: 'learner.target.updated.v1、assessment.placement.completed.v1、learning.plan_resumed.v1',
     acceptance: '首次进入可完成；中断可恢复；重复提交不重复建计划；地图锁定态、空推荐、加载、错误、离线和权限态均可回退到可学习路径。',
   },
   VOC: {

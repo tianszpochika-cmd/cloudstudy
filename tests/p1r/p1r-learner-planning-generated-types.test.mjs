@@ -53,6 +53,7 @@ import type {
   B9LearnerPreferencesPatch,
   B9LearnerProfilePatch,
   B9LearnerTargetUpsert,
+  B9PlacementBaseline,
   B9PlanningInputSnapshot,
   B9PlanningJobRef,
   B9PlanReference,
@@ -127,6 +128,7 @@ const rejectedProfileTargetGoal: B9LearnerProfilePatch = {
 // @ts-expect-error weeklyStudyDays is required in the response projection.
 const rejectedPreferences: B9LearnerPreferences = { ...preferences, weeklyStudyDays: undefined };
 
+declare const placementBaseline: B9PlacementBaseline;
 const planningInput = {
   pinId: 'pin-1',
   pinVersion: 1,
@@ -140,11 +142,13 @@ const planningInput = {
   timezone: 'Asia/Shanghai',
   weeklyStudyDays: [1, 2],
   contentLocale: 'en-US',
+  contentVersionId: 1,
   contentEpoch: 1,
   projectionVersion: 1,
   rightsSnapshotVersion: 1,
   eligibilitySnapshotVersion: 1,
   eligibilitySnapshotDigest: 'b'.repeat(64),
+  placementBaseline,
   planningRuleVersion: 'rule-v1',
   inputFactWatermark: 'watermark-1',
   sourceEventId: 'evt-1',
@@ -153,9 +157,9 @@ const planningInput = {
 const rejectedPlanningAuthority = {
   pinId: 'pin-1', pinVersion: 1, pinDigest: 'a'.repeat(64), targetId: 1, targetVersion: 1,
   profileVersion: 1, preferenceVersion: 1, goalCatalogVersion: 'catalog-v1', dailyQuotaMinutes: 15,
-  timezone: 'Asia/Shanghai', weeklyStudyDays: [1, 2], contentLocale: 'en-US', contentEpoch: 1,
+  timezone: 'Asia/Shanghai', weeklyStudyDays: [1, 2], contentLocale: 'en-US', contentVersionId: 1, contentEpoch: 1,
   projectionVersion: 1, rightsSnapshotVersion: 1, eligibilitySnapshotVersion: 1, eligibilitySnapshotDigest: 'b'.repeat(64), planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
-  sourceEventId: 'evt-1', rootEventId: 'evt-root-1',
+  sourceEventId: 'evt-1', rootEventId: 'evt-root-1', placementBaseline,
   // @ts-expect-error IAM eligibility remains a server-derived digest, never a raw client authority fact.
   adultGate: true,
 } satisfies B9PlanningInputSnapshot;
@@ -163,8 +167,8 @@ const rejectedPlanningAuthority = {
 const rejectedPlanningPin: B9PlanningInputSnapshot = {
   pinId: 'pin-1', pinVersion: 1, targetId: 1, targetVersion: 1, profileVersion: 1,
   preferenceVersion: 1, goalCatalogVersion: 'catalog-v1', dailyQuotaMinutes: 15, timezone: 'Asia/Shanghai',
-  weeklyStudyDays: [1, 2], contentLocale: 'en-US', contentEpoch: 1, projectionVersion: 1,
-  rightsSnapshotVersion: 1, eligibilitySnapshotVersion: 1, eligibilitySnapshotDigest: 'b'.repeat(64), planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
+  weeklyStudyDays: [1, 2], contentLocale: 'en-US', contentVersionId: 1, contentEpoch: 1, projectionVersion: 1,
+  rightsSnapshotVersion: 1, eligibilitySnapshotVersion: 1, eligibilitySnapshotDigest: 'b'.repeat(64), placementBaseline, planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
   sourceEventId: 'evt-1', rootEventId: 'evt-root-1',
 };
 
@@ -180,8 +184,8 @@ declare const completedRecovery: B9FirstDayRecovery & {
   retryable: false;
   safeFailureCode: 'NONE';
 };
-// OpenAPI/checker enforce taskCount minimum and tasks minItems at the wire boundary;
-// generated TypeScript here verifies required fields, state discriminators and never branches.
+// OpenAPI/checker enforce taskCount equality and its numeric minimum at the wire boundary;
+// generated TypeScript also preserves the READY branch's non-empty tasks cardinality.
 const ready = {
   state: 'READY' as const,
   profileReady: true as const,
@@ -196,6 +200,12 @@ const ready = {
   planningInput,
   plan,
 } satisfies B9FirstDayProjection;
+const readyWithoutTasks = { ...ready, taskCount: 0, tasks: [] as const };
+// @ts-expect-error READY cannot masquerade as a successful empty projection.
+const rejectedReadyWithoutTasks: B9FirstDayProjection = readyWithoutTasks;
+const readyWithMalformedTask = { ...ready, tasks: [{ unexpectedTaskShape: true }] };
+// @ts-expect-error READY tasks retain the generated B9TaskRef element shape.
+const rejectedReadyWithMalformedTask: B9FirstDayProjection = readyWithMalformedTask;
 const readyWithRecovery = { ...ready, recovery };
 // @ts-expect-error READY cannot carry a DEGRADED recovery branch.
 const rejectedReadyRecovery: B9FirstDayProjection = readyWithRecovery;

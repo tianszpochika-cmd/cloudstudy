@@ -1,0 +1,813 @@
+{
+  "$schema": "p1r.placement-contract.v1",
+  "schemaVersion": "p1r.placement-contract.v1",
+  "task": "P1R-M1-012",
+  "phase": "P1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "compatibilityPromotion": {
+    "id": "P1R-M1-012",
+    "sourceContractBaseline": "270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3",
+    "previousPromotion": "M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_EVENT_GOVERNANCE_B26_STATIC",
+    "canonicalFragment": "packages/contracts/fragments/b10/b10-placement.openapi.json",
+    "legacyAdapterFragments": [
+      "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+      "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json"
+    ],
+    "planningFragment": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+    "eventFragment": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+    "b26StaticPolicy": "config/b26-event-runtime.json"
+  },
+  "canonicalSources": {
+    "b10PlacementFragment": "packages/contracts/fragments/b10/b10-placement.openapi.json",
+    "b10AssessmentFragment": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+    "b1OnboardingPrivacyFragment": "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+    "b1AuthOnboardingFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
+    "eventFragment": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json"
+  },
+  "sourceContractBaseline": "270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3",
+  "startCommit": "35d78f9",
+  "scope": [
+    "RULE-P1-PLACEMENT",
+    "INT-P1-004",
+    "P1_PLACEMENT_V1_MANIFEST_RESULT_EVENT_AND_PLAN_SAGA"
+  ],
+  "integrationDependencies": {
+    "status": "SOURCE_BOUND_STATIC_D2",
+    "trackOwner": "P1R-M1-012_TRACK_B",
+    "unresolvedDecisions": []
+  },
+  "runtimeBoundary": {
+    "staticContractOnly": true,
+    "prohibitedRuntimeClaims": [
+      "assessment-service-placement-session-persisted",
+      "assessment-service-placement-report-persisted",
+      "outbox-or-kafka-placement-completion-delivery-verified",
+      "workflow-placement-saga-executed",
+      "learning-plan-or-learner-projection-created",
+      "gateway-or-resource-server-pep-verified",
+      "browser-or-device-placement-e2e-verified"
+    ],
+    "b26": {
+      "mode": "static-only",
+      "runtimeStatus": "pending",
+      "defaultDecision": "NO-GO"
+    },
+    "runtimeOwners": {
+      "ownerDataAndTransaction": "P1R-M2-004",
+      "kafkaOutboxAndDelivery": "P1R-M2-005",
+      "workflowSagaAndRecovery": "P1R-M2-006",
+      "endToEndEvidence": "P1R-M8-006/011/012",
+      "releaseGate": "P1R-M0-006"
+    }
+  },
+  "manifest": {
+    "id": "P1_PLACEMENT_V1",
+    "version": "P1_PLACEMENT_V1",
+    "ownerService": "assessment-service",
+    "totalItemCount": 10,
+    "dimensions": [
+      {
+        "id": "VOCABULARY",
+        "weight": 25,
+        "requiredItemCount": 3,
+        "displayOrder": 1
+      },
+      {
+        "id": "BASIC_GRAMMAR",
+        "weight": 25,
+        "requiredItemCount": 3,
+        "displayOrder": 2
+      },
+      {
+        "id": "READING",
+        "weight": 25,
+        "requiredItemCount": 2,
+        "displayOrder": 3
+      },
+      {
+        "id": "LISTENING",
+        "weight": 25,
+        "requiredItemCount": 2,
+        "displayOrder": 4
+      }
+    ],
+    "closed": true,
+    "noExtraDimensions": true
+  },
+  "scoring": {
+    "correctValue": 1,
+    "incorrectValue": 0,
+    "unansweredValue": 0,
+    "dimensionFormula": "earnedItemCount / availableItemCount * 100",
+    "aggregateFormula": "sum(dimensionPercent * dimensionWeight / 100)",
+    "aggregateScale": "0_TO_100",
+    "dimensionRounding": {
+      "method": "ROUND_HALF_UP",
+      "decimalPlaces": 2,
+      "appliedBeforeAggregation": true
+    },
+    "aggregateRounding": {
+      "method": "ROUND_HALF_UP",
+      "decimalPlaces": 0,
+      "appliedBeforeLevelBoundary": true
+    },
+    "timeRole": "EXPLANATION_OR_TIEBREAKER_ONLY",
+    "timeMayChangeCorrectness": false,
+    "serverDerivedFields": [
+      "correctness",
+      "dimensionPercent",
+      "aggregateScore",
+      "referenceLevel",
+      "confidence",
+      "recommendation"
+    ]
+  },
+  "coverageAndConfidence": {
+    "coverageFormula": "validServerAcceptedItemCount / manifest.totalItemCount",
+    "coverageIsIndependentFromCorrectness": true,
+    "completeAssessmentRequiresAllDimensionTargets": true,
+    "confidenceCodes": ["HIGH", "MEDIUM", "LOW", "UNVERIFIED"],
+    "high": {
+      "coverageRatio": 1,
+      "allDimensionTargetsMet": true,
+      "minimumValidItemsPerDimension": [
+        {
+          "dimension": "VOCABULARY",
+          "count": 3
+        },
+        {
+          "dimension": "BASIC_GRAMMAR",
+          "count": 3
+        },
+        {
+          "dimension": "READING",
+          "count": 2
+        },
+        {
+          "dimension": "LISTENING",
+          "count": 2
+        }
+      ]
+    },
+    "medium": {
+      "minimumCoverageRatio": 0.8,
+      "minimumValidItemsPerDimension": 1
+    },
+    "low": {
+      "minimumCoverageRatioExclusive": 0,
+      "when": "coverage is positive but does not qualify for HIGH or MEDIUM"
+    },
+    "unverified": {
+      "when": "skip or no valid coverage",
+      "mustNotImplyMeasuredLevel": true
+    },
+    "incompleteResultPolicy": "MISSING_A_DIMENSION_MUST_NOT_BE_PRESENTED_AS_COMPLETE_ASSESSMENT"
+  },
+  "levelBoundaries": [
+    {
+      "minimum": 0,
+      "maximum": 39,
+      "referenceLevel": "A1"
+    },
+    {
+      "minimum": 40,
+      "maximum": 59,
+      "referenceLevel": "A2"
+    },
+    {
+      "minimum": 60,
+      "maximum": 74,
+      "referenceLevel": "B1"
+    },
+    {
+      "minimum": 75,
+      "maximum": 84,
+      "referenceLevel": "B2"
+    },
+    {
+      "minimum": 85,
+      "maximum": 92,
+      "referenceLevel": "C1"
+    },
+    {
+      "minimum": 93,
+      "maximum": 100,
+      "referenceLevel": "C2"
+    }
+  ],
+  "resultSafety": {
+    "referenceOnly": true,
+    "officialCertification": false,
+    "forbiddenResultFields": [
+      "estimatedVocabulary",
+      "preciseVocabularyCount",
+      "officialCertificate",
+      "officialCertification",
+      "officialCEFR",
+      "nationwidePercentile",
+      "mastery",
+      "aiScore",
+      "aiRecommendation"
+    ],
+    "requiredLearnerSafeFields": [
+      "placementResultId",
+      "sessionId",
+      "reportId",
+      "resultVersion",
+      "reportVersion",
+      "aggregateScore",
+      "referenceLevel",
+      "confidence",
+      "coverageRatio",
+      "completionStatus",
+      "resultDigest",
+      "completedAt"
+    ]
+  },
+  "pins": {
+    "digestPattern": "^[a-f0-9]{64}$",
+    "manifest": {
+      "requiredFields": [
+        "placementManifestId",
+        "placementManifestVersion",
+        "placementManifestDigest",
+        "dimensionSetDigest",
+        "totalItemCount"
+      ]
+    },
+    "content": {
+      "requiredFields": [
+        "contentVersionId",
+        "contentEpoch",
+        "snapshotId",
+        "snapshotHash"
+      ]
+    },
+    "answerRule": {
+      "requiredFields": [
+        "answerRuleSetVersion",
+        "answerRuleVersion",
+        "ruleDigest",
+        "completionRuleVersion"
+      ]
+    },
+    "session": {
+      "requiredFields": ["sessionId", "stateVersion", "sessionSnapshotDigest"]
+    },
+    "result": {
+      "requiredFields": [
+        "placementResultId",
+        "resultVersion",
+        "reportId",
+        "reportVersion",
+        "reportDigest",
+        "resultDigest",
+        "completedAt"
+      ]
+    },
+    "bindingRule": "ALL_RESULT_AND_PLAN_REFERENCES_MUST_BIND_THE_SAME_MANIFEST_CONTENT_AND_ANSWER_RULE_PIN_SET"
+  },
+  "sessionRecovery": {
+    "resumeScope": "SAME_SESSION_SAME_SUBJECT_SAME_IMMUTABLE_PIN_SET_ONLY",
+    "checkpointOperationId": "putB10AssessmentSessionCheckpoint",
+    "checkpointOwner": "assessment-service",
+    "allowedSessionStates": ["CREATED", "IN_PROGRESS", "INTERRUPTED"],
+    "forbiddenSessionStates": [
+      "SUBMITTING",
+      "COMPLETED",
+      "AUTO_SUBMITTED",
+      "CANCELLED",
+      "EXPIRED"
+    ],
+    "mayCreateReplacementSession": false,
+    "mayChangeSnapshotOrRulePins": false,
+    "crossSubjectResume": "FORBIDDEN"
+  },
+  "resultImmutability": {
+    "firstDurableResultRule": "FIRST_DURABLE_COMPLETED_RESULT_AND_REPORT_ARE_IMMUTABLE",
+    "sameIdempotencyKeySamePayload": "RETURN_ORIGINAL_DURABLE_RESULT",
+    "sameIdempotencyKeyDifferentPayload": "CONFLICT_409",
+    "duplicateCompletionEvent": "RETURN_ORIGINAL_EVENT_OR_DEDUPLICATE_WITHOUT_NEW_PLAN",
+    "recalibration": "CREATE_NEW_SEPARATE_RESULT_WITH_ORIGINAL_RESULT_RETAINED",
+    "mayOverwriteOriginalReport": false,
+    "mayCreateSecondPlanForSameBindings": false
+  },
+  "skip": {
+    "resultKind": "SKIPPED",
+    "baselineConfidence": "UNVERIFIED",
+    "aggregateScore": null,
+    "referenceLevel": null,
+    "recommendation": "CONSERVATIVE_ENTRY_PLAN_ONLY",
+    "mustNotImplyMeasuredResult": true
+  },
+  "authorization": {
+    "defaultDecision": "DENY",
+    "serviceSidePepRequired": true,
+    "trustedFacts": [
+      "subject",
+      "tenant",
+      "adultGate",
+      "phase",
+      "contentRights",
+      "entitlement",
+      "resourceOwner",
+      "policyVersion"
+    ],
+    "candidateResponseBoundary": "CLIENT_MAY_SUBMIT_ONLY_CANDIDATE_RESPONSE_IN_PROTECTED_ASSESSMENT_REQUEST_BOUNDARY",
+    "serverAuthorityFields": [
+      "correctness",
+      "answerKey",
+      "answerRule",
+      "score",
+      "aggregateScore",
+      "dimensionPercent",
+      "referenceLevel",
+      "confidence",
+      "recommendation",
+      "placementManifestId",
+      "contentVersionId",
+      "contentEpoch",
+      "snapshotId",
+      "snapshotHash",
+      "answerRuleSetVersion",
+      "answerRuleVersion",
+      "ruleDigest",
+      "completionRuleVersion",
+      "resultVersion",
+      "reportVersion"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "tenant",
+      "tenantId",
+      "subject",
+      "subjectId",
+      "owner",
+      "ownerId",
+      "adultGate",
+      "phase",
+      "contentRights",
+      "entitlement",
+      "policyVersion",
+      "correct",
+      "isCorrect",
+      "correctness",
+      "answerKey",
+      "answerRule",
+      "answerRuleVersion",
+      "ruleDigest",
+      "score",
+      "aggregateScore",
+      "dimensionPercent",
+      "referenceLevel",
+      "confidence",
+      "recommendation",
+      "placementManifestId",
+      "placementManifestVersion",
+      "placementManifestDigest",
+      "contentVersionId",
+      "contentEpoch",
+      "snapshotId",
+      "snapshotHash",
+      "resultVersion",
+      "reportVersion"
+    ]
+  },
+  "ownership": {
+    "assessment": {
+      "service": "assessment-service",
+      "owns": [
+        "placement-session",
+        "placement-checkpoint",
+        "placement-manifest-pin",
+        "placement-result",
+        "placement-report",
+        "placement-completion-fact"
+      ],
+      "mayWriteForeignDomainSchema": false
+    },
+    "workflow": {
+      "service": "workflow-service",
+      "owns": [
+        "placement-plan-saga",
+        "retry",
+        "dedupe",
+        "compensation",
+        "dlq-reference",
+        "manual-recovery-reference"
+      ],
+      "mayWriteForeignDomainSchema": false,
+      "mayModifyPlacementResultOrReport": false,
+      "commands": "VERSIONED_OWNER_API_OR_EVENT_ONLY"
+    },
+    "learning": {
+      "service": "learning-service",
+      "owns": ["initial-learning-plan", "one-active-plan-constraint"],
+      "mayModifyPlacementResultOrReport": false,
+      "planCreationBinding": "placementSessionId+placementResultId+targetVersion+planningInputPinId"
+    },
+    "learner": {
+      "service": "learner-service",
+      "owns": [
+        "learner-facing-placement-reference",
+        "first-day-projection-reference"
+      ],
+      "mayRecomputePlacement": false,
+      "mayWriteLearningPlan": false,
+      "mayModifyPlacementResultOrReport": false
+    },
+    "audit": {
+      "service": "audit-service",
+      "owns": ["immutable-security-audit"],
+      "mayOwnPlacementReport": false,
+      "mayWriteForeignDomainSchema": false
+    }
+  },
+  "completionEvent": {
+    "bindingStatus": "SOURCE_BOUND_STATIC_D2",
+    "name": "assessment.placement.completed.v1",
+    "status": "CANONICAL_D2",
+    "producerService": "assessment-service",
+    "publishTrigger": "FIRST_DURABLE_COMPLETED_RESULT_ONLY",
+    "aggregateType": "placement_session",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "envelopeOnlyFields": [
+      "eventId",
+      "eventName",
+      "schema",
+      "version",
+      "schemaVersion",
+      "occurredAt",
+      "dedupeKey"
+    ],
+    "commonRequiredPayloadGroups": [
+      "placement-session-result-report-identity-and-version",
+      "manifest-content-answer-rule-pin-set",
+      "target-reference-and-version"
+    ],
+    "consumerProjectionLineage": {
+      "ownerService": "learning-service",
+      "assembly": "B9PlacementBaseline_AND_B9PlanningInputSnapshot",
+      "sourceEventIdDerivation": "completion-envelope.eventId",
+      "rootEventIdDerivation": "first-placement-completion-envelope.eventId",
+      "payloadMustNotContain": ["eventId", "sourceEventId", "rootEventId"]
+    },
+    "assessed": {
+      "resultKind": "ASSESSED",
+      "requiredPayloadGroups": [
+        "learner-safe-score-level-coverage-confidence-summary",
+        "dimension-learner-safe-summary"
+      ]
+    },
+    "skipped": {
+      "resultKind": "SKIPPED",
+      "fixedSummary": {
+        "confidence": "UNVERIFIED",
+        "coverageRatio": 0,
+        "aggregateScore": null,
+        "referenceLevel": null
+      },
+      "forbiddenPayloadGroups": [
+        "dimension-learner-safe-summary",
+        "assessment-algorithm-or-rule-explanation"
+      ],
+      "requestedStartingLevel": {
+        "allowed": true,
+        "authority": "USER_SELECTED_NON_AUTHORITATIVE"
+      }
+    },
+    "forbiddenPayloadFields": [
+      "rawResponse",
+      "response",
+      "responses",
+      "answer",
+      "answers",
+      "answerKey",
+      "answerRule",
+      "recording",
+      "recordingUrl",
+      "estimatedVocabulary",
+      "preciseVocabularyCount",
+      "officialCertification",
+      "mastery",
+      "aiScore",
+      "aiRecommendation"
+    ],
+    "dedupeRule": "FIRST_DURABLE_RESULT_PER_PLACEMENT_SESSION_ONLY",
+    "onlyFirstDurableResultMayPublish": true,
+    "trackBMustFreeze": [
+      "event-name",
+      "event-catalog-status-and-governance-fields",
+      "payload-schema-allowlist-and-required-fields",
+      "resultKind-oneOf-and-branch-not-guards",
+      "aggregate-id-field",
+      "compatibility-policy"
+    ]
+  },
+  "placementPlanSaga": {
+    "sagaType": "PLACEMENT_TO_INITIAL_PLAN_V1",
+    "coordinator": "workflow-service",
+    "sourceEventBinding": "SOURCE_BOUND_STATIC_D2",
+    "requiredBindingGroups": [
+      "immutable-placement-session-result",
+      "manifest-content-answer-rule-pins",
+      "target-version",
+      "planning-input-pin-and-watermark"
+    ],
+    "steps": [
+      {
+        "id": "VALIDATE_COMPLETION_FACT",
+        "ownerService": "workflow-service",
+        "writeBoundary": "workflow-service-schema-only"
+      },
+      {
+        "id": "ASSEMBLE_OR_REPLAY_PLANNING_INPUT",
+        "ownerService": "learning-service",
+        "writeBoundary": "versioned-learning-owner-api-only"
+      },
+      {
+        "id": "CREATE_OR_REPLAY_INITIAL_PLAN",
+        "ownerService": "learning-service",
+        "writeBoundary": "versioned-learning-owner-api-only"
+      },
+      {
+        "id": "PROJECT_LEARNER_REFERENCE",
+        "ownerService": "learner-service",
+        "writeBoundary": "versioned-learner-owner-api-only"
+      }
+    ],
+    "oneActivePlanRule": "SAME_BINDINGS_REPLAY_OR_RETURN_EXISTING_PLAN_NEVER_CREATE_A_SECOND_ACTIVE_PLAN",
+    "planningInputNaturalKey": "targetId+contentVersionId+contentEpoch+planningRuleVersion",
+    "planEffectDedupeKey": "sessionId+placementResultId+resultVersion+targetVersion+planningInputPinId+planningInputPinVersion+planningInputDigest+inputFactWatermark",
+    "outOfOrderOrDuplicateEvent": "DEDUPE_OR_RECONCILE_WITHOUT_ASSESSMENT_MUTATION",
+    "planFailure": "RETAIN_IMMUTABLE_PLACEMENT_RESULT_AND_REPORT_AND_OPEN_OWNER_SCOPED_RECOVERY",
+    "recovery": "RETRY_OR_MANUAL_RECOVERY_MAY_NOT_OVERWRITE_PLACEMENT_RESULT_REPORT_OR_WRITE_FOREIGN_SCHEMA",
+    "kafkaRpc": false,
+    "twoPhaseCommit": false,
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+  },
+  "gapBoundaries": {
+    "mustRemainOpenUntilIntegratedEvidence": [
+      "CONTRACT-GAP-ONB-002",
+      "CONTRACT-GAP-PLACEMENT-MANIFEST",
+      "EVENT-GAP-ONB-002",
+      "EVENT-GAP-PLACEMENT-PLAN"
+    ],
+    "mayNotCloseFromPolicyOnly": true
+  },
+  "contractIntegration": {
+    "status": "SOURCE_BOUND_STATIC_D2",
+    "staticSourceBindingOnly": true,
+    "canonicalRoutes": [
+      {
+        "path": "/api/v1/assessment/placement/sessions",
+        "method": "POST",
+        "operationId": "createB10PlacementSession"
+      },
+      {
+        "path": "/api/v1/assessment/placement/sessions/{sessionId}",
+        "method": "GET",
+        "operationId": "getB10PlacementSession"
+      },
+      {
+        "path": "/api/v1/assessment/placement/sessions/{sessionId}/responses",
+        "method": "POST",
+        "operationId": "submitB10PlacementResponse"
+      },
+      {
+        "path": "/api/v1/assessment/placement/baselines/skip",
+        "method": "POST",
+        "operationId": "createB10PlacementSkipBaseline"
+      },
+      {
+        "path": "/api/v1/assessment/placement/reports/{reportId}",
+        "method": "GET",
+        "operationId": "getB10PlacementReport"
+      }
+    ],
+    "schemaBinding": "EXACT_B10_B1_EVENT_SOURCE_GATE",
+    "requiredRouteBehavior": [
+      "bearer-security-and-service-side-PEP-default-deny",
+      "server-authoritative-pins-score-level-confidence-and-recommendation",
+      "same-session-checkpoint-recovery-only",
+      "same-idempotency-key-same-payload-replay-original",
+      "same-idempotency-key-different-payload-409",
+      "skip-produces-unverified-baseline-only",
+      "all-five-B1-placement-operations-deprecated-adapter-only"
+    ]
+  },
+  "learnerPlanningSuccessor": {
+    "task": "P1R-M1-012",
+    "basePolicyId": "M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION",
+    "planningFragment": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+    "placementBaselineSchema": "B9PlacementBaseline",
+    "planningInput": {
+      "schema": "B9PlanningInputSnapshot",
+      "addedRequiredFields": ["contentVersionId", "placementBaseline"],
+      "addedForbiddenFields": [
+        "placementRaw",
+        "placementScore",
+        "placementAlgorithm",
+        "aggregateScore",
+        "dimensionSummaries",
+        "placementReport",
+        "placementResult",
+        "srsState",
+        "mastery",
+        "adultGate",
+        "consent",
+        "phase",
+        "policyVersion",
+        "contentRights"
+      ],
+      "sourceMappingAdditions": {
+        "contentProjection": ["contentVersionId"],
+        "assessmentPlacement": ["placementBaseline"]
+      }
+    },
+    "placementBinding": {
+      "sourceEvent": "assessment.placement.completed.v1",
+      "planningInputOwner": "learning-service",
+      "assembleOrReplayBeforePlan": true,
+      "activePlanNaturalKey": [
+        "targetId",
+        "contentVersionId",
+        "contentEpoch",
+        "planningRuleVersion"
+      ],
+      "effectDedupeKey": [
+        "placementBaseline.placementSessionId",
+        "placementBaseline.placementResultId",
+        "placementBaseline.resultVersion",
+        "targetVersion",
+        "pinId",
+        "pinVersion",
+        "pinDigest",
+        "inputFactWatermark"
+      ],
+      "pinConsistency": "placementBaseline target/content pins, sourceEventId and rootEventId MUST equal their planning-input counterparts",
+      "lineage": {
+        "sourceEventId": "DERIVED_BY_LEARNING_FROM_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+        "rootEventId": "FIRST_DURABLE_COMPLETION_SAGA_ROOT_EQUALS_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+        "assessmentPayloadEventIdentityFields": "PROHIBITED"
+      },
+      "rawAuthorityFacts": "PROHIBITED",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    "firstDay": {
+      "commonSchema": "B9FirstDayProjectionCommon",
+      "addedConsistency": [
+        "placementStatus=COMPLETED implies planningInput.placementBaseline.resultKind=ASSESSED",
+        "placementStatus=SKIPPED implies planningInput.placementBaseline.resultKind=SKIPPED",
+        "planningInput placement baseline target/content pins and lineage MUST remain bound while PROCESSING, READY or DEGRADED"
+      ]
+    },
+    "lineage": {
+      "sourceEventId": "DERIVED_BY_LEARNING_FROM_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+      "rootEventId": "FIRST_DURABLE_COMPLETION_SAGA_ROOT_EQUALS_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+      "assessmentPayloadEventIdentityFields": "PROHIBITED"
+    }
+  },
+  "adversarialCases": [
+    "CONFIG_UNKNOWN_FIELD",
+    "CONFIG_REQUIRED_FIELD_REMOVAL",
+    "CONFIG_RUNTIME_PROMOTION",
+    "SOURCE_BASELINE_DRIFT",
+    "MANIFEST_ID_DRIFT",
+    "MANIFEST_DIMENSION_UNKNOWN",
+    "MANIFEST_DIMENSION_ORDER_DRIFT",
+    "MANIFEST_DIMENSION_COUNT_DRIFT",
+    "MANIFEST_TOTAL_ITEM_COUNT_DRIFT",
+    "MANIFEST_WEIGHT_DRIFT",
+    "MANIFEST_WEIGHT_SUM_NOT_100",
+    "SCORING_CORRECT_VALUE_DRIFT",
+    "SCORING_UNANSWERED_VALUE_DRIFT",
+    "SCORING_TIME_FLIPS_CORRECTNESS",
+    "SCORING_FORMULA_DRIFT",
+    "DIMENSION_ROUNDING_DRIFT",
+    "AGGREGATE_ROUNDING_DRIFT",
+    "ROUNDING_ORDER_DRIFT",
+    "LEVEL_BOUNDARY_GAP",
+    "LEVEL_BOUNDARY_OVERLAP",
+    "LEVEL_BOUNDARY_DRIFT",
+    "RESULT_OFFICIAL_CLAIM",
+    "RESULT_PRECISE_VOCABULARY_LEAK",
+    "CONFIDENCE_HIGH_THRESHOLD_DRIFT",
+    "CONFIDENCE_MEDIUM_THRESHOLD_DRIFT",
+    "CONFIDENCE_LOW_ZERO_ACCEPTED",
+    "COVERAGE_CORRECTNESS_CONFLATION",
+    "COVERAGE_MISSING_DIMENSION_PROMOTED",
+    "PIN_MANIFEST_FIELD_REMOVAL",
+    "PIN_CONTENT_FIELD_REMOVAL",
+    "PIN_ANSWER_RULE_FIELD_REMOVAL",
+    "PIN_DIGEST_PATTERN_WEAKENED",
+    "SESSION_RECOVERY_NEW_SESSION_ALLOWED",
+    "SESSION_RECOVERY_SNAPSHOT_DRIFT_ALLOWED",
+    "SESSION_RECOVERY_TERMINAL_ALLOWED",
+    "FIRST_DURABLE_RESULT_MUTABLE",
+    "IDEMPOTENCY_SAME_KEY_REEXECUTES",
+    "IDEMPOTENCY_DIFFERENT_PAYLOAD_NOT_409",
+    "RECALIBRATION_OVERWRITES_ORIGINAL",
+    "SKIP_CONFIDENCE_DRIFT",
+    "SKIP_REFERENCE_LEVEL_LEAK",
+    "CLIENT_SCORE_INJECTION",
+    "CLIENT_LEVEL_INJECTION",
+    "CLIENT_RECOMMENDATION_INJECTION",
+    "CLIENT_TENANT_INJECTION",
+    "CLIENT_ANSWER_KEY_INJECTION",
+    "AUTHORIZATION_DEFAULT_ALLOW",
+    "AUTHORIZATION_TRUSTED_FACT_REMOVAL",
+    "PEP_NOT_SERVICE_SIDE",
+    "ASSESSMENT_OWNER_DRIFT",
+    "WORKFLOW_FOREIGN_WRITE_ALLOWED",
+    "LEARNING_REPORT_WRITE_ALLOWED",
+    "LEARNER_PLAN_WRITE_ALLOWED",
+    "AUDIT_REPORT_OWNER_DRIFT",
+    "COMPLETION_EVENT_HISTORICAL_DEMOTION",
+    "COMPLETION_EVENT_RESULT_KIND_OPEN",
+    "COMPLETION_EVENT_ENVELOPE_FIELD_PAYLOAD_LEAK",
+    "COMPLETION_EVENT_RAW_RESPONSE_LEAK",
+    "COMPLETION_EVENT_ANSWER_RULE_LEAK",
+    "COMPLETION_EVENT_ASSESSED_SUMMARY_REMOVAL",
+    "COMPLETION_EVENT_SKIP_CONFIDENCE_DRIFT",
+    "COMPLETION_EVENT_SKIP_COVERAGE_DRIFT",
+    "COMPLETION_EVENT_SKIP_SCORE_LEAK",
+    "COMPLETION_EVENT_SKIP_LEVEL_LEAK",
+    "COMPLETION_EVENT_SKIP_DIMENSION_LEAK",
+    "COMPLETION_EVENT_SKIP_ALGORITHM_LEAK",
+    "COMPLETION_EVENT_SKIP_STARTING_LEVEL_AUTHORITY",
+    "COMPLETION_EVENT_DUPLICATE_ALLOWED",
+    "COMPLETION_EVENT_BEFORE_DURABLE",
+    "COMPLETION_EVENT_RUNTIME_PROMOTION",
+    "SAGA_UNKNOWN_STEP",
+    "SAGA_STEP_ORDER_DRIFT",
+    "SAGA_PLANNING_INPUT_STEP_REMOVAL",
+    "SAGA_PLANNING_INPUT_NATURAL_KEY_DRIFT",
+    "SAGA_PLAN_EFFECT_DEDUPE_DRIFT",
+    "SAGA_FOREIGN_WRITE_ALLOWED",
+    "SAGA_DUPLICATE_PLAN_ALLOWED",
+    "SAGA_FAILURE_MUTATES_REPORT",
+    "SAGA_RECOVERY_DROPS_REPORT",
+    "SAGA_KAFKA_RPC_ENABLED",
+    "SAGA_2PC_ENABLED",
+    "GAP_CLOSURE_FROM_POLICY",
+    "B26_RUNTIME_PROMOTION",
+    "RUNTIME_CLAIM_REMOVAL",
+    "CONTRACT_INTEGRATION_PREMATURE_COMPLETION",
+    "CONTRACT_ROUTE_ALLOWLIST_DRIFT",
+    "CONTRACT_SCHEMA_ALLOWLIST_DRIFT",
+    "CONTRACT_ROUTE_CLIENT_AUTHORITY_LEAK",
+    "COMPATIBILITY_PROMOTION_BASELINE_DRIFT",
+    "COMPATIBILITY_PROMOTION_RUNTIME_PROMOTION",
+    "SOURCE_CANONICAL_ROUTE_ALLOWLIST_DRIFT",
+    "SOURCE_CANONICAL_OPERATION_ID_DRIFT",
+    "SOURCE_CANONICAL_ROUTE_DEPRECATED",
+    "SOURCE_CANONICAL_BEARER_SECURITY_DRIFT",
+    "SOURCE_CANONICAL_DEFAULT_ALLOW",
+    "SOURCE_CANONICAL_TRUSTED_FACT_REMOVAL",
+    "SOURCE_CANONICAL_PEP_DRIFT",
+    "SOURCE_SUBMIT_REQUEST_OPEN",
+    "SOURCE_SUBMIT_REQUIRED_FIELD_REMOVAL",
+    "SOURCE_SUBMIT_CLIENT_SCORE_ALLOWED",
+    "SOURCE_CANDIDATE_RESPONSE_BRANCH_DRIFT",
+    "SOURCE_MANIFEST_SCORING_DRIFT",
+    "SOURCE_MANIFEST_PIN_REMOVAL",
+    "SOURCE_RESULT_ASSESSED_BRANCH_WEAKENED",
+    "SOURCE_RESULT_SKIPPED_DIMENSION_LEAK",
+    "SOURCE_RESULT_SAGA_NATURAL_KEY_DRIFT",
+    "SOURCE_RESULT_SAGA_DEDUPE_DRIFT",
+    "SOURCE_RESULT_DIMENSION_ORDER_DRIFT",
+    "SOURCE_RESULT_DIMENSION_UNIQUENESS_DRIFT",
+    "SOURCE_REPORT_MUTATION_ALLOWED",
+    "SOURCE_REPORT_MANIFEST_STRUCTURAL_EQUALITY",
+    "SOURCE_B1_LEGACY_DEPRECATION_REMOVAL",
+    "SOURCE_B1_LEGACY_ADAPTER_PROMOTION",
+    "SOURCE_EVENT_FRAGMENT_PROMOTION",
+    "SOURCE_EVENT_CATALOG_STATUS_DRIFT",
+    "SOURCE_EVENT_PAYLOAD_OPEN",
+    "SOURCE_EVENT_ENVELOPE_PROPERTY_LEAK",
+    "SOURCE_EVENT_LINEAGE_PROPERTY_LEAK",
+    "SOURCE_EVENT_RAW_RESPONSE_LEAK",
+    "SOURCE_EVENT_PERMISSION_FACT_LEAK",
+    "SOURCE_EVENT_RESULT_KIND_OPEN",
+    "SOURCE_EVENT_ASSESSED_BRANCH_WEAKENED",
+    "SOURCE_EVENT_SKIP_DIMENSION_LEAK",
+    "SOURCE_EVENT_DIMENSION_COVERAGE_ZERO_REJECTED",
+    "SOURCE_EVENT_STARTING_LEVEL_AUTHORITY_DRIFT",
+    "SOURCE_EVENT_GOVERNANCE_RUNTIME_PROMOTION",
+    "SOURCE_B26_RUNTIME_PROMOTION",
+    "SUCCESSOR_PLANNING_REQUIRED_ADDITION_REMOVAL",
+    "SUCCESSOR_PLANNING_FORBIDDEN_AUTHORITY_REMOVAL",
+    "SUCCESSOR_CONTENT_MAPPING_ADDITION_REMOVAL",
+    "SUCCESSOR_PLACEMENT_MAPPING_REMOVAL",
+    "SUCCESSOR_PLACEMENT_BINDING_LINEAGE_DRIFT",
+    "SUCCESSOR_FIRST_DAY_CONSISTENCY_REMOVAL",
+    "SUCCESSOR_FIRST_DAY_PIN_LINEAGE_CONSISTENCY_REMOVAL",
+    "SUCCESSOR_BASELINE_RAW_LEAK",
+    "SUCCESSOR_LINEAGE_DERIVATION_DRIFT"
+  ]
+}

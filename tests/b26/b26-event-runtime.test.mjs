@@ -23,10 +23,10 @@ test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pen
   assert.equal(result.runtimeGate, 'static-only')
   assert.equal(result.topicCount, 7)
   assert.equal(result.fragmentEventCount, 7)
-  assert.equal(result.routedCanonicalEventCount, 13)
+  assert.equal(result.routedCanonicalEventCount, 14)
   assert.equal(result.fragmentPayloadSchemaCount, 7)
   assert.equal(result.eventCount, 7)
-  assert.equal(result.routeCount, 13)
+  assert.equal(result.routeCount, 14)
   assert.equal(result.payloadSchemaCount, 7)
   assert.equal(result.runtimeEvidencePending, true)
 })
@@ -45,6 +45,22 @@ test('B26 event envelope and Kafka routing carry server-owned correlation and de
     assert.equal(canonical['x-p1r-governance'].transport.delivery, 'at-least-once')
     assert.equal(manifest.eventRouting.find((route) => route.eventName === event.eventName).topic, canonical['x-p1r-governance'].transport.topic)
   }
+})
+
+test('B26 freezes assessment placement completion on the assessment topic with both governed consumers', () => {
+  const route = manifest.eventRouting.find((candidate) => candidate.eventName === 'assessment.placement.completed.v1')
+  assert.deepEqual(route, {
+    eventName: 'assessment.placement.completed.v1',
+    topic: 'platform.assessment.v1',
+    partitionKey: 'aggregateId',
+    consumerGroups: ['cg.learning-from-assessment.v1', 'cg.workflow-from-assessment.v1'],
+  })
+  const topic = manifest.topics.find((candidate) => candidate.name === route.topic)
+  assert.equal(topic.ownerService, 'assessment-service')
+  assert.deepEqual(topic.consumerGroups.filter((group) => route.consumerGroups.includes(group.name)).map((group) => group.service), ['learning-service', 'workflow-service'])
+  const event = catalog.events.find((candidate) => candidate.eventName === route.eventName)
+  assert.equal(event.status, 'CANONICAL_D2')
+  assert.equal(event['x-p1r-governance'].runtimeStatus, 'NOT_RUNTIME_VERIFIED')
 })
 
 test('B26 topics use fixed local port, aggregate partitioning, explicit ACL and isolated consumer groups', () => {

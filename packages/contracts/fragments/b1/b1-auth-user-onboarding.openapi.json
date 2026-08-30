@@ -913,6 +913,39 @@
           "B1 Onboarding"
         ],
         "operationId": "skipB1Placement",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/assessment/placement/baselines/skip"
+        },
+        "x-p1r-b10-placement-adapter": {
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "canonicalOperationId": "createB10PlacementSkipBaseline",
+          "canonicalRoute": "/api/v1/assessment/placement/baselines/skip",
+          "legacyFastTrackLevelMapping": {
+            "ZERO_A1": { "level": "A1", "authority": "USER_SELECTED_NON_AUTHORITATIVE" },
+            "CET4_B1": { "level": "B1", "authority": "USER_SELECTED_NON_AUTHORITATIVE" },
+            "CET6_B2": { "level": "B2", "authority": "USER_SELECTED_NON_AUTHORITATIVE" },
+            "POSTGRAD_B2_PLUS": { "level": "B2", "authority": "USER_SELECTED_NON_AUTHORITATIVE", "mappingDisposition": "CONSERVATIVE_DOWNMAP_NOT_ASSESSED" }
+          },
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.baseline.skip",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement baseline owner",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",
@@ -969,6 +1002,18 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -979,6 +1024,34 @@
           "B1 Onboarding"
         ],
         "operationId": "getB1PlacementReport",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/assessment/placement/reports/{reportId}"
+        },
+        "x-p1r-b10-placement-adapter": {
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "canonicalOperationId": "getB10PlacementReport",
+          "canonicalRoute": "/api/v1/assessment/placement/reports/{reportId}",
+          "serverDerivedBinding": "legacy sessionId resolves through the assessment-owned session-to-report binding; reportId is never client-invented",
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.report.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement report owner",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "parameters": [
           {
             "name": "sessionId",
@@ -1025,6 +1098,15 @@
                 "$ref": "#/components/headers/XApiVersion"
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }

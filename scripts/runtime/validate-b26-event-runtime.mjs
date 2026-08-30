@@ -238,6 +238,7 @@ const expectedTopicBindings = [
   },
 ]
 const expectedEventRoutingBindings = [
+  'assessment.placement.completed.v1|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'content.version.published.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.reviewed.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.rolled_back.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',

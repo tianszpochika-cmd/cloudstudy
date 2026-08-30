@@ -7,6 +7,7 @@ const scriptPath = fileURLToPath(import.meta.url);
 const defaultRoot = path.resolve(path.dirname(scriptPath), '..', '..');
 
 export const DEFAULT_LEARNER_PLANNING_POLICY = 'config/p1r-learner-planning-contract.v1.json';
+export const DEFAULT_PLACEMENT_POLICY = 'config/p1r-placement-contract.v1.json';
 export const DEFAULT_B9_OPENAPI = 'packages/contracts/fragments/b9/b9-learner.openapi.json';
 export const DEFAULT_B1_OPENAPI = 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json';
 export const DEFAULT_CANONICAL_OPENAPI = 'packages/contracts/openapi/v1/openapi.json';
@@ -19,6 +20,7 @@ export const DEFAULT_EVENT_RELIABILITY = 'packages/contracts/events/v1/reliabili
 export const DEFAULT_B26_RUNTIME = 'config/b26-event-runtime.json';
 
 const FROZEN_POLICY_SHA256 = '184b85687a8a3916cf2746d425fb49a99f348e24062359e498368ccdd3dbd310';
+const FROZEN_M1_012_PLACEMENT_POLICY_SHA256 = '9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b';
 const POLICY_KEYS = [
   '$schema', 'schemaVersion', 'task', 'phase', 'maturity', 'runtimeStatus', 'canonicalSources',
   'compatibilityPromotion', 'runtimeBoundary', 'canonicalRoutes', 'authorization', 'goalCatalog',
@@ -226,6 +228,58 @@ function expectedVersionPolicy(rule) {
 
 function forbiddenNot(fields) {
   return { anyOf: fields.map((field) => ({ required: [field] })) };
+}
+
+function insertBefore(values, additions, anchor) {
+  const result = [...values];
+  const anchorIndex = result.indexOf(anchor);
+  result.splice(anchorIndex < 0 ? result.length : anchorIndex, 0, ...additions);
+  return result;
+}
+
+function deriveM1012LearnerPlanningPolicy(basePolicy, placementPolicy, errors) {
+  add(errors, digest(placementPolicy) === FROZEN_M1_012_PLACEMENT_POLICY_SHA256, 'M1-012 placement successor policy digest drift');
+  exact(errors, placementPolicy?.task, 'P1R-M1-012', 'M1-012 successor task');
+  exact(errors, placementPolicy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'M1-012 successor runtime status');
+  const successor = placementPolicy?.learnerPlanningSuccessor;
+  add(errors, isRecord(successor), 'M1-012 learner planning successor must be an object');
+  if (!isRecord(successor)) return structuredClone(basePolicy);
+  exact(errors, successor?.task, 'P1R-M1-012', 'learner planning successor task');
+  exact(errors, successor?.basePolicyId, 'M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION', 'learner planning successor base policy');
+  exact(errors, successor?.planningFragment, DEFAULT_B9_OPENAPI, 'learner planning successor fragment');
+  exact(errors, successor?.placementBaselineSchema, 'B9PlacementBaseline', 'learner planning successor baseline schema');
+  exact(errors, successor?.planningInput?.schema, basePolicy?.planningInput?.schema, 'learner planning successor input schema');
+  exact(errors, successor?.firstDay?.commonSchema, basePolicy?.firstDay?.commonSchema, 'learner planning successor first-day common schema');
+  exact(errors, successor?.placementBinding?.lineage, successor?.lineage, 'learner planning successor lineage binding');
+  exact(errors, successor?.placementBinding?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'learner planning successor binding runtime status');
+
+  const effective = structuredClone(basePolicy);
+  effective.planningInput.requiredFields = insertBefore(
+    insertBefore(basePolicy.planningInput.requiredFields, ['contentVersionId'], 'contentEpoch'),
+    ['placementBaseline'],
+    'planningRuleVersion',
+  );
+  effective.planningInput.forbiddenFields = [...(successor?.planningInput?.addedForbiddenFields ?? [])];
+  effective.planningInput.positiveIntegerFields = insertBefore(
+    basePolicy.planningInput.positiveIntegerFields,
+    ['contentVersionId'],
+    'contentEpoch',
+  );
+  effective.planningInput.sourceMapping = {
+    ...basePolicy.planningInput.sourceMapping,
+    contentProjection: [
+      ...(successor?.planningInput?.sourceMappingAdditions?.contentProjection ?? []),
+      ...basePolicy.planningInput.sourceMapping.contentProjection,
+    ],
+    assessmentPlacement: [...(successor?.planningInput?.sourceMappingAdditions?.assessmentPlacement ?? [])],
+  };
+  effective.planningInput.placementBinding = structuredClone(successor?.placementBinding);
+  effective.planningInput.placementBaselineSchema = successor?.placementBaselineSchema;
+  effective.firstDay.consistency = [
+    ...basePolicy.firstDay.consistency,
+    ...(successor?.firstDay?.addedConsistency ?? []),
+  ];
+  return effective;
 }
 
 /**
@@ -467,6 +521,7 @@ function checkPlanningInput(b9OpenApi, canonicalOpenApi, policy, errors) {
   exact(errors, schemaRequired(b9OpenApi, snapshot, canonicalOpenApi), policy.planningInput.requiredFields, 'B9PlanningInputSnapshot required fields');
   exact(errors, snapshot?.['x-forbidden-fields'], policy.planningInput.forbiddenFields, 'B9PlanningInputSnapshot forbidden fields');
   exact(errors, snapshot?.['x-source-mapping'], policy.planningInput.sourceMapping, 'B9PlanningInputSnapshot source mapping');
+  exact(errors, snapshot?.['x-p1r-placement-plan-saga'], policy.planningInput.placementBinding, 'B9PlanningInputSnapshot placement-to-plan saga binding');
   add(errors, !policy.planningInput.forbiddenFields.some((field) => Object.hasOwn(properties, field)), 'planning input must not absorb placement, SRS, mastery, or raw assessment facts');
   for (const field of policy.planningInput.positiveIntegerFields) {
     add(errors, positiveInteger(b9OpenApi, properties[field], canonicalOpenApi), `B9PlanningInputSnapshot.${field} must be non-null positive integer`);
@@ -488,6 +543,17 @@ function checkPlanningInput(b9OpenApi, canonicalOpenApi, policy, errors) {
     pattern: policy.planningInput.eligibilitySnapshotDigest.pattern,
   }, 'B9PlanningInputSnapshot.eligibilitySnapshotDigest server-derived SHA-256 guard');
   exact(errors, properties.timezone?.pattern, policy.goalCatalog.timezonePattern, 'B9PlanningInputSnapshot.timezone IANA-like pattern');
+  const placementBaseline = component(b9OpenApi, policy.planningInput.placementBaselineSchema);
+  add(errors, containsReference(properties.placementBaseline, `#/components/schemas/${policy.planningInput.placementBaselineSchema}`), 'B9PlanningInputSnapshot.placementBaseline reference drift');
+  add(errors, closedObject(b9OpenApi, placementBaseline, canonicalOpenApi), 'B9PlacementBaseline must remain closed');
+  add(errors, placementBaseline?.readOnly === true, 'B9PlacementBaseline must remain read-only');
+  exact(errors, placementBaseline?.['x-p1r-placement-baseline']?.lineage, policy.planningInput.placementBinding?.lineage, 'B9PlacementBaseline lineage binding');
+  exact(errors, placementBaseline?.['x-p1r-placement-baseline']?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'B9PlacementBaseline runtime status');
+  const baselineRequired = schemaRequired(b9OpenApi, placementBaseline, canonicalOpenApi);
+  for (const field of [
+    'resultKind', 'placementSessionId', 'placementResultId', 'resultVersion', 'reportId', 'reportVersion',
+    'manifest', 'contentPin', 'answerRulePin', 'targetPin', 'sourceEventId', 'rootEventId', 'placementFactWatermark',
+  ]) add(errors, baselineRequired.includes(field), `B9PlacementBaseline must require ${field}`);
   const referenceBindings = policy?.planningInput?.referenceBindings;
   exactKeys(errors, referenceBindings, ['job', 'plan'], 'planning input reference bindings');
   if (!isRecord(referenceBindings)) return;
@@ -770,17 +836,19 @@ export function validateLearnerPlanningContractData(input = {}) {
     ['canonicalOpenApi', 'composed OpenAPI'], ['eventFragment', 'B9 event fragment'], ['catalog', 'event catalog'],
     ['gapRegistry', 'P1R gap registry'], ['dataOwnership', 'P1R data ownership'], ['sagaRecovery', 'P1R saga recovery'],
     ['eventReliability', 'P1R event reliability'], ['b26Runtime', 'B26 static runtime config'],
+    ['placementPolicy', 'M1-012 placement successor policy'],
   ];
   for (const [key, label] of requiredInputs) add(errors, isRecord(input[key]), `${label} must be an object`);
   if (errors.length === 0) {
     checkPolicy(input.policy, errors);
+    const effectivePolicy = deriveM1012LearnerPlanningPolicy(input.policy, input.placementPolicy, errors);
     checkCanonicalRoutes(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
-    checkGoalCatalog(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
+    checkGoalCatalog(input.b9OpenApi, input.canonicalOpenApi, effectivePolicy, errors);
     checkVersionEquivalence(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
     checkConcurrency(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
-    checkPlanningInput(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
-    checkFirstDayProjection(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
-    checkRecovery(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
+    checkPlanningInput(input.b9OpenApi, input.canonicalOpenApi, effectivePolicy, errors);
+    checkFirstDayProjection(input.b9OpenApi, input.canonicalOpenApi, effectivePolicy, errors);
+    checkRecovery(input.b9OpenApi, input.canonicalOpenApi, effectivePolicy, errors);
     checkLegacy(input.b1OpenApi, input.policy, errors);
     checkEvents(input.eventFragment, input.catalog, input.gapRegistry, input.policy, errors);
     checkB26Static(input.b26Runtime, input.policy, errors);
@@ -809,6 +877,7 @@ export function readLearnerPlanningContractInputs(options = {}) {
   const root = options.root || defaultRoot;
   return {
     policy: readJson(root, DEFAULT_LEARNER_PLANNING_POLICY),
+    placementPolicy: readJson(root, DEFAULT_PLACEMENT_POLICY),
     b9OpenApi: readJson(root, DEFAULT_B9_OPENAPI),
     b1OpenApi: readJson(root, DEFAULT_B1_OPENAPI),
     canonicalOpenApi: readJson(root, DEFAULT_CANONICAL_OPENAPI),

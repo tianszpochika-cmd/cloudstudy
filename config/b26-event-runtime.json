@@ -422,6 +422,7 @@
   },
   "eventRouting": [
     { "eventName": "learner.target.updated.v1", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-learner.v1", "cg.workflow-from-learner.v1"] },
+    { "eventName": "assessment.placement.completed.v1", "topic": "platform.assessment.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-assessment.v1", "cg.workflow-from-assessment.v1"] },
     { "eventName": "workflow.outbox.published.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
     { "eventName": "workflow.event.delivery_failed.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-reliability.v1", "cg.audit-from-workflow.v1"] },
     { "eventName": "workflow.event.dead_lettered.v1", "topic": "platform.workflow.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-manual-recovery.v1", "cg.audit-from-workflow.v1"] },

@@ -100,8 +100,51 @@ function schemaBaseToTs(document, schema) {
     return tsLiteral(schema.const);
   }
 
-  if (schema.type === 'array' || (schema.type === undefined && schema.items !== undefined)) {
+  if (schema.type === 'array'
+    || (schema.type === undefined
+      && (schema.items !== undefined
+        || schema.prefixItems !== undefined
+        || schema.minItems !== undefined
+        || schema.maxItems !== undefined))) {
+    if (Array.isArray(schema.prefixItems)) {
+      const prefixTypes = schema.prefixItems.map((item) => schemaToTs(document, item));
+      if (schema.items === false) {
+        return prefixTypes.length === 0
+          ? 'readonly []'
+          : `readonly [${prefixTypes.join(', ')}]`;
+      }
+      const remainingItemType = schema.items && typeof schema.items === 'object'
+        ? schemaToTs(document, schema.items)
+        : 'unknown';
+      return prefixTypes.length === 0
+        ? `ReadonlyArray<${remainingItemType}>`
+        : `readonly [${prefixTypes.join(', ')}, ...Array<${remainingItemType}>]`;
+    }
     const itemType = schemaToTs(document, schema.items ?? {});
+    const minimumItems = Number.isSafeInteger(schema.minItems) && schema.minItems >= 0
+      ? schema.minItems
+      : 0;
+    const maximumItems = Number.isSafeInteger(schema.maxItems) && schema.maxItems >= 0
+      ? schema.maxItems
+      : undefined;
+    const tupleForLength = (length) => (
+      length === 0
+        ? 'readonly []'
+        : `readonly [${Array.from({ length }, () => itemType).join(', ')}]`
+    );
+    if (maximumItems !== undefined
+      && maximumItems >= minimumItems
+      && maximumItems <= 32
+      && maximumItems - minimumItems <= 16) {
+      return Array.from(
+        { length: maximumItems - minimumItems + 1 },
+        (_, offset) => tupleForLength(minimumItems + offset),
+      ).join(' | ');
+    }
+    if (minimumItems > 0 && minimumItems <= 32) {
+      const requiredItems = Array.from({ length: minimumItems }, () => itemType);
+      return `readonly [${requiredItems.join(', ')}, ...Array<${itemType}>]`;
+    }
     return `ReadonlyArray<${itemType}>`;
   }
 
@@ -142,10 +185,88 @@ function parenthesizeComposition(typeName) {
   return typeName.includes(' | ') ? `(${typeName})` : typeName;
 }
 
+function mergeProjectionPropertySchema(document, parentProperty, variantProperty) {
+  if (!parentProperty || typeof parentProperty !== 'object' || Array.isArray(parentProperty)) {
+    return variantProperty;
+  }
+  if (!variantProperty || typeof variantProperty !== 'object' || Array.isArray(variantProperty)) {
+    return variantProperty;
+  }
+  if (variantProperty.$ref) return variantProperty;
+  if (Array.isArray(variantProperty.allOf)
+    || Array.isArray(variantProperty.oneOf)
+    || Array.isArray(variantProperty.anyOf)) {
+    // A branch-local composition already carries its own shared reference and
+    // narrowing constraints. Keeping a parent `$ref` beside it would make the
+    // early reference projection discard the branch narrowing.
+    return variantProperty;
+  }
+
+  const resolvedParentProperty = parentProperty.$ref
+    ? {
+        ...dereference(document, parentProperty),
+        ...Object.fromEntries(Object.entries(parentProperty).filter(([key]) => key !== '$ref')),
+      }
+    : parentProperty;
+
+  // Constraint-only branches commonly restate only `minimum`, `minItems`,
+  // `maxItems`, `enum` or `const`. Preserve the shared property's wire type
+  // and item schema while applying those narrower branch constraints.
+  const merged = { ...resolvedParentProperty, ...variantProperty };
+  if (Object.hasOwn(variantProperty, 'const')) delete merged.enum;
+  if (Object.hasOwn(variantProperty, 'enum')) delete merged.const;
+  if (!Object.hasOwn(variantProperty, 'nullable')
+    && (Object.hasOwn(variantProperty, 'type')
+      || Object.hasOwn(variantProperty, 'const')
+      || Object.hasOwn(variantProperty, 'enum'))) {
+    // A branch that explicitly narrows the JSON value kind also narrows an
+    // OpenAPI 3.0 parent `nullable: true` unless it opts back in itself.
+    delete merged.nullable;
+  }
+  return merged;
+}
+
+function mergeProjectionObjectSchemas(document, schemas) {
+  const merged = { properties: {}, required: [] };
+  const required = new Set();
+  let hasObjectShape = false;
+  for (const candidate of schemas) {
+    if (!candidate || typeof candidate !== 'object') continue;
+    const resolved = candidate.$ref ? dereference(document, candidate) : candidate;
+    if (!resolved || typeof resolved !== 'object') continue;
+    if (resolved.type === 'object' || resolved.properties || resolved.additionalProperties !== undefined) {
+      hasObjectShape = true;
+      Object.assign(merged.properties, resolved.properties ?? {});
+      for (const field of resolved.required ?? []) required.add(field);
+      if (resolved.additionalProperties === false) merged.additionalProperties = false;
+      if (resolved.discriminator) merged.discriminator = resolved.discriminator;
+    }
+  }
+  if (!hasObjectShape) return undefined;
+  merged.required = [...required];
+  return merged;
+}
+
 function compositionVariantToTs(document, variant, parentSchema) {
   if (!variant || typeof variant !== 'object' || variant.$ref) return schemaToTs(document, variant);
+  const parentIsArray = parentSchema?.type === 'array' || parentSchema?.items !== undefined;
+  const variantIsArrayConstraint = variant.type === 'array'
+    || variant.items !== undefined
+    || variant.minItems !== undefined
+    || variant.maxItems !== undefined;
+  if (parentIsArray && variantIsArrayConstraint && variant.items === undefined) {
+    // A oneOf branch often carries only minItems/maxItems. Reuse the parent
+    // item schema so the tuple projection keeps its element type instead of
+    // introducing `unknown` into an otherwise closed generated contract.
+    return schemaToTs(document, { ...variant, type: 'array', items: parentSchema.items ?? {} });
+  }
   const parentProperties = parentSchema?.properties ?? {};
-  const variantProperties = variant.properties ?? {};
+  const variantProperties = Object.fromEntries(
+    Object.entries(variant.properties ?? {}).map(([field, propertySchema]) => [
+      field,
+      mergeProjectionPropertySchema(document, parentProperties[field], propertySchema),
+    ]),
+  );
   const parentRequired = new Set(parentSchema?.required ?? []);
   const variantRequired = new Set(variant.required ?? []);
   const discriminator = parentSchema?.discriminator?.propertyName;
@@ -193,7 +314,7 @@ function compositionVariantToTs(document, variant, parentSchema) {
   });
 }
 
-export function schemaToTs(document, schema) {
+export function schemaToTs(document, schema, inheritedCompositionSchema) {
   if (!schema || typeof schema !== 'object') return 'unknown';
 
   if (schema.$ref) {
@@ -203,13 +324,20 @@ export function schemaToTs(document, schema) {
   const baseType = schemaBaseToTs(document, schema);
   if (Array.isArray(schema.oneOf) || Array.isArray(schema.anyOf)) {
     const variants = schema.oneOf ?? schema.anyOf;
-    const variantTypes = variants.map((variant) => compositionVariantToTs(document, variant, schema));
+    const compositionParent = mergeProjectionObjectSchemas(
+      document,
+      [inheritedCompositionSchema, schema],
+    ) ?? schema;
+    const variantTypes = variants.map((variant) => (
+      compositionVariantToTs(document, variant, compositionParent)
+    ));
     let composedType;
     if (baseType !== 'unknown') {
-      // Constraint-only branches (for example array cardinality expressed with
-      // minItems/not) cannot be represented faithfully in TypeScript. Preserve
-      // the shared wire shape instead of widening the generated type to unknown
-      // or incorrectly narrowing it to the only representable branch.
+      // Some constraint-only branches (for example numeric ranges and
+      // cross-field equality) cannot be represented faithfully in TypeScript.
+      // Array cardinality and simple `not required` guards are projected above;
+      // for the remaining constraints preserve the shared wire shape instead
+      // of widening the generated type to unknown.
       composedType = variantTypes.some((typeName) => typeName === 'unknown')
         ? baseType
         : `${parenthesizeComposition(baseType)} & (${variantTypes.join(' | ') || 'unknown'})`;
@@ -220,8 +348,12 @@ export function schemaToTs(document, schema) {
   }
 
   if (Array.isArray(schema.allOf)) {
+    const inheritedObjectSchema = mergeProjectionObjectSchemas(document, [
+      inheritedCompositionSchema,
+      ...schema.allOf,
+    ]);
     const variantTypes = schema.allOf
-      .map((variant) => schemaToTs(document, variant))
+      .map((variant) => schemaToTs(document, variant, inheritedObjectSchema))
       .filter((typeName) => typeName !== 'unknown');
     const parts = baseType === 'unknown' ? variantTypes : [baseType, ...variantTypes];
     const intersection = parts.map(parenthesizeComposition).join(' & ') || 'unknown';

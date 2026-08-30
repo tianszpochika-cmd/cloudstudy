@@ -17,9 +17,32 @@
         ],
         "summary": "Read the learner's current placement session",
         "operationId": "readPlacementSession",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/assessment/placement/sessions/{sessionId}"
+        },
+        "x-p1r-b10-placement-adapter": {
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "canonicalOperationId": "getB10PlacementSession",
+          "canonicalRoute": "/api/v1/assessment/placement/sessions/{sessionId}",
+          "serverDerivedBinding": "legacy query sessionId or current self-scoped session resolves to canonical path sessionId",
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.session.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "security": [
           {
-            "B1ContentBearerAuth": []
+            "bearerAuth": []
           }
         ],
         "parameters": [
@@ -73,6 +96,12 @@
           },
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       },
@@ -82,9 +111,32 @@
         ],
         "summary": "Start a deterministic placement session",
         "operationId": "startPlacementSession",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/assessment/placement/sessions"
+        },
+        "x-p1r-b10-placement-adapter": {
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "canonicalOperationId": "createB10PlacementSession",
+          "canonicalRoute": "/api/v1/assessment/placement/sessions",
+          "serverDerivedBinding": "bodyless legacy start derives subject, tenant, eligibility, target and immutable placement pins on the server",
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.session.create",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "security": [
           {
-            "B1ContentBearerAuth": []
+            "bearerAuth": []
           }
         ],
         "x-b1-acceptance": [
@@ -142,8 +194,14 @@
           "401": {
             "$ref": "#/components/responses/ApiUnauthorized"
           },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -155,9 +213,32 @@
         ],
         "summary": "Submit one placement item with replay-safe idempotency",
         "operationId": "submitPlacementStep",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-30T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/assessment/placement/sessions/{sessionId}/responses"
+        },
+        "x-p1r-b10-placement-adapter": {
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "canonicalOperationId": "submitB10PlacementResponse",
+          "canonicalRoute": "/api/v1/assessment/placement/sessions/{sessionId}/responses",
+          "serverDerivedBinding": "legacy session and item context resolve to the canonical path and immutable server-owned assessment pins",
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.response.submit",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true,
+          "legacyAuthorizationBypass": "PROHIBITED"
+        },
         "security": [
           {
-            "B1ContentBearerAuth": []
+            "bearerAuth": []
           }
         ],
         "x-b1-acceptance": [
@@ -233,6 +314,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }

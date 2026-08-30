@@ -1,0 +1,535 @@
+{
+  "paths": {
+    "/api/v1/assessment/placement/sessions": {
+      "post": {
+        "tags": ["b10-assessment"],
+        "summary": "Create the server-pinned P1 placement session",
+        "operationId": "createB10PlacementSession",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "assessment-service",
+          "placementRule": "P1_PLACEMENT_V1",
+          "requestAuthority": "bodyless; server derives subject, tenant, target, content and rule pins",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": {
+          "canonical": true,
+          "lifecycle": "CREATE_SERVER_PINNED_SESSION",
+          "resultOwner": "assessment-service",
+          "planOwner": "learning-service",
+          "legacyAdapter": "startPlacementSession"
+        },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.session.create",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "serverDerivedResourceOwner": true,
+          "serviceSidePepRequired": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "p1-placement-session-start",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject and server-derived target/pin set returns the original placement session",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B10IdempotencyKey" }],
+        "responses": {
+          "201": {
+            "description": "Server-pinned placement session",
+            "content": { "application/json": { "schema": { "allOf": [
+              { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
+              { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementSession" } } }
+            ] } } }
+          },
+          "401": { "$ref": "#/components/responses/ApiUnauthorized" },
+          "403": { "$ref": "#/components/responses/ApiForbidden" },
+          "409": { "$ref": "#/components/responses/ApiConflict" },
+          "422": { "$ref": "#/components/responses/ApiUnprocessableEntity" }
+        }
+      }
+    },
+    "/api/v1/assessment/placement/sessions/{sessionId}": {
+      "get": {
+        "tags": ["b10-assessment"],
+        "summary": "Read a learner-owned P1 placement session",
+        "operationId": "getB10PlacementSession",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "assessment-service",
+          "answerProtection": "learner-safe item state only; no answer key or rule body",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": { "canonical": true, "lifecycle": "READ_SAME_SESSION", "legacyAdapter": "readPlacementSession" },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.session.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": ["rawResponse", "answerKey", "answerRule", "ruleDigest", "recording", "recordingUrl"]
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B10SessionId" }],
+        "responses": {
+          "200": {
+            "description": "Learner-safe placement session",
+            "content": { "application/json": { "schema": { "allOf": [
+              { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
+              { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementSession" } } }
+            ] } } }
+          },
+          "401": { "$ref": "#/components/responses/ApiUnauthorized" },
+          "403": { "$ref": "#/components/responses/ApiForbidden" },
+          "404": { "$ref": "#/components/responses/ApiNotFound" }
+        }
+      }
+    },
+    "/api/v1/assessment/placement/sessions/{sessionId}/responses": {
+      "post": {
+        "tags": ["b10-assessment"],
+        "summary": "Submit one protected P1 placement response",
+        "operationId": "submitB10PlacementResponse",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "assessment-service",
+          "clientMaySupply": ["candidateResponse", "timeSpentSec", "expectedStateVersion", "itemId", "itemSequence", "responseDigest"],
+          "serverOwns": ["correctness", "answerKey", "answerRule", "dimensionPercent", "aggregateScore", "referenceLevel", "confidence", "recommendation", "all pins", "tenant", "owner"],
+          "rawResponse": "protected scoring boundary only; never crosses event, analytics or ordinary audit boundaries",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": { "canonical": true, "lifecycle": "CHECKPOINT_OR_COMPLETE_SAME_SESSION", "legacyAdapter": "submitPlacementStep" },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.response.submit",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement session owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": ["requestBody.candidateResponse", "requestBody.candidateResponse.selectedOptionIds", "requestBody.candidateResponse.pairs", "requestBody.candidateResponse.orderedTokenIds", "requestBody.candidateResponse.blanks", "requestBody.candidateResponse.blanks[].text", "requestBody.candidateResponse.text", "requestBody.responseDigest", "answerKey", "answerRule", "ruleDigest", "recording", "recordingUrl"]
+        },
+        "x-audit": {
+          "redactionPaths": ["requestBody.candidateResponse", "requestBody.candidateResponse.selectedOptionIds", "requestBody.candidateResponse.pairs", "requestBody.candidateResponse.orderedTokenIds", "requestBody.candidateResponse.blanks", "requestBody.candidateResponse.blanks[].text", "requestBody.candidateResponse.text", "requestBody.responseDigest"],
+          "forbiddenSinks": ["placement completion event", "analytics", "ordinary audit"],
+          "protectedScoringBoundary": true
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "p1-placement-session-response",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same session, item, state version and response digest returns the original receipt",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "parameters": [
+          { "$ref": "#/components/parameters/B10SessionId" },
+          { "$ref": "#/components/parameters/B10IdempotencyKey" },
+          { "$ref": "#/components/parameters/B10IfMatch" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10PlacementResponseSubmitRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Response receipt, optionally with the immutable final result reference",
+            "content": { "application/json": { "schema": { "allOf": [
+              { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
+              { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementResponseReceipt" } } }
+            ] } } }
+          },
+          "401": { "$ref": "#/components/responses/ApiUnauthorized" },
+          "403": { "$ref": "#/components/responses/ApiForbidden" },
+          "409": { "$ref": "#/components/responses/ApiConflict" },
+          "422": { "$ref": "#/components/responses/ApiUnprocessableEntity" }
+        }
+      }
+    },
+    "/api/v1/assessment/placement/baselines/skip": {
+      "post": {
+        "tags": ["b10-assessment"],
+        "summary": "Create a durable unverified placement baseline without claiming a measured result",
+        "operationId": "createB10PlacementSkipBaseline",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "assessment-service",
+          "resultKind": "SKIPPED",
+          "resultAuthority": "aggregateScore/referenceLevel/dimension summaries are null or absent; requestedStartingLevel is a user-selected non-authoritative hint only",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": { "canonical": true, "lifecycle": "CREATE_UNVERIFIED_BASELINE", "legacyAdapter": "skipB1Placement" },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.skip",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "serverDerivedResourceOwner": true,
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": ["rawResponse", "answerKey", "answerRule", "ruleDigest", "recording", "recordingUrl"]
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "p1-placement-skip-baseline",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same subject, target and requested-starting-level digest returns the original durable baseline",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B10IdempotencyKey" }],
+        "requestBody": {
+          "required": false,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/B10PlacementSkipBaselineRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Durable unverified placement baseline",
+            "content": { "application/json": { "schema": { "allOf": [
+              { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
+              { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementResult" } } }
+            ] } } }
+          },
+          "401": { "$ref": "#/components/responses/ApiUnauthorized" },
+          "403": { "$ref": "#/components/responses/ApiForbidden" },
+          "409": { "$ref": "#/components/responses/ApiConflict" },
+          "422": { "$ref": "#/components/responses/ApiUnprocessableEntity" }
+        }
+      }
+    },
+    "/api/v1/assessment/placement/reports/{reportId}": {
+      "get": {
+        "tags": ["b10-assessment"],
+        "summary": "Read the immutable learner-safe P1 placement report",
+        "operationId": "getB10PlacementReport",
+        "security": [{ "bearerAuth": [] }],
+        "x-contract": {
+          "owner": "assessment-service",
+          "report": "immutable result/report/pin snapshot; neither official certification nor learning mastery",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-p1r-placement": { "canonical": true, "lifecycle": "READ_IMMUTABLE_RESULT_REPORT", "legacyAdapter": "getB1PlacementReport" },
+        "x-authorization": {
+          "requiredPermission": "assessment.placement.report.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": ["subject", "tenant", "adultGate", "phase", "contentRights", "entitlement", "resourceOwner", "policyVersion"],
+          "resourceOwner": "server-derived placement report owner",
+          "serviceSidePepRequired": true,
+          "auditSensitiveFields": ["rawResponse", "answerKey", "answerRule", "ruleDigest", "recording", "recordingUrl"]
+        },
+        "parameters": [{ "$ref": "#/components/parameters/B10ReportId" }],
+        "responses": {
+          "200": {
+            "description": "Immutable learner-safe placement report",
+            "content": { "application/json": { "schema": { "allOf": [
+              { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
+              { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementReport" } } }
+            ] } } }
+          },
+          "401": { "$ref": "#/components/responses/ApiUnauthorized" },
+          "403": { "$ref": "#/components/responses/ApiForbidden" },
+          "404": { "$ref": "#/components/responses/ApiNotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "B10PlacementDigest": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$",
+        "minLength": 64,
+        "maxLength": 64,
+        "description": "Lowercase SHA-256 digest pinned by the assessment owner; it is not client authority."
+      },
+      "B10PlacementManifestDimension": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension", "weight", "requiredItemCount", "displayOrder"],
+        "properties": {
+          "dimension": { "type": "string", "enum": ["VOCABULARY", "BASIC_GRAMMAR", "READING", "LISTENING"] },
+          "weight": { "type": "integer", "enum": [25] },
+          "requiredItemCount": { "type": "integer", "enum": [2, 3] },
+          "displayOrder": { "type": "integer", "minimum": 1, "maximum": 4 }
+        }
+      },
+      "B10PlacementManifest": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "description": "Assessment-owned immutable P1_PLACEMENT_V1 manifest. It freezes the ten-item, four-dimension scoring set for one placement session.",
+        "x-p1r-placement-manifest": {
+          "id": "P1_PLACEMENT_V1",
+          "totalItemCount": 10,
+          "exactDimensions": [
+            { "dimension": "VOCABULARY", "weight": 25, "requiredItemCount": 3, "displayOrder": 1 },
+            { "dimension": "BASIC_GRAMMAR", "weight": 25, "requiredItemCount": 3, "displayOrder": 2 },
+            { "dimension": "READING", "weight": 25, "requiredItemCount": 2, "displayOrder": 3 },
+            { "dimension": "LISTENING", "weight": 25, "requiredItemCount": 2, "displayOrder": 4 }
+          ],
+          "correctValue": 1,
+          "incorrectValue": 0,
+          "unansweredValue": 0,
+          "dimensionRounding": "ROUND_HALF_UP_2",
+          "aggregateRounding": "ROUND_HALF_UP_0_BEFORE_LEVEL_BOUNDARY",
+          "timeRole": "EXPLANATION_OR_TIEBREAKER_ONLY"
+        },
+        "required": ["placementManifestId", "placementManifestVersion", "placementManifestDigest", "dimensionSetDigest", "totalItemCount", "dimensions"],
+        "properties": {
+          "placementManifestId": { "type": "string", "enum": ["P1_PLACEMENT_V1"] },
+          "placementManifestVersion": { "type": "string", "enum": ["P1_PLACEMENT_V1"] },
+          "placementManifestDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "dimensionSetDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "totalItemCount": { "type": "integer", "enum": [10] },
+          "dimensions": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "$ref": "#/components/schemas/B10PlacementManifestDimension" },
+            "x-p1r-exact-order": ["VOCABULARY", "BASIC_GRAMMAR", "READING", "LISTENING"]
+          }
+        }
+      },
+      "B10PlacementManifestPin": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": ["placementManifestId", "placementManifestVersion", "placementManifestDigest", "dimensionSetDigest", "totalItemCount"],
+        "properties": {
+          "placementManifestId": { "type": "string", "enum": ["P1_PLACEMENT_V1"] },
+          "placementManifestVersion": { "type": "string", "enum": ["P1_PLACEMENT_V1"] },
+          "placementManifestDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "dimensionSetDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "totalItemCount": { "type": "integer", "enum": [10] }
+        }
+      },
+      "B10PlacementContentPin": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": ["contentVersionId", "contentEpoch", "snapshotId", "snapshotHash"],
+        "properties": {
+          "contentVersionId": { "$ref": "#/components/schemas/B10Int64Id" },
+          "contentEpoch": { "$ref": "#/components/schemas/B10ContentEpoch" },
+          "snapshotId": { "$ref": "#/components/schemas/B10SnapshotId" },
+          "snapshotHash": { "$ref": "#/components/schemas/B10PlacementDigest" }
+        }
+      },
+      "B10PlacementAnswerRulePin": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": ["answerRuleSetVersion", "answerRuleVersion", "ruleDigest", "completionRuleVersion"],
+        "properties": {
+          "answerRuleSetVersion": { "$ref": "#/components/schemas/B10RuleVersion" },
+          "answerRuleVersion": { "$ref": "#/components/schemas/B10RuleVersion" },
+          "ruleDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "completionRuleVersion": { "$ref": "#/components/schemas/B10RuleVersion" }
+        }
+      },
+      "B10PlacementTargetPin": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": ["targetId", "targetVersion", "targetSnapshotDigest"],
+        "properties": {
+          "targetId": { "$ref": "#/components/schemas/B10Int64Id" },
+          "targetVersion": { "type": "integer", "minimum": 1 },
+          "targetSnapshotDigest": { "$ref": "#/components/schemas/B10PlacementDigest" }
+        }
+      },
+      "B10PlacementSession": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "description": "One assessment-owned placement session. B10 session status remains the only session state machine; placement result kind is a separate immutable result fact.",
+        "required": ["sessionId", "status", "stateVersion", "sessionSnapshotDigest", "manifest", "contentPin", "answerRulePin", "targetPin", "startedAt"],
+        "properties": {
+          "sessionId": { "$ref": "#/components/schemas/B10SessionId" },
+          "status": { "$ref": "#/components/schemas/B10SessionStatus" },
+          "stateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
+          "sessionSnapshotDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "manifest": { "$ref": "#/components/schemas/B10PlacementManifest" },
+          "contentPin": { "$ref": "#/components/schemas/B10PlacementContentPin" },
+          "answerRulePin": { "$ref": "#/components/schemas/B10PlacementAnswerRulePin" },
+          "targetPin": { "$ref": "#/components/schemas/B10PlacementTargetPin" },
+          "currentItem": { "$ref": "#/components/schemas/B10LearnerContentItem" },
+          "completedResult": { "$ref": "#/components/schemas/B10PlacementResult" },
+          "startedAt": { "$ref": "#/components/schemas/B10DateTime" },
+          "updatedAt": { "$ref": "#/components/schemas/B10DateTime" }
+        }
+      },
+      "B10PlacementResponseSubmitRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Closed candidate placement response. Client score, level, confidence, recommendation, pin, tenant and authority facts are rejected.",
+        "x-forbidden-client-fields": ["tenant", "tenantId", "subject", "principalId", "owner", "ownerId", "adultGate", "consent", "phase", "policyVersion", "contentRights", "correct", "isCorrect", "correctness", "answerKey", "answerRule", "score", "aggregateScore", "dimensionPercent", "referenceLevel", "confidence", "recommendation", "placementManifestId", "contentVersionId", "contentEpoch", "snapshotId", "snapshotHash", "resultVersion", "reportVersion"],
+        "required": ["expectedStateVersion", "itemId", "itemSequence", "candidateResponse", "responseDigest", "timeSpentSec"],
+        "properties": {
+          "expectedStateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
+          "itemId": { "$ref": "#/components/schemas/B10Int64Id" },
+          "itemSequence": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "candidateResponse": { "$ref": "#/components/schemas/B10CandidateResponse" },
+          "responseDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "timeSpentSec": { "type": "integer", "minimum": 0, "maximum": 3600 }
+        }
+      },
+      "B10PlacementDimensionSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": ["dimension", "validItemCount", "earnedItemCount", "dimensionPercent"],
+        "properties": {
+          "dimension": { "type": "string", "enum": ["VOCABULARY", "BASIC_GRAMMAR", "READING", "LISTENING"] },
+          "validItemCount": { "type": "integer", "minimum": 0, "maximum": 3 },
+          "earnedItemCount": { "type": "integer", "minimum": 0, "maximum": 3 },
+          "dimensionPercent": { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      },
+      "B10RequestedStartingLevel": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "User-selected historical fast-track hint only. It is never an assessed score, reference level or policy authority.",
+        "required": ["level", "authority"],
+        "properties": {
+          "level": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] },
+          "authority": { "type": "string", "const": "USER_SELECTED_NON_AUTHORITATIVE" }
+        }
+      },
+      "B10PlacementResult": {
+        "allOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "readOnly": true,
+            "x-p1r-placement-plan-saga": {
+              "sourceEvent": "assessment.placement.completed.v1",
+              "planningInputOwner": "learning-service",
+              "assemblePlanningInputBeforePlan": true,
+              "activePlanNaturalKey": ["targetPin.targetId", "contentPin.contentVersionId", "contentPin.contentEpoch", "planningInput.planningRuleVersion"],
+              "effectDedupeKey": ["sessionId", "placementResultId", "resultVersion", "targetPin.targetVersion", "planningInput.pinId", "planningInput.pinVersion", "planningInput.pinDigest", "planningInput.inputFactWatermark"],
+              "effectOwner": "learning-service",
+              "workflowBoundary": "workflow-service coordinates only via events or versioned owner APIs; no foreign schema write, Kafka RPC or two-phase commit",
+              "reportMutation": "PROHIBITED"
+            },
+            "required": ["placementResultId", "sessionId", "resultVersion", "resultDigest", "reportId", "reportVersion", "reportDigest", "resultKind", "confidence", "coverageRatio", "completionStatus", "manifest", "contentPin", "answerRulePin", "targetPin", "completedAt"],
+            "properties": {
+              "placementResultId": { "type": "string", "pattern": "^plr_[A-Za-z0-9._:-]{8,127}$" },
+              "sessionId": { "$ref": "#/components/schemas/B10SessionId" },
+              "resultVersion": { "type": "integer", "minimum": 1 },
+              "resultDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+              "reportId": { "$ref": "#/components/schemas/B10ReportId" },
+              "reportVersion": { "type": "integer", "minimum": 1 },
+              "reportDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+              "resultKind": { "type": "string", "enum": ["ASSESSED", "SKIPPED"] },
+              "confidence": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW", "UNVERIFIED"] },
+              "coverageRatio": { "type": "number", "minimum": 0, "maximum": 1 },
+              "completionStatus": { "type": "string", "enum": ["COMPLETED", "SKIPPED"] },
+              "aggregateScore": { "type": "integer", "minimum": 0, "maximum": 100, "nullable": true },
+              "referenceLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"], "nullable": true },
+              "dimensionSummaries": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "x-p1r-exact-order": ["VOCABULARY", "BASIC_GRAMMAR", "READING", "LISTENING"],
+                "x-unique-by": "dimension",
+                "items": { "$ref": "#/components/schemas/B10PlacementDimensionSummary" }
+              },
+              "requestedStartingLevel": { "$ref": "#/components/schemas/B10RequestedStartingLevel" },
+              "manifest": { "$ref": "#/components/schemas/B10PlacementManifestPin" },
+              "contentPin": { "$ref": "#/components/schemas/B10PlacementContentPin" },
+              "answerRulePin": { "$ref": "#/components/schemas/B10PlacementAnswerRulePin" },
+              "targetPin": { "$ref": "#/components/schemas/B10PlacementTargetPin" },
+              "completedAt": { "$ref": "#/components/schemas/B10DateTime" }
+            }
+          },
+          {
+            "oneOf": [
+              {
+                "required": ["resultKind", "aggregateScore", "referenceLevel", "dimensionSummaries"],
+                "properties": {
+                  "resultKind": { "const": "ASSESSED" },
+                  "completionStatus": { "const": "COMPLETED" },
+                  "confidence": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+                  "aggregateScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+                  "referenceLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] }
+                },
+                "not": { "required": ["requestedStartingLevel"] }
+              },
+              {
+                "required": ["resultKind", "aggregateScore", "referenceLevel"],
+                "properties": {
+                  "resultKind": { "const": "SKIPPED" },
+                  "completionStatus": { "const": "SKIPPED" },
+                  "confidence": { "const": "UNVERIFIED" },
+                  "coverageRatio": { "const": 0 },
+                  "aggregateScore": { "const": null },
+                  "referenceLevel": { "const": null }
+                },
+                "not": { "required": ["dimensionSummaries"] }
+              }
+            ]
+          }
+        ]
+      },
+      "B10PlacementResponseReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "required": ["sessionId", "stateVersion", "status", "acceptedAt"],
+        "properties": {
+          "sessionId": { "$ref": "#/components/schemas/B10SessionId" },
+          "stateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
+          "status": { "$ref": "#/components/schemas/B10SessionStatus" },
+          "nextItem": { "$ref": "#/components/schemas/B10LearnerContentItem" },
+          "finalResult": { "$ref": "#/components/schemas/B10PlacementResult" },
+          "acceptedAt": { "$ref": "#/components/schemas/B10DateTime" }
+        },
+        "oneOf": [
+          {
+            "properties": { "status": { "enum": ["CREATED", "IN_PROGRESS", "INTERRUPTED"] } },
+            "required": ["nextItem"],
+            "not": { "required": ["finalResult"] }
+          },
+          {
+            "properties": { "status": { "enum": ["COMPLETED", "AUTO_SUBMITTED"] } },
+            "required": ["finalResult"],
+            "not": { "required": ["nextItem"] }
+          }
+        ]
+      },
+      "B10PlacementSkipBaselineRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Optional user-selected starting-level hint. It cannot establish a measured level, score, recommendation, owner, tenant or policy fact.",
+        "x-forbidden-client-fields": ["tenant", "tenantId", "subject", "principalId", "owner", "ownerId", "adultGate", "consent", "phase", "policyVersion", "contentRights", "score", "aggregateScore", "dimensionPercent", "referenceLevel", "confidence", "recommendation", "placementManifestId", "contentVersionId", "resultVersion", "reportVersion"],
+        "properties": {
+          "requestedStartingLevel": { "$ref": "#/components/schemas/B10RequestedStartingLevel" }
+        }
+      },
+      "B10PlacementReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "description": "Immutable learner-safe placement report. It is a non-official reference and is not a learning mastery, SRS or certification fact.",
+        "x-p1r-placement-report-result-consistency": {
+          "equality": "JSON_STRUCTURAL_EXACT",
+          "mustEqual": [
+            ["result.manifest.placementManifestId", "manifest.placementManifestId"],
+            ["result.manifest.placementManifestVersion", "manifest.placementManifestVersion"],
+            ["result.manifest.placementManifestDigest", "manifest.placementManifestDigest"],
+            ["result.manifest.dimensionSetDigest", "manifest.dimensionSetDigest"],
+            ["result.manifest.totalItemCount", "manifest.totalItemCount"],
+            ["result.contentPin", "contentPin"],
+            ["result.answerRulePin", "answerRulePin"],
+            ["result.targetPin", "targetPin"]
+          ],
+          "resultIdentityIsAuthoritative": ["result.placementResultId", "result.resultVersion", "result.resultDigest", "result.reportId", "result.reportVersion", "result.reportDigest"],
+          "reportMutation": "PROHIBITED"
+        },
+        "required": ["result", "manifest", "contentPin", "answerRulePin", "targetPin", "generatedAt"],
+        "properties": {
+          "result": { "$ref": "#/components/schemas/B10PlacementResult" },
+          "manifest": { "$ref": "#/components/schemas/B10PlacementManifest" },
+          "contentPin": { "$ref": "#/components/schemas/B10PlacementContentPin" },
+          "answerRulePin": { "$ref": "#/components/schemas/B10PlacementAnswerRulePin" },
+          "targetPin": { "$ref": "#/components/schemas/B10PlacementTargetPin" },
+          "generatedAt": { "$ref": "#/components/schemas/B10DateTime" }
+        }
+      }
+    }
+  }
+}

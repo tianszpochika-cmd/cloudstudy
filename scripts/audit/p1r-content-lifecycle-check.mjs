@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -10,6 +11,8 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRoot = path.resolve(scriptDir, '..', '..');
 
 export const DEFAULT_CONTENT_LIFECYCLE_POLICY = 'config/p1r-content-lifecycle.v1.json';
+const DEFAULT_PLACEMENT_POLICY = 'config/p1r-placement-contract.v1.json';
+const FROZEN_PLACEMENT_POLICY_SHA256 = '9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b';
 const B9_OPENAPI_PATH = 'packages/contracts/fragments/b9/b9-content.openapi.json';
 const B9_SHARED_OPENAPI_PATH = 'packages/contracts/fragments/b9/b9-shared.openapi.json';
 const B1_OPENAPI_PATH = 'packages/contracts/fragments/b1-content.openapi.json';
@@ -92,6 +95,8 @@ const CANONICAL_CONTENT_EVENTS = [
 ];
 const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-ONB-001',
+  'EVENT-GAP-ONB-002',
+  'EVENT-GAP-PLACEMENT-PLAN',
   'EVENT-GAP-CONTENT-DUPLICATE',
   'EVENT-GAP-BIND-CONT-001',
 ];
@@ -445,6 +450,10 @@ function stableJson(value) {
     return JSON.stringify(key) + ':' + stableJson(value[key]);
   }).join(',') + '}';
   return JSON.stringify(value);
+}
+
+function stableSha256(value) {
+  return crypto.createHash('sha256').update(stableJson(value)).digest('hex');
 }
 
 function add(errors, condition, message) {
@@ -913,12 +922,17 @@ function checkEventGovernance(input, errors) {
     closedIds.push(disposition.gapId);
   }
   exact(errors, closedIds, ['EVENT-GAP-CONTENT-DUPLICATE', 'EVENT-GAP-BIND-CONT-001'], 'content D2 closed gap set');
+  for (const gapId of ['EVENT-GAP-ONB-002', 'EVENT-GAP-PLACEMENT-PLAN']) {
+    const closure = closureById.get(gapId);
+    add(errors, closure && closure.status === 'D2_CONTRACT_CLOSED', gapId + ' must be D2_CONTRACT_CLOSED only under the frozen P1R-M1-012 successor');
+    exact(errors, closure && closure.d2ClosureTasks, ['P1R-M1-012', 'P1R-M1-006'], gapId + ' P1R-M1-012 closure tasks');
+  }
   const actualClosed = (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
     .filter(function (closure) { return closure.status === 'D2_CONTRACT_CLOSED'; })
     .map(function (closure) { return closure.gapId; });
   exact(errors, actualClosed, EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS, 'catalog D2 closed gap set');
   add(errors, (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
-    .filter(function (closure) { return closure.status === 'PLANNED'; }).length === 13, 'exactly thirteen unrelated event gaps must remain PLANNED');
+    .filter(function (closure) { return closure.status === 'PLANNED'; }).length === 11, 'exactly eleven unrelated event gaps must remain PLANNED');
   for (const eventName of HISTORICAL_CONTENT_EVENTS) {
     const event = eventByName(catalog, eventName);
     add(errors, event && event.status === 'HISTORICAL_CANDIDATE', eventName + ' must remain HISTORICAL_CANDIDATE');
@@ -965,6 +979,17 @@ function checkEventGovernance(input, errors) {
   add(errors, !Object.hasOwn((catalog.asyncapi && catalog.asyncapi.channels) || {}, 'content_public_projection_invalidated_v1'), 'historical projection invalidation must not enter AsyncAPI');
 }
 
+function checkPlacementSuccessor(input, errors) {
+  const policy = input.placementPolicy;
+  add(errors, stableSha256(policy) === FROZEN_PLACEMENT_POLICY_SHA256, 'P1R-M1-012 placement successor policy digest drifted');
+  add(errors, policy.task === 'P1R-M1-012', 'placement successor task must remain P1R-M1-012');
+  add(errors, policy.maturity === 'D2_CONTRACT_READY', 'placement successor maturity must remain D2_CONTRACT_READY');
+  add(errors, policy.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'placement successor must remain NOT_RUNTIME_VERIFIED');
+  add(errors, policy.completionEvent && policy.completionEvent.name === 'assessment.placement.completed.v1' && policy.completionEvent.status === 'CANONICAL_D2', 'placement successor completion event binding drifted');
+  add(errors, policy.placementPlanSaga && policy.placementPlanSaga.sagaType === 'PLACEMENT_TO_INITIAL_PLAN_V1' && policy.placementPlanSaga.runtimeStatus === 'NOT_RUNTIME_VERIFIED', 'placement-to-plan successor Saga boundary drifted');
+  add(errors, policy.learnerPlanningSuccessor && policy.learnerPlanningSuccessor.task === 'P1R-M1-012' && policy.learnerPlanningSuccessor.basePolicyId === 'M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION', 'learner-planning successor binding drifted');
+}
+
 function checkLinkedAudits(input, errors) {
   const governance = validateEventGovernanceData({
     catalog: input.catalog, ownerPolicy: input.ownerPolicy, b26Runtime: input.b26Runtime, fragments: input.eventFragments,
@@ -987,12 +1012,14 @@ export function validateContentLifecycleData(input = {}) {
     ['b9SharedOpenApi', 'B9 shared OpenAPI'],
     ['b1OpenApi', 'B1 content OpenAPI'], ['b10OpenApi', 'B10 learning/assessment content OpenAPI'],
     ['catalog', 'event catalog'],
+    ['placementPolicy', 'P1R-M1-012 placement successor policy'],
     ['b26Runtime', 'B26 static candidate'], ['reliabilityPolicy', 'event reliability policy'],
     ['b26Fragment', 'B26 event fragment'], ['registry', 'schema registry'],
     ['sagaPolicy', 'Saga recovery policy'], ['ownerPolicy', 'data ownership policy'],
   ]) add(errors, isRecord(input[key]), label + ' must be an object');
   add(errors, Array.isArray(input.eventFragments), 'event fragments must be an array');
   if (errors.length === 0) {
+    checkPlacementSuccessor(input, errors);
     checkPolicy(input.policy, errors);
     checkB9(input.policy, input.b9OpenApi, input.b9SharedOpenApi, input.catalog, errors);
     checkB1(input.policy, input.b1OpenApi, errors);
@@ -1025,6 +1052,7 @@ export function readContentLifecycleInputs(options = {}) {
     b9SharedOpenApi: readJson(root, B9_SHARED_OPENAPI_PATH),
     b1OpenApi: readJson(root, B1_OPENAPI_PATH),
     b10OpenApi: readJson(root, B10_OPENAPI_PATH),
+    placementPolicy: readJson(root, DEFAULT_PLACEMENT_POLICY),
     catalog: readJson(root, 'packages/contracts/events/v1/catalog.json'),
     b26Runtime: readJson(root, 'config/b26-event-runtime.json'),
     reliabilityPolicy: readJson(root, 'packages/contracts/events/v1/reliability-policy.json'),

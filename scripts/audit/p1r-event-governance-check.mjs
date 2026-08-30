@@ -25,6 +25,7 @@ const BASE_EVENT_KEYS = [
   'aggregateIdField', 'payloadSchema', 'compatibility',
 ];
 const EXPECTED_CANONICAL_EVENTS = [
+  'assessment.placement.completed.v1',
   'content.version.published.v1',
   'content.version.reviewed.v1',
   'content.version.rolled_back.v1',
@@ -60,6 +61,8 @@ const EXPECTED_GAP_CLOSURE_ORDER = [
 const EXPECTED_GAP_CLOSURES = [...EXPECTED_GAP_CLOSURE_ORDER].sort();
 const D2_CONTRACT_CLOSED_GAPS = new Set([
   'EVENT-GAP-ONB-001',
+  'EVENT-GAP-ONB-002',
+  'EVENT-GAP-PLACEMENT-PLAN',
   'EVENT-GAP-CONTENT-DUPLICATE',
   'EVENT-GAP-BIND-CONT-001',
 ]);
@@ -86,6 +89,17 @@ const REQUIRED_ENVELOPE = [
   'aggregateId', 'actorId', 'traceId', 'requestId', 'schemaVersion', 'dedupeKey', 'payload',
 ];
 const REQUIRED_CORRELATION = ['eventId', 'aggregateId', 'requestId', 'traceId', 'dedupeKey'];
+const PLACEMENT_COMPLETED_EVENT = 'assessment.placement.completed.v1';
+const PLACEMENT_COMMON_REQUIRED = [
+  'tenantId', 'principalId', 'sessionId', 'stateVersion', 'sessionSnapshotDigest',
+  'placementResultId', 'resultVersion', 'reportId', 'reportVersion', 'resultDigest', 'reportDigest',
+  'placementManifestId', 'placementManifestVersion', 'placementManifestDigest', 'dimensionSetDigest', 'totalItemCount',
+  'contentVersionId', 'contentEpoch', 'snapshotId', 'snapshotHash',
+  'answerRuleSetVersion', 'answerRuleVersion', 'ruleDigest', 'completionRuleVersion',
+  'targetId', 'targetVersion', 'targetSnapshotDigest',
+  'resultKind', 'completionStatus', 'aggregateScore', 'referenceLevel', 'confidence', 'coverageRatio', 'completedAt',
+];
+const PLACEMENT_DIMENSIONS = ['VOCABULARY', 'BASIC_GRAMMAR', 'READING', 'LISTENING'];
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -130,6 +144,10 @@ function stableJson(value) {
   return JSON.stringify(value);
 }
 
+function exactValue(errors, actual, expected, label) {
+  add(errors, stableJson(actual) === stableJson(expected), `${label} must exactly match the frozen M1-012 placement contract`);
+}
+
 function snakeCaseIdentifier(value) {
   return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 }
@@ -140,6 +158,86 @@ function resolveLocalReference(document, reference) {
     (current, token) => current?.[token.replaceAll('~1', '/').replaceAll('~0', '~')],
     document,
   );
+}
+
+function checkPlacementCompletedPayload(payload, errors) {
+  const label = `${PLACEMENT_COMPLETED_EVENT} payload`;
+  add(errors, isRecord(payload), `${label} must be an object`);
+  if (!isRecord(payload)) return;
+
+  add(errors, payload.$id === 'platform.events.assessment.placement.completed.v1.payload', `${label} must retain its stable schema identity`);
+  add(errors, payload.type === 'object' && payload.additionalProperties === false, `${label} must be a closed object`);
+  exactValue(errors, payload.required, PLACEMENT_COMMON_REQUIRED, `${label}.required`);
+  exactKeys(errors, payload.properties, [...PLACEMENT_COMMON_REQUIRED, 'dimensionSummaries', 'requestedStartingLevel'], `${label}.properties`);
+
+  const properties = payload.properties ?? {};
+  for (const envelopeOnlyField of ['eventId', 'sourceEventId', 'rootEventId']) {
+    add(errors, !Object.hasOwn(properties, envelopeOnlyField), `${label} must not duplicate envelope-only ${envelopeOnlyField}`);
+  }
+  exactValue(errors, properties.placementResultId, { type: 'string', pattern: '^plr_[A-Za-z0-9._:-]{8,127}$' }, `${label}.placementResultId`);
+  exactValue(errors, properties.reportDigest, { type: 'string', pattern: '^[a-f0-9]{64}$' }, `${label}.reportDigest`);
+  exactValue(errors, properties.placementManifestId, { type: 'string', const: 'P1_PLACEMENT_V1' }, `${label}.placementManifestId`);
+  exactValue(errors, properties.placementManifestVersion, { type: 'string', const: 'P1_PLACEMENT_V1' }, `${label}.placementManifestVersion`);
+  exactValue(errors, properties.totalItemCount, { type: 'integer', const: 10 }, `${label}.totalItemCount`);
+  exactValue(errors, properties.resultKind, { type: 'string', enum: ['ASSESSED', 'SKIPPED'] }, `${label}.resultKind`);
+  exactValue(errors, properties.completionStatus, { type: 'string', enum: ['COMPLETED', 'SKIPPED'] }, `${label}.completionStatus`);
+  exactValue(errors, properties.aggregateScore, { type: ['integer', 'null'] }, `${label}.aggregateScore`);
+  exactValue(errors, properties.referenceLevel, { type: ['string', 'null'] }, `${label}.referenceLevel`);
+  exactValue(errors, properties.confidence, { type: 'string', enum: ['HIGH', 'MEDIUM', 'LOW', 'UNVERIFIED'] }, `${label}.confidence`);
+  exactValue(errors, properties.coverageRatio, { type: 'number', minimum: 0, maximum: 1 }, `${label}.coverageRatio`);
+  exactValue(errors, properties.requestedStartingLevel, {
+    type: 'object',
+    additionalProperties: false,
+    required: ['level', 'authority'],
+    properties: {
+      level: { type: 'string', enum: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] },
+      authority: { type: 'string', const: 'USER_SELECTED_NON_AUTHORITATIVE' },
+    },
+  }, `${label}.requestedStartingLevel`);
+
+  const dimensions = properties.dimensionSummaries;
+  exactKeys(errors, dimensions, ['type', 'minItems', 'maxItems', 'prefixItems', 'items'], `${label}.dimensionSummaries`);
+  add(errors, dimensions?.type === 'array' && dimensions?.minItems === 4 && dimensions?.maxItems === 4 && dimensions?.items === false, `${label}.dimensionSummaries must be the closed four-dimension tuple`);
+  const prefixItems = Array.isArray(dimensions?.prefixItems) ? dimensions.prefixItems : [];
+  add(errors, prefixItems.length === PLACEMENT_DIMENSIONS.length, `${label}.dimensionSummaries must retain four ordered dimension summaries`);
+  for (const [index, dimensionId] of prefixItems.entries()) {
+    const dimensionLabel = `${label}.dimensionSummaries.prefixItems[${index}]`;
+    exactKeys(errors, dimensionId, ['type', 'additionalProperties', 'required', 'properties'], dimensionLabel);
+    add(errors, dimensionId?.type === 'object' && dimensionId?.additionalProperties === false, `${dimensionLabel} must be a closed object`);
+    exactValue(errors, dimensionId?.required, ['dimensionId', 'dimensionPercent', 'coverageRatio'], `${dimensionLabel}.required`);
+    exactKeys(errors, dimensionId?.properties, ['dimensionId', 'dimensionPercent', 'coverageRatio'], `${dimensionLabel}.properties`);
+    exactValue(errors, dimensionId?.properties?.dimensionId, { type: 'string', const: PLACEMENT_DIMENSIONS[index] }, `${dimensionLabel}.dimensionId`);
+    exactValue(errors, dimensionId?.properties?.dimensionPercent, { type: 'number', minimum: 0, maximum: 100 }, `${dimensionLabel}.dimensionPercent`);
+    exactValue(errors, dimensionId?.properties?.coverageRatio, { type: 'number', minimum: 0, maximum: 1 }, `${dimensionLabel}.coverageRatio`);
+  }
+
+  const oneOf = Array.isArray(payload.oneOf) ? payload.oneOf : [];
+  add(errors, oneOf.length === 2, `${label} must have exactly ASSESSED and SKIPPED branches`);
+  const branches = new Map(oneOf.map((branch) => [branch?.properties?.resultKind?.const, branch]));
+  add(errors, branches.size === 2 && branches.has('ASSESSED') && branches.has('SKIPPED'), `${label} branches must be keyed by ASSESSED and SKIPPED only`);
+  const assessed = branches.get('ASSESSED');
+  const skipped = branches.get('SKIPPED');
+  exactKeys(errors, assessed, ['required', 'properties', 'not'], `${label}.ASSESSED`);
+  exactValue(errors, assessed?.required, ['resultKind', 'completionStatus', 'aggregateScore', 'referenceLevel', 'confidence', 'coverageRatio', 'dimensionSummaries'], `${label}.ASSESSED.required`);
+  exactKeys(errors, assessed?.properties, ['resultKind', 'completionStatus', 'aggregateScore', 'referenceLevel', 'confidence', 'coverageRatio'], `${label}.ASSESSED.properties`);
+  exactValue(errors, assessed?.properties?.resultKind, { const: 'ASSESSED' }, `${label}.ASSESSED.resultKind`);
+  exactValue(errors, assessed?.properties?.completionStatus, { const: 'COMPLETED' }, `${label}.ASSESSED.completionStatus`);
+  exactValue(errors, assessed?.properties?.aggregateScore, { type: 'integer', minimum: 0, maximum: 100 }, `${label}.ASSESSED.aggregateScore`);
+  exactValue(errors, assessed?.properties?.referenceLevel, { type: 'string', enum: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] }, `${label}.ASSESSED.referenceLevel`);
+  exactValue(errors, assessed?.properties?.confidence, { type: 'string', enum: ['HIGH', 'MEDIUM', 'LOW'] }, `${label}.ASSESSED.confidence`);
+  exactValue(errors, assessed?.properties?.coverageRatio, { type: 'number', exclusiveMinimum: 0, maximum: 1 }, `${label}.ASSESSED.coverageRatio`);
+  exactValue(errors, assessed?.not, { required: ['requestedStartingLevel'] }, `${label}.ASSESSED.not`);
+
+  exactKeys(errors, skipped, ['required', 'properties', 'not'], `${label}.SKIPPED`);
+  exactValue(errors, skipped?.required, ['resultKind', 'completionStatus', 'aggregateScore', 'referenceLevel', 'confidence', 'coverageRatio'], `${label}.SKIPPED.required`);
+  exactKeys(errors, skipped?.properties, ['resultKind', 'completionStatus', 'aggregateScore', 'referenceLevel', 'confidence', 'coverageRatio'], `${label}.SKIPPED.properties`);
+  exactValue(errors, skipped?.properties?.resultKind, { const: 'SKIPPED' }, `${label}.SKIPPED.resultKind`);
+  exactValue(errors, skipped?.properties?.completionStatus, { const: 'SKIPPED' }, `${label}.SKIPPED.completionStatus`);
+  exactValue(errors, skipped?.properties?.aggregateScore, { type: 'null' }, `${label}.SKIPPED.aggregateScore`);
+  exactValue(errors, skipped?.properties?.referenceLevel, { type: 'null' }, `${label}.SKIPPED.referenceLevel`);
+  exactValue(errors, skipped?.properties?.confidence, { const: 'UNVERIFIED' }, `${label}.SKIPPED.confidence`);
+  exactValue(errors, skipped?.properties?.coverageRatio, { const: 0 }, `${label}.SKIPPED.coverageRatio`);
+  exactValue(errors, skipped?.not, { required: ['dimensionSummaries'] }, `${label}.SKIPPED.not`);
 }
 
 export function listEventFragments(root) {
@@ -220,8 +318,8 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_GAP_CLOSURES), 'plannedClosures must cover the exact M1-006 event gap registry');
   add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_GAP_CLOSURE_ORDER), 'plannedClosures must preserve the canonical gap registry order');
   const closureCounts = countEventGapClosures(governance.plannedClosures);
-  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly thirteen PLANNED event gaps');
-  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly three D2_CONTRACT_CLOSED event gaps');
+  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly eleven PLANNED event gaps');
+  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly five D2_CONTRACT_CLOSED event gaps');
 }
 
 function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors) {
@@ -292,6 +390,7 @@ function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEven
   add(errors, governance.schema?.compatibility === event.compatibility?.strategy && governance.schema?.compatibility === 'additive', `${label} compatibility must be additive and match the event`);
   const payload = resolveLocalReference(catalog, event.payloadSchema?.$ref);
   add(errors, isRecord(payload) && isRecord(payload.properties) && Object.hasOwn(payload.properties, event.aggregateIdField), `${label} aggregateIdField must exist in its payload schema`);
+  if (label === PLACEMENT_COMPLETED_EVENT) checkPlacementCompletedPayload(payload, errors);
 
   add(errors, JSON.stringify(governance.correlation) === JSON.stringify(REQUIRED_CORRELATION), `${label} correlation fields must be exact and ordered`);
   add(errors, JSON.stringify(event['x-envelope-required']) === JSON.stringify(REQUIRED_ENVELOPE), `${label} must require the complete canonical envelope`);
@@ -308,7 +407,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
 
   checkPlatformGovernance(catalog, errors);
   add(errors, b26Runtime.mode === 'static-only' && b26Runtime.runtimeStatus === 'pending' && b26Runtime.defaultDecision === 'NO-GO', 'B26 input must remain static-only, pending and NO-GO');
-  add(errors, Array.isArray(catalog.events) && catalog.events.length === 154, 'event catalog must contain exactly 154 current candidates');
+  add(errors, Array.isArray(catalog.events) && catalog.events.length === 155, 'event catalog must contain exactly 155 current candidates');
 
   const services = new Set((ownerPolicy.serviceOwners ?? []).map((owner) => owner.service));
   const dataOwners = new Set((ownerPolicy.serviceOwners ?? []).filter((owner) => owner.dataOwner === true).map((owner) => owner.service));
@@ -319,7 +418,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact thirteen canonical governance events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact fourteen canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
   add(errors, duplicates(eventNames).length === 0, `event catalog duplicates event names: ${duplicates(eventNames).join(', ')}`);
@@ -353,8 +452,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact thirteen governed events');
-  add(errors, counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 13 canonical / 141 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact fourteen governed events');
+  add(errors, counts.canonical === 14 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 14 canonical / 141 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);

@@ -15,6 +15,8 @@ import {
   M1010_SOURCE_CONTRACT_BASELINE_REF,
   M1011_LEARNER_PLANNING_PROMOTION_ID,
   M1011_SOURCE_CONTRACT_BASELINE_REF,
+  M1012_PLACEMENT_PROMOTION_ID,
+  M1012_SOURCE_CONTRACT_BASELINE_REF,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -34,6 +36,7 @@ const contentLifecyclePolicyPath = 'config/p1r-content-lifecycle.v1.json';
 const mediaContractPolicyPath = 'config/p1r-media-contract.v1.json';
 const assessmentContractPolicyPath = 'config/p1r-assessment-contract.v1.json';
 const learnerPlanningContractPolicyPath = 'config/p1r-learner-planning-contract.v1.json';
+const placementContractPolicyPath = 'config/p1r-placement-contract.v1.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
@@ -41,6 +44,7 @@ export const REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF = M1008_SOURCE_CONTRACT
 export const REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF = M1009_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF = M1010_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF = M1011_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF = M1012_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -802,6 +806,97 @@ function loadM1011CompatibilityPolicy(readFile) {
   return Object.freeze({ ...policy.compatibilityPromotion });
 }
 
+const M1012_COMPATIBILITY_PROMOTION_POLICY = Object.freeze({
+  id: M1012_PLACEMENT_PROMOTION_ID,
+  sourceContractBaseline: REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+  previousPromotion: M1011_LEARNER_PLANNING_PROMOTION_ID,
+  immutableGovernanceBaseline: REQUIRED_EVENT_GOVERNANCE_BASELINE_REF,
+  runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+  scope: 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC',
+  canonicalFragment: 'packages/contracts/fragments/b10/b10-placement.openapi.json',
+  legacyAdapterFragments: [
+    'packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json',
+    'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json',
+  ],
+  planningFragment: 'packages/contracts/fragments/b9/b9-learner.openapi.json',
+  eventFragment: 'packages/contracts/events/v1/fragments/b10-learning-assessment.events.json',
+  b26StaticPolicy: 'config/b26-event-runtime.json',
+});
+
+const M1012_CANONICAL_ROUTE_OPERATIONS = Object.freeze([
+  { path: '/api/v1/assessment/placement/sessions', method: 'POST', operationId: 'createB10PlacementSession' },
+  { path: '/api/v1/assessment/placement/sessions/{sessionId}', method: 'GET', operationId: 'getB10PlacementSession' },
+  { path: '/api/v1/assessment/placement/sessions/{sessionId}/responses', method: 'POST', operationId: 'submitB10PlacementResponse' },
+  { path: '/api/v1/assessment/placement/baselines/skip', method: 'POST', operationId: 'createB10PlacementSkipBaseline' },
+  { path: '/api/v1/assessment/placement/reports/{reportId}', method: 'GET', operationId: 'getB10PlacementReport' },
+]);
+
+/**
+ * This is intentionally narrower than the placement source checker: it
+ * freezes the promotion authority used by the generic compatibility tool and
+ * proves that the promoted surface is static D2 only.  The source checker
+ * owns the detailed scoring and payload rules.
+ */
+export function validateM1012CompatibilityPolicy(policy) {
+  const errors = [];
+  exactPolicyValue(policy?.task, 'P1R-M1-012', 'placement contract policy task', errors);
+  exactPolicyValue(policy?.maturity, 'D2_CONTRACT_READY', 'placement contract policy maturity', errors);
+  exactPolicyValue(policy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'placement contract policy runtimeStatus', errors);
+  exactPolicyValue(policy?.sourceContractBaseline, REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF, 'placement contract source baseline', errors);
+  exactPolicyValue(policy?.compatibilityPromotion, M1012_COMPATIBILITY_PROMOTION_POLICY, 'M1-012 compatibility promotion', errors);
+  exactPolicyValue(policy?.completionEvent && {
+    name: policy.completionEvent.name,
+    status: policy.completionEvent.status,
+    runtimeStatus: policy.completionEvent.runtimeStatus,
+    producerService: policy.completionEvent.producerService,
+    aggregateType: policy.completionEvent.aggregateType,
+  }, {
+    name: 'assessment.placement.completed.v1',
+    status: 'CANONICAL_D2',
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+    producerService: 'assessment-service',
+    aggregateType: 'placement_session',
+  }, 'M1-012 placement completion event boundary', errors);
+  exactPolicyValue(policy?.contractIntegration && {
+    status: policy.contractIntegration.status,
+    staticSourceBindingOnly: policy.contractIntegration.staticSourceBindingOnly,
+    canonicalRoutes: policy.contractIntegration.canonicalRoutes,
+  }, {
+    status: 'SOURCE_BOUND_STATIC_D2',
+    staticSourceBindingOnly: true,
+    canonicalRoutes: M1012_CANONICAL_ROUTE_OPERATIONS,
+  }, 'M1-012 canonical placement route boundary', errors);
+  exactPolicyValue(policy?.learnerPlanningSuccessor && {
+    task: policy.learnerPlanningSuccessor.task,
+    basePolicyId: policy.learnerPlanningSuccessor.basePolicyId,
+    planningFragment: policy.learnerPlanningSuccessor.planningFragment,
+    placementBaselineSchema: policy.learnerPlanningSuccessor.placementBaselineSchema,
+  }, {
+    task: 'P1R-M1-012',
+    basePolicyId: M1011_LEARNER_PLANNING_PROMOTION_ID,
+    planningFragment: 'packages/contracts/fragments/b9/b9-learner.openapi.json',
+    placementBaselineSchema: 'B9PlacementBaseline',
+  }, 'M1-012 learner planning successor boundary', errors);
+  return errors;
+}
+
+function loadM1012CompatibilityPolicy(readFile) {
+  let policy;
+  try {
+    policy = JSON.parse(readFile(path.join(repoRoot, ...placementContractPolicyPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M1-012 compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM1012CompatibilityPolicy(policy);
+  if (errors.length > 0) {
+    throw new Error(`M1-012 compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({
+    ...policy.compatibilityPromotion,
+    legacyAdapterFragments: [...policy.compatibilityPromotion.legacyAdapterFragments],
+  });
+}
+
 function loadImmutableGovernanceBaseline(governanceRef, git) {
   if (governanceRef !== REQUIRED_EVENT_GOVERNANCE_BASELINE_REF) {
     throw new Error(
@@ -906,6 +1001,24 @@ function loadM1011SourceContractBaseline(promotion, git) {
   };
 }
 
+function loadM1012SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M1-012 source contract ref ${REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  return {
+    ref,
+    commit,
+    openapi: JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`])),
+    catalog: JSON.parse(git(['show', `${commit}:${contractPaths.events}`])),
+    b26Runtime: JSON.parse(git(['show', `${commit}:${b26RuntimePath}`])),
+    source: `git:${commit}:packages/contracts/{openapi/v1/openapi.json,events/v1/catalog.json,../config/b26-event-runtime.json}`,
+  };
+}
+
 export function runGitBaselineCompatibility({
   ref,
   kind = 'all',
@@ -923,6 +1036,7 @@ export function runGitBaselineCompatibility({
   const needsM1008Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1010Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1011Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM1012Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1009Promotion = selectedKinds.includes('openapi');
   const needsM1009Policy = needsM1009Promotion || needsM1010Promotion;
   const needsEventGovernance = selectedKinds.includes('events');
@@ -956,6 +1070,12 @@ export function runGitBaselineCompatibility({
   const learnerPlanningSourceContractBaseline = needsM1011Promotion
     ? loadM1011SourceContractBaseline(learnerPlanningPromotion, git)
     : undefined;
+  const placementPromotion = needsM1012Promotion
+    ? loadM1012CompatibilityPolicy(readFile)
+    : undefined;
+  const placementSourceContractBaseline = needsM1012Promotion
+    ? loadM1012SourceContractBaseline(placementPromotion, git)
+    : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
       ...compareContracts('events', sourceContractBaseline.catalog, immutableGovernanceBaseline.catalog),
@@ -988,6 +1108,15 @@ export function runGitBaselineCompatibility({
     REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
   ]);
   const useM1011Promotion = needsM1011Promotion && m1011BaselineRefs.has(baselineCommit);
+  const m1012BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM1012Promotion = needsM1012Promotion && m1012BaselineRefs.has(baselineCommit);
   const m1008ToM1009IntegrityChanges = needsM1009Promotion
     ? compareContracts(
       'openapi',
@@ -1028,11 +1157,34 @@ export function runGitBaselineCompatibility({
       { allowance: assessmentPromotion },
     )
     : [];
+  const m1011ToM1012OpenApiIntegrityChanges = needsM1009Promotion
+    ? compareContracts(
+      'openapi',
+      learnerPlanningSourceContractBaseline.openapi,
+      placementSourceContractBaseline.openapi,
+      { allowance: learnerPlanningPromotion },
+    )
+    : [];
+  const m1011ToM1012EventIntegrityChanges = needsEventGovernance
+    ? compareContracts(
+      'events',
+      learnerPlanningSourceContractBaseline.catalog,
+      placementSourceContractBaseline.catalog,
+      { allowance: learnerPlanningPromotion },
+    )
+    : [];
   const m1011SourceB26IntegrityChanges = needsEventGovernance
     ? compareB26WorkflowGovernance(
       immutableGovernanceBaseline.b26Runtime,
       learnerPlanningSourceContractBaseline.b26Runtime,
       { allowance: promotion },
+    )
+    : [];
+  const m1011ToM1012B26IntegrityChanges = needsEventGovernance
+    ? compareB26WorkflowGovernance(
+      learnerPlanningSourceContractBaseline.b26Runtime,
+      placementSourceContractBaseline.b26Runtime,
+      { allowance: learnerPlanningPromotion },
     )
     : [];
 
@@ -1057,7 +1209,66 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1011Promotion) {
+    if (contractKind === 'openapi' && useM1012Promotion) {
+      breakingChanges = [
+        ...m1008ToM1009IntegrityChanges,
+        ...m1009ToM1010OpenApiIntegrityChanges,
+        ...m1010ToM1011OpenApiIntegrityChanges,
+        ...m1011ToM1012OpenApiIntegrityChanges,
+        ...compareContracts(
+          'openapi',
+          placementSourceContractBaseline.openapi,
+          current,
+          { allowance: placementPromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: placementPromotion.id,
+        sourceContractBaseline: placementSourceContractBaseline.commit,
+        previousPromotion: learnerPlanningPromotion.id,
+        previousPromotionSource: learnerPlanningSourceContractBaseline.commit,
+        immutableGovernanceBaseline: placementPromotion.immutableGovernanceBaseline,
+        scope: placementPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'events' && useM1012Promotion) {
+      const currentB26 = JSON.parse(readFile(path.join(repoRoot, ...b26RuntimePath.split('/'))));
+      breakingChanges = [
+        ...m1008ToM1010EventIntegrityChanges,
+        ...m1010ToM1011EventIntegrityChanges,
+        ...m1011ToM1012EventIntegrityChanges,
+        ...compareContracts(
+          'events',
+          placementSourceContractBaseline.catalog,
+          current,
+          { allowance: placementPromotion },
+        ),
+        ...m1011SourceB26IntegrityChanges,
+        ...m1011ToM1012B26IntegrityChanges,
+        ...compareB26WorkflowGovernance(
+          placementSourceContractBaseline.b26Runtime,
+          currentB26,
+          { allowance: placementPromotion },
+        ),
+        ...immutableBaselineIntegrityChanges,
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      resultGovernanceBaseline = governanceSummary;
+      promotionResult = {
+        id: placementPromotion.id,
+        sourceContractBaseline: placementSourceContractBaseline.commit,
+        previousPromotion: learnerPlanningPromotion.id,
+        previousPromotionSource: learnerPlanningSourceContractBaseline.commit,
+        immutableGovernanceBaseline: immutableGovernanceBaseline.commit,
+        scope: placementPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1011Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...m1009ToM1010OpenApiIntegrityChanges,
@@ -1272,7 +1483,17 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1011Promotion
+    promotion: useM1012Promotion
+      ? {
+        id: placementPromotion.id,
+        sourceContractBaseline: placementSourceContractBaseline.commit,
+        previousPromotion: learnerPlanningPromotion.id,
+        previousPromotionSource: learnerPlanningSourceContractBaseline.commit,
+        immutableGovernanceBaseline: placementPromotion.immutableGovernanceBaseline,
+        runtimeStatus: placementPromotion.runtimeStatus,
+        scope: placementPromotion.scope,
+      }
+      : useM1011Promotion
       ? {
         id: learnerPlanningPromotion.id,
         sourceContractBaseline: learnerPlanningSourceContractBaseline.commit,

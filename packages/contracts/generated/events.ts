@@ -281,12 +281,12 @@ export type IamPolicyVersionChanged = { policyName: string; previousVersion: str
 /**
  * Generated from the contract source.
  */
-export type B9LearnerProfileUpdated = { tenantId: string; principalId: string; profileVersion: number; changedFieldCodes: ReadonlyArray<string>; updatedAt: string; };
+export type B9LearnerProfileUpdated = { tenantId: string; principalId: string; profileVersion: number; changedFieldCodes: readonly [string, ...Array<string>]; updatedAt: string; };
 
 /**
  * Generated from the contract source.
  */
-export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45; profileVersion: number; preferenceVersion: number; timezone: string; weeklyStudyDays: ReadonlyArray<number>; contentLocale: string; goalCatalogVersion: string; targetSnapshotDigest: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; updatedAt: string; };
+export type B9LearnerTargetUpdated = { tenantId: string; principalId: string; targetId: number; targetVersion: number; goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADUATE_ENGLISH" | "WORKPLACE_DAILY"; targetLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; dailyQuotaMinutes: 5 | 15 | 30 | 45; profileVersion: number; preferenceVersion: number; timezone: string; weeklyStudyDays: readonly [number] | readonly [number, number] | readonly [number, number, number] | readonly [number, number, number, number] | readonly [number, number, number, number, number] | readonly [number, number, number, number, number, number] | readonly [number, number, number, number, number, number, number]; contentLocale: string; goalCatalogVersion: string; targetSnapshotDigest: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; updatedAt: string; };
 
 /**
  * Generated from the contract source.
@@ -332,6 +332,11 @@ export type B10AssessmentAttemptSubmitted = { tenantId: string; principalId: str
  * Generated from the contract source.
  */
 export type B10AssessmentAttemptAssessed = { tenantId: string; principalId: string; attemptId: string; sessionId: string; contentVersionId: number; contentSnapshotId?: string; contentEpoch: number; snapshotId: string; snapshotHash: string; pin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; attemptVersion: number; submissionId: string; submissionDigest: string; answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; reportId: string; reportVersion: number; reportRuleVersion: string; reportStatus: "READY" | "PARTIAL" | "FAILED"; reportDigest: string; asOf: string; assessmentFactWatermark: string; outcomeKind: "OBJECTIVE"; objectiveNumerator: number; objectiveDenominator: number; scoreBucket: "ZERO" | "PARTIAL" | "FULL"; errorCategory: "NONE" | "CHOICE" | "MATCHING" | "ORDERING" | "CLOZE" | "TEXT" | "CONTENT" | "RULE"; reasonTrace: ReadonlyArray<{ itemId?: number; ruleCode: string; ruleVersion: string; category: "NONE" | "CHOICE" | "MATCHING" | "ORDERING" | "CLOZE" | "TEXT" | "CONTENT" | "RULE"; reasonCode?: string; evidenceRef?: string; }>; outcomeDigest: string; mistakeCodes: ReadonlyArray<string>; assessedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlacementCompleted = ({ tenantId: string; principalId: string; sessionId: string; stateVersion: number; sessionSnapshotDigest: string; placementResultId: string; resultVersion: number; reportId: string; reportVersion: number; resultDigest: string; reportDigest: string; placementManifestId: "P1_PLACEMENT_V1"; placementManifestVersion: "P1_PLACEMENT_V1"; placementManifestDigest: string; dimensionSetDigest: string; totalItemCount: 10; contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; targetId: number; targetVersion: number; targetSnapshotDigest: string; resultKind: "ASSESSED" | "SKIPPED"; completionStatus: "COMPLETED" | "SKIPPED"; aggregateScore: number | null; referenceLevel: string | null; confidence: "HIGH" | "MEDIUM" | "LOW" | "UNVERIFIED"; coverageRatio: number; dimensionSummaries?: readonly [{ dimensionId: "VOCABULARY"; dimensionPercent: number; coverageRatio: number; }, { dimensionId: "BASIC_GRAMMAR"; dimensionPercent: number; coverageRatio: number; }, { dimensionId: "READING"; dimensionPercent: number; coverageRatio: number; }, { dimensionId: "LISTENING"; dimensionPercent: number; coverageRatio: number; }]; requestedStartingLevel?: { level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; authority: "USER_SELECTED_NON_AUTHORITATIVE"; }; completedAt: string; }) & ({ dimensionSummaries: readonly [{ dimensionId: "VOCABULARY"; dimensionPercent: number; coverageRatio: number; }, { dimensionId: "BASIC_GRAMMAR"; dimensionPercent: number; coverageRatio: number; }, { dimensionId: "READING"; dimensionPercent: number; coverageRatio: number; }, { dimensionId: "LISTENING"; dimensionPercent: number; coverageRatio: number; }]; resultKind: "ASSESSED"; completionStatus: "COMPLETED"; aggregateScore: number; referenceLevel: "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; confidence: "HIGH" | "MEDIUM" | "LOW"; coverageRatio: number; requestedStartingLevel?: never; } | { resultKind: "SKIPPED"; completionStatus: "SKIPPED"; aggregateScore: null; referenceLevel: null; confidence: "UNVERIFIED"; coverageRatio: 0; dimensionSummaries?: never; });
 
 /**
  * Generated from the contract source.
@@ -1247,6 +1252,13 @@ export interface AssessmentAttemptAssessedEvent extends PlatformEventEnvelope<B1
   dedupeKey: string;
 }
 
+export interface AssessmentPlacementCompletedEvent extends PlatformEventEnvelope<B10PlacementCompleted, "assessment.event.v1"> {
+  eventName: "assessment.placement.completed.v1";
+  version: 1;
+  schemaVersion: "assessment.event.v1";
+  dedupeKey: string;
+}
+
 export interface LearningMasteryProjectedEvent extends PlatformEventEnvelope<B10LearningMasteryProjected, "learning.event.v1"> {
   eventName: "learning.mastery.projected.v1";
   version: 1;
@@ -1528,7 +1540,7 @@ export interface AuthLoginSucceededEvent extends PlatformEventEnvelope<AuthLogin
 }
 
 /** All catalog entries, including HISTORICAL_CANDIDATE records. New v2 publishers must use CanonicalPlatformEvent. */
-export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent;
+export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent;
 
 /** @deprecated Use CanonicalPlatformEvent for new v2 event publication. */
 export type PlatformEvent = EventCatalogCandidate;
@@ -1853,6 +1865,54 @@ export const canonicalEventGovernance = {
     "schema": {
       "schemaVersion": "content.event.v1",
       "payloadRef": "#/payloadSchemas/B9ContentVersionRolledBack",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "assessment.placement.completed.v1": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "assessment-service",
+      "dataOwner": "assessment-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_assessment_placement_completed_v1"
+    },
+    "consumers": [
+      {
+        "service": "learning-service",
+        "consumerGroup": "cg.learning-from-assessment.v1",
+        "subscriptionOperationId": "subscribe_assessment_placement_completed_v1_cg_learning_from_assessment_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-assessment.v1",
+        "subscriptionOperationId": "subscribe_assessment_placement_completed_v1_cg_workflow_from_assessment_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.assessment.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.sessionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "assessment_placement_completed_v1"
+    },
+    "schema": {
+      "schemaVersion": "assessment.event.v1",
+      "payloadRef": "#/payloadSchemas/B10PlacementCompleted",
       "compatibility": "additive"
     },
     "correlation": [
@@ -2206,4 +2266,4 @@ export const canonicalEventGovernance = {
 } as const;
 
 export type CanonicalEventName = keyof typeof canonicalEventGovernance;
-export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;
+export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;

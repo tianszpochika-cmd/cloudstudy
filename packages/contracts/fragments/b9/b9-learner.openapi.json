@@ -1647,6 +1647,75 @@
           }
         }
       },
+      "B9PlacementBaseline": {
+        "type": "object",
+        "additionalProperties": false,
+        "readOnly": true,
+        "description": "Closed, learner-safe assessment reference assembled by learning-service from the canonical durable placement completion fact. It is a binding reference, not raw responses, scores, an algorithm, SRS or mastery input.",
+        "x-p1r-placement-baseline": {
+          "sourceEvent": "assessment.placement.completed.v1",
+          "assessmentOwner": "assessment-service",
+          "planningInputOwner": "learning-service",
+          "allowedResultKinds": ["ASSESSED", "SKIPPED"],
+          "requiredPinGroups": ["session", "result-and-report", "manifest", "content", "answer-rule", "target"],
+          "sameBindingRule": "manifest, content, answer-rule and target pins MUST equal the canonical result/report/event pins",
+          "lineage": {
+            "sourceEventId": "DERIVED_BY_LEARNING_FROM_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+            "rootEventId": "FIRST_DURABLE_COMPLETION_SAGA_ROOT_EQUALS_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+            "assessmentPayloadEventIdentityFields": "PROHIBITED"
+          },
+          "assessedPlanningData": "referenceLevel and baselineConfidence only; aggregateScore and dimension summaries are excluded",
+          "skipPlanningData": "UNVERIFIED with null referenceLevel; requestedStartingLevel is optional and non-authoritative",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-forbidden-fields": ["placementRaw", "rawResponse", "response", "responses", "answer", "answers", "answerKey", "answerRule", "aggregateScore", "placementScore", "dimensionPercent", "dimensionSummaries", "placementAlgorithm", "recommendation", "srsState", "mastery", "adultGate", "consent", "phase", "policyVersion", "contentRights"],
+        "required": ["resultKind", "placementSessionId", "sessionStateVersion", "sessionSnapshotDigest", "placementResultId", "resultVersion", "resultDigest", "reportId", "reportVersion", "reportDigest", "baselineConfidence", "referenceLevel", "completionStatus", "manifest", "contentPin", "answerRulePin", "targetPin", "completedAt", "sourceEventId", "rootEventId", "placementFactWatermark"],
+        "properties": {
+          "resultKind": { "type": "string", "enum": ["ASSESSED", "SKIPPED"] },
+          "placementSessionId": { "$ref": "#/components/schemas/B10SessionId" },
+          "sessionStateVersion": { "$ref": "#/components/schemas/B10StateVersion" },
+          "sessionSnapshotDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "placementResultId": { "type": "string", "pattern": "^plr_[A-Za-z0-9._:-]{8,127}$" },
+          "resultVersion": { "type": "integer", "minimum": 1 },
+          "resultDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "reportId": { "$ref": "#/components/schemas/B10ReportId" },
+          "reportVersion": { "type": "integer", "minimum": 1 },
+          "reportDigest": { "$ref": "#/components/schemas/B10PlacementDigest" },
+          "baselineConfidence": { "type": "string", "enum": ["HIGH", "MEDIUM", "LOW", "UNVERIFIED"] },
+          "referenceLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"], "nullable": true },
+          "requestedStartingLevel": { "$ref": "#/components/schemas/B10RequestedStartingLevel" },
+          "completionStatus": { "type": "string", "enum": ["COMPLETED", "SKIPPED"] },
+          "manifest": { "$ref": "#/components/schemas/B10PlacementManifestPin" },
+          "contentPin": { "$ref": "#/components/schemas/B10PlacementContentPin" },
+          "answerRulePin": { "$ref": "#/components/schemas/B10PlacementAnswerRulePin" },
+          "targetPin": { "$ref": "#/components/schemas/B10PlacementTargetPin" },
+          "completedAt": { "$ref": "#/components/schemas/B10DateTime" },
+          "sourceEventId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+          "rootEventId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+          "placementFactWatermark": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" }
+        },
+        "oneOf": [
+          {
+            "required": ["resultKind", "baselineConfidence", "referenceLevel"],
+            "properties": {
+              "resultKind": { "const": "ASSESSED" },
+              "completionStatus": { "const": "COMPLETED" },
+              "baselineConfidence": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+              "referenceLevel": { "type": "string", "enum": ["A1", "A2", "B1", "B2", "C1", "C2"] }
+            },
+            "not": { "required": ["requestedStartingLevel"] }
+          },
+          {
+            "required": ["resultKind", "baselineConfidence", "referenceLevel"],
+            "properties": {
+              "resultKind": { "const": "SKIPPED" },
+              "completionStatus": { "const": "SKIPPED" },
+              "baselineConfidence": { "const": "UNVERIFIED" },
+              "referenceLevel": { "const": null }
+            }
+          }
+        ]
+      },
       "B9PlanningInputSnapshot": {
         "type": "object",
         "additionalProperties": false,
@@ -1663,30 +1732,52 @@
           "timezone",
           "weeklyStudyDays",
           "contentLocale",
+          "contentVersionId",
           "contentEpoch",
           "projectionVersion",
           "rightsSnapshotVersion",
           "eligibilitySnapshotVersion",
           "eligibilitySnapshotDigest",
+          "placementBaseline",
           "planningRuleVersion",
           "inputFactWatermark",
           "sourceEventId",
           "rootEventId"
         ],
-        "description": "Immutable, server-assembled planning facts. Eligibility is pinned only as a server-derived digest of adult gate, required consents, phase and policy; raw authority facts, placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.",
+        "description": "Immutable, server-assembled planning facts. Eligibility is pinned only as a server-derived digest of adult gate, required consents, phase and policy; the placement baseline is a closed canonical result reference. Raw authority facts, placement raw answers, scores, algorithm, SRS and mastery facts are never part of this snapshot.",
         "x-source-mapping": {
           "learnerTarget": ["targetId", "targetVersion", "dailyQuotaMinutes", "goalCatalogVersion"],
           "learnerProfile": ["profileVersion"],
           "learnerPreferences": ["preferenceVersion", "timezone", "weeklyStudyDays", "contentLocale"],
-          "contentProjection": ["contentEpoch", "projectionVersion", "rightsSnapshotVersion"],
+          "contentProjection": ["contentVersionId", "contentEpoch", "projectionVersion", "rightsSnapshotVersion"],
           "iamEligibility": ["eligibilitySnapshotVersion", "eligibilitySnapshotDigest"],
+          "assessmentPlacement": ["placementBaseline"],
           "learningPolicy": ["planningRuleVersion"],
           "learningOwner": ["pinId", "pinVersion", "pinDigest", "inputFactWatermark", "sourceEventId", "rootEventId"]
+        },
+        "x-p1r-placement-plan-saga": {
+          "sourceEvent": "assessment.placement.completed.v1",
+          "planningInputOwner": "learning-service",
+          "assembleOrReplayBeforePlan": true,
+          "activePlanNaturalKey": ["targetId", "contentVersionId", "contentEpoch", "planningRuleVersion"],
+          "effectDedupeKey": ["placementBaseline.placementSessionId", "placementBaseline.placementResultId", "placementBaseline.resultVersion", "targetVersion", "pinId", "pinVersion", "pinDigest", "inputFactWatermark"],
+          "pinConsistency": "placementBaseline target/content pins, sourceEventId and rootEventId MUST equal their planning-input counterparts",
+          "lineage": {
+            "sourceEventId": "DERIVED_BY_LEARNING_FROM_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+            "rootEventId": "FIRST_DURABLE_COMPLETION_SAGA_ROOT_EQUALS_ASSESSMENT_COMPLETION_ENVELOPE_EVENT_ID",
+            "assessmentPayloadEventIdentityFields": "PROHIBITED"
+          },
+          "rawAuthorityFacts": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
         "x-forbidden-fields": [
           "placementRaw",
           "placementScore",
           "placementAlgorithm",
+          "aggregateScore",
+          "dimensionSummaries",
+          "placementReport",
+          "placementResult",
           "srsState",
           "mastery",
           "adultGate",
@@ -1759,6 +1850,9 @@
           "contentLocale": {
             "$ref": "#/components/schemas/B9Locale"
           },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
           "contentEpoch": {
             "$ref": "#/components/schemas/B9ContentEpoch"
           },
@@ -1778,6 +1872,9 @@
             "minLength": 64,
             "maxLength": 64,
             "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "placementBaseline": {
+            "$ref": "#/components/schemas/B9PlacementBaseline"
           },
           "planningRuleVersion": {
             "type": "string",
@@ -2189,7 +2286,10 @@
           "state=DEGRADED implies planningInput/degradedReason/recovery are present and state is never READY",
           "taskCount MUST equal tasks.length",
           "job and recovery input pin fields MUST equal the embedded planningInput pin fields",
-          "plan input pin, digest, watermark, content epoch and projection version MUST equal the embedded planningInput fields"
+          "plan input pin, digest, watermark, content epoch and projection version MUST equal the embedded planningInput fields",
+          "placementStatus=COMPLETED implies planningInput.placementBaseline.resultKind=ASSESSED",
+          "placementStatus=SKIPPED implies planningInput.placementBaseline.resultKind=SKIPPED",
+          "planningInput placement baseline target/content pins and lineage MUST remain bound while PROCESSING, READY or DEGRADED"
         ]
       },
       "B9FirstDayProjection": {

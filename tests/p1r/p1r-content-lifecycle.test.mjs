@@ -372,17 +372,23 @@ test('content lifecycle rejects canonical owner, topic, group, binding, fragment
     ['unrelated event gap is falsely marked D2 closed', (input) => {
       const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-IAM-001');
       closure.status = 'D2_CONTRACT_CLOSED';
-    }, /catalog D2 closed gap set|exactly thirteen unrelated event gaps/],
+    }, /catalog D2 closed gap set|exactly eleven unrelated event gaps/],
+    ['placement successor digest drifts after closure', (input) => {
+      input.placementPolicy.learnerPlanningSuccessor.placementBinding.rawAuthorityFacts = 'ALLOWED';
+    }, /placement successor policy digest drifted/],
+    ['placement successor falsely claims runtime verification', (input) => {
+      input.placementPolicy.runtimeStatus = 'RUNTIME_VERIFIED';
+    }, /placement successor policy digest drifted|must remain NOT_RUNTIME_VERIFIED/],
     ['fragment envelope stale', (input) => {
       const fragment = input.eventFragments.find((item) => item.path.endsWith('b9-learner-content.events.json'));
       fragment.data.events.find((event) => event.eventName === 'content.version.submitted.v1')['x-envelope-required'].pop();
     }, /fragment canonical envelope/],
     ['invalidated event promoted', (input) => {
       catalogEvent(input, 'content.public_projection.invalidated.v1').status = 'CANONICAL_D2';
-    }, /must remain HISTORICAL_CANDIDATE|exact thirteen/],
+    }, /must remain HISTORICAL_CANDIDATE|exact eleven/],
     ['cms event promoted', (input) => {
       catalogEvent(input, 'cms.content.published.v1').status = 'CANONICAL_D2';
-    }, /must remain HISTORICAL_CANDIDATE|exact thirteen/],
+    }, /must remain HISTORICAL_CANDIDATE|exact eleven/],
     ['historical invalidated Kafka binding', (input) => {
       catalogEvent(input, 'content.public_projection.invalidated.v1')['x-kafka'] = { topic: 'platform.content.v1' };
     }, /historical event must not carry|historical candidate/],
@@ -393,7 +399,7 @@ test('content lifecycle rejects canonical owner, topic, group, binding, fragment
         partitionKey: 'aggregateId',
         consumerGroups: ['cg.learner-from-content.v1'],
       });
-    }, /must not gain a B26 Kafka route|exact thirteen/],
+    }, /must not gain a B26 Kafka route|exact eleven/],
     ['reliability omits canonical content event', (input) => {
       input.reliabilityPolicy.catalog.currentCanonicalEvents = input.reliabilityPolicy.catalog.currentCanonicalEvents.filter((eventName) => eventName !== 'content.version.published.v1');
     }, /must be covered by reliability policy|canonical event set/],

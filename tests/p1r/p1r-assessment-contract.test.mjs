@@ -292,6 +292,7 @@ function makeFixture() {
     events: [
       { eventName: 'assessment.attempt.submitted.v1', status: 'HISTORICAL_CANDIDATE', payloadSchema: { $ref: '#/payloadSchemas/B10AssessmentAttemptSubmitted' } },
       { eventName: 'assessment.attempt.assessed.v1', status: 'HISTORICAL_CANDIDATE', payloadSchema: { $ref: '#/payloadSchemas/B10AssessmentAttemptAssessed' } },
+      { eventName: 'assessment.placement.completed.v1', status: 'CANONICAL_D2', payloadSchema: { $ref: '#/payloadSchemas/B10PlacementCompleted' } },
     ],
     payloadSchemas: structuredClone(eventFragment.payloadSchemas),
   };

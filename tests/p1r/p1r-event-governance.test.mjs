@@ -47,16 +47,16 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   const report = validateEventGovernance({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
-    totalEvents: 154,
-    canonicalEvents: 13,
+    totalEvents: 155,
+    canonicalEvents: 14,
     historicalCandidates: 141,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 35,
-    plannedEventGaps: 13,
-    d2ContractClosedEventGaps: 3,
+    canonicalConsumerBindings: 37,
+    plannedEventGaps: 11,
+    d2ContractClosedEventGaps: 5,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 13,
-    asyncApiOperations: 48,
+    asyncApiChannels: 14,
+    asyncApiOperations: 51,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -66,10 +66,10 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 13);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 13);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 35);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 13, operationCount: 48 });
+  assert.equal(Object.keys(projection.channels).length, 14);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 14);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 37);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 14, operationCount: 51 });
 });
 
 test('generated TypeScript separates canonical publishers from historical catalog candidates', () => {
@@ -91,6 +91,7 @@ test('generated TypeScript separates canonical publishers from historical catalo
     'ContentVersionPublishedEvent',
     'ContentVersionUnpublishedEvent',
     'ContentVersionRolledBackEvent',
+    'AssessmentPlacementCompletedEvent',
     'WorkflowOutboxPublishedEvent',
     'WorkflowEventDeliveryFailedEvent',
     'WorkflowEventDeadLetteredEvent',
@@ -98,7 +99,7 @@ test('generated TypeScript separates canonical publishers from historical catalo
     'WorkflowEventOrderingDeferredEvent',
     'WorkflowSagaCompensationRequestedEvent',
     'WorkflowSagaManualRecoveryRequestedEvent',
-  ], 'CanonicalPlatformEvent must exactly preserve the thirteen canonical event interfaces in catalog order');
+  ], 'CanonicalPlatformEvent must exactly preserve the fourteen canonical event interfaces in catalog order');
   for (const historicalInterface of [
     'ContentPublicProjectionInvalidatedEvent',
     'CmsContentPublishedEvent',
@@ -152,6 +153,17 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['canonical payload optional-field drift', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.migrationNote = { type: 'string', maxLength: 64 }; }, /frozen B26 canonical payload digest/],
     ['canonical payload constraint drift', (input) => { input.catalog.payloadSchemas.B26WorkflowOutboxPublished.properties.outboxId.maxLength = 64; }, /frozen B26 canonical payload digest/],
     ['canonical payload invalid uniqueItems type', (input) => { input.catalog.payloadSchemas.B9LearnerTargetUpdated.properties.weeklyStudyDays.uniqueItems = 'yes'; }, /uniqueItems must be boolean/],
+    ['placement completion duplicates envelope identity in payload', (input) => { input.catalog.payloadSchemas.B10PlacementCompleted.properties.eventId = { type: 'string' }; }, /must not duplicate envelope-only eventId/],
+    ['placement completion result pin drifts', (input) => { input.catalog.payloadSchemas.B10PlacementCompleted.properties.placementResultId.pattern = '^[A-Za-z].*$'; }, /assessment\.placement\.completed\.v1 payload\.placementResultId must exactly match/],
+    ['placement completion manifest pin drifts', (input) => { input.catalog.payloadSchemas.B10PlacementCompleted.properties.totalItemCount.const = 9; }, /assessment\.placement\.completed\.v1 payload\.totalItemCount must exactly match/],
+    ['placement completion dimension order drifts', (input) => { input.catalog.payloadSchemas.B10PlacementCompleted.properties.dimensionSummaries.prefixItems.reverse(); }, /assessment\.placement\.completed\.v1 payload\.dimensionSummaries\.prefixItems\[0\]\.dimensionId must exactly match/],
+    ['placement completion dimension coverage forbids excluding zero', (input) => {
+      const coverage = input.catalog.payloadSchemas.B10PlacementCompleted.properties.dimensionSummaries.prefixItems[0].properties.coverageRatio;
+      delete coverage.minimum;
+      coverage.exclusiveMinimum = 0;
+    }, /assessment\.placement\.completed\.v1 payload\.dimensionSummaries\.prefixItems\[0\]\.coverageRatio must exactly match/],
+    ['placement completion skipped confidence drifts', (input) => { input.catalog.payloadSchemas.B10PlacementCompleted.oneOf[1].properties.confidence.const = 'LOW'; }, /assessment\.placement\.completed\.v1 payload\.SKIPPED\.confidence must exactly match/],
+    ['placement completion assessed branch permits requested start level', (input) => { input.catalog.payloadSchemas.B10PlacementCompleted.oneOf[0].not = { required: [] }; }, /assessment\.placement\.completed\.v1 payload\.ASSESSED\.not must exactly match/],
     ['runtime-success catalog description', (input) => { input.catalog.description = 'Kafka runtime verified and accepted'; }, /event catalog description must exactly match|runtime success claim/],
     ['camel-case runtime-success prose', (input) => { historical(input).compatibility.consumerRule = 'KafkaRuntimeVerified'; }, /runtime success claim/],
     ['weakened eventId envelope pattern', (input) => { input.catalog.envelope.properties.eventId.pattern = '^.*$'; }, /event envelope must exactly match/],
@@ -181,7 +193,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['topic owner drift', (input) => {
       input.b26Runtime.topics.find((topic) => topic.name === 'platform.workflow.v1').ownerService = 'audit-service';
     }, /producer must match the B26 topic owner/],
-    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact thirteen canonical governance events/],
+    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact fourteen canonical governance events/],
     ['consumer order drift', (input) => { canonical(input)['x-p1r-governance'].consumers.reverse(); }, /consumers and order must match/],
     ['client consumer group', (input) => { canonical(input)['x-p1r-governance'].consumers[0].consumerGroup = 'cg.browser-client.v1'; }, /cannot represent a client/],
     ['duplicate consumer group', (input) => {
@@ -213,7 +225,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
-    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact thirteen/],
+    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact fourteen/],
     ['wrong planned closure family', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].family = 'WRONG'; }, /family must match the frozen gap registry/],
     ['closed content gap regresses to planned', (input) => {
       input.catalog['x-p1r-event-governance'].plannedClosures
