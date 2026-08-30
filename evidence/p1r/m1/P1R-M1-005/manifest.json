@@ -2,9 +2,9 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
   "artifactDigests": [
-    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "39aaacd06d4afb22788f960605cada7e46ec70858b538abc18edcee878576a9d"},
     {"path": "config/p1r-data-ownership.v1.json", "algorithm": "sha256", "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"},
     {"path": "scripts/audit/p1r-data-ownership-check.mjs", "algorithm": "sha256", "digest": "327c59f7e6a3577b68704dc4dbfce37024d4fa0937ca6162b4187cbca8d55c4a"},
     {"path": "tests/p1r/p1r-data-ownership.test.mjs", "algorithm": "sha256", "digest": "45ff98545bad7954ae0f095e31f232a3ba440e3beb54db77432ae225f1dd89a0"},
@@ -41,15 +41,27 @@
       {
         "taskId": "P1R-M1-009",
         "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T18:32:14+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
-    "currentSourceRevalidationTask": "P1R-M1-009",
-    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max"
+    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationTask": "P1R-M1-010",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
-  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "finishedAt": "2026-08-30T18:32:14+08:00",
   "actors": [
     "m1_004_evidence",
     "m1_004_evidence/data_owner_audit",
@@ -65,6 +77,7 @@
     "REDIS-KEYSPACE"
   ],
   "commands": [
+    "pnpm p1r:assessment-contract:check",
     "pnpm p1r:data-ownership:check",
     "node --test tests/p1r/p1r-data-ownership.test.mjs",
     "pnpm test:p1r",
@@ -92,6 +105,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-010-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-005 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "service-owner-and-gateway-boundary",
       "status": "PASS",
@@ -152,6 +170,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

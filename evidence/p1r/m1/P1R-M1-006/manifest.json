@@ -2,17 +2,17 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
   "artifactDigests": [
     {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"},
-    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "39aaacd06d4afb22788f960605cada7e46ec70858b538abc18edcee878576a9d"},
     {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "6a42b324c4360a36a2be48d52befa1728abfd2e68d7eabb9ce3a9fd7bf3dbba0"},
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "70b3eeb7d12af5b2d75b26479567c99138a147fd5aec239c4609ce51e72d6208"},
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "6f93248ecc718ce54e1b3bc9b70fed8189ed2458b93e168d130e38ada85e5a3d"},
     {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"},
     {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
-    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "36dcc270548eeb7e3dc163906a87c00185b8c1ce1a801321fc72bd841589abc1"},
+    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "79b442f0df89fc93dffdb372b748f99ae008528e233fca264a6f72963b2471c6"},
     {"path": "packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json", "algorithm": "sha256", "digest": "1375999135fcc4137be1c2450304e759f7a07e2176d13aad465c2c11aa365c4a"},
-    {"path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json", "algorithm": "sha256", "digest": "f3043d2fe3fccd09dfd0d23be027cab7767f0b92502b5117478d94677f8f139d"},
+    {"path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json", "algorithm": "sha256", "digest": "0e34489a86ef88b1f602c4f777bc702c6e54668f2b893d46bd0ea6b78bdfd56e"},
     {"path": "packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json", "algorithm": "sha256", "digest": "87a2d93eb96164cc0f0050273f611de91e777f76cbf202664a4aa26e1f689e73"},
     {"path": "packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json", "algorithm": "sha256", "digest": "101260f4e0925e68e540f205b202bd53dc75f5f292fec3b4a73cd6fff2d5fe26"},
     {"path": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json", "algorithm": "sha256", "digest": "777c8cd3d5836e5d495c72644afcf7b5fa99bc044817886536c3f6440d079d24"},
@@ -25,22 +25,22 @@
     {"path": "packages/contracts/events/v1/fragments/b6-platform-quality.events.json", "algorithm": "sha256", "digest": "bdc721327481219b9c53bec6395ad6ba73593848229d7c5ba7eae91930c26cbf"},
     {"path": "packages/contracts/events/v1/fragments/b8-auth-iam.events.json", "algorithm": "sha256", "digest": "cbf9f843391c49664d4bd813620831cee1cbf1429beead6043fa2d6e4825a72f"},
     {"path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json", "algorithm": "sha256", "digest": "477d023ec8bcfce7ebb4952d38954862ef1c73ad12adf9051298515ff384df43"},
-    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "b5257bdfe36e42f79df92d383a4ccd0a8dee3a323cb250d9b8c2a0b32ff00536"},
+    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "4237cec4782c09ed1b48636cf6df22fd379622399a9418b15dbbd7df1789c0a9"},
     {"path": "packages/contracts/src/event-schema-assertions.ts", "algorithm": "sha256", "digest": "77a80209599c0c68b763e7fe51d192df3dfed4075e37a27ab4f13a9e4d050235"},
     {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "d05d6ebb1fd249934a7d33ae3fdea1e7612bc00c518c5e56f5ab33cdff66efbd"},
     {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"},
     {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "08a8072c8ad7305b3c64018a29b6fd280e158e31d06f17902bbcde65a210fe22"},
     {"path": "scripts/contracts/event-governance-projection.mjs", "algorithm": "sha256", "digest": "67b1f1a83755c057b50ca12506f7db72ad73d6cccb35dd461ee4bcfb813a82bf"},
     {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "947ba711f3638f7f881cbc29d2823dd711019db6637092f327eab3dfde4d6788"},
-    {"path": "scripts/contracts/generate-contracts.mjs", "algorithm": "sha256", "digest": "2d8dacc70e3682f3ca77f259a2f75443673e57d6c6255c669fb35d62bae9f30b"},
+    {"path": "scripts/contracts/generate-contracts.mjs", "algorithm": "sha256", "digest": "e49b6d94528518a2fba18bff16a3189a78199ca8cdb14e1adfa9c52db74baa34"},
     {"path": "scripts/contracts/validate-contracts.mjs", "algorithm": "sha256", "digest": "9f28a00b29d6264157ba4aaa99298c455ced6a94a465da96a726d6993da7ae87"},
-    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "b3de1691c722b88ae8b34c6ffd6ad9d861f09576b704215393f95a15f373a80a"},
-    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "9b54f55662ea451534c0dc80dc1cd1ac5f407032d573186c87cad3dbadc235e1"},
+    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "141c4703860a0855d407e98a562627b168a74160668e96970fc7cbfec3bdbba3"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "b09ecccff362335c5003823b9feb29d23427d3a01b303d13b2f07aa0e61cb972"},
     {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "71a58ce24b671f8689cfacf9967631de060ab679fdde75275ab86e158022cfc6"},
     {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "ac638762eb27e2357857c570bec243a387f077807829001610cf378ca5b10348"},
-    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "a0c334466e5a740be259a1b453c0651083ae3d34d1600baea75104dc2cbd376c"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "f9e87b6ef0a785415e5d1f63dea0d3dae992396a31545a79a43752f2d0d64637"},
     {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "9650feeddcafdbbe10e2ddbc5caed0d0783251b5d434b3069d449ebfe3c13c9d"},
-    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "1e82db56acf3c7cf48d2261688ba1e747a43538d55796569359d769bb5c2f82d"}
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "7e1de97179f9527df4e6dd5cb402025f77884091e2a947416f1bc7d51603a110"}
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -68,15 +68,27 @@
       {
         "taskId": "P1R-M1-009",
         "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T18:32:14+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
-    "currentSourceRevalidationTask": "P1R-M1-009",
-    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max"
+    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationTask": "P1R-M1-010",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
-  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "finishedAt": "2026-08-30T18:32:14+08:00",
   "actors": [
     "m1_005_data_docs",
     "root-coordinator"
@@ -123,6 +135,7 @@
     "workflow-service"
   ],
   "commands": [
+    "pnpm p1r:assessment-contract:check",
     "pnpm p1r:event-governance:check -- --json",
     "node --test tests/p1r/p1r-event-governance.test.mjs tests/p1r/p1r-contract-tooling.test.mjs tests/b26/b26-event-runtime.test.mjs tests/g/g1-contract-data.test.mjs",
     "pnpm test:p1r",
@@ -146,6 +159,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-010-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-006 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "catalog-governance",
       "status": "PASS",
@@ -208,6 +226,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

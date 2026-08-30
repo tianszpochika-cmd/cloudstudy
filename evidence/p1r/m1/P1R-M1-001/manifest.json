@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
   "artifactDigests": [
     {"path": "scripts/audit/p1r-api-contract-check.mjs", "algorithm": "sha256", "digest": "def72fb4c8acf34dcb5c431c1119419193a0d994e19af8e93e429c3ce2902f25"},
-    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "9b54f55662ea451534c0dc80dc1cd1ac5f407032d573186c87cad3dbadc235e1"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "b09ecccff362335c5003823b9feb29d23427d3a01b303d13b2f07aa0e61cb972"},
     {"path": "tests/p1r/p1r-api-contract.test.mjs", "algorithm": "sha256", "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"},
-    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "a0c334466e5a740be259a1b453c0651083ae3d34d1600baea75104dc2cbd376c"}
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "f9e87b6ef0a785415e5d1f63dea0d3dae992396a31545a79a43752f2d0d64637"}
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -21,9 +21,9 @@
     "originalFinishedAt": "2026-08-29T20:28:20+08:00",
     "originalReviewer": "m1_001_final_review",
     "originalAcceptedContractBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3",
-    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
-    "currentSourceRevalidationTask": "P1R-M1-009",
+    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationTask": "P1R-M1-010",
     "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
     "currentSourceRevalidationHistory": [
       {
@@ -41,11 +41,23 @@
       {
         "taskId": "P1R-M1-009",
         "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T18:32:14+08:00"
       }
-    ]
+    ],
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00"
   },
   "startedAt": "2026-08-29T11:15:00+08:00",
-  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "finishedAt": "2026-08-30T18:32:14+08:00",
   "actors": [
     "m1_api_contract",
     "m0_frontend_acceptance",
@@ -75,6 +87,7 @@
     "INT-P1-018"
   ],
   "commands": [
+    "pnpm p1r:assessment-contract:check",
     "node scripts/audit/p1r-api-contract-check.mjs",
     "node scripts/contracts/merge-b1-fragments.mjs",
     "node scripts/contracts/generate-contracts.mjs --check",
@@ -94,6 +107,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-010-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-001 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "canonical-success-and-errors",
       "status": "PASS",
@@ -141,6 +159,6 @@
     "Authentication and authorization D2 contracts are now accepted by P1R-M1-002/003; Gateway, data-owner and event contracts remain owned by P1R-M1-004 through P1R-M1-018, while runtime IAM/PEP remains in M2.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-001-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

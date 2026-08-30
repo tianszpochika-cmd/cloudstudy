@@ -4,17 +4,17 @@
 
 ## 当前任务
 
-- `P1R-M1-001`：`ACCEPTED`；原实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。
-- `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享制品最新在 `2e7304a` 完成 current-source revalidation。
-- `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。
-- `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。
-- `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，原实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，原独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`；共享制品最新在 `2e7304a` 完成 current-source revalidation。
-- `P1R-M1-006`：`ACCEPTED`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`，原最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，原独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`；共享制品最新在 `2e7304a` 完成 current-source revalidation。只接受 Kafka + AsyncAPI 的 D2 静态目录与失败关闭机制。
-- `P1R-M1-007`：`ACCEPTED`；不可变来源检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec`，原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，Evidence `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。只接受可靠性与恢复的 D2 契约和失败关闭门禁，保持 `NOT_RUNTIME_VERIFIED`。
-- `P1R-M1-008`：`ACCEPTED`；不可变来源检查点 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31`，原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，Evidence `evidence/p1r/m1/P1R-M1-008/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。只接受 D2 内容 lifecycle 契约和失败关闭门禁，不宣称真实发布链路已运行。
-- `P1R-M1-009`：`ACCEPTED`；不可变来源检查点 `ca282cd00dabeeb3fafbf6b4570054bd5b9f8549`，最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，Evidence `evidence/p1r/m1/P1R-M1-009/manifest.json`；独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`，只接受媒体/录音 D2 契约与失败关闭门禁。
-- `P1R-M1-010`：`IN_PROGRESS`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，只冻结 assessment session/checkpoint/attempt、确定性判分摘要、报告快照、版本和幂等 D2 契约。
-- M1-009 更新了共享 OpenAPI、生成类型、Gateway/IAM 静态输入、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-008` 的 manifest 已保留各自原始 provenance，并统一绑定 `2e7304a...` 完成 current-source revalidation；这不把旧任务重写为 M1-009 的实现成果。
+- `P1R-M1-001`：`ACCEPTED`；原实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。
+- `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享制品最新在 `cd92378` 完成 current-source revalidation。
+- `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。
+- `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。
+- `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，原实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，原独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`；共享制品最新在 `cd92378` 完成 current-source revalidation。
+- `P1R-M1-006`：`ACCEPTED`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`，原最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，原独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受 Kafka + AsyncAPI 的 D2 静态目录与失败关闭机制。
+- `P1R-M1-007`：`ACCEPTED`；不可变来源检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec`，原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，Evidence `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受可靠性与恢复的 D2 契约和失败关闭门禁，保持 `NOT_RUNTIME_VERIFIED`。
+- `P1R-M1-008`：`ACCEPTED`；不可变来源检查点 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31`，原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，Evidence `evidence/p1r/m1/P1R-M1-008/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受 D2 内容 lifecycle 契约和失败关闭门禁，不宣称真实发布链路已运行。
+- `P1R-M1-009`：`ACCEPTED`；不可变来源检查点 `ca282cd00dabeeb3fafbf6b4570054bd5b9f8549`，原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，Evidence `evidence/p1r/m1/P1R-M1-009/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation，独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 接受原任务与本轮当前源，保持媒体/录音 D2 边界。
+- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 复审接受，P1/P2 为 `0/0`，只冻结 assessment session/checkpoint/attempt、确定性判分摘要、报告快照、版本和幂等 D2 契约。
+- M1-010 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-009` 的 manifest 已保留各自原始 provenance，并统一绑定 `cd92378...` 完成 current-source revalidation；这不把旧任务重写为 M1-010 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
@@ -87,6 +87,17 @@
 3. 安全与失败关闭：拒绝客户端 tenant/owner/score/rule authority，禁止答案密钥、原始作答和敏感输入进入事件/日志/普通审计；覆盖旧版本、重复/乱序、自动提交、失败报告、主观输入无 AI 评分和字段注入等对抗用例。
 
 统筹 Agent 负责统一模型、共享生成物、状态、Evidence、提交与推送；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-010 不完成 placement manifest/Saga（M1-012）、learning 的 SRS/mastery/report watermark（M1-013）、真实 owner 数据与 Outbox（M2-004）、Kafka（M2-005）、Saga/runtime（M2-006）或浏览器/E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，M0-006 继续 `BLOCKED`。
+
+## M1-010 执行与结果摘要
+
+1. 契约与状态：冻结 5 个 canonical assessment route、8 个 session 状态、4 个 attempt 状态和 4 个 report 状态；session、checkpoint、attempt、outcome 与 report 分层，内容/规则/报告版本和服务端权威字段失败关闭。
+2. 安全与恢复：六类答案分支使用单一 discriminator；原始作答仅进入受保护 owner 边界，审计精确脱敏 `responseDigest`、五类 raw 字段与 checkpoint `protectedDraft`；幂等 replay/conflict、单调 checkpoint、自动提交和 learner-safe 报告均有对抗测试。
+3. 兼容与生成：B2/B10 历史入口显式 adapter/deprecation，assessment 事件保持 historical-only，不伪造 AsyncAPI/B26 晋升；OpenAPI、API client 和 TypeScript 生成物与两组不可变 compatibility baseline 一致。
+
+- 一轮 REWORK：初始 `3bfc63d` 的 submit/checkpoint 脱敏路径仍引用旧 `.response`，且 `ASSESSED.assessedAt` 可为 null；`cd92378` 用精确 raw 字段清单、旧路径禁止规则、非空终态时间与生成类型 null 负例闭合。独立 Luna Max reviewer 随后接受，P1/P2 `0/0`。
+- 终验结果：assessment `83/83`、CLI `77` cases、P1R `433/433`、tooling `35/35`、workspace typecheck `7/7`，contracts merge/generate/validate 与固定 compatibility 均 PASS；canonical 为 386 operations、601 schemas、154 events、104 payload schemas、12 AsyncAPI channels、45 operations、13 JSON Schemas。
+- 已知非本任务问题：完整历史 G 保持既知 G0/G3 两项 stale marker 失败；direct API audit 保持既存 B9 content-publish-task 200 envelope 缺口。两项均未由 M1-010 引入，也没有被伪装成全绿。
+- D2 边界：`EVENT-GAP-BIND-ASM-001` 仍开放；placement/Saga 归 M1-012，learning SRS/mastery/report watermark 归 M1-013，真实 owner schema/Outbox、Kafka、workflow runtime 分别归 M2-004/005/006；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 
 ## M1-003 执行轨道
 

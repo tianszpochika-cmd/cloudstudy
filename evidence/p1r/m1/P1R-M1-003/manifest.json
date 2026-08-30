@@ -2,13 +2,13 @@
   "taskId": "P1R-M1-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
   "artifactDigests": [
-    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "39aaacd06d4afb22788f960605cada7e46ec70858b538abc18edcee878576a9d"},
     {"path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json", "algorithm": "sha256", "digest": "adeaf107a42e3f00ec49c74434eb6aaa6f903e37471e5cd852f81d5b55c493a1"},
-    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "31037e15b4e3674f117778c5acaea8fbf0dce131aa421d9ef7ea7072cd513547"},
-    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "7340d104c51677ec1680d0f1ce2ae52812bd345010df0cb08334d9ef3920f022"},
-    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "88100f175d16921ea783231d61ca2a95db0cde5f816e98589cebc40a7a0ade63"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "5b9740167695511f961c9b455737e719b751a3446571981d16e89abdf79b4e7d"},
+    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "969bdce4e7a83b54b48fb3e130c8d3da10a4d11f50d3eeca99934bcb3d324f99"},
+    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "5276a6053c1600030c4c8dba439c60dc340490455c77206912f83f2d58e56569"},
     {"path": "scripts/audit/p1r-iam-policy-contract-check.mjs", "algorithm": "sha256", "digest": "87e1634ec4b917dd0068be3d113e02682269516f1da8a6429b4505a175d8b935"},
     {"path": "tests/p1r/p1r-iam-policy-contract.test.mjs", "algorithm": "sha256", "digest": "2c780e381bbd5b14cb2fa33c15ccabad14519c3a56d6ca51d7d4a23d06b9a9b6"},
     {"path": "tests/p1r/p1r-api-contract.test.mjs", "algorithm": "sha256", "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"},
@@ -16,10 +16,10 @@
     {"path": "docs/02-architecture/security-and-data-boundaries.md", "algorithm": "sha256", "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"},
     {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"},
     {"path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md", "algorithm": "sha256", "digest": "e9c403f52cb1e2be9ece76cb99f2f7f0ead3e73f8dbec97e054066b56081bd4d"},
-    {"path": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md", "algorithm": "sha256", "digest": "3369304b6ec3ff1c97483f863a8414672ac7eb3bcfff6a166a088ea53e1bce62"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md", "algorithm": "sha256", "digest": "28aaa64d32c3893446a95275ff9b473aecc904ee18451f6bcb77fc349384e23f"},
     {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "70b3eeb7d12af5b2d75b26479567c99138a147fd5aec239c4609ce51e72d6208"},
-    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "1e82db56acf3c7cf48d2261688ba1e747a43538d55796569359d769bb5c2f82d"}
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "6f93248ecc718ce54e1b3bc9b70fed8189ed2458b93e168d130e38ada85e5a3d"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "7e1de97179f9527df4e6dd5cb402025f77884091e2a947416f1bc7d51603a110"}
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -54,15 +54,27 @@
       {
         "taskId": "P1R-M1-009",
         "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T18:32:14+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
-    "currentSourceRevalidationTask": "P1R-M1-009",
-    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max"
+    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationTask": "P1R-M1-010",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00"
   },
   "startedAt": "2026-08-29T22:19:13+08:00",
-  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "finishedAt": "2026-08-30T18:32:14+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -77,6 +89,7 @@
     "ADR-0013"
   ],
   "commands": [
+    "pnpm p1r:assessment-contract:check",
     "pnpm p1r:auth-contract:check",
     "pnpm p1r:iam-policy-contract:check",
     "node scripts/contracts/merge-b1-fragments.mjs",
@@ -101,6 +114,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-010-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-003 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "server-derived-principal-rbac-abac",
       "status": "PASS",
@@ -160,6 +178,6 @@
     "The deprecated authorization decision route keeps its historical response shape for compatibility; runtime integrations must use the strict structured PDP context rather than omit server-authoritative facts.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the M1-003-relevant G1 slice passes 6/6 and these failures predate the task source."
   ],
-  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

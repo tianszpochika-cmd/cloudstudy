@@ -2,31 +2,31 @@
   "taskId": "P1R-M1-009",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
   "artifactDigests": [
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "70b3eeb7d12af5b2d75b26479567c99138a147fd5aec239c4609ce51e72d6208"},
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "6f93248ecc718ce54e1b3bc9b70fed8189ed2458b93e168d130e38ada85e5a3d"},
     {"path": "config/p1r-media-contract.v1.json", "algorithm": "sha256", "digest": "d7d3ce0f7e6286ac8c5281c249458b741fee11d66ec9508944e9281b4c5c883e"},
-    {"path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md", "algorithm": "sha256", "digest": "4666baeb121246e4193391972b7c0dc133fd33a0512c1f3f400c748ed671c08c"},
-    {"path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md", "algorithm": "sha256", "digest": "9f4783cf8b0f84703669e619e5826faa50a5d5c434d43be3f736dedc30a78f72"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md", "algorithm": "sha256", "digest": "3ac4482d479753ced526e36f3c105670255e7498bc355f8b45eac7fe1bc72850"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md", "algorithm": "sha256", "digest": "8da77ab2cae682b909a424cbc47c4e76425055a958589b7c1c0a0d435fbd38d9"},
     {"path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md", "algorithm": "sha256", "digest": "e9c403f52cb1e2be9ece76cb99f2f7f0ead3e73f8dbec97e054066b56081bd4d"},
-    {"path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md", "algorithm": "sha256", "digest": "1eb25cdf2c526bd67f88836aef4c9bae04f946127d6d75790a2cf7575b41dc24"},
-    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
-    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "88100f175d16921ea783231d61ca2a95db0cde5f816e98589cebc40a7a0ade63"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md", "algorithm": "sha256", "digest": "f83b13096744d25582c057ee7eb7e31411d6bd4f428afa14db366d1b9b525fad"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "39aaacd06d4afb22788f960605cada7e46ec70858b538abc18edcee878576a9d"},
+    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "5276a6053c1600030c4c8dba439c60dc340490455c77206912f83f2d58e56569"},
     {"path": "packages/contracts/fragments/b1-content.openapi.json", "algorithm": "sha256", "digest": "d5f143508e6f0dab1075209f243c15d21703e888f2cf7556c6e9bb217452b72a"},
     {"path": "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json", "algorithm": "sha256", "digest": "15af7e4e85253ac665f22c937b9caebae3110069633112944add1cb195b28fec"},
     {"path": "packages/contracts/fragments/b11/p1r-media.openapi.json", "algorithm": "sha256", "digest": "8a71e3a67fbe08bc0281643d2177c97a18355778c844d2c62b68b1b8d8fc1404"},
     {"path": "packages/contracts/fragments/b3-multimodal.openapi.json", "algorithm": "sha256", "digest": "1313a0e42f578388ed49a9885f9d754c2cc24917393cb3e33cfec15a4a4214e2"},
     {"path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json", "algorithm": "sha256", "digest": "adeaf107a42e3f00ec49c74434eb6aaa6f903e37471e5cd852f81d5b55c493a1"},
     {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "4b9bdfa1a15420cbfcac9495357f9104544c5a8a4a20979873164f0460f11f82"},
-    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "7340d104c51677ec1680d0f1ce2ae52812bd345010df0cb08334d9ef3920f022"},
-    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "31037e15b4e3674f117778c5acaea8fbf0dce131aa421d9ef7ea7072cd513547"},
+    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "969bdce4e7a83b54b48fb3e130c8d3da10a4d11f50d3eeca99934bcb3d324f99"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "5b9740167695511f961c9b455737e719b751a3446571981d16e89abdf79b4e7d"},
     {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "c716273a5f525f48f67fcc10ac4b163cf3adbdf8185c271bf0cf8a088e3b4fde"},
     {"path": "scripts/audit/p1r-media-contract-check.mjs", "algorithm": "sha256", "digest": "e24c8456f208697dcf39bfc0dbfeb27182ea0362c67751628966bc74212b9810"},
-    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "b3de1691c722b88ae8b34c6ffd6ad9d861f09576b704215393f95a15f373a80a"},
-    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "9b54f55662ea451534c0dc80dc1cd1ac5f407032d573186c87cad3dbadc235e1"},
+    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "141c4703860a0855d407e98a562627b168a74160668e96970fc7cbfec3bdbba3"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "b09ecccff362335c5003823b9feb29d23427d3a01b303d13b2f07aa0e61cb972"},
     {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "947ba711f3638f7f881cbc29d2823dd711019db6637092f327eab3dfde4d6788"},
-    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "1e82db56acf3c7cf48d2261688ba1e747a43538d55796569359d769bb5c2f82d"},
-    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "a0c334466e5a740be259a1b453c0651083ae3d34d1600baea75104dc2cbd376c"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "7e1de97179f9527df4e6dd5cb402025f77884091e2a947416f1bc7d51603a110"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "f9e87b6ef0a785415e5d1f63dea0d3dae992396a31545a79a43752f2d0d64637"},
     {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "6c35b9475baabe508b4c2cb3d114d727c0b5eb35098d686990ca48ff5126e595"},
     {"path": "tests/p1r/p1r-media-contract.test.mjs", "algorithm": "sha256", "digest": "344a5ae43f483bf96e6923660648990bccdd732201e4ecac42fbdd006d0705d6"}
   ],
@@ -53,8 +53,39 @@
     },
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
+  "provenance": {
+    "originalSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "originalFinishedAt": "2026-08-30T15:10:39+08:00",
+    "originalReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "currentSourceRevalidationTask": "P1R-M1-010",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-009",
+        "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T15:10:39+08:00"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T18:32:14+08:00"
+      }
+    ]
+  },
   "startedAt": "2026-08-30T13:26:50+08:00",
-  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "finishedAt": "2026-08-30T18:32:14+08:00",
   "actors": [
     "root-coordinator",
     "m1_009_scope_design",
@@ -102,6 +133,7 @@
     }
   ],
   "commands": [
+    "pnpm p1r:assessment-contract:check",
     "pnpm p1r:media-contract:check",
     "node --test tests/p1r/p1r-media-contract.test.mjs",
     "node --test tests/p1r/p1r-contract-tooling.test.mjs",
@@ -126,6 +158,11 @@
     "independent Luna Max acceptance review at 2e7304a12c297d4c7bcad22b41cdb373b6030033"
   ],
   "results": [
+    {
+      "check": "m1-010-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-009 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "media-contract-and-adversarial-policy",
       "status": "PASS",

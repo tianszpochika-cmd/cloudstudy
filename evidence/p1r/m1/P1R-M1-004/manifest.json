@@ -2,11 +2,11 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
   "artifactDigests": [
-    {"path": "package.json", "algorithm": "sha256", "digest": "86a5d27694c558a97aa75b51792cec848958d924df06db578b258ac305a35dc0"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "39aaacd06d4afb22788f960605cada7e46ec70858b538abc18edcee878576a9d"},
     {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "4b9bdfa1a15420cbfcac9495357f9104544c5a8a4a20979873164f0460f11f82"},
-    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "31037e15b4e3674f117778c5acaea8fbf0dce131aa421d9ef7ea7072cd513547"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "5b9740167695511f961c9b455737e719b751a3446571981d16e89abdf79b4e7d"},
     {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "947ba711f3638f7f881cbc29d2823dd711019db6637092f327eab3dfde4d6788"},
     {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "c716273a5f525f48f67fcc10ac4b163cf3adbdf8185c271bf0cf8a088e3b4fde"},
     {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "6c35b9475baabe508b4c2cb3d114d727c0b5eb35098d686990ca48ff5126e595"},
@@ -49,15 +49,27 @@
       {
         "taskId": "P1R-M1-009",
         "sourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033"
+      },
+      {
+        "taskId": "P1R-M1-010",
+        "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+        "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T18:32:14+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-008",
-    "currentSourceRevalidationTask": "P1R-M1-009",
-    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max"
+    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
+    "currentSourceRevalidationTask": "P1R-M1-010",
+    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00"
   },
   "startedAt": "2026-08-29T23:52:04+08:00",
-  "finishedAt": "2026-08-30T15:10:39+08:00",
+  "finishedAt": "2026-08-30T18:32:14+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -70,6 +82,7 @@
     "ADR-0013"
   ],
   "commands": [
+    "pnpm p1r:assessment-contract:check",
     "pnpm p1r:gateway-contract:check",
     "node --test tests/p1r/p1r-gateway-contract.test.mjs",
     "pnpm p1r:auth-contract:check",
@@ -97,6 +110,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-010-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-004 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "route-owner-coverage",
       "status": "PASS",
@@ -152,6 +170,6 @@
     "The full historical G suite remains 39/41 because G0 and G3 assert the removed exact source marker `Phase 2/3 已移出当前批次`; the task-relevant G1 slice passes 6/6.",
     "This ACCEPTED decision covers D2 contract governance only and does not claim the existing Gateway Java candidate or any M2 runtime capability is complete."
   ],
-  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }
