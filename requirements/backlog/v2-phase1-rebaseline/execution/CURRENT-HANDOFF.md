@@ -30,7 +30,7 @@ M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bc
 
 `P1R-M1-012` 已接受：不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence/台账关闭提交为 `a07a58a7d245295c54d39487a6669545d077c513`；独立 Luna Max reviewer 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品已在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。
 
-`P1R-M1-013` 已接受：不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`。learning `67/67`、tooling `50/50`、P1R `818/818`、typecheck `7/7`，contracts `401/646/158/108/17/60/13`，fixed compatibility/Gateway/event/reliability/B26/plan/CI/diff 均 PASS；仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 pending/NO-GO，M0-006 `BLOCKED`。Evidence/台账关闭集成提交：`PENDING_EVIDENCE_INTEGRATION_COMMIT`（未知）。当前台账计数为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`（共 108 项）。下一推荐任务为 `P1R-M1-014`，未启动。
+`P1R-M1-013` 已接受：不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，Evidence/台账关闭集成提交 `c9a67577db590b92982571a1aecba6200adcb9cf`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`。learning `67/67`、tooling `50/50`、P1R `818/818`、typecheck `7/7`，contracts `401/646/158/108/17/60/13`，fixed compatibility/Gateway/event/reliability/B26/plan/CI/diff 均 PASS；仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 pending/NO-GO，M0-006 `BLOCKED`。当前台账计数为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`（共 108 项）。下一推荐任务为 `P1R-M1-014`，未启动。
 
 ## 1. 获取检查点
 
@@ -38,11 +38,11 @@ M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bc
 git switch dev
 git fetch origin dev
 git pull --ff-only origin dev
-git merge-base --is-ancestor a07a58a7d245295c54d39487a6669545d077c513 origin/dev
+git merge-base --is-ancestor c9a67577db590b92982571a1aecba6200adcb9cf origin/dev
 git status --short
 ```
 
-预期：`a07a58a7d245295c54d39487a6669545d077c513` 是 `origin/dev` 的祖先，M1-012 canonical manifest、M1-001 至 M1-012 current-source revalidation、台账与状态轨迹均随关闭集成提交同步，工作树干净。任一条件不满足都先停止后续任务；实现源和任务状态只从 Evidence、台账和 Git 读取。
+预期：`c9a67577db590b92982571a1aecba6200adcb9cf` 是 `origin/dev` 的祖先，M1-013 canonical manifest、M1-001 至 M1-012 current-source revalidation、台账与状态轨迹均随关闭集成提交同步，工作树干净。任一条件不满足都先停止后续任务；实现源和任务状态只从 Evidence、台账和 Git 读取。
 
 ## 2. 选择 Java 25（只影响当前终端）
 
@@ -113,7 +113,7 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先以 M1-013 来源 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 和来源检查点 `a07a58a7d245295c54d39487a6669545d077c513` 核对 Evidence/台账状态，并确认 `pnpm plan:p1r:check` 与 `pnpm p1r:evidence:check` 通过；Evidence/台账关闭集成提交仍未知，明确记录为 `PENDING_EVIDENCE_INTEGRATION_COMMIT`，不能只从聊天记录恢复。
+1. 先以 M1-013 来源 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`、来源检查点 `a07a58a7d245295c54d39487a6669545d077c513` 和 Evidence/台账关闭集成提交 `c9a67577db590b92982571a1aecba6200adcb9cf` 核对状态，并确认 `pnpm plan:p1r:check` 与 `pnpm p1r:evidence:check` 通过；不能只从聊天记录恢复。
 2. 下一推荐任务为 `P1R-M1-014`，目前仍为 `PLANNED`，不要在本交接中启动；M1-013 仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不得把 placement/Saga 静态契约或历史 B2/B25 当 learning runtime 证明。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。

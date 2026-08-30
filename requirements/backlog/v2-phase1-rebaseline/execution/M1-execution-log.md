@@ -133,7 +133,7 @@
 - 终验结果：learning `67/67`、tooling `50/50`、P1R `818/818`、workspace typecheck `7/7`；contracts `401 operations/646 schemas/158 events/108 payload schemas/17 AsyncAPI channels/60 operations/13 JSON Schemas`；fixed compatibility、Gateway、event、reliability、B26、plan、CI、diff 均 PASS。
 - 独立 reviewer：`agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`；Evidence：`evidence/p1r/m1/P1R-M1-013/manifest.json`。
 - D2 边界：结果仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，`P1R-M0-006` 继续 `BLOCKED`，真实 schema/Outbox/Kafka/worker/Saga、浏览器/设备和 E2E 未验证。
-- Evidence/台账关闭集成提交：`PENDING_EVIDENCE_INTEGRATION_COMMIT`（未知，禁止发明 SHA）。当前台账为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`；下一推荐任务为 `P1R-M1-014`，保持 `PLANNED`，不启动。
+- Evidence/台账关闭集成提交：`c9a67577db590b92982571a1aecba6200adcb9cf`。当前台账为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`；下一推荐任务为 `P1R-M1-014`，保持 `PLANNED`，不启动。
 
 ## M1-011 执行轨道
 
