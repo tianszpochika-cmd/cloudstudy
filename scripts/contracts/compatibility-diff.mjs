@@ -488,7 +488,7 @@ export const M1010_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
 export const M1011_LEARNER_PLANNING_PROMOTION_ID = 'M1-011_LEARNER_PLANNING_CONTRACT_PROMOTION';
 export const M1011_SOURCE_CONTRACT_BASELINE_REF = 'cd92378bd8ba0c57c920fc6e79db52de717b0b05';
 export const M1011_OPENAPI_SOURCE_SEMANTIC_SHA256 = '55dc56fffdd3f94898e62149b48ac400af5eada2a969c396205939ba41f115ed';
-export const M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '0d000b5230751a508d997bc2af581ab1df71df2ccccc35300d33b633e207791f';
+export const M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '7b0fef0a9bd909af9731d8cb267ae75e5c497af6115c62af8fe135c290ff87fa';
 export const M1011_EVENT_SOURCE_SEMANTIC_SHA256 = 'bba617d505acd04ac14a2c3c5e261c02e6ab8a075c5c551fe05eabe849024470';
 export const M1011_EVENT_EXPECTED_SEMANTIC_SHA256 = '765e95bdcfcd469b9729749b05941247cbc542bc81f4cee8c82d1be76545021b';
 export const M1011_B26_SOURCE_SEMANTIC_SHA256 = '0df8b346a75777a5d75c4370de63a6b8370f640f025252698f1449e1d2b7cb61';
@@ -508,6 +508,9 @@ const M1011_OPENAPI_APPROVED_PATH_PROJECTIONS = Object.freeze([
   '/api/v1/onboarding/goals/first',
   '/api/v1/onboarding/options',
   '/api/v1/onboarding/profile',
+]);
+const M1011_OPENAPI_APPROVED_PARAMETER_PROJECTIONS = Object.freeze([
+  'B9IfMatch',
 ]);
 const M1011_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
   'B9FirstDayProjectionCommon',
@@ -666,25 +669,40 @@ export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
 ]);
 
 export const M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ["components.parameters.B9IfMatch","component parameter contract changed"],
+  ["POST /api/v1/onboarding/profile.x-idempotency","operation x-idempotency contract changed"],
   ["POST /api/v1/onboarding/profile.request.description","description contract changed"],
   ["POST /api/v1/onboarding/profile.request.x-compatibility-only","unknown schema keyword or extension changed"],
   ["POST /api/v1/onboarding/profile.request.x-p1r-b9-target-mapping","unknown schema keyword or extension changed"],
   ["POST /api/v1/onboarding/profile.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
   ["POST /api/v1/onboarding/profile.request.properties.targetGoal.enum","enum contract changed from unspecified to specified"],
+  ["POST /api/v1/onboarding/profile.request.properties.expectedVersion.minimum","minimum contract changed"],
+  ["PATCH /api/v1/onboarding/profile.x-idempotency","operation x-idempotency contract changed"],
   ["PATCH /api/v1/onboarding/profile.request.description","description contract changed"],
   ["PATCH /api/v1/onboarding/profile.request.x-compatibility-only","unknown schema keyword or extension changed"],
   ["PATCH /api/v1/onboarding/profile.request.x-p1r-b9-target-mapping","unknown schema keyword or extension changed"],
   ["PATCH /api/v1/onboarding/profile.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
   ["PATCH /api/v1/onboarding/profile.request.properties.targetGoal.enum","enum contract changed from unspecified to specified"],
+  ["PATCH /api/v1/onboarding/profile.request.properties.expectedVersion.minimum","minimum contract changed"],
+  ["POST /api/v1/onboarding/goals/first.x-idempotency","operation x-idempotency contract changed"],
+  ["PATCH /api/v1/learner/profile.x-idempotency","operation x-idempotency contract changed"],
+  ["PATCH /api/v1/learner/profile.x-concurrency","operation x-concurrency contract changed"],
+  ["PATCH /api/v1/learner/profile.responses.422","response contract added"],
   ["PATCH /api/v1/learner/profile.request.description","description contract changed"],
+  ["PATCH /api/v1/learner/profile.request.not","not contract changed"],
   ["PATCH /api/v1/learner/profile.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["PATCH /api/v1/learner/profile.request.x-compatibility-shadow-policy","unknown schema keyword or extension changed"],
   ["PATCH /api/v1/learner/profile.request.properties.timezone.pattern","pattern contract changed"],
   ["PATCH /api/v1/learner/profile.request.properties.targetGoal.description","description contract changed"],
   ["PATCH /api/v1/learner/profile.request.properties.targetGoal.deprecated","deprecated contract changed"],
+  ["PUT /api/v1/learner/targets.x-idempotency","operation x-idempotency contract changed"],
+  ["PUT /api/v1/learner/targets.x-concurrency","operation x-concurrency contract changed"],
   ["PUT /api/v1/learner/targets.request.description","description contract changed"],
   ["PUT /api/v1/learner/targets.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
   ["PUT /api/v1/learner/targets.request.properties.goalCode.enum","enum contract changed from unspecified to specified"],
   ["PUT /api/v1/learner/targets.request.properties.goalCode.pattern","pattern contract changed"],
+  ["PATCH /api/v1/learner/preferences.x-idempotency","operation x-idempotency contract changed"],
+  ["PATCH /api/v1/learner/preferences.x-concurrency","operation x-concurrency contract changed"],
   ["PATCH /api/v1/learner/preferences.request.description","description contract changed"],
   ["PATCH /api/v1/learner/preferences.request.x-forbidden-client-fields","unknown schema keyword or extension changed"],
   ["PATCH /api/v1/learner/preferences.request.properties.timezone.pattern","pattern contract changed"],
@@ -693,13 +711,16 @@ export const M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["components.schemas.B1OnboardingProfileRequest.x-p1r-b9-target-mapping","unknown schema keyword or extension changed"],
   ["components.schemas.B1OnboardingProfileRequest.x-forbidden-client-fields","unknown schema keyword or extension changed"],
   ["components.schemas.B1OnboardingProfileRequest.properties.targetGoal.enum","enum contract changed from unspecified to specified"],
+  ["components.schemas.B1OnboardingProfileRequest.properties.expectedVersion.minimum","minimum contract changed"],
   ["components.schemas.B9LearnerProfile.required","new required field: profileVersion"],
   ["components.schemas.B9LearnerProfile.x-version-policy","unknown schema keyword or extension changed"],
   ["components.schemas.B9LearnerProfile.x-planning-source-policy","unknown schema keyword or extension changed"],
   ["components.schemas.B9LearnerProfile.properties.targetGoal.description","description contract changed"],
   ["components.schemas.B9LearnerProfile.properties.targetGoal.deprecated","deprecated contract changed"],
   ["components.schemas.B9LearnerProfilePatch.description","description contract changed"],
+  ["components.schemas.B9LearnerProfilePatch.not","not contract changed"],
   ["components.schemas.B9LearnerProfilePatch.x-forbidden-client-fields","unknown schema keyword or extension changed"],
+  ["components.schemas.B9LearnerProfilePatch.x-compatibility-shadow-policy","unknown schema keyword or extension changed"],
   ["components.schemas.B9LearnerProfilePatch.properties.timezone.pattern","pattern contract changed"],
   ["components.schemas.B9LearnerProfilePatch.properties.targetGoal.description","description contract changed"],
   ["components.schemas.B9LearnerProfilePatch.properties.targetGoal.deprecated","deprecated contract changed"],
@@ -742,6 +763,9 @@ export const M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["components.schemas.B9FirstDayProjection.properties.projectionVersion","existing property removed"],
   ["components.schemas.B9FirstDayProjection.properties.generatedAt","existing property removed"],
   ["components.schemas.B9FirstDayProjection.properties.degradedReason","existing property removed"],
+  ["components.schemas.B9FirstDayProjection.allOf[1].oneOf[state=READY]","approved READY state branch contract changed"],
+  ["components.schemas.B9FirstDayProjection.allOf[1].oneOf[state=DEGRADED]","approved DEGRADED state branch contract changed"],
+  ["components.schemas.B9PlanningInputSnapshot","approved server-assembled planning-input schema added"],
 ]);
 
 export const M1011_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
@@ -1067,6 +1091,7 @@ export function buildM1011OpenApiExpectedProjection(previous, approved, allowanc
   if (!isRecord(previous) || !isRecord(approved) || !isValidM1011PromotionAllowance(allowance)) return undefined;
   const expected = structuredClone(previous);
   const projected = applyApprovedOpenApiProjection(expected.paths, approved.paths, M1011_OPENAPI_APPROVED_PATH_PROJECTIONS)
+    && applyApprovedOpenApiProjection(expected.components?.parameters, approved.components?.parameters, M1011_OPENAPI_APPROVED_PARAMETER_PROJECTIONS)
     && applyApprovedOpenApiProjection(expected.components?.schemas, approved.components?.schemas, M1011_OPENAPI_APPROVED_SCHEMA_PROJECTIONS);
   return projected ? expected : undefined;
 }
@@ -1495,8 +1520,64 @@ function compareM1009OpenApiPromotion(previous, current, allowance) {
   return changes;
 }
 
-function compareFrozenDescriptorSet(kind, previous, current, expected, location, message) {
-  const actual = (kind === 'openapi' ? compareOpenApi(previous, current) : compareEvents(previous, current))
+function compareM1011FirstDayStateBranch(document, state) {
+  const branches = document?.components?.schemas?.B9FirstDayProjection?.allOf?.[1]?.oneOf;
+  if (!Array.isArray(branches)) return undefined;
+  return branches.find((branch) => branch?.properties?.state?.const === state);
+}
+
+export function compareM1011OpenApiDescriptors(previous, current) {
+  const changes = compareOpenApi(previous, current);
+  const compareValue = (previousValue, currentValue, location, reason) => {
+    if (stableGovernanceValue(previousValue) !== stableGovernanceValue(currentValue)) {
+      changes.push(describeChange('openapi', location, reason));
+    }
+  };
+  compareValue(
+    previous?.components?.parameters?.B9IfMatch,
+    current?.components?.parameters?.B9IfMatch,
+    'components.parameters.B9IfMatch',
+    'component parameter contract changed',
+  );
+  for (const [method, path] of [
+    ['PATCH', '/api/v1/learner/profile'],
+    ['PUT', '/api/v1/learner/targets'],
+    ['PATCH', '/api/v1/learner/preferences'],
+  ]) {
+    const methodKey = method.toLowerCase();
+    compareValue(
+      previous?.paths?.[path]?.[methodKey]?.['x-concurrency'],
+      current?.paths?.[path]?.[methodKey]?.['x-concurrency'],
+      `${method} ${path}.x-concurrency`,
+      'operation x-concurrency contract changed',
+    );
+  }
+  compareValue(
+    previous?.paths?.['/api/v1/learner/profile']?.patch?.responses?.['422'],
+    current?.paths?.['/api/v1/learner/profile']?.patch?.responses?.['422'],
+    'PATCH /api/v1/learner/profile.responses.422',
+    'response contract added',
+  );
+  compareValue(
+    previous?.components?.schemas?.B9PlanningInputSnapshot,
+    current?.components?.schemas?.B9PlanningInputSnapshot,
+    'components.schemas.B9PlanningInputSnapshot',
+    'approved server-assembled planning-input schema added',
+  );
+  for (const state of ['READY', 'DEGRADED']) {
+    compareValue(
+      compareM1011FirstDayStateBranch(previous, state),
+      compareM1011FirstDayStateBranch(current, state),
+      `components.schemas.B9FirstDayProjection.allOf[1].oneOf[state=${state}]`,
+      `approved ${state} state branch contract changed`,
+    );
+  }
+  return changes;
+}
+
+function compareFrozenDescriptorSet(kind, previous, current, expected, location, message, compare = undefined) {
+  const comparator = compare ?? (kind === 'openapi' ? compareOpenApi : compareEvents);
+  const actual = comparator(previous, current)
     .sort(function (left, right) { return stableGovernanceValue(left).localeCompare(stableGovernanceValue(right)); });
   const frozen = expected
     .map(([entryLocation, reason]) => describeChange(kind, entryLocation, reason))
@@ -1581,6 +1662,7 @@ function compareM1011OpenApiPromotion(previous, current, allowance) {
     M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
     'm1-011.openapiPromotion.change-descriptors',
     'current OpenAPI changes do not exactly match the frozen M1-011 descriptor set',
+    compareM1011OpenApiDescriptors,
   ));
   const expectedProjection = buildM1011OpenApiExpectedProjection(previous, current, allowance);
   if (expectedProjection === undefined) {

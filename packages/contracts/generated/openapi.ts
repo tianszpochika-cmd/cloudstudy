@@ -1418,9 +1418,9 @@ export type B9AssessmentContentSnapshotResponse = { data: B9AssessmentContentSna
 export type B9LearnerProfile = { principalId: B9PrincipalId; tenantId: "platform"; status: "ONBOARDING" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"; uiLocale: B9Locale; contentLocale: B9Locale; timezone: string; profileVersion: B9StateVersion; targetGoal?: string; proficiencyLevel?: "UNKNOWN" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; stateVersion: B9StateVersion; updatedAt: B9DateTime; };
 
 /**
- * 只提交可由学习者修改的字段；principalId、tenantId、role、owner、server versions 和权限事实由服务端派生。
+ * 只提交可由学习者修改的字段；principalId、tenantId、role、owner、server versions 和权限事实由服务端派生。targetGoal 历史影子字段保留定义，但写入恒以 422 拒绝。
  */
-export type B9LearnerProfilePatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; targetGoal?: string; proficiencyLevel?: "UNKNOWN" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; };
+export type B9LearnerProfilePatch = { expectedStateVersion: B9ExpectedStateVersion; uiLocale?: B9Locale; contentLocale?: B9Locale; timezone?: string; targetGoal?: never; proficiencyLevel?: "UNKNOWN" | "A1" | "A2" | "B1" | "B2" | "C1" | "C2"; };
 
 /**
  * Generated from the contract source.
@@ -3018,9 +3018,9 @@ export type B9GoalOption = { goalCode: "FOUNDATION" | "COLLEGE_CET" | "POSTGRADU
 export type B9GoalOptions = { goalCatalogVersion: string; contentLocale: B9Locale; options: ReadonlyArray<B9GoalOption>; generatedAt: B9DateTime; };
 
 /**
- * Immutable, server-assembled planning facts. Placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.
+ * Immutable, server-assembled planning facts. Eligibility is pinned only as a server-derived digest of adult gate, required consents, phase and policy; raw authority facts, placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.
  */
-export type B9PlanningInputSnapshot = { pinId: string; pinVersion: number; pinDigest: string; targetId: number; targetVersion: B9StateVersion; profileVersion: B9StateVersion; preferenceVersion: B9StateVersion; goalCatalogVersion: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; timezone: string; weeklyStudyDays: ReadonlyArray<number>; contentLocale: B9Locale; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; rightsSnapshotVersion: number; planningRuleVersion: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; };
+export type B9PlanningInputSnapshot = { pinId: string; pinVersion: number; pinDigest: string; targetId: number; targetVersion: B9StateVersion; profileVersion: B9StateVersion; preferenceVersion: B9StateVersion; goalCatalogVersion: string; dailyQuotaMinutes: 5 | 15 | 30 | 45; timezone: string; weeklyStudyDays: ReadonlyArray<number>; contentLocale: B9Locale; contentEpoch: B9ContentEpoch; projectionVersion: B9ProjectionVersion; rightsSnapshotVersion: number; eligibilitySnapshotVersion: number; eligibilitySnapshotDigest: string; planningRuleVersion: string; inputFactWatermark: string; sourceEventId: string; rootEventId: string; };
 
 /**
  * Generated from the contract source.

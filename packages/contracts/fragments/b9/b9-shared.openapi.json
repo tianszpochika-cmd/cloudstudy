@@ -12,8 +12,8 @@
         "name": "If-Match",
         "in": "header",
         "required": true,
-        "description": "资源状态版本的乐观并发条件；版本不匹配时返回 409，不覆盖其他写入。",
-        "schema": { "type": "string", "minLength": 1, "maxLength": 64 }
+        "description": "资源状态版本的乐观并发条件；必须以无前导零的十进制字符串精确等于请求体 expectedStateVersion，版本不匹配时返回 409，不覆盖其他写入。",
+        "schema": { "type": "string", "minLength": 1, "maxLength": 19, "pattern": "^(?:0|[1-9][0-9]{0,18})$" }
       },
       "B9ContentCode": {
         "name": "contentCode",

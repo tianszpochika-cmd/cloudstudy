@@ -482,6 +482,257 @@ function loadM1010CompatibilityPolicy(readFile) {
   return Object.freeze({ ...policy.compatibilityPromotion });
 }
 
+const M1011_AUTHORIZATION_POLICY_KEYS = Object.freeze([
+  'defaultDecision',
+  'pep',
+  'bearerSecurity',
+  'trustedFacts',
+  'genericClientAuthority',
+  'recoveryClientAuthority',
+  'forbiddenClientFieldsBySchema',
+]);
+const M1011_PLANNING_INPUT_POLICY_KEYS = Object.freeze([
+  'schema',
+  'owner',
+  'projectionOwner',
+  'requiredFields',
+  'forbiddenFields',
+  'positiveIntegerFields',
+  'pinnedStringFields',
+  'opaqueStringFields',
+  'pinDigest',
+  'eligibilitySnapshotDigest',
+  'sourceMapping',
+  'referenceBindings',
+  'placementBinding',
+  'planAndSrsBinding',
+]);
+const M1011_CONCURRENCY_POLICY_KEYS = Object.freeze([
+  'ifMatchParameter',
+  'writeOperationIds',
+  'writeParameterRefs',
+  'operationBinding',
+]);
+const M1011_FIRST_DAY_POLICY_KEYS = Object.freeze([
+  'schema',
+  'commonSchema',
+  'owner',
+  'planOwner',
+  'stateField',
+  'states',
+  'baseRequiredFields',
+  'consistency',
+  'statePolicy',
+  'statePolicies',
+]);
+const M1011_AUTHORIZATION_POLICY = Object.freeze({
+  defaultDecision: 'DENY',
+  pep: 'learner-service-local',
+  bearerSecurity: [{ bearerAuth: [] }],
+  trustedFacts: ['subject', 'tenant', 'resourceOwner', 'roles', 'permissions', 'phase', 'adultGate', 'consent', 'contentRights', 'policyVersion'],
+  genericClientAuthority: 'none; authority fields are server-derived and client assertions cannot expand ALLOW',
+  recoveryClientAuthority: 'none; task ownership and status are server-derived',
+  forbiddenClientFieldsBySchema: [
+    {
+      schema: 'B9LearnerProfilePatch',
+      fields: ['principalId', 'tenantId', 'ownerId', 'role', 'permissions', 'adultGate', 'consent', 'policyVersion', 'contentRights', 'profileVersion', 'stateVersion'],
+    },
+    {
+      schema: 'B9LearnerTargetUpsert',
+      fields: ['principalId', 'tenantId', 'targetId', 'ownerId', 'role', 'permissions', 'adultGate', 'consent', 'policyVersion', 'contentRights', 'targetVersion', 'stateVersion'],
+    },
+    {
+      schema: 'B9LearnerPreferencesPatch',
+      fields: ['principalId', 'tenantId', 'ownerId', 'role', 'permissions', 'adultGate', 'consent', 'policyVersion', 'contentRights', 'preferenceVersion', 'stateVersion'],
+    },
+  ],
+});
+const M1011_CONCURRENCY_POLICY = Object.freeze({
+  ifMatchParameter: {
+    name: 'If-Match',
+    in: 'header',
+    required: true,
+    description: '资源状态版本的乐观并发条件；必须以无前导零的十进制字符串精确等于请求体 expectedStateVersion，版本不匹配时返回 409，不覆盖其他写入。',
+    schema: { type: 'string', minLength: 1, maxLength: 19, pattern: '^(?:0|[1-9][0-9]{0,18})$' },
+  },
+  writeOperationIds: ['patchB9LearnerProfile', 'putB9LearnerTarget', 'patchB9LearnerPreferences'],
+  writeParameterRefs: [{ $ref: '#/components/parameters/B9IdempotencyKey' }, { $ref: '#/components/parameters/B9IfMatch' }],
+  operationBinding: {
+    ifMatchParameterRef: '#/components/parameters/B9IfMatch',
+    requestField: 'expectedStateVersion',
+    comparison: 'EXACT_DECIMAL_STRING_EQUAL',
+    mismatchDecision: 'DENY_WITH_409',
+  },
+});
+const M1011_PLANNING_INPUT_ELIGIBILITY_POLICY = Object.freeze({
+  schema: 'B9PlanningInputSnapshot',
+  requiredFields: [
+    'pinId', 'pinVersion', 'pinDigest', 'targetId', 'targetVersion', 'profileVersion', 'preferenceVersion', 'goalCatalogVersion',
+    'dailyQuotaMinutes', 'timezone', 'weeklyStudyDays', 'contentLocale', 'contentEpoch', 'projectionVersion', 'rightsSnapshotVersion',
+    'eligibilitySnapshotVersion', 'eligibilitySnapshotDigest', 'planningRuleVersion', 'inputFactWatermark', 'sourceEventId', 'rootEventId',
+  ],
+  forbiddenFields: ['placementRaw', 'placementScore', 'placementAlgorithm', 'srsState', 'mastery', 'adultGate', 'consent', 'phase', 'policyVersion', 'contentRights'],
+  positiveIntegerFields: [
+    'pinVersion', 'targetId', 'targetVersion', 'profileVersion', 'preferenceVersion', 'contentEpoch', 'projectionVersion',
+    'rightsSnapshotVersion', 'eligibilitySnapshotVersion',
+  ],
+  pinnedStringFields: [
+    'pinId', 'pinDigest', 'eligibilitySnapshotDigest', 'goalCatalogVersion', 'planningRuleVersion', 'inputFactWatermark', 'sourceEventId', 'rootEventId',
+  ],
+  opaqueStringFields: ['pinId', 'pinDigest', 'eligibilitySnapshotDigest', 'inputFactWatermark', 'sourceEventId', 'rootEventId'],
+  eligibilitySnapshotDigest: { minLength: 64, maxLength: 64, pattern: '^[A-Fa-f0-9]{64}$' },
+  sourceMapping: {
+    learnerTarget: ['targetId', 'targetVersion', 'dailyQuotaMinutes', 'goalCatalogVersion'],
+    learnerProfile: ['profileVersion'],
+    learnerPreferences: ['preferenceVersion', 'timezone', 'weeklyStudyDays', 'contentLocale'],
+    contentProjection: ['contentEpoch', 'projectionVersion', 'rightsSnapshotVersion'],
+    iamEligibility: ['eligibilitySnapshotVersion', 'eligibilitySnapshotDigest'],
+    learningPolicy: ['planningRuleVersion'],
+    learningOwner: ['pinId', 'pinVersion', 'pinDigest', 'inputFactWatermark', 'sourceEventId', 'rootEventId'],
+  },
+});
+const M1011_B1_TARGET_MAPPING_POLICY = Object.freeze({
+  schema: 'B1OnboardingProfileRequest',
+  extension: 'x-p1r-b9-target-mapping',
+  sourceField: 'targetGoal',
+  dailyQuotaField: 'dailyQuotaMinutes',
+  expectedStateVersionField: 'expectedVersion',
+  expectedVersionSchema: { type: 'integer', format: 'int64', minimum: 0 },
+  missingOrUnknownDecision: 'DENY_WITH_422',
+  dailyQuotaMinutes: [5, 15, 30, 45],
+  legacyGoalCodes: ['ZERO_BASIS', 'CET_4_6', 'POSTGRADUATE', 'WORKPLACE_DAILY'],
+  mappings: [
+    { legacyTargetGoal: 'ZERO_BASIS', goalCode: 'FOUNDATION', targetLevel: 'A1' },
+    { legacyTargetGoal: 'CET_4_6', goalCode: 'COLLEGE_CET', targetLevel: 'B1' },
+    { legacyTargetGoal: 'POSTGRADUATE', goalCode: 'POSTGRADUATE_ENGLISH', targetLevel: 'B2' },
+    { legacyTargetGoal: 'WORKPLACE_DAILY', goalCode: 'WORKPLACE_DAILY', targetLevel: 'B2' },
+  ],
+});
+const M1011_PROFILE_TARGET_GOAL_POLICY = Object.freeze({
+  schema: 'B9LearnerProfile',
+  patchSchema: 'B9LearnerProfilePatch',
+  patchOperationId: 'patchB9LearnerProfile',
+  field: 'targetGoal',
+  deprecated: true,
+  planningAuthority: false,
+  patchPolicy: { targetGoal: 'SERVER_REJECTED_422_NON_AUTHORITATIVE' },
+  patchNot: { required: ['targetGoal'] },
+  patchResponseStatus: '422',
+});
+const M1011_CANONICAL_WRITE_IDEMPOTENCY = Object.freeze([
+  {
+    operationId: 'patchB9LearnerProfile', path: '/api/v1/learner/profile', method: 'PATCH', idempotencyRequired: true,
+    idempotencyPolicy: {
+      required: true, strategy: 'learner-profile-update', keyHeader: 'Idempotency-Key',
+      replayBehavior: 'same subject and request hash returns the original profile version',
+      sameKeySamePayload: 'REPLAY_ORIGINAL_RESPONSE', sameKeyDifferentPayload: 'DENY_WITH_409',
+      commandFingerprint: 'SERVER_COMPUTED_NORMALIZED_COMMAND_HASH',
+    },
+  },
+  {
+    operationId: 'putB9LearnerTarget', path: '/api/v1/learner/targets', method: 'PUT', idempotencyRequired: true,
+    idempotencyPolicy: {
+      required: true, strategy: 'learner-target-upsert', keyHeader: 'Idempotency-Key',
+      replayBehavior: 'same subject and state version returns the original target',
+      sameKeySamePayload: 'REPLAY_ORIGINAL_RESPONSE', sameKeyDifferentPayload: 'DENY_WITH_409',
+      commandFingerprint: 'SERVER_COMPUTED_NORMALIZED_COMMAND_HASH',
+    },
+  },
+  {
+    operationId: 'patchB9LearnerPreferences', path: '/api/v1/learner/preferences', method: 'PATCH', idempotencyRequired: true,
+    idempotencyPolicy: {
+      required: true, strategy: 'learner-preference-update', keyHeader: 'Idempotency-Key',
+      replayBehavior: 'same subject and request hash returns the original preferences',
+      sameKeySamePayload: 'REPLAY_ORIGINAL_RESPONSE', sameKeyDifferentPayload: 'DENY_WITH_409',
+      commandFingerprint: 'SERVER_COMPUTED_NORMALIZED_COMMAND_HASH',
+    },
+  },
+]);
+const M1011_LEGACY_WRITE_IDEMPOTENCY = Object.freeze([
+  {
+    operationId: 'saveB1OnboardingProfile', path: '/api/v1/onboarding/profile', method: 'POST',
+    idempotencyPolicy: {
+      required: true, strategy: 'request-key', keyHeader: 'Idempotency-Key', replayBehavior: 'return-original-profile',
+      sameKeySamePayload: 'REPLAY_ORIGINAL_RESPONSE', sameKeyDifferentPayload: 'DENY_WITH_409',
+      commandFingerprint: 'SERVER_COMPUTED_NORMALIZED_COMMAND_HASH',
+    },
+  },
+  {
+    operationId: 'patchB1OnboardingProfile', path: '/api/v1/onboarding/profile', method: 'PATCH',
+    idempotencyPolicy: {
+      required: true, strategy: 'request-key', keyHeader: 'Idempotency-Key', replayBehavior: 'return-original-profile',
+      sameKeySamePayload: 'REPLAY_ORIGINAL_RESPONSE', sameKeyDifferentPayload: 'DENY_WITH_409',
+      commandFingerprint: 'SERVER_COMPUTED_NORMALIZED_COMMAND_HASH',
+    },
+  },
+  {
+    operationId: 'createB1FirstGoal', path: '/api/v1/onboarding/goals/first', method: 'POST',
+    idempotencyPolicy: {
+      required: true, strategy: 'request-key', keyHeader: 'Idempotency-Key', replayBehavior: 'return-original-goal',
+      sameKeySamePayload: 'REPLAY_ORIGINAL_RESPONSE', sameKeyDifferentPayload: 'DENY_WITH_409',
+      commandFingerprint: 'SERVER_COMPUTED_NORMALIZED_COMMAND_HASH',
+    },
+  },
+]);
+const M1011_FIRST_DAY_WIRE_POLICY = Object.freeze({
+  schema: 'B9FirstDayProjection',
+  commonSchema: 'B9FirstDayProjectionCommon',
+  stateField: 'state',
+  states: ['NOT_READY', 'PROCESSING', 'READY', 'DEGRADED'],
+  baseRequiredFields: ['state', 'profileReady', 'targetReady', 'placementStatus', 'taskCount', 'tasks', 'contentEpoch', 'projectionVersion', 'projectionWatermark', 'generatedAt'],
+  statePolicy: {
+    failureCannotMasqueradeAsEmptySuccess: true,
+    notReady: 'empty tasks plus an explicit blocker; no planning, plan, failure or recovery fields',
+    processing: 'empty tasks plus immutable planningInput and job; no plan, failure or recovery fields',
+    ready: 'at least one task plus immutable planningInput and plan; no blocker, job, failure or recovery fields',
+    degraded: 'empty tasks plus immutable planningInput, safe reason and read-only recovery; never a READY result',
+  },
+  statePolicies: [
+    { state: 'NOT_READY', required: ['state', 'tasks', 'blocker'], forbidden: ['planningInput', 'job', 'plan', 'degradedReason', 'recovery'], taskCount: { const: 0 }, tasks: { maxItems: 0 }, constants: {} },
+    { state: 'PROCESSING', required: ['state', 'tasks', 'planningInput', 'job'], forbidden: ['blocker', 'plan', 'degradedReason', 'recovery'], taskCount: { const: 0 }, tasks: { maxItems: 0 }, constants: { profileReady: true, targetReady: true }, inputReference: { field: 'job', schema: 'B9PlanningJobRef', statuses: ['QUEUED', 'PROCESSING', 'RETRYABLE'] } },
+    { state: 'READY', required: ['state', 'tasks', 'planningInput', 'plan'], forbidden: ['blocker', 'job', 'degradedReason', 'recovery'], taskCount: { minimum: 1 }, tasks: { minItems: 1 }, constants: { profileReady: true, targetReady: true } },
+    { state: 'DEGRADED', required: ['state', 'tasks', 'planningInput', 'degradedReason', 'recovery'], forbidden: ['blocker', 'job', 'plan'], taskCount: { const: 0 }, tasks: { maxItems: 0 }, constants: { profileReady: true, targetReady: true }, inputReference: { field: 'recovery', schema: 'B9FirstDayRecovery', statuses: ['QUEUED', 'PROCESSING', 'RETRYABLE', 'FAILED'] } },
+  ],
+});
+
+function exactM1011PolicyKeys(value, expected, label, errors) {
+  if (!isRecord(value)) {
+    errors.push(`${label} must be an object`);
+    return;
+  }
+  if (stableGovernanceValue(Object.keys(value).sort()) !== stableGovernanceValue([...expected].sort())) {
+    errors.push(`${label} keys are not the frozen M1-011 set`);
+  }
+}
+
+function exactM1011PolicyValue(value, expected, label, errors) {
+  if (stableGovernanceValue(value) !== stableGovernanceValue(expected)) {
+    errors.push(`${label} is not the frozen M1-011 value`);
+  }
+}
+
+function exactM1011WriteIdempotency(routes, expected, label, errors) {
+  if (!Array.isArray(routes)) {
+    errors.push(`${label} must be an array`);
+    return;
+  }
+  const actual = expected.map((expectedRoute) => {
+    const { operationId } = expectedRoute;
+    const matches = routes.filter((route) => isRecord(route) && route.operationId === operationId);
+    if (matches.length !== 1) return { operationId, matchingEntries: matches.length };
+    const route = matches[0];
+    const projected = {
+      operationId: route.operationId,
+      path: route.path,
+      method: route.method,
+      idempotencyPolicy: route.idempotencyPolicy,
+    };
+    if (Object.hasOwn(expectedRoute, 'idempotencyRequired')) projected.idempotencyRequired = route.idempotencyRequired;
+    return projected;
+  });
+  exactM1011PolicyValue(actual, expected, label, errors);
+}
+
 export function validateM1011CompatibilityPolicy(policy) {
   const errors = [];
   exactPolicyValue(policy?.task, 'P1R-M1-011', 'learner planning contract policy task', errors);
@@ -498,6 +749,42 @@ export function validateM1011CompatibilityPolicy(policy) {
     legacyAdapterFragment: 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json',
     historicalEventFragment: 'packages/contracts/events/v1/fragments/b9-learner-content.events.json',
   }, 'M1-011 compatibility promotion', errors);
+  if (!isRecord(policy)) return errors;
+
+  exactM1011PolicyKeys(policy.authorization, M1011_AUTHORIZATION_POLICY_KEYS, 'M1-011 authorization policy', errors);
+  exactM1011PolicyValue(policy.authorization, M1011_AUTHORIZATION_POLICY, 'M1-011 authorization policy', errors);
+  exactM1011PolicyKeys(policy.concurrency, M1011_CONCURRENCY_POLICY_KEYS, 'M1-011 concurrency policy', errors);
+  exactM1011PolicyValue(policy.concurrency, M1011_CONCURRENCY_POLICY, 'M1-011 concurrency policy', errors);
+
+  const planningInput = policy.planningInput;
+  exactM1011PolicyKeys(planningInput, M1011_PLANNING_INPUT_POLICY_KEYS, 'M1-011 planning-input policy', errors);
+  exactM1011PolicyValue(isRecord(planningInput) ? {
+    schema: planningInput.schema,
+    requiredFields: planningInput.requiredFields,
+    forbiddenFields: planningInput.forbiddenFields,
+    positiveIntegerFields: planningInput.positiveIntegerFields,
+    pinnedStringFields: planningInput.pinnedStringFields,
+    opaqueStringFields: planningInput.opaqueStringFields,
+    eligibilitySnapshotDigest: planningInput.eligibilitySnapshotDigest,
+    sourceMapping: planningInput.sourceMapping,
+  } : planningInput, M1011_PLANNING_INPUT_ELIGIBILITY_POLICY, 'M1-011 planning-input eligibility policy', errors);
+
+  exactM1011PolicyValue(policy.goalCatalog?.legacyB1TargetMapping, M1011_B1_TARGET_MAPPING_POLICY, 'M1-011 B1 target mapping policy', errors);
+  exactM1011PolicyValue(policy.goalCatalog?.profileTargetGoal, M1011_PROFILE_TARGET_GOAL_POLICY, 'M1-011 profile targetGoal policy', errors);
+  exactM1011WriteIdempotency(policy.canonicalRoutes, M1011_CANONICAL_WRITE_IDEMPOTENCY, 'M1-011 canonical write idempotency', errors);
+  exactM1011WriteIdempotency(policy.legacyCompatibility, M1011_LEGACY_WRITE_IDEMPOTENCY, 'M1-011 legacy write idempotency', errors);
+
+  const firstDay = policy.firstDay;
+  exactM1011PolicyKeys(firstDay, M1011_FIRST_DAY_POLICY_KEYS, 'M1-011 first-day policy', errors);
+  exactM1011PolicyValue(isRecord(firstDay) ? {
+    schema: firstDay.schema,
+    commonSchema: firstDay.commonSchema,
+    stateField: firstDay.stateField,
+    states: firstDay.states,
+    baseRequiredFields: firstDay.baseRequiredFields,
+    statePolicy: firstDay.statePolicy,
+    statePolicies: firstDay.statePolicies,
+  } : firstDay, M1011_FIRST_DAY_WIRE_POLICY, 'M1-011 first-day READY/DEGRADED wire policy', errors);
   return errors;
 }
 

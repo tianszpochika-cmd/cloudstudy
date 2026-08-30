@@ -204,11 +204,20 @@
           ],
           "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
+        "x-concurrency": {
+          "ifMatchParameterRef": "#/components/parameters/B9IfMatch",
+          "requestField": "expectedStateVersion",
+          "comparison": "EXACT_DECIMAL_STRING_EQUAL",
+          "mismatchDecision": "DENY_WITH_409"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "learner-profile-update",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "same subject and request hash returns the original profile version"
+          "replayBehavior": "same subject and request hash returns the original profile version",
+          "sameKeySamePayload": "REPLAY_ORIGINAL_RESPONSE",
+          "sameKeyDifferentPayload": "DENY_WITH_409",
+          "commandFingerprint": "SERVER_COMPUTED_NORMALIZED_COMMAND_HASH"
         },
         "parameters": [
           {
@@ -276,6 +285,9 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
           }
         }
       }
@@ -397,11 +409,20 @@
           ],
           "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
+        "x-concurrency": {
+          "ifMatchParameterRef": "#/components/parameters/B9IfMatch",
+          "requestField": "expectedStateVersion",
+          "comparison": "EXACT_DECIMAL_STRING_EQUAL",
+          "mismatchDecision": "DENY_WITH_409"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "learner-target-upsert",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "same subject and state version returns the original target"
+          "replayBehavior": "same subject and state version returns the original target",
+          "sameKeySamePayload": "REPLAY_ORIGINAL_RESPONSE",
+          "sameKeyDifferentPayload": "DENY_WITH_409",
+          "commandFingerprint": "SERVER_COMPUTED_NORMALIZED_COMMAND_HASH"
         },
         "parameters": [
           {
@@ -587,11 +608,20 @@
           ],
           "clientAuthority": "none; authority fields are server-derived and client assertions cannot expand ALLOW"
         },
+        "x-concurrency": {
+          "ifMatchParameterRef": "#/components/parameters/B9IfMatch",
+          "requestField": "expectedStateVersion",
+          "comparison": "EXACT_DECIMAL_STRING_EQUAL",
+          "mismatchDecision": "DENY_WITH_409"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "learner-preference-update",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "same subject and request hash returns the original preferences"
+          "replayBehavior": "same subject and request hash returns the original preferences",
+          "sameKeySamePayload": "REPLAY_ORIGINAL_RESPONSE",
+          "sameKeyDifferentPayload": "DENY_WITH_409",
+          "commandFingerprint": "SERVER_COMPUTED_NORMALIZED_COMMAND_HASH"
         },
         "parameters": [
           {
@@ -1078,7 +1108,7 @@
         "required": [
           "expectedStateVersion"
         ],
-        "description": "只提交可由学习者修改的字段；principalId、tenantId、role、owner、server versions 和权限事实由服务端派生。",
+        "description": "只提交可由学习者修改的字段；principalId、tenantId、role、owner、server versions 和权限事实由服务端派生。targetGoal 历史影子字段保留定义，但写入恒以 422 拒绝。",
         "x-forbidden-client-fields": [
           "principalId",
           "tenantId",
@@ -1092,6 +1122,14 @@
           "profileVersion",
           "stateVersion"
         ],
+        "x-compatibility-shadow-policy": {
+          "targetGoal": "SERVER_REJECTED_422_NON_AUTHORITATIVE"
+        },
+        "not": {
+          "required": [
+            "targetGoal"
+          ]
+        },
         "properties": {
           "expectedStateVersion": {
             "$ref": "#/components/schemas/B9ExpectedStateVersion"
@@ -1107,12 +1145,12 @@
             "pattern": "^[A-Za-z_]+/[A-Za-z_]+(?:/[A-Za-z_]+)?$",
             "maxLength": 64
           },
-        "targetGoal": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 96,
-          "deprecated": true,
-          "description": "Compatibility-only profile shadow. The server must not treat this field as planning authority; use PUT /api/v1/learner/targets."
+          "targetGoal": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "deprecated": true,
+            "description": "Compatibility-only profile shadow retained for historical reads. PATCH submissions are server-rejected with 422 and never become planning authority; use PUT /api/v1/learner/targets."
           },
           "proficiencyLevel": {
             "type": "string",
@@ -1628,17 +1666,20 @@
           "contentEpoch",
           "projectionVersion",
           "rightsSnapshotVersion",
+          "eligibilitySnapshotVersion",
+          "eligibilitySnapshotDigest",
           "planningRuleVersion",
           "inputFactWatermark",
           "sourceEventId",
           "rootEventId"
         ],
-        "description": "Immutable, server-assembled planning facts. Placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.",
+        "description": "Immutable, server-assembled planning facts. Eligibility is pinned only as a server-derived digest of adult gate, required consents, phase and policy; raw authority facts, placement raw answers, score, algorithm, SRS and mastery facts are never part of this snapshot.",
         "x-source-mapping": {
           "learnerTarget": ["targetId", "targetVersion", "dailyQuotaMinutes", "goalCatalogVersion"],
           "learnerProfile": ["profileVersion"],
           "learnerPreferences": ["preferenceVersion", "timezone", "weeklyStudyDays", "contentLocale"],
           "contentProjection": ["contentEpoch", "projectionVersion", "rightsSnapshotVersion"],
+          "iamEligibility": ["eligibilitySnapshotVersion", "eligibilitySnapshotDigest"],
           "learningPolicy": ["planningRuleVersion"],
           "learningOwner": ["pinId", "pinVersion", "pinDigest", "inputFactWatermark", "sourceEventId", "rootEventId"]
         },
@@ -1647,7 +1688,12 @@
           "placementScore",
           "placementAlgorithm",
           "srsState",
-          "mastery"
+          "mastery",
+          "adultGate",
+          "consent",
+          "phase",
+          "policyVersion",
+          "contentRights"
         ],
         "properties": {
           "pinId": {
@@ -1722,6 +1768,16 @@
           "rightsSnapshotVersion": {
             "type": "integer",
             "minimum": 1
+          },
+          "eligibilitySnapshotVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "eligibilitySnapshotDigest": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[A-Fa-f0-9]{64}$"
           },
           "planningRuleVersion": {
             "type": "string",

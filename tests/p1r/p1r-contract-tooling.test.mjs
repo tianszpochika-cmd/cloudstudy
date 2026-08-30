@@ -15,6 +15,7 @@ import {
   buildM1011B26ExpectedProjection,
   buildM1011EventExpectedProjection,
   buildM1011OpenApiExpectedProjection,
+  compareM1011OpenApiDescriptors,
   compareB26WorkflowGovernance,
   compareContracts,
   M1008_OPENAPI_EXPECTED_SEMANTIC_SHA256,
@@ -1193,9 +1194,12 @@ test('M1-011 exact static contract promotion has frozen source, descriptors and 
   assert.deepEqual(openApiProjection, openApi);
   assert.equal(stableGovernanceSha256(openApiProjection), M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256);
   assert.equal(M1011_OPENAPI_EXPECTED_SEMANTIC_SHA256.length, 64);
+  const sortDescriptor = (left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right));
   assert.deepEqual(
-    compareContracts('openapi', m1011SourceOpenApi, openApi).map((change) => [change.location, change.reason]),
-    M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    compareM1011OpenApiDescriptors(m1011SourceOpenApi, openApi)
+      .map((change) => [change.location, change.reason])
+      .sort(sortDescriptor),
+    [...M1011_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS].sort(sortDescriptor),
   );
 
   const eventProjection = m1011ExpectedEventProjection();
@@ -1229,8 +1233,46 @@ test('M1-011 promotion rejects unapproved learner-planning, canonical-event and 
     ['extra learner path', (document) => {
       document.paths['/api/v1/learner/injected'] = { get: { responses: { 200: { description: 'injected' } } } };
     }],
+    ['extra OpenAPI root extension', (document) => {
+      document['x-m1011-injected'] = { status: 'not-approved' };
+    }],
+    ['extra operation on an approved learner path', (document) => {
+      document.paths['/api/v1/learner/targets'].post = structuredClone(document.paths['/api/v1/learner/targets'].put);
+      document.paths['/api/v1/learner/targets'].post.operationId = 'postM1011InjectedTarget';
+    }],
     ['extra learner schema', (document) => {
       document.components.schemas.M1011Injected = { type: 'object', additionalProperties: false };
+    }],
+    ['If-Match exact decimal guard weakened', (document) => {
+      document.components.parameters.B9IfMatch.schema.pattern = '^.*$';
+    }],
+    ['If-Match operation binding removed', (document) => {
+      delete document.paths['/api/v1/learner/profile'].patch['x-concurrency'];
+    }],
+    ['canonical same key with different payload is allowed', (document) => {
+      document.paths['/api/v1/learner/targets'].put['x-idempotency'].sameKeyDifferentPayload = 'ALLOW_NEW_COMMAND';
+    }],
+    ['legacy same key with different payload is allowed', (document) => {
+      document.paths['/api/v1/onboarding/goals/first'].post['x-idempotency'].sameKeyDifferentPayload = 'ALLOW_NEW_COMMAND';
+    }],
+    ['B1 expectedVersion minimum is tightened', (document) => {
+      document.components.schemas.B1OnboardingProfileRequest.properties.expectedVersion.minimum = 1;
+    }],
+    ['profile targetGoal reject guard removed', (document) => {
+      delete document.components.schemas.B9LearnerProfilePatch.not;
+    }],
+    ['profile targetGoal 422 response removed', (document) => {
+      delete document.paths['/api/v1/learner/profile'].patch.responses['422'];
+    }],
+    ['planning eligibility version pin removed', (document) => {
+      document.components.schemas.B9PlanningInputSnapshot.required = document.components.schemas.B9PlanningInputSnapshot.required
+        .filter((field) => field !== 'eligibilitySnapshotVersion');
+    }],
+    ['planning eligibility digest is weakened', (document) => {
+      document.components.schemas.B9PlanningInputSnapshot.properties.eligibilitySnapshotDigest.maxLength = 128;
+    }],
+    ['planning eligibility source mapping removed', (document) => {
+      delete document.components.schemas.B9PlanningInputSnapshot['x-source-mapping'].iamEligibility;
     }],
     ['goal catalog expansion', (document) => {
       document.components.schemas.B9PlanningInputSnapshot.properties.dailyQuotaMinutes.enum.push(60);
@@ -1240,6 +1282,12 @@ test('M1-011 promotion rejects unapproved learner-planning, canonical-event and 
     }],
     ['first-day branch weakened', (document) => {
       document.components.schemas.B9FirstDayProjection.allOf[1].oneOf[0].required.pop();
+    }],
+    ['READY branch allows zero tasks', (document) => {
+      document.components.schemas.B9FirstDayProjection.allOf[1].oneOf[2].properties.tasks.minItems = 0;
+    }],
+    ['DEGRADED branch accepts a reason alias', (document) => {
+      document.components.schemas.B9FirstDayProjection.allOf[1].oneOf[3].properties.reason = { type: 'string' };
     }],
     ['plan input binding drift', (document) => {
       document.components.schemas.B9PlanReference['x-input-binding'].planningInputPinVersion = 'MAY_DIFFER_FROM_PLANNING_INPUT_PIN_VERSION';
@@ -1318,6 +1366,17 @@ test('M1-011 policy and full fixed-baseline chain fail closed while remaining st
     (policy) => { policy.compatibilityPromotion.eventCatalogDecision = 'PROMOTE_ALL_LEARNER_EVENTS'; },
     (policy) => { policy.compatibilityPromotion.canonicalFragment = 'packages/contracts/openapi/v1/openapi.json'; },
     (policy) => { policy.compatibilityPromotion.unexpectedPromotionFlag = true; },
+    (policy) => { policy.planningInput.requiredFields = policy.planningInput.requiredFields.filter((field) => field !== 'eligibilitySnapshotVersion'); },
+    (policy) => { policy.planningInput.eligibilitySnapshotDigest.maxLength = 128; },
+    (policy) => { policy.planningInput.forbiddenFields = policy.planningInput.forbiddenFields.filter((field) => field !== 'adultGate'); },
+    (policy) => { policy.concurrency.ifMatchParameter.schema.pattern = '^.*$'; },
+    (policy) => { policy.canonicalRoutes.find((route) => route.operationId === 'putB9LearnerTarget').idempotencyPolicy.sameKeyDifferentPayload = 'ALLOW_NEW_COMMAND'; },
+    (policy) => { policy.legacyCompatibility.find((route) => route.operationId === 'createB1FirstGoal').idempotencyPolicy.sameKeyDifferentPayload = 'ALLOW_NEW_COMMAND'; },
+    (policy) => { policy.goalCatalog.legacyB1TargetMapping.expectedVersionSchema.minimum = 1; },
+    (policy) => { delete policy.goalCatalog.profileTargetGoal.patchNot; },
+    (policy) => { policy.goalCatalog.profileTargetGoal.patchResponseStatus = '409'; },
+    (policy) => { policy.firstDay.statePolicies.find((state) => state.state === 'READY').tasks.minItems = 0; },
+    (policy) => { policy.firstDay.statePolicies.find((state) => state.state === 'DEGRADED').required.push('reason'); },
   ]) {
     const mutated = structuredClone(learnerPlanningContractPolicy);
     mutate(mutated);

@@ -18,11 +18,11 @@ export const DEFAULT_SAGA_RECOVERY = 'config/p1r-saga-recovery.v1.json';
 export const DEFAULT_EVENT_RELIABILITY = 'packages/contracts/events/v1/reliability-policy.json';
 export const DEFAULT_B26_RUNTIME = 'config/b26-event-runtime.json';
 
-const FROZEN_POLICY_SHA256 = 'a93b41bffb9131a4760316f8994dae1faa59f5b533387be38d45f7503d3e7114';
+const FROZEN_POLICY_SHA256 = '184b85687a8a3916cf2746d425fb49a99f348e24062359e498368ccdd3dbd310';
 const POLICY_KEYS = [
   '$schema', 'schemaVersion', 'task', 'phase', 'maturity', 'runtimeStatus', 'canonicalSources',
   'compatibilityPromotion', 'runtimeBoundary', 'canonicalRoutes', 'authorization', 'goalCatalog',
-  'versionEquivalence', 'planningInput', 'firstDay', 'recovery', 'ownership', 'legacyCompatibility',
+  'versionEquivalence', 'concurrency', 'planningInput', 'firstDay', 'recovery', 'ownership', 'legacyCompatibility',
   'events', 'b26Static', 'phase1Prohibitions', 'adversarialCases',
 ];
 const AUTHORIZATION_KEYS = ['clientAuthority', 'defaultDecision', 'pep', 'requiredPermission', 'trustedFacts'];
@@ -228,6 +228,34 @@ function forbiddenNot(fields) {
   return { anyOf: fields.map((field) => ({ required: [field] })) };
 }
 
+/**
+ * Validates a safe, synthetic GoalOptions response against the catalog's
+ * exactly-once governance. This is static contract testing only: it does not
+ * claim that a deployed service has emitted such a response.
+ */
+export function validateGoalOptionsPayload(payload, policy) {
+  const errors = [];
+  const expectedCodes = policy?.goalCatalog?.goalCodes;
+  add(errors, Array.isArray(expectedCodes) && expectedCodes.length === 4, 'goal catalog policy must define four expected goal codes');
+  add(errors, isRecord(payload), 'GoalOptions payload must be an object');
+  const options = payload?.options;
+  add(errors, Array.isArray(options), 'GoalOptions payload.options must be an array');
+  if (!Array.isArray(expectedCodes) || !Array.isArray(options)) {
+    return { result: errors.length === 0 ? 'PASS' : 'FAIL', errors };
+  }
+  add(errors, options.length === expectedCodes.length, 'GoalOptions payload must contain exactly four options');
+  const counts = new Map();
+  for (const option of options) {
+    const goalCode = option?.goalCode;
+    add(errors, typeof goalCode === 'string' && expectedCodes.includes(goalCode), 'GoalOptions payload must not contain an unknown goalCode');
+    if (typeof goalCode === 'string') counts.set(goalCode, (counts.get(goalCode) ?? 0) + 1);
+  }
+  for (const goalCode of expectedCodes) {
+    add(errors, counts.get(goalCode) === 1, `GoalOptions payload goalCode ${goalCode} must occur exactly once, independently of label text`);
+  }
+  return { result: errors.length === 0 ? 'PASS' : 'FAIL', errors };
+}
+
 function checkPolicy(policy, errors) {
   exactKeys(errors, policy, POLICY_KEYS, 'learner planning policy');
   add(errors, digest(policy) === FROZEN_POLICY_SHA256, 'learner planning policy digest drift');
@@ -295,7 +323,7 @@ function checkIdempotency(document, fallback, operation, route, errors, label) {
     add(errors, operation?.['x-idempotency']?.required !== true, `${label} must not claim an idempotent write boundary`);
     return;
   }
-  add(errors, operation?.['x-idempotency']?.required === true, `${label} must require idempotency`);
+  exact(errors, operation?.['x-idempotency'], route.idempotencyPolicy, `${label} idempotency semantics`);
   const parameter = findParameter(document, operation, 'Idempotency-Key', fallback);
   add(errors, parameter?.in === 'header' && parameter?.required === true, `${label} must require Idempotency-Key header`);
 }
@@ -324,6 +352,9 @@ function checkCanonicalRoutes(b9OpenApi, canonicalOpenApi, policy, errors) {
 function checkGoalCatalog(b9OpenApi, canonicalOpenApi, policy, errors) {
   const options = component(b9OpenApi, policy.goalCatalog.responseSchema);
   const option = component(b9OpenApi, policy.goalCatalog.optionSchema);
+  exact(errors, policy.goalCatalog.coverage, 'EXACTLY_ONCE', 'goal catalog exactly-once coverage policy');
+  exact(errors, policy.goalCatalog.uniqueBy, 'goalCode', 'goal catalog unique-by policy');
+  exact(errors, policy.goalCatalog.optionsUniqueBy, 'goalCode', 'goal catalog option unique-by policy');
   add(errors, closedObject(b9OpenApi, options, canonicalOpenApi), 'B9GoalOptions must be closed');
   exact(errors, schemaRequired(b9OpenApi, options, canonicalOpenApi), policy.goalCatalog.requiredFields, 'B9GoalOptions required fields');
   exact(errors, options?.['x-goal-catalog-policy'], {
@@ -352,12 +383,24 @@ function checkGoalCatalog(b9OpenApi, canonicalOpenApi, policy, errors) {
   }
   const targetGoalRule = policy.goalCatalog.profileTargetGoal;
   const profile = component(b9OpenApi, targetGoalRule.schema);
-  const profilePatch = component(b9OpenApi, 'B9LearnerProfilePatch');
+  const profilePatch = component(b9OpenApi, targetGoalRule.patchSchema);
   const profileField = schemaProperties(b9OpenApi, profile, canonicalOpenApi)[targetGoalRule.field];
   const patchField = schemaProperties(b9OpenApi, profilePatch, canonicalOpenApi)[targetGoalRule.field];
   add(errors, profileField?.deprecated === true && patchField?.deprecated === true, 'profile targetGoal must remain compatibility-only and deprecated');
   add(errors, String(profileField?.description ?? '').includes('never selects a goal'), 'profile targetGoal must not become planning authority');
-  add(errors, String(patchField?.description ?? '').includes('must not treat this field as planning authority'), 'profile patch targetGoal must not become planning authority');
+  add(errors, String(patchField?.description ?? '').includes('server-rejected with 422') && String(patchField?.description ?? '').includes('never become planning authority'), 'profile patch targetGoal must be server-rejected and never become planning authority');
+  exact(errors, profilePatch?.['x-compatibility-shadow-policy'], targetGoalRule.patchPolicy, 'profile patch targetGoal compatibility shadow policy');
+  exact(errors, profilePatch?.not, targetGoalRule.patchNot, 'profile patch targetGoal schema-level prohibition');
+  for (const [document, labelPrefix] of [[b9OpenApi, 'B9 fragment'], [canonicalOpenApi, 'composed OpenAPI']]) {
+    const route = policy.canonicalRoutes.find((candidate) => candidate?.operationId === targetGoalRule.patchOperationId);
+    const operation = methodAt(document, route ?? {});
+    const patchSchema = component(document, targetGoalRule.patchSchema);
+    const patchTargetGoal = schemaProperties(document, patchSchema, canonicalOpenApi)[targetGoalRule.field];
+    exact(errors, patchSchema?.['x-compatibility-shadow-policy'], targetGoalRule.patchPolicy, `${labelPrefix} profile PATCH compatibility shadow policy`);
+    exact(errors, patchSchema?.not, targetGoalRule.patchNot, `${labelPrefix} profile PATCH targetGoal prohibition`);
+    add(errors, patchTargetGoal?.deprecated === true && String(patchTargetGoal?.description ?? '').includes('server-rejected with 422'), `${labelPrefix} profile PATCH targetGoal must remain a rejected compatibility shadow`);
+    add(errors, Object.hasOwn(operation?.responses ?? {}, targetGoalRule.patchResponseStatus), `${labelPrefix} profile PATCH must expose ${targetGoalRule.patchResponseStatus} for targetGoal compatibility-shadow writes`);
+  }
   exact(errors, profile?.['x-planning-source-policy'], policy.goalCatalog.planningSourcePolicies.profile, 'profile planning source policy');
   const preferences = component(b9OpenApi, 'B9LearnerPreferences');
   const preferencePatch = component(b9OpenApi, 'B9LearnerPreferencesPatch');
@@ -395,6 +438,28 @@ function checkVersionEquivalence(b9OpenApi, canonicalOpenApi, policy, errors) {
   }
 }
 
+function checkConcurrency(b9OpenApi, canonicalOpenApi, policy, errors) {
+  const concurrency = policy?.concurrency;
+  exactKeys(errors, concurrency, ['ifMatchParameter', 'writeOperationIds', 'writeParameterRefs', 'operationBinding'], 'concurrency policy');
+  const versionOperationIds = (policy?.versionEquivalence ?? []).map((rule) => rule?.operationId).sort();
+  exact(errors, [...(concurrency?.writeOperationIds ?? [])].sort(), versionOperationIds, 'concurrency write operation inventory');
+  for (const [document, labelPrefix] of [[b9OpenApi, 'B9 fragment'], [canonicalOpenApi, 'composed OpenAPI']]) {
+    const ifMatch = directSchema(document, { $ref: '#/components/parameters/B9IfMatch' }, canonicalOpenApi);
+    exact(errors, ifMatch, concurrency?.ifMatchParameter, `${labelPrefix} B9IfMatch parameter`);
+    for (const operationId of concurrency?.writeOperationIds ?? []) {
+      const route = policy.canonicalRoutes.find((candidate) => candidate?.operationId === operationId);
+      const operation = methodAt(document, route ?? {});
+      const label = `${labelPrefix} ${operationId}`;
+      add(errors, isRecord(operation), `${label} concurrency route is required`);
+      if (!isRecord(operation)) continue;
+      exact(errors, operation.parameters, concurrency?.writeParameterRefs, `${label} write parameter refs`);
+      exact(errors, operation['x-concurrency'], concurrency?.operationBinding, `${label} expectedStateVersion If-Match binding`);
+      add(errors, Object.hasOwn(operation.responses ?? {}, '409'), `${label} must expose a 409 version/idempotency conflict response`);
+      exact(errors, findParameter(document, operation, 'If-Match', canonicalOpenApi), concurrency?.ifMatchParameter, `${label} If-Match parameter resolution`);
+    }
+  }
+}
+
 function checkPlanningInput(b9OpenApi, canonicalOpenApi, policy, errors) {
   const snapshot = component(b9OpenApi, policy.planningInput.schema);
   const properties = schemaProperties(b9OpenApi, snapshot, canonicalOpenApi);
@@ -416,6 +481,12 @@ function checkPlanningInput(b9OpenApi, canonicalOpenApi, policy, errors) {
     maxLength: policy.planningInput.pinDigest.maxLength,
     pattern: policy.planningInput.pinDigest.pattern,
   }, 'B9PlanningInputSnapshot.pinDigest SHA-256 guard');
+  exact(errors, directSchema(b9OpenApi, properties.eligibilitySnapshotDigest, canonicalOpenApi), {
+    type: 'string',
+    minLength: policy.planningInput.eligibilitySnapshotDigest.minLength,
+    maxLength: policy.planningInput.eligibilitySnapshotDigest.maxLength,
+    pattern: policy.planningInput.eligibilitySnapshotDigest.pattern,
+  }, 'B9PlanningInputSnapshot.eligibilitySnapshotDigest server-derived SHA-256 guard');
   exact(errors, properties.timezone?.pattern, policy.goalCatalog.timezonePattern, 'B9PlanningInputSnapshot.timezone IANA-like pattern');
   const referenceBindings = policy?.planningInput?.referenceBindings;
   exactKeys(errors, referenceBindings, ['job', 'plan'], 'planning input reference bindings');
@@ -492,6 +563,7 @@ function checkFirstDayProjection(b9OpenApi, canonicalOpenApi, policy, errors) {
     exact(errors, branch.properties?.state, { const: statePolicy.state }, `${label} discriminator`);
     exact(errors, branch.properties?.taskCount, statePolicy.taskCount, `${label} taskCount guard`);
     exact(errors, branch.properties?.tasks, statePolicy.tasks, `${label} tasks guard`);
+    add(errors, !Object.hasOwn(branch.properties ?? {}, 'reason'), `${label} must use degradedReason and must not introduce a reason alias`);
     for (const [field, value] of Object.entries(statePolicy.constants)) exact(errors, branch.properties?.[field], { const: value }, `${label}.${field} state guard`);
     if (statePolicy.required.includes('planningInput')) add(errors, containsReference(branch.properties?.planningInput, `#/components/schemas/${policy.planningInput.schema}`), `${label} must pin planning input`);
     if (statePolicy.required.includes('job')) add(errors, containsReference(branch.properties?.job, '#/components/schemas/B9PlanningJobRef'), `${label} must expose a planning job reference`);
@@ -556,6 +628,7 @@ function checkLegacyTargetMapping(b1OpenApi, policy, errors) {
   exact(errors, schema?.[mapping?.extension], expectedMapping, 'B1 legacy target mapping policy');
   exact(errors, enumFor(b1OpenApi, properties[mapping?.sourceField]), mapping?.legacyGoalCodes, 'B1 legacy targetGoal enum');
   exact(errors, enumFor(b1OpenApi, properties[mapping?.dailyQuotaField]), mapping?.dailyQuotaMinutes, 'B1 legacy daily quota enum');
+  exact(errors, directSchema(b1OpenApi, properties[mapping?.expectedStateVersionField]), mapping?.expectedVersionSchema, 'B1 legacy expectedVersion non-negative integer guard');
 }
 
 function checkLegacy(b1OpenApi, policy, errors) {
@@ -579,7 +652,7 @@ function checkLegacy(b1OpenApi, policy, errors) {
     add(errors, typeof authorization?.clientAuthority === 'string' && /(server-derived|cannot expand|cannot establish)/.test(authorization.clientAuthority), `${label} must deny client authority`);
     exact(errors, operation?.security, policy.authorization.bearerSecurity, `${label} bearer security`);
     exact(errors, Object.keys(operation.responses ?? {}).sort(), [...route.responseStatuses].sort(), `${label} response statuses`);
-    if (route.method !== 'GET') add(errors, operation?.['x-idempotency']?.required === true, `${label} write adapter must require idempotency`);
+    if (route.method !== 'GET') exact(errors, operation?.['x-idempotency'], route.idempotencyPolicy, `${label} write adapter idempotency semantics`);
     if (route.operationId === 'createB1FirstGoal') {
       const adapter = operation['x-p1r-b9-adapter'];
       const mapping = policy?.goalCatalog?.legacyB1TargetMapping;
@@ -605,6 +678,7 @@ function checkEventPayload(document, event, eventPolicy, policy, errors, label) 
   add(errors, eventPolicy.historicalPinFields.every((field) => Object.hasOwn(properties, field)), `${eventPolicy.eventName} ${label} historical pin fields drift`);
   add(errors, !eventPolicy.prohibitedProperties.some((field) => Object.hasOwn(properties, field)), `${eventPolicy.eventName} ${label} must not leak sensitive payload detail`);
   if (eventPolicy.eventName === 'learner.target.updated.v1') {
+    exact(errors, Object.keys(properties).sort(), [...(eventPolicy.allowedProperties ?? [])].sort(), `${eventPolicy.eventName} ${label} payload property allowlist`);
     exact(errors, enumFor(document, properties.goalCode), policy.goalCatalog.goalCodes, `${eventPolicy.eventName} ${label} goal enum`);
     exact(errors, enumFor(document, properties.dailyQuotaMinutes), policy.goalCatalog.dailyQuotaMinutes, `${eventPolicy.eventName} ${label} duration enum`);
     exact(errors, properties.targetSnapshotDigest, { type: 'string', minLength: 64, maxLength: 64, pattern: '^[A-Fa-f0-9]{64}$' }, `${eventPolicy.eventName} ${label} target digest SHA-256 guard`);
@@ -703,6 +777,7 @@ export function validateLearnerPlanningContractData(input = {}) {
     checkCanonicalRoutes(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
     checkGoalCatalog(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
     checkVersionEquivalence(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
+    checkConcurrency(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
     checkPlanningInput(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
     checkFirstDayProjection(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
     checkRecovery(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
@@ -711,6 +786,10 @@ export function validateLearnerPlanningContractData(input = {}) {
     checkB26Static(input.b26Runtime, input.policy, errors);
     checkOwnershipAndRuntime(input.dataOwnership, input.sagaRecovery, input.eventReliability, input.policy, errors);
     checkPhaseBoundary(input.b9OpenApi, input.canonicalOpenApi, input.policy, errors);
+    if (input.goalOptionsPayload !== undefined) {
+      const goalOptions = validateGoalOptionsPayload(input.goalOptionsPayload, input.policy);
+      errors.push(...goalOptions.errors.map((message) => `GoalOptions payload: ${message}`));
+    }
   }
   return {
     result: errors.length === 0 ? 'PASS' : 'FAIL',

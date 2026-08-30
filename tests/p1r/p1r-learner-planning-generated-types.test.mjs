@@ -51,6 +51,7 @@ import type {
   B9GoalOption,
   B9LearnerPreferences,
   B9LearnerPreferencesPatch,
+  B9LearnerProfilePatch,
   B9LearnerTargetUpsert,
   B9PlanningInputSnapshot,
   B9PlanningJobRef,
@@ -117,6 +118,12 @@ const preferences: B9LearnerPreferences = {
   updatedAt: '2026-08-30T00:00:00Z',
 };
 const preferencePatch: B9LearnerPreferencesPatch = { expectedStateVersion: 1, weeklyStudyDays: [2, 4, 6] };
+const profilePatch: B9LearnerProfilePatch = { expectedStateVersion: 1, timezone: 'Asia/Shanghai' };
+const rejectedProfileTargetGoal: B9LearnerProfilePatch = {
+  expectedStateVersion: 1,
+  // @ts-expect-error targetGoal is a read-only historical shadow and PATCH rejects it with 422.
+  targetGoal: 'COLLEGE_CET',
+};
 // @ts-expect-error weeklyStudyDays is required in the response projection.
 const rejectedPreferences: B9LearnerPreferences = { ...preferences, weeklyStudyDays: undefined };
 
@@ -136,6 +143,8 @@ const planningInput = {
   contentEpoch: 1,
   projectionVersion: 1,
   rightsSnapshotVersion: 1,
+  eligibilitySnapshotVersion: 1,
+  eligibilitySnapshotDigest: 'b'.repeat(64),
   planningRuleVersion: 'rule-v1',
   inputFactWatermark: 'watermark-1',
   sourceEventId: 'evt-1',
@@ -145,17 +154,17 @@ const rejectedPlanningAuthority = {
   pinId: 'pin-1', pinVersion: 1, pinDigest: 'a'.repeat(64), targetId: 1, targetVersion: 1,
   profileVersion: 1, preferenceVersion: 1, goalCatalogVersion: 'catalog-v1', dailyQuotaMinutes: 15,
   timezone: 'Asia/Shanghai', weeklyStudyDays: [1, 2], contentLocale: 'en-US', contentEpoch: 1,
-  projectionVersion: 1, rightsSnapshotVersion: 1, planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
+  projectionVersion: 1, rightsSnapshotVersion: 1, eligibilitySnapshotVersion: 1, eligibilitySnapshotDigest: 'b'.repeat(64), planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
   sourceEventId: 'evt-1', rootEventId: 'evt-root-1',
-  // @ts-expect-error raw placement data is not in a planning snapshot type.
-  placementRaw: { answers: ['x'] },
+  // @ts-expect-error IAM eligibility remains a server-derived digest, never a raw client authority fact.
+  adultGate: true,
 } satisfies B9PlanningInputSnapshot;
 // @ts-expect-error immutable planning snapshots require their digest pin.
 const rejectedPlanningPin: B9PlanningInputSnapshot = {
   pinId: 'pin-1', pinVersion: 1, targetId: 1, targetVersion: 1, profileVersion: 1,
   preferenceVersion: 1, goalCatalogVersion: 'catalog-v1', dailyQuotaMinutes: 15, timezone: 'Asia/Shanghai',
   weeklyStudyDays: [1, 2], contentLocale: 'en-US', contentEpoch: 1, projectionVersion: 1,
-  rightsSnapshotVersion: 1, planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
+  rightsSnapshotVersion: 1, eligibilitySnapshotVersion: 1, eligibilitySnapshotDigest: 'b'.repeat(64), planningRuleVersion: 'rule-v1', inputFactWatermark: 'watermark-1',
   sourceEventId: 'evt-1', rootEventId: 'evt-root-1',
 };
 
@@ -264,6 +273,8 @@ void acceptedDuration;
 void rejectedDuration;
 void rejectedGoal;
 void rejectedTargetAuthority;
+void profilePatch;
+void rejectedProfileTargetGoal;
 void preferencePatch;
 void rejectedPreferences;
 void rejectedPlanningAuthority;

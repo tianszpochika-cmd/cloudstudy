@@ -409,7 +409,10 @@
           "required": true,
           "strategy": "request-key",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "return-original-profile"
+          "replayBehavior": "return-original-profile",
+          "sameKeySamePayload": "REPLAY_ORIGINAL_RESPONSE",
+          "sameKeyDifferentPayload": "DENY_WITH_409",
+          "commandFingerprint": "SERVER_COMPUTED_NORMALIZED_COMMAND_HASH"
         },
         "parameters": [
           {
@@ -527,7 +530,10 @@
           "required": true,
           "strategy": "request-key",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "return-original-profile"
+          "replayBehavior": "return-original-profile",
+          "sameKeySamePayload": "REPLAY_ORIGINAL_RESPONSE",
+          "sameKeyDifferentPayload": "DENY_WITH_409",
+          "commandFingerprint": "SERVER_COMPUTED_NORMALIZED_COMMAND_HASH"
         },
         "parameters": [
           {
@@ -644,7 +650,10 @@
           "required": true,
           "strategy": "request-key",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "return-original-goal"
+          "replayBehavior": "return-original-goal",
+          "sameKeySamePayload": "REPLAY_ORIGINAL_RESPONSE",
+          "sameKeyDifferentPayload": "DENY_WITH_409",
+          "commandFingerprint": "SERVER_COMPUTED_NORMALIZED_COMMAND_HASH"
         },
         "parameters": [
           {
@@ -1358,7 +1367,8 @@
           },
           "expectedVersion": {
             "type": "integer",
-            "format": "int64"
+            "format": "int64",
+            "minimum": 0
           }
         }
       },
