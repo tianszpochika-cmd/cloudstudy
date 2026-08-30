@@ -20,7 +20,7 @@ M1-006 Kafka 事件目录与 AsyncAPI 治理 D2 已接受：最终实现源 `3e4
 
 M1-007 事件可靠性与人工恢复 D2 契约已接受：最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4` 已同步到 `origin/dev`，独立终验 `agent:m1_007_independent_review:gpt-5.6-luna:max` 与另一位 Luna Max 交叉复核均接受，canonical manifest 为 `evidence/p1r/m1/P1R-M1-007/manifest.json`。专项 reliability `78/78`、`test:p1r` `276/276`、G1 `6/6`（13 schemas），contracts/typecheck/audits 均 PASS，当前源码 P1/P2 为 0。结论仍是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续是 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`。
 
-本轮关闭后的台账计数为 `14 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 93 PLANNED`（共 108 项）。`P1R-M1-008` 是下一项依赖已就绪任务，但仍为 `PLANNED`；必须等 M1-007 canonical Evidence 与台账收口的集成提交也同步到 `origin/dev` 并完成核对后再启动。
+M1-007 的 canonical Evidence 与台账关闭提交 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31` 已同步并核对。当前台账计数为 `14 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 92 PLANNED`（共 108 项）；`P1R-M1-008` 已从该不可变检查点启动，范围只包括内容 lifecycle 的 D2 契约与失败关闭门禁。
 
 ## 1. 获取检查点
 
@@ -87,7 +87,7 @@ pnpm --dir apps/mobile test:b12
 - `P1R-M1-006` 已接受：dual-baseline compatibility、fragment/payload 完整性、B26 workflow topic/group/ACL/partition 精确绑定和生成 `schemaVersion` 均为静态失败关闭结果；B26 仍为 `static-only`、`runtimeStatus=pending`、`defaultDecision=NO-GO`，不得将其写成 Kafka runtime Evidence。
 - `P1R-M1-007` 已接受：Outbox/consumer、retry/DLQ/replay、ordering、Saga/补偿、双人审批、人工恢复与 receipt 的 D2 语义和失败关闭门禁已冻结。三轮 REWORK 依次关闭危险状态迁移与因果/错误/Schema 条件、G1 5↔13 schemas 与 compatibility 注入、完整 event governance 绕过与 `PUBLISHED attempt=0`；没有补造未持久化的中间评审时间。
 - 运行边界继续开放：`P1R-M2-004` 负责真实 owner schema/grants、owner-local 事务/Outbox 存储/lease；`P1R-M2-005` 负责 Kafka broker/topic/ACL、Outbox→broker→consumer 投递及重复/乱序/宕机/DLQ/replay；`P1R-M2-006` 负责 Saga、补偿、定时任务、双人审批、人工恢复、closure receipt 与不可变审计运行闭环。
-- `P1R-M1-008` 仍为 `PLANNED`；它只是在 M1-007 接受后依赖就绪，不等于已认领或已进入 `IN_PROGRESS`。
+- `P1R-M1-008` 已为 `IN_PROGRESS`：正在统一 B9 外部 command、双审职责分离、排期任务、content canonical 事件、public/learner allow-list、版本 pin、projectionVersion/contentEpoch 与下线/回滚语义；真实调度、发布、Kafka、投影和 E2E 仍未验证。
 - M2-001 运行缺口仍开放：真实 WebFlux CORS/CSRF/Origin、public-path parity、Redis 限流及故障语义、持久审计、网络直连隔离、真实浏览器/JWKS/跨进程/网络 Evidence。
 - M2-004 运行缺口仍开放：真实 owner schema/grants、空库/存量库迁移、TenantScope/跨租户拒绝、Redis ACL/rebuild/restart、回滚/补偿和 retention/delete/legal-hold Evidence。
 - `P1R-M1-001` 已接受：公共成功/错误 envelope、追踪/版本 headers、写幂等、统一 cursor 分页、只读 merge/generate 与真实 Git baseline compatibility 已有当前提交 Evidence。
@@ -95,8 +95,8 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先确认 `origin/dev` 同时包含 M1-007 最终源码 `6ce98a9` 和其后 canonical Evidence/台账关闭集成提交，并确认上述恢复验证与 manifest 一致；不能只看到本地提交就继续。
-2. 同步无误后，才按状态机启动 `P1R-M1-008` 的内容后台 command、双审、发布/下线/回滚契约；它在同步确认前继续保持 `PLANNED`。
+1. 先确认 `origin/dev` 包含 M1-008 来源检查点 `18d7d38`，并确认 M1-007 Evidence Gate 与台账状态一致；不能只从聊天记录恢复。
+2. 续接 `P1R-M1-008` 的内容后台 command、双审、排期发布、投影、下线/回滚契约；保持 `NOT_RUNTIME_VERIFIED`，不得把现有 B9 实现或静态 B26 输入当运行证明。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

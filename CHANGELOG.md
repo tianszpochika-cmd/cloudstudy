@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-008-START-20260830] 启动 Phase 1 内容后台 lifecycle D2 契约：以已同步的 `dev@18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31` 为不可变来源检查点，统一 B9 外部 command、校验与双审、带时区的排期发布任务、公开/学习投影 allow-list、版本 pin、projectionVersion/contentEpoch、下线/回滚、canonical content 事件和审计关联，并建立失败关闭校验与对抗测试。该条只记录 `IN_PROGRESS`；真实 owner 数据/Outbox、Kafka 投递、调度执行、投影恢复与端到端发布证据仍未验证，M0-006 继续 `BLOCKED`。
+
 - [P1R-M1-007-RELIABILITY-20260830] 接受 Phase 1 Outbox、消费可靠性、Saga 与人工恢复 D2 契约：最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4` 已同步 `origin/dev`，经独立 reviewer `agent:m1_007_independent_review:gpt-5.6-luna:max` 终验 `ACCEPT`，另一位 Luna Max 交叉复核亦接受，当前源码 P1/P2 为 0；canonical manifest 位于 `evidence/p1r/m1/P1R-M1-007/manifest.json`。专项 reliability `78/78`、`test:p1r` `276/276`、G1 `6/6`（13 schemas）以及 contracts、typecheck、event/Saga audits 均 PASS。结论只覆盖 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续为 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，真实 owner schema/事务、Kafka/consumer 与 Saga/人工恢复分别归 M2-004/005/006，M0-006 继续 `BLOCKED`。台账现为 `14 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 93 PLANNED`；M1-008 仍为下一项依赖就绪的 `PLANNED` 任务，须待本轮 Evidence/台账集成提交同步后再启动。
 
 - [P1R-M1-007-REWORK-20260830] M1-007 经三轮 REWORK 收口：初始 `64b5f96` 的危险 Saga/recovery 迁移、root/causation、错误路由和 Schema 条件缺口由 `ce3e3bb/12ab943/93d75d7` 修复；G1 5↔13 schemas 回归与 `events[*].compatibility` 未知字段注入由 `a6cdb51` 修复；独立 reliability Gate 未调用完整 event governance 所导致的 7 类治理字段绕过，以及 Outbox `PUBLISHED attempt=0`，由 `6ce98a9` 修复。中间评审的精确时刻未单独持久化，状态顺序只以 `execution/status-trajectories.json` 为准，不补造时间或 runtime 结论。

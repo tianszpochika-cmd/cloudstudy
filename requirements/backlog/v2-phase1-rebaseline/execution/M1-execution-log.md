@@ -11,7 +11,7 @@
 - `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。
 - `P1R-M1-006`：`ACCEPTED`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`，最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`。只接受 Kafka + AsyncAPI 的 D2 静态目录与失败关闭机制，不把 B26、Kafka、Outbox、ACL 或 consumer runtime 写成 PASS。
 - `P1R-M1-007`：`ACCEPTED`；不可变来源检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec`，最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，Evidence `evidence/p1r/m1/P1R-M1-007/manifest.json`，独立终验 `agent:m1_007_independent_review:gpt-5.6-luna:max` 与另一位 Luna Max 交叉复核均接受。只接受可靠性与恢复的 D2 契约和失败关闭门禁，保持 `NOT_RUNTIME_VERIFIED`。
-- `P1R-M1-008`：`PLANNED`；M1-007 接受后依赖已经就绪，但必须先确认本轮 Evidence/台账集成提交同步到 `origin/dev`，再按状态机认领，不提前标记 `IN_PROGRESS`。
+- `P1R-M1-008`：`IN_PROGRESS`；不可变来源检查点 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31` 已与 `origin/dev` 同步。当前只冻结内容后台 command、双审、排期任务、公开/学习投影、下线/回滚、canonical content 事件与审计边界，不宣称真实发布链路已运行。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
@@ -35,7 +35,15 @@
 - 三轮 REWORK：初始 `64b5f96` 的危险 Saga/recovery 迁移、root/causation、错误路由和 Schema 条件缺口由 `ce3e3bb/12ab943/93d75d7` 收口；随后发现 G1 5↔13 schemas 回归与 event compatibility 未知字段注入，由 `a6cdb51` 修复；最后发现独立 reliability Gate 可绕过 7 类 event governance 字段且 Outbox `PUBLISHED` 可接受 `attempt=0`，由 `6ce98a9` 接入完整治理校验并约束 attempt。中间评审精确时刻未单独持久化，不补造时间。
 - 终验结果：专项 reliability `78/78`、`test:p1r` `276/276`、G1 `6/6`（13 schemas），contracts、typecheck、event/Saga audits 均 PASS；最终源码 P1/P2 `0/0`，独立 reviewer 结论 `ACCEPT`。
 - D2 边界：canonical manifest 为 `evidence/p1r/m1/P1R-M1-007/manifest.json`；B26 继续 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`。真实 owner schema/事务/lease 归 M2-004，Kafka/Outbox/consumer/DLQ/replay 归 M2-005，Saga/补偿/审批/人工恢复/审计运行闭环归 M2-006；M0-006 继续 `BLOCKED`，不得放行发布。
-- 下一任务：`P1R-M1-008` 保持 `PLANNED`。最终源码 `6ce98a9` 已推送 `origin/dev`；待本轮 Evidence 与台账集成提交也推送并完成同步确认后再启动。
+- 下一任务：M1-007 Evidence/台账关闭提交 `18d7d38` 已推送并核对，`P1R-M1-008` 已按状态机启动；来源检查点不随工作树移动。
+
+## M1-008 执行轨道
+
+1. 内容 lifecycle 与命令边界：统一 B9 外部 command，关闭旧直连生命周期入口的外部授权语义，固定版本、校验、双审、发布、下线和回滚状态机。
+2. 排期与投影：固定带时区的排期任务、取消/失败恢复、幂等与审计关联，并冻结 public/learner allow-list、版本 pin、projectionVersion 与 contentEpoch。
+3. 事件与失败关闭：把 content lifecycle 的 canonical 事件、producer/consumer/topic/partition/schema 与 M1-006/007 治理接通，补契约 policy、生成物、兼容和对抗测试。
+
+统筹 Agent 负责统一模型、共享生成物、状态、Evidence、提交与推送。M1-008 只产生 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED` 结论；真实 owner 数据/Outbox、Kafka 投递和排期/Saga/投影运行验证继续归 M2-004/005/006 与后续内容实现/E2E 任务。
 
 ## M1-003 执行轨道
 

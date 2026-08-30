@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`14 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 93 PLANNED`（共 108 项）。
+- 当前台账计数：`14 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 92 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -17,7 +17,7 @@
 - `P1R-M1-006` 已由独立 reviewer `agent:m1_005_independent_review:gpt-5.6-luna:max` 接受最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`：154 条事件的 canonical/historical 分类、7 条 canonical workflow reliability 事件、AsyncAPI 投影、双基线 compatibility、B26 静态绑定与生成 `schemaVersion` 均为 D2 契约结果。输出保持 `NOT_RUNTIME_VERIFIED`；M1-007 已另行关闭可靠性 D2 契约，真实 Kafka 运行验证仍归 M2-005。
 - 因本任务更新了共享契约、CI 与文档制品，`P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 canonical manifest 已统一绑定 `3e4ba856...` 做 current-source revalidation；各任务的原始实现源、完成时间、reviewer 与兼容基线仍保存在 manifest `provenance`，没有被改写成 M1-006 的实现成果。
 - `P1R-M1-007` 已由独立 reviewer `agent:m1_007_independent_review:gpt-5.6-luna:max` 终验接受最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，另一位 Luna Max 交叉复核亦接受；canonical manifest 位于 `evidence/p1r/m1/P1R-M1-007/manifest.json`。专项 reliability `78/78`、`test:p1r` `276/276`、G1 `6/6`（13 schemas）以及 contracts、typecheck、audits 均 PASS，当前源码 P1/P2 为 0。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 仍为 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，真实 owner schema/事务、Kafka/consumer 与 Saga/人工恢复分别归 M2-004/005/006，`P1R-M0-006` 继续 `BLOCKED`。
-- `P1R-M1-008` 的台账状态仍为 `PLANNED`。它是下一项依赖已就绪任务，但只能在确认 `origin/dev` 已同步本轮源码、Evidence 与台账收口后按状态机启动，不得提前标记 `IN_PROGRESS`。
+- `P1R-M1-008` 已从已同步的 `dev@18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31` 启动，当前只冻结内容后台 command、双审、排期发布、公开/学习投影、下线与回滚的 D2 契约和失败关闭门禁；不把现有 B9 Java、静态事件路由或本机进程当成发布运行 Evidence。
 
 ## M0 记录索引
 
@@ -45,3 +45,4 @@
 | `P1R-M1-005` | `P1R-M1-005.md` | `ACCEPTED` |
 | `P1R-M1-006` | `P1R-M1-006.md` | `ACCEPTED` |
 | `P1R-M1-007` | `P1R-M1-007.md` | `ACCEPTED` |
+| `P1R-M1-008` | `P1R-M1-008.md` | `IN_PROGRESS` |
