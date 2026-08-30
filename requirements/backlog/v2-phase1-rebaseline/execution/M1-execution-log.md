@@ -4,18 +4,10 @@
 
 ## 当前任务
 
-- `P1R-M1-001`：`ACCEPTED`；原实现源 `96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`，Evidence `evidence/p1r/m1/P1R-M1-001/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。
-- `P1R-M1-002`：`ACCEPTED`；原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，Evidence `evidence/p1r/m1/P1R-M1-002/manifest.json`，原独立评审 `m1_002_final_review`（Terra Ultra）；共享制品最新在 `cd92378` 完成 current-source revalidation。
-- `P1R-M1-003`：`ACCEPTED`；原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，Evidence `evidence/p1r/m1/P1R-M1-003/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。
-- `P1R-M1-004`：`ACCEPTED`；不可变来源基线 `e5110f29d73724fd518fd6d4a6a7cbcdb08ece28`，原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，Evidence `evidence/p1r/m1/P1R-M1-004/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。
-- `P1R-M1-005`：`ACCEPTED`；不可变来源基线 `bb0ae3b5f23ff6410b7a0b2629c8730422b0c78d`，原实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，Evidence `evidence/p1r/m1/P1R-M1-005/manifest.json`，原独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`；共享制品最新在 `cd92378` 完成 current-source revalidation。
-- `P1R-M1-006`：`ACCEPTED`；不可变来源基线 `463c4b238caceb1592bff6c61327c00ab9bac922`，原最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，原独立终验 `agent:m1_005_independent_review:gpt-5.6-luna:max`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受 Kafka + AsyncAPI 的 D2 静态目录与失败关闭机制。
-- `P1R-M1-007`：`ACCEPTED`；不可变来源检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec`，原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，Evidence `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受可靠性与恢复的 D2 契约和失败关闭门禁，保持 `NOT_RUNTIME_VERIFIED`。
-- `P1R-M1-008`：`ACCEPTED`；不可变来源检查点 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31`，原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，Evidence `evidence/p1r/m1/P1R-M1-008/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation。只接受 D2 内容 lifecycle 契约和失败关闭门禁，不宣称真实发布链路已运行。
-- `P1R-M1-009`：`ACCEPTED`；不可变来源检查点 `ca282cd00dabeeb3fafbf6b4570054bd5b9f8549`，原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，Evidence `evidence/p1r/m1/P1R-M1-009/manifest.json`；共享制品最新在 `cd92378` 完成 current-source revalidation，独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 接受原任务与本轮当前源，保持媒体/录音 D2 边界。
-- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 复审接受，P1/P2 为 `0/0`，只冻结 assessment session/checkpoint/attempt、确定性判分摘要、报告快照、版本和幂等 D2 契约。
-- `P1R-M1-011`：`IN_PROGRESS`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，只冻结 learner-owned profile/target、5/15/30/45、planning-input pin、首日投影 owner、失败状态和只读恢复查询 D2 契约。
-- M1-010 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-009` 的 manifest 已保留各自原始 provenance，并统一绑定 `cd92378...` 完成 current-source revalidation；这不把旧任务重写为 M1-010 的实现成果。
+- `P1R-M1-001` 至 `P1R-M1-009` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`，共享制品最新在 `daa543b369c0e369a8f70e2f79278eb934ff9a09` 完成 current-source revalidation。
+- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；共享制品在 `daa543b...` 完成 current-source revalidation，原复审 P1/P2 为 `0/0`。
+- `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
+- M1-011 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-010` 的 manifest 已保留各自原始 provenance，并统一绑定 `daa543b...` 完成 current-source revalidation；这不把旧任务重写为 M1-011 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
@@ -109,6 +101,17 @@
 3. 事件与失败关闭：先消除 `EVENT-GAP-ONB-001` 的文档复用歧义，再按 M1-006 治理要求决定目标/首日 D2 producer-consumer 绑定；任何未形成完整绑定的历史事件继续 historical-only，placement 完成事件归 M1-012。覆盖客户端 authority 注入、版本错配、空任务伪装成功、恢复任务越权与 D2 runtime 冒充。
 
 统筹 Agent 负责统一模型、公共生成物、状态、Evidence、提交和推送；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-011 不完成 placement manifest/结果及 placement→plan Saga（M1-012）、计划算法/SRS/mastery/watermark（M1-013）、真实 owner 数据与 Outbox（M2-004）、Kafka（M2-005）、Saga/runtime（M2-006）或浏览器/E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，M0-006 继续 `BLOCKED`。
+
+## M1-011 执行与结果摘要
+
+1. Learner 与并发边界：冻结 10 个 canonical route、四个 goalCode exactly-once、`5/15/30/45`、profile/target/preferences 版本、十进制 `If-Match` 与 expectedStateVersion 精确相等、同键同载荷 replay 和同键异载荷 409。
+2. Planning 与首日投影：planning input 使用服务端聚合 eligibility version/digest，不接收 raw adult Gate/consent/policy/rights；first-day 固定 `NOT_READY/PROCESSING/READY/DEGRADED`，READY 非空、DEGRADED 唯一 `degradedReason`，recovery 只读且按主体绑定。
+3. 兼容与事件：B1 onboarding 仅为 adapter/deprecation，未知目标或缺失 canonical snapshot 返回 422；`learner.target.updated.v1` 是本任务唯一 canonical D2 事件，其余 learner 事件继续 historical-only。
+
+- 一轮 REWORK：初始 `5b6a3d5` 经独立 Luna Max 复核后补齐 eligibility authority pin、goal exactly-once、If-Match/幂等、目标事件 allow-list 与 legacy mapping；最终 `daa543b` 复审 `ACCEPT`，P1/P2=`0/0`。
+- 终验结果：learner planning CLI 10 routes/145 cases、定点 150/150、tooling 40/40、P1R 589/589、typecheck 7/7；contracts merge/generate/validate、固定 compatibility、IAM/Gateway/data/event/reliability/B26 static、plan/CI/diff 均 PASS。
+- 类型边界：生成 TypeScript 保留公共/分支 required、discriminator 和可表达的 `not -> never`；READY 数值/数组基数由 OpenAPI/checker 负责，未冒充 TypeScript 编译期完整 JSON Schema 校验。
+- D2 边界：B26 继续 `static-only/pending/NO-GO`，真实 owner schema/Outbox、Kafka、placement/Saga、浏览器/E2E 分别归 M1-012/M1-013/M2-004/005/006 与后续任务；M0-006 继续 `BLOCKED`。
 
 ## M1-003 执行轨道
 

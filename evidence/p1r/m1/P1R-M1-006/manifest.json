@@ -2,15 +2,15 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+  "sourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
   "artifactDigests": [
     {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"},
-    {"path": "package.json", "algorithm": "sha256", "digest": "39aaacd06d4afb22788f960605cada7e46ec70858b538abc18edcee878576a9d"},
-    {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "6a42b324c4360a36a2be48d52befa1728abfd2e68d7eabb9ce3a9fd7bf3dbba0"},
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "6f93248ecc718ce54e1b3bc9b70fed8189ed2458b93e168d130e38ada85e5a3d"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "b8fddba17e85e84b572256e242a687431e9bd8a748fabcd1e72a062fcec2eb18"},
+    {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "22f3d9043af7499536a355d8e6182305cd2191efe350316019d12f70b5e9cb01"},
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "e800f0826c653bec03293015f6d2edcf541d053482ef81713a44cb78d8c99d54"},
     {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"},
     {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
-    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "79b442f0df89fc93dffdb372b748f99ae008528e233fca264a6f72963b2471c6"},
+    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "49a2e00e9fe9df902c14e63865853214aaeb8f870b8c9f05cc9f6edaeb3cf36a"},
     {"path": "packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json", "algorithm": "sha256", "digest": "1375999135fcc4137be1c2450304e759f7a07e2176d13aad465c2c11aa365c4a"},
     {"path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json", "algorithm": "sha256", "digest": "0e34489a86ef88b1f602c4f777bc702c6e54668f2b893d46bd0ea6b78bdfd56e"},
     {"path": "packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json", "algorithm": "sha256", "digest": "87a2d93eb96164cc0f0050273f611de91e777f76cbf202664a4aa26e1f689e73"},
@@ -24,23 +24,23 @@
     {"path": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json", "algorithm": "sha256", "digest": "e34f9b76afb1151c7e792cbcb1ef2d7d8862f0cf03828075e031fa15f25611bd"},
     {"path": "packages/contracts/events/v1/fragments/b6-platform-quality.events.json", "algorithm": "sha256", "digest": "bdc721327481219b9c53bec6395ad6ba73593848229d7c5ba7eae91930c26cbf"},
     {"path": "packages/contracts/events/v1/fragments/b8-auth-iam.events.json", "algorithm": "sha256", "digest": "cbf9f843391c49664d4bd813620831cee1cbf1429beead6043fa2d6e4825a72f"},
-    {"path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json", "algorithm": "sha256", "digest": "477d023ec8bcfce7ebb4952d38954862ef1c73ad12adf9051298515ff384df43"},
-    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "4237cec4782c09ed1b48636cf6df22fd379622399a9418b15dbbd7df1789c0a9"},
+    {"path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json", "algorithm": "sha256", "digest": "fc1a62591c6c5f3f7d72413859c42cd6cfd2f4557b0972ca0e8bf6f366fde560"},
+    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "a8634708ee12d93d274b61cfbcde469b2544a8d41d7df1038627489b91da74a7"},
     {"path": "packages/contracts/src/event-schema-assertions.ts", "algorithm": "sha256", "digest": "77a80209599c0c68b763e7fe51d192df3dfed4075e37a27ab4f13a9e4d050235"},
-    {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "d05d6ebb1fd249934a7d33ae3fdea1e7612bc00c518c5e56f5ab33cdff66efbd"},
+    {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "9c73a70be405217ef973137939f994cbbcf7df60b7aa5e6bf7d6597a504026c2"},
     {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"},
-    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "08a8072c8ad7305b3c64018a29b6fd280e158e31d06f17902bbcde65a210fe22"},
+    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "dc0235ebd16713ece76658ad7fc46887605082e4a7b181ef7295de1bb2ad7f1b"},
     {"path": "scripts/contracts/event-governance-projection.mjs", "algorithm": "sha256", "digest": "67b1f1a83755c057b50ca12506f7db72ad73d6cccb35dd461ee4bcfb813a82bf"},
-    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "947ba711f3638f7f881cbc29d2823dd711019db6637092f327eab3dfde4d6788"},
+    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "c16e2c2429db664222094c2662a8dbc43620fc26f33eba1eae9e34d65b3bb90b"},
     {"path": "scripts/contracts/generate-contracts.mjs", "algorithm": "sha256", "digest": "e49b6d94528518a2fba18bff16a3189a78199ca8cdb14e1adfa9c52db74baa34"},
     {"path": "scripts/contracts/validate-contracts.mjs", "algorithm": "sha256", "digest": "9f28a00b29d6264157ba4aaa99298c455ced6a94a465da96a726d6993da7ae87"},
-    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "141c4703860a0855d407e98a562627b168a74160668e96970fc7cbfec3bdbba3"},
-    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "b09ecccff362335c5003823b9feb29d23427d3a01b303d13b2f07aa0e61cb972"},
-    {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "71a58ce24b671f8689cfacf9967631de060ab679fdde75275ab86e158022cfc6"},
-    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "ac638762eb27e2357857c570bec243a387f077807829001610cf378ca5b10348"},
-    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "f9e87b6ef0a785415e5d1f63dea0d3dae992396a31545a79a43752f2d0d64637"},
-    {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "9650feeddcafdbbe10e2ddbc5caed0d0783251b5d434b3069d449ebfe3c13c9d"},
-    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "7e1de97179f9527df4e6dd5cb402025f77884091e2a947416f1bc7d51603a110"}
+    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "9e06f8c36471ba2fcd8fe0ba60f46115773030847b6d8243bb3e4bca6b1929fa"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "e2612c788299596af8649b30c0d71a275d8409f31f51d55b3395446b52bae84a"},
+    {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "63bdf4a400422172f40129443a8d1167d77ccacbfd97d35246f45ef09130dd13"},
+    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "fa03dac9820657e640a9777f784ffbf3eb1e7b0fd5ba1b285a77cbbca96f8e62"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "51536fd11d74c7a88fd1fa53a8429d43ef846243307f8b13712c1570aaa7db2b"},
+    {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "0b499bdbdb5c7e8c8e8270a73c18cf4a61d3744ac56a1c7ddf6d65f5ab84c692"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "a868612be481c463fdf5fbdade0316ff327cb427495e3aabe3ceb7035a58b357"}
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -75,20 +75,27 @@
         "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-30T18:32:14+08:00"
+      },
+      {
+        "taskId": "P1R-M1-011",
+        "sourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
+        "reviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-30T21:45:45+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "2e7304a12c297d4c7bcad22b41cdb373b6030033",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-009",
-    "currentSourceRevalidationTask": "P1R-M1-010",
-    "currentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-010",
+    "currentSourceRevalidationTask": "P1R-M1-011",
+    "currentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T15:10:39+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
-  "finishedAt": "2026-08-30T18:32:14+08:00",
+  "finishedAt": "2026-08-30T21:45:45+08:00",
   "actors": [
     "m1_005_data_docs",
     "root-coordinator"
@@ -160,6 +167,11 @@
   ],
   "results": [
     {
+      "check": "m1-011-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_011_independent_review:gpt-5.6-luna:max revalidated the accepted P1R-M1-006 semantics and shared artifacts at source daa543b369c0e369a8f70e2f79278eb934ff9a09. P1R 589/589, contract tooling 40/40, workspace typecheck 7/7, contract merge/generate/validate, fixed compatibility and relevant IAM/Gateway/data/event/reliability/B26 static checks pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
+    {
       "check": "m1-010-current-source-revalidation",
       "status": "PASS",
       "details": "Independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max revalidated the accepted P1R-M1-006 semantics and shared artifacts at source cd92378bd8ba0c57c920fc6e79db52de717b0b05. Assessment 83/83, 77 CLI adversarial cases, P1R 433/433, contract tooling 35/35, workspace typecheck 7/7, contract merge/generate/validate and fixed compatibility pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
@@ -226,6 +238,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

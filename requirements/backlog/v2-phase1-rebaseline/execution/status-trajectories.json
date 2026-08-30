@@ -180,10 +180,10 @@
     },
     {
       "taskId": "P1R-M1-011",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-30T19:02:12+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-30T21:45:45+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-003, P1R-M1-005 and P1R-M1-007 are accepted. The coordinator froze 14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1 as the source checkpoint and started the learner target, profile, planning-input and first-day projection D2 contract task without promoting database, Kafka, workflow, browser or E2E runtime evidence.",
+      "reason": "Initial source 5b6a3d5ef3e8b1b5dfd95fa327d2aa246cde457e entered REWORK after independent Luna Max review found an eligibility authority gap and follow-up contract hardening needs. Final source daa543b369c0e369a8f70e2f79278eb934ff9a09 closed the findings and was accepted by reviewer agent:m1_011_independent_review:gpt-5.6-luna:max with zero current-source P1/P2 blockers. The result remains D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; M1-012/M1-013 and M2-004/005/006 retain downstream/runtime ownership, B26 stays pending/NO-GO and M0-006 remains BLOCKED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-011/manifest.json"
     }
   ]
