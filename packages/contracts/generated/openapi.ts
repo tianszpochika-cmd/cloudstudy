@@ -1778,19 +1778,19 @@ export type B10Checkpoint = { attemptId: B10AttemptId; checkpointVersion: number
 export type B10AssessmentReport = { reportId: B10ReportId; attemptId: B10AttemptId; sessionId: B10SessionId; attemptVersion: number; submissionId: string; submissionDigest: B10Sha256; reportVersion: number; reportRuleVersion: B10RuleVersion; assessmentVersion: B10RuleVersion; answerRuleSetVersion: B10RuleVersion; completionRuleVersion: B10RuleVersion; itemRulePins: readonly [B10AssessmentItemRulePin, ...Array<B10AssessmentItemRulePin>]; asOf: B10DateTime; assessmentFactWatermark: string; status: B10ReportStatus; outcome?: B10AssessmentOutcome; mistakeCodes?: ReadonlyArray<string>; pin: B10ActiveSessionAttemptPin; generatedAt: B10DateTime; replayable: true; partialReasonCodes?: readonly [string, ...Array<string>]; failureCode?: string; retryable?: boolean; } & ({ status: "GENERATING"; outcome?: never; mistakeCodes?: never; partialReasonCodes?: never; failureCode?: never; retryable?: never; } | { outcome: B10AssessmentOutcome; mistakeCodes: ReadonlyArray<string>; status: "READY"; partialReasonCodes?: never; failureCode?: never; retryable?: never; } | { outcome: B10AssessmentOutcome; partialReasonCodes: readonly [string, ...Array<string>]; status: "PARTIAL"; failureCode?: never; retryable?: never; } | { failureCode: string; retryable: boolean; status: "FAILED"; outcome?: never; mistakeCodes?: never; partialReasonCodes?: never; });
 
 /**
- * Generated from the contract source.
+ * Learning queue item. SRS stage, mistake-repair workflow state and mastery stage are independent server-owned projections.
  */
-export type B10LearningQueueItem = { queueItemId: B10QueueItemId; itemId: B10Int64Id; source: "NEW" | "REVIEW" | "MISTAKE" | "RETRY"; state: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; dueAt: B10DateTime; priority: number; pin: B10ContentVersionPin; stateVersion: B10StateVersion; };
+export type B10LearningQueueItem = { queueItemId: B10QueueItemId; itemId: B10Int64Id; source: "NEW" | "REVIEW" | "MISTAKE" | "RETRY"; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; verificationStage: "IMMEDIATE_REPAIR" | "D1" | "D7"; dueAt: B10DateTime; priority: number; pin: B10ContentVersionPin; stateVersion: B10StateVersion; };
 
 /**
- * Generated from the contract source.
+ * Canonical public SRS review command. The server derives effective quality, SM2 state, repair transition and mastery projection; the client supplies only the observed review and immutable pin/concurrency facts.
  */
-export type B10CompleteReviewRequest = { expectedStateVersion: B10StateVersion; verificationStage: "D0" | "D1" | "D7"; result: "PASS" | "FAIL" | "SKIPPED"; clientEventId?: string; };
+export type B10CompleteReviewRequest = { snapshotItemId: B10SnapshotId; sourceAssessmentAttemptId: B10AttemptId; baseStateVersion: B10StateVersion; clientEventId: string; clientSeq: number; contentPin: B10ReviewContentPin; payloadHash: B10Sha256; rawQuality: 0 | 1 | 2 | 3; clientOccurredAt: B10DateTime; responseTimeMs?: number; attemptNo?: number; };
 
 /**
- * Generated from the contract source.
+ * Learning-service mastery projection. SRS scheduling, repair verification and mastery are separate server-owned state machines.
  */
-export type B10MasteryProjection = { itemId: B10Int64Id; fromState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED" | "NONE"; toState: "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REVIEW_QUEUE" | "REOPENED"; srsStage?: "NEW" | "D0" | "D1" | "D7" | "MASTERED"; nextReviewAt?: B10DateTime | null; projectionVersion: B10ProjectionVersion; projectionStatus: "PENDING" | "APPLIED" | "RETRYING" | "COMPENSATED" | "MANUAL_REVIEW"; sourceAssessmentId: B10AttemptId; pin: B10ActiveSessionAttemptPin; projectedAt: B10DateTime; };
+export type B10MasteryProjection = { itemId: B10Int64Id; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; verificationStage?: "IMMEDIATE_REPAIR" | "D1" | "D7"; nextReviewAt?: B10DateTime | null; projectionVersion: B10ProjectionVersion; projectionStatus: "PENDING" | "APPLIED" | "RETRYING" | "COMPENSATED" | "MANUAL_REVIEW"; sourceAssessmentId?: B10AttemptId | null; sourceReviewEventId?: B10ReviewEventId | null; stateVersion: B10StateVersion; pin: B10ActiveSessionAttemptPin; projectedAt: B10DateTime; };
 
 /**
  * Generated from the contract source.
@@ -3122,6 +3122,116 @@ export type B10PlacementSkipBaselineRequest = { requestedStartingLevel?: B10Requ
  */
 export type B10PlacementReport = { result: B10PlacementResult; manifest: B10PlacementManifest; contentPin: B10PlacementContentPin; answerRulePin: B10PlacementAnswerRulePin; targetPin: B10PlacementTargetPin; generatedAt: B10DateTime; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B10ReviewEventId = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type B10TaskId = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type B10RepairId = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlanId = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningReportType = "DAILY" | "WEEKLY" | "PHASE";
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningPlanStatus = "READY" | "PROCESSING" | "DEGRADED" | "FAILED";
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningTaskStatus = "LOCKED" | "AVAILABLE" | "IN_PROGRESS" | "COMPLETED" | "DEFERRED" | "SKIPPED";
+
+/**
+ * Immutable content identity observed by the client. The server validates it against the learning snapshot before accepting a review.
+ */
+export type B10ReviewContentPin = { contentCode: B10ContentCode; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; };
+
+/**
+ * Accepted-fact high-water mark from one owning service. A report is not complete until all required owner watermarks are explicit.
+ */
+export type B10SourceWatermark = { owner: "learning-service" | "assessment-service"; watermark: string; };
+
+/**
+ * A server-planned learning task. Priority, budget, content pin and state version are authoritative projections, not client commands.
+ */
+export type B10LearningPlanTask = { taskId: B10TaskId; planId: B10PlanId; planVersion: B10ProjectionVersion; streamRevision: string; planningRuleVersion: "P1_DAILY_PLAN_V1"; completionRuleVersion: B10RuleVersion; candidateId: string; logicalItemId: B10Int64Id; actionAggregateId: string; candidateType: string; candidateSnapshotDigest: B10Sha256; planningInputDigest: B10Sha256; sourceFactRefs: readonly [string, ...Array<string>]; eligibilityDecision: "ELIGIBLE" | "RECOVERY_REFERENCE" | "INELIGIBLE"; sequence: number; taskType: string; priorityClass: "RECOVERY_REQUIRED" | "DELAY_VERIFICATION_DUE" | "SRS_OVERDUE_OR_DUE" | "MISTAKE_REPAIR" | "GOAL_CRITICAL" | "NEW_CORE" | "OPTIONAL"; budgetMinutes: 5 | 15 | 30 | 45; plannedMinutes: number; backlog: "NONE" | "CATCH_UP"; budgetLane: "REVIEW_REPAIR" | "GOAL_NEW" | "SKILL_ROTATION" | "OPTIONAL"; primaryReasonCode: string; secondaryReasonCodes?: ReadonlyArray<string>; reasonTrace?: ReadonlyArray<B10ReasonTrace>; status: B10LearningTaskStatus; contentPin: B10ContentVersionPin; stateVersion: B10StateVersion; };
+
+/**
+ * The canonical learning-service plan projection. It is derived from owned plan, SRS, repair and mastery facts.
+ */
+export type B10LearningPlan = { planId: B10PlanId; planVersion: B10ProjectionVersion; streamRevision: string; planningInputPinId: string; planningInputPinVersion: number; planningInputDigest: B10Sha256; localDate: string; timezone: string; status: B10LearningPlanStatus; algorithmVersion: "P1_DAILY_PLAN_V1"; planningRuleVersion: "P1_DAILY_PLAN_V1"; dailyBudgetMinutes: 5 | 15 | 30 | 45; budgetUsedMinutes?: number; budgetOverflowPercent?: number; contentEpoch: B10ContentEpoch; contentEligibilityDigest: B10Sha256; inputFactWatermark: string; sourceWatermarks: readonly [B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark]; sourceWatermarkDigest: B10Sha256; manualOrderOverlayVersion: number; candidateSnapshotDigest: B10Sha256; stateVersion: B10StateVersion; generatedAt: B10DateTime; tasks: ReadonlyArray<B10LearningPlanTask>; };
+
+/**
+ * The current-day view of the canonical learning plan. It carries the same server-owned plan facts and version boundary.
+ */
+export type B10TodayLearningPlan = B10LearningPlan;
+
+/**
+ * Client intent to reorder visible plan tasks. The server validates ownership, task membership and the base state version before applying it.
+ */
+export type B10PlanReorderRequest = { baseStateVersion: B10StateVersion; clientEventId: string; clientSeq: number; taskOrder: readonly [B10TaskId, ...Array<B10TaskId>]; payloadHash: B10Sha256; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10PlanReorderResult = { planId: B10PlanId; planVersion: B10ProjectionVersion; stateVersion: B10StateVersion; taskOrder: readonly [B10TaskId, ...Array<B10TaskId>]; replayed: boolean; updatedAt: B10DateTime; };
+
+/**
+ * Client intent to complete a planned task. Learning-service computes completion and any resulting projections; client facts cannot set outcome or mastery.
+ */
+export type B10TaskCompletionRequest = { baseStateVersion: B10StateVersion; clientEventId: string; clientSeq: number; completionFactRef: string; completionFactDigest: B10Sha256; payloadHash: B10Sha256; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10TaskCompletionResult = { taskId: B10TaskId; status: "COMPLETED"; planVersion: B10ProjectionVersion; stateVersion: B10StateVersion; replayed: boolean; completedAt: B10DateTime; };
+
+/**
+ * Learning-service repair projection. Verification timing is a repair workflow concern and is separate from the SRS and mastery stages.
+ */
+export type B10RepairItem = { repairId: B10RepairId; itemId: B10Int64Id; sourceAssessmentEventId: string; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; verificationStage: "IMMEDIATE_REPAIR" | "D1" | "D7"; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; dueAt: B10DateTime | null; contentPin: B10ContentVersionPin; stateVersion: B10StateVersion; reasonTrace: ReadonlyArray<B10ReasonTrace>; };
+
+/**
+ * Learning-service mastery counts as of a server-owned projection watermark.
+ */
+export type B10MasteryOverview = { projectionVersion: B10ProjectionVersion; stateVersion: B10StateVersion; asOf: B10DateTime; newCount: number; learningCount: number; masteredCount: number; consolidatedCount: number; };
+
+/**
+ * Version pins used to build a learning report. These are input facts, not client-supplied report claims.
+ */
+export type B10ReportInputVersions = { planVersion: B10ProjectionVersion; streamRevision: string; srsStateVersion: B10StateVersion; masteryProjectionVersion: B10ProjectionVersion; assessmentReportVersion: number; contentEpoch: B10ContentEpoch; };
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningReportMetric = ({ metricCode: string; status: "PROCESSING" | "READY" | "NOT_APPLICABLE"; numerator: number | null; denominator: number | null; value: number | null; }) & ({ metricCode: string; status: "PROCESSING"; numerator: null & (number | null); denominator: null & (number | null); value: null & (number | null); } | { metricCode: string; status: "READY"; numerator: number & (number | null); denominator: number & (number | null); value: number & (number | null); } | { metricCode: string; status: "NOT_APPLICABLE"; numerator: null & (number | null); denominator: null & (number | null); value: null & (number | null); });
+
+/**
+ * Learning-service report aggregation. Missing or late facts are visible through status, watermarks and reconciliation fields rather than silently treated as zero.
+ */
+export type B10LearningReport = { reportId: B10ReportId; reportVersion: number; reportType: B10LearningReportType; windowStart: B10DateTime; windowEnd: B10DateTime; asOf: B10DateTime; reportRuleVersion: "P1_REPORT_V1"; planningRuleVersion: "P1_DAILY_PLAN_V1"; srsAlgorithmVersion: "SM2_Q03_V1"; contentEpoch: B10ContentEpoch; sourceWatermarks: readonly [B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark] | readonly [B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark, B10SourceWatermark]; sourceWatermarkDigest: B10Sha256; inputVersions: B10ReportInputVersions; metricDefinitionsVersion: "P1_REPORT_V1"; sourceFactDigest: B10Sha256; status: "PROCESSING" | "READY" | "PARTIAL" | "FAILED"; metrics: ReadonlyArray<B10LearningReportMetric>; lateEventCount?: number; supersedesReportVersion?: number | null; rebuildStatus?: "NOT_REQUIRED" | "PENDING" | "REBUILT"; reconciliationStatus?: "NOT_REQUIRED" | "PENDING" | "RECONCILED" | "DISCREPANCY"; sourceTrace?: ReadonlyArray<string>; missingFacts?: ReadonlyArray<string>; generatedAt: B10DateTime; replayable: true; };
+
+/**
+ * Server receipt for the canonical public SRS review command. Derived SRS values, repair state and mastery state are response facts only.
+ */
+export type B10LearningReviewResult = { reviewEventId: B10ReviewEventId; eventStatus: "ACCEPTED" | "DUPLICATE" | "RISK_FILTERED" | "CONFLICT" | "REJECTED" | "EXPIRED"; riskDecision: "ALLOW" | "ACCEPT_NO_REWARD" | "THROTTLE" | "REJECT" | "REVIEW"; stateVersion: B10StateVersion; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; verificationStage?: "IMMEDIATE_REPAIR" | "D1" | "D7"; repetitionCount: number; easeFactor: number; intervalDays: number; dueAt: B10DateTime | null; algorithmVersion: "SM2_Q03_V1"; contentPin: B10ContentVersionPin; projectionVersion: B10ProjectionVersion; projectedAt: B10DateTime; replayed: boolean; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -3413,7 +3523,7 @@ export interface ApiOperationRegistry {
   putB10AssessmentCheckpoint: { method: "PUT"; path: "/api/v1/assessment/sessions/{sessionId}/attempts/{attemptId}/checkpoint"; request: B10CheckpointRequest; response: ApiSuccessEnvelope & { data: B10Checkpoint; }; idempotent: true };
   getB10AssessmentReport: { method: "GET"; path: "/api/v1/assessment/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: B10AssessmentReport; }; idempotent: false };
   listB10LearningReviewQueue: { method: "GET"; path: "/api/v1/learning/review-queue"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B10LearningQueueItem>; }; idempotent: false };
-  completeB10LearningReview: { method: "POST"; path: "/api/v1/learning/review-queue/{queueItemId}/complete"; request: B10CompleteReviewRequest; response: ApiSuccessEnvelope & { data: B10MasteryProjection; }; idempotent: true };
+  completeB10LearningReview: { method: "POST"; path: "/api/v1/learning/review-queue/{queueItemId}/complete"; request: B10CompleteReviewRequest; response: ApiSuccessEnvelope & { data: B10LearningReviewResult; }; idempotent: true };
   getB10LearningMasteryProjection: { method: "GET"; path: "/api/v1/learning/mastery/{itemId}"; request: never; response: ApiSuccessEnvelope & { data: B10MasteryProjection; }; idempotent: false };
   getMediaAsset: { method: "GET"; path: "/api/v1/media/assets/{assetId}"; request: never; response: ApiSuccessEnvelope & { data: MediaAsset; }; idempotent: false };
   getMediaAssetManifest: { method: "GET"; path: "/api/v1/media/assets/{assetId}/manifest"; request: never; response: ApiSuccessEnvelope & { data: MediaManifest; }; idempotent: false };
@@ -3534,6 +3644,14 @@ export interface ApiOperationRegistry {
   submitB10PlacementResponse: { method: "POST"; path: "/api/v1/assessment/placement/sessions/{sessionId}/responses"; request: B10PlacementResponseSubmitRequest; response: ApiSuccessEnvelope & { data: B10PlacementResponseReceipt; }; idempotent: true };
   createB10PlacementSkipBaseline: { method: "POST"; path: "/api/v1/assessment/placement/baselines/skip"; request: B10PlacementSkipBaselineRequest; response: ApiSuccessEnvelope & { data: B10PlacementResult; }; idempotent: true };
   getB10PlacementReport: { method: "GET"; path: "/api/v1/assessment/placement/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: B10PlacementReport; }; idempotent: false };
+  getB10LearningPlan: { method: "GET"; path: "/api/v1/learning/plans/current"; request: never; response: ApiSuccessEnvelope & { data: B10LearningPlan; }; idempotent: false };
+  getB10LearningToday: { method: "GET"; path: "/api/v1/learning/today"; request: never; response: ApiSuccessEnvelope & { data: B10TodayLearningPlan; }; idempotent: false };
+  reorderB10LearningPlan: { method: "POST"; path: "/api/v1/learning/plans/reorder"; request: B10PlanReorderRequest; response: ApiSuccessEnvelope & { data: B10PlanReorderResult; }; idempotent: true };
+  completeB10LearningTask: { method: "POST"; path: "/api/v1/learning/tasks/{taskId}/complete"; request: B10TaskCompletionRequest; response: ApiSuccessEnvelope & { data: B10TaskCompletionResult; }; idempotent: true };
+  listB10LearningRepairs: { method: "GET"; path: "/api/v1/learning/repairs"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B10RepairItem>; }; idempotent: false };
+  getB10LearningRepair: { method: "GET"; path: "/api/v1/learning/repairs/{repairId}"; request: never; response: ApiSuccessEnvelope & { data: B10RepairItem; }; idempotent: false };
+  getB10LearningMasteryOverview: { method: "GET"; path: "/api/v1/learning/mastery"; request: never; response: ApiSuccessEnvelope & { data: B10MasteryOverview; }; idempotent: false };
+  getB10LearningReport: { method: "GET"; path: "/api/v1/learning/reports/{reportType}"; request: never; response: ApiSuccessEnvelope & { data: B10LearningReport; }; idempotent: false };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

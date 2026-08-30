@@ -19,6 +19,7 @@
     "governanceSchemaVersion": "p1r.event-governance.v1",
     "applicationScope": "ALL_CURRENT_AND_FUTURE_CANONICAL_D2_EVENTS",
     "currentCanonicalEvents": [
+      "assessment.item.assessed.v2",
       "assessment.placement.completed.v1",
       "content.version.published.v1",
       "content.version.reviewed.v1",
@@ -26,6 +27,8 @@
       "content.version.submitted.v1",
       "content.version.unpublished.v1",
       "learner.target.updated.v1",
+      "learning.mastery.projected.v2",
+      "learning.review.scheduled.v2",
       "workflow.event.dead_lettered.v1",
       "workflow.event.delivery_failed.v1",
       "workflow.event.ordering_deferred.v1",

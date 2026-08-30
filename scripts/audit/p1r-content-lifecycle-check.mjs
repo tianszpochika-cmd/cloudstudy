@@ -99,6 +99,19 @@ const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-PLACEMENT-PLAN',
   'EVENT-GAP-CONTENT-DUPLICATE',
   'EVENT-GAP-BIND-CONT-001',
+  'EVENT-GAP-BIND-ASM-001',
+  'EVENT-GAP-BIND-LRN-001',
+];
+const EXPECTED_GLOBAL_PLANNED_EVENT_GAPS = [
+  'EVENT-GAP-IAM-001',
+  'EVENT-GAP-BIND-IAM-001',
+  'EVENT-GAP-BIND-IAM-002',
+  'EVENT-GAP-BIND-GAM-001',
+  'EVENT-GAP-BIND-SOC-001',
+  'EVENT-GAP-BIND-NOTIF-001',
+  'EVENT-GAP-BIND-PRIV-001',
+  'EVENT-GAP-USR-DEL-001',
+  'EVENT-GAP-BIND',
 ];
 const HISTORICAL_CONTENT_EVENTS = [
   'content.public_projection.invalidated.v1',
@@ -931,8 +944,10 @@ function checkEventGovernance(input, errors) {
     .filter(function (closure) { return closure.status === 'D2_CONTRACT_CLOSED'; })
     .map(function (closure) { return closure.gapId; });
   exact(errors, actualClosed, EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS, 'catalog D2 closed gap set');
-  add(errors, (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
-    .filter(function (closure) { return closure.status === 'PLANNED'; }).length === 11, 'exactly eleven unrelated event gaps must remain PLANNED');
+  const actualPlanned = (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
+    .filter(function (closure) { return closure.status === 'PLANNED'; })
+    .map(function (closure) { return closure.gapId; });
+  exact(errors, actualPlanned, EXPECTED_GLOBAL_PLANNED_EVENT_GAPS, 'catalog planned gap set');
   for (const eventName of HISTORICAL_CONTENT_EVENTS) {
     const event = eventByName(catalog, eventName);
     add(errors, event && event.status === 'HISTORICAL_CANDIDATE', eventName + ' must remain HISTORICAL_CANDIDATE');

@@ -238,6 +238,7 @@ const expectedTopicBindings = [
   },
 ]
 const expectedEventRoutingBindings = [
+  'assessment.item.assessed.v2|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'assessment.placement.completed.v1|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'content.version.published.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.reviewed.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
@@ -245,6 +246,8 @@ const expectedEventRoutingBindings = [
   'content.version.submitted.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.unpublished.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'learner.target.updated.v1|platform.learner.v1|aggregateId|cg.learning-from-learner.v1,cg.workflow-from-learner.v1',
+  'learning.mastery.projected.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.workflow-from-learning.v1',
+  'learning.review.scheduled.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.workflow-from-learning.v1',
   'workflow.event.dead_lettered.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
   'workflow.event.delivery_failed.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
   'workflow.event.ordering_deferred.v1|platform.workflow.v1|aggregateId|cg.workflow-manual-recovery.v1,cg.workflow-reliability.v1',

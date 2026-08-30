@@ -909,7 +909,10 @@ function checkEvents(eventFragment, catalog, gapRegistry, errors) {
     .filter((event) => event && event.status === 'CANONICAL_D2' && String(event.eventName).startsWith('assessment.'))
     .map((event) => event.eventName)
     .sort();
-  exact(errors, canonicalAssessmentEvents, ['assessment.placement.completed.v1'], 'canonical assessment event allowlist');
+  exact(errors, canonicalAssessmentEvents, [
+    'assessment.item.assessed.v2',
+    'assessment.placement.completed.v1',
+  ], 'canonical assessment event allowlist');
   const gap = findGap(gapRegistry, 'EVENT-GAP-BIND-ASM-001');
   add(errors, isRecord(gap), 'EVENT-GAP-BIND-ASM-001 must remain registered');
   add(errors, gap && gap.status === 'OPEN', 'EVENT-GAP-BIND-ASM-001 must remain OPEN');

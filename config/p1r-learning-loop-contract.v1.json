@@ -1,0 +1,1232 @@
+{
+  "$schema": "p1r.learning-loop-contract.v1",
+  "schemaVersion": "p1r.learning-loop-contract.v1",
+  "task": "P1R-M1-013",
+  "phase": "P1",
+  "sourceBaseline": "a07a58a7d245295c54d39487a6669545d077c513",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "collectionPolicy": {
+    "unknownFieldDecision": "DENY",
+    "unknownEnumDecision": "DENY",
+    "stableOrderingRequired": true,
+    "localeDependentOrdering": "PROHIBITED",
+    "clientAuthorityExpansion": "PROHIBITED"
+  },
+  "canonicalSources": {
+    "businessRules": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+    "journeys": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+    "recoveryMatrix": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
+    "assessmentContract": "config/p1r-assessment-contract.v1.json",
+    "learnerPlanningContract": "config/p1r-learner-planning-contract.v1.json",
+    "b9FirstDayProjectionFragment": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+    "b1OnboardingFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
+    "b10Fragment": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+    "b2CompatibilityFragment": "packages/contracts/fragments/b2-compatibility.openapi.json",
+    "b2SrsFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json",
+    "b2MasteryFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json",
+    "b10HistoricalEventFragment": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+    "b10LearningLoopEventFragment": "packages/contracts/events/v1/fragments/b10-learning-loop.events.json",
+    "b2SrsHistoricalEventFragment": "packages/contracts/events/v1/fragments/b2-vocabulary-srs.events.json",
+    "b2MasteryHistoricalEventFragment": "packages/contracts/events/v1/fragments/b2-assessment-mastery.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "eventReliabilityPolicy": "packages/contracts/events/v1/reliability-policy.json",
+    "b26RuntimeContract": "config/b26-event-runtime.json"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-013",
+    "sourceContractBaseline": "a07a58a7d245295c54d39487a6669545d077c513",
+    "previousPromotion": "P1R-M1-012",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_EVENT_GOVERNANCE_B26_STATIC",
+    "approvedSourceFiles": [
+      "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
+      "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+      "packages/contracts/fragments/b2-compatibility.openapi.json",
+      "packages/contracts/fragments/b2-vocabulary-srs.openapi.json",
+      "packages/contracts/fragments/b2-assessment-mastery.openapi.json",
+      "packages/contracts/events/v1/fragments/b10-learning-loop.events.json",
+      "packages/contracts/events/v1/catalog.json",
+      "packages/contracts/events/v1/reliability-policy.json",
+      "config/b26-event-runtime.json"
+    ],
+    "approvedCanonicalEvents": [
+      {
+        "eventName": "assessment.item.assessed.v2",
+        "payloadRef": "#/payloadSchemas/B10AssessmentItemAssessedV2",
+        "topic": "platform.assessment.v1",
+        "producer": "assessment-service",
+        "aggregateType": "assessment_item",
+        "aggregateIdField": "itemAssessmentId",
+        "requiredPayloadFields": [
+          "tenantId", "principalId", "itemAssessmentId", "attemptId", "sessionId", "logicalItemId", "contentPin", "rulePin", "reportPin", "objectivePolicyPin",
+          "objectiveOutcome", "objectiveNumerator", "objectiveDenominator", "objectiveCorrect", "guessSignal", "semanticErrorCategory",
+          "mappingVersion", "verificationStage", "reasonTrace", "outcomeDigest", "assessmentFactWatermark", "assessedAt"
+        ],
+        "consumers": [
+          { "service": "learning-service", "consumerGroup": "cg.learning-from-assessment.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-assessment.v1" }
+        ]
+      },
+      {
+        "eventName": "learning.mastery.projected.v2",
+        "payloadRef": "#/payloadSchemas/B10LearningMasteryProjectedV2",
+        "topic": "platform.learning.v1",
+        "producer": "learning-service",
+        "aggregateType": "mastery_projection",
+        "aggregateIdField": "projectionId",
+        "requiredPayloadFields": [
+          "tenantId", "principalId", "projectionId", "logicalItemId", "sourceAssessmentEventId", "sourceItemAssessmentId", "contentPin",
+          "masteryStageBefore", "masteryStageAfter", "evidenceCount", "evidenceDigest", "evidenceLocalDates", "d7Gate", "aggregateScore",
+          "latestEffectiveQuality", "latestGuessSignal", "masteryEpochId", "masteryEpochVersion", "projectionVersion", "masteryRuleVersion",
+          "masteryFactWatermark", "reasonTrace", "projectedAt"
+        ],
+        "consumers": [
+          { "service": "assessment-service", "consumerGroup": "cg.assessment-from-learning.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-learning.v1" }
+        ]
+      },
+      {
+        "eventName": "learning.review.scheduled.v2",
+        "payloadRef": "#/payloadSchemas/B10LearningReviewScheduledV2",
+        "topic": "platform.learning.v1",
+        "producer": "learning-service",
+        "aggregateType": "learning_review_queue",
+        "aggregateIdField": "queueItemId",
+        "requiredPayloadFields": [
+          "tenantId", "principalId", "queueItemId", "logicalItemId", "queueVersion", "srsStage", "repairWorkflowState", "masteryStage",
+          "sourceAssessmentEventId", "sourceItemAssessmentId", "algorithmVersion", "timePolicyVersion", "contentPin", "dueLocalDate", "dueAt",
+          "timezoneId", "reasonCodes", "scheduledAt"
+        ],
+        "consumers": [
+          { "service": "assessment-service", "consumerGroup": "cg.assessment-from-learning.v1" },
+          { "service": "workflow-service", "consumerGroup": "cg.workflow-from-learning.v1" }
+        ]
+      }
+    ],
+    "canonicalRoutes": [
+      { "id": "B10-REVIEW-QUEUE-LIST", "method": "GET", "path": "/api/v1/learning/review-queue", "operationId": "listB10LearningReviewQueue", "requestSchema": "NONE", "responseSchema": "B10LearningQueueItem[]", "owner": "learning-service", "requiredPermission": "learning.srs.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-REVIEW-COMPLETE", "method": "POST", "path": "/api/v1/learning/review-queue/{queueItemId}/complete", "operationId": "completeB10LearningReview", "requestSchema": "B10CompleteReviewRequest", "responseSchema": "B10LearningReviewResult", "owner": "learning-service", "requiredPermission": "learning.srs.write", "security": "bearerAuth", "idempotency": "REQUIRED" },
+      { "id": "B10-MASTERY-ITEM", "method": "GET", "path": "/api/v1/learning/mastery/{itemId}", "operationId": "getB10LearningMasteryProjection", "requestSchema": "NONE", "responseSchema": "B10MasteryProjection", "owner": "learning-service", "requiredPermission": "learning.mastery.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-PLAN-CURRENT", "method": "GET", "path": "/api/v1/learning/plans/current", "operationId": "getB10LearningPlan", "requestSchema": "NONE", "responseSchema": "B10LearningPlan", "owner": "learning-service", "requiredPermission": "learning.plan.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-TODAY", "method": "GET", "path": "/api/v1/learning/today", "operationId": "getB10LearningToday", "requestSchema": "NONE", "responseSchema": "B10TodayLearningPlan", "owner": "learning-service", "requiredPermission": "learning.today.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-PLAN-REORDER", "method": "POST", "path": "/api/v1/learning/plans/reorder", "operationId": "reorderB10LearningPlan", "requestSchema": "B10PlanReorderRequest", "responseSchema": "B10PlanReorderResult", "owner": "learning-service", "requiredPermission": "learning.plan.write", "security": "bearerAuth", "idempotency": "REQUIRED" },
+      { "id": "B10-TASK-COMPLETE", "method": "POST", "path": "/api/v1/learning/tasks/{taskId}/complete", "operationId": "completeB10LearningTask", "requestSchema": "B10TaskCompletionRequest", "responseSchema": "B10TaskCompletionResult", "owner": "learning-service", "requiredPermission": "learning.task.write", "security": "bearerAuth", "idempotency": "REQUIRED" },
+      { "id": "B10-REPAIR-LIST", "method": "GET", "path": "/api/v1/learning/repairs", "operationId": "listB10LearningRepairs", "requestSchema": "NONE", "responseSchema": "B10RepairItem[]", "owner": "learning-service", "requiredPermission": "learning.repair.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-REPAIR-DETAIL", "method": "GET", "path": "/api/v1/learning/repairs/{repairId}", "operationId": "getB10LearningRepair", "requestSchema": "NONE", "responseSchema": "B10RepairItem", "owner": "learning-service", "requiredPermission": "learning.repair.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-MASTERY-OVERVIEW", "method": "GET", "path": "/api/v1/learning/mastery", "operationId": "getB10LearningMasteryOverview", "requestSchema": "NONE", "responseSchema": "B10MasteryOverview", "owner": "learning-service", "requiredPermission": "learning.mastery.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" },
+      { "id": "B10-REPORT", "method": "GET", "path": "/api/v1/learning/reports/{reportType}", "operationId": "getB10LearningReport", "requestSchema": "NONE", "responseSchema": "B10LearningReport", "owner": "learning-service", "requiredPermission": "learning.report.read", "security": "bearerAuth", "idempotency": "NOT_REQUIRED" }
+    ],
+    "legacyAdapters": [
+      { "id": "LEGACY-B1-DAILY-TASKS-TODAY", "sourceFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json", "method": "GET", "path": "/api/v1/onboarding/daily-tasks/today", "operationId": "getB1DailyTasks", "canonicalOperationId": "getB10LearningToday", "canonicalRoute": "/api/v1/learning/today", "owner": "learning-service", "requiredPermission": "learning.plan.read", "write": false },
+      { "id": "LEGACY-B1-DAILY-TASK-COMPLETE", "sourceFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json", "method": "POST", "path": "/api/v1/onboarding/daily-tasks/{taskId}/complete", "operationId": "completeB1DailyTask", "canonicalOperationId": "completeB10LearningTask", "canonicalRoute": "/api/v1/learning/tasks/{taskId}/complete", "owner": "learning-service", "requiredPermission": "learning.task.write", "write": true },
+      { "id": "LEGACY-B1-DAILY-TASKS-REORDER", "sourceFragment": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json", "method": "POST", "path": "/api/v1/onboarding/daily-tasks/reorder", "operationId": "reorderB1DailyTasks", "canonicalOperationId": "reorderB10LearningPlan", "canonicalRoute": "/api/v1/learning/plans/reorder", "owner": "learning-service", "requiredPermission": "learning.plan.write", "write": true },
+      { "id": "LEGACY-B2-CURRENT-LEARNING-PLAN", "sourceFragment": "packages/contracts/fragments/b2-compatibility.openapi.json", "method": "GET", "path": "/api/v1/learning/plan/current", "operationId": "getCurrentLearningPlan", "canonicalOperationId": "getB10LearningPlan", "canonicalRoute": "/api/v1/learning/plans/current", "owner": "learning-service", "requiredPermission": "learning.plan.read", "write": false },
+      { "id": "LEGACY-B2-TODAY-LEARNING-STREAM", "sourceFragment": "packages/contracts/fragments/b2-compatibility.openapi.json", "method": "GET", "path": "/api/v1/learning/stream/today", "operationId": "getTodayLearningStream", "canonicalOperationId": "getB10LearningToday", "canonicalRoute": "/api/v1/learning/today", "owner": "learning-service", "requiredPermission": "learning.plan.read", "write": false },
+      { "id": "LEGACY-B2-SUBMIT-LEARNING-STREAM-ACTION", "sourceFragment": "packages/contracts/fragments/b2-compatibility.openapi.json", "method": "POST", "path": "/api/v1/learning/stream/action", "operationId": "submitLearningStreamAction", "canonicalOperationId": "completeB10LearningReview", "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete", "owner": "learning-service", "requiredPermission": "learning.srs.write", "write": true },
+      { "id": "LEGACY-B2-LEARNING-MISTAKE-QUEUE", "sourceFragment": "packages/contracts/fragments/b2-compatibility.openapi.json", "method": "GET", "path": "/api/v1/learning/mistakes/queue", "operationId": "getLearningMistakeQueue", "canonicalOperationId": "listB10LearningRepairs", "canonicalRoute": "/api/v1/learning/repairs", "owner": "learning-service", "requiredPermission": "learning.repair.read", "write": false },
+      { "id": "LEGACY-B2-VERIFY-LEARNING-MISTAKE", "sourceFragment": "packages/contracts/fragments/b2-compatibility.openapi.json", "method": "POST", "path": "/api/v1/learning/mistakes/verify", "operationId": "verifyLearningMistake", "canonicalOperationId": "completeB10LearningReview", "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete", "owner": "learning-service", "requiredPermission": "learning.srs.write", "write": true },
+      { "id": "LEGACY-B2-DAILY-LEARNING-SUMMARY", "sourceFragment": "packages/contracts/fragments/b2-compatibility.openapi.json", "method": "GET", "path": "/api/v1/learning/stats/daily-summary", "operationId": "getDailyLearningSummary", "canonicalOperationId": "getB10LearningReport", "canonicalRoute": "/api/v1/learning/reports/{reportType}", "owner": "learning-service", "requiredPermission": "learning.report.read", "write": false },
+      { "id": "LEGACY-B2-CREATE-SRS-BATCH", "sourceFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json", "method": "POST", "path": "/api/v1/learning/srs/batches", "operationId": "createSrsBatch", "canonicalOperationId": "getB10LearningToday", "canonicalRoute": "/api/v1/learning/today", "owner": "learning-service", "requiredPermission": "learning.plan.read", "write": true },
+      { "id": "LEGACY-B2-GET-SRS-BATCH", "sourceFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json", "method": "GET", "path": "/api/v1/learning/srs/batches/{snapshotId}", "operationId": "getSrsBatch", "canonicalOperationId": "getB10LearningToday", "canonicalRoute": "/api/v1/learning/today", "owner": "learning-service", "requiredPermission": "learning.plan.read", "write": false },
+      { "id": "LEGACY-B2-SUBMIT-REVIEW-EVENT", "sourceFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json", "method": "POST", "path": "/api/v1/learning/srs/reviews", "operationId": "submitReviewEvent", "canonicalOperationId": "completeB10LearningReview", "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete", "owner": "learning-service", "requiredPermission": "learning.srs.write", "write": true },
+      { "id": "LEGACY-B2-SYNC-REVIEW-EVENTS", "sourceFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json", "method": "POST", "path": "/api/v1/learning/srs/reviews:sync", "operationId": "syncReviewEvents", "canonicalOperationId": "completeB10LearningReview", "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete", "owner": "learning-service", "requiredPermission": "learning.srs.write", "write": true },
+      { "id": "LEGACY-B2-LIST-SRS-STATES", "sourceFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json", "method": "GET", "path": "/api/v1/learning/srs/states", "operationId": "listSrsStates", "canonicalOperationId": "listB10LearningReviewQueue", "canonicalRoute": "/api/v1/learning/review-queue", "owner": "learning-service", "requiredPermission": "learning.srs.read", "write": false },
+      { "id": "LEGACY-B2-GET-SRS-OVERVIEW", "sourceFragment": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json", "method": "GET", "path": "/api/v1/learning/srs/overview", "operationId": "getSrsOverview", "canonicalOperationId": "listB10LearningReviewQueue", "canonicalRoute": "/api/v1/learning/review-queue", "owner": "learning-service", "requiredPermission": "learning.srs.read", "write": false },
+      { "id": "LEGACY-B2-DAILY-STREAM", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/assessment/daily-stream", "operationId": "getB2DailyStream", "canonicalOperationId": "getB10LearningToday", "canonicalRoute": "/api/v1/learning/today", "owner": "learning-service", "requiredPermission": "learning.plan.read", "write": false },
+      { "id": "LEGACY-B2-MASTERY-OVERVIEW", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/mastery/overview", "operationId": "getB2MasteryOverview", "canonicalOperationId": "getB10LearningMasteryOverview", "canonicalRoute": "/api/v1/learning/mastery", "owner": "learning-service", "requiredPermission": "learning.mastery.read", "write": false },
+      { "id": "LEGACY-B2-MISTAKES", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/mastery/mistakes", "operationId": "listB2Mistakes", "canonicalOperationId": "listB10LearningRepairs", "canonicalRoute": "/api/v1/learning/repairs", "owner": "learning-service", "requiredPermission": "learning.repair.read", "write": false },
+      { "id": "LEGACY-B2-MISTAKE-DETAIL", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/mastery/mistakes/{mistakeId}", "operationId": "getB2MistakeDetail", "canonicalOperationId": "getB10LearningRepair", "canonicalRoute": "/api/v1/learning/repairs/{repairId}", "owner": "learning-service", "requiredPermission": "learning.repair.read", "write": false },
+      { "id": "LEGACY-B2-MISTAKE-RETRY", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "POST", "path": "/api/v1/mastery/mistakes/{mistakeId}/retry", "operationId": "startB2MistakeRetry", "canonicalOperationId": "completeB10LearningReview", "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete", "owner": "learning-service", "requiredPermission": "learning.srs.write", "write": true },
+      { "id": "LEGACY-B2-MASTERY-VERIFICATIONS", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/mastery/verifications", "operationId": "listB2MasteryVerifications", "canonicalOperationId": "listB10LearningRepairs", "canonicalRoute": "/api/v1/learning/repairs", "owner": "learning-service", "requiredPermission": "learning.repair.read", "write": false },
+      { "id": "LEGACY-B2-SUBMIT-MASTERY-VERIFICATION", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "POST", "path": "/api/v1/mastery/verifications/{verificationId}/submit", "operationId": "submitB2MasteryVerification", "canonicalOperationId": "completeB10LearningReview", "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete", "owner": "learning-service", "requiredPermission": "learning.srs.write", "write": true },
+      { "id": "LEGACY-B2-DAILY-REPORT", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/learning/stats/daily-report", "operationId": "getB2DailyReport", "canonicalOperationId": "getB10LearningReport", "canonicalRoute": "/api/v1/learning/reports/{reportType}", "owner": "learning-service", "requiredPermission": "learning.report.read", "write": false },
+      { "id": "LEGACY-B2-WEEKLY-REPORT", "sourceFragment": "packages/contracts/fragments/b2-assessment-mastery.openapi.json", "method": "GET", "path": "/api/v1/learning/stats/weekly-report", "operationId": "getB2WeeklyReport", "canonicalOperationId": "getB10LearningReport", "canonicalRoute": "/api/v1/learning/reports/{reportType}", "owner": "learning-service", "requiredPermission": "learning.report.read", "write": false }
+    ],
+    "historicalOnlySources": [
+      "getB2DailyStream",
+      "submitReviewEvent",
+      "syncReviewEvents",
+      "getB2DailyReport",
+      "getB2WeeklyReport",
+      "assessment.attempt.assessed.v1",
+      "learning.mastery.projected.v1",
+      "learning.review.scheduled.v1",
+      "vocabulary.review.accepted.v1",
+      "vocabulary.srs.state_changed.v1",
+      "mastery.verification_state_changed.v1",
+      "report.generated.v1"
+    ],
+    "prohibitedRuntimeClaims": [
+      "http-execution-verified",
+      "database-persistence-verified",
+      "kafka-delivery-verified",
+      "consumer-processing-verified",
+      "gateway-pep-runtime-verified",
+      "b26-go",
+      "runtime-ready"
+    ]
+  },
+  "firstDayProjection": {
+    "sourceFragment": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+    "operationId": "getB9FirstDayProjection",
+    "responseSchema": "B9FirstDayProjection",
+    "ready": {
+      "taskCountMinimum": 1,
+      "tasksMinItems": 1
+    },
+    "degraded": {
+      "reasonField": "degradedReason"
+    }
+  },
+  "runtimeBoundary": {
+    "staticContractOnly": true,
+    "prohibitedRuntimeClaims": [
+      "learning-service-http-executed",
+      "assessment-service-to-learning-service-delivery-verified",
+      "mysql-plan-srs-repair-mastery-report-persisted",
+      "outbox-or-kafka-delivery-verified",
+      "workflow-saga-or-dlq-replay-verified",
+      "gateway-or-resource-server-pep-verified",
+      "browser-or-device-offline-e2e-verified"
+    ]
+  },
+  "rulePackages": {
+    "dailyPlan": "P1_DAILY_PLAN_V1",
+    "session": "P1_SESSION_V1",
+    "srs": "SM2_Q03_V1",
+    "repair": "P1_MISTAKE_REPAIR_V1",
+    "mastery": "P1_MASTERY_V1",
+    "report": "P1_REPORT_V1",
+    "timeSync": "P1_TIME_SYNC_V1"
+  },
+  "ownership": {
+    "learningService": [
+      "planning-input",
+      "learning-plan",
+      "today-stream",
+      "learning-task",
+      "lrn_srs_state",
+      "review-fact",
+      "repair-schedule",
+      "mastery-projection",
+      "learning-report-snapshot"
+    ],
+    "assessmentService": [
+      "assessment-session",
+      "checkpoint",
+      "attempt",
+      "deterministic-outcome",
+      "semantic-error-mapping-input",
+      "assessment-report-snapshot"
+    ],
+    "contentService": [
+      "published-content",
+      "learning-item",
+      "content-version",
+      "answer-rule",
+      "legal-variant",
+      "rights"
+    ],
+    "workflowService": [
+      "retry",
+      "dlq",
+      "replay",
+      "saga",
+      "manual-recovery-task"
+    ],
+    "learnerService": [
+      "profile",
+      "target",
+      "preferences",
+      "first-day-read-projection"
+    ],
+    "forbiddenCrossOwnerWrites": [
+      "assessment-service->lrn_srs_state",
+      "assessment-service->mastery-projection",
+      "assessment-service->learning-report-snapshot",
+      "learner-service->learning-plan",
+      "workflow-service->assessment-or-learning-schema",
+      "client->canonical-kafka-fact",
+      "client->score-srs-mastery-xp-or-entitlement"
+    ]
+  },
+  "dailyPlan": {
+    "algorithmVersion": "P1_DAILY_PLAN_V1",
+    "legacyAlgorithmAliases": [
+      "P1_PLAN_V1"
+    ],
+    "legacyAliasPolicy": "READ_COMPATIBILITY_ONLY_NEVER_A_SECOND_ALGORITHM_VERSION",
+    "dailyQuotaMinutes": [
+      5,
+      15,
+      30,
+      45
+    ],
+    "planningRunInputRequiredFields": [
+      "targetId",
+      "targetVersion",
+      "profileVersion",
+      "preferenceVersion",
+      "timezoneId",
+      "weeklyStudyDays",
+      "dailyQuotaMinutes",
+      "eligibilitySnapshotVersion",
+      "eligibilitySnapshotDigest",
+      "contentEpoch",
+      "contentEligibilityDigest",
+      "placementBaselineKind",
+      "placementBaselineDigest",
+      "planningRuleVersion",
+      "localDate",
+      "asOf",
+      "sourceWatermarks",
+      "sourceWatermarkDigest",
+      "manualOrderOverlayVersion",
+      "candidateSnapshotDigest"
+    ],
+    "planningRunForbiddenFields": [
+      "clientPlan",
+      "clientScore",
+      "clientMastery",
+      "clientDueAt",
+      "tenantId",
+      "ownerId",
+      "adultGate",
+      "consent",
+      "contentRights"
+    ],
+    "priorityClasses": [
+      {
+        "ordinal": 1,
+        "code": "RECOVERY_REQUIRED",
+        "mandatory": true
+      },
+      {
+        "ordinal": 2,
+        "code": "DELAY_VERIFICATION_DUE",
+        "mandatory": true
+      },
+      {
+        "ordinal": 3,
+        "code": "SRS_OVERDUE_OR_DUE",
+        "mandatory": true
+      },
+      {
+        "ordinal": 4,
+        "code": "MISTAKE_REPAIR",
+        "mandatory": false
+      },
+      {
+        "ordinal": 5,
+        "code": "GOAL_CRITICAL",
+        "mandatory": false
+      },
+      {
+        "ordinal": 6,
+        "code": "NEW_CORE",
+        "mandatory": false
+      },
+      {
+        "ordinal": 7,
+        "code": "OPTIONAL",
+        "mandatory": false
+      }
+    ],
+    "budgetLanes": [
+      "REVIEW_REPAIR",
+      "GOAL_NEW",
+      "SKILL_ROTATION",
+      "OPTIONAL"
+    ],
+    "candidateRequiredFields": [
+      "candidateId",
+      "logicalItemId",
+      "actionAggregateId",
+      "candidateType",
+      "priorityClass",
+      "budgetLane",
+      "estimatedMinutes",
+      "riskScore",
+      "goalAffinity",
+      "contentPin",
+      "sourceFactRefs",
+      "eligibilityDecision",
+      "primaryReasonCode"
+    ],
+    "candidateEligibility": {
+      "required": [
+        "PUBLISHED",
+        "READABLE",
+        "RIGHTS_VALID",
+        "ENTITLEMENT_VALID",
+        "PHASE_ALLOWED",
+        "ADULT_GATE_ALLOWED",
+        "CONSENT_ALLOWED"
+      ],
+      "emergencyWithdrawalDecision": "RECOVERY_REFERENCE_ONLY_NOT_AN_EXECUTABLE_CONTENT_TASK",
+      "unschedulableEstimatedMinutesDecision": "RECOVERY_REFERENCE_WITH_CONTENT_ESTIMATE_UNSCHEDULABLE"
+    },
+    "deduplication": {
+      "ordinaryCandidateKey": "logicalItemId",
+      "recoveryCandidateKey": "sessionId",
+      "winner": "LOWEST_PRIORITY_CLASS_ORDINAL",
+      "suppressedCandidateAuditFields": [
+        "suppressedCandidateId",
+        "winnerCandidateId",
+        "suppressionReason"
+      ],
+      "samePriorityTie": "STABLE_SORT_TUPLE"
+    },
+    "stableSortTuple": [
+      {
+        "field": "priorityClass.ordinal",
+        "direction": "ASC"
+      },
+      {
+        "field": "dueSortAt",
+        "direction": "ASC",
+        "missingValue": "9999-12-31T23:59:59.999999999Z"
+      },
+      {
+        "field": "riskScore",
+        "direction": "DESC"
+      },
+      {
+        "field": "goalAffinity",
+        "direction": "DESC"
+      },
+      {
+        "field": "lastEvidenceAt",
+        "direction": "ASC",
+        "missingValue": "0001-01-01T00:00:00Z"
+      },
+      {
+        "field": "stableCandidateId",
+        "direction": "ASC",
+        "comparison": "CANONICAL_ASCII_OR_UTF8_BINARY"
+      }
+    ],
+    "normalBudgets": [
+      {
+        "dailyQuotaMinutes": 5,
+        "reviewRepairMinutes": 2,
+        "goalNewMinutes": 2,
+        "skillRotationMinutes": 1,
+        "totalCapMinutes": 6
+      },
+      {
+        "dailyQuotaMinutes": 15,
+        "reviewRepairMinutes": 6,
+        "goalNewMinutes": 6,
+        "skillRotationMinutes": 3,
+        "totalCapMinutes": 17
+      },
+      {
+        "dailyQuotaMinutes": 30,
+        "reviewRepairMinutes": 12,
+        "goalNewMinutes": 12,
+        "skillRotationMinutes": 6,
+        "totalCapMinutes": 33
+      },
+      {
+        "dailyQuotaMinutes": 45,
+        "reviewRepairMinutes": 18,
+        "goalNewMinutes": 18,
+        "skillRotationMinutes": 9,
+        "totalCapMinutes": 50
+      }
+    ],
+    "selectionPolicy": {
+      "totalCapFormula": "CEILING(dailyQuotaMinutes * 1.10)",
+      "taskAtomicity": "WHOLE_VERSIONED_TASK_ONLY",
+      "recoveryReservation": "SELECT_RECOVERY_REQUIRED_FIRST_WITHIN_TOTAL_CAP",
+      "reviewLaneSelectionOrder": [
+        "DELAY_VERIFICATION_DUE",
+        "SRS_OVERDUE_OR_DUE",
+        "MISTAKE_REPAIR"
+      ],
+      "normalRemainderFlow": [
+        "REVIEW_REPAIR_TO_GOAL_NEW",
+        "GOAL_NEW_TO_SKILL_ROTATION"
+      ],
+      "optionalPolicy": "DOES_NOT_CONSUME_CORE_BUDGET",
+      "overCapMandatoryPolicy": "RETAIN_AS_OVERDUE_BACKLOG_WITHOUT_CHANGING_ORIGINAL_DUE_AT",
+      "sessionBudgetMeaning": "TASK_ESTIMATED_MINUTES_ONLY_NOT_A_CLIENT_COMPLETION_AUTHORITY"
+    },
+    "catchUp": {
+      "triggerFormula": "debtMinutes > 2 * normalReviewRepairMinutes",
+      "debtCandidateClasses": [
+        "DELAY_VERIFICATION_DUE",
+        "SRS_OVERDUE_OR_DUE"
+      ],
+      "reviewCapFormula": "CEILING(dailyQuotaMinutes * 0.70)",
+      "goalCapFormula": "CEILING(dailyQuotaMinutes * 0.20)",
+      "rotationCapFormula": "MAX(0, totalCapMinutes - reviewCapMinutes - goalCapMinutes)",
+      "catchUpDaysFormula": "CLAMP(CEILING(debtMinutes / MAX(1, reviewCapMinutes)), 2, 7)",
+      "userModes": [
+        "NORMAL",
+        "FAST",
+        "DISTRIBUTED"
+      ],
+      "unresolvedDebtPolicy": "RETURN_backlogRemainingAfterWindow_NEVER_FABRICATE_CLEARANCE",
+      "goalRetentionPolicy": "RETAIN_ONLY_A_COMPLETE_LEGAL_TASK_THAT_FITS_GOAL_CAP"
+    },
+    "reasonCodes": [
+      "RESUME_SESSION",
+      "SUBMISSION_CONFIRMATION",
+      "D1_VERIFICATION",
+      "D7_VERIFICATION",
+      "DUE_TODAY",
+      "OVERDUE_HIGH_RISK",
+      "RECENT_MISTAKE",
+      "REPEATED_ERROR_CATEGORY",
+      "GOAL_FOUNDATION",
+      "GOAL_COLLEGE_CET",
+      "GOAL_POSTGRADUATE_ENGLISH",
+      "GOAL_WORKPLACE_DAILY",
+      "PLAN_CHECKPOINT",
+      "NEW_CORE",
+      "SKILL_ROTATION",
+      "CATCH_UP_PROTECTION",
+      "MANUAL_LEGAL_COURSE",
+      "GOAL_LIGHT_ITEM_UNAVAILABLE",
+      "CONTENT_ESTIMATE_UNSCHEDULABLE"
+    ],
+    "deferPolicy": {
+      "allowedOnlyFor": [
+        "MISTAKE_REPAIR",
+        "GOAL_CRITICAL",
+        "NEW_CORE",
+        "OPTIONAL"
+      ],
+      "requiredFields": [
+        "deferReasonCode",
+        "deferredPresentationLocalDate",
+        "overlayVersion"
+      ],
+      "immutableFields": [
+        "srsDueAt",
+        "verificationDueAt",
+        "completionFact"
+      ]
+    },
+    "planAndTask": {
+      "planStates": [
+        "DRAFT",
+        "ACTIVE",
+        "PAUSED",
+        "COMPLETED",
+        "CANCELLED"
+      ],
+      "taskStates": [
+        "PLANNED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "DEFERRED",
+        "UNAVAILABLE",
+        "CANCELLED"
+      ],
+      "planVersionChangeInputs": [
+        "target",
+        "timezone",
+        "dailyQuotaMinutes",
+        "weeklyStudyDays",
+        "contentEpoch",
+        "checkpoint",
+        "catchUpMode"
+      ],
+      "taskRequiredPins": [
+        "planId",
+        "planVersion",
+        "streamRevision",
+        "planningRuleVersion",
+        "contentPin",
+        "completionRuleVersion"
+      ],
+      "completionAuthority": "ONLY_VERSIONED_LEARNING_OR_ASSESSMENT_OWNER_FACT"
+    }
+  },
+  "srs": {
+    "algorithmVersion": "SM2_Q03_V1",
+    "numericArithmetic": "DECIMAL_ONLY",
+    "roundingMode": "ROUND_HALF_UP",
+    "rawQualityValues": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "objectiveOutcomes": [
+      "CORRECT_VERIFIED",
+      "INCORRECT",
+      "UNANSWERED",
+      "REVEALED_BEFORE_ANSWER",
+      "GUESSED",
+      "NO_OBJECTIVE_EXPECTED"
+    ],
+    "objectiveOutcomeAuthority": {
+      "unknownOutcomeDecision": "REJECT",
+      "objectiveExpected": {
+        "requiredPracticeType": "OBJECTIVE_ASSESSMENT",
+        "requiredObjectiveExpected": true
+      },
+      "noObjectiveExpected": {
+        "requiredAuthority": "SERVER_PREDECLARED_LEGAL_PRACTICE_TYPE",
+        "requiredTrustedContextFields": [
+          "authority",
+          "objectivePolicyPin"
+        ],
+        "objectivePolicyPinRequiredFields": [
+          "practiceType",
+          "objectiveExpected",
+          "policyVersion",
+          "policyDigest"
+        ],
+        "allowedPracticeTypes": [
+          "SPEAKING_SELF_RATING",
+          "WRITING_SELF_RATING",
+          "ACTIVE_RECALL_SELF_RATING"
+        ],
+        "requiredObjectiveExpected": false,
+        "policyDigestPattern": "^[A-Fa-f0-9]{64}$",
+        "clientClaimDecision": "REJECT"
+      }
+    },
+    "qualityCaps": [
+      {
+        "objectiveOutcome": "UNANSWERED",
+        "effectiveQuality": 0
+      },
+      {
+        "objectiveOutcome": "REVEALED_BEFORE_ANSWER",
+        "effectiveQuality": 0
+      },
+      {
+        "objectiveOutcome": "INCORRECT",
+        "effectiveQualityFormula": "MIN(rawQuality, 1)"
+      },
+      {
+        "objectiveOutcome": "GUESSED",
+        "effectiveQualityFormula": "MIN(rawQuality, 2)"
+      },
+      {
+        "objectiveOutcome": "CORRECT_VERIFIED",
+        "effectiveQualityFormula": "rawQuality"
+      },
+      {
+        "objectiveOutcome": "NO_OBJECTIVE_EXPECTED",
+        "effectiveQualityFormula": "rawQuality",
+        "allowedOnlyWhen": "SERVER_PREDECLARED_LEGAL_PRACTICE_TYPE"
+      }
+    ],
+    "initialState": {
+      "srsStage": "NEW",
+      "easeFactor": "2.50",
+      "repetitions": 0,
+      "intervalDays": 0,
+      "lapseCount": 0,
+      "dueAt": "NOW"
+    },
+    "stateValidation": {
+      "easeFactor": {
+        "minimum": "1.30",
+        "maximum": "2.50",
+        "maxDecimalPlaces": 2
+      },
+      "intervalDays": {
+        "minimum": 0,
+        "maximum": 365
+      },
+      "repetitions": {
+        "minimum": 0
+      },
+      "lapseCount": {
+        "minimum": 0
+      }
+    },
+    "formula": {
+      "distance": "3 - effectiveQuality",
+      "rawEaseFactor": "easeFactor + 0.10 - distance * (0.08 + distance * 0.02)",
+      "easeFactorAfter": "CLAMP(ROUND_HALF_UP(rawEaseFactor, 2), 1.30, 2.50)",
+      "failedReviewCondition": "effectiveQuality < 2",
+      "failedReview": {
+        "repetitionsAfter": 0,
+        "intervalDaysAfter": 1,
+        "lapseCountAfter": "lapseCount + 1"
+      },
+      "successfulReview": {
+        "repetitionsAfter": "repetitions + 1",
+        "fixedIntervalsByRepetition": [
+          1,
+          3,
+          7,
+          15,
+          30,
+          90
+        ],
+        "postSixIntervalDays": "CLAMP(ROUND_HALF_UP(intervalDays * easeFactorAfter, 0), 1, 365)"
+      }
+    },
+    "srsStages": [
+      "NEW",
+      "LEARNING",
+      "MASTERED",
+      "CONSOLIDATED"
+    ],
+    "stageDerivation": [
+      {
+        "when": "no accepted review",
+        "srsStage": "NEW"
+      },
+      {
+        "when": "effectiveQuality < 2",
+        "srsStage": "LEARNING"
+      },
+      {
+        "when": "repetitions >= 6 && intervalDays >= 90",
+        "srsStage": "CONSOLIDATED"
+      },
+      {
+        "when": "repetitions >= 4 && intervalDays >= 30",
+        "srsStage": "MASTERED"
+      },
+      {
+        "when": "otherwise",
+        "srsStage": "LEARNING"
+      }
+    ],
+    "timePolicy": {
+      "reviewedAtAuthority": "SERVER_ACCEPTED_UTC_INSTANT",
+      "timezoneAuthority": "SERVER_DERIVED_IANA_TIMEZONE",
+      "dueLocalFormula": "reviewedAt.atZone(scheduleTimezoneId).plusCalendarDays(intervalDays)",
+      "dueAtFormula": "dueLocal.toInstantUTC",
+      "dstGap": "SHIFT_FORWARD_TO_FIRST_VALID_LOCAL_TIME",
+      "dstOverlap": "USE_EARLIER_OFFSET",
+      "timezoneChange": "PRESERVE_EXISTING_dueAt_AND_USE_NEW_SERVER_DERIVED_TIMEZONE_FOR_FUTURE_ACCEPTED_REVIEWS",
+      "requiredAuditFields": [
+        "reviewedAt",
+        "reviewedLocalDate",
+        "scheduleTimezoneId",
+        "dueLocalDate",
+        "dueAt",
+        "timePolicyVersion"
+      ]
+    },
+    "writeEntry": {
+      "canonicalPublicOperationId": "completeB10LearningReview",
+      "canonicalPublicPath": "/api/v1/learning/review-queue/{queueItemId}/complete",
+      "canonicalRequestRequiredFields": [
+        "baseStateVersion",
+        "clientEventId",
+        "clientSeq",
+        "contentPin",
+        "payloadHash",
+        "sourceAssessmentAttemptId",
+        "rawQuality"
+      ],
+      "canonicalRequestForbiddenFields": [
+        "tenantId",
+        "principalId",
+        "ownerId",
+        "objectiveOutcome",
+        "effectiveQuality",
+        "score",
+        "mastery",
+        "srsStage",
+        "easeFactor",
+        "intervalDays",
+        "dueAt",
+        "algorithmVersion",
+        "pass",
+        "fail"
+      ],
+      "trustedOutcomeSource": "assessment-service-result-or-server-protected-review-interaction",
+      "singleTransitionService": "learning-service-review-transition-service",
+      "earlyReviewDecision": "CONFLICT_409",
+      "sameReceiptSamePayload": "REPLAY_ORIGINAL_RECEIPT",
+      "sameReceiptDifferentPayload": "CONFLICT_409"
+    },
+    "rejectConditions": [
+      "STALE_BASE_STATE_VERSION",
+      "CLIENT_SEQ_OUT_OF_ORDER",
+      "CLIENT_EVENT_ID_PAYLOAD_CONFLICT",
+      "REVIEWED_AT_OUT_OF_ORDER",
+      "CONTENT_PIN_CONFLICT",
+      "QUEUE_ITEM_TERMINAL",
+      "ALGORITHM_VERSION_CONFLICT",
+      "EARLY_REVIEW_NOT_ALLOWED",
+      "UNTRUSTED_OBJECTIVE_OUTCOME"
+    ],
+    "legacyMigration": {
+      "legacyWriteOperations": [
+        "submitReviewEvent",
+        "syncReviewEvents",
+        "B1_SRS_WRITE_IF_DISCOVERED"
+      ],
+      "legacyDisposition": "DEPRECATED_ADAPTER_ONLY",
+      "adapterMayComputeAlgorithm": false,
+      "adapterMayWriteLrnSrsState": false,
+      "legacyBatchPolicy": "ORDERED_PER_EVENT_TRANSLATION_TO_SINGLE_TRANSITION_SERVICE",
+      "unmappableLegacyQuality": "REJECT_OR_QUARANTINE_NEVER_CLAMP",
+      "cutoverDecision": "RUNTIME_GATE_REQUIRED_BEFORE_410"
+    }
+  },
+  "repair": {
+    "ruleVersion": "P1_MISTAKE_REPAIR_V1",
+    "workflowStates": [
+      "REVIEW_QUEUE",
+      "LEARNING",
+      "DELAY_VERIFY_D1",
+      "DELAY_VERIFY_D7",
+      "MASTERED",
+      "REOPENED"
+    ],
+    "verificationStages": [
+      "IMMEDIATE_REPAIR",
+      "D1",
+      "D7"
+    ],
+    "availabilityStates": [
+      "ACTIVE",
+      "WAITING_FOR_CONTENT",
+      "BLOCKED_BY_RIGHTS"
+    ],
+    "semanticErrorCategories": [
+      "KNOWLEDGE_GAP",
+      "MEMORY_FUZZY",
+      "CONFUSABLE",
+      "RULE_CONCEPT",
+      "LISTENING_DISCRIMINATION",
+      "READING_COMPREHENSION",
+      "SPELLING_OR_STRUCTURE",
+      "CARELESS_OR_OMISSION",
+      "TIME_INSUFFICIENT",
+      "UNCLASSIFIED"
+    ],
+    "transitionTable": [
+      {
+        "from": "ASSESSMENT_ERROR",
+        "to": "REVIEW_QUEUE",
+        "trigger": "TRUSTED_ASSESSMENT_ERROR"
+      },
+      {
+        "from": "REVIEW_QUEUE",
+        "to": "LEARNING",
+        "trigger": "LEGAL_VARIANT_STARTED"
+      },
+      {
+        "from": "LEARNING",
+        "to": "DELAY_VERIFY_D1",
+        "trigger": "IMMEDIATE_REPAIR_PASS"
+      },
+      {
+        "from": "LEARNING",
+        "to": "REVIEW_QUEUE",
+        "trigger": "IMMEDIATE_REPAIR_FAIL"
+      },
+      {
+        "from": "DELAY_VERIFY_D1",
+        "to": "DELAY_VERIFY_D7",
+        "trigger": "D1_PASS"
+      },
+      {
+        "from": "DELAY_VERIFY_D1",
+        "to": "REOPENED",
+        "trigger": "D1_FAIL"
+      },
+      {
+        "from": "DELAY_VERIFY_D7",
+        "to": "MASTERED",
+        "trigger": "D7_PASS_AND_MASTERY_GATE"
+      },
+      {
+        "from": "DELAY_VERIFY_D7",
+        "to": "REOPENED",
+        "trigger": "D7_FAIL_OR_MASTERY_GATE_NOT_MET"
+      },
+      {
+        "from": "REOPENED",
+        "to": "REVIEW_QUEUE",
+        "trigger": "REPAIR_REQUEUED"
+      }
+    ],
+    "variantPolicy": {
+      "requiredFields": [
+        "variantSelectionRuleVersion",
+        "variantCatalogDigest",
+        "sourceQuestionId",
+        "variantId",
+        "relationship",
+        "contentPin"
+      ],
+      "allowedRelationships": [
+        "LEGAL_VARIANT",
+        "CONTEXTUAL_EQUIVALENT"
+      ],
+      "originalQuestionPolicy": "EXPLANATION_ONLY_NOT_SUFFICIENT_AS_THE_ONLY_REPAIR_EVIDENCE",
+      "selectionTieBreak": [
+        "contentVariantRank_ASC",
+        "variantId_ASC"
+      ],
+      "contentWithdrawalPolicy": "PRESERVE_HISTORY_AND_SET_AVAILABILITY_WAITING_FOR_CONTENT"
+    },
+    "delayPolicy": {
+      "d1Formula": "FIRST_CONFIGURED_STUDY_DAY_STRICTLY_AFTER_IMMEDIATE_REPAIR_LOCAL_DATE",
+      "d7NominalFormula": "D1_PASS_LOCAL_DATE_PLUS_7_CALENDAR_DAYS",
+      "d7ScheduledFormula": "FIRST_CONFIGURED_STUDY_DAY_ON_OR_AFTER_D7_NOMINAL_LOCAL_DATE",
+      "dueTimePolicy": "PRESERVE_SOURCE_LOCAL_TIME_USING_SRS_DST_POLICY",
+      "requiredAuditFields": [
+        "nominalDueLocalDate",
+        "scheduledDueLocalDate",
+        "dueAt",
+        "timezoneId",
+        "weeklyStudyDays"
+      ]
+    }
+  },
+  "mastery": {
+    "ruleVersion": "P1_MASTERY_V1",
+    "masteryStages": [
+      "NEW",
+      "LEARNING",
+      "MASTERED",
+      "CONSOLIDATED"
+    ],
+    "evidenceRequiredFields": [
+      "evidenceId",
+      "sourceEventId",
+      "attemptId",
+      "logicalItemId",
+      "contentVersionId",
+      "contentEpoch",
+      "objectiveCorrect",
+      "evidenceScore",
+      "objectiveOutcome",
+      "effectiveQuality",
+      "guessSignal",
+      "errorCategory",
+      "ruleVersion",
+      "ruleDigest",
+      "verificationStage",
+      "occurredAt",
+      "localDate",
+      "evidenceDigest"
+    ],
+    "evidenceScoreFormula": "ROUND_HALF_UP(100 * objectiveNumerator / objectiveDenominator, 2)",
+    "qualifyingEvidence": {
+      "required": [
+        "OBJECTIVE_OUTCOME",
+        "NOT_REVOKED",
+        "OBJECTIVE_CORRECT",
+        "effectiveQuality >= 2"
+      ],
+      "oneEvidencePerLocalDate": "LATEST_BY_occurredAt_THEN_evidenceId",
+      "dedupeKey": "evidenceId"
+    },
+    "criticalError": {
+      "conditions": [
+        "CONTENT_RULE_masteryCritical_EQUALS_TRUE",
+        "D1_FAILED",
+        "D7_FAILED"
+      ],
+      "effect": "START_NEW_MASTERY_EPOCH_AND_DOWNGRADE_TO_LEARNING"
+    },
+    "aggregation": {
+      "candidateEvidence": "THREE_MOST_RECENT_DISTINCT_LOCAL_DATES_IN_CURRENT_EPOCH",
+      "aggregateScoreFormula": "ROUND_HALF_UP(SUM(evidenceScore) / 3, 2)",
+      "minimumEvidenceCount": 3
+    },
+    "promotion": {
+      "mastered": "D7_PASS_IN_CURRENT_EPOCH && qualifyingEvidenceCount >= 3 && aggregateScore >= 85",
+      "consolidated": "MASTERED && aggregateScore >= 95 && latestQualifyingEvidence.effectiveQuality == 3 && latestQualifyingEvidence.guessSignal == false"
+    },
+    "postD7GateFailure": "REPAIR_REOPENED_WITH_MASTERY_GATE_NOT_MET",
+    "contentVersionPolicy": "REJECT_OLDER_CONTENT_VERSION_EVIDENCE_UNLESS_CONTENT_SERVICE_DECLARES_A_VERSIONED_LEGAL_REPLACEMENT"
+  },
+  "report": {
+    "ruleVersion": "P1_REPORT_V1",
+    "reportKinds": [
+      "DAILY",
+      "WEEKLY",
+      "PHASE"
+    ],
+    "snapshotStatuses": [
+      "PROCESSING",
+      "READY",
+      "PARTIAL",
+      "FAILED",
+      "NOT_APPLICABLE"
+    ],
+    "reportKeyFields": [
+      "learnerId",
+      "reportKind",
+      "windowStartInclusive",
+      "windowEndExclusive",
+      "timezoneId",
+      "weekStartRule",
+      "planCheckpointBoundary"
+    ],
+    "snapshotRequiredFields": [
+      "reportId",
+      "reportVersion",
+      "reportRuleVersion",
+      "asOf",
+      "window",
+      "sourceWatermarks",
+      "sourceWatermarkDigest",
+      "inputVersions",
+      "metricDefinitionsVersion",
+      "sourceFactDigest",
+      "status",
+      "metrics"
+    ],
+    "requiredSourceOwners": [
+      "learning-service",
+      "assessment-service"
+    ],
+    "missingWatermarkDecision": "PROCESSING_WITH_NULL_METRICS_NEVER_ZERO",
+    "snapshotValidation": {
+      "timestampFormat": "UTC_RFC3339_Z",
+      "watermarkPattern": "^[A-Za-z0-9._:-]+$",
+      "digestPattern": "^[a-f0-9]{64}$",
+      "rateMultiplier": 100,
+      "rateDecimalPlaces": 2,
+      "processingMetricStatus": "PROCESSING"
+    },
+    "metricDefinitions": [
+      {
+        "code": "TASK_COMPLETION_RATE",
+        "numerator": "ACCEPTED_COMPLETED_REQUIRED_TASK_INSTANCES",
+        "denominator": "PUBLISHED_EFFECTIVE_REQUIRED_TASK_INSTANCES_EXCLUDING_AUDITED_CANCELLED_OR_UNAVAILABLE"
+      },
+      {
+        "code": "OBJECTIVE_ACCURACY",
+        "numerator": "SUM_OBJECTIVE_NUMERATOR_FOR_ASSESSED_OBJECTIVE_ITEMS",
+        "denominator": "SUM_OBJECTIVE_DENOMINATOR_FOR_THE_SAME_ITEMS"
+      },
+      {
+        "code": "D1_PASS_RATE",
+        "numerator": "D1_PASSED_COMPLETED_VERIFICATIONS",
+        "denominator": "D1_PASSED_OR_FAILED_COMPLETED_VERIFICATIONS"
+      },
+      {
+        "code": "D7_PASS_RATE",
+        "numerator": "D7_PASSED_COMPLETED_VERIFICATIONS",
+        "denominator": "D7_PASSED_OR_FAILED_COMPLETED_VERIFICATIONS"
+      },
+      {
+        "code": "NEW_LEARNING_COUNT",
+        "numerator": "DISTINCT_LOGICAL_ITEMS_WITH_FIRST_ACCEPTED_LEARNING_FACT_IN_WINDOW",
+        "denominator": null
+      },
+      {
+        "code": "REVIEW_COUNT",
+        "numerator": "ACCEPTED_SRS_REVIEW_FACTS",
+        "denominator": null
+      },
+      {
+        "code": "NEW_MISTAKE_COUNT",
+        "numerator": "DISTINCT_MISTAKE_IDS_WITH_FIRST_ERROR_AT_IN_WINDOW",
+        "denominator": null
+      },
+      {
+        "code": "FULLY_REPAIRED_COUNT",
+        "numerator": "DISTINCT_REPAIR_IDS_FIRST_ENTERING_REPAIR_MASTERED_IN_WINDOW",
+        "denominator": null
+      },
+      {
+        "code": "NEW_MASTERY_COUNT",
+        "numerator": "DISTINCT_LOGICAL_ITEMS_FIRST_ENTERING_MASTERY_MASTERED_OR_CONSOLIDATED_IN_WINDOW",
+        "denominator": null
+      },
+      {
+        "code": "LEARNING_MINUTES",
+        "numerator": "SUM_OWNER_ACCEPTED_CREDITED_SECONDS_DIVIDED_BY_60",
+        "denominator": null,
+        "requiredUpstreamFact": "P1_SESSION_V1_creditedSeconds"
+      }
+    ],
+    "zeroDenominatorDecision": "NOT_APPLICABLE_WITH_NULL_VALUE",
+    "lateEvent": {
+      "windowAttribution": "OWNER_OCCURRED_AT_OR_ASSESSED_AT",
+      "lateCondition": "FACT_BELONGS_TO_WINDOW_AND_SOURCE_POSITION_IS_AFTER_SNAPSHOT_WATERMARK",
+      "immutableSnapshotPolicy": "NEVER_MUTATE_EXISTING_REPORT_VERSION",
+      "rebuildPolicy": "CREATE_REPORT_VERSION_PLUS_ONE_WITH_supersedesReportVersion",
+      "replayDeduplication": "SOURCE_EVENT_ID_OR_EVIDENCE_ID",
+      "historicalRulePolicy": "REPLAY_WITH_FACT_PINNED_CONTENT_RULE_AND_ALGORITHM_VERSION",
+      "lateSnapshotRequiredFields": [
+        "supersedesReportVersion",
+        "lateSourceFactId",
+        "lateSourceWatermark"
+      ]
+    }
+  },
+  "offlineAndIdempotency": {
+    "requiredClientFields": [
+      "clientEventId",
+      "clientSeq",
+      "baseStateVersion",
+      "contentVersionId",
+      "payloadHash",
+      "rawQuality"
+    ],
+    "serverDerivedFields": [
+      "tenant",
+      "principal",
+      "owner",
+      "objectiveOutcome",
+      "effectiveQuality",
+      "score",
+      "dueAt",
+      "srsStage",
+      "repairWorkflowState",
+      "masteryStage",
+      "xp",
+      "entitlement"
+    ],
+    "dedupeScope": "principalId + deviceRegistrationId + clientEventId",
+    "commandFieldConstraints": {
+      "clientEventIdPattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "clientSeq": {
+        "minimum": 1
+      },
+      "baseStateVersion": {
+        "minimum": 0
+      },
+      "contentVersionId": {
+        "minimum": 1
+      },
+      "payloadHashPattern": "^[a-f0-9]{64}$",
+      "rawQualityValues": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "replayPolicy": {
+      "sameEventSamePayload": "REPLAY_ORIGINAL_RECEIPT",
+      "sameEventDifferentPayload": "CONFLICT_409",
+      "clientSeqOrdering": "STRICTLY_INCREASING_PER_DEDUPE_SCOPE"
+    },
+    "sameEventDifferentPayload": "CONFLICT_409",
+    "conflictPolicy": "RETURN_CURRENT_SAFE_STATE_OR_RECOVERY_REFERENCE_NEVER_LAST_WRITE_WINS",
+    "canonicalKafkaClientProduction": "PROHIBITED"
+  },
+  "deferredEventCandidates": [
+    {
+      "eventName": "learning.plan.generated.v1",
+      "owner": "learning-service",
+      "aggregateType": "learning_plan",
+      "partitionKey": "planId",
+      "dedupeKey": "planningInputDigest + planVersion",
+      "requiredPayloadPurpose": "PLAN_VERSION_PINS_AND_LEARNER_SAFE_REASON_SUMMARY",
+      "disposition": "OWNER_LOCAL_UNLESS_FUTURE_CROSS_SERVICE_CONSUMER",
+      "status": "NOT_CANONICAL"
+    },
+    {
+      "eventName": "learning.today_stream.materialized.v1",
+      "owner": "learning-service",
+      "aggregateType": "today_stream",
+      "partitionKey": "streamId",
+      "dedupeKey": "candidateSnapshotDigest + streamRevision",
+      "requiredPayloadPurpose": "STREAM_VERSION_BUDGET_AND_SAFE_REASON_SUMMARY",
+      "disposition": "OWNER_LOCAL_UNLESS_FUTURE_CROSS_SERVICE_CONSUMER",
+      "status": "NOT_CANONICAL"
+    },
+    {
+      "eventName": "learning.srs.review.accepted.v1",
+      "owner": "learning-service",
+      "aggregateType": "srs_state",
+      "partitionKey": "logicalItemId",
+      "dedupeKey": "reviewFactId + stateVersionAfter",
+      "requiredPayloadPurpose": "QUALITY_CAP_ALGORITHM_VERSION_STATE_TRANSITION_AND_DUE_AT_WITHOUT_RAW_ANSWER",
+      "disposition": "OWNER_LOCAL_UNLESS_FUTURE_CROSS_SERVICE_CONSUMER",
+      "status": "NOT_CANONICAL"
+    },
+    {
+      "eventName": "learning.srs.state.changed.v2",
+      "owner": "learning-service",
+      "aggregateType": "srs_state",
+      "partitionKey": "logicalItemId",
+      "dedupeKey": "stateVersionAfter",
+      "requiredPayloadPurpose": "SRS_STAGE_ONLY_NEVER_REPAIR_OR_MASTERY_STAGE",
+      "disposition": "OWNER_LOCAL_UNLESS_FUTURE_CROSS_SERVICE_CONSUMER",
+      "status": "NOT_CANONICAL"
+    },
+    {
+      "eventName": "learning.repair.state.changed.v1",
+      "owner": "learning-service",
+      "aggregateType": "repair_item",
+      "partitionKey": "repairId",
+      "dedupeKey": "repairId + repairVersion",
+      "requiredPayloadPurpose": "REPAIR_WORKFLOW_VARIANT_AND_D1_D7_SCHEDULE",
+      "disposition": "OWNER_LOCAL_UNLESS_FUTURE_CROSS_SERVICE_CONSUMER",
+      "status": "NOT_CANONICAL"
+    },
+    {
+      "eventName": "learning.report.snapshot.created.v1",
+      "owner": "learning-service",
+      "aggregateType": "learning_report",
+      "partitionKey": "reportId",
+      "dedupeKey": "reportKey + reportVersion",
+      "requiredPayloadPurpose": "WATERMARK_VECTOR_METRIC_DEFINITIONS_AND_REBUILD_LINEAGE",
+      "disposition": "OWNER_LOCAL_UNLESS_FUTURE_CROSS_SERVICE_CONSUMER",
+      "status": "NOT_CANONICAL"
+    }
+  ],
+  "adversarialCases": [
+    "PLAN_REPLAY_SAME_INPUT_SAME_SEQUENCE",
+    "PLAN_UNKNOWN_PRIORITY_REJECTED",
+    "PLAN_DUPLICATE_LOGICAL_ITEM_DEDUPED",
+    "PLAN_NULL_SORT_FIELDS_USE_FIXED_SENTINELS",
+    "PLAN_LOCALE_SORT_PROHIBITED",
+    "PLAN_QUOTA_ENUM_DRIFT_REJECTED",
+    "PLAN_TOTAL_CAP_10_PERCENT_BOUNDARY",
+    "PLAN_CATCH_UP_EQUAL_TWO_R0_NOT_TRIGGERED",
+    "PLAN_CATCH_UP_GREATER_THAN_TWO_R0_TRIGGERED",
+    "PLAN_OPTIONAL_DOES_NOT_CONSUME_CORE_BUDGET",
+    "PLAN_MANDATORY_OVER_CAP_REMAINS_BACKLOG",
+    "SRS_RAW_QUALITY_OUT_OF_RANGE_REJECTED",
+    "SRS_UNANSWERED_CAP_ZERO",
+    "SRS_REVEALED_CAP_ZERO",
+    "SRS_INCORRECT_CAP_ONE",
+    "SRS_GUESSED_CAP_TWO",
+    "SRS_DECIMAL_HALF_UP_EASE_FACTOR",
+    "SRS_EASE_FACTOR_LOWER_AND_UPPER_CLAMP",
+    "SRS_REPETITION_SIX_TO_SEVEN_INTERVAL",
+    "SRS_INTERVAL_365_CLAMP",
+    "SRS_DST_GAP_AND_OVERLAP",
+    "SRS_TIMEZONE_CHANGE_PRESERVES_EXISTING_DUE_AT",
+    "SRS_EARLY_REVIEW_REJECTED",
+    "SRS_CLIENT_SEQUENCE_OUT_OF_ORDER",
+    "SRS_SAME_EVENT_DIFFERENT_PAYLOAD_CONFLICT",
+    "SRS_CONTENT_PIN_CONFLICT",
+    "SRS_UNKNOWN_OBJECTIVE_OUTCOME_REJECTED",
+    "SRS_NO_OBJECTIVE_EXPECTED_REQUIRES_SERVER_PREDECLARED_PRACTICE",
+    "SRS_NO_OBJECTIVE_EXPECTED_ILLEGAL_PRACTICE_REJECTED",
+    "SRS_STATE_NEGATIVE_OR_FRACTIONAL_REJECTED",
+    "SRS_DECIMAL_1_005_HALF_UP",
+    "REPAIR_ORIGINAL_QUESTION_ONLY_REJECTED",
+    "REPAIR_WITHDRAWN_CONTENT_PRESERVES_HISTORY",
+    "REPAIR_D1_OR_D7_NOT_DUE_REJECTED",
+    "REPAIR_D7_GATE_NOT_MET_REOPENS",
+    "MASTERY_DUPLICATE_EVIDENCE_IGNORED",
+    "MASTERY_SAME_LOCAL_DATE_DOES_NOT_COUNT_THREE_TIMES",
+    "MASTERY_GUESSED_CANNOT_CONSOLIDATE",
+    "MASTERY_CRITICAL_ERROR_DOWNGRADES",
+    "REPORT_ZERO_DENOMINATOR_NOT_ZERO_PERCENT",
+    "REPORT_MISSING_WATERMARK_PROCESSING",
+    "REPORT_LATE_EVENT_CREATES_NEW_VERSION",
+    "REPORT_REPLAY_DEDUPED",
+    "REPORT_HISTORICAL_ALGORITHM_NOT_REINTERPRETED",
+    "REPORT_METRIC_ARBITRARY_VALUE_REJECTED",
+    "REPORT_NEGATIVE_DENOMINATOR_REJECTED",
+    "OFFLINE_REPLAY_SAME_PAYLOAD_RETURNS_ORIGINAL_RECEIPT",
+    "OFFLINE_CLIENT_SEQ_OUT_OF_ORDER_REJECTED",
+    "OFFLINE_SAME_EVENT_DIFFERENT_PAYLOAD_CONFLICT",
+    "CLIENT_CANONICAL_EVENT_OR_MASTERY_XP_AUTHORITY_REJECTED"
+  ]
+}

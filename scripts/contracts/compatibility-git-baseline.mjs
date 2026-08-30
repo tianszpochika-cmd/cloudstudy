@@ -17,6 +17,30 @@ import {
   M1011_SOURCE_CONTRACT_BASELINE_REF,
   M1012_PLACEMENT_PROMOTION_ID,
   M1012_SOURCE_CONTRACT_BASELINE_REF,
+  M1013_LEARNING_LOOP_PROMOTION_ID,
+  M1013_SOURCE_CONTRACT_BASELINE_REF,
+  M1013_IMMUTABLE_GOVERNANCE_BASELINE_REF,
+  M1013_APPROVED_CANONICAL_EVENTS,
+  M1013_CANONICAL_ROUTE_PROJECTIONS,
+  M1013_LEGACY_ADAPTER_PROJECTIONS,
+  M1013_PROMOTION_ALLOWANCE_KEYS,
+  M1013_EVENT_PAYLOAD_SCHEMA_PROJECTIONS,
+  M1013_ASYNCAPI_CHANNEL_PROJECTIONS,
+  M1013_ASYNCAPI_OPERATION_PROJECTIONS,
+  M1013_OPENAPI_APPROVED_PARAMETER_PROJECTIONS,
+  M1013_OPENAPI_APPROVED_SCHEMA_PROJECTIONS,
+  M1013_OPENAPI_SOURCE_SEMANTIC_SHA256,
+  M1013_OPENAPI_EXPECTED_SEMANTIC_SHA256,
+  M1013_EVENT_SOURCE_SEMANTIC_SHA256,
+  M1013_EVENT_EXPECTED_SEMANTIC_SHA256,
+  M1013_B26_SOURCE_SEMANTIC_SHA256,
+  M1013_B26_EXPECTED_SEMANTIC_SHA256,
+  buildM1013OpenApiExpectedProjection,
+  buildM1013EventExpectedProjection,
+  buildM1013B26ExpectedProjection,
+  compareM1013OpenApiDescriptors,
+  compareM1013EventDescriptors,
+  compareM1013B26Descriptors,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -37,6 +61,7 @@ const mediaContractPolicyPath = 'config/p1r-media-contract.v1.json';
 const assessmentContractPolicyPath = 'config/p1r-assessment-contract.v1.json';
 const learnerPlanningContractPolicyPath = 'config/p1r-learner-planning-contract.v1.json';
 const placementContractPolicyPath = 'config/p1r-placement-contract.v1.json';
+const learningLoopContractPolicyPath = 'config/p1r-learning-loop-contract.v1.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
@@ -45,6 +70,7 @@ export const REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF = M1009_SOURCE_CONTRACT
 export const REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF = M1010_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF = M1011_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF = M1012_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF = M1013_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -897,6 +923,141 @@ function loadM1012CompatibilityPolicy(readFile) {
   });
 }
 
+const M1013_APPROVED_SOURCE_FILES = Object.freeze([
+  'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json',
+  'packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json',
+  'packages/contracts/fragments/b2-compatibility.openapi.json',
+  'packages/contracts/fragments/b2-vocabulary-srs.openapi.json',
+  'packages/contracts/fragments/b2-assessment-mastery.openapi.json',
+  'packages/contracts/events/v1/fragments/b10-learning-loop.events.json',
+  'packages/contracts/events/v1/catalog.json',
+  'packages/contracts/events/v1/reliability-policy.json',
+  'config/b26-event-runtime.json',
+]);
+
+const M1013_HISTORICAL_ONLY_SOURCES = Object.freeze([
+  'getB2DailyStream',
+  'submitReviewEvent',
+  'syncReviewEvents',
+  'getB2DailyReport',
+  'getB2WeeklyReport',
+  'assessment.attempt.assessed.v1',
+  'learning.mastery.projected.v1',
+  'learning.review.scheduled.v1',
+  'vocabulary.review.accepted.v1',
+  'vocabulary.srs.state_changed.v1',
+  'mastery.verification_state_changed.v1',
+  'report.generated.v1',
+]);
+
+const M1013_PROHIBITED_RUNTIME_CLAIMS = Object.freeze([
+  'http-execution-verified',
+  'database-persistence-verified',
+  'kafka-delivery-verified',
+  'consumer-processing-verified',
+  'gateway-pep-runtime-verified',
+  'b26-go',
+  'runtime-ready',
+]);
+
+const M1013_CANONICAL_ROUTE_POLICY = Object.freeze([
+  { id: 'B10-REVIEW-QUEUE-LIST', method: 'GET', path: '/api/v1/learning/review-queue', operationId: 'listB10LearningReviewQueue', requestSchema: 'NONE', responseSchema: 'B10LearningQueueItem[]', owner: 'learning-service', requiredPermission: 'learning.srs.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-REVIEW-COMPLETE', method: 'POST', path: '/api/v1/learning/review-queue/{queueItemId}/complete', operationId: 'completeB10LearningReview', requestSchema: 'B10CompleteReviewRequest', responseSchema: 'B10LearningReviewResult', owner: 'learning-service', requiredPermission: 'learning.srs.write', security: 'bearerAuth', idempotency: 'REQUIRED' },
+  { id: 'B10-MASTERY-ITEM', method: 'GET', path: '/api/v1/learning/mastery/{itemId}', operationId: 'getB10LearningMasteryProjection', requestSchema: 'NONE', responseSchema: 'B10MasteryProjection', owner: 'learning-service', requiredPermission: 'learning.mastery.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-PLAN-CURRENT', method: 'GET', path: '/api/v1/learning/plans/current', operationId: 'getB10LearningPlan', requestSchema: 'NONE', responseSchema: 'B10LearningPlan', owner: 'learning-service', requiredPermission: 'learning.plan.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-TODAY', method: 'GET', path: '/api/v1/learning/today', operationId: 'getB10LearningToday', requestSchema: 'NONE', responseSchema: 'B10TodayLearningPlan', owner: 'learning-service', requiredPermission: 'learning.today.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-PLAN-REORDER', method: 'POST', path: '/api/v1/learning/plans/reorder', operationId: 'reorderB10LearningPlan', requestSchema: 'B10PlanReorderRequest', responseSchema: 'B10PlanReorderResult', owner: 'learning-service', requiredPermission: 'learning.plan.write', security: 'bearerAuth', idempotency: 'REQUIRED' },
+  { id: 'B10-TASK-COMPLETE', method: 'POST', path: '/api/v1/learning/tasks/{taskId}/complete', operationId: 'completeB10LearningTask', requestSchema: 'B10TaskCompletionRequest', responseSchema: 'B10TaskCompletionResult', owner: 'learning-service', requiredPermission: 'learning.task.write', security: 'bearerAuth', idempotency: 'REQUIRED' },
+  { id: 'B10-REPAIR-LIST', method: 'GET', path: '/api/v1/learning/repairs', operationId: 'listB10LearningRepairs', requestSchema: 'NONE', responseSchema: 'B10RepairItem[]', owner: 'learning-service', requiredPermission: 'learning.repair.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-REPAIR-DETAIL', method: 'GET', path: '/api/v1/learning/repairs/{repairId}', operationId: 'getB10LearningRepair', requestSchema: 'NONE', responseSchema: 'B10RepairItem', owner: 'learning-service', requiredPermission: 'learning.repair.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-MASTERY-OVERVIEW', method: 'GET', path: '/api/v1/learning/mastery', operationId: 'getB10LearningMasteryOverview', requestSchema: 'NONE', responseSchema: 'B10MasteryOverview', owner: 'learning-service', requiredPermission: 'learning.mastery.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+  { id: 'B10-REPORT', method: 'GET', path: '/api/v1/learning/reports/{reportType}', operationId: 'getB10LearningReport', requestSchema: 'NONE', responseSchema: 'B10LearningReport', owner: 'learning-service', requiredPermission: 'learning.report.read', security: 'bearerAuth', idempotency: 'NOT_REQUIRED' },
+]);
+
+const M1013_LEGACY_ADAPTER_POLICY = Object.freeze([
+  { id: 'LEGACY-B1-DAILY-TASKS-TODAY', sourceFragment: 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json', method: 'GET', path: '/api/v1/onboarding/daily-tasks/today', operationId: 'getB1DailyTasks', canonicalOperationId: 'getB10LearningToday', canonicalRoute: '/api/v1/learning/today', owner: 'learning-service', requiredPermission: 'learning.plan.read', write: false },
+  { id: 'LEGACY-B1-DAILY-TASK-COMPLETE', sourceFragment: 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json', method: 'POST', path: '/api/v1/onboarding/daily-tasks/{taskId}/complete', operationId: 'completeB1DailyTask', canonicalOperationId: 'completeB10LearningTask', canonicalRoute: '/api/v1/learning/tasks/{taskId}/complete', owner: 'learning-service', requiredPermission: 'learning.task.write', write: true },
+  { id: 'LEGACY-B1-DAILY-TASKS-REORDER', sourceFragment: 'packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json', method: 'POST', path: '/api/v1/onboarding/daily-tasks/reorder', operationId: 'reorderB1DailyTasks', canonicalOperationId: 'reorderB10LearningPlan', canonicalRoute: '/api/v1/learning/plans/reorder', owner: 'learning-service', requiredPermission: 'learning.plan.write', write: true },
+  { id: 'LEGACY-B2-CURRENT-LEARNING-PLAN', sourceFragment: 'packages/contracts/fragments/b2-compatibility.openapi.json', method: 'GET', path: '/api/v1/learning/plan/current', operationId: 'getCurrentLearningPlan', canonicalOperationId: 'getB10LearningPlan', canonicalRoute: '/api/v1/learning/plans/current', owner: 'learning-service', requiredPermission: 'learning.plan.read', write: false },
+  { id: 'LEGACY-B2-TODAY-LEARNING-STREAM', sourceFragment: 'packages/contracts/fragments/b2-compatibility.openapi.json', method: 'GET', path: '/api/v1/learning/stream/today', operationId: 'getTodayLearningStream', canonicalOperationId: 'getB10LearningToday', canonicalRoute: '/api/v1/learning/today', owner: 'learning-service', requiredPermission: 'learning.plan.read', write: false },
+  { id: 'LEGACY-B2-SUBMIT-LEARNING-STREAM-ACTION', sourceFragment: 'packages/contracts/fragments/b2-compatibility.openapi.json', method: 'POST', path: '/api/v1/learning/stream/action', operationId: 'submitLearningStreamAction', canonicalOperationId: 'completeB10LearningReview', canonicalRoute: '/api/v1/learning/review-queue/{queueItemId}/complete', owner: 'learning-service', requiredPermission: 'learning.srs.write', write: true },
+  { id: 'LEGACY-B2-LEARNING-MISTAKE-QUEUE', sourceFragment: 'packages/contracts/fragments/b2-compatibility.openapi.json', method: 'GET', path: '/api/v1/learning/mistakes/queue', operationId: 'getLearningMistakeQueue', canonicalOperationId: 'listB10LearningRepairs', canonicalRoute: '/api/v1/learning/repairs', owner: 'learning-service', requiredPermission: 'learning.repair.read', write: false },
+  { id: 'LEGACY-B2-VERIFY-LEARNING-MISTAKE', sourceFragment: 'packages/contracts/fragments/b2-compatibility.openapi.json', method: 'POST', path: '/api/v1/learning/mistakes/verify', operationId: 'verifyLearningMistake', canonicalOperationId: 'completeB10LearningReview', canonicalRoute: '/api/v1/learning/review-queue/{queueItemId}/complete', owner: 'learning-service', requiredPermission: 'learning.srs.write', write: true },
+  { id: 'LEGACY-B2-DAILY-LEARNING-SUMMARY', sourceFragment: 'packages/contracts/fragments/b2-compatibility.openapi.json', method: 'GET', path: '/api/v1/learning/stats/daily-summary', operationId: 'getDailyLearningSummary', canonicalOperationId: 'getB10LearningReport', canonicalRoute: '/api/v1/learning/reports/{reportType}', owner: 'learning-service', requiredPermission: 'learning.report.read', write: false },
+  { id: 'LEGACY-B2-CREATE-SRS-BATCH', sourceFragment: 'packages/contracts/fragments/b2-vocabulary-srs.openapi.json', method: 'POST', path: '/api/v1/learning/srs/batches', operationId: 'createSrsBatch', canonicalOperationId: 'getB10LearningToday', canonicalRoute: '/api/v1/learning/today', owner: 'learning-service', requiredPermission: 'learning.plan.read', write: true },
+  { id: 'LEGACY-B2-GET-SRS-BATCH', sourceFragment: 'packages/contracts/fragments/b2-vocabulary-srs.openapi.json', method: 'GET', path: '/api/v1/learning/srs/batches/{snapshotId}', operationId: 'getSrsBatch', canonicalOperationId: 'getB10LearningToday', canonicalRoute: '/api/v1/learning/today', owner: 'learning-service', requiredPermission: 'learning.plan.read', write: false },
+  { id: 'LEGACY-B2-SUBMIT-REVIEW-EVENT', sourceFragment: 'packages/contracts/fragments/b2-vocabulary-srs.openapi.json', method: 'POST', path: '/api/v1/learning/srs/reviews', operationId: 'submitReviewEvent', canonicalOperationId: 'completeB10LearningReview', canonicalRoute: '/api/v1/learning/review-queue/{queueItemId}/complete', owner: 'learning-service', requiredPermission: 'learning.srs.write', write: true },
+  { id: 'LEGACY-B2-SYNC-REVIEW-EVENTS', sourceFragment: 'packages/contracts/fragments/b2-vocabulary-srs.openapi.json', method: 'POST', path: '/api/v1/learning/srs/reviews:sync', operationId: 'syncReviewEvents', canonicalOperationId: 'completeB10LearningReview', canonicalRoute: '/api/v1/learning/review-queue/{queueItemId}/complete', owner: 'learning-service', requiredPermission: 'learning.srs.write', write: true },
+  { id: 'LEGACY-B2-LIST-SRS-STATES', sourceFragment: 'packages/contracts/fragments/b2-vocabulary-srs.openapi.json', method: 'GET', path: '/api/v1/learning/srs/states', operationId: 'listSrsStates', canonicalOperationId: 'listB10LearningReviewQueue', canonicalRoute: '/api/v1/learning/review-queue', owner: 'learning-service', requiredPermission: 'learning.srs.read', write: false },
+  { id: 'LEGACY-B2-GET-SRS-OVERVIEW', sourceFragment: 'packages/contracts/fragments/b2-vocabulary-srs.openapi.json', method: 'GET', path: '/api/v1/learning/srs/overview', operationId: 'getSrsOverview', canonicalOperationId: 'listB10LearningReviewQueue', canonicalRoute: '/api/v1/learning/review-queue', owner: 'learning-service', requiredPermission: 'learning.srs.read', write: false },
+  { id: 'LEGACY-B2-DAILY-STREAM', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/assessment/daily-stream', operationId: 'getB2DailyStream', canonicalOperationId: 'getB10LearningToday', canonicalRoute: '/api/v1/learning/today', owner: 'learning-service', requiredPermission: 'learning.plan.read', write: false },
+  { id: 'LEGACY-B2-MASTERY-OVERVIEW', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/mastery/overview', operationId: 'getB2MasteryOverview', canonicalOperationId: 'getB10LearningMasteryOverview', canonicalRoute: '/api/v1/learning/mastery', owner: 'learning-service', requiredPermission: 'learning.mastery.read', write: false },
+  { id: 'LEGACY-B2-MISTAKES', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/mastery/mistakes', operationId: 'listB2Mistakes', canonicalOperationId: 'listB10LearningRepairs', canonicalRoute: '/api/v1/learning/repairs', owner: 'learning-service', requiredPermission: 'learning.repair.read', write: false },
+  { id: 'LEGACY-B2-MISTAKE-DETAIL', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/mastery/mistakes/{mistakeId}', operationId: 'getB2MistakeDetail', canonicalOperationId: 'getB10LearningRepair', canonicalRoute: '/api/v1/learning/repairs/{repairId}', owner: 'learning-service', requiredPermission: 'learning.repair.read', write: false },
+  { id: 'LEGACY-B2-MISTAKE-RETRY', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'POST', path: '/api/v1/mastery/mistakes/{mistakeId}/retry', operationId: 'startB2MistakeRetry', canonicalOperationId: 'completeB10LearningReview', canonicalRoute: '/api/v1/learning/review-queue/{queueItemId}/complete', owner: 'learning-service', requiredPermission: 'learning.srs.write', write: true },
+  { id: 'LEGACY-B2-MASTERY-VERIFICATIONS', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/mastery/verifications', operationId: 'listB2MasteryVerifications', canonicalOperationId: 'listB10LearningRepairs', canonicalRoute: '/api/v1/learning/repairs', owner: 'learning-service', requiredPermission: 'learning.repair.read', write: false },
+  { id: 'LEGACY-B2-SUBMIT-MASTERY-VERIFICATION', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'POST', path: '/api/v1/mastery/verifications/{verificationId}/submit', operationId: 'submitB2MasteryVerification', canonicalOperationId: 'completeB10LearningReview', canonicalRoute: '/api/v1/learning/review-queue/{queueItemId}/complete', owner: 'learning-service', requiredPermission: 'learning.srs.write', write: true },
+  { id: 'LEGACY-B2-DAILY-REPORT', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/learning/stats/daily-report', operationId: 'getB2DailyReport', canonicalOperationId: 'getB10LearningReport', canonicalRoute: '/api/v1/learning/reports/{reportType}', owner: 'learning-service', requiredPermission: 'learning.report.read', write: false },
+  { id: 'LEGACY-B2-WEEKLY-REPORT', sourceFragment: 'packages/contracts/fragments/b2-assessment-mastery.openapi.json', method: 'GET', path: '/api/v1/learning/stats/weekly-report', operationId: 'getB2WeeklyReport', canonicalOperationId: 'getB10LearningReport', canonicalRoute: '/api/v1/learning/reports/{reportType}', owner: 'learning-service', requiredPermission: 'learning.report.read', write: false },
+]);
+
+const M1013_COMPATIBILITY_PROMOTION_POLICY_KEYS = M1013_PROMOTION_ALLOWANCE_KEYS;
+
+export function validateM1013CompatibilityPolicy(policy) {
+  const errors = [];
+  exactPolicyValue(policy?.task, 'P1R-M1-013', 'learning-loop contract policy task', errors);
+  exactPolicyValue(policy?.maturity, 'D2_CONTRACT_READY', 'learning-loop contract policy maturity', errors);
+  exactPolicyValue(policy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'learning-loop contract policy runtimeStatus', errors);
+  exactPolicyValue(policy?.sourceBaseline, M1013_SOURCE_CONTRACT_BASELINE_REF, 'learning-loop contract source baseline', errors);
+  const promotion = policy?.compatibilityPromotion;
+  exactPolicyKeys(promotion, M1013_COMPATIBILITY_PROMOTION_POLICY_KEYS, 'M1-013 compatibility promotion', errors);
+  exactPolicyValue(promotion?.id, M1013_LEARNING_LOOP_PROMOTION_ID, 'M1-013 promotion id', errors);
+  exactPolicyValue(promotion?.sourceContractBaseline, M1013_SOURCE_CONTRACT_BASELINE_REF, 'M1-013 promotion source baseline', errors);
+  exactPolicyValue(promotion?.previousPromotion, M1012_PLACEMENT_PROMOTION_ID, 'M1-013 previous promotion', errors);
+  exactPolicyValue(promotion?.immutableGovernanceBaseline, M1013_IMMUTABLE_GOVERNANCE_BASELINE_REF, 'M1-013 immutable governance baseline', errors);
+  exactPolicyValue(promotion?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'M1-013 promotion runtimeStatus', errors);
+  exactPolicyValue(promotion?.scope, 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC', 'M1-013 promotion scope', errors);
+  exactPolicyValue(promotion?.approvedSourceFiles, M1013_APPROVED_SOURCE_FILES, 'M1-013 approved source files', errors);
+  exactPolicyValue(promotion?.approvedCanonicalEvents, M1013_APPROVED_CANONICAL_EVENTS, 'M1-013 approved canonical events', errors);
+  exactPolicyValue(promotion?.canonicalRoutes, M1013_CANONICAL_ROUTE_POLICY, 'M1-013 canonical route policy', errors);
+  exactPolicyValue(promotion?.legacyAdapters, M1013_LEGACY_ADAPTER_POLICY, 'M1-013 legacy adapter policy', errors);
+  exactPolicyValue(promotion?.historicalOnlySources, M1013_HISTORICAL_ONLY_SOURCES, 'M1-013 historical-only sources', errors);
+  exactPolicyValue(promotion?.prohibitedRuntimeClaims, M1013_PROHIBITED_RUNTIME_CLAIMS, 'M1-013 prohibited runtime claims', errors);
+  return errors;
+}
+
+function loadM1013CompatibilityPolicy(readFile) {
+  let policy;
+  try {
+    policy = JSON.parse(readFile(path.join(repoRoot, ...learningLoopContractPolicyPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M1-013 compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM1013CompatibilityPolicy(policy);
+  if (errors.length > 0) {
+    throw new Error(`M1-013 compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({ ...policy.compatibilityPromotion });
+}
+
+function loadM1013SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== M1013_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M1-013 source contract ref ${M1013_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  return {
+    ref,
+    commit,
+    openapi: JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`])),
+    catalog: JSON.parse(git(['show', `${commit}:${contractPaths.events}`])),
+    b26Runtime: JSON.parse(git(['show', `${commit}:${b26RuntimePath}`])),
+    source: `git:${commit}:packages/contracts/{openapi/v1/openapi.json,events/v1/catalog.json,../config/b26-event-runtime.json}`,
+  };
+}
+
 function loadImmutableGovernanceBaseline(governanceRef, git) {
   if (governanceRef !== REQUIRED_EVENT_GOVERNANCE_BASELINE_REF) {
     throw new Error(
@@ -1033,10 +1194,26 @@ export function runGitBaselineCompatibility({
   const selectedKinds = normalizeKind(kind);
   const baselineCommit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
   const currentCommit = git(['rev-parse', '--verify', 'HEAD^{commit}']).trim();
+  if (baselineCommit === currentCommit) {
+    throw new Error(
+      `Compatibility baseline ${ref} resolves to the current HEAD and every selected contract is identical; choose an older accepted commit.`,
+    );
+  }
   const needsM1008Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1010Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1011Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1012Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM1013Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const m1013BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM1013Promotion = needsM1013Promotion && m1013BaselineRefs.has(baselineCommit);
   const needsM1009Promotion = selectedKinds.includes('openapi');
   const needsM1009Policy = needsM1009Promotion || needsM1010Promotion;
   const needsEventGovernance = selectedKinds.includes('events');
@@ -1075,6 +1252,12 @@ export function runGitBaselineCompatibility({
     : undefined;
   const placementSourceContractBaseline = needsM1012Promotion
     ? loadM1012SourceContractBaseline(placementPromotion, git)
+    : undefined;
+  const learningLoopPromotion = useM1013Promotion
+    ? loadM1013CompatibilityPolicy(readFile)
+    : undefined;
+  const learningLoopSourceContractBaseline = useM1013Promotion
+    ? loadM1013SourceContractBaseline(learningLoopPromotion, git)
     : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
@@ -1173,6 +1356,22 @@ export function runGitBaselineCompatibility({
       { allowance: learnerPlanningPromotion },
     )
     : [];
+  const m1012ToM1013OpenApiIntegrityChanges = useM1013Promotion
+    ? compareContracts(
+      'openapi',
+      placementSourceContractBaseline.openapi,
+      learningLoopSourceContractBaseline.openapi,
+      { allowance: placementPromotion },
+    )
+    : [];
+  const m1012ToM1013EventIntegrityChanges = useM1013Promotion && needsEventGovernance
+    ? compareContracts(
+      'events',
+      placementSourceContractBaseline.catalog,
+      learningLoopSourceContractBaseline.catalog,
+      { allowance: placementPromotion },
+    )
+    : [];
   const m1011SourceB26IntegrityChanges = needsEventGovernance
     ? compareB26WorkflowGovernance(
       immutableGovernanceBaseline.b26Runtime,
@@ -1185,6 +1384,13 @@ export function runGitBaselineCompatibility({
       learnerPlanningSourceContractBaseline.b26Runtime,
       placementSourceContractBaseline.b26Runtime,
       { allowance: learnerPlanningPromotion },
+    )
+    : [];
+  const m1012ToM1013B26IntegrityChanges = useM1013Promotion && needsEventGovernance
+    ? compareB26WorkflowGovernance(
+      placementSourceContractBaseline.b26Runtime,
+      learningLoopSourceContractBaseline.b26Runtime,
+      { allowance: placementPromotion },
     )
     : [];
 
@@ -1209,7 +1415,71 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1012Promotion) {
+    if (contractKind === 'openapi' && useM1013Promotion) {
+      breakingChanges = [
+        ...m1008ToM1009IntegrityChanges,
+        ...m1009ToM1010OpenApiIntegrityChanges,
+        ...m1010ToM1011OpenApiIntegrityChanges,
+        ...m1011ToM1012OpenApiIntegrityChanges,
+        ...m1012ToM1013OpenApiIntegrityChanges,
+        ...compareContracts(
+          'openapi',
+          learningLoopSourceContractBaseline.openapi,
+          current,
+          { allowance: learningLoopPromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: learningLoopPromotion.id,
+        sourceContractBaseline: learningLoopSourceContractBaseline.commit,
+        previousPromotion: placementPromotion.id,
+        previousPromotionSource: placementSourceContractBaseline.commit,
+        immutableGovernanceBaseline: learningLoopPromotion.immutableGovernanceBaseline,
+        runtimeStatus: learningLoopPromotion.runtimeStatus,
+        scope: learningLoopPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'events' && useM1013Promotion) {
+      const currentB26 = JSON.parse(readFile(path.join(repoRoot, ...b26RuntimePath.split('/'))));
+      breakingChanges = [
+        ...m1008ToM1010EventIntegrityChanges,
+        ...m1010ToM1011EventIntegrityChanges,
+        ...m1011ToM1012EventIntegrityChanges,
+        ...m1012ToM1013EventIntegrityChanges,
+        ...compareContracts(
+          'events',
+          learningLoopSourceContractBaseline.catalog,
+          current,
+          { allowance: learningLoopPromotion },
+        ),
+        ...m1011SourceB26IntegrityChanges,
+        ...m1011ToM1012B26IntegrityChanges,
+        ...m1012ToM1013B26IntegrityChanges,
+        ...compareB26WorkflowGovernance(
+          learningLoopSourceContractBaseline.b26Runtime,
+          currentB26,
+          { allowance: learningLoopPromotion },
+        ),
+        ...immutableBaselineIntegrityChanges,
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      resultGovernanceBaseline = governanceSummary;
+      promotionResult = {
+        id: learningLoopPromotion.id,
+        sourceContractBaseline: learningLoopSourceContractBaseline.commit,
+        previousPromotion: placementPromotion.id,
+        previousPromotionSource: placementSourceContractBaseline.commit,
+        immutableGovernanceBaseline: immutableGovernanceBaseline.commit,
+        runtimeStatus: learningLoopPromotion.runtimeStatus,
+        scope: learningLoopPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1012Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...m1009ToM1010OpenApiIntegrityChanges,
@@ -1471,11 +1741,6 @@ export function runGitBaselineCompatibility({
     };
   });
 
-  if (baselineCommit === currentCommit && comparisons.every((comparison) => comparison.identical)) {
-    throw new Error(
-      `Compatibility baseline ${ref} resolves to the current HEAD and every selected contract is identical; choose an older accepted commit.`,
-    );
-  }
   const results = comparisons.map((comparison) => comparison.result);
 
   return {
@@ -1483,7 +1748,17 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1012Promotion
+    promotion: useM1013Promotion
+      ? {
+        id: learningLoopPromotion.id,
+        sourceContractBaseline: learningLoopSourceContractBaseline.commit,
+        previousPromotion: placementPromotion.id,
+        previousPromotionSource: placementSourceContractBaseline.commit,
+        immutableGovernanceBaseline: learningLoopPromotion.immutableGovernanceBaseline,
+        runtimeStatus: learningLoopPromotion.runtimeStatus,
+        scope: learningLoopPromotion.scope,
+      }
+      : useM1012Promotion
       ? {
         id: placementPromotion.id,
         sourceContractBaseline: placementSourceContractBaseline.commit,

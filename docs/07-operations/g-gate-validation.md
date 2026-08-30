@@ -33,7 +33,7 @@ pnpm g:bootstrap --require-runtime
 
 - `pnpm test:g`：PASS，41/41。
 - G0 validator：PASS，5 个静态检查、3 个运行证据保持 pending，`BLOCKED`。
-- G1 validator：PASS，6 个静态检查、6 个运行证据保持 pending，契约统计为 402 operations、476 OpenAPI schemas、144 events、100 event payload schemas、15 个 data owner。
+- G1 validator：PASS，6 个静态检查、6 个运行证据保持 pending，契约统计为 401 operations、646 OpenAPI schemas、158 events、108 event payload schemas、15 个 data owner。
 - G2 validator：PASS，10 个静态检查、8 个运行检查，`PASS/NO-GO`，真实交互和设备证据保持 pending。
 - G3 validator：PASS，12 个静态检查、12 个运行检查，`PASS/NO-GO`，真实扫描、观测和设备证据保持 pending/blocked。
 - G4 validator：PASS，10 个静态检查、12 个运行检查、22 个证据索引，`BLOCKED/NO-GO`。

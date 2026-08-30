@@ -1107,6 +1107,108 @@
         "tags": [
           "srs"
         ],
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/today",
+          "canonicalOperationId": "getB10LearningToday",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningToday",
+          "canonicalRoute": "/api/v1/learning/today",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "noSecondWrite": true,
+          "write": true,
+          "canonicalWrite": false,
+          "authority": "the adapter may only translate a legacy snapshot request; plan/today/SRS facts remain learning-service-owned",
+          "legacyRequestFieldPolicy": "every declared legacy field is explicitly translated, validated against a server-derived fact, or rejected; unknown fields are denied",
+          "semanticMismatch": "FAIL_CLOSED"
+        },
+        "x-migration": {
+          "kind": "DEPRECATED_ADAPTER_ONLY",
+          "source": {
+            "method": "POST",
+            "path": "/api/v1/learning/srs/batches",
+            "operationId": "createSrsBatch"
+          },
+          "target": {
+            "method": "GET",
+            "path": "/api/v1/learning/today",
+            "operationId": "getB10LearningToday",
+            "canonicalWrite": false,
+            "owner": "learning-service"
+          },
+          "noSecondWrite": true,
+          "unknownFieldDecision": "DENY",
+          "semanticMismatchDecision": "FAIL_CLOSED",
+          "requestFieldPolicy": {
+            "localDate": {
+              "action": "TRANSLATE_TO_QUERY",
+              "target": "query.date",
+              "authority": "client local-date selector only",
+              "mismatchDecision": "FAIL_CLOSED"
+            },
+            "timezone": {
+              "action": "VALIDATE_AGAINST_SERVER_DERIVED",
+              "sourceLocations": ["body.timezone", "header.X-Timezone"],
+              "target": "NONE",
+              "serverDerivedFact": "principal.scheduleTimezoneId",
+              "clientAuthority": "assertion only; never used to derive dueAt or plan facts",
+              "mismatchDecision": "FAIL_CLOSED"
+            },
+            "dailyNewTarget": {
+              "action": "VALIDATE_AGAINST_SERVER_PLAN_THEN_DISCARD",
+              "target": "NONE",
+              "serverDerivedFact": "today plan count of eligible NEW_CORE tasks",
+              "mismatchDecision": "FAIL_CLOSED"
+            },
+            "maxDailyReview": {
+              "action": "VALIDATE_AGAINST_SERVER_PLAN_THEN_DISCARD",
+              "target": "NONE",
+              "serverDerivedFact": "today plan count of eligible SRS/repair review tasks",
+              "mismatchDecision": "FAIL_CLOSED"
+            },
+            "scheduleType": {
+              "action": "VALIDATE_AGAINST_SERVER_PLAN",
+              "target": "NONE",
+              "serverDerivedFact": "P1_DAILY_PLAN_V1 schedule and active plan status",
+              "supportedValues": ["DAILY"],
+              "unsupportedValues": ["CATCH_UP", "EXPRESSION"],
+              "unsupportedDecision": "FAIL_CLOSED",
+              "mismatchDecision": "FAIL_CLOSED"
+            }
+          },
+          "responseTranslation": "translate only server-owned B10TodayLearningPlan facts into the legacy snapshot envelope; if any requested legacy field has no equivalent server fact, reject or quarantine instead of silently dropping it"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none for plan, SRS state or schedule"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "srs-batch",
@@ -1210,6 +1312,47 @@
         "tags": [
           "srs"
         ],
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/today",
+          "canonicalOperationId": "getB10LearningToday",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningToday",
+          "canonicalRoute": "/api/v1/learning/today",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/SnapshotId"
@@ -1297,6 +1440,48 @@
         "tags": [
           "srs"
         ],
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "canonicalOperationId": "completeB10LearningReview",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "completeB10LearningReview",
+          "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": true,
+          "authority": "one canonical review command owns SRS scheduling, repair workflow and mastery projection"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.write",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "observed review only; result, effective quality, interval, dueAt, algorithm, mastery and tenant are forbidden"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "srs-review",
@@ -1373,6 +1558,48 @@
         "tags": [
           "srs"
         ],
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "canonicalOperationId": "completeB10LearningReview",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "completeB10LearningReview",
+          "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": true,
+          "batchAdapter": "translate each legacy event into one canonical review command; never calculate or batch-write SRS state"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.write",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "observed review only; each event is subject to canonical idempotency and version conflict"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "srs-review-sync",
@@ -1467,6 +1694,48 @@
         "tags": [
           "srs"
         ],
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/review-queue",
+          "canonicalOperationId": "listB10LearningReviewQueue",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "listB10LearningReviewQueue",
+          "canonicalRoute": "/api/v1/learning/review-queue",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false,
+          "authority": "SRS state is a learning-service read projection; D1/D7 verification remains a separate repair field"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "parameters": [
           {
             "name": "itemType",
@@ -1557,6 +1826,47 @@
         "tags": [
           "srs"
         ],
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/review-queue",
+          "canonicalOperationId": "listB10LearningReviewQueue",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "listB10LearningReviewQueue",
+          "canonicalRoute": "/api/v1/learning/review-queue",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; summary is translated from server-owned learning projection"
+        },
         "responses": {
           "200": {
             "description": "SRS 基础统计",
@@ -1775,6 +2085,8 @@
       },
       "SrsState": {
         "type": "object",
+        "additionalProperties": false,
+        "x-compatibility-only": true,
         "required": [
           "srsStateId",
           "item",
@@ -1851,6 +2163,9 @@
       },
       "ReviewEventRequest": {
         "type": "object",
+        "additionalProperties": false,
+        "x-compatibility-only": true,
+        "x-canonical-replacement-schema": "B10CompleteReviewRequest",
         "required": [
           "snapshotItemId",
           "item",
@@ -2026,6 +2341,8 @@
       },
       "SrsBatchCreateRequest": {
         "type": "object",
+        "additionalProperties": false,
+        "x-compatibility-only": true,
         "required": [
           "localDate",
           "timezone",
@@ -2324,6 +2641,8 @@
       },
       "SrsBatchItem": {
         "type": "object",
+        "additionalProperties": false,
+        "x-compatibility-only": true,
         "required": [
           "snapshotItemId",
           "sequenceNo",
@@ -2444,6 +2763,9 @@
       },
       "ReviewEventResponse": {
         "type": "object",
+        "additionalProperties": false,
+        "x-compatibility-only": true,
+        "x-canonical-replacement-schema": "B10LearningReviewResult",
         "required": [
           "reviewEventId",
           "eventStatus",
@@ -2514,6 +2836,8 @@
       },
       "SrsOverview": {
         "type": "object",
+        "additionalProperties": false,
+        "x-compatibility-only": true,
         "required": [
           "todayDue",
           "overdue",

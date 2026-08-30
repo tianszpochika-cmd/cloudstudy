@@ -18,6 +18,7 @@ export const DEFAULT_RELIABILITY_POLICY =
 export const DEFAULT_SAGA_POLICY = "config/p1r-saga-recovery.v1.json";
 
 const CANONICAL_EVENTS = [
+  "assessment.item.assessed.v2",
   "assessment.placement.completed.v1",
   "content.version.published.v1",
   "content.version.reviewed.v1",
@@ -25,6 +26,8 @@ const CANONICAL_EVENTS = [
   "content.version.submitted.v1",
   "content.version.unpublished.v1",
   "learner.target.updated.v1",
+  "learning.mastery.projected.v2",
+  "learning.review.scheduled.v2",
   "workflow.event.dead_lettered.v1",
   "workflow.event.delivery_failed.v1",
   "workflow.event.ordering_deferred.v1",

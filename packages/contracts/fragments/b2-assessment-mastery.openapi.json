@@ -33,6 +33,40 @@
           "legacyReadOnly": true,
           "runtimeStatus": "NOT_RUNTIME_VERIFIED"
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningToday",
+          "canonicalRoute": "/api/v1/learning/today",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "x-b2-acceptance": [
           "DEV-05-006",
           "DEV-05-005"
@@ -1622,6 +1656,47 @@
         ],
         "operationId": "getB2MasteryOverview",
         "summary": "读取复习、D1/D7 和长期掌握概览",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/mastery",
+          "canonicalOperationId": "getB10LearningMasteryOverview",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningMasteryOverview",
+          "canonicalRoute": "/api/v1/learning/mastery",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.mastery.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "responses": {
           "200": {
             "description": "Mastery overview",
@@ -1669,6 +1744,47 @@
         ],
         "operationId": "listB2Mistakes",
         "summary": "按错因和掌握状态分页读取错题",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/repairs",
+          "canonicalOperationId": "listB10LearningRepairs",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "listB10LearningRepairs",
+          "canonicalRoute": "/api/v1/learning/repairs",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.repair.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; repair workflow facts are server-derived"
+        },
         "responses": {
           "200": {
             "description": "Cursor page",
@@ -1733,6 +1849,47 @@
         ],
         "operationId": "getB2MistakeDetail",
         "summary": "读取错题状态转移和解释证据",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/repairs/{repairId}",
+          "canonicalOperationId": "getB10LearningRepair",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningRepair",
+          "canonicalRoute": "/api/v1/learning/repairs/{repairId}",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.repair.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B2MistakeId"
@@ -1788,6 +1945,48 @@
         ],
         "operationId": "startB2MistakeRetry",
         "summary": "开始 D0 订正",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "canonicalOperationId": "completeB10LearningReview",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "completeB10LearningReview",
+          "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": true,
+          "authority": "learning-service alone advances repair, SRS and mastery"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.write",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "verification observation only; no client-derived state transition"
+        },
         "x-b2-acceptance": [
           "DEV-05-008",
           "DEV-05-009"
@@ -1856,6 +2055,47 @@
         ],
         "operationId": "listB2MasteryVerifications",
         "summary": "读取 D0/D1/D7 验证队列和历史",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/repairs",
+          "canonicalOperationId": "listB10LearningRepairs",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "listB10LearningRepairs",
+          "canonicalRoute": "/api/v1/learning/repairs",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.repair.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; repair timing and verification stage are server-derived"
+        },
         "responses": {
           "200": {
             "description": "Cursor page",
@@ -1920,6 +2160,47 @@
         ],
         "operationId": "submitB2MasteryVerification",
         "summary": "提交 D0/D1/D7 验证答案",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "canonicalOperationId": "completeB10LearningReview",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "completeB10LearningReview",
+          "canonicalRoute": "/api/v1/learning/review-queue/{queueItemId}/complete",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.write",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "verification observation only; no client-derived SRS or mastery"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "mastery-verification",
@@ -2003,6 +2284,49 @@
         ],
         "operationId": "getB2DailyReport",
         "summary": "读取 learning-service MySQL 学习日报投影",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/reports/DAILY",
+          "canonicalOperationId": "getB10LearningReport",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningReport",
+          "canonicalRoute": "/api/v1/learning/reports/{reportType}",
+          "canonicalRouteExample": "/api/v1/learning/reports/DAILY",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false,
+          "authority": "watermarks, metric status and report versions are server-owned"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.report.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "x-b2-acceptance": [
           "DEV-05-012"
         ],
@@ -2058,6 +2382,49 @@
         ],
         "operationId": "getB2WeeklyReport",
         "summary": "读取 learning-service MySQL 学习周报投影",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/reports/WEEKLY",
+          "canonicalOperationId": "getB10LearningReport",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningReport",
+          "canonicalRoute": "/api/v1/learning/reports/{reportType}",
+          "canonicalRouteExample": "/api/v1/learning/reports/WEEKLY",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "write": false,
+          "authority": "watermarks, metric status and report versions are server-owned"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.report.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; response translation only"
+        },
         "x-b2-acceptance": [
           "DEV-05-012"
         ],

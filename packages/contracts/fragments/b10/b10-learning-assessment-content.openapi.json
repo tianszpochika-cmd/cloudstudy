@@ -985,8 +985,29 @@
         ],
         "x-contract": {
           "owner": "learning-service",
+          "canonical": true,
+          "readModel": "srs_review_queue",
           "source": "learning facts and mastery projection",
           "contentPin": "each item retains its source content version pin"
+        },
+        "x-owner": "learning-service",
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.srs.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; SRS, repair and mastery stages are server-derived"
         },
         "parameters": [
           {
@@ -1061,21 +1082,45 @@
         ],
         "summary": "Complete a review action through learning-service",
         "operationId": "completeB10LearningReview",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "x-contract": {
-          "owner": "learning-service",
-          "command": "learning.review.complete",
-          "assessment": "only assessment-service may produce assessment result facts"
-        },
-        "x-idempotency": {
-          "required": true,
-          "strategy": "b10-learning-review-complete",
-          "keyHeader": "Idempotency-Key",
-          "replayBehavior": "same queue item and action digest return the original projection version"
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "x-owner": "learning-service",
+          "x-contract": {
+            "owner": "learning-service",
+            "command": "learning.review.complete",
+            "canonical": true,
+            "singleWritePath": true,
+            "authority": "learning-service derives SRS scheduling, repair workflow and mastery projection",
+            "assessment": "only assessment-service may produce assessment outcome facts; an assessment outcome never authorizes a mastery or SRS write",
+            "clientAuthority": "observed review facts and concurrency/content pins only"
+          },
+          "x-authorization": {
+            "defaultDecision": "DENY",
+            "requiredPermission": "learning.srs.write",
+            "pep": "learning-service-local",
+            "trustedFacts": [
+              "subject",
+              "tenant",
+              "resourceOwner",
+              "roles",
+              "permissions",
+              "phase",
+              "adultGate",
+              "consent",
+              "contentRights",
+              "policyVersion"
+            ],
+            "clientAuthority": "none for result, effective quality, schedule, repair or mastery"
+          },
+          "x-idempotency": {
+            "required": true,
+            "strategy": "b10-learning-review-complete",
+            "keyHeader": "Idempotency-Key",
+            "replayBehavior": "same queue item, command digest and client sequence return the original review receipt",
+            "conflictBehavior": "stale baseStateVersion, reused clientEventId with a different payload, content pin mismatch or sequence gap returns 409; the client never retries by changing server-derived fields"
         },
         "parameters": [
           {
@@ -1113,11 +1158,11 @@
                       "required": [
                         "data"
                       ],
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/B10MasteryProjection"
+                        "properties": {
+                          "data": {
+                            "$ref": "#/components/schemas/B10LearningReviewResult"
+                          }
                         }
-                      }
                     }
                   ]
                 }
@@ -1160,16 +1205,37 @@
         ],
         "summary": "Read the current mastery projection for an item",
         "operationId": "getB10LearningMasteryProjection",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "x-contract": {
-          "owner": "learning-service",
-          "readModel": "mastery_projection",
-          "historicalSource": "assessment event; no direct assessment table read"
-        },
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "x-owner": "learning-service",
+          "x-contract": {
+            "owner": "learning-service",
+            "canonical": true,
+            "readModel": "mastery_projection",
+            "historicalSource": "assessment event; no direct assessment table read",
+            "authority": "mastery stage and evidence are learning-service projections"
+          },
+          "x-authorization": {
+            "defaultDecision": "DENY",
+            "requiredPermission": "learning.mastery.read",
+            "pep": "learning-service-local",
+            "trustedFacts": [
+              "subject",
+              "tenant",
+              "resourceOwner",
+              "roles",
+              "permissions",
+              "phase",
+              "adultGate",
+              "consent",
+              "contentRights",
+              "policyVersion"
+            ],
+            "clientAuthority": "none; mastery evidence, stage and versions are server-derived"
+          },
         "parameters": [
           {
             "$ref": "#/components/parameters/B10ItemId"
@@ -1220,6 +1286,721 @@
           },
           "404": {
             "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/plans/current": {
+      "get": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Read the server-owned deterministic learning plan",
+        "operationId": "getB10LearningPlan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "authority": "plan sequence, priority, budget, reason and content/rule pins are server-owned",
+          "source": "P1_DAILY_PLAN_V1"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; plan facts and versions are server-derived"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10LocalDateOptional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current learning plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10LearningPlan"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/today": {
+      "get": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Read today's server-owned learning plan",
+        "operationId": "getB10LearningToday",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "authority": "today task sequence, priorities, budgets, reasons and content/rule pins are server-owned",
+          "source": "P1_DAILY_PLAN_V1"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.today.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; today facts and versions are server-derived"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10LocalDateOptional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Today's learning plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10TodayLearningPlan"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/plans/reorder": {
+      "post": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Reorder non-mandatory tasks inside one priority class",
+        "operationId": "reorderB10LearningPlan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "command": "learning.plan.reorder",
+          "authority": "server validates the current plan and mandatory-task boundary; client cannot delete or complete a task"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.write",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; ownership, mandatory-task and plan versions are server-derived"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-learning-plan-reorder",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same plan version and order digest returns the original plan version",
+          "conflicts": {
+            "staleBaseStateVersion": {
+              "status": 409,
+              "errorCode": "LRN_PLAN_STATE_VERSION_CONFLICT"
+            },
+            "mandatoryTaskMutation": {
+              "status": 409,
+              "errorCode": "LRN_PLAN_MANDATORY_TASK_CONFLICT"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B10IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10PlanReorderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reordered plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10PlanReorderResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B10BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B10Conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/tasks/{taskId}/complete": {
+      "post": {
+        "tags": [
+          "b10-learning-plan"
+        ],
+        "summary": "Record a server-verified learning task completion",
+        "operationId": "completeB10LearningTask",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "command": "learning.task.complete",
+          "authority": "completion conditions and task state are server-owned; assessment outcomes remain assessment-service facts"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.task.write",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; task ownership, completion rule and versions are server-derived"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "b10-learning-task-complete",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same task and completion digest returns the original completion receipt",
+          "conflicts": {
+            "staleBaseStateVersion": {
+              "status": 409,
+              "errorCode": "LRN_TASK_STATE_VERSION_CONFLICT"
+            },
+            "invalidCompletion": {
+              "status": 409,
+              "errorCode": "LRN_TASK_COMPLETION_INVALID"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10TaskId"
+          },
+          {
+            "$ref": "#/components/parameters/B10IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/B10IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/B10TaskCompletionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task completion receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10TaskCompletionResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B10BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/B10Conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/repairs": {
+      "get": {
+        "tags": [
+          "b10-learning-repair"
+        ],
+        "summary": "Read the server-owned mistake repair queue",
+        "operationId": "listB10LearningRepairs",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "readModel": "mistake_repair_projection",
+          "authority": "repair workflow, SRS stage and mastery stage are separate server-owned fields"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.repair.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; repair facts and status versions are server-derived"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mistake repair queue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/B10RepairItem"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
+    },
+    "/api/v1/learning/repairs/{repairId}": {
+      "get": {
+        "tags": [
+          "b10-learning-repair"
+        ],
+        "summary": "Read one server-owned mistake repair",
+        "operationId": "getB10LearningRepair",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "readModel": "mistake_repair_projection"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.repair.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; repair facts are server-derived"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10RepairId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mistake repair",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10RepairItem"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/mastery": {
+      "get": {
+        "tags": [
+          "b10-learning"
+        ],
+        "summary": "Read the server-owned mastery overview",
+        "operationId": "getB10LearningMasteryOverview",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "readModel": "mastery_projection",
+          "authority": "mastery is a learning projection and never an assessment or client fact"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.mastery.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; mastery evidence, stage and versions are server-derived"
+        },
+        "responses": {
+          "200": {
+            "description": "Mastery overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10MasteryOverview"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/reports/{reportType}": {
+      "get": {
+        "tags": [
+          "b10-learning-report"
+        ],
+        "summary": "Read a versioned learning report",
+        "operationId": "getB10LearningReport",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "canonical": true,
+          "readModel": "learning_report_projection",
+          "authority": "asOf, sourceWatermark, numerator/denominator, versions and source trace are server-owned"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.report.read",
+          "pep": "learning-service-local",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "none; report facts and watermarks are server-derived"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B10ReportType"
+          },
+          {
+            "$ref": "#/components/parameters/B10LocalDateOptional"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Learning report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/B10LearningReport"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B10Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B10Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/B10NotFound"
           }
         }
       }
@@ -1275,6 +2056,30 @@
           "$ref": "#/components/schemas/B10QueueItemId"
         }
       },
+      "B10TaskId": {
+        "name": "taskId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10TaskId"
+        }
+      },
+      "B10RepairId": {
+        "name": "repairId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10RepairId"
+        }
+      },
+      "B10ReportType": {
+        "name": "reportType",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "$ref": "#/components/schemas/B10LearningReportType"
+        }
+      },
       "B10ItemId": {
         "name": "itemId",
         "in": "path",
@@ -1301,26 +2106,6 @@
           "type": "string",
           "pattern": "^state-[0-9]+$",
           "maxLength": 64
-        }
-      },
-      "B10Cursor": {
-        "name": "cursor",
-        "in": "query",
-        "required": false,
-        "schema": {
-          "type": "string",
-          "maxLength": 256
-        }
-      },
-      "B10Limit": {
-        "name": "limit",
-        "in": "query",
-        "required": false,
-        "schema": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100,
-          "default": 20
         }
       },
       "B10LocalDateOptional": {
@@ -1402,13 +2187,57 @@
         "type": "string",
         "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
       },
+      "B10ReviewEventId": {
+        "type": "string",
+        "pattern": "^rev_[A-Za-z0-9._:-]{8,127}$"
+      },
       "B10QueueItemId": {
         "type": "string",
         "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$"
       },
+      "B10TaskId": {
+        "type": "string",
+        "pattern": "^ltask_[A-Za-z0-9._:-]{8,127}$"
+      },
+      "B10RepairId": {
+        "type": "string",
+        "pattern": "^repair_[A-Za-z0-9._:-]{8,127}$"
+      },
+      "B10PlanId": {
+        "type": "string",
+        "pattern": "^plan_[A-Za-z0-9._:-]{8,127}$"
+      },
       "B10RuleVersion": {
         "type": "string",
         "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,95}$"
+      },
+      "B10LearningReportType": {
+        "type": "string",
+        "enum": [
+          "DAILY",
+          "WEEKLY",
+          "PHASE"
+        ]
+      },
+      "B10LearningPlanStatus": {
+        "type": "string",
+        "enum": [
+          "READY",
+          "PROCESSING",
+          "DEGRADED",
+          "FAILED"
+        ]
+      },
+      "B10LearningTaskStatus": {
+        "type": "string",
+        "enum": [
+          "LOCKED",
+          "AVAILABLE",
+          "IN_PROGRESS",
+          "COMPLETED",
+          "DEFERRED",
+          "SKIPPED"
+        ]
       },
       "B10SessionStatus": {
         "type": "string",
@@ -3670,14 +4499,579 @@
           }
         ]
       },
+      "B10ReviewContentPin": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Immutable content identity observed by the client. The server validates it against the learning snapshot before accepting a review.",
+        "required": [
+          "contentCode",
+          "contentVersionId",
+          "contentEpoch",
+          "snapshotId",
+          "snapshotHash"
+        ],
+        "properties": {
+          "contentCode": {
+            "$ref": "#/components/schemas/B10ContentCode"
+          },
+          "contentVersionId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "snapshotId": {
+            "$ref": "#/components/schemas/B10SnapshotId"
+          },
+          "snapshotHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
+        }
+      },
+      "B10SourceWatermark": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Accepted-fact high-water mark from one owning service. A report is not complete until all required owner watermarks are explicit.",
+        "required": [
+          "owner",
+          "watermark"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "enum": [
+              "learning-service",
+              "assessment-service"
+            ]
+          },
+          "watermark": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,191}$"
+          }
+        }
+      },
+      "B10LearningPlanTask": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "A server-planned learning task. Priority, budget, content pin and state version are authoritative projections, not client commands.",
+        "required": [
+          "taskId",
+          "planId",
+          "planVersion",
+          "streamRevision",
+          "planningRuleVersion",
+          "completionRuleVersion",
+          "candidateId",
+          "logicalItemId",
+          "actionAggregateId",
+          "candidateType",
+          "candidateSnapshotDigest",
+          "planningInputDigest",
+          "sourceFactRefs",
+          "eligibilityDecision",
+          "sequence",
+          "taskType",
+          "priorityClass",
+          "budgetLane",
+          "budgetMinutes",
+          "plannedMinutes",
+          "backlog",
+          "primaryReasonCode",
+          "status",
+          "contentPin",
+          "stateVersion"
+        ],
+        "x-input-binding": {
+          "planId": "MUST_EQUAL_PLAN_ID",
+          "planVersion": "MUST_EQUAL_PLAN_VERSION",
+          "streamRevision": "MUST_EQUAL_PLAN_STREAM_REVISION",
+          "planningRuleVersion": "MUST_EQUAL_P1_DAILY_PLAN_V1",
+          "planningInputDigest": "MUST_EQUAL_PLAN_PLANNING_INPUT_DIGEST",
+          "candidateSnapshotDigest": "MUST_EQUAL_PLAN_CANDIDATE_SNAPSHOT_DIGEST"
+        },
+        "properties": {
+          "taskId": {
+            "$ref": "#/components/schemas/B10TaskId"
+          },
+          "planId": {
+            "$ref": "#/components/schemas/B10PlanId"
+          },
+          "planVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "streamRevision": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          },
+          "planningRuleVersion": {
+            "type": "string",
+            "enum": [
+              "P1_DAILY_PLAN_V1"
+            ]
+          },
+          "completionRuleVersion": {
+            "$ref": "#/components/schemas/B10RuleVersion"
+          },
+          "candidateId": {
+            "type": "string",
+            "pattern": "^candidate_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "logicalItemId": {
+            "$ref": "#/components/schemas/B10Int64Id"
+          },
+          "actionAggregateId": {
+            "type": "string",
+            "pattern": "^agg_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "candidateType": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9._:-]{1,63}$"
+          },
+          "candidateSnapshotDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "planningInputDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "sourceFactRefs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z0-9._:-]{1,191}$"
+            },
+            "minItems": 1,
+            "maxItems": 64,
+            "uniqueItems": true
+          },
+          "eligibilityDecision": {
+            "type": "string",
+            "enum": [
+              "ELIGIBLE",
+              "RECOVERY_REFERENCE",
+              "INELIGIBLE"
+            ]
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99
+          },
+          "taskType": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9._:-]{1,63}$"
+          },
+          "priorityClass": {
+            "type": "string",
+            "enum": [
+              "RECOVERY_REQUIRED",
+              "DELAY_VERIFICATION_DUE",
+              "SRS_OVERDUE_OR_DUE",
+              "MISTAKE_REPAIR",
+              "GOAL_CRITICAL",
+              "NEW_CORE",
+              "OPTIONAL"
+            ]
+          },
+          "budgetMinutes": {
+            "type": "integer",
+            "enum": [
+              5,
+              15,
+              30,
+              45
+            ]
+          },
+          "plannedMinutes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "backlog": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "CATCH_UP"
+            ]
+          },
+          "budgetLane": {
+            "type": "string",
+            "enum": [
+              "REVIEW_REPAIR",
+              "GOAL_NEW",
+              "SKILL_ROTATION",
+              "OPTIONAL"
+            ]
+          },
+          "primaryReasonCode": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+          },
+          "secondaryReasonCodes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+            },
+            "maxItems": 32,
+            "uniqueItems": true
+          },
+          "reasonTrace": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10ReasonTrace"
+            },
+            "maxItems": 32
+          },
+          "status": {
+            "$ref": "#/components/schemas/B10LearningTaskStatus"
+          },
+          "contentPin": {
+            "$ref": "#/components/schemas/B10ContentVersionPin"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          }
+        }
+      },
+      "B10LearningPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "The canonical learning-service plan projection. It is derived from owned plan, SRS, repair and mastery facts.",
+        "required": [
+          "planId",
+          "planVersion",
+          "streamRevision",
+          "planningInputPinId",
+          "planningInputPinVersion",
+          "planningInputDigest",
+          "localDate",
+          "timezone",
+          "status",
+          "algorithmVersion",
+          "planningRuleVersion",
+          "dailyBudgetMinutes",
+          "contentEpoch",
+          "contentEligibilityDigest",
+          "inputFactWatermark",
+          "sourceWatermarks",
+          "sourceWatermarkDigest",
+          "manualOrderOverlayVersion",
+          "candidateSnapshotDigest",
+          "stateVersion",
+          "generatedAt",
+          "tasks"
+        ],
+        "x-input-binding": {
+          "planningInputPinId": "MUST_EQUAL_PLANNING_INPUT_PIN_ID",
+          "planningInputPinVersion": "MUST_EQUAL_PLANNING_INPUT_PIN_VERSION",
+          "planningInputDigest": "MUST_EQUAL_PLANNING_INPUT_DIGEST",
+          "inputFactWatermark": "MUST_EQUAL_PLANNING_INPUT_FACT_WATERMARK",
+          "sourceWatermarkDigest": "DIGEST_OF_SOURCE_WATERMARKS",
+          "candidateSnapshotDigest": "DIGEST_OF_ELIGIBLE_CANDIDATES"
+        },
+        "properties": {
+          "planId": {
+            "$ref": "#/components/schemas/B10PlanId"
+          },
+          "planVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "streamRevision": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+          },
+          "planningInputPinId": {
+            "type": "string",
+            "pattern": "^pin_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "planningInputPinVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "planningInputDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "localDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "timezone": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_+./-]{0,127}$"
+          },
+          "status": {
+            "$ref": "#/components/schemas/B10LearningPlanStatus"
+          },
+          "algorithmVersion": {
+            "type": "string",
+            "enum": [
+              "P1_DAILY_PLAN_V1"
+            ]
+          },
+          "planningRuleVersion": {
+            "type": "string",
+            "enum": [
+              "P1_DAILY_PLAN_V1"
+            ]
+          },
+          "dailyBudgetMinutes": {
+            "type": "integer",
+            "enum": [
+              5,
+              15,
+              30,
+              45
+            ]
+          },
+          "budgetUsedMinutes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "budgetOverflowPercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "contentEpoch": {
+            "$ref": "#/components/schemas/B10ContentEpoch"
+          },
+          "contentEligibilityDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "inputFactWatermark": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9._:-]{8,191}$"
+          },
+          "sourceWatermarks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10SourceWatermark"
+            },
+            "minItems": 1,
+            "maxItems": 16
+          },
+          "sourceWatermarkDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "manualOrderOverlayVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "candidateSnapshotDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "generatedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "tasks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10LearningPlanTask"
+            },
+            "maxItems": 100
+          }
+        }
+      },
+      "B10TodayLearningPlan": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/B10LearningPlan"
+          }
+        ],
+        "description": "The current-day view of the canonical learning plan. It carries the same server-owned plan facts and version boundary."
+      },
+      "B10PlanReorderRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Client intent to reorder visible plan tasks. The server validates ownership, task membership and the base state version before applying it.",
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "owner",
+          "ownerId",
+          "status",
+          "completed",
+          "priorityClass",
+          "budgetMinutes",
+          "contentPin",
+          "algorithmVersion"
+        ],
+        "required": [
+          "baseStateVersion",
+          "clientEventId",
+          "clientSeq",
+          "taskOrder",
+          "payloadHash"
+        ],
+        "properties": {
+          "baseStateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          },
+          "clientSeq": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "taskOrder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10TaskId"
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "payloadHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
+        }
+      },
+      "B10PlanReorderResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "planVersion",
+          "stateVersion",
+          "taskOrder",
+          "replayed",
+          "updatedAt"
+        ],
+        "properties": {
+          "planId": {
+            "$ref": "#/components/schemas/B10PlanId"
+          },
+          "planVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "taskOrder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/B10TaskId"
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
+        }
+      },
+      "B10TaskCompletionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Client intent to complete a planned task. Learning-service computes completion and any resulting projections; client facts cannot set outcome or mastery.",
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "owner",
+          "ownerId",
+          "result",
+          "score",
+          "effectiveQuality",
+          "mastery",
+          "reward",
+          "dueAt",
+          "algorithmVersion"
+        ],
+        "required": [
+          "baseStateVersion",
+          "clientEventId",
+          "clientSeq",
+          "completionFactRef",
+          "completionFactDigest",
+          "payloadHash"
+        ],
+        "properties": {
+          "baseStateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 96
+          },
+          "clientSeq": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "completionFactRef": {
+            "type": "string",
+            "pattern": "^fact_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "completionFactDigest": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "payloadHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          }
+        }
+      },
+      "B10TaskCompletionResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "taskId",
+          "status",
+          "planVersion",
+          "stateVersion",
+          "replayed",
+          "completedAt"
+        ],
+        "properties": {
+          "taskId": {
+            "$ref": "#/components/schemas/B10TaskId"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETED"
+            ]
+          },
+          "planVersion": {
+            "$ref": "#/components/schemas/B10ProjectionVersion"
+          },
+          "stateVersion": {
+            "$ref": "#/components/schemas/B10StateVersion"
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "completedAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          }
+        }
+      },
       "B10LearningQueueItem": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Learning queue item. SRS stage, mistake-repair workflow state and mastery stage are independent server-owned projections.",
         "required": [
           "queueItemId",
           "itemId",
           "source",
-          "state",
+          "srsStage",
+          "repairWorkflowState",
+          "masteryStage",
+          "verificationStage",
           "dueAt",
           "priority",
           "pin",
@@ -3699,15 +5093,41 @@
               "RETRY"
             ]
           },
-          "state": {
+          "srsStage": {
             "type": "string",
             "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "repairWorkflowState": {
+            "type": "string",
+            "enum": [
+              "REVIEW_QUEUE",
               "LEARNING",
               "DELAY_VERIFY_D1",
               "DELAY_VERIFY_D7",
               "MASTERED",
-              "REVIEW_QUEUE",
               "REOPENED"
+            ]
+          },
+          "masteryStage": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "LEARNING",
+              "MASTERED",
+              "CONSOLIDATED"
+            ]
+          },
+          "verificationStage": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE_REPAIR",
+              "D1",
+              "D7"
             ]
           },
           "dueAt": {
@@ -3729,88 +5149,142 @@
       "B10CompleteReviewRequest": {
         "type": "object",
         "additionalProperties": false,
+        "description": "Canonical public SRS review command. The server derives effective quality, SM2 state, repair transition and mastery projection; the client supplies only the observed review and immutable pin/concurrency facts.",
+        "x-forbidden-client-fields": [
+          "result",
+          "objectiveOutcome",
+          "effectiveQuality",
+          "score",
+          "pass",
+          "fail",
+          "mastery",
+          "srsStage",
+          "easeFactor",
+          "intervalDays",
+          "dueAt",
+          "algorithmVersion",
+          "masteryStage",
+          "tenant",
+          "tenantId",
+          "principalId",
+          "ownerId",
+          "isCorrect"
+        ],
         "required": [
-          "expectedStateVersion",
-          "verificationStage",
-          "result"
+          "snapshotItemId",
+          "sourceAssessmentAttemptId",
+          "baseStateVersion",
+          "clientEventId",
+          "clientSeq",
+          "contentPin",
+          "payloadHash",
+          "rawQuality",
+          "clientOccurredAt"
         ],
         "properties": {
-          "expectedStateVersion": {
+          "snapshotItemId": {
+            "$ref": "#/components/schemas/B10SnapshotId"
+          },
+          "sourceAssessmentAttemptId": {
+            "$ref": "#/components/schemas/B10AttemptId"
+          },
+          "baseStateVersion": {
             "$ref": "#/components/schemas/B10StateVersion"
-          },
-          "verificationStage": {
-            "type": "string",
-            "enum": [
-              "D0",
-              "D1",
-              "D7"
-            ]
-          },
-          "result": {
-            "type": "string",
-            "enum": [
-              "PASS",
-              "FAIL",
-              "SKIPPED"
-            ]
           },
           "clientEventId": {
             "type": "string",
             "minLength": 8,
             "maxLength": 96
+          },
+          "clientSeq": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "contentPin": {
+            "$ref": "#/components/schemas/B10ReviewContentPin"
+          },
+          "payloadHash": {
+            "$ref": "#/components/schemas/B10Sha256"
+          },
+          "rawQuality": {
+            "type": "integer",
+            "enum": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          "clientOccurredAt": {
+            "$ref": "#/components/schemas/B10DateTime"
+          },
+          "responseTimeMs": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "attemptNo": {
+            "type": "integer",
+            "minimum": 1
           }
         }
       },
-      "B10MasteryProjection": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "itemId",
-          "fromState",
-          "toState",
-          "projectionVersion",
-          "projectionStatus",
-          "sourceAssessmentId",
-          "pin",
-          "projectedAt"
-        ],
-        "properties": {
-          "itemId": {
-            "$ref": "#/components/schemas/B10Int64Id"
-          },
-          "fromState": {
-            "type": "string",
-            "enum": [
-              "LEARNING",
-              "DELAY_VERIFY_D1",
-              "DELAY_VERIFY_D7",
-              "MASTERED",
-              "REVIEW_QUEUE",
-              "REOPENED",
-              "NONE"
-            ]
-          },
-          "toState": {
-            "type": "string",
-            "enum": [
-              "LEARNING",
-              "DELAY_VERIFY_D1",
-              "DELAY_VERIFY_D7",
-              "MASTERED",
-              "REVIEW_QUEUE",
-              "REOPENED"
-            ]
-          },
-          "srsStage": {
-            "type": "string",
-            "enum": [
-              "NEW",
-              "D0",
-              "D1",
-              "D7",
-              "MASTERED"
-            ]
-          },
+        "B10MasteryProjection": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Learning-service mastery projection. SRS scheduling, repair verification and mastery are separate server-owned state machines.",
+          "required": [
+            "itemId",
+            "srsStage",
+            "repairWorkflowState",
+            "masteryStage",
+            "projectionVersion",
+            "projectionStatus",
+            "stateVersion",
+            "pin",
+            "projectedAt"
+          ],
+          "properties": {
+            "itemId": {
+              "$ref": "#/components/schemas/B10Int64Id"
+            },
+            "srsStage": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "LEARNING",
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "repairWorkflowState": {
+              "type": "string",
+              "enum": [
+                "REVIEW_QUEUE",
+                "LEARNING",
+                "DELAY_VERIFY_D1",
+                "DELAY_VERIFY_D7",
+                "MASTERED",
+                "REOPENED"
+              ]
+            },
+            "masteryStage": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "LEARNING",
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "verificationStage": {
+              "type": "string",
+              "enum": [
+                "IMMEDIATE_REPAIR",
+                "D1",
+                "D7"
+              ]
+            },
           "nextReviewAt": {
             "$ref": "#/components/schemas/B10DateTime",
             "nullable": true
@@ -3828,9 +5302,17 @@
               "MANUAL_REVIEW"
             ]
           },
-          "sourceAssessmentId": {
-            "$ref": "#/components/schemas/B10AttemptId"
-          },
+            "sourceAssessmentId": {
+              "$ref": "#/components/schemas/B10AttemptId",
+              "nullable": true
+            },
+            "sourceReviewEventId": {
+              "$ref": "#/components/schemas/B10ReviewEventId",
+              "nullable": true
+            },
+            "stateVersion": {
+              "$ref": "#/components/schemas/B10StateVersion"
+            },
           "pin": {
             "$ref": "#/components/schemas/B10ActiveSessionAttemptPin"
           },
@@ -3839,7 +5321,606 @@
           }
         }
       },
-      "B10LearnerContentSnapshotResponse": {
+        "B10RepairItem": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Learning-service repair projection. Verification timing is a repair workflow concern and is separate from the SRS and mastery stages.",
+          "required": [
+            "repairId",
+            "itemId",
+            "sourceAssessmentEventId",
+            "repairWorkflowState",
+            "verificationStage",
+            "srsStage",
+            "masteryStage",
+            "dueAt",
+            "contentPin",
+            "stateVersion",
+            "reasonTrace"
+          ],
+          "properties": {
+            "repairId": {
+              "$ref": "#/components/schemas/B10RepairId"
+            },
+            "itemId": {
+              "$ref": "#/components/schemas/B10Int64Id"
+            },
+            "sourceAssessmentEventId": {
+              "type": "string",
+              "pattern": "^evt_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "repairWorkflowState": {
+              "type": "string",
+              "enum": [
+                "REVIEW_QUEUE",
+                "LEARNING",
+                "DELAY_VERIFY_D1",
+                "DELAY_VERIFY_D7",
+                "MASTERED",
+                "REOPENED"
+              ]
+            },
+            "verificationStage": {
+              "type": "string",
+              "enum": [
+                "IMMEDIATE_REPAIR",
+                "D1",
+                "D7"
+              ]
+            },
+            "srsStage": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "LEARNING",
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "masteryStage": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "LEARNING",
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "dueAt": {
+              "$ref": "#/components/schemas/B10DateTime",
+              "nullable": true
+            },
+            "contentPin": {
+              "$ref": "#/components/schemas/B10ContentVersionPin"
+            },
+            "stateVersion": {
+              "$ref": "#/components/schemas/B10StateVersion"
+            },
+            "reasonTrace": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/B10ReasonTrace"
+              },
+              "maxItems": 32
+            }
+          }
+        },
+        "B10MasteryOverview": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Learning-service mastery counts as of a server-owned projection watermark.",
+          "required": [
+            "projectionVersion",
+            "stateVersion",
+            "asOf",
+            "newCount",
+            "learningCount",
+            "masteredCount",
+            "consolidatedCount"
+          ],
+          "properties": {
+            "projectionVersion": {
+              "$ref": "#/components/schemas/B10ProjectionVersion"
+            },
+            "stateVersion": {
+              "$ref": "#/components/schemas/B10StateVersion"
+            },
+            "asOf": {
+              "$ref": "#/components/schemas/B10DateTime"
+            },
+            "newCount": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "learningCount": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "masteredCount": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "consolidatedCount": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            }
+          }
+        },
+        "B10ReportInputVersions": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Version pins used to build a learning report. These are input facts, not client-supplied report claims.",
+          "required": [
+            "planVersion",
+            "streamRevision",
+            "srsStateVersion",
+            "masteryProjectionVersion",
+            "assessmentReportVersion",
+            "contentEpoch"
+          ],
+          "properties": {
+            "planVersion": {
+              "$ref": "#/components/schemas/B10ProjectionVersion"
+            },
+            "streamRevision": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+            },
+            "srsStateVersion": {
+              "$ref": "#/components/schemas/B10StateVersion"
+            },
+            "masteryProjectionVersion": {
+              "$ref": "#/components/schemas/B10ProjectionVersion"
+            },
+            "assessmentReportVersion": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "$ref": "#/components/schemas/B10ContentEpoch"
+            }
+          }
+        },
+        "B10LearningReportMetric": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "metricCode",
+            "status",
+            "numerator",
+            "denominator",
+            "value"
+          ],
+          "properties": {
+            "metricCode": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "PROCESSING",
+                "READY",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "numerator": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "denominator": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "metricCode",
+                "status",
+                "numerator",
+                "denominator",
+                "value"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "PROCESSING"
+                  ]
+                },
+                "numerator": {
+                  "type": "null"
+                },
+                "denominator": {
+                  "type": "null"
+                },
+                "value": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "required": [
+                "metricCode",
+                "status",
+                "numerator",
+                "denominator",
+                "value"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "READY"
+                  ]
+                },
+                "numerator": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0
+                },
+                "denominator": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 1
+                },
+                "value": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            },
+            {
+              "required": [
+                "metricCode",
+                "status",
+                "numerator",
+                "denominator",
+                "value"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "NOT_APPLICABLE"
+                  ]
+                },
+                "numerator": {
+                  "type": "null"
+                },
+                "denominator": {
+                  "type": "null"
+                },
+                "value": {
+                  "type": "null"
+                }
+              }
+            }
+          ]
+        },
+        "B10LearningReport": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Learning-service report aggregation. Missing or late facts are visible through status, watermarks and reconciliation fields rather than silently treated as zero.",
+          "required": [
+            "reportId",
+            "reportVersion",
+            "reportType",
+            "windowStart",
+            "windowEnd",
+            "asOf",
+            "reportRuleVersion",
+            "planningRuleVersion",
+            "srsAlgorithmVersion",
+            "contentEpoch",
+            "sourceWatermarks",
+            "sourceWatermarkDigest",
+            "inputVersions",
+            "metricDefinitionsVersion",
+            "sourceFactDigest",
+            "status",
+            "metrics",
+            "generatedAt",
+            "replayable"
+          ],
+          "properties": {
+            "reportId": {
+              "$ref": "#/components/schemas/B10ReportId"
+            },
+            "reportVersion": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "reportType": {
+              "$ref": "#/components/schemas/B10LearningReportType"
+            },
+            "windowStart": {
+              "$ref": "#/components/schemas/B10DateTime"
+            },
+            "windowEnd": {
+              "$ref": "#/components/schemas/B10DateTime"
+            },
+            "asOf": {
+              "$ref": "#/components/schemas/B10DateTime"
+            },
+            "reportRuleVersion": {
+              "type": "string",
+              "enum": [
+                "P1_REPORT_V1"
+              ]
+            },
+            "planningRuleVersion": {
+              "type": "string",
+              "enum": [
+                "P1_DAILY_PLAN_V1"
+              ]
+            },
+            "srsAlgorithmVersion": {
+              "type": "string",
+              "enum": [
+                "SM2_Q03_V1"
+              ]
+            },
+            "contentEpoch": {
+              "$ref": "#/components/schemas/B10ContentEpoch"
+            },
+            "sourceWatermarks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/B10SourceWatermark"
+              },
+              "minItems": 2,
+              "maxItems": 16
+            },
+            "sourceWatermarkDigest": {
+              "$ref": "#/components/schemas/B10Sha256"
+            },
+            "inputVersions": {
+              "$ref": "#/components/schemas/B10ReportInputVersions"
+            },
+            "metricDefinitionsVersion": {
+              "type": "string",
+              "enum": [
+                "P1_REPORT_V1"
+              ]
+            },
+            "sourceFactDigest": {
+              "$ref": "#/components/schemas/B10Sha256"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "PROCESSING",
+                "READY",
+                "PARTIAL",
+                "FAILED"
+              ]
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/B10LearningReportMetric"
+              },
+              "maxItems": 256
+            },
+            "lateEventCount": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "supersedesReportVersion": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "nullable": true
+            },
+            "rebuildStatus": {
+              "type": "string",
+              "enum": [
+                "NOT_REQUIRED",
+                "PENDING",
+                "REBUILT"
+              ]
+            },
+            "reconciliationStatus": {
+              "type": "string",
+              "enum": [
+                "NOT_REQUIRED",
+                "PENDING",
+                "RECONCILED",
+                "DISCREPANCY"
+              ]
+            },
+            "sourceTrace": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 191
+              },
+              "maxItems": 64
+            },
+            "missingFacts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 191
+              },
+              "maxItems": 64
+            },
+            "generatedAt": {
+              "$ref": "#/components/schemas/B10DateTime"
+            },
+            "replayable": {
+              "type": "boolean",
+              "enum": [
+                true
+              ]
+            }
+          }
+        },
+        "B10LearningReviewResult": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Server receipt for the canonical public SRS review command. Derived SRS values, repair state and mastery state are response facts only.",
+          "required": [
+            "reviewEventId",
+            "eventStatus",
+            "riskDecision",
+            "stateVersion",
+            "srsStage",
+            "repairWorkflowState",
+            "masteryStage",
+            "repetitionCount",
+            "easeFactor",
+            "intervalDays",
+            "dueAt",
+            "algorithmVersion",
+            "contentPin",
+            "projectionVersion",
+            "projectedAt",
+            "replayed"
+          ],
+          "properties": {
+            "reviewEventId": {
+              "$ref": "#/components/schemas/B10ReviewEventId"
+            },
+            "eventStatus": {
+              "type": "string",
+              "enum": [
+                "ACCEPTED",
+                "DUPLICATE",
+                "RISK_FILTERED",
+                "CONFLICT",
+                "REJECTED",
+                "EXPIRED"
+              ]
+            },
+            "riskDecision": {
+              "type": "string",
+              "enum": [
+                "ALLOW",
+                "ACCEPT_NO_REWARD",
+                "THROTTLE",
+                "REJECT",
+                "REVIEW"
+              ]
+            },
+            "stateVersion": {
+              "$ref": "#/components/schemas/B10StateVersion"
+            },
+            "srsStage": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "LEARNING",
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "repairWorkflowState": {
+              "type": "string",
+              "enum": [
+                "REVIEW_QUEUE",
+                "LEARNING",
+                "DELAY_VERIFY_D1",
+                "DELAY_VERIFY_D7",
+                "MASTERED",
+                "REOPENED"
+              ]
+            },
+            "masteryStage": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "LEARNING",
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "verificationStage": {
+              "type": "string",
+              "enum": [
+                "IMMEDIATE_REPAIR",
+                "D1",
+                "D7"
+              ]
+            },
+            "repetitionCount": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 0
+            },
+            "easeFactor": {
+              "type": "number",
+              "minimum": 1.3,
+              "maximum": 2.5
+            },
+            "intervalDays": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 365
+            },
+            "dueAt": {
+              "$ref": "#/components/schemas/B10DateTime",
+              "nullable": true
+            },
+            "algorithmVersion": {
+              "type": "string",
+              "enum": [
+                "SM2_Q03_V1"
+              ]
+            },
+            "contentPin": {
+              "$ref": "#/components/schemas/B10ContentVersionPin"
+            },
+            "projectionVersion": {
+              "$ref": "#/components/schemas/B10ProjectionVersion"
+            },
+            "projectedAt": {
+              "$ref": "#/components/schemas/B10DateTime"
+            },
+            "replayed": {
+              "type": "boolean"
+            }
+          }
+        },
+        "B10LearnerContentSnapshotResponse": {
         "type": "object",
         "additionalProperties": false,
         "required": [

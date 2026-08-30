@@ -548,6 +548,21 @@ export type AuthAccountRegistered = { principalId: string; accountStatus: "ACTIV
  */
 export type AuthLoginSucceeded = { principalId: string; sessionId: string; deviceId: string; authMethod: "PASSWORD"; loggedInAt: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type B10AssessmentItemAssessedV2 = ({ tenantId: string; principalId: string; itemAssessmentId: string; attemptId: string; sessionId: string; logicalItemId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; rulePin: { answerRuleSetVersion: string; answerRuleVersion: string; ruleDigest: string; completionRuleVersion: string; assessmentVersion: string; }; reportPin: { reportId: string; reportVersion: number; reportRuleVersion: string; reportStatus: "READY" | "PARTIAL" | "FAILED"; reportDigest: string; asOf: string; }; objectivePolicyPin: { practiceType: "OBJECTIVE_ASSESSMENT" | "SPEAKING_SELF_RATING" | "WRITING_SELF_RATING" | "ACTIVE_RECALL_SELF_RATING"; objectiveExpected: boolean; policyVersion: string; policyDigest: string; }; objectiveOutcome: "CORRECT_VERIFIED" | "INCORRECT" | "UNANSWERED" | "REVEALED_BEFORE_ANSWER" | "GUESSED" | "NO_OBJECTIVE_EXPECTED"; objectiveNumerator: number; objectiveDenominator: number; objectiveCorrect: boolean; guessSignal: boolean; semanticErrorCategory: "KNOWLEDGE_GAP" | "MEMORY_FUZZY" | "CONFUSABLE" | "RULE_CONCEPT" | "LISTENING_DISCRIMINATION" | "READING_COMPREHENSION" | "SPELLING_OR_STRUCTURE" | "CARELESS_OR_OMISSION" | "TIME_INSUFFICIENT" | "UNCLASSIFIED"; mappingVersion: string; verificationStage: "NONE" | "IMMEDIATE_REPAIR" | "D1" | "D7"; reasonTrace: readonly [{ ruleCode: string; ruleVersion: string; category: "KNOWLEDGE_GAP" | "MEMORY_FUZZY" | "CONFUSABLE" | "RULE_CONCEPT" | "LISTENING_DISCRIMINATION" | "READING_COMPREHENSION" | "SPELLING_OR_STRUCTURE" | "CARELESS_OR_OMISSION" | "TIME_INSUFFICIENT" | "UNCLASSIFIED"; reasonCode: string; evidenceRef: string; }, ...Array<{ ruleCode: string; ruleVersion: string; category: "KNOWLEDGE_GAP" | "MEMORY_FUZZY" | "CONFUSABLE" | "RULE_CONCEPT" | "LISTENING_DISCRIMINATION" | "READING_COMPREHENSION" | "SPELLING_OR_STRUCTURE" | "CARELESS_OR_OMISSION" | "TIME_INSUFFICIENT" | "UNCLASSIFIED"; reasonCode: string; evidenceRef: string; }>]; outcomeDigest: string; assessmentFactWatermark: string; assessedAt: string; }) & ({ objectivePolicyPin: { objectiveExpected: true; practiceType: "OBJECTIVE_ASSESSMENT"; }; objectiveOutcome: "CORRECT_VERIFIED"; objectiveNumerator: 1; objectiveDenominator: 1; objectiveCorrect: true; guessSignal: false; } | { objectivePolicyPin: { objectiveExpected: true; practiceType: "OBJECTIVE_ASSESSMENT"; }; objectiveOutcome: "INCORRECT"; objectiveNumerator: 0; objectiveDenominator: 1; objectiveCorrect: false; guessSignal: false; } | { objectivePolicyPin: { objectiveExpected: true; practiceType: "OBJECTIVE_ASSESSMENT"; }; objectiveOutcome: "UNANSWERED"; objectiveNumerator: 0; objectiveDenominator: 1; objectiveCorrect: false; guessSignal: false; } | { objectivePolicyPin: { objectiveExpected: true; practiceType: "OBJECTIVE_ASSESSMENT"; }; objectiveOutcome: "REVEALED_BEFORE_ANSWER"; objectiveNumerator: 0; objectiveDenominator: 1; objectiveCorrect: false; guessSignal: false; } | { objectivePolicyPin: { objectiveExpected: true; practiceType: "OBJECTIVE_ASSESSMENT"; }; objectiveOutcome: "GUESSED"; objectiveNumerator: 1; objectiveDenominator: 1; objectiveCorrect: true; guessSignal: true; } | { objectivePolicyPin: { objectiveExpected: true; practiceType: "OBJECTIVE_ASSESSMENT"; }; objectiveOutcome: "GUESSED"; objectiveNumerator: 0; objectiveDenominator: 1; objectiveCorrect: false; guessSignal: true; } | { objectivePolicyPin: { objectiveExpected: false; practiceType: "SPEAKING_SELF_RATING" | "WRITING_SELF_RATING" | "ACTIVE_RECALL_SELF_RATING"; }; objectiveOutcome: "NO_OBJECTIVE_EXPECTED"; objectiveNumerator: 0; objectiveDenominator: 0; objectiveCorrect: false; guessSignal: false; });
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningMasteryProjectedV2 = ({ tenantId: string; principalId: string; projectionId: string; logicalItemId: string; sourceAssessmentEventId: string; sourceItemAssessmentId: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; masteryStageBefore: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; masteryStageAfter: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; evidenceCount: number; evidenceDigest: string; evidenceLocalDates: readonly [] | readonly [string] | readonly [string, string] | readonly [string, string, string]; d7Gate: ({ result: "NOT_DUE" | "NOT_PASSED" | "PASSED" | "FAILED"; reasonCode: "D7_NOT_DUE" | "D7_NOT_PASSED" | "D7_PASSED" | "D7_FAILED" | "MASTERY_GATE_NOT_MET"; }) & ({ result: "NOT_DUE"; reasonCode: "D7_NOT_DUE"; } | { result: "NOT_PASSED"; reasonCode: "D7_NOT_PASSED"; } | { result: "NOT_PASSED"; reasonCode: "MASTERY_GATE_NOT_MET"; } | { result: "PASSED"; reasonCode: "D7_PASSED"; } | { result: "FAILED"; reasonCode: "D7_FAILED"; }); aggregateScore: number; latestEffectiveQuality: number; latestGuessSignal: boolean; masteryEpochId: string; masteryEpochVersion: number; projectionVersion: number; masteryRuleVersion: "P1_MASTERY_V1"; masteryFactWatermark: string; reasonTrace: readonly [{ ruleCode: string; ruleVersion: string; category: "EVIDENCE" | "D7_GATE" | "STAGE_TRANSITION" | "CONTENT_VERSION" | "REPLAY"; reasonCode: string; evidenceRef: string; }, ...Array<{ ruleCode: string; ruleVersion: string; category: "EVIDENCE" | "D7_GATE" | "STAGE_TRANSITION" | "CONTENT_VERSION" | "REPLAY"; reasonCode: string; evidenceRef: string; }>]; projectedAt: string; }) & ({ masteryStageAfter: "MASTERED"; d7Gate: { result: "PASSED"; reasonCode: "D7_PASSED"; } & ({ result: "NOT_DUE"; reasonCode: "D7_NOT_DUE"; } | { result: "NOT_PASSED"; reasonCode: "D7_NOT_PASSED"; } | { result: "NOT_PASSED"; reasonCode: "MASTERY_GATE_NOT_MET"; } | { result: "PASSED"; reasonCode: "D7_PASSED"; } | { result: "FAILED"; reasonCode: "D7_FAILED"; }); evidenceCount: number; evidenceLocalDates: readonly [string, string, string]; aggregateScore: number; } | { masteryStageAfter: "CONSOLIDATED"; d7Gate: { result: "PASSED"; reasonCode: "D7_PASSED"; } & ({ result: "NOT_DUE"; reasonCode: "D7_NOT_DUE"; } | { result: "NOT_PASSED"; reasonCode: "D7_NOT_PASSED"; } | { result: "NOT_PASSED"; reasonCode: "MASTERY_GATE_NOT_MET"; } | { result: "PASSED"; reasonCode: "D7_PASSED"; } | { result: "FAILED"; reasonCode: "D7_FAILED"; }); evidenceCount: number; evidenceLocalDates: readonly [string, string, string]; aggregateScore: number; latestEffectiveQuality: 3; latestGuessSignal: false; } | { masteryStageAfter: "NEW" | "LEARNING"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type B10LearningReviewScheduledV2 = ({ tenantId: string; principalId: string; queueItemId: string; logicalItemId: string; queueVersion: number; srsStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; repairWorkflowState: "REVIEW_QUEUE" | "LEARNING" | "DELAY_VERIFY_D1" | "DELAY_VERIFY_D7" | "MASTERED" | "REOPENED"; masteryStage: "NEW" | "LEARNING" | "MASTERED" | "CONSOLIDATED"; sourceAssessmentEventId: string; sourceItemAssessmentId: string; algorithmVersion: "SM2_Q03_V1"; timePolicyVersion: string; contentPin: { contentVersionId: number; contentEpoch: number; snapshotId: string; snapshotHash: string; }; dueLocalDate: string; dueAt: string; timezoneId: string; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; scheduledAt: string; }) & ({ repairWorkflowState: "DELAY_VERIFY_D1"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "DELAY_VERIFY_D7"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "MASTERED"; masteryStage: "MASTERED" | "CONSOLIDATED"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "REOPENED"; masteryStage: "LEARNING"; reasonCodes: readonly ["RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE", ...Array<"RESUME_SESSION" | "SUBMISSION_CONFIRMATION" | "D1_VERIFICATION" | "D7_VERIFICATION" | "DUE_TODAY" | "OVERDUE_HIGH_RISK" | "RECENT_MISTAKE" | "REPEATED_ERROR_CATEGORY" | "GOAL_FOUNDATION" | "GOAL_COLLEGE_CET" | "GOAL_POSTGRADUATE_ENGLISH" | "GOAL_WORKPLACE_DAILY" | "PLAN_CHECKPOINT" | "NEW_CORE" | "SKILL_ROTATION" | "CATCH_UP_PROTECTION" | "MANUAL_LEGAL_COURSE" | "GOAL_LIGHT_ITEM_UNAVAILABLE" | "CONTENT_ESTIMATE_UNSCHEDULABLE">]; } | { repairWorkflowState: "REVIEW_QUEUE" | "LEARNING"; });
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated, "learning.event.v1"> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -1539,8 +1554,29 @@ export interface AuthLoginSucceededEvent extends PlatformEventEnvelope<AuthLogin
   dedupeKey: string;
 }
 
+export interface AssessmentItemAssessedEvent extends PlatformEventEnvelope<B10AssessmentItemAssessedV2, "assessment.event.v2"> {
+  eventName: "assessment.item.assessed.v2";
+  version: 2;
+  schemaVersion: "assessment.event.v2";
+  dedupeKey: string;
+}
+
+export interface LearningMasteryProjectedB10Event extends PlatformEventEnvelope<B10LearningMasteryProjectedV2, "learning.event.v2"> {
+  eventName: "learning.mastery.projected.v2";
+  version: 2;
+  schemaVersion: "learning.event.v2";
+  dedupeKey: string;
+}
+
+export interface LearningReviewScheduledB10Event extends PlatformEventEnvelope<B10LearningReviewScheduledV2, "learning.event.v2"> {
+  eventName: "learning.review.scheduled.v2";
+  version: 2;
+  schemaVersion: "learning.event.v2";
+  dedupeKey: string;
+}
+
 /** All catalog entries, including HISTORICAL_CANDIDATE records. New v2 publishers must use CanonicalPlatformEvent. */
-export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent;
+export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event;
 
 /** @deprecated Use CanonicalPlatformEvent for new v2 event publication. */
 export type PlatformEvent = EventCatalogCandidate;
@@ -2262,8 +2298,152 @@ export const canonicalEventGovernance = {
       "ARCH-EVT-001",
       "INT-P1-017"
     ]
+  },
+  "assessment.item.assessed.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "assessment-service",
+      "dataOwner": "assessment-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_assessment_item_assessed_v2"
+    },
+    "consumers": [
+      {
+        "service": "learning-service",
+        "consumerGroup": "cg.learning-from-assessment.v1",
+        "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_learning_from_assessment_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-assessment.v1",
+        "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_workflow_from_assessment_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.assessment.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.itemAssessmentId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "assessment_item_assessed_v2"
+    },
+    "schema": {
+      "schemaVersion": "assessment.event.v2",
+      "payloadRef": "#/payloadSchemas/B10AssessmentItemAssessedV2",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "learning.mastery.projected.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "learning-service",
+      "dataOwner": "learning-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_learning_mastery_projected_v2"
+    },
+    "consumers": [
+      {
+        "service": "assessment-service",
+        "consumerGroup": "cg.assessment-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_assessment_from_learning_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_workflow_from_learning_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.learning.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.projectionId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "learning_mastery_projected_v2"
+    },
+    "schema": {
+      "schemaVersion": "learning.event.v2",
+      "payloadRef": "#/payloadSchemas/B10LearningMasteryProjectedV2",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
+  },
+  "learning.review.scheduled.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "learning-service",
+      "dataOwner": "learning-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_learning_review_scheduled_v2"
+    },
+    "consumers": [
+      {
+        "service": "assessment-service",
+        "consumerGroup": "cg.assessment-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_review_scheduled_v2_cg_assessment_from_learning_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-learning.v1",
+        "subscriptionOperationId": "subscribe_learning_review_scheduled_v2_cg_workflow_from_learning_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.learning.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.queueItemId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "learning_review_scheduled_v2"
+    },
+    "schema": {
+      "schemaVersion": "learning.event.v2",
+      "payloadRef": "#/payloadSchemas/B10LearningReviewScheduledV2",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-017"
+    ]
   }
 } as const;
 
 export type CanonicalEventName = keyof typeof canonicalEventGovernance;
-export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent;
+export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event;

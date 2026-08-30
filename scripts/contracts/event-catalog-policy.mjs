@@ -71,12 +71,14 @@ export const EXPECTED_EVENT_COMPATIBILITY_POLICY = {
 const fragmentInventory = (path, eventNames) => ({ path, eventNames: eventNames.split(' ') });
 
 // This is deliberately a source-side inventory, rather than a rule inferred
-// from catalog metadata.  It freezes both the fourteen accepted fragment paths
+// from catalog metadata. It freezes the accepted fragment paths
 // and the ordered event contribution of each path, so a coordinated catalog
-// edit cannot hide a rename, nested file, or cross-fragment move.
+// edit cannot hide a rename, nested file, or cross-fragment move. M1-013 adds
+// one isolated source fragment for the three approved learning-loop facts.
 export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json', 'assessment.item.submitted.v1 auth.device.kicked.v1 privacy.export.requested.v1 privacy.export.completed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b10-learning-assessment.events.json', 'assessment.attempt.submitted.v1 assessment.attempt.assessed.v1 assessment.placement.completed.v1 learning.mastery.projected.v1 learning.review.scheduled.v1 workflow.assessment_learning.saga_started.v1 workflow.assessment_learning.saga_compensated.v1 workflow.event.replayed.v1'),
+  fragmentInventory('packages/contracts/events/v1/fragments/b10-learning-loop.events.json', 'assessment.item.assessed.v2 learning.mastery.projected.v2 learning.review.scheduled.v2'),
   fragmentInventory('packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json', 'media.started.v1 media.segment_completed.v1 media.downloaded.v1 media.revoked.v1 notification.delivered.v1 sync.enqueued.v1 sync.conflict_detected.v1 sync.recovered.v1 recording.saved.v1 speaking.permission_requested.v1 shadowing.completed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json', 'gamification.session_started.v1 gamification.xp.ledger_posted.v1 gamification.reward.granted.v1 gamification.avatar.equipped.v1 study_room.joined.v1 study_room.focus_started.v1 study_room.left.v1 leaderboard.refreshed.v1 social.report.created.v1 notification.requested.v1 notification.retry_scheduled.v1 notification.recovery.completed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json', 'commerce.order.created.v1 commerce.payment.callback_received.v1 commerce.entitlement.activated.v1 commerce.refund.completed.v1 commerce.order.reconciled.v1 support.ticket.created.v1 analytics.metric.projected.v1 analytics.recompute.requested.v1'),
@@ -150,9 +152,10 @@ const allowedRuntimeClaimKeys = [
   /^event catalog\.asyncapi\.x-runtime-status$/,
 ];
 const allowedPayloadSchemaKeywords = new Set([
-  '$id', 'additionalProperties', 'const', 'enum', 'format', 'items',
+  '$id', 'additionalProperties', 'allOf', 'const', 'contains', 'description', 'enum', 'format', 'items',
   'exclusiveMinimum', 'maxItems', 'maxLength', 'maximum', 'minItems', 'minLength', 'minimum',
-  'not', 'nullable', 'oneOf', 'pattern', 'prefixItems', 'properties', 'required', 'type', 'uniqueItems',
+  'not', 'nullable', 'oneOf', 'pattern', 'prefixItems', 'properties', 'required', 'title', 'type', 'uniqueItems',
+  'x-p1r-cross-field-invariants',
 ]);
 const allowedPayloadSchemaTypes = new Set(['null', 'boolean', 'object', 'array', 'number', 'integer', 'string']);
 const forbiddenInfrastructureSubject = /\b(?:broker|kafka)\b/i;
@@ -298,7 +301,7 @@ function normalizedIdentifier(value) {
   return String(value).replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[^a-z0-9]+/gi, ' ');
 }
 
-function validatePayloadSchemaNode(schema, location, errors, inheritedProperties = undefined) {
+function validatePayloadSchemaNode(schema, location, errors, inheritedProperties = undefined, context = {}) {
   if (!isRecord(schema)) {
     errors.push(`${location} must be a JSON Schema object`);
     return;
@@ -318,6 +321,19 @@ function validatePayloadSchemaNode(schema, location, errors, inheritedProperties
   }
   if (schema.nullable !== undefined && typeof schema.nullable !== 'boolean') errors.push(`${location}.nullable must be boolean`);
   if (schema.uniqueItems !== undefined && typeof schema.uniqueItems !== 'boolean') errors.push(`${location}.uniqueItems must be boolean`);
+  if (schema.description !== undefined && (typeof schema.description !== 'string' || schema.description.trim() === '')) {
+    errors.push(`${location}.description must be a non-empty string`);
+  }
+  if (schema.title !== undefined) {
+    if (context.allowOneOfTitle !== true) errors.push(`${location}.title is only allowed on oneOf branches`);
+    if (typeof schema.title !== 'string' || schema.title.trim() === '') errors.push(`${location}.title must be a non-empty string`);
+  }
+  if (schema['x-p1r-cross-field-invariants'] !== undefined) {
+    const invariants = schema['x-p1r-cross-field-invariants'];
+    if (!Array.isArray(invariants) || invariants.length === 0 || invariants.some((invariant) => typeof invariant !== 'string' || invariant.trim() === '')) {
+      errors.push(`${location}.x-p1r-cross-field-invariants must be a non-empty string array`);
+    }
+  }
   for (const key of ['format', 'pattern']) {
     if (schema[key] !== undefined && typeof schema[key] !== 'string') errors.push(`${location}.${key} must be a string`);
   }
@@ -386,11 +402,31 @@ function validatePayloadSchemaNode(schema, location, errors, inheritedProperties
       schema.prefixItems.forEach((branch, index) => validatePayloadSchemaNode(branch, `${location}.prefixItems[${index}]`, errors));
     }
   }
+  if (schema.allOf !== undefined) {
+    if (!Array.isArray(schema.allOf) || schema.allOf.length === 0) {
+      errors.push(`${location}.allOf must contain at least one JSON Schema branch`);
+    } else {
+      schema.allOf.forEach((branch, index) => validatePayloadSchemaNode(branch, `${location}.allOf[${index}]`, errors, availableProperties));
+    }
+  }
   if (schema.oneOf !== undefined) {
     if (!Array.isArray(schema.oneOf) || schema.oneOf.length < 2) {
       errors.push(`${location}.oneOf must contain at least two JSON Schema branches`);
     } else {
-      schema.oneOf.forEach((branch, index) => validatePayloadSchemaNode(branch, `${location}.oneOf[${index}]`, errors, availableProperties));
+      schema.oneOf.forEach((branch, index) => validatePayloadSchemaNode(
+        branch,
+        `${location}.oneOf[${index}]`,
+        errors,
+        availableProperties,
+        { allowOneOfTitle: true },
+      ));
+    }
+  }
+  if (schema.contains !== undefined) {
+    if (!isRecord(schema.contains)) {
+      errors.push(`${location}.contains must be a JSON Schema object`);
+    } else {
+      validatePayloadSchemaNode(schema.contains, `${location}.contains`, errors);
     }
   }
   if (schema.not !== undefined) validatePayloadSchemaNode(schema.not, `${location}.not`, errors, availableProperties);

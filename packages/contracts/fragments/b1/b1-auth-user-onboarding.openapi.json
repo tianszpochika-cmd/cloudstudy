@@ -718,6 +718,46 @@
           "B1 Onboarding"
         ],
         "operationId": "getB1DailyTasks",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/today",
+          "canonicalOperationId": "getB10LearningToday",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "getB10LearningToday",
+          "canonicalRoute": "/api/v1/learning/today",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.read",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none; the adapter may only translate the legacy response"
+        },
         "responses": {
           "200": {
             "description": "Today's deterministic task plan",
@@ -764,14 +804,46 @@
           "B1 Onboarding"
         ],
         "operationId": "completeB1DailyTask",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/tasks/{taskId}/complete",
+          "canonicalOperationId": "completeB10LearningTask",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "x-owner": "learning-service",
         "x-contract": {
-          "owner": "learner-service",
-          "migration": "B25 durable learner daily-task projection; public Gateway path is retained for compatibility"
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "completeB10LearningTask",
+          "canonicalRoute": "/api/v1/learning/tasks/{taskId}/complete",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true,
+          "authority": "learning-service owns task completion, plan state and resulting projections"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.task.write",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "none for completion result, score, mastery, reward or schedule"
         },
         "x-idempotency": {
           "required": true,
@@ -856,6 +928,46 @@
           "B1 Onboarding"
         ],
         "operationId": "reorderB1DailyTasks",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "migrationLink": "/api/v1/learning/plans/reorder",
+          "canonicalOperationId": "reorderB10LearningPlan",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED"
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learning-service",
+        "x-contract": {
+          "owner": "learning-service",
+          "adapterOnly": true,
+          "canonicalOperationId": "reorderB10LearningPlan",
+          "canonicalRoute": "/api/v1/learning/plans/reorder",
+          "legacyWirePreserved": true,
+          "noIndependentCalculation": true,
+          "noDoubleWrite": true
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.plan.write",
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "task order intent only; plan facts remain server-owned"
+        },
         "x-idempotency": {
           "required": true,
           "strategy": "request-key",

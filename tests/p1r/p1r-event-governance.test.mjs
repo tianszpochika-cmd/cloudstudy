@@ -9,6 +9,7 @@ import {
   validateEventGovernanceData,
   listEventFragments,
 } from '../../scripts/audit/p1r-event-governance-check.mjs';
+import { validateEventPayloadSchemas } from '../../scripts/contracts/event-catalog-policy.mjs';
 import { projectCanonicalAsyncApi } from '../../scripts/contracts/event-governance-projection.mjs';
 import { validateAsyncApiProjection, validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
 
@@ -47,16 +48,16 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   const report = validateEventGovernance({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
-    totalEvents: 155,
-    canonicalEvents: 14,
+    totalEvents: 158,
+    canonicalEvents: 17,
     historicalCandidates: 141,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 37,
-    plannedEventGaps: 11,
-    d2ContractClosedEventGaps: 5,
+    canonicalConsumerBindings: 43,
+    plannedEventGaps: 9,
+    d2ContractClosedEventGaps: 7,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 14,
-    asyncApiOperations: 51,
+    asyncApiChannels: 17,
+    asyncApiOperations: 60,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -66,10 +67,86 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 14);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 14);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 37);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 14, operationCount: 51 });
+  assert.equal(Object.keys(projection.channels).length, 17);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 17);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 43);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 17, operationCount: 60 });
+});
+
+test('event payload schema policy supports bounded cross-field keywords recursively', () => {
+  const payloadSchemas = {
+    ValidNestedSchema: {
+      type: 'object',
+      description: 'A payload schema with bounded policy metadata.',
+      'x-p1r-cross-field-invariants': ['status=A requires values to contain A'],
+      required: ['status', 'values'],
+      properties: {
+        status: { type: 'string', enum: ['A', 'B'] },
+        values: {
+          type: 'array',
+          items: { type: 'string' },
+          contains: { enum: ['A'] },
+        },
+      },
+      allOf: [
+        { properties: { status: { enum: ['A', 'B'] } } },
+        {
+          oneOf: [
+            { title: 'STATUS_A', properties: { status: { const: 'A' } } },
+            { title: 'STATUS_B', properties: { status: { const: 'B' } } },
+          ],
+        },
+      ],
+      oneOf: [
+        { title: 'VALUES_PRESENT', required: ['values'] },
+        { title: 'STATUS_PRESENT', required: ['status'] },
+      ],
+    },
+  };
+
+  assert.deepEqual(validateEventPayloadSchemas(payloadSchemas, 'test payloadSchemas'), []);
+});
+
+test('event payload schema policy remains fail-closed for nested unknown keywords and malformed extensions', () => {
+  const base = {
+    type: 'object',
+    'x-p1r-cross-field-invariants': ['one invariant'],
+    properties: {
+      values: {
+        type: 'array',
+        items: { type: 'string' },
+        contains: { enum: ['A'] },
+      },
+    },
+    allOf: [
+      { properties: { values: { type: 'array' } } },
+      { oneOf: [{ title: 'VALUES', properties: { values: { type: 'array' } } }, { type: 'object' }] },
+    ],
+    oneOf: [
+      { title: 'PRESENT', required: ['values'] },
+      { title: 'OBJECT', type: 'object' },
+    ],
+  };
+
+  const unknown = structuredClone(base);
+  unknown.allOf[1].oneOf[0].unknownKeyword = true;
+  unknown.properties.values.contains.unknownKeyword = true;
+  const unknownErrors = validateEventPayloadSchemas({ UnknownNestedKeyword: unknown }, 'test payloadSchemas');
+  assert.match(unknownErrors.join('\n'), /allOf\[1\]\.oneOf\[0\]\.unknownKeyword is not an allowed M1-006 payload schema keyword/);
+  assert.match(unknownErrors.join('\n'), /properties\.values\.contains\.unknownKeyword is not an allowed M1-006 payload schema keyword/);
+
+  const malformed = structuredClone(base);
+  malformed.title = 'root titles are not allowed';
+  malformed['x-p1r-cross-field-invariants'] = [''];
+  malformed.allOf = {};
+  malformed.oneOf[0].title = {};
+  malformed.properties.values.contains = true;
+  const malformedErrors = validateEventPayloadSchemas({ MalformedExtensions: malformed }, 'test payloadSchemas');
+  assert.match(malformedErrors.join('\n'), /title is only allowed on oneOf branches/);
+  assert.match(malformedErrors.join('\n'), /x-p1r-cross-field-invariants must be a non-empty string array/);
+  assert.match(malformedErrors.join('\n'), /allOf must contain at least one JSON Schema branch/);
+  assert.match(malformedErrors.join('\n'), /title must be a non-empty string/);
+  assert.match(malformedErrors.join('\n'), /contains must be a JSON Schema object/);
 });
 
 test('generated TypeScript separates canonical publishers from historical catalog candidates', () => {
@@ -99,7 +176,10 @@ test('generated TypeScript separates canonical publishers from historical catalo
     'WorkflowEventOrderingDeferredEvent',
     'WorkflowSagaCompensationRequestedEvent',
     'WorkflowSagaManualRecoveryRequestedEvent',
-  ], 'CanonicalPlatformEvent must exactly preserve the fourteen canonical event interfaces in catalog order');
+    'AssessmentItemAssessedEvent',
+    'LearningMasteryProjectedB10Event',
+    'LearningReviewScheduledB10Event',
+  ], 'CanonicalPlatformEvent must exactly preserve the seventeen canonical event interfaces in catalog order');
   for (const historicalInterface of [
     'ContentPublicProjectionInvalidatedEvent',
     'CmsContentPublishedEvent',
@@ -193,7 +273,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['topic owner drift', (input) => {
       input.b26Runtime.topics.find((topic) => topic.name === 'platform.workflow.v1').ownerService = 'audit-service';
     }, /producer must match the B26 topic owner/],
-    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact fourteen canonical governance events/],
+    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact seventeen canonical governance events/],
     ['consumer order drift', (input) => { canonical(input)['x-p1r-governance'].consumers.reverse(); }, /consumers and order must match/],
     ['client consumer group', (input) => { canonical(input)['x-p1r-governance'].consumers[0].consumerGroup = 'cg.browser-client.v1'; }, /cannot represent a client/],
     ['duplicate consumer group', (input) => {
@@ -225,7 +305,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
-    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact fourteen/],
+    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact seventeen/],
     ['wrong planned closure family', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].family = 'WRONG'; }, /family must match the frozen gap registry/],
     ['closed content gap regresses to planned', (input) => {
       input.catalog['x-p1r-event-governance'].plannedClosures

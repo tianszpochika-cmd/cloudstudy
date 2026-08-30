@@ -64,6 +64,14 @@
         ]
       },
       {
+        "path": "packages/contracts/events/v1/fragments/b10-learning-loop.events.json",
+        "eventNames": [
+          "assessment.item.assessed.v2",
+          "learning.mastery.projected.v2",
+          "learning.review.scheduled.v2"
+        ]
+      },
+      {
         "path": "packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json",
         "eventNames": [
           "media.started.v1",
@@ -327,7 +335,7 @@
       {
         "gapId": "EVENT-GAP-BIND-ASM-001",
         "family": "EVENT-GAP-BIND",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-006",
           "P1R-M1-010",
@@ -337,7 +345,7 @@
       {
         "gapId": "EVENT-GAP-BIND-LRN-001",
         "family": "EVENT-GAP-BIND",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-006",
           "P1R-M1-013"
@@ -6266,6 +6274,1289 @@
           "format": "date-time"
         }
       }
+    },
+    "B10AssessmentItemAssessedV2": {
+      "$id": "platform.events.assessment.item.assessed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "x-p1r-cross-field-invariants": [
+        "objectivePolicyPin is an assessment-service server-predeclared proof; policyVersion and policyDigest identify the immutable legal practice policy",
+        "objectiveOutcome=NO_OBJECTIVE_EXPECTED => objectivePolicyPin.objectiveExpected=false and objectivePolicyPin.practiceType in [SPEAKING_SELF_RATING,WRITING_SELF_RATING,ACTIVE_RECALL_SELF_RATING]",
+        "objectiveOutcome!=NO_OBJECTIVE_EXPECTED => objectivePolicyPin.objectiveExpected=true and objectivePolicyPin.practiceType=OBJECTIVE_ASSESSMENT",
+        "NO_OBJECTIVE_EXPECTED is legal only when objectiveNumerator=0, objectiveDenominator=0, objectiveCorrect=false and guessSignal=false"
+      ],
+      "required": [
+        "tenantId",
+        "principalId",
+        "itemAssessmentId",
+        "attemptId",
+        "sessionId",
+        "logicalItemId",
+        "contentPin",
+        "rulePin",
+        "reportPin",
+        "objectivePolicyPin",
+        "objectiveOutcome",
+        "objectiveNumerator",
+        "objectiveDenominator",
+        "objectiveCorrect",
+        "guessSignal",
+        "semanticErrorCategory",
+        "mappingVersion",
+        "verificationStage",
+        "reasonTrace",
+        "outcomeDigest",
+        "assessmentFactWatermark",
+        "assessedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "itemAssessmentId": {
+          "type": "string",
+          "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "attemptId": {
+          "type": "string",
+          "pattern": "^aatm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sessionId": {
+          "type": "string",
+          "pattern": "^asess_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "logicalItemId": {
+          "type": "string",
+          "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentPin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
+          "properties": {
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          }
+        },
+        "rulePin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "answerRuleSetVersion",
+            "answerRuleVersion",
+            "ruleDigest",
+            "completionRuleVersion",
+            "assessmentVersion"
+          ],
+          "properties": {
+            "answerRuleSetVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "answerRuleVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "ruleDigest": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            },
+            "completionRuleVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "assessmentVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            }
+          }
+        },
+        "reportPin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reportId",
+            "reportVersion",
+            "reportRuleVersion",
+            "reportStatus",
+            "reportDigest",
+            "asOf"
+          ],
+          "properties": {
+            "reportId": {
+              "type": "string",
+              "pattern": "^rpt_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "reportVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "reportRuleVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "reportStatus": {
+              "type": "string",
+              "enum": [
+                "READY",
+                "PARTIAL",
+                "FAILED"
+              ]
+            },
+            "reportDigest": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            },
+            "asOf": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "objectivePolicyPin": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Assessment-service server-predeclared proof that determines whether an item is objective-scored. Clients cannot create, override or widen this pin.",
+          "required": [
+            "practiceType",
+            "objectiveExpected",
+            "policyVersion",
+            "policyDigest"
+          ],
+          "properties": {
+            "practiceType": {
+              "type": "string",
+              "enum": [
+                "OBJECTIVE_ASSESSMENT",
+                "SPEAKING_SELF_RATING",
+                "WRITING_SELF_RATING",
+                "ACTIVE_RECALL_SELF_RATING"
+              ]
+            },
+            "objectiveExpected": {
+              "type": "boolean"
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 96
+            },
+            "policyDigest": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          }
+        },
+        "objectiveOutcome": {
+          "type": "string",
+          "enum": [
+            "CORRECT_VERIFIED",
+            "INCORRECT",
+            "UNANSWERED",
+            "REVEALED_BEFORE_ANSWER",
+            "GUESSED",
+            "NO_OBJECTIVE_EXPECTED"
+          ]
+        },
+        "objectiveNumerator": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "objectiveDenominator": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "objectiveCorrect": {
+          "type": "boolean"
+        },
+        "guessSignal": {
+          "type": "boolean"
+        },
+        "semanticErrorCategory": {
+          "type": "string",
+          "enum": [
+            "KNOWLEDGE_GAP",
+            "MEMORY_FUZZY",
+            "CONFUSABLE",
+            "RULE_CONCEPT",
+            "LISTENING_DISCRIMINATION",
+            "READING_COMPREHENSION",
+            "SPELLING_OR_STRUCTURE",
+            "CARELESS_OR_OMISSION",
+            "TIME_INSUFFICIENT",
+            "UNCLASSIFIED"
+          ]
+        },
+        "mappingVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "verificationStage": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "IMMEDIATE_REPAIR",
+            "D1",
+            "D7"
+          ]
+        },
+        "reasonTrace": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleCode",
+              "ruleVersion",
+              "category",
+              "reasonCode",
+              "evidenceRef"
+            ],
+            "properties": {
+              "ruleCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "ruleVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "KNOWLEDGE_GAP",
+                  "MEMORY_FUZZY",
+                  "CONFUSABLE",
+                  "RULE_CONCEPT",
+                  "LISTENING_DISCRIMINATION",
+                  "READING_COMPREHENSION",
+                  "SPELLING_OR_STRUCTURE",
+                  "CARELESS_OR_OMISSION",
+                  "TIME_INSUFFICIENT",
+                  "UNCLASSIFIED"
+                ]
+              },
+              "reasonCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "evidenceRef": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9._:-]{3,191}$"
+              }
+            }
+          }
+        },
+        "outcomeDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "assessmentFactWatermark": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "assessedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "CORRECT_VERIFIED"
+            },
+            "objectiveNumerator": {
+              "const": 1
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": true
+            },
+            "guessSignal": {
+              "const": false
+            }
+          }
+        },
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "INCORRECT"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
+          }
+        },
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "UNANSWERED"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
+          }
+        },
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "REVEALED_BEFORE_ANSWER"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
+          }
+        },
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "GUESSED"
+            },
+            "objectiveNumerator": {
+              "const": 1
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": true
+            },
+            "guessSignal": {
+              "const": true
+            }
+          }
+        },
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    true
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "OBJECTIVE_ASSESSMENT"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "GUESSED"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 1
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": true
+            }
+          }
+        },
+        {
+          "properties": {
+            "objectivePolicyPin": {
+              "properties": {
+                "objectiveExpected": {
+                  "enum": [
+                    false
+                  ]
+                },
+                "practiceType": {
+                  "enum": [
+                    "SPEAKING_SELF_RATING",
+                    "WRITING_SELF_RATING",
+                    "ACTIVE_RECALL_SELF_RATING"
+                  ]
+                }
+              }
+            },
+            "objectiveOutcome": {
+              "const": "NO_OBJECTIVE_EXPECTED"
+            },
+            "objectiveNumerator": {
+              "const": 0
+            },
+            "objectiveDenominator": {
+              "const": 0
+            },
+            "objectiveCorrect": {
+              "const": false
+            },
+            "guessSignal": {
+              "const": false
+            }
+          }
+        }
+      ]
+    },
+    "B10LearningMasteryProjectedV2": {
+      "$id": "platform.events.learning.mastery.projected.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "x-p1r-cross-field-invariants": [
+        "masteryStageAfter=MASTERED => d7Gate.result=PASSED and d7Gate.reasonCode=D7_PASSED and evidenceCount=3 and evidenceLocalDates.length=3 and aggregateScore>=85",
+        "masteryStageAfter=CONSOLIDATED => d7Gate.result=PASSED and d7Gate.reasonCode=D7_PASSED and evidenceCount=3 and evidenceLocalDates.length=3 and aggregateScore>=95 and latestEffectiveQuality=3 and latestGuessSignal=false",
+        "evidenceCount=length(evidenceLocalDates); evidenceLocalDates are unique and sorted by ISO local date ascending",
+        "reasonTrace is sorted by Unicode code-point tuple (ruleCode,reasonCode,evidenceRef) ascending"
+      ],
+      "required": [
+        "tenantId",
+        "principalId",
+        "projectionId",
+        "logicalItemId",
+        "sourceAssessmentEventId",
+        "sourceItemAssessmentId",
+        "contentPin",
+        "masteryStageBefore",
+        "masteryStageAfter",
+        "evidenceCount",
+        "evidenceDigest",
+        "evidenceLocalDates",
+        "d7Gate",
+        "aggregateScore",
+        "latestEffectiveQuality",
+        "latestGuessSignal",
+        "masteryEpochId",
+        "masteryEpochVersion",
+        "projectionVersion",
+        "masteryRuleVersion",
+        "masteryFactWatermark",
+        "reasonTrace",
+        "projectedAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "projectionId": {
+          "type": "string",
+          "pattern": "^mp_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "logicalItemId": {
+          "type": "string",
+          "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "sourceAssessmentEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "sourceItemAssessmentId": {
+          "type": "string",
+          "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "contentPin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
+          "properties": {
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          }
+        },
+        "masteryStageBefore": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "masteryStageAfter": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "evidenceCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "evidenceDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "evidenceLocalDates": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "d7Gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "result",
+            "reasonCode"
+          ],
+          "properties": {
+            "result": {
+              "type": "string",
+              "enum": [
+                "NOT_DUE",
+                "NOT_PASSED",
+                "PASSED",
+                "FAILED"
+              ]
+            },
+            "reasonCode": {
+              "type": "string",
+              "enum": [
+                "D7_NOT_DUE",
+                "D7_NOT_PASSED",
+                "D7_PASSED",
+                "D7_FAILED",
+                "MASTERY_GATE_NOT_MET"
+              ]
+            }
+          },
+          "oneOf": [
+            {
+              "properties": {
+                "result": {
+                  "const": "NOT_DUE"
+                },
+                "reasonCode": {
+                  "const": "D7_NOT_DUE"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "NOT_PASSED"
+                },
+                "reasonCode": {
+                  "const": "D7_NOT_PASSED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "NOT_PASSED"
+                },
+                "reasonCode": {
+                  "const": "MASTERY_GATE_NOT_MET"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "PASSED"
+                },
+                "reasonCode": {
+                  "const": "D7_PASSED"
+                }
+              }
+            },
+            {
+              "properties": {
+                "result": {
+                  "const": "FAILED"
+                },
+                "reasonCode": {
+                  "const": "D7_FAILED"
+                }
+              }
+            }
+          ]
+        },
+        "aggregateScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "latestEffectiveQuality": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "latestGuessSignal": {
+          "type": "boolean"
+        },
+        "masteryEpochId": {
+          "type": "string",
+          "pattern": "^mep_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "masteryEpochVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "masteryRuleVersion": {
+          "type": "string",
+          "enum": [
+            "P1_MASTERY_V1"
+          ]
+        },
+        "masteryFactWatermark": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "reasonTrace": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "ruleCode",
+              "ruleVersion",
+              "category",
+              "reasonCode",
+              "evidenceRef"
+            ],
+            "properties": {
+              "ruleCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "ruleVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "EVIDENCE",
+                  "D7_GATE",
+                  "STAGE_TRANSITION",
+                  "CONTENT_VERSION",
+                  "REPLAY"
+                ]
+              },
+              "reasonCode": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Z0-9_]{1,95}$"
+              },
+              "evidenceRef": {
+                "type": "string",
+                "pattern": "^[A-Za-z][A-Za-z0-9._:-]{3,191}$"
+              }
+            }
+          }
+        },
+        "projectedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "oneOf": [
+        {
+          "title": "MASTERED_GATE",
+          "properties": {
+            "masteryStageAfter": {
+              "enum": [
+                "MASTERED"
+              ]
+            },
+            "d7Gate": {
+              "required": [
+                "result",
+                "reasonCode"
+              ],
+              "properties": {
+                "result": {
+                  "enum": [
+                    "PASSED"
+                  ]
+                },
+                "reasonCode": {
+                  "enum": [
+                    "D7_PASSED"
+                  ]
+                }
+              }
+            },
+            "evidenceCount": {
+              "minimum": 3,
+              "maximum": 3
+            },
+            "evidenceLocalDates": {
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "aggregateScore": {
+              "minimum": 85
+            }
+          }
+        },
+        {
+          "title": "CONSOLIDATED_GATE",
+          "properties": {
+            "masteryStageAfter": {
+              "enum": [
+                "CONSOLIDATED"
+              ]
+            },
+            "d7Gate": {
+              "required": [
+                "result",
+                "reasonCode"
+              ],
+              "properties": {
+                "result": {
+                  "enum": [
+                    "PASSED"
+                  ]
+                },
+                "reasonCode": {
+                  "enum": [
+                    "D7_PASSED"
+                  ]
+                }
+              }
+            },
+            "evidenceCount": {
+              "minimum": 3,
+              "maximum": 3
+            },
+            "evidenceLocalDates": {
+              "minItems": 3,
+              "maxItems": 3
+            },
+            "aggregateScore": {
+              "minimum": 95
+            },
+            "latestEffectiveQuality": {
+              "enum": [
+                3
+              ]
+            },
+            "latestGuessSignal": {
+              "enum": [
+                false
+              ]
+            }
+          }
+        },
+        {
+          "title": "NON_MASTERED_PROJECTION",
+          "properties": {
+            "masteryStageAfter": {
+              "enum": [
+                "NEW",
+                "LEARNING"
+              ]
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "evidenceCount": {
+                  "enum": [
+                    0
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "maxItems": 0
+                }
+              }
+            },
+            {
+              "properties": {
+                "evidenceCount": {
+                  "enum": [
+                    1
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "minItems": 1,
+                  "maxItems": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "evidenceCount": {
+                  "enum": [
+                    2
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            },
+            {
+              "properties": {
+                "evidenceCount": {
+                  "enum": [
+                    3
+                  ]
+                },
+                "evidenceLocalDates": {
+                  "minItems": 3,
+                  "maxItems": 3
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "B10LearningReviewScheduledV2": {
+      "$id": "platform.events.learning.review.scheduled.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "x-p1r-cross-field-invariants": [
+        "repairWorkflowState=DELAY_VERIFY_D1 => reasonCodes contains D1_VERIFICATION",
+        "repairWorkflowState=DELAY_VERIFY_D7 => reasonCodes contains D7_VERIFICATION",
+        "repairWorkflowState=MASTERED => masteryStage in [MASTERED,CONSOLIDATED] and reasonCodes contains D7_VERIFICATION",
+        "repairWorkflowState=REOPENED => masteryStage=LEARNING and reasonCodes contains D1_VERIFICATION or D7_VERIFICATION or CATCH_UP_PROTECTION",
+        "repairWorkflowState in [REVIEW_QUEUE,LEARNING] has no cross-state coupling; srsStage, repairWorkflowState and masteryStage remain independent",
+        "reasonCodes are unique and sorted by Unicode code-point ascending"
+      ],
+      "required": [
+        "tenantId",
+        "principalId",
+        "queueItemId",
+        "logicalItemId",
+        "queueVersion",
+        "srsStage",
+        "repairWorkflowState",
+        "masteryStage",
+        "sourceAssessmentEventId",
+        "sourceItemAssessmentId",
+        "algorithmVersion",
+        "timePolicyVersion",
+        "contentPin",
+        "dueLocalDate",
+        "dueAt",
+        "timezoneId",
+        "reasonCodes",
+        "scheduledAt"
+      ],
+      "properties": {
+        "tenantId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{1,63}$"
+        },
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "queueItemId": {
+          "type": "string",
+          "pattern": "^rq_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "logicalItemId": {
+          "type": "string",
+          "pattern": "^li_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "queueVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "srsStage": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "repairWorkflowState": {
+          "type": "string",
+          "enum": [
+            "REVIEW_QUEUE",
+            "LEARNING",
+            "DELAY_VERIFY_D1",
+            "DELAY_VERIFY_D7",
+            "MASTERED",
+            "REOPENED"
+          ]
+        },
+        "masteryStage": {
+          "type": "string",
+          "enum": [
+            "NEW",
+            "LEARNING",
+            "MASTERED",
+            "CONSOLIDATED"
+          ]
+        },
+        "sourceAssessmentEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "sourceItemAssessmentId": {
+          "type": "string",
+          "pattern": "^aitm_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "algorithmVersion": {
+          "type": "string",
+          "enum": [
+            "SM2_Q03_V1"
+          ]
+        },
+        "timePolicyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "contentPin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contentVersionId",
+            "contentEpoch",
+            "snapshotId",
+            "snapshotHash"
+          ],
+          "properties": {
+            "contentVersionId": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            },
+            "contentEpoch": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
+            },
+            "snapshotId": {
+              "type": "string",
+              "pattern": "^snap_[A-Za-z0-9._:-]{8,127}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          }
+        },
+        "dueLocalDate": {
+          "type": "string",
+          "format": "date"
+        },
+        "dueAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezoneId": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_+./-]{0,127}$"
+        },
+        "reasonCodes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 19,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "RESUME_SESSION",
+              "SUBMISSION_CONFIRMATION",
+              "D1_VERIFICATION",
+              "D7_VERIFICATION",
+              "DUE_TODAY",
+              "OVERDUE_HIGH_RISK",
+              "RECENT_MISTAKE",
+              "REPEATED_ERROR_CATEGORY",
+              "GOAL_FOUNDATION",
+              "GOAL_COLLEGE_CET",
+              "GOAL_POSTGRADUATE_ENGLISH",
+              "GOAL_WORKPLACE_DAILY",
+              "PLAN_CHECKPOINT",
+              "NEW_CORE",
+              "SKILL_ROTATION",
+              "CATCH_UP_PROTECTION",
+              "MANUAL_LEGAL_COURSE",
+              "GOAL_LIGHT_ITEM_UNAVAILABLE",
+              "CONTENT_ESTIMATE_UNSCHEDULABLE"
+            ]
+          }
+        },
+        "scheduledAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "oneOf": [
+        {
+          "title": "D1_VERIFICATION_QUEUE",
+          "properties": {
+            "repairWorkflowState": {
+              "enum": [
+                "DELAY_VERIFY_D1"
+              ]
+            },
+            "reasonCodes": {
+              "contains": {
+                "enum": [
+                  "D1_VERIFICATION"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "title": "D7_VERIFICATION_QUEUE",
+          "properties": {
+            "repairWorkflowState": {
+              "enum": [
+                "DELAY_VERIFY_D7"
+              ]
+            },
+            "reasonCodes": {
+              "contains": {
+                "enum": [
+                  "D7_VERIFICATION"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "title": "MASTERED_REPAIR_QUEUE",
+          "properties": {
+            "repairWorkflowState": {
+              "enum": [
+                "MASTERED"
+              ]
+            },
+            "masteryStage": {
+              "enum": [
+                "MASTERED",
+                "CONSOLIDATED"
+              ]
+            },
+            "reasonCodes": {
+              "contains": {
+                "enum": [
+                  "D7_VERIFICATION"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "title": "REOPENED_REPAIR_QUEUE",
+          "properties": {
+            "repairWorkflowState": {
+              "enum": [
+                "REOPENED"
+              ]
+            },
+            "masteryStage": {
+              "enum": [
+                "LEARNING"
+              ]
+            },
+            "reasonCodes": {
+              "contains": {
+                "enum": [
+                  "D1_VERIFICATION",
+                  "D7_VERIFICATION",
+                  "CATCH_UP_PROTECTION"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "title": "ACTIVE_REVIEW_QUEUE",
+          "properties": {
+            "repairWorkflowState": {
+              "enum": [
+                "REVIEW_QUEUE",
+                "LEARNING"
+              ]
+            }
+          }
+        }
+      ]
     }
   },
   "events": [
@@ -10325,6 +11616,246 @@
         "breakingChange": "发布 auth.login.succeeded.v2",
         "consumerRule": "只消费本地账号登录后建立的 principal/session 结果；不传播密码、Access Token、Refresh Token 或原始凭证。"
       }
+    },
+    {
+      "eventName": "assessment.item.assessed.v2",
+      "domain": "assessment",
+      "version": 2,
+      "schema": "assessment.event.v2",
+      "aggregateType": "assessment_item",
+      "aggregateIdField": "itemAssessmentId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10AssessmentItemAssessedV2"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish assessment.item.assessed.v3",
+        "consumerRule": "assessment-service 是单题可信 outcome 的不可变 source；消费者按 itemAssessmentId、rulePin.assessmentVersion 与 outcomeDigest 幂等，reasonTrace 按 ruleCode、reasonCode、evidenceRef 升序解释；不接收原始作答、答案 key、规则正文、音频或客户端权限事实。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "assessment-service",
+          "dataOwner": "assessment-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_assessment_item_assessed_v2"
+        },
+        "consumers": [
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-assessment.v1",
+            "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_learning_from_assessment_v1"
+          },
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-assessment.v1",
+            "subscriptionOperationId": "subscribe_assessment_item_assessed_v2_cg_workflow_from_assessment_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.assessment.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.itemAssessmentId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "assessment_item_assessed_v2"
+        },
+        "schema": {
+          "schemaVersion": "assessment.event.v2",
+          "payloadRef": "#/payloadSchemas/B10AssessmentItemAssessedV2",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "learning.mastery.projected.v2",
+      "domain": "learning",
+      "version": 2,
+      "schema": "learning.event.v2",
+      "aggregateType": "mastery_projection",
+      "aggregateIdField": "projectionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningMasteryProjectedV2"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.mastery.projected.v3",
+        "consumerRule": "learning-service 是 mastery projection 的唯一写 owner；消费者按 masteryEpochId、projectionVersion 与 evidenceDigest 幂等，evidenceLocalDates 按 ISO local date 升序、reasonTrace 按 ruleCode、reasonCode、evidenceRef 升序解释，三套状态只读且不得反向写入 SRS 或 repair。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "learning-service",
+          "dataOwner": "learning-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_learning_mastery_projected_v2"
+        },
+        "consumers": [
+          {
+            "service": "assessment-service",
+            "consumerGroup": "cg.assessment-from-learning.v1",
+            "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_assessment_from_learning_v1"
+          },
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-learning.v1",
+            "subscriptionOperationId": "subscribe_learning_mastery_projected_v2_cg_workflow_from_learning_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.learning.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.projectionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "learning_mastery_projected_v2"
+        },
+        "schema": {
+          "schemaVersion": "learning.event.v2",
+          "payloadRef": "#/payloadSchemas/B10LearningMasteryProjectedV2",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "learning.review.scheduled.v2",
+      "domain": "learning",
+      "version": 2,
+      "schema": "learning.event.v2",
+      "aggregateType": "learning_review_queue",
+      "aggregateIdField": "queueItemId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/B10LearningReviewScheduledV2"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish learning.review.scheduled.v3",
+        "consumerRule": "learning-service 只发布已由服务端算法、内容 pin 与时区规则确定的队列事实；消费者按 queueItemId、queueVersion 幂等，reasonCodes 按 Unicode code-point 升序解释，不能以客户端时间或状态改写 dueAt。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "learning-service",
+          "dataOwner": "learning-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_learning_review_scheduled_v2"
+        },
+        "consumers": [
+          {
+            "service": "assessment-service",
+            "consumerGroup": "cg.assessment-from-learning.v1",
+            "subscriptionOperationId": "subscribe_learning_review_scheduled_v2_cg_assessment_from_learning_v1"
+          },
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-learning.v1",
+            "subscriptionOperationId": "subscribe_learning_review_scheduled_v2_cg_workflow_from_learning_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.learning.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.queueItemId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "learning_review_scheduled_v2"
+        },
+        "schema": {
+          "schemaVersion": "learning.event.v2",
+          "payloadRef": "#/payloadSchemas/B10LearningReviewScheduledV2",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
     }
   ],
   "asyncapi": {
@@ -10701,6 +12232,87 @@
             "x-event-name": "workflow.saga.manual_recovery_requested.v1",
             "payload": {
               "$ref": "#/payloadSchemas/B26WorkflowManualRecoveryRequested"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "assessment_item_assessed_v2": {
+        "address": "platform.assessment.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.assessment.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "assessment.item.assessed.v2",
+            "x-event-name": "assessment.item.assessed.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10AssessmentItemAssessedV2"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "learning_mastery_projected_v2": {
+        "address": "platform.learning.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.learning.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "learning.mastery.projected.v2",
+            "x-event-name": "learning.mastery.projected.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10LearningMasteryProjectedV2"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "learning_review_scheduled_v2": {
+        "address": "platform.learning.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.learning.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "learning.review.scheduled.v2",
+            "x-event-name": "learning.review.scheduled.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/B10LearningReviewScheduledV2"
             },
             "bindings": {
               "kafka": {
@@ -11818,6 +13430,198 @@
           }
         },
         "x-consumer-service": "audit-service"
+      },
+      "publish_assessment_item_assessed_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/assessment_item_assessed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/assessment_item_assessed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "assessment-service",
+        "x-data-owner": "assessment-service"
+      },
+      "subscribe_assessment_item_assessed_v2_cg_learning_from_assessment_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/assessment_item_assessed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/assessment_item_assessed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-assessment.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_assessment_item_assessed_v2_cg_workflow_from_assessment_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/assessment_item_assessed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/assessment_item_assessed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-assessment.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "publish_learning_mastery_projected_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_mastery_projected_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_mastery_projected_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "learning-service",
+        "x-data-owner": "learning-service"
+      },
+      "subscribe_learning_mastery_projected_v2_cg_assessment_from_learning_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_mastery_projected_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_mastery_projected_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.assessment-from-learning.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "assessment-service"
+      },
+      "subscribe_learning_mastery_projected_v2_cg_workflow_from_learning_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_mastery_projected_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_mastery_projected_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-learning.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "publish_learning_review_scheduled_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_review_scheduled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_review_scheduled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "learning-service",
+        "x-data-owner": "learning-service"
+      },
+      "subscribe_learning_review_scheduled_v2_cg_assessment_from_learning_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_review_scheduled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_review_scheduled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.assessment-from-learning.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "assessment-service"
+      },
+      "subscribe_learning_review_scheduled_v2_cg_workflow_from_learning_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/learning_review_scheduled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/learning_review_scheduled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-learning.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
       }
     }
   }

@@ -623,6 +623,165 @@ const M1012_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
   'b26StaticPolicy',
 ]);
 
+// M1-013 source-bound promotion.  These constants are intentionally kept in
+// the compatibility tool (rather than inferred from the working tree) so the
+// mutable policy can only describe a previously frozen machine boundary.
+export const M1013_LEARNING_LOOP_PROMOTION_ID = 'P1R-M1-013';
+export const M1013_SOURCE_CONTRACT_BASELINE_REF = 'a07a58a7d245295c54d39487a6669545d077c513';
+export const M1013_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1013_OPENAPI_SOURCE_SEMANTIC_SHA256 = '651e76fc53f921536687b37d8a961eacb8216912f185ae42f60026e28979eabd';
+export const M1013_EVENT_SOURCE_SEMANTIC_SHA256 = '9f9767cbca34b9793e3477691d78d5d6759b357adf5c8ec62f376a0f539caa2e';
+export const M1013_B26_SOURCE_SEMANTIC_SHA256 = '599058853cbd9c829ca5b8addba6434c61d0593e5ea62d5585b2c8fa9904b620';
+
+export const M1013_APPROVED_CANONICAL_EVENTS = Object.freeze([
+  Object.freeze({
+    eventName: 'assessment.item.assessed.v2',
+    payloadRef: '#/payloadSchemas/B10AssessmentItemAssessedV2',
+    topic: 'platform.assessment.v1',
+    producer: 'assessment-service',
+    aggregateType: 'assessment_item',
+    aggregateIdField: 'itemAssessmentId',
+    requiredPayloadFields: Object.freeze([
+      'tenantId', 'principalId', 'itemAssessmentId', 'attemptId', 'sessionId', 'logicalItemId', 'contentPin', 'rulePin', 'reportPin', 'objectivePolicyPin',
+      'objectiveOutcome', 'objectiveNumerator', 'objectiveDenominator', 'objectiveCorrect', 'guessSignal', 'semanticErrorCategory',
+      'mappingVersion', 'verificationStage', 'reasonTrace', 'outcomeDigest', 'assessmentFactWatermark', 'assessedAt',
+    ]),
+    consumers: Object.freeze([
+      Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-assessment.v1' }),
+      Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-assessment.v1' }),
+    ]),
+  }),
+  Object.freeze({
+    eventName: 'learning.mastery.projected.v2',
+    payloadRef: '#/payloadSchemas/B10LearningMasteryProjectedV2',
+    topic: 'platform.learning.v1',
+    producer: 'learning-service',
+    aggregateType: 'mastery_projection',
+    aggregateIdField: 'projectionId',
+    requiredPayloadFields: Object.freeze([
+      'tenantId', 'principalId', 'projectionId', 'logicalItemId', 'sourceAssessmentEventId', 'sourceItemAssessmentId', 'contentPin',
+      'masteryStageBefore', 'masteryStageAfter', 'evidenceCount', 'evidenceDigest', 'evidenceLocalDates', 'd7Gate', 'aggregateScore',
+      'latestEffectiveQuality', 'latestGuessSignal', 'masteryEpochId', 'masteryEpochVersion', 'projectionVersion', 'masteryRuleVersion',
+      'masteryFactWatermark', 'reasonTrace', 'projectedAt',
+    ]),
+    consumers: Object.freeze([
+      Object.freeze({ service: 'assessment-service', consumerGroup: 'cg.assessment-from-learning.v1' }),
+      Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' }),
+    ]),
+  }),
+  Object.freeze({
+    eventName: 'learning.review.scheduled.v2',
+    payloadRef: '#/payloadSchemas/B10LearningReviewScheduledV2',
+    topic: 'platform.learning.v1',
+    producer: 'learning-service',
+    aggregateType: 'learning_review_queue',
+    aggregateIdField: 'queueItemId',
+    requiredPayloadFields: Object.freeze([
+      'tenantId', 'principalId', 'queueItemId', 'logicalItemId', 'queueVersion', 'srsStage', 'repairWorkflowState', 'masteryStage',
+      'sourceAssessmentEventId', 'sourceItemAssessmentId', 'algorithmVersion', 'timePolicyVersion', 'contentPin', 'dueLocalDate', 'dueAt',
+      'timezoneId', 'reasonCodes', 'scheduledAt',
+    ]),
+    consumers: Object.freeze([
+      Object.freeze({ service: 'assessment-service', consumerGroup: 'cg.assessment-from-learning.v1' }),
+      Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' }),
+    ]),
+  }),
+]);
+
+export const M1013_CANONICAL_ROUTE_PROJECTIONS = Object.freeze([
+  Object.freeze({ id: 'B10-REVIEW-QUEUE-LIST', method: 'GET', path: '/api/v1/learning/review-queue', operationId: 'listB10LearningReviewQueue' }),
+  Object.freeze({ id: 'B10-REVIEW-COMPLETE', method: 'POST', path: '/api/v1/learning/review-queue/{queueItemId}/complete', operationId: 'completeB10LearningReview' }),
+  Object.freeze({ id: 'B10-MASTERY-ITEM', method: 'GET', path: '/api/v1/learning/mastery/{itemId}', operationId: 'getB10LearningMasteryProjection' }),
+  Object.freeze({ id: 'B10-PLAN-CURRENT', method: 'GET', path: '/api/v1/learning/plans/current', operationId: 'getB10LearningPlan' }),
+  Object.freeze({ id: 'B10-TODAY', method: 'GET', path: '/api/v1/learning/today', operationId: 'getB10LearningToday' }),
+  Object.freeze({ id: 'B10-PLAN-REORDER', method: 'POST', path: '/api/v1/learning/plans/reorder', operationId: 'reorderB10LearningPlan' }),
+  Object.freeze({ id: 'B10-TASK-COMPLETE', method: 'POST', path: '/api/v1/learning/tasks/{taskId}/complete', operationId: 'completeB10LearningTask' }),
+  Object.freeze({ id: 'B10-REPAIR-LIST', method: 'GET', path: '/api/v1/learning/repairs', operationId: 'listB10LearningRepairs' }),
+  Object.freeze({ id: 'B10-REPAIR-DETAIL', method: 'GET', path: '/api/v1/learning/repairs/{repairId}', operationId: 'getB10LearningRepair' }),
+  Object.freeze({ id: 'B10-MASTERY-OVERVIEW', method: 'GET', path: '/api/v1/learning/mastery', operationId: 'getB10LearningMasteryOverview' }),
+  Object.freeze({ id: 'B10-REPORT', method: 'GET', path: '/api/v1/learning/reports/{reportType}', operationId: 'getB10LearningReport' }),
+]);
+
+export const M1013_LEGACY_ADAPTER_PROJECTIONS = Object.freeze([
+  Object.freeze({ id: 'LEGACY-B1-DAILY-TASKS-TODAY', method: 'GET', path: '/api/v1/onboarding/daily-tasks/today', operationId: 'getB1DailyTasks' }),
+  Object.freeze({ id: 'LEGACY-B1-DAILY-TASK-COMPLETE', method: 'POST', path: '/api/v1/onboarding/daily-tasks/{taskId}/complete', operationId: 'completeB1DailyTask' }),
+  Object.freeze({ id: 'LEGACY-B1-DAILY-TASKS-REORDER', method: 'POST', path: '/api/v1/onboarding/daily-tasks/reorder', operationId: 'reorderB1DailyTasks' }),
+  Object.freeze({ id: 'LEGACY-B2-CURRENT-LEARNING-PLAN', method: 'GET', path: '/api/v1/learning/plan/current', operationId: 'getCurrentLearningPlan' }),
+  Object.freeze({ id: 'LEGACY-B2-TODAY-LEARNING-STREAM', method: 'GET', path: '/api/v1/learning/stream/today', operationId: 'getTodayLearningStream' }),
+  Object.freeze({ id: 'LEGACY-B2-SUBMIT-LEARNING-STREAM-ACTION', method: 'POST', path: '/api/v1/learning/stream/action', operationId: 'submitLearningStreamAction' }),
+  Object.freeze({ id: 'LEGACY-B2-LEARNING-MISTAKE-QUEUE', method: 'GET', path: '/api/v1/learning/mistakes/queue', operationId: 'getLearningMistakeQueue' }),
+  Object.freeze({ id: 'LEGACY-B2-VERIFY-LEARNING-MISTAKE', method: 'POST', path: '/api/v1/learning/mistakes/verify', operationId: 'verifyLearningMistake' }),
+  Object.freeze({ id: 'LEGACY-B2-DAILY-LEARNING-SUMMARY', method: 'GET', path: '/api/v1/learning/stats/daily-summary', operationId: 'getDailyLearningSummary' }),
+  Object.freeze({ id: 'LEGACY-B2-CREATE-SRS-BATCH', method: 'POST', path: '/api/v1/learning/srs/batches', operationId: 'createSrsBatch' }),
+  Object.freeze({ id: 'LEGACY-B2-GET-SRS-BATCH', method: 'GET', path: '/api/v1/learning/srs/batches/{snapshotId}', operationId: 'getSrsBatch' }),
+  Object.freeze({ id: 'LEGACY-B2-SUBMIT-REVIEW-EVENT', method: 'POST', path: '/api/v1/learning/srs/reviews', operationId: 'submitReviewEvent' }),
+  Object.freeze({ id: 'LEGACY-B2-SYNC-REVIEW-EVENTS', method: 'POST', path: '/api/v1/learning/srs/reviews:sync', operationId: 'syncReviewEvents' }),
+  Object.freeze({ id: 'LEGACY-B2-LIST-SRS-STATES', method: 'GET', path: '/api/v1/learning/srs/states', operationId: 'listSrsStates' }),
+  Object.freeze({ id: 'LEGACY-B2-GET-SRS-OVERVIEW', method: 'GET', path: '/api/v1/learning/srs/overview', operationId: 'getSrsOverview' }),
+  Object.freeze({ id: 'LEGACY-B2-DAILY-STREAM', method: 'GET', path: '/api/v1/assessment/daily-stream', operationId: 'getB2DailyStream' }),
+  Object.freeze({ id: 'LEGACY-B2-MASTERY-OVERVIEW', method: 'GET', path: '/api/v1/mastery/overview', operationId: 'getB2MasteryOverview' }),
+  Object.freeze({ id: 'LEGACY-B2-MISTAKES', method: 'GET', path: '/api/v1/mastery/mistakes', operationId: 'listB2Mistakes' }),
+  Object.freeze({ id: 'LEGACY-B2-MISTAKE-DETAIL', method: 'GET', path: '/api/v1/mastery/mistakes/{mistakeId}', operationId: 'getB2MistakeDetail' }),
+  Object.freeze({ id: 'LEGACY-B2-MISTAKE-RETRY', method: 'POST', path: '/api/v1/mastery/mistakes/{mistakeId}/retry', operationId: 'startB2MistakeRetry' }),
+  Object.freeze({ id: 'LEGACY-B2-MASTERY-VERIFICATIONS', method: 'GET', path: '/api/v1/mastery/verifications', operationId: 'listB2MasteryVerifications' }),
+  Object.freeze({ id: 'LEGACY-B2-SUBMIT-MASTERY-VERIFICATION', method: 'POST', path: '/api/v1/mastery/verifications/{verificationId}/submit', operationId: 'submitB2MasteryVerification' }),
+  Object.freeze({ id: 'LEGACY-B2-DAILY-REPORT', method: 'GET', path: '/api/v1/learning/stats/daily-report', operationId: 'getB2DailyReport' }),
+  Object.freeze({ id: 'LEGACY-B2-WEEKLY-REPORT', method: 'GET', path: '/api/v1/learning/stats/weekly-report', operationId: 'getB2WeeklyReport' }),
+]);
+
+export const M1013_OPENAPI_APPROVED_PARAMETER_PROJECTIONS = Object.freeze([
+  'B10TaskId', 'B10RepairId', 'B10ReportType',
+]);
+export const M1013_OPENAPI_APPROVED_SCHEMA_PROJECTIONS = Object.freeze([
+  'SrsState', 'ReviewEventRequest', 'SrsBatchCreateRequest', 'SrsBatchItem', 'ReviewEventResponse', 'SrsOverview',
+  'B10LearningQueueItem', 'B10CompleteReviewRequest', 'B10MasteryProjection',
+  'B10ReviewEventId', 'B10TaskId', 'B10RepairId', 'B10PlanId', 'B10LearningReportType', 'B10LearningPlanStatus',
+  'B10LearningTaskStatus', 'B10ReviewContentPin', 'B10SourceWatermark', 'B10LearningPlanTask', 'B10LearningPlan',
+  'B10TodayLearningPlan', 'B10PlanReorderRequest', 'B10PlanReorderResult', 'B10TaskCompletionRequest',
+  'B10TaskCompletionResult', 'B10RepairItem', 'B10MasteryOverview', 'B10ReportInputVersions', 'B10LearningReportMetric',
+  'B10LearningReport', 'B10LearningReviewResult',
+]);
+export const M1013_EVENT_PAYLOAD_SCHEMA_PROJECTIONS = Object.freeze([
+  'B10AssessmentItemAssessedV2', 'B10LearningMasteryProjectedV2', 'B10LearningReviewScheduledV2',
+]);
+export const M1013_ASYNCAPI_CHANNEL_PROJECTIONS = Object.freeze([
+  'assessment_item_assessed_v2', 'learning_mastery_projected_v2', 'learning_review_scheduled_v2',
+]);
+export const M1013_ASYNCAPI_OPERATION_PROJECTIONS = Object.freeze([
+  'publish_assessment_item_assessed_v2',
+  'subscribe_assessment_item_assessed_v2_cg_learning_from_assessment_v1',
+  'subscribe_assessment_item_assessed_v2_cg_workflow_from_assessment_v1',
+  'publish_learning_mastery_projected_v2',
+  'subscribe_learning_mastery_projected_v2_cg_assessment_from_learning_v1',
+  'subscribe_learning_mastery_projected_v2_cg_workflow_from_learning_v1',
+  'publish_learning_review_scheduled_v2',
+  'subscribe_learning_review_scheduled_v2_cg_assessment_from_learning_v1',
+  'subscribe_learning_review_scheduled_v2_cg_workflow_from_learning_v1',
+]);
+export const M1013_EVENT_NAMES = Object.freeze(M1013_APPROVED_CANONICAL_EVENTS.map((event) => event.eventName));
+export const M1013_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'd0b297ae2370bf837d6b1a7dbe1c1776b221060ae10f32c27fb99353fa3a1c40';
+export const M1013_EVENT_EXPECTED_SEMANTIC_SHA256 = '961e4a21be0b59d91d75870b96c105514a4f2fdd1be10728ad10b4b49de79720';
+export const M1013_B26_EXPECTED_SEMANTIC_SHA256 = '53ba061644bfb91db85a945c778fd2467395dca7c117c56a6db1b1e5612f81c3';
+// These digests bind every nested governance field, not just the route/event
+// identity tuple.  The policy validator repeats the structural check, while
+// direct compareContracts callers use these immutable values to prevent a
+// caller-provided allowance from widening owner, permission, security,
+// migration, or runtime boundaries.
+export const M1013_APPROVED_SOURCE_FILES_SEMANTIC_SHA256 = 'b92f10393a6c8ebd56bab6f230845a449c81ae4c65db80a69e52e24f0ba96ae6';
+export const M1013_CANONICAL_ROUTES_SEMANTIC_SHA256 = 'a9237fe0d89985077cee628c303c079821ee03c4270408ff94e49aca7b0ca279';
+export const M1013_LEGACY_ADAPTERS_SEMANTIC_SHA256 = '774a15a5ee1e96d3e1c77c356983b8e211da33035db9fddb2bf17f13b4ff9b1f';
+export const M1013_HISTORICAL_ONLY_SOURCES_SEMANTIC_SHA256 = '117e7ac7c0e4b7dc21751841161bebe978a6095e07fe0ff938d981ab39c026f1';
+export const M1013_PROHIBITED_RUNTIME_CLAIMS_SEMANTIC_SHA256 = 'e1ae8022f8196cd7459a81160241163feb887807469664b02ad8d3e16604f69d';
+export const M1013_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id', 'sourceContractBaseline', 'previousPromotion', 'immutableGovernanceBaseline', 'runtimeStatus', 'scope',
+  'approvedSourceFiles', 'approvedCanonicalEvents', 'canonicalRoutes', 'legacyAdapters', 'historicalOnlySources',
+  'prohibitedRuntimeClaims',
+]);
+const M1013_OPENAPI_ROUTE_PROJECTIONS = Object.freeze([
+  ...M1013_CANONICAL_ROUTE_PROJECTIONS,
+  ...M1013_LEGACY_ADAPTER_PROJECTIONS,
+]);
+
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -1344,6 +1503,195 @@ export function buildM1012B26ExpectedProjection(previous, approved, allowance) {
   return insertM1012ArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', M1012_PLACEMENT_EVENT_NAME)
     ? expected
     : undefined;
+}
+
+function isValidM1013PromotionAllowance(allowance) {
+  if (!isRecord(allowance)
+    || stableGovernanceValue(Object.keys(allowance).sort()) !== stableGovernanceValue([...M1013_PROMOTION_ALLOWANCE_KEYS].sort())
+    || allowance.id !== M1013_LEARNING_LOOP_PROMOTION_ID
+    || allowance.sourceContractBaseline !== M1013_SOURCE_CONTRACT_BASELINE_REF
+    || allowance.previousPromotion !== M1012_PLACEMENT_PROMOTION_ID
+    || allowance.immutableGovernanceBaseline !== M1013_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    || allowance.runtimeStatus !== 'NOT_RUNTIME_VERIFIED'
+    || allowance.scope !== 'OPENAPI_EVENT_GOVERNANCE_B26_STATIC'
+    || stableGovernanceSha256(allowance.approvedSourceFiles) !== M1013_APPROVED_SOURCE_FILES_SEMANTIC_SHA256
+    || stableGovernanceValue(allowance.approvedCanonicalEvents) !== stableGovernanceValue(M1013_APPROVED_CANONICAL_EVENTS)
+    || stableGovernanceSha256(allowance.canonicalRoutes) !== M1013_CANONICAL_ROUTES_SEMANTIC_SHA256
+    || stableGovernanceSha256(allowance.legacyAdapters) !== M1013_LEGACY_ADAPTERS_SEMANTIC_SHA256
+    || stableGovernanceSha256(allowance.historicalOnlySources) !== M1013_HISTORICAL_ONLY_SOURCES_SEMANTIC_SHA256
+    || stableGovernanceSha256(allowance.prohibitedRuntimeClaims) !== M1013_PROHIBITED_RUNTIME_CLAIMS_SEMANTIC_SHA256
+    || stableGovernanceValue(allowance.canonicalRoutes?.map(({ id, method, path, operationId }) => ({ id, method, path, operationId }))) !== stableGovernanceValue(M1013_CANONICAL_ROUTE_PROJECTIONS.map(({ id, method, path, operationId }) => ({ id, method, path, operationId })))
+    || stableGovernanceValue(allowance.legacyAdapters?.map(({ id, method, path, operationId }) => ({ id, method, path, operationId })))
+      !== stableGovernanceValue(M1013_LEGACY_ADAPTER_PROJECTIONS.map(({ id, method, path, operationId }) => ({ id, method, path, operationId })))) {
+    return false;
+  }
+  return true;
+}
+
+function copyM1013Operation(expected, approved, projection) {
+  const method = projection.method.toLowerCase();
+  const approvedPath = approved?.paths?.[projection.path];
+  if (!isRecord(approvedPath) || !isRecord(approvedPath[method])
+    || approvedPath[method].operationId !== projection.operationId) return false;
+  if (!isRecord(expected.paths)) expected.paths = {};
+  if (!isRecord(expected.paths[projection.path])) expected.paths[projection.path] = {};
+  expected.paths[projection.path][method] = structuredClone(approvedPath[method]);
+  return true;
+}
+
+/**
+ * Rebuild the only approved M1-013 OpenAPI projection from the immutable
+ * M1-012 checkpoint.  Canonical learning-loop operations, their exact legacy
+ * adapters, three newly introduced parameters and the affected B2/B10
+ * schemas are all copied by name.  No path-wide or schema-family fallback is
+ * allowed; the frozen semantic digest below pins every nested value (and in
+ * particular preserves each legacy deprecation migration link).
+ */
+export function buildM1013OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1013PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const operationsValid = M1013_CANONICAL_ROUTE_PROJECTIONS
+    .concat(M1013_LEGACY_ADAPTER_PROJECTIONS)
+    .every((projection) => copyM1013Operation(expected, approved, projection));
+  if (!operationsValid) return undefined;
+  if (!isRecord(expected.components)) expected.components = {};
+  if (!isRecord(expected.components.parameters)) expected.components.parameters = {};
+  if (!isRecord(expected.components.schemas)) expected.components.schemas = {};
+  for (const name of M1013_OPENAPI_APPROVED_PARAMETER_PROJECTIONS) {
+    if (!isRecord(approved.components?.parameters?.[name])) return undefined;
+    if (Object.hasOwn(previous.components?.parameters ?? {}, name)) return undefined;
+    expected.components.parameters[name] = structuredClone(approved.components.parameters[name]);
+  }
+  for (const name of M1013_OPENAPI_APPROVED_SCHEMA_PROJECTIONS) {
+    if (!isRecord(approved.components?.schemas?.[name])) return undefined;
+    expected.components.schemas[name] = structuredClone(approved.components.schemas[name]);
+  }
+  return expected;
+}
+
+function insertM1013EventEntry(target, approved, eventName) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const targetEntries = target.filter((entry) => entry?.eventName === eventName);
+  const approvedEntries = approved.filter((entry) => entry?.eventName === eventName);
+  if (targetEntries.length !== 0 || approvedEntries.length !== 1) return false;
+  const insertionIndex = approved.findIndex((entry) => entry?.eventName === eventName);
+  target.splice(insertionIndex, 0, structuredClone(approvedEntries[0]));
+  return true;
+}
+
+function insertM1013NamedEntry(target, approved, name) {
+  if (!isRecord(target) || !isRecord(approved) || Object.hasOwn(target, name) || !isRecord(approved[name])) return false;
+  target[name] = structuredClone(approved[name]);
+  return true;
+}
+
+/** Rebuild the M1-013 event catalog and generated AsyncAPI projection. */
+export function buildM1013EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1013PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  if (!isRecord(approved['x-p1r-event-governance'])) return undefined;
+  expected['x-p1r-event-governance'] = structuredClone(approved['x-p1r-event-governance']);
+  const eventsValid = M1013_EVENT_NAMES.every((eventName) => insertM1013EventEntry(expected.events, approved.events, eventName));
+  const payloadsValid = M1013_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.every((name) => insertM1013NamedEntry(expected.payloadSchemas, approved.payloadSchemas, name));
+  const channelsValid = M1013_ASYNCAPI_CHANNEL_PROJECTIONS.every((name) => insertM1013NamedEntry(expected.asyncapi?.channels, approved.asyncapi?.channels, name));
+  const operationsValid = M1013_ASYNCAPI_OPERATION_PROJECTIONS.every((name) => insertM1013NamedEntry(expected.asyncapi?.operations, approved.asyncapi?.operations, name));
+  return eventsValid && payloadsValid && channelsValid && operationsValid ? expected : undefined;
+}
+
+/** Rebuild the three M1-013 B26 route additions without promoting runtime. */
+export function buildM1013B26ExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1013PromotionAllowance(allowance)) return undefined;
+  const expected = structuredClone(previous);
+  const routes = Array.isArray(expected.eventRouting) && Array.isArray(approved.eventRouting)
+    && M1013_EVENT_NAMES.every((eventName) => insertM1013EventEntry(expected.eventRouting, approved.eventRouting, eventName));
+  return routes ? expected : undefined;
+}
+
+function compareM1013Value(changes, kind, previousValue, currentValue, location, reason) {
+  if (stableGovernanceValue(previousValue) !== stableGovernanceValue(currentValue)) {
+    changes.push(describeChange(kind, location, reason));
+  }
+}
+
+export const M1013_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1013_CANONICAL_ROUTE_PROJECTIONS.map((projection) => [
+    `${projection.method} ${projection.path}`,
+    'approved canonical learning-loop route projection changed',
+  ]),
+  ...M1013_LEGACY_ADAPTER_PROJECTIONS.map((projection) => [
+    `${projection.method} ${projection.path}`,
+    'approved legacy learning-loop adapter projection changed',
+  ]),
+  ...M1013_OPENAPI_APPROVED_PARAMETER_PROJECTIONS.map((name) => [
+    `components.parameters.${name}`,
+    'approved learning-loop route parameter added',
+  ]),
+  ...M1013_OPENAPI_APPROVED_SCHEMA_PROJECTIONS.map((name) => [
+    `components.schemas.${name}`,
+    'approved learning-loop schema projection changed',
+  ]),
+]);
+
+export const M1013_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ['x-p1r-event-governance', 'approved learning-loop event governance changed'],
+  ...M1013_EVENT_NAMES.map((eventName) => [eventName, 'approved canonical learning-loop event added']),
+  ...M1013_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.map((name) => [`payloadSchemas.${name}`, 'approved learning-loop event payload added']),
+  ...M1013_ASYNCAPI_CHANNEL_PROJECTIONS.map((name) => [`asyncapi.channels.${name}`, 'approved learning-loop AsyncAPI channel added']),
+  ...M1013_ASYNCAPI_OPERATION_PROJECTIONS.map((name) => [`asyncapi.operations.${name}`, 'approved learning-loop AsyncAPI operation added']),
+]);
+
+export const M1013_B26_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze(
+  M1013_EVENT_NAMES.map((eventName) => [`eventRouting.${eventName}`, 'approved learning-loop B26 route added']),
+);
+
+export function compareM1013OpenApiDescriptors(previous, current) {
+  const changes = [];
+  for (const projection of M1013_OPENAPI_ROUTE_PROJECTIONS) {
+    const method = projection.method.toLowerCase();
+    compareM1013Value(
+      changes,
+      'openapi',
+      previous?.paths?.[projection.path]?.[method],
+      current?.paths?.[projection.path]?.[method],
+      `${projection.method} ${projection.path}`,
+      projection.id.startsWith('LEGACY-')
+        ? 'approved legacy learning-loop adapter projection changed'
+        : 'approved canonical learning-loop route projection changed',
+    );
+  }
+  for (const name of M1013_OPENAPI_APPROVED_PARAMETER_PROJECTIONS) {
+    compareM1013Value(changes, 'openapi', previous?.components?.parameters?.[name], current?.components?.parameters?.[name], `components.parameters.${name}`, 'approved learning-loop route parameter added');
+  }
+  for (const name of M1013_OPENAPI_APPROVED_SCHEMA_PROJECTIONS) {
+    compareM1013Value(changes, 'openapi', previous?.components?.schemas?.[name], current?.components?.schemas?.[name], `components.schemas.${name}`, 'approved learning-loop schema projection changed');
+  }
+  return changes;
+}
+
+export function compareM1013EventDescriptors(previous, current) {
+  const changes = [];
+  compareM1013Value(changes, 'events', previous?.['x-p1r-event-governance'], current?.['x-p1r-event-governance'], 'x-p1r-event-governance', 'approved learning-loop event governance changed');
+  for (const eventName of M1013_EVENT_NAMES) {
+    compareM1013Value(changes, 'events', (previous?.events ?? []).find((event) => event?.eventName === eventName), (current?.events ?? []).find((event) => event?.eventName === eventName), eventName, 'approved canonical learning-loop event added');
+  }
+  for (const name of M1013_EVENT_PAYLOAD_SCHEMA_PROJECTIONS) {
+    compareM1013Value(changes, 'events', previous?.payloadSchemas?.[name], current?.payloadSchemas?.[name], `payloadSchemas.${name}`, 'approved learning-loop event payload added');
+  }
+  for (const name of M1013_ASYNCAPI_CHANNEL_PROJECTIONS) {
+    compareM1013Value(changes, 'events', previous?.asyncapi?.channels?.[name], current?.asyncapi?.channels?.[name], `asyncapi.channels.${name}`, 'approved learning-loop AsyncAPI channel added');
+  }
+  for (const name of M1013_ASYNCAPI_OPERATION_PROJECTIONS) {
+    compareM1013Value(changes, 'events', previous?.asyncapi?.operations?.[name], current?.asyncapi?.operations?.[name], `asyncapi.operations.${name}`, 'approved learning-loop AsyncAPI operation added');
+  }
+  return changes;
+}
+
+export function compareM1013B26Descriptors(previous, current) {
+  const changes = [];
+  for (const eventName of M1013_EVENT_NAMES) {
+    compareM1013Value(changes, 'events', (previous?.eventRouting ?? []).find((entry) => entry?.eventName === eventName), (current?.eventRouting ?? []).find((entry) => entry?.eventName === eventName), `eventRouting.${eventName}`, 'approved learning-loop B26 route added');
+  }
+  return changes;
 }
 
 function m1008ChannelId(eventName) {
@@ -2138,6 +2486,99 @@ function compareM1012B26Promotion(previous, current, allowance) {
   return changes;
 }
 
+function compareM1013OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1013PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-013.openapiPromotion', 'M1-013 promotion allowance cannot be applied without the frozen learning-loop policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1013_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-013.openapiPromotion.source', 'M1-013 OpenAPI promotion source is not the frozen a07a58a M1-012 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'openapi',
+    previous,
+    current,
+    M1013_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-013.openapiPromotion.change-descriptors',
+    'current OpenAPI changes do not exactly match the frozen M1-013 descriptor set',
+    compareM1013OpenApiDescriptors,
+  ));
+  const expectedProjection = buildM1013OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-013.openapiPromotion.projection', 'the approved canonical and legacy learning-loop projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1013_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-013.openapiPromotion.expected-projection', 'the allowlisted M1-013 OpenAPI projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-013.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source learning-loop projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1013EventPromotion(previous, current, allowance) {
+  if (!isValidM1013PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-013.eventPromotion', 'M1-013 event allowance cannot be applied without the frozen learning-loop policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1013_EVENT_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'm1-013.eventPromotion.source', 'M1-013 event source is not the frozen a07a58a M1-012 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1013_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-013.eventPromotion.change-descriptors',
+    'current event changes do not exactly match the frozen M1-013 descriptor set',
+    compareM1013EventDescriptors,
+  ));
+  const expectedProjection = buildM1013EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-013.eventPromotion.projection', 'the approved canonical learning-loop event projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1013_EVENT_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'm1-013.eventPromotion.expected-projection', 'the allowlisted M1-013 event projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'm1-013.eventPromotion.projection', 'current event catalog is not the unique frozen-source learning-loop projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1013B26Promotion(previous, current, allowance) {
+  if (!isValidM1013PromotionAllowance(allowance)) {
+    return [describeChange('events', 'b26.m1-013.compatibilityPromotion', 'M1-013 B26 allowance cannot be applied without the frozen learning-loop policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1013_B26_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'b26.m1-013.source', 'M1-013 B26 promotion source is not the frozen a07a58a M1-012 projection'));
+  }
+  const expectedProjection = buildM1013B26ExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'b26.m1-013.projection', 'the approved learning-loop B26 routes cannot be constructed from the frozen source'));
+  } else {
+    changes.push(...compareFrozenDescriptorSet(
+      'events',
+      previous,
+      current,
+      M1013_B26_EXPECTED_CHANGE_DESCRIPTORS,
+      'b26.m1-013.change-descriptors',
+      'current B26 changes do not exactly match the frozen M1-013 descriptor set',
+      compareM1013B26Descriptors,
+    ));
+    if (stableGovernanceSha256(expectedProjection) !== M1013_B26_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'b26.m1-013.expected-projection', 'the allowlisted M1-013 B26 projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'b26.m1-013.projection', 'current B26 runtime policy differs from the explicit static M1-013 learning-loop route promotion'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -2239,6 +2680,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1013_LEARNING_LOOP_PROMOTION_ID) {
+    return compareM1013B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1012_PLACEMENT_PROMOTION_ID) {
     return compareM1012B26Promotion(governanceBaseline, current, allowance);
   }
@@ -2397,6 +2841,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1013_LEARNING_LOOP_PROMOTION_ID) {
+    return compareM1013EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1012_PLACEMENT_PROMOTION_ID) {
     return compareM1012EventPromotion(previous, current, allowance);
   }
@@ -2523,6 +2970,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1013_LEARNING_LOOP_PROMOTION_ID) {
+      return compareM1013OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1012_PLACEMENT_PROMOTION_ID) {
       return compareM1012OpenApiPromotion(previous, current, allowance);
     }

@@ -72,8 +72,8 @@ test('canonical external API fixture passes the P1R governance gate', () => {
   assert(report.summary.operationCount > 300);
   assert(report.summary.externalWriteCount > 100);
   assert.equal(report.summary.idempotencyExceptionCount, 1);
-  assert.equal(report.summary.listOperationCount, 59);
-  assert.equal(report.summary.cursorPaginatedOperationCount, 61);
+  assert.equal(report.summary.listOperationCount, 60);
+  assert.equal(report.summary.cursorPaginatedOperationCount, 62);
 });
 
 test('missing canonical error response and correlation headers fail closed', () => {
