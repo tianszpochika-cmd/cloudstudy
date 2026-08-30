@@ -8,6 +8,7 @@
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；共享制品在 `aac5c346...` 完成 current-source revalidation，原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
+- `P1R-M1-013`：`IN_PROGRESS`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，只冻结日计划/Session 衔接、`SM2_Q03_V1`、单一 SRS 写入口、repair/D1/D7、mastery、报告 watermark 与离线冲突的 D2 契约。
 - M1-012 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-011` 的 manifest 已保留各自原始 provenance，并统一绑定 `aac5c346...` 完成 current-source revalidation；这不把旧任务重写为 M1-012 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
@@ -112,6 +113,16 @@
 - 终验结果：placement `141/141`、P1R `746/746`、B26 `27/27`、tooling `46/46`、typecheck `7/7`；contracts merge/generate/validate、两条固定 compatibility、assessment/planning/event/reliability/Gateway/Saga、plan/CI/diff 均 PASS。独立 Luna Max reviewer 接受 `aac5c346...`，P1/P2=`0/0`。
 - 已知历史边界：core-api、B25 和 learner-web 仍保留旧 4/3/3、耗时加权、精确词汇量或 FAST_TRACK 候选逻辑；它们没有被本任务晋升为 canonical/runtime，后续实现不得直接复用为 `P1_PLACEMENT_V1`。
 - D2 边界：结果只为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；真实 owner schema/Outbox、Kafka、Saga/人工恢复分别归 M2-004/005/006，计划算法/SRS/mastery/watermark 归 M1-013，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
+## M1-013 执行轨道
+
+不可变来源检查点：`dev@a07a58a7d245295c54d39487a6669545d077c513`。
+
+1. 规则模型：冻结 `P1_DAILY_PLAN_V1` 候选/稳定排序/预算/积压/解释，`SM2_Q03_V1` 公式与 outcome cap，repair/D1/D7、mastery Gate、report numerator/denominator/watermark 与时区/离线顺序。
+2. 契约与事件：盘点 B1/B2/B9/B10 计划、today、SRS、错题、mastery、报告和同步入口，确定单一 canonical 写路径、服务端 authority、owner/event/payload 和历史 adapter/deprecation。
+3. 兼容与失败关闭：延续 M1-008..012 source-bound promotion，不移动不可变基线；建立结构化 policy、checker、生成类型和 unknown-field/版本/乱序/DST/双写/runtime-promotion 对抗测试。
+
+三条轨道先只读形成统一设计，再由统筹分配互斥文件实施；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-013 不实现真实 schema/Outbox/Kafka/worker/Saga、六技能页面、浏览器离线数据库或 E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 
 ## M1-011 执行轨道
 

@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-013-START-20260831] 启动 Phase 1 日计划、Session 衔接、SRS、错题修复、mastery 与报告水位 D2 契约：以已同步的 `dev@a07a58a7d245295c54d39487a6669545d077c513` 为不可变来源检查点，冻结 `P1_DAILY_PLAN_V1` 稳定排序/预算/积压/解释、`SM2_Q03_V1` 精确公式与 outcome cap、单一 SRS 写入口、repair/D1/D7、mastery Gate、report numerator/denominator/watermark、时区/DST 和离线冲突。该条只记录 `IN_PROGRESS`；真实 schema/Outbox/Kafka/worker/Saga、页面/设备/E2E 均未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
 - [P1R-M1-012-PLACEMENT-CONTRACT-20260831] 接受 `P1_PLACEMENT_V1` manifest、结果摘要、canonical completion event 与 placement→plan Saga D2 契约：最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72` 固定四维 `3/3/2/2` 共 10 题、各 25%、二值正误、耗时仅作解释、覆盖/置信度、rounding 与 A1–C2 边界，首次 result/report 不可变，skip 只能形成 `SKIPPED + UNVERIFIED`。五条 B10 canonical route、五条 B1 deprecated adapter、`assessment.placement.completed.v1` 及 placement→plan 去重/乱序/恢复边界均通过；生成 READY `tasks` 为非空 tuple，唯一降级字段为 `degradedReason`。独立 Luna Max reviewer 接受 `aac5c346...`，P1/P2=`0/0`；placement `141/141`、P1R `746/746`、B26 `27/27`、tooling `46/46`、typecheck `7/7` 以及 contracts、两条固定 compatibility、治理/计划/CI/diff 门禁通过。结论仍仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 pending/NO-GO、M2-004/005/006 未完成、M0-006 BLOCKED。
 
 - [P1R-M1-012-START-20260830] 启动 Phase 1 `P1_PLACEMENT_V1` manifest、结果摘要、canonical completion event 与 placement→plan Saga/补偿 D2 契约：以已同步的 `dev@270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3` 为不可变来源检查点，收敛四维权重/覆盖/置信度、计分和等级边界、内容与规则 pin、同 session 恢复、幂等完成、skip=`UNVERIFIED`、事件治理和失败恢复。该条只记录 `IN_PROGRESS`；真实数据库/Outbox/Kafka/workflow、浏览器与 E2E 均未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
