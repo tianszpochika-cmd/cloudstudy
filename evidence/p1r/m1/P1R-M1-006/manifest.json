@@ -2,45 +2,193 @@
   "taskId": "P1R-M1-006",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
+  "sourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
   "artifactDigests": [
-    {"path": ".github/workflows/ci.yml", "algorithm": "sha256", "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"},
-    {"path": "package.json", "algorithm": "sha256", "digest": "b8fddba17e85e84b572256e242a687431e9bd8a748fabcd1e72a062fcec2eb18"},
-    {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "22f3d9043af7499536a355d8e6182305cd2191efe350316019d12f70b5e9cb01"},
-    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "e800f0826c653bec03293015f6d2edcf541d053482ef81713a44cb78d8c99d54"},
-    {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"},
-    {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
-    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "49a2e00e9fe9df902c14e63865853214aaeb8f870b8c9f05cc9f6edaeb3cf36a"},
-    {"path": "packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json", "algorithm": "sha256", "digest": "1375999135fcc4137be1c2450304e759f7a07e2176d13aad465c2c11aa365c4a"},
-    {"path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json", "algorithm": "sha256", "digest": "0e34489a86ef88b1f602c4f777bc702c6e54668f2b893d46bd0ea6b78bdfd56e"},
-    {"path": "packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json", "algorithm": "sha256", "digest": "87a2d93eb96164cc0f0050273f611de91e777f76cbf202664a4aa26e1f689e73"},
-    {"path": "packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json", "algorithm": "sha256", "digest": "101260f4e0925e68e540f205b202bd53dc75f5f292fec3b4a73cd6fff2d5fe26"},
-    {"path": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json", "algorithm": "sha256", "digest": "777c8cd3d5836e5d495c72644afcf7b5fa99bc044817886536c3f6440d079d24"},
-    {"path": "packages/contracts/events/v1/fragments/b2-assessment-mastery.events.json", "algorithm": "sha256", "digest": "11b226c8e5b90f14e515c80ac14b60579d4715ea3c684af7795288ad705d416f"},
-    {"path": "packages/contracts/events/v1/fragments/b2-vocabulary-srs.events.json", "algorithm": "sha256", "digest": "a3233f04febbe9d4faf0ad4985ab52fdcc375cb8c2246e7b949b6b04d98854ae"},
-    {"path": "packages/contracts/events/v1/fragments/b26-reliability.events.json", "algorithm": "sha256", "digest": "ae08075079047cc53810fcea92b0fc6c2da6719d956610bf0b915d7097883627"},
-    {"path": "packages/contracts/events/v1/fragments/b3-multimodal.events.json", "algorithm": "sha256", "digest": "49e1c25109f55d0839d8c07f6c12b769e8ef661cbb9b424a2224c330c0ff1f72"},
-    {"path": "packages/contracts/events/v1/fragments/b4-gamification-social.events.json", "algorithm": "sha256", "digest": "0a52a8db05bfba9490c6c59a6366ca5e4ecd75f0b1b212ba9c0abec988cf9e4a"},
-    {"path": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json", "algorithm": "sha256", "digest": "e34f9b76afb1151c7e792cbcb1ef2d7d8862f0cf03828075e031fa15f25611bd"},
-    {"path": "packages/contracts/events/v1/fragments/b6-platform-quality.events.json", "algorithm": "sha256", "digest": "bdc721327481219b9c53bec6395ad6ba73593848229d7c5ba7eae91930c26cbf"},
-    {"path": "packages/contracts/events/v1/fragments/b8-auth-iam.events.json", "algorithm": "sha256", "digest": "cbf9f843391c49664d4bd813620831cee1cbf1429beead6043fa2d6e4825a72f"},
-    {"path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json", "algorithm": "sha256", "digest": "fc1a62591c6c5f3f7d72413859c42cd6cfd2f4557b0972ca0e8bf6f366fde560"},
-    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "a8634708ee12d93d274b61cfbcde469b2544a8d41d7df1038627489b91da74a7"},
-    {"path": "packages/contracts/src/event-schema-assertions.ts", "algorithm": "sha256", "digest": "77a80209599c0c68b763e7fe51d192df3dfed4075e37a27ab4f13a9e4d050235"},
-    {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "9c73a70be405217ef973137939f994cbbcf7df60b7aa5e6bf7d6597a504026c2"},
-    {"path": "scripts/audit/p1r-ci-guard.mjs", "algorithm": "sha256", "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"},
-    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "dc0235ebd16713ece76658ad7fc46887605082e4a7b181ef7295de1bb2ad7f1b"},
-    {"path": "scripts/contracts/event-governance-projection.mjs", "algorithm": "sha256", "digest": "67b1f1a83755c057b50ca12506f7db72ad73d6cccb35dd461ee4bcfb813a82bf"},
-    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "c16e2c2429db664222094c2662a8dbc43620fc26f33eba1eae9e34d65b3bb90b"},
-    {"path": "scripts/contracts/generate-contracts.mjs", "algorithm": "sha256", "digest": "e49b6d94528518a2fba18bff16a3189a78199ca8cdb14e1adfa9c52db74baa34"},
-    {"path": "scripts/contracts/validate-contracts.mjs", "algorithm": "sha256", "digest": "9f28a00b29d6264157ba4aaa99298c455ced6a94a465da96a726d6993da7ae87"},
-    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "9e06f8c36471ba2fcd8fe0ba60f46115773030847b6d8243bb3e4bca6b1929fa"},
-    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "e2612c788299596af8649b30c0d71a275d8409f31f51d55b3395446b52bae84a"},
-    {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "63bdf4a400422172f40129443a8d1167d77ccacbfd97d35246f45ef09130dd13"},
-    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "fa03dac9820657e640a9777f784ffbf3eb1e7b0fd5ba1b285a77cbbca96f8e62"},
-    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "51536fd11d74c7a88fd1fa53a8429d43ef846243307f8b13712c1570aaa7db2b"},
-    {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "0b499bdbdb5c7e8c8e8270a73c18cf4a61d3744ac56a1c7ddf6d65f5ab84c692"},
-    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "a868612be481c463fdf5fbdade0316ff327cb427495e3aabe3ceb7035a58b357"}
+    {
+      "path": ".github/workflows/ci.yml",
+      "algorithm": "sha256",
+      "digest": "c1df3401bf8815b7c90797bea918a28db5d2daf13eeda8b756bf601acd557398"
+    },
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "6eabf666e8dbcb0c0c33e32935f88593a9eebde43eb486229bab73e35431130f"
+    },
+    {
+      "path": "config/b26-event-runtime.json",
+      "algorithm": "sha256",
+      "digest": "a1e616a19fb2e105954933a237af4734e2f9e7dd69abd13a46912069a71bf56c"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "bbe9495c55266459d0b28568fc2c7db8fb392ae1d84db8ed38b0c07d8af5160d"
+    },
+    {
+      "path": "docs/02-architecture/v2-microservices-architecture.md",
+      "algorithm": "sha256",
+      "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "algorithm": "sha256",
+      "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"
+    },
+    {
+      "path": "packages/contracts/events/v1/catalog.json",
+      "algorithm": "sha256",
+      "digest": "94090de7696e4d38e5ece0871128058b712bca1b1c2102c8d22452bac7a7b477"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json",
+      "algorithm": "sha256",
+      "digest": "1375999135fcc4137be1c2450304e759f7a07e2176d13aad465c2c11aa365c4a"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+      "algorithm": "sha256",
+      "digest": "0a5138ae585724d4c6f49940db57d836c667e421dfcd029cac641e762bab1087"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json",
+      "algorithm": "sha256",
+      "digest": "87a2d93eb96164cc0f0050273f611de91e777f76cbf202664a4aa26e1f689e73"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b12-gamification-social-notification.events.json",
+      "algorithm": "sha256",
+      "digest": "101260f4e0925e68e540f205b202bd53dc75f5f292fec3b4a73cd6fff2d5fe26"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json",
+      "algorithm": "sha256",
+      "digest": "777c8cd3d5836e5d495c72644afcf7b5fa99bc044817886536c3f6440d079d24"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b2-assessment-mastery.events.json",
+      "algorithm": "sha256",
+      "digest": "11b226c8e5b90f14e515c80ac14b60579d4715ea3c684af7795288ad705d416f"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b2-vocabulary-srs.events.json",
+      "algorithm": "sha256",
+      "digest": "a3233f04febbe9d4faf0ad4985ab52fdcc375cb8c2246e7b949b6b04d98854ae"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b26-reliability.events.json",
+      "algorithm": "sha256",
+      "digest": "ae08075079047cc53810fcea92b0fc6c2da6719d956610bf0b915d7097883627"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b3-multimodal.events.json",
+      "algorithm": "sha256",
+      "digest": "49e1c25109f55d0839d8c07f6c12b769e8ef661cbb9b424a2224c330c0ff1f72"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b4-gamification-social.events.json",
+      "algorithm": "sha256",
+      "digest": "0a52a8db05bfba9490c6c59a6366ca5e4ecd75f0b1b212ba9c0abec988cf9e4a"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json",
+      "algorithm": "sha256",
+      "digest": "e34f9b76afb1151c7e792cbcb1ef2d7d8862f0cf03828075e031fa15f25611bd"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b6-platform-quality.events.json",
+      "algorithm": "sha256",
+      "digest": "bdc721327481219b9c53bec6395ad6ba73593848229d7c5ba7eae91930c26cbf"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b8-auth-iam.events.json",
+      "algorithm": "sha256",
+      "digest": "cbf9f843391c49664d4bd813620831cee1cbf1429beead6043fa2d6e4825a72f"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json",
+      "algorithm": "sha256",
+      "digest": "fc1a62591c6c5f3f7d72413859c42cd6cfd2f4557b0972ca0e8bf6f366fde560"
+    },
+    {
+      "path": "packages/contracts/generated/events.ts",
+      "algorithm": "sha256",
+      "digest": "42c12ffa1c2090e8813dfefd8fb3d61b2c8f205b69e0b645cf3b6906a597cb3a"
+    },
+    {
+      "path": "packages/contracts/src/event-schema-assertions.ts",
+      "algorithm": "sha256",
+      "digest": "77a80209599c0c68b763e7fe51d192df3dfed4075e37a27ab4f13a9e4d050235"
+    },
+    {
+      "path": "scripts/audit/p1r-event-governance-check.mjs",
+      "algorithm": "sha256",
+      "digest": "13bf042fd9e83bdf935bc316426e2826f2c2620633cceaa51bef88130dceb620"
+    },
+    {
+      "path": "scripts/audit/p1r-ci-guard.mjs",
+      "algorithm": "sha256",
+      "digest": "e9d946c3fe68d0a068ea2368e67f32c23c087c63ca8d0a6883dcecf6b31c6158"
+    },
+    {
+      "path": "scripts/contracts/event-catalog-policy.mjs",
+      "algorithm": "sha256",
+      "digest": "0f8c7c7dbbcd648d3a683c65f6cea839f427730c510dac1a7868cd9fde0f1efb"
+    },
+    {
+      "path": "scripts/contracts/event-governance-projection.mjs",
+      "algorithm": "sha256",
+      "digest": "67b1f1a83755c057b50ca12506f7db72ad73d6cccb35dd461ee4bcfb813a82bf"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "d5833d02debefcdf88f8c40054d81867c45af9ba14eb48e4847ff415c33bd7ef"
+    },
+    {
+      "path": "scripts/contracts/generate-contracts.mjs",
+      "algorithm": "sha256",
+      "digest": "e49b6d94528518a2fba18bff16a3189a78199ca8cdb14e1adfa9c52db74baa34"
+    },
+    {
+      "path": "scripts/contracts/validate-contracts.mjs",
+      "algorithm": "sha256",
+      "digest": "9f28a00b29d6264157ba4aaa99298c455ced6a94a465da96a726d6993da7ae87"
+    },
+    {
+      "path": "scripts/contracts/compatibility-diff.mjs",
+      "algorithm": "sha256",
+      "digest": "9af61041bd67c369c4d143c6cce209dc5669647655a4b617b7ee03a7cf204a1b"
+    },
+    {
+      "path": "scripts/contracts/compatibility-git-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "656e15fd4a745a6a73db6d6c5571a258f44a7d116f58c25a4efa273f6767f35e"
+    },
+    {
+      "path": "scripts/runtime/validate-b26-event-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "804c627f365dfbec40c79a624ee5cd58c153ae307d7ff0fb713c5bd94ce50a80"
+    },
+    {
+      "path": "tests/p1r/p1r-event-governance.test.mjs",
+      "algorithm": "sha256",
+      "digest": "a7b47a385bd7d296b1feacc058ffa2b9c0ce886edd7de1609442a7f35fdb7308"
+    },
+    {
+      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
+      "algorithm": "sha256",
+      "digest": "7fdbf62dd5cb384df2b86e765dea9f24ab8e727f97b960592749e4c86420f360"
+    },
+    {
+      "path": "tests/b26/b26-event-runtime.test.mjs",
+      "algorithm": "sha256",
+      "digest": "e46aa2fc7a74b74d9dfe2cf1c57b0038a6aa701919cdaee2ecccae44d4b2804d"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "308f1a146baed0f894f6d16a3b96023008d86e01c91609c64f89228b817a46ce"
+    }
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -82,20 +230,27 @@
         "reviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-30T21:45:45+08:00"
+      },
+      {
+        "taskId": "P1R-M1-012",
+        "sourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
+        "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T00:49:16+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-010",
-    "currentSourceRevalidationTask": "P1R-M1-011",
-    "currentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-011",
+    "currentSourceRevalidationTask": "P1R-M1-012",
+    "currentSourceRevalidationReviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T00:49:16+08:00"
   },
   "startedAt": "2026-08-30T02:24:20+08:00",
-  "finishedAt": "2026-08-30T21:45:45+08:00",
+  "finishedAt": "2026-08-31T00:49:16+08:00",
   "actors": [
     "m1_005_data_docs",
     "root-coordinator"
@@ -166,6 +321,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-012-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_012_independent_review:gpt-5.6-luna:max revalidated the accepted P1R-M1-006 semantics and shared artifacts at source aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72. P1R 746/746, contract tooling 46/46, workspace typecheck 7/7, contract merge/generate/validate, both fixed compatibility baselines and relevant IAM/Gateway/data/content/assessment/planning/event/reliability/B26 static checks pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "m1-011-current-source-revalidation",
       "status": "PASS",
@@ -238,6 +398,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

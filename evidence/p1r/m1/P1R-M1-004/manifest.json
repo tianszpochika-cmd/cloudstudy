@@ -2,19 +2,63 @@
   "taskId": "P1R-M1-004",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
+  "sourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
   "artifactDigests": [
-    {"path": "package.json", "algorithm": "sha256", "digest": "b8fddba17e85e84b572256e242a687431e9bd8a748fabcd1e72a062fcec2eb18"},
-    {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "4b9bdfa1a15420cbfcac9495357f9104544c5a8a4a20979873164f0460f11f82"},
-    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "c1024fdc3bcf93d157f9003f0e16babf9ba2267807d4d477cfd9479789f26bb8"},
-    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "c16e2c2429db664222094c2662a8dbc43620fc26f33eba1eae9e34d65b3bb90b"},
-    {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "68c1b1943f8967cb6bb9a47a4127c26a7eb7de3c927710e839392b1937966ba6"},
-    {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "430d116aec886bcb4d50da9ea454e4554f78f332f7602ddfbd1de898db32e392"},
-    {"path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md", "algorithm": "sha256", "digest": "f6e191bbf69ea3437c82f0d4fccde364dcc189d525ea3bcd4d4b91695afaa023"},
-    {"path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md", "algorithm": "sha256", "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"},
-    {"path": "docs/02-architecture/security-and-data-boundaries.md", "algorithm": "sha256", "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"},
-    {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
-    {"path": "services/api-gateway/README.md", "algorithm": "sha256", "digest": "e7df7e39fc53f5dcb9c6159d98b45d00e95099c96b8e1cbb4fa015323d4e1a60"}
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "6eabf666e8dbcb0c0c33e32935f88593a9eebde43eb486229bab73e35431130f"
+    },
+    {
+      "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+      "algorithm": "sha256",
+      "digest": "4b9bdfa1a15420cbfcac9495357f9104544c5a8a4a20979873164f0460f11f82"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "d473effc14ebbda9bea33e9305a00254767d6ad9403ee92bab598a17e9c3d765"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "d5833d02debefcdf88f8c40054d81867c45af9ba14eb48e4847ff415c33bd7ef"
+    },
+    {
+      "path": "scripts/audit/p1r-gateway-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "095eb21637d5aeafe9e8045fbf5ac09cd5df440092acf01c2576e0e0275e1f94"
+    },
+    {
+      "path": "tests/p1r/p1r-gateway-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "9e7162dcab1a43ba25d041ccf0da1ac5b256547d8b74eda8d13cd884f58064fe"
+    },
+    {
+      "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
+      "algorithm": "sha256",
+      "digest": "f6e191bbf69ea3437c82f0d4fccde364dcc189d525ea3bcd4d4b91695afaa023"
+    },
+    {
+      "path": "docs/10-decisions/0013-self-owned-jwt-authentication-center.md",
+      "algorithm": "sha256",
+      "digest": "46a8e3809acb4b10e08bcf4d70c57954f47844c44376c0aaef86573f84eb71ab"
+    },
+    {
+      "path": "docs/02-architecture/security-and-data-boundaries.md",
+      "algorithm": "sha256",
+      "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "algorithm": "sha256",
+      "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"
+    },
+    {
+      "path": "services/api-gateway/README.md",
+      "algorithm": "sha256",
+      "digest": "e7df7e39fc53f5dcb9c6159d98b45d00e95099c96b8e1cbb4fa015323d4e1a60"
+    }
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -63,20 +107,27 @@
         "reviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-30T21:45:45+08:00"
+      },
+      {
+        "taskId": "P1R-M1-012",
+        "sourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
+        "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T00:49:16+08:00"
       }
     ],
-    "previousCurrentSourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-010",
-    "currentSourceRevalidationTask": "P1R-M1-011",
-    "currentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_009_contract_audit:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-011",
+    "currentSourceRevalidationTask": "P1R-M1-012",
+    "currentSourceRevalidationReviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T18:32:14+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T00:49:16+08:00"
   },
   "startedAt": "2026-08-29T23:52:04+08:00",
-  "finishedAt": "2026-08-30T21:45:45+08:00",
+  "finishedAt": "2026-08-31T00:49:16+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -117,6 +168,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-012-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_012_independent_review:gpt-5.6-luna:max revalidated the accepted P1R-M1-004 semantics and shared artifacts at source aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72. P1R 746/746, contract tooling 46/46, workspace typecheck 7/7, contract merge/generate/validate, both fixed compatibility baselines and relevant IAM/Gateway/data/content/assessment/planning/event/reliability/B26 static checks pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "m1-011-current-source-revalidation",
       "status": "PASS",
@@ -182,6 +238,6 @@
     "The full historical G suite remains 39/41 because G0 and G3 assert the removed exact source marker `Phase 2/3 已移出当前批次`; the task-relevant G1 slice passes 6/6.",
     "This ACCEPTED decision covers D2 contract governance only and does not claim the existing Gateway Java candidate or any M2 runtime capability is complete."
   ],
-  "reviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }
