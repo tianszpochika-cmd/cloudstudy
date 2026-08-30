@@ -1,7 +1,7 @@
 # Phase 1 事件可靠性与恢复契约
 
-> 状态：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`  
-> 任务：`P1R-M1-007`  
+> 状态：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`
+> 任务：`P1R-M1-007`
 > 本文解释契约如何运作，不代表 Kafka、Outbox、consumer、Saga 或人工恢复已经在线运行。
 
 ## 1. 单一事实源与边界
