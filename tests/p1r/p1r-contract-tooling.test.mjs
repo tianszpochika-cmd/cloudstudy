@@ -26,6 +26,7 @@ import {
   runGitBaselineCompatibility,
 } from '../../scripts/contracts/compatibility-git-baseline.mjs';
 import { validateEventCatalog } from '../../scripts/contracts/validate-contracts.mjs';
+import { schemaToTs } from '../../scripts/contracts/schema-utils.mjs';
 
 const root = path.resolve(import.meta.dirname, '..', '..');
 const openApiPath = path.join(root, 'packages', 'contracts', 'openapi', 'v1', 'openapi.json');
@@ -37,6 +38,56 @@ const eventCatalog = JSON.parse(fs.readFileSync(eventCatalogPath, 'utf8'));
 const b26Runtime = JSON.parse(fs.readFileSync(b26RuntimePath, 'utf8'));
 const ciWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'ci.yml'), 'utf8');
 const EXPECTED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+
+test('generated TypeScript preserves shared fields around oneOf constraints', () => {
+  const schemas = openApi.components.schemas;
+  const composedSchemas = [
+    'B9ContentCommandRequest',
+    'B9ScheduledPublishTask',
+    'B9SessionContentPin',
+    'B10ContentVersionPin',
+    'B10ContentRecovery',
+    'B10ActiveSessionAttemptPin',
+  ];
+  for (const schemaName of composedSchemas) {
+    const schema = schemas[schemaName];
+    const generated = schemaToTs(openApi, schema);
+    assert.doesNotMatch(generated, /(?:^|[< &(])unknown(?:$|[> )|&])/, `${schemaName} widened to unknown`);
+    for (const field of schema.required ?? []) {
+      assert.match(generated, new RegExp(`(?:^|[ {])${field}:`), `${schemaName}.${field} stopped being required`);
+    }
+    for (const branch of schema.oneOf ?? []) {
+      for (const field of branch.required ?? []) {
+        assert.match(generated, new RegExp(`(?:^|[ {])${field}:`), `${schemaName} oneOf stopped requiring ${field}`);
+      }
+    }
+  }
+
+  const commandType = schemaToTs(openApi, schemas.B9ContentCommandRequest);
+  assert.doesNotMatch(commandType, /command\?:/);
+  assert.match(commandType, /content\?: never/);
+  const pinType = schemaToTs(openApi, schemas.B10ContentVersionPin);
+  assert.doesNotMatch(pinType, /pinStatus\?:/);
+  assert.match(pinType, /fallbackVersionId\?: never/);
+  const recoveryType = schemaToTs(openApi, schemas.B10ContentRecovery);
+  assert.doesNotMatch(recoveryType, /resolution\?:/);
+  assert.match(recoveryType, /resolvedVersionId\?: never/);
+
+  const reviewRecords = schemas.B9AdminContentState.properties.reviewRecords;
+  const generatedReviewRecords = schemaToTs(openApi, reviewRecords);
+  assert.match(generatedReviewRecords, /^ReadonlyArray</);
+  assert.doesNotMatch(generatedReviewRecords, /(?:^|[< &(])unknown(?:$|[> )|&])/);
+  for (const field of ['contentVersionId', 'contentHash', 'reviewStage', 'decision', 'reviewVersion', 'auditId', 'decidedAt']) {
+    assert.match(generatedReviewRecords, new RegExp(`(?:^|[ {])${field}:`));
+  }
+});
+
+test('generated TypeScript preserves nullable JSON Schema type arrays', () => {
+  assert.equal(
+    schemaToTs(openApi, { type: ['string', 'null'], nullable: true }),
+    'string | null',
+  );
+});
 
 test('no-write merge detects an in-memory canonical artifact drift', () => {
   const expectedOpenApi = structuredClone(openApi);

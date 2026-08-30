@@ -505,7 +505,7 @@ export type B2AnswerSheetMarkRequest = { exerciseId: number; reviewMark: "NONE" 
 /**
  * Generated from the contract source.
  */
-export type B2VerificationSubmission = B2AnswerSubmissionRequest & { stage: "D0" | "D1" | "D7"; };
+export type B2VerificationSubmission = B2AnswerSubmissionRequest & ({ stage: "D0" | "D1" | "D7"; });
 
 /**
  * Generated from the contract source.
@@ -1280,7 +1280,7 @@ export type B9ContentDraftInput = { contentType: B9ContentType; title: string; s
 /**
  * 命令只表达意图和资源版本；actor、tenant、owner、role、permission、reviewer 和版权事实均由服务端从已验证上下文与内容记录派生。
  */
-export type B9ContentCommandRequest = { command?: "CREATE_DRAFT" | "SAVE_DRAFT"; } | { command?: "VALIDATE_DRAFT"; } | { command?: "SUBMIT_REVIEW"; } | { command?: "REVIEW_FIRST" | "REVIEW_FINAL"; } | { command?: "PUBLISH"; } | { command?: "SCHEDULE_PUBLISH"; } | { command?: "CANCEL_SCHEDULED_PUBLISH"; } | { command?: "UNPUBLISH"; } | { command?: "ROLLBACK"; };
+export type B9ContentCommandRequest = ({ command: "CREATE_DRAFT" | "SAVE_DRAFT" | "VALIDATE_DRAFT" | "SUBMIT_REVIEW" | "REVIEW_FIRST" | "REVIEW_FINAL" | "PUBLISH" | "SCHEDULE_PUBLISH" | "CANCEL_SCHEDULED_PUBLISH" | "UNPUBLISH" | "ROLLBACK"; contentCode: B9ContentCode; expectedStateVersion: B9ExpectedStateVersion; targetVersionNumber?: number; reasonCode?: string; content?: B9ContentDraftInput; reviewDecision?: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewNote?: string; schedule?: B9PublishScheduleInput; scheduledPublishTaskId?: B9ScheduledPublishTaskId; }) & ({ content: B9ContentDraftInput; targetVersionNumber?: never; reasonCode?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; scheduledPublishTaskId?: never; command: "CREATE_DRAFT" | "SAVE_DRAFT"; } | { targetVersionNumber?: never; reasonCode?: never; content?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; scheduledPublishTaskId?: never; command: "VALIDATE_DRAFT"; } | { targetVersionNumber?: never; reasonCode?: never; content?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; scheduledPublishTaskId?: never; command: "SUBMIT_REVIEW"; } | { reviewDecision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; targetVersionNumber?: never; reasonCode?: never; content?: never; schedule?: never; scheduledPublishTaskId?: never; command: "REVIEW_FIRST" | "REVIEW_FINAL"; } | { targetVersionNumber: number; reasonCode?: never; content?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; scheduledPublishTaskId?: never; command: "PUBLISH"; } | { schedule: B9PublishScheduleInput; targetVersionNumber?: never; reasonCode?: never; content?: never; reviewDecision?: never; reviewNote?: never; scheduledPublishTaskId?: never; command: "SCHEDULE_PUBLISH"; } | { scheduledPublishTaskId: B9ScheduledPublishTaskId; targetVersionNumber?: never; content?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; command: "CANCEL_SCHEDULED_PUBLISH"; } | { reasonCode: string; targetVersionNumber?: never; content?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; scheduledPublishTaskId?: never; command: "UNPUBLISH"; } | { targetVersionNumber: number; reasonCode: string; content?: never; reviewDecision?: never; reviewNote?: never; schedule?: never; scheduledPublishTaskId?: never; command: "ROLLBACK"; });
 
 /**
  * 服务端生成的命令受理结果。排期命令只返回只读任务引用；任务 status 不是 runtime publication proof。
@@ -1355,7 +1355,7 @@ export type B9PublicProjectionState = { availability: B9ContentAvailability; pro
 /**
  * 内容后台状态。canonical 持久状态为 DRAFT/IN_REVIEW/APPROVED/PUBLISHED/ARCHIVED；旧 UNPUBLISHED/ROLLED_BACK 只读兼容且新实现不得产生。排期任务由服务端只读维护。
  */
-export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewRecords?: unknown | unknown | unknown & unknown; scheduledPublishTask?: B9ScheduledPublishTaskRef; };
+export type B9AdminContentState = { contentCode: B9ContentCode; contentType: B9ContentType; title: string; authorSubject?: string; stateVersion: B9StateVersion; latestStatus: "DRAFT" | "IN_REVIEW" | "APPROVED" | "PUBLISHED" | "UNPUBLISHED" | "ROLLED_BACK" | "ARCHIVED"; versions: ReadonlyArray<B9ContentVersionSummary>; publicProjection: B9PublicProjectionState; rightsStatus: "PENDING" | "VALID" | "EXPIRED" | "REVOKED"; reviewRecords?: ReadonlyArray<({ contentVersionId: B9ContentVersionId; contentHash: string; reviewStage: "FIRST_REVIEW" | "FINAL_REVIEW"; decision: "APPROVED" | "REJECTED" | "CHANGES_REQUESTED"; reviewVersion: number; auditId: B9AuditId; decidedAt: B9DateTime; }) & ({ reviewStage: "FIRST_REVIEW"; } | { reviewStage: "FINAL_REVIEW"; })>; scheduledPublishTask?: B9ScheduledPublishTaskRef; };
 
 /**
  * Generated from the contract source.
@@ -1700,7 +1700,7 @@ export type B10QueueItemId = string;
 /**
  * Content pin for a future read or a task that has not started. SAFE_FUTURE_FALLBACK may be represented only before a session or attempt starts; active session and attempt projections use B10ActiveSessionAttemptPin and never replace their pinned contentVersionId silently.
  */
-export type B10ContentVersionPin = { pinStatus?: "PINNED"; recoveryReasonCode: "NONE"; } | { pinStatus?: "UNPUBLISHED"; recoveryReasonCode: "CONTENT_UNPUBLISHED"; } | { pinStatus?: "RECOVERABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; } | { pinStatus?: "RECOVERED"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; } | { pinStatus?: "UNAVAILABLE"; recoveryReasonCode: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; };
+export type B10ContentVersionPin = ({ contentCode: B10ContentCode; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; pinStatus: "PINNED" | "UNPUBLISHED" | "RECOVERABLE" | "RECOVERED" | "UNAVAILABLE"; pinnedAt: B10DateTime; fallbackVersionId?: B10Int64Id; fallbackContentEpoch?: B10ContentEpoch; fallbackSnapshotId?: B10SnapshotId; fallbackSnapshotHash?: B10Sha256; recoveryReasonCode?: "NONE" | "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; }) & ({ fallbackVersionId?: never; fallbackContentEpoch?: never; fallbackSnapshotId?: never; fallbackSnapshotHash?: never; pinStatus: "PINNED"; recoveryReasonCode: "NONE"; } | { fallbackVersionId?: never; fallbackContentEpoch?: never; fallbackSnapshotId?: never; fallbackSnapshotHash?: never; pinStatus: "UNPUBLISHED"; recoveryReasonCode: "CONTENT_UNPUBLISHED"; } | { fallbackVersionId?: never; fallbackContentEpoch?: never; fallbackSnapshotId?: never; fallbackSnapshotHash?: never; pinStatus: "RECOVERABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; } | { fallbackVersionId: B10Int64Id; fallbackContentEpoch: B10ContentEpoch; fallbackSnapshotId: B10SnapshotId; fallbackSnapshotHash: B10Sha256; pinStatus: "RECOVERED"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED"; } | { fallbackVersionId?: never; fallbackContentEpoch?: never; fallbackSnapshotId?: never; fallbackSnapshotHash?: never; pinStatus: "UNAVAILABLE"; recoveryReasonCode: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; });
 
 /**
  * Generated from the contract source.
@@ -1735,7 +1735,7 @@ export type B10AssessmentContentSnapshot = { pin: B10ContentVersionPin; snapshot
 /**
  * Future-read-only recovery decision. The route cannot be applied to an active session or attempt. SAFE_FUTURE_FALLBACK requires an explicit replacement version and snapshot and never regrades historical facts.
  */
-export type B10ContentRecovery = { resolution?: "EXACT_PIN"; } | { resolution?: "IMMUTABLE_SNAPSHOT"; } | { resolution?: "SAFE_FUTURE_FALLBACK"; } | { resolution?: "UNAVAILABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; };
+export type B10ContentRecovery = ({ usageScope: "FUTURE_READ_ONLY"; requestedVersionId: B10Int64Id; resolvedVersionId?: B10Int64Id | null; resolvedSnapshotId?: B10SnapshotId | null; resolution: "EXACT_PIN" | "IMMUTABLE_SNAPSHOT" | "SAFE_FUTURE_FALLBACK" | "UNAVAILABLE"; contentEpoch?: B10ContentEpoch; recoveryReasonCode?: "NONE" | "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; mustNotRegrade: true; resolvedAt: B10DateTime; }) & ({ resolvedVersionId: B10Int64Id | null; resolvedSnapshotId: B10SnapshotId | null; resolution: "EXACT_PIN"; } | { resolvedSnapshotId: B10SnapshotId | null; resolvedVersionId?: never; resolution: "IMMUTABLE_SNAPSHOT"; } | { resolvedVersionId: B10Int64Id | null; resolvedSnapshotId: B10SnapshotId | null; resolution: "SAFE_FUTURE_FALLBACK"; } | { resolvedVersionId?: never; resolvedSnapshotId?: never; resolution: "UNAVAILABLE"; recoveryReasonCode: "CONTENT_UNPUBLISHED" | "RIGHTS_EXPIRED" | "SNAPSHOT_MISSING" | "POLICY_DENIED" | "SERVICE_DEGRADED" | "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; });
 
 /**
  * The client may request a content version but cannot provide tenant, owner, role, score or grading rule facts.
@@ -2365,17 +2365,17 @@ export type B25EnsureDailyTaskRequest = { contentCode: string; title: string; mi
 /**
  * Generated from the contract source.
  */
-export type B8RegisterRequest = B8WebRegisterRequest | B8NativeRegisterRequest;
+export type B8RegisterRequest = { identifier: string; password: string; device: B8DeviceInput; } & (B8WebRegisterRequest | B8NativeRegisterRequest);
 
 /**
  * Generated from the contract source.
  */
-export type B8LoginRequest = B8WebLoginRequest | B8NativeLoginRequest;
+export type B8LoginRequest = { identifier: string; password: string; device: B8DeviceInput; } & (B8WebLoginRequest | B8NativeLoginRequest);
 
 /**
  * Generated from the contract source.
  */
-export type B8RefreshRequest = B8WebRefreshRequest | B8NativeRefreshRequest;
+export type B8RefreshRequest = { refreshToken?: string; deviceId?: string; } & (B8WebRefreshRequest | B8NativeRefreshRequest);
 
 /**
  * Generated from the contract source.
@@ -2435,12 +2435,12 @@ export type ApiErrorEnvelope = { error: ApiError; meta: ApiResponseMeta; };
 /**
  * WEB_COOKIE request device boundary for browser Web and mobile H5. The server derives authorization facts independently of this device declaration.
  */
-export type B8WebDeviceInput = B8DeviceInput & { deviceType: "WEB" | "H5"; };
+export type B8WebDeviceInput = B8DeviceInput & ({ deviceType: "WEB" | "H5"; });
 
 /**
  * NATIVE_SECURE_STORAGE request device boundary for iOS, Android and native iPad runtimes. The server derives authorization facts independently of this device declaration.
  */
-export type B8NativeDeviceInput = B8DeviceInput & { deviceType: "IOS" | "ANDROID" | "IPAD"; };
+export type B8NativeDeviceInput = B8DeviceInput & ({ deviceType: "IOS" | "ANDROID" | "IPAD"; });
 
 /**
  * Generated from the contract source.
@@ -2485,7 +2485,7 @@ export type B8NativeAuthTokenResponse = { authTransport: "NATIVE_SECURE_STORAGE"
 /**
  * Canonical ApiSuccessEnvelope with an explicitly transport-discriminated authentication data payload.
  */
-export type B8AuthTokenEnvelope = ApiSuccessEnvelope & { data: B8WebAuthTokenResponse | B8NativeAuthTokenResponse; };
+export type B8AuthTokenEnvelope = ApiSuccessEnvelope & ({ data: B8WebAuthTokenResponse | B8NativeAuthTokenResponse; });
 
 /**
  * Generated from the contract source.
@@ -2690,7 +2690,7 @@ export type B9PublishScheduleInput = { contentVersionId: B9ContentVersionId; con
 /**
  * 服务端只读的排期发布任务。客户端不能提交、伪造或推进 status，也不能把任务状态当作运行时发布证明；处理、重试、失败和恢复沿用 M1-007 recovery 契约，不在 B9 复制第二套处理状态机。
  */
-export type B9ScheduledPublishTask = { status?: "SCHEDULED"; } | { status?: "CANCELLED"; } | { status?: "EXECUTED"; } | { status?: "INVALIDATED"; } | { status?: "RECOVERY_REQUIRED"; };
+export type B9ScheduledPublishTask = ({ taskId: B9ScheduledPublishTaskId; commandId: string; requestId: string; traceId: string; contentCode: B9ContentCode; contentVersionId: B9ContentVersionId; contentHash: string; validationReportId: B9ContentValidationReportId; validationReportVersion: B9EvidenceVersion; firstReviewVersion: B9EvidenceVersion; finalReviewVersion: B9EvidenceVersion; rightsSnapshotId: B9RightsSnapshotId; rightsSnapshotVersion: B9EvidenceVersion; scheduledAt: B9OffsetDateTime; displayTimeZone: B9DisplayTimeZone; stateVersion: B9StateVersion; auditId: B9AuditId; status: "SCHEDULED" | "CANCELLED" | "EXECUTED" | "INVALIDATED" | "RECOVERY_REQUIRED"; createdAt: B9DateTime; updatedAt: B9DateTime; startedAt?: B9DateTime; completedAt?: B9DateTime; failureCode?: string; recoveryTaskId?: string; }) & ({ completedAt?: never; failureCode?: never; recoveryTaskId?: never; status: "SCHEDULED"; } | { completedAt: B9DateTime; recoveryTaskId?: never; status: "CANCELLED"; } | { completedAt: B9DateTime; failureCode?: never; recoveryTaskId?: never; status: "EXECUTED"; } | { failureCode: string; completedAt: B9DateTime; recoveryTaskId?: never; status: "INVALIDATED"; } | { failureCode: string; recoveryTaskId: string; status: "RECOVERY_REQUIRED"; });
 
 /**
  * 命令受理或后台状态中的排期任务只读引用。处理、重试和失败恢复由 M1-007 recovery 负责，不在此引用复制第二套状态机。
@@ -2700,7 +2700,7 @@ export type B9ScheduledPublishTaskRef = { taskId: B9ScheduledPublishTaskId; cont
 /**
  * 学习 session 对内容版本的服务端固定关系。仅表达版本引用和可用性，不返回已移除内容正文、答案或版权证据；UNAVAILABLE 时客户端不得静默回退到其他版本。
  */
-export type B9SessionContentPin = { status: "AVAILABLE"; } | { status: "UNAVAILABLE"; };
+export type B9SessionContentPin = ({ contentVersionId: B9ContentVersionId; versionNumber: number; status: "AVAILABLE" | "UNAVAILABLE"; pinnedAt: B9DateTime; reasonCode?: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; alternativeAction?: "RETURN_TO_CATALOG" | "SELECT_ALTERNATIVE_TASK" | "CONTACT_SUPPORT"; alternativeContentVersionId?: B9ContentVersionId; }) & ({ reasonCode?: never; alternativeAction?: never; alternativeContentVersionId?: never; status: "AVAILABLE"; } | { reasonCode: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; alternativeAction: "RETURN_TO_CATALOG" | "SELECT_ALTERNATIVE_TASK" | "CONTACT_SUPPORT"; status: "UNAVAILABLE"; });
 
 /**
  * Generated from the contract source.
@@ -2745,7 +2745,7 @@ export type B9EvidenceVersion = number;
 /**
  * Immutable pin used after an assessment session or attempt starts. The contentVersionId/contentEpoch/snapshotId/snapshotHash identity never changes. Emergency rights, security or legal removal returns UNAVAILABLE instead of a silent fallback.
  */
-export type B10ActiveSessionAttemptPin = { status: "AVAILABLE"; } | { status: "UNAVAILABLE"; };
+export type B10ActiveSessionAttemptPin = ({ contentCode: B10ContentCode; contentVersionId: B10Int64Id; contentEpoch: B10ContentEpoch; snapshotId: B10SnapshotId; snapshotHash: B10Sha256; status: "AVAILABLE" | "UNAVAILABLE"; pinnedAt: B10DateTime; reasonCode?: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; alternativeAction?: "RETURN_TO_CATALOG" | "SELECT_ALTERNATIVE_TASK" | "CONTACT_SUPPORT"; alternativeContentVersionId?: B10Int64Id; }) & ({ reasonCode?: never; alternativeAction?: never; alternativeContentVersionId?: never; status: "AVAILABLE"; } | { reasonCode: "RIGHTS_REMOVED" | "SECURITY_REMOVED" | "LEGAL_REMOVED"; alternativeAction: "RETURN_TO_CATALOG" | "SELECT_ALTERNATIVE_TASK" | "CONTACT_SUPPORT"; status: "UNAVAILABLE"; });
 
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
@@ -2831,7 +2831,7 @@ export interface ApiOperationRegistry {
   getB2WeeklyReport: { method: "GET"; path: "/api/v1/learning/stats/weekly-report"; request: never; response: ApiSuccessEnvelope & { data: B2Report; }; idempotent: false };
   createB2ShareAsset: { method: "POST"; path: "/api/v1/mastery/share-assets"; request: B2ShareAssetRequest; response: ApiSuccessEnvelope & { data: Record<string, never>; }; idempotent: true };
   listWordbooks: { method: "GET"; path: "/api/v1/vocab/wordbooks"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Wordbook>; }; idempotent: false };
-  activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; request: { active: true; }; response: ApiSuccessEnvelope & { data: { activeWordbookId: number; planVersion: number; retainedStateCount?: number; firstSnapshotId?: number | null; }; }; idempotent: true };
+  activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; request: { active: true; }; response: ApiSuccessEnvelope & ({ data: { activeWordbookId: number; planVersion: number; retainedStateCount?: number; firstSnapshotId?: number | null; }; }); idempotent: true };
   listWordbookItems: { method: "GET"; path: "/api/v1/vocab/wordbooks/{wordbookId}/items"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<VocabItem>; }; idempotent: false };
   getVocabDetail: { method: "GET"; path: "/api/v1/content/learner/vocabulary/{vocabularyId}"; request: never; response: ApiSuccessEnvelope & { data: VocabDetail; }; idempotent: false };
   getChunkDetail: { method: "GET"; path: "/api/v1/vocab/chunks/{chunkId}"; request: never; response: ApiSuccessEnvelope & { data: ChunkDetail; }; idempotent: false };

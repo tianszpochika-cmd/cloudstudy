@@ -69,7 +69,7 @@ export interface GeneratedApiOperationRegistry {
   getB2WeeklyReport: { method: "GET"; path: "/api/v1/learning/stats/weekly-report"; response: ApiSuccessEnvelope & { data: B2Report; }; };
   createB2ShareAsset: { method: "POST"; path: "/api/v1/mastery/share-assets"; response: ApiSuccessEnvelope & { data: Record<string, never>; }; };
   listWordbooks: { method: "GET"; path: "/api/v1/vocab/wordbooks"; response: ApiCursorPageEnvelope & { data: ReadonlyArray<Wordbook>; }; };
-  activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; response: ApiSuccessEnvelope & { data: { activeWordbookId: number; planVersion: number; retainedStateCount?: number; firstSnapshotId?: number | null; }; }; };
+  activateWordbook: { method: "PUT"; path: "/api/v1/vocab/wordbooks/{wordbookId}/activation"; response: ApiSuccessEnvelope & ({ data: { activeWordbookId: number; planVersion: number; retainedStateCount?: number; firstSnapshotId?: number | null; }; }); };
   listWordbookItems: { method: "GET"; path: "/api/v1/vocab/wordbooks/{wordbookId}/items"; response: ApiCursorPageEnvelope & { data: ReadonlyArray<VocabItem>; }; };
   getVocabDetail: { method: "GET"; path: "/api/v1/content/learner/vocabulary/{vocabularyId}"; response: ApiSuccessEnvelope & { data: VocabDetail; }; };
   getChunkDetail: { method: "GET"; path: "/api/v1/vocab/chunks/{chunkId}"; response: ApiSuccessEnvelope & { data: ChunkDetail; }; };

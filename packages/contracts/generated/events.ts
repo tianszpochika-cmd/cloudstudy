@@ -476,7 +476,7 @@ export type B12NotificationRecoveryCompleted = { taskId: string; state: "SUCCEED
 /**
  * Generated from the contract source.
  */
-export type B13CommerceEntitlementActivated = { entitlementId: string; entitlementCode: string; sourceRef: string; startsAt: string; expiresAt: unknown; activationReason: "VERIFIED_PAYMENT" | "ACTIVATION_CODE"; };
+export type B13CommerceEntitlementActivated = { entitlementId: string; entitlementCode: string; sourceRef: string; startsAt: string; expiresAt: string | null; activationReason: "VERIFIED_PAYMENT" | "ACTIVATION_CODE"; };
 
 /**
  * Generated from the contract source.
@@ -506,7 +506,7 @@ export type B26WorkflowOutboxPublished = { outboxId: string; producerService: st
 /**
  * Generated from the contract source.
  */
-export type B26WorkflowDeliveryFailed = { failedEventId: string; consumerGroup: string; failureCode: "TIMEOUT" | "TEMPORARY_UNAVAILABLE" | "CONFLICT_RETRYABLE" | "SCHEMA_INVALID" | "FORBIDDEN" | "OWNER_MISMATCH" | "STALE_VERSION"; retryable: boolean; attempt: number; failedAt: string; nextAttemptAt?: unknown; };
+export type B26WorkflowDeliveryFailed = { failedEventId: string; consumerGroup: string; failureCode: "TIMEOUT" | "TEMPORARY_UNAVAILABLE" | "CONFLICT_RETRYABLE" | "SCHEMA_INVALID" | "FORBIDDEN" | "OWNER_MISMATCH" | "STALE_VERSION"; retryable: boolean; attempt: number; failedAt: string; nextAttemptAt?: string | null; };
 
 /**
  * Generated from the contract source.
