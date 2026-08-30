@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
+  "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
   "artifactDigests": [
     {
       "path": "scripts/audit/p1r-api-contract-check.mjs",
@@ -12,17 +12,17 @@
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "656e15fd4a745a6a73db6d6c5571a258f44a7d116f58c25a4efa273f6767f35e"
+      "digest": "993863a43431d22f9d7e17baf6c014971dd6add5f33f3ee049adc354f2d61248"
     },
     {
       "path": "tests/p1r/p1r-api-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"
+      "digest": "bb5f5de7ea6173fd3ef3f4cbd8d961e817b9f16867b73dc7648ce6f2d459034a"
     },
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "7fdbf62dd5cb384df2b86e765dea9f24ab8e727f97b960592749e4c86420f360"
+      "digest": "b59cabd33f79106edac77f331f74b6f87b9eb78e8e55566030d2e9d0b3691e85"
     }
   ],
   "environment": {
@@ -37,10 +37,10 @@
     "originalFinishedAt": "2026-08-29T20:28:20+08:00",
     "originalReviewer": "m1_001_final_review",
     "originalAcceptedContractBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3",
-    "previousCurrentSourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-011",
-    "currentSourceRevalidationTask": "P1R-M1-012",
-    "currentSourceRevalidationReviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-012",
+    "currentSourceRevalidationTask": "P1R-M1-013",
+    "currentSourceRevalidationReviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M1-003",
@@ -78,16 +78,23 @@
         "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-31T00:49:16+08:00"
+      },
+      {
+        "taskId": "P1R-M1-013",
+        "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+        "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T04:18:36+08:00"
       }
     ],
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T00:49:16+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-31T00:49:16+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T04:18:36+08:00"
   },
   "startedAt": "2026-08-29T11:15:00+08:00",
-  "finishedAt": "2026-08-31T00:49:16+08:00",
+  "finishedAt": "2026-08-31T04:18:36+08:00",
   "actors": [
     "m1_api_contract",
     "m0_frontend_acceptance",
@@ -137,6 +144,11 @@
     "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
+    {
+      "check": "m1-013-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_013_evidence_plan:gpt-5.6-terra:max revalidated the accepted P1R-M1-001 semantics and shared artifacts at source a7f92095323f2afc4e6d28eeaff977e2197fcd0c with P1/P2=0/0. P1R 818/818, contract tooling 50/50, learning-loop 67/67, contracts 401/646/158/108/17/60, workspace typecheck 7/7, fixed compatibility, Gateway, event governance, event reliability and B26 static checks pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
     {
       "check": "m1-012-current-source-revalidation",
       "status": "PASS",
@@ -199,6 +211,6 @@
     "Authentication and authorization D2 contracts are now accepted by P1R-M1-002/003; Gateway, data-owner and event contracts remain owned by P1R-M1-004 through P1R-M1-018, while runtime IAM/PEP remains in M2.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-001-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
   "decision": "ACCEPTED"
 }

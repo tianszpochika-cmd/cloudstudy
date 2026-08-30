@@ -4,12 +4,12 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-010` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`，共享制品最新在 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72` 完成 current-source revalidation。
-- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；共享制品在 `aac5c346...` 完成 current-source revalidation，原复审 P1/P2 为 `0/0`。
+- `P1R-M1-001` 至 `P1R-M1-012` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`，共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。
+- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；共享制品在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation，原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
-- `P1R-M1-013`：`IN_PROGRESS`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，只冻结日计划/Session 衔接、`SM2_Q03_V1`、单一 SRS 写入口、repair/D1/D7、mastery、报告 watermark 与离线冲突的 D2 契约。
-- M1-012 更新了共享 OpenAPI、生成类型、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-011` 的 manifest 已保留各自原始 provenance，并统一绑定 `aac5c346...` 完成 current-source revalidation；这不把旧任务重写为 M1-012 的实现成果。
+- `P1R-M1-013`：`ACCEPTED`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2 为 `0/0`。
+- M1-013 接受前完成共享 OpenAPI、生成类型、兼容工具和审计测试的 current-source revalidation；`P1R-M1-001` 至 `P1R-M1-012` 的 manifest 继续保留各自原始 provenance，并统一绑定 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，不把旧任务重写为 M1-013 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
@@ -123,6 +123,17 @@
 3. 兼容与失败关闭：延续 M1-008..012 source-bound promotion，不移动不可变基线；建立结构化 policy、checker、生成类型和 unknown-field/版本/乱序/DST/双写/runtime-promotion 对抗测试。
 
 三条轨道先只读形成统一设计，再由统筹分配互斥文件实施；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-013 不实现真实 schema/Outbox/Kafka/worker/Saga、六技能页面、浏览器离线数据库或 E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
+## M1-013 执行与结果摘要
+
+1. 规则模型：冻结 `P1_DAILY_PLAN_V1` 的稳定排序、预算、积压与解释，`SM2_Q03_V1` 的公式与 outcome cap，repair/D1/D7、mastery Gate、report numerator/denominator/watermark，以及时区、DST 和离线顺序。
+2. 契约与事件：冻结 plan/today/task/session owner、版本和 pin，assessment 与 learning 的单一事实边界，唯一 SRS 写入口、历史 adapter/deprecation、服务端 authority、事件治理和恢复引用。
+3. 兼容与失败关闭：以 `a07a58a7d245295c54d39487a6669545d077c513` 为 checkpoint、`a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 为最终源码，完成 unknown-field、版本、乱序、DST、双写与 runtime-promotion 失败关闭检查。
+
+- 终验结果：learning `67/67`、tooling `50/50`、P1R `818/818`、workspace typecheck `7/7`；contracts `401 operations/646 schemas/158 events/108 payload schemas/17 AsyncAPI channels/60 operations/13 JSON Schemas`；fixed compatibility、Gateway、event、reliability、B26、plan、CI、diff 均 PASS。
+- 独立 reviewer：`agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`；Evidence：`evidence/p1r/m1/P1R-M1-013/manifest.json`。
+- D2 边界：结果仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，`P1R-M0-006` 继续 `BLOCKED`，真实 schema/Outbox/Kafka/worker/Saga、浏览器/设备和 E2E 未验证。
+- Evidence/台账关闭集成提交：`PENDING_EVIDENCE_INTEGRATION_COMMIT`（未知，禁止发明 SHA）。当前台账为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`；下一推荐任务为 `P1R-M1-014`，保持 `PLANNED`，不启动。
 
 ## M1-011 执行轨道
 

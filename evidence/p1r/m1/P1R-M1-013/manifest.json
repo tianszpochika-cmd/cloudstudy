@@ -1,0 +1,451 @@
+{
+  "taskId": "P1R-M1-013",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+  "artifactDigests": [
+    {
+      "path": "config/b26-event-runtime.json",
+      "algorithm": "sha256",
+      "digest": "5034e52fa654c6d8f99929789cdcc7fc5e13d7d7fbddd983a51ad72afb5f5a9e"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "d8e4bd903118822d3a90adb27ad2cfdc0fbd18667bfe3c51211cecbe005cdd50"
+    },
+    {
+      "path": "config/p1r-learning-loop-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "b2aaedb9fc8f28ea3ee78811c14e015da9bff7d8f013326ea547518963621069"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/04-学习机制与学习引擎规则.md",
+      "algorithm": "sha256",
+      "digest": "f88882d32b56bbc31b3ffa553f5f83dd2a687c2caedc0d5aaadb9d120f8222bc"
+    },
+    {
+      "path": "docs/07-operations/b26-validation.md",
+      "algorithm": "sha256",
+      "digest": "3c14a6244a5827c72d877be684d0185ca7476b0fe4b18325fef11b5ef7c216ff"
+    },
+    {
+      "path": "docs/07-operations/g-gate-validation.md",
+      "algorithm": "sha256",
+      "digest": "cb53c10e6685e5407d57a74087d9f7741cb89b544da37ec8ee2404753ba1e8b4"
+    },
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "1a3ddc87c2c549a2ffb7ea4ac5ee27d37bb1548645ba1c21805d67c3d009b536"
+    },
+    {
+      "path": "packages/api-client/src/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "73d9b8cedc93a3edd982d748ad48d38c3671f62c4254991bc8acc972a69d41f4"
+    },
+    {
+      "path": "packages/contracts/events/v1/catalog.json",
+      "algorithm": "sha256",
+      "digest": "4ec1443c33194572aff1e4d382d91086d442656aa7dd22f409844acd813c0f8f"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b10-learning-loop.events.json",
+      "algorithm": "sha256",
+      "digest": "60034e24787d8affd7286ddea8d4da4e449f7705ca587f0e854e81a4ef03e992"
+    },
+    {
+      "path": "packages/contracts/events/v1/reliability-policy.json",
+      "algorithm": "sha256",
+      "digest": "40d1a6de5165fab94247d4be2b4096745dba86f256bce29d8df44e19ba6d13e7"
+    },
+    {
+      "path": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
+      "algorithm": "sha256",
+      "digest": "7b22ead3c36942e95db3756a7674986bdbb89713aa720dd178ab5d2431b07c20"
+    },
+    {
+      "path": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+      "algorithm": "sha256",
+      "digest": "40404fc3a9edb0d2087fc2b945c4184a6bcc499b5993af88e7ea1c129899fbc4"
+    },
+    {
+      "path": "packages/contracts/fragments/b2-assessment-mastery.openapi.json",
+      "algorithm": "sha256",
+      "digest": "94bd1cf775600c9f664435fc74719f28bff7291d9a937730aaca9232a58896ae"
+    },
+    {
+      "path": "packages/contracts/fragments/b2-compatibility.openapi.json",
+      "algorithm": "sha256",
+      "digest": "d2ff6a8e033bb8a515ac202cba47f5811265edd89fa76d43996987b8715f0a58"
+    },
+    {
+      "path": "packages/contracts/fragments/b2-vocabulary-srs.openapi.json",
+      "algorithm": "sha256",
+      "digest": "b4ffd4401c464504dc8b7da05b724f8a1c81b2034eaddb49fb37e531a64814ce"
+    },
+    {
+      "path": "packages/contracts/generated/events.ts",
+      "algorithm": "sha256",
+      "digest": "a845d5329baf906d9e6f625c08a731cf9f22545b7162394f20be87d0bed648f4"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "algorithm": "sha256",
+      "digest": "534d286a94486fe1815e11960a31e63797dc39e25a23d92cd2dcbf30ac6bf0d4"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "45c37bab210b5d151fc3445ef0edffbdcf30cc37b292be94d8d0fea7bb85e670"
+    },
+    {
+      "path": "scripts/audit/p1r-assessment-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "848110225653e0f0478d7c6a91e715dc80eeab1db0972d232d18e5b9575363c4"
+    },
+    {
+      "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
+      "algorithm": "sha256",
+      "digest": "60840406a8c36f253a15f7ffd5860cd23dd9f8d06ab258f7fada76c6f7ee5dde"
+    },
+    {
+      "path": "scripts/audit/p1r-event-governance-check.mjs",
+      "algorithm": "sha256",
+      "digest": "3193d9b4bb725a97822fbc4b39ff47be88f9c39ea9b8f0cf48f2d7548cdd4e55"
+    },
+    {
+      "path": "scripts/audit/p1r-event-reliability-check.mjs",
+      "algorithm": "sha256",
+      "digest": "fd4f83e280483d5726cd6e6585e61eed69cbeb631580d746ab9db91e4ad07699"
+    },
+    {
+      "path": "scripts/audit/p1r-gateway-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "ce9ceaf3c373bd9acded03983ab904061ed779fd0fc2006c4a2c6c41f3588eaa"
+    },
+    {
+      "path": "scripts/audit/p1r-learning-loop-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "490974536a0304ddaee3e1551cd2cd802c50eae0074bcb263027cb64ff3edb7c"
+    },
+    {
+      "path": "scripts/contracts/compatibility-diff.mjs",
+      "algorithm": "sha256",
+      "digest": "981f7aabc1624555f311322897f1219d1d740cced69b621bc7b7164b8ecbbcf9"
+    },
+    {
+      "path": "scripts/contracts/compatibility-git-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "993863a43431d22f9d7e17baf6c014971dd6add5f33f3ee049adc354f2d61248"
+    },
+    {
+      "path": "scripts/contracts/event-catalog-policy.mjs",
+      "algorithm": "sha256",
+      "digest": "69429fc50dd6c22ac447b3f46e7aefc8fd9cfdf7761d3679673228894f06b206"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "dafc718d31549151c3088f0a3b3ecce07de2bbf49c17d29153b8622123215660"
+    },
+    {
+      "path": "scripts/runtime/validate-b26-event-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "0035869710381a7df2865adf1090929036db7aba115d0879ee81fffadaf5bf06"
+    },
+    {
+      "path": "tests/b26/b26-event-runtime.test.mjs",
+      "algorithm": "sha256",
+      "digest": "2ad2c458748d38a3a758825621a5866e07cd4011812622e44a09bd1dc76e0eea"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "12f416910e88abb4d1a2e6b0b8d52b994808608bbb007d59363c1a46c52bbe27"
+    },
+    {
+      "path": "tests/p1r/p1r-api-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "bb5f5de7ea6173fd3ef3f4cbd8d961e817b9f16867b73dc7648ce6f2d459034a"
+    },
+    {
+      "path": "tests/p1r/p1r-assessment-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "8761db6c54283b61919a15d80913e3e44de6b0de937864ecdfcb27db48f62317"
+    },
+    {
+      "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
+      "algorithm": "sha256",
+      "digest": "b429e42c12a84e59114d7318325c61f90a32e6fc5fb4bb03a1582c5929686100"
+    },
+    {
+      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
+      "algorithm": "sha256",
+      "digest": "b59cabd33f79106edac77f331f74b6f87b9eb78e8e55566030d2e9d0b3691e85"
+    },
+    {
+      "path": "tests/p1r/p1r-event-governance.test.mjs",
+      "algorithm": "sha256",
+      "digest": "a57c30422b94f351cfc447a4d072098b106dd4f67a4b8a86b041108d333d4854"
+    },
+    {
+      "path": "tests/p1r/p1r-event-reliability.test.mjs",
+      "algorithm": "sha256",
+      "digest": "9954564518397bcba5bf34c882ab411fcecb400f6dfb452ce04249e90d3e4fa2"
+    },
+    {
+      "path": "tests/p1r/p1r-gateway-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "b3508c8847e9358e3f7e4b5569bb2892dde6a87e147392c31bd7fb8d9baccf62"
+    },
+    {
+      "path": "tests/p1r/p1r-learning-loop-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "5bdc7df85b22ecb9943c9d816909712b07f276f14e1ae569c4013ea9c0934686"
+    },
+    {
+      "path": "tests/p1r/p1r-learning-loop-generated-types.test.mjs",
+      "algorithm": "sha256",
+      "digest": "f93a3093f1c12e185376073033c0b97a2f21b7413abdfaa2936b08229254e17d"
+    },
+    {
+      "path": "packages/contracts/fragments/b9/b9-learner.openapi.json",
+      "algorithm": "sha256",
+      "digest": "48ab1667cbc98a475c19023fa1d73b21bee345fa93be178bcb810b965c2ad941"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
+      "algorithm": "sha256",
+      "digest": "0a5138ae585724d4c6f49940db57d836c667e421dfcd029cac641e762bab1087"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b2-vocabulary-srs.events.json",
+      "algorithm": "sha256",
+      "digest": "a3233f04febbe9d4faf0ad4985ab52fdcc375cb8c2246e7b949b6b04d98854ae"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b2-assessment-mastery.events.json",
+      "algorithm": "sha256",
+      "digest": "11b226c8e5b90f14e515c80ac14b60579d4715ea3c684af7795288ad705d416f"
+    },
+    {
+      "path": "packages/contracts/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "d8271c25a15dc022937b97cfdb070b0b2f5956d74e108d94468e66701688c37b"
+    },
+    {
+      "path": "packages/contracts/generated/schemas.ts",
+      "algorithm": "sha256",
+      "digest": "ffc5dfb0113e597cc6d8585e11c61f77f2c5a5b3d19838f7530eed0bd6886538"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "a07a58a7d245295c54d39487a6669545d077c513",
+    "taskStartCommit": "66640174b3073af0dabc7412a55d5edc45e9b535",
+    "sourceRange": "66640174b3073af0dabc7412a55d5edc45e9b535..a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "sourceContractBaseline": "a07a58a7d245295c54d39487a6669545d077c513",
+    "previousPromotion": "P1R-M1-012",
+    "promotion": "M1-013_LEARNING_LOOP_CONTRACT_PROMOTION",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "eventCatalogDecision": "LEARNING_LOOP_CANONICAL_D2",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "m2RuntimeTasks": {
+      "P1R-M2-004": "NOT_COMPLETED",
+      "P1R-M2-005": "NOT_COMPLETED",
+      "P1R-M2-006": "NOT_COMPLETED"
+    },
+    "releaseBlocker": "P1R-M0-006 BLOCKED"
+  },
+  "startedAt": "2026-08-31T01:15:41+08:00",
+  "finishedAt": "2026-08-31T04:20:54+08:00",
+  "actors": [
+    "root-coordinator",
+    "m1_013_rule_model",
+    "m1_013_contract_inventory",
+    "m1_013_compat_tests",
+    "m1_013_compat_projection"
+  ],
+  "sourceIds": [
+    "P1R-M1-013",
+    "RULE-P1-DAILY-PLAN",
+    "RULE-P1-SESSION",
+    "RULE-P1-SRS",
+    "RULE-P1-MISTAKE-REPAIR",
+    "RULE-P1-MASTERY",
+    "RULE-P1-REPORT",
+    "RULE-P1-TIME-SYNC",
+    "CONTRACT-GAP-LRN-001",
+    "CONTRACT-GAP-PLAN-EXPLAIN",
+    "CONTRACT-GAP-REP-001",
+    "CONTRACT-GAP-SRS-OUTCOME",
+    "CONTRACT-GAP-REPAIR-VARIANT",
+    "CONTRACT-GAP-REPORT-WATERMARK",
+    "EVENT-GAP-BIND-ASM-001",
+    "EVENT-GAP-BIND-LRN-001"
+  ],
+  "journeys": [
+    "JNY-P1-05",
+    "JNY-P1-06",
+    "JNY-P1-07",
+    "JNY-P1-08",
+    "JNY-P1-09"
+  ],
+  "pages": [
+    "PAGE-P1-PLAN-MAP",
+    "PAGE-P1-LEARN-HOME",
+    "PAGE-P1-TODAY",
+    "PAGE-P1-VOCAB",
+    "PAGE-P1-MISTAKES-MASTERY",
+    "PAGE-P1-REPORT"
+  ],
+  "rules": [
+    "RULE-P1-DAILY-PLAN",
+    "RULE-P1-SESSION",
+    "RULE-P1-SRS",
+    "RULE-P1-MISTAKE-REPAIR",
+    "RULE-P1-MASTERY",
+    "RULE-P1-REPORT",
+    "RULE-P1-TIME-SYNC"
+  ],
+  "integrations": [
+    "INT-P1-006",
+    "INT-P1-007",
+    "INT-P1-014"
+  ],
+  "e2eScenarios": [
+    "E2E-P1-FIRST-DAY",
+    "E2E-P1-SRS",
+    "E2E-P1-MISTAKE-MASTERY",
+    "E2E-INT-P1-006",
+    "E2E-INT-P1-007",
+    "E2E-INT-P1-014"
+  ],
+  "serviceOwners": [
+    "learning-service",
+    "assessment-service",
+    "content-service",
+    "workflow-service",
+    "learner-service",
+    "iam-service",
+    "api-gateway"
+  ],
+  "dataOwners": [
+    "learning-service",
+    "assessment-service",
+    "content-service",
+    "learner-service",
+    "iam-service"
+  ],
+  "statusTrajectory": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED"
+  ],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+      "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+      "decision": "ACCEPTED",
+      "p1": 0,
+      "p2": 0,
+      "details": "Independent Terra Max review accepted the M1-013 source-bound daily-plan, session handoff, single SRS write path, repair, mastery, report-watermark, compatibility and static-governance contract evidence. No runtime promotion was granted."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:learning-loop-contract:check -- --json",
+    "node --test tests/p1r/p1r-learning-loop-contract.test.mjs",
+    "node --test tests/p1r/p1r-learning-loop-generated-types.test.mjs",
+    "node --test tests/p1r/p1r-contract-tooling.test.mjs",
+    "pnpm test:p1r",
+    "pnpm test:b26",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm contracts:compatibility:git -- --ref a07a58a7d245295c54d39487a6669545d077c513 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:assessment-contract:check",
+    "pnpm p1r:content-lifecycle:check",
+    "pnpm p1r:gateway-contract:check",
+    "pnpm p1r:event-governance:check",
+    "pnpm p1r:event-reliability:check",
+    "pnpm b26:static",
+    "pnpm typecheck",
+    "pnpm p1r:ci:check",
+    "pnpm plan:p1r:check",
+    "git diff --check"
+  ],
+  "results": [
+    {
+      "check": "learning-loop-contract-and-generated-types",
+      "status": "PASS",
+      "details": "Learning-loop contract tests pass 67/67. P1_DAILY_PLAN_V1, SM2_Q03_V1, repair/D1/D7, mastery, report-watermark, offline conflict and generated type constraints remain deterministic and fail closed."
+    },
+    {
+      "check": "contract-tooling",
+      "status": "PASS",
+      "details": "Contract tooling passes 50/50. Merge, generation and validation report 401 OpenAPI operations, 646 OpenAPI schemas, 158 events, 108 event payload schemas, 17 AsyncAPI channels, 60 AsyncAPI operations and 13 JSON Schemas."
+    },
+    {
+      "check": "p1r-suite-and-typecheck",
+      "status": "PASS",
+      "details": "P1R passes 818/818 and workspace typecheck passes 7/7."
+    },
+    {
+      "check": "gateway-and-event-static-governance",
+      "status": "PASS",
+      "details": "Gateway contract checks pass 350/350. Event governance and reliability checks pass 17/141/43; the three learning-loop events remain governed D2 contracts rather than delivery evidence."
+    },
+    {
+      "check": "b26-static",
+      "status": "PASS",
+      "details": "B26 static checks pass 27/27. The result does not promote B26 beyond static-only, pending and NO-GO."
+    },
+    {
+      "check": "fixed-compatibility",
+      "status": "PASS",
+      "details": "Both fixed Git compatibility baselines, 463c4b238caceb1592bff6c61327c00ab9bac922 and a07a58a7d245295c54d39487a6669545d077c513, report zero breaking changes against immutable governance baseline 868c2177f62b6d2cf613bed702686dddcfe6943f."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "The sole promotion is D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED. P1R-M2-004/005/006 remain NOT_COMPLETED and P1R-M0-006 remains BLOCKED."
+    },
+    {
+      "check": "historical-full-g-context",
+      "status": "NOT_APPLICABLE",
+      "details": "The historical full G suite remains 39/41 because of known historical G0/G3 stale source-marker failures. It is not presented as a green suite, a source regression, or runtime evidence."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Revert a7f92095323f2afc4e6d28eeaff977e2197fcd0c and then 66640174b3073af0dabc7412a55d5edc45e9b535 in reverse task order. Rerun learning-loop and generated-type tests, contract merge/generate/validate, both fixed compatibility baselines, P1R, Gateway, event, B26, typecheck, Evidence and diff gates. Do not move immutable baselines or treat a source rollback as a runtime-data, Kafka or workflow rollback."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004 remains responsible for real learning and assessment owner schemas, grants, migrations, transactions and Outbox persistence evidence.",
+    "P1R-M2-005 remains responsible for Kafka broker/topic/ACL, delivery, consumers, dedupe, disorder, outage, DLQ and replay evidence.",
+    "P1R-M2-006 remains responsible for real Saga execution, compensation, scheduled/manual recovery and immutable closure receipts.",
+    "EVIDENCE-GAP-LEARNING-LOOP remains open until browser-to-Gateway-to-owner-to-Outbox-to-consumer-to-report evidence is collected for E2E-P1-FIRST-DAY, E2E-P1-SRS and E2E-P1-MISTAKE-MASTERY.",
+    "B1/B2/B25/core-api and legacy event paths remain compatibility or historical candidates and are not P1_DAILY_PLAN_V1, SM2_Q03_V1 or learning runtime implementations.",
+    "Database, Gateway/service processes, Kafka, worker, browser/device, offline database and end-to-end runtime behavior are not verified by this D2 contract task.",
+    "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
+    "The historical full G suite remains 39/41 because of G0/G3 stale source markers."
+  ],
+  "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+  "decision": "ACCEPTED"
+}

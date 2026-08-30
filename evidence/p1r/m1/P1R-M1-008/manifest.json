@@ -2,7 +2,7 @@
   "taskId": "P1R-M1-008",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
+  "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
   "artifactDigests": [
     {
       "path": "config/b20-privacy-content-gates.json",
@@ -12,12 +12,12 @@
     {
       "path": "config/b26-event-runtime.json",
       "algorithm": "sha256",
-      "digest": "a1e616a19fb2e105954933a237af4734e2f9e7dd69abd13a46912069a71bf56c"
+      "digest": "5034e52fa654c6d8f99929789cdcc7fc5e13d7d7fbddd983a51ad72afb5f5a9e"
     },
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "bbe9495c55266459d0b28568fc2c7db8fb392ae1d84db8ed38b0c07d8af5160d"
+      "digest": "d8e4bd903118822d3a90adb27ad2cfdc0fbd18667bfe3c51211cecbe005cdd50"
     },
     {
       "path": "config/p1r-content-lifecycle.v1.json",
@@ -72,17 +72,17 @@
     {
       "path": "docs/07-operations/b26-validation.md",
       "algorithm": "sha256",
-      "digest": "80301c920a45391b206b624b61a677ef6c98280d7f9a575f3254501708ed3aab"
+      "digest": "3c14a6244a5827c72d877be684d0185ca7476b0fe4b18325fef11b5ef7c216ff"
     },
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "6eabf666e8dbcb0c0c33e32935f88593a9eebde43eb486229bab73e35431130f"
+      "digest": "1a3ddc87c2c549a2ffb7ea4ac5ee27d37bb1548645ba1c21805d67c3d009b536"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "6bc9c40b29dd4041cd5ed35ccb234ff13477c16b72d5338a8b55ecf750041d5d"
+      "digest": "73d9b8cedc93a3edd982d748ad48d38c3671f62c4254991bc8acc972a69d41f4"
     },
     {
       "path": "packages/contracts/README.md",
@@ -92,7 +92,7 @@
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "94090de7696e4d38e5ece0871128058b712bca1b1c2102c8d22452bac7a7b477"
+      "digest": "4ec1443c33194572aff1e4d382d91086d442656aa7dd22f409844acd813c0f8f"
     },
     {
       "path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json",
@@ -102,7 +102,7 @@
     {
       "path": "packages/contracts/events/v1/reliability-policy.json",
       "algorithm": "sha256",
-      "digest": "70b2bba61a8786db44853d90e88867dcf6ddce7bbee389f033ac1989df9ba77b"
+      "digest": "40d1a6de5165fab94247d4be2b4096745dba86f256bce29d8df44e19ba6d13e7"
     },
     {
       "path": "packages/contracts/fragments/b1-content.openapi.json",
@@ -112,7 +112,7 @@
     {
       "path": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
       "algorithm": "sha256",
-      "digest": "c191ab3e5eb2486a5b732e75abfe4ca9f218c1691ad76b7e383b5a890961953a"
+      "digest": "40404fc3a9edb0d2087fc2b945c4184a6bcc499b5993af88e7ea1c129899fbc4"
     },
     {
       "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
@@ -132,17 +132,17 @@
     {
       "path": "packages/contracts/generated/events.ts",
       "algorithm": "sha256",
-      "digest": "42c12ffa1c2090e8813dfefd8fb3d61b2c8f205b69e0b645cf3b6906a597cb3a"
+      "digest": "a845d5329baf906d9e6f625c08a731cf9f22545b7162394f20be87d0bed648f4"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "ae850db825bdeb536962f32f7b06a8e46cc753e6a9655b9051888c22d9106523"
+      "digest": "534d286a94486fe1815e11960a31e63797dc39e25a23d92cd2dcbf30ac6bf0d4"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "d473effc14ebbda9bea33e9305a00254767d6ad9403ee92bab598a17e9c3d765"
+      "digest": "45c37bab210b5d151fc3445ef0edffbdcf30cc37b292be94d8d0fea7bb85e670"
     },
     {
       "path": "packages/contracts/src/generated-oneof-assertions.ts",
@@ -157,42 +157,42 @@
     {
       "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
       "algorithm": "sha256",
-      "digest": "342ee37c30469bf20002fc98a3953a59068ec7e40e13967b4dcde5fa2a851b76"
+      "digest": "60840406a8c36f253a15f7ffd5860cd23dd9f8d06ab258f7fada76c6f7ee5dde"
     },
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
       "algorithm": "sha256",
-      "digest": "13bf042fd9e83bdf935bc316426e2826f2c2620633cceaa51bef88130dceb620"
+      "digest": "3193d9b4bb725a97822fbc4b39ff47be88f9c39ea9b8f0cf48f2d7548cdd4e55"
     },
     {
       "path": "scripts/audit/p1r-event-reliability-check.mjs",
       "algorithm": "sha256",
-      "digest": "99be11dc15e8364504eec9448dc7352da9959871599b2cbac609bd42f82b47a5"
+      "digest": "fd4f83e280483d5726cd6e6585e61eed69cbeb631580d746ab9db91e4ad07699"
     },
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "095eb21637d5aeafe9e8045fbf5ac09cd5df440092acf01c2576e0e0275e1f94"
+      "digest": "ce9ceaf3c373bd9acded03983ab904061ed779fd0fc2006c4a2c6c41f3588eaa"
     },
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "9af61041bd67c369c4d143c6cce209dc5669647655a4b617b7ee03a7cf204a1b"
+      "digest": "981f7aabc1624555f311322897f1219d1d740cced69b621bc7b7164b8ecbbcf9"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "656e15fd4a745a6a73db6d6c5571a258f44a7d116f58c25a4efa273f6767f35e"
+      "digest": "993863a43431d22f9d7e17baf6c014971dd6add5f33f3ee049adc354f2d61248"
     },
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
       "algorithm": "sha256",
-      "digest": "0f8c7c7dbbcd648d3a683c65f6cea839f427730c510dac1a7868cd9fde0f1efb"
+      "digest": "69429fc50dd6c22ac447b3f46e7aefc8fd9cfdf7761d3679673228894f06b206"
     },
     {
       "path": "scripts/contracts/merge-b1-fragments.mjs",
       "algorithm": "sha256",
-      "digest": "d5833d02debefcdf88f8c40054d81867c45af9ba14eb48e4847ff415c33bd7ef"
+      "digest": "dafc718d31549151c3088f0a3b3ecce07de2bbf49c17d29153b8622123215660"
     },
     {
       "path": "scripts/contracts/schema-utils.mjs",
@@ -202,7 +202,7 @@
     {
       "path": "scripts/runtime/validate-b26-event-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "804c627f365dfbec40c79a624ee5cd58c153ae307d7ff0fb713c5bd94ce50a80"
+      "digest": "0035869710381a7df2865adf1090929036db7aba115d0879ee81fffadaf5bf06"
     },
     {
       "path": "tests/b10/b10-contract-boundaries.test.mjs",
@@ -212,37 +212,37 @@
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
       "algorithm": "sha256",
-      "digest": "e46aa2fc7a74b74d9dfe2cf1c57b0038a6aa701919cdaee2ecccae44d4b2804d"
+      "digest": "2ad2c458748d38a3a758825621a5866e07cd4011812622e44a09bd1dc76e0eea"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "308f1a146baed0f894f6d16a3b96023008d86e01c91609c64f89228b817a46ce"
+      "digest": "12f416910e88abb4d1a2e6b0b8d52b994808608bbb007d59363c1a46c52bbe27"
     },
     {
       "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
       "algorithm": "sha256",
-      "digest": "51af96dbac2e055692bb3de72c75c636950bf3893230770be8542dd52c526616"
+      "digest": "b429e42c12a84e59114d7318325c61f90a32e6fc5fb4bb03a1582c5929686100"
     },
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "7fdbf62dd5cb384df2b86e765dea9f24ab8e727f97b960592749e4c86420f360"
+      "digest": "b59cabd33f79106edac77f331f74b6f87b9eb78e8e55566030d2e9d0b3691e85"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
       "algorithm": "sha256",
-      "digest": "a7b47a385bd7d296b1feacc058ffa2b9c0ce886edd7de1609442a7f35fdb7308"
+      "digest": "a57c30422b94f351cfc447a4d072098b106dd4f67a4b8a86b041108d333d4854"
     },
     {
       "path": "tests/p1r/p1r-event-reliability.test.mjs",
       "algorithm": "sha256",
-      "digest": "93602d3aab6c743f09f74cdc85cc42b81f284ead7e77db6ee0417936c011efc3"
+      "digest": "9954564518397bcba5bf34c882ab411fcecb400f6dfb452ce04249e90d3e4fa2"
     },
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "9e7162dcab1a43ba25d041ccf0da1ac5b256547d8b74eda8d13cd884f58064fe"
+      "digest": "b3508c8847e9358e3f7e4b5569bb2892dde6a87e147392c31bd7fb8d9baccf62"
     }
   ],
   "environment": {
@@ -270,10 +270,10 @@
     "originalFinishedAt": "2026-08-30T12:32:26+08:00",
     "originalReviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
     "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
-    "previousCurrentSourceCommit": "daa543b369c0e369a8f70e2f79278eb934ff9a09",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-011",
-    "currentSourceRevalidationTask": "P1R-M1-012",
-    "currentSourceRevalidationReviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-012",
+    "currentSourceRevalidationTask": "P1R-M1-013",
+    "currentSourceRevalidationReviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
     "currentSourceRevalidationHistory": [
       {
         "taskId": "P1R-M1-008",
@@ -303,16 +303,23 @@
         "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-31T00:49:16+08:00"
+      },
+      {
+        "taskId": "P1R-M1-013",
+        "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+        "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T04:18:36+08:00"
       }
     ],
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_011_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-30T21:45:45+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T00:49:16+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-31T00:49:16+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T04:18:36+08:00"
   },
   "startedAt": "2026-08-30T09:15:05+08:00",
-  "finishedAt": "2026-08-31T00:49:16+08:00",
+  "finishedAt": "2026-08-31T04:18:36+08:00",
   "actors": [
     "root-coordinator"
   ],
@@ -443,6 +450,11 @@
   ],
   "results": [
     {
+      "check": "m1-013-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_013_evidence_plan:gpt-5.6-terra:max revalidated the accepted P1R-M1-008 semantics and shared artifacts at source a7f92095323f2afc4e6d28eeaff977e2197fcd0c with P1/P2=0/0. P1R 818/818, contract tooling 50/50, learning-loop 67/67, contracts 401/646/158/108/17/60, workspace typecheck 7/7, fixed compatibility, Gateway, event governance, event reliability and B26 static checks pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
+    },
+    {
       "check": "m1-012-current-source-revalidation",
       "status": "PASS",
       "details": "Independent reviewer agent:m1_012_independent_review:gpt-5.6-luna:max revalidated the accepted P1R-M1-008 semantics and shared artifacts at source aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72. P1R 746/746, contract tooling 46/46, workspace typecheck 7/7, contract merge/generate/validate, both fixed compatibility baselines and relevant IAM/Gateway/data/content/assessment/planning/event/reliability/B26 static checks pass. Original acceptance provenance is preserved; runtime remains NOT_RUNTIME_VERIFIED."
@@ -517,6 +529,6 @@
     "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy source marker; this pre-existing non-gating gap is not masked.",
     "TypeScript cannot encode every cross-array identity/cardinality rule; those constraints remain enforced by OpenAPI/policy/audit and still require runtime enforcement in later tasks."
   ],
-  "reviewer": "agent:m1_012_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
   "decision": "ACCEPTED"
 }

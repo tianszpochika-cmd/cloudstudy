@@ -196,10 +196,10 @@
     },
     {
       "taskId": "P1R-M1-013",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-31T01:14:25+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-31T04:16:39+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-007, P1R-M1-010, P1R-M1-011 and P1R-M1-012 are accepted. The coordinator froze a07a58a7d245295c54d39487a6669545d077c513 as the source checkpoint and started the P1_DAILY_PLAN_V1, SM2_Q03_V1, single SRS write path, repair/D1/D7, mastery, report watermark and offline-conflict D2 contract task without promoting database, Kafka, worker, browser or E2E runtime evidence.",
+      "reason": "Dependencies P1R-M1-007, P1R-M1-010, P1R-M1-011 and P1R-M1-012 were accepted. Source checkpoint a07a58a7d245295c54d39487a6669545d077c513 was used to freeze the P1_DAILY_PLAN_V1, SM2_Q03_V1, single SRS write path, repair/D1/D7, mastery, report watermark and offline-conflict D2 contract. Final source a7f92095323f2afc4e6d28eeaff977e2197fcd0c was independently accepted by agent:m1_013_evidence_plan:gpt-5.6-terra:max with P1/P2=0/0; database, Kafka, worker, browser and E2E runtime evidence remain unpromoted.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-013/manifest.json"
     }
   ]
