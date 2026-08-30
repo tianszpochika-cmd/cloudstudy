@@ -54,7 +54,7 @@
       "canonicalPath": "packages/contracts/schemas/v1/registry.json",
       "generatedPaths": ["packages/contracts/generated/schemas.ts"],
       "sourceMarker": "GENERATED FILE. Source: packages/contracts/schemas/v1/registry.json",
-      "expectedSchemaCount": 5
+      "expectedSchemaCount": 13
     },
     "generation": {
       "scriptPath": "scripts/contracts/generate-contracts.mjs",

@@ -189,6 +189,31 @@ function exact(errors, actual, expected, label) {
   }
 }
 
+function validateEventCompatibility(compatibility, label, errors) {
+  if (!isRecord(compatibility)) {
+    errors.push(`${label} must be an object`);
+    return;
+  }
+
+  const actualKeys = Object.keys(compatibility).sort();
+  const minimalKeys = ['strategy'];
+  const documentedKeys = ['breakingChange', 'consumerRule', 'strategy'];
+  const hasAllowedShape = stableEventPolicyValue(actualKeys) === stableEventPolicyValue(minimalKeys)
+    || stableEventPolicyValue(actualKeys) === stableEventPolicyValue(documentedKeys);
+  if (!hasAllowedShape) {
+    errors.push(`${label} keys must be exactly strategy or breakingChange, consumerRule, strategy`);
+  }
+
+  if (compatibility.strategy !== 'additive') {
+    errors.push(`${label}.strategy must be additive`);
+  }
+  for (const key of ['breakingChange', 'consumerRule']) {
+    if (compatibility[key] !== undefined && (typeof compatibility[key] !== 'string' || compatibility[key].trim() === '')) {
+      errors.push(`${label}.${key} must be a non-empty string when present`);
+    }
+  }
+}
+
 function scanRuntimeSuccessClaims(value, location, errors) {
   if (typeof value === 'string') {
     const normalized = value.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[_./:-]+/g, ' ');
@@ -387,11 +412,16 @@ export function validateFrozenEventCatalogPolicy(catalog) {
   errors.push(...validateEventPayloadSchemas(catalog.payloadSchemas));
   const referencedPayloadSchemas = new Set();
   if (Array.isArray(catalog.events)) {
-    for (const event of catalog.events) {
+    for (const [index, event] of catalog.events.entries()) {
       const label = `${event?.eventName ?? 'event'} payloadSchema`;
       const referenceErrors = validateExactEventPayloadReference(event?.payloadSchema, catalog.payloadSchemas, label);
       errors.push(...referenceErrors);
       if (referenceErrors.length === 0) referencedPayloadSchemas.add(eventPayloadSchemaName(event.payloadSchema));
+      validateEventCompatibility(
+        event?.compatibility,
+        `${event?.eventName ?? `events[${index}]`} compatibility`,
+        errors,
+      );
     }
   }
   if (isRecord(catalog.payloadSchemas)) {

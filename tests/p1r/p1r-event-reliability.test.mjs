@@ -35,6 +35,13 @@ const mutations = [
     /unknown or missing keys/,
   ],
   [
+    "unknown nested event compatibility field",
+    function (input) {
+      input.catalog.events[0].compatibility.extra = "x";
+    },
+    /compatibility keys must be exactly/,
+  ],
+  [
     "runtime promotion",
     function (input) {
       input.policy.runtimeStatus = "RUNTIME_VERIFIED";
