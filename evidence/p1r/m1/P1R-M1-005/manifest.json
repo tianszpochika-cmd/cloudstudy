@@ -2,43 +2,15 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+  "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
   "artifactDigests": [
-    {
-      "path": "package.json",
-      "algorithm": "sha256",
-      "digest": "ff04aa9ad3ef385cad0cd1f643b9baf68713f41945abd1a4c40665e58a95589d"
-    },
-    {
-      "path": "config/p1r-data-ownership.v1.json",
-      "algorithm": "sha256",
-      "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"
-    },
-    {
-      "path": "scripts/audit/p1r-data-ownership-check.mjs",
-      "algorithm": "sha256",
-      "digest": "327c59f7e6a3577b68704dc4dbfce37024d4fa0937ca6162b4187cbca8d55c4a"
-    },
-    {
-      "path": "tests/p1r/p1r-data-ownership.test.mjs",
-      "algorithm": "sha256",
-      "digest": "45ff98545bad7954ae0f095e31f232a3ba440e3beb54db77432ae225f1dd89a0"
-    },
-    {
-      "path": "database/redis/README.md",
-      "algorithm": "sha256",
-      "digest": "b7e732ba7d950b4aecc499f63e08f2a0e0ec1b72589d8cae17885700384e5acf"
-    },
-    {
-      "path": "docs/02-architecture/security-and-data-boundaries.md",
-      "algorithm": "sha256",
-      "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"
-    },
-    {
-      "path": "docs/02-architecture/v2-microservices-architecture.md",
-      "algorithm": "sha256",
-      "digest": "1b114da95da5e07b9bec7185ea3df1121d7fc721c0a86f4e4f2ed37bca5ccaba"
-    }
+    {"path": "package.json", "algorithm": "sha256", "digest": "61c482bd59aaf9d10f9b2daea0e536e4335766b482675c72fb3cc12aeb06ddde"},
+    {"path": "config/p1r-data-ownership.v1.json", "algorithm": "sha256", "digest": "5f855a64d6a8cbfc92cd8a5ae83cdd6bb99e7ac49fc463ea5cb8ade38c883b1b"},
+    {"path": "scripts/audit/p1r-data-ownership-check.mjs", "algorithm": "sha256", "digest": "327c59f7e6a3577b68704dc4dbfce37024d4fa0937ca6162b4187cbca8d55c4a"},
+    {"path": "tests/p1r/p1r-data-ownership.test.mjs", "algorithm": "sha256", "digest": "45ff98545bad7954ae0f095e31f232a3ba440e3beb54db77432ae225f1dd89a0"},
+    {"path": "database/redis/README.md", "algorithm": "sha256", "digest": "b7e732ba7d950b4aecc499f63e08f2a0e0ec1b72589d8cae17885700384e5acf"},
+    {"path": "docs/02-architecture/security-and-data-boundaries.md", "algorithm": "sha256", "digest": "e55b085b07caea013eb904722d95efcce0432070b19aea3a426ed393eda93434"},
+    {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"}
   ],
   "environment": {
     "kind": "repository-static-governance",
@@ -61,14 +33,18 @@
       {
         "taskId": "P1R-M1-007",
         "sourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1"
       }
     ],
-    "previousCurrentSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-006",
-    "currentSourceRevalidationTask": "P1R-M1-007"
+    "previousCurrentSourceCommit": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-007",
+    "currentSourceRevalidationTask": "P1R-M1-008"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
-  "finishedAt": "2026-08-30T08:49:40+08:00",
+  "finishedAt": "2026-08-30T12:32:26+08:00",
   "actors": [
     "m1_004_evidence",
     "m1_004_evidence/data_owner_audit",
@@ -107,7 +83,8 @@
     "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
     "pnpm p1r:ci:check",
     "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
-    "independent Luna Max current-source revalidation review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4"
+    "independent Luna Max current-source revalidation review at 6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+    "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
     {
@@ -149,6 +126,11 @@
       "check": "m1-007-current-source-revalidation",
       "status": "PASS",
       "details": "Independent reviewer agent:m1_007_independent_review:gpt-5.6-luna:max revalidated the accepted M1-005 data-owner semantics at source 6ce98a95b75e7efca05cc511f5f773dbf2be08a4; owner governance, Redis and B25 static checks plus contract and P1R regression remain passing. M2-004 runtime evidence remains incomplete."
+    },
+    {
+      "check": "m1-008-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_008_independent_review:gpt-5.6-luna:max revalidated the accepted P1R-M1-005 semantics at source e05c774b02ece081a5c05145b623f39d1ecd39e1. The 296/296 P1R regression, 7/7 workspace typecheck, contract merge/generate/validate, fixed compatibility, relevant IAM/Gateway/data/event/reliability/lifecycle checks and D2 runtime boundaries remain passing; original acceptance provenance is preserved."
     }
   ],
   "rollbackEvidence": [
@@ -165,6 +147,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_007_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

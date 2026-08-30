@@ -141,10 +141,25 @@
     },
     {
       "taskId": "P1R-M1-008",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-30T09:05:38+08:00",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
+      "recordedAt": "2026-08-30T12:49:10+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-003, P1R-M1-005, P1R-M1-006 and P1R-M1-007 are accepted, and dev@18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31 is synchronized to origin/dev. M1-008 starts the D2 content lifecycle contract for server-derived commands, dual review, scheduled publication, projections, unpublish, rollback and canonical content events without promoting existing B9 code, B26 static input or local processes to runtime evidence.",
+      "reason": "Final source e05c774b02ece081a5c05145b623f39d1ecd39e1 closed three recorded REWORK cycles covering lifecycle semantics, immutable review-chain identity and composed TypeScript generation. Primary reviewer agent:m1_008_independent_review:gpt-5.6-luna:max plus two Luna Max cross-reviews accepted the same SHA with zero current-source P1/P2 blockers. The result remains D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; B26 stays static-only, pending and NO-GO, while M2-004/005/006 retain runtime ownership.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-008/manifest.json"
     }
   ]

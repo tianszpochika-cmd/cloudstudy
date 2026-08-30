@@ -1,0 +1,268 @@
+{
+  "taskId": "P1R-M1-008",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+  "artifactDigests": [
+    {"path": "config/b20-privacy-content-gates.json", "algorithm": "sha256", "digest": "fec5cc2f9ee61354e24222e24d4c712e24805810cd7752058780d2d98bf3b5f0"},
+    {"path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "6a42b324c4360a36a2be48d52befa1728abfd2e68d7eabb9ce3a9fd7bf3dbba0"},
+    {"path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "e942a16596e1021c85f8fb493d2a7659fb9c09a17d8181746c6aa23ede1920a1"},
+    {"path": "config/p1r-content-lifecycle.v1.json", "algorithm": "sha256", "digest": "b2a2da87287fbf17273132c0441e7c541788eb68a8f23938a9d770c213e2a107"},
+    {"path": "docs/02-architecture/data-flow.md", "algorithm": "sha256", "digest": "64230e374b11b804e7970b0a4f4b590611a3f5c7dedce13a57b31d8fd1aa20b9"},
+    {"path": "docs/02-architecture/v2-microservices-architecture.md", "algorithm": "sha256", "digest": "dcfead986b2325ce222344f3722dd68bbb1fa0e116d220f202555e06faa287ec"},
+    {"path": "docs/05-api/b10-compatibility-adapter-contract.md", "algorithm": "sha256", "digest": "c6f5b60008dcb32f149fcc298c2bc3759248721bb4426686d2ab737c20d3d1f0"},
+    {"path": "docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md", "algorithm": "sha256", "digest": "7600e8d62dd543dd672a089632bdf0fcd709e886cab4dacec9cc2d7dacf48300"},
+    {"path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md", "algorithm": "sha256", "digest": "4e33664e98e7700c20c767c5e377e649a63e2a5605bf4326a0adc2b6d37b975b"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md", "algorithm": "sha256", "digest": "6e0fcbd0032a69ac977a0e68dc955d3e584385212682bd30ce7920540e58a995"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md", "algorithm": "sha256", "digest": "e3ca312ec1a4d8677878e09d2da3e9db839349879bcd01fd920a48967e0563b6"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md", "algorithm": "sha256", "digest": "cd336341a473e5c8a88a65f5ec2f34c9e13bba99a50acb382f5545303a5586a9"},
+    {"path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md", "algorithm": "sha256", "digest": "63beaf9206800394ec4d2498f78affa6f8685c048eb06ff7fe5fe9464bed4de5"},
+    {"path": "docs/07-operations/b26-validation.md", "algorithm": "sha256", "digest": "0bdb630d3bb0c69044f1fff615499e798936e7fcd67611eda7b7e543ee70ddab"},
+    {"path": "package.json", "algorithm": "sha256", "digest": "61c482bd59aaf9d10f9b2daea0e536e4335766b482675c72fb3cc12aeb06ddde"},
+    {"path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "f6292aaa801a5504b5fb374d67af8ac87b01d4a5e3eb83537581e54f17274a7c"},
+    {"path": "packages/contracts/README.md", "algorithm": "sha256", "digest": "d667859903af5631c6ada0bfc200733176d072b4939e95b1bd4094bdc80643a3"},
+    {"path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "36dcc270548eeb7e3dc163906a87c00185b8c1ce1a801321fc72bd841589abc1"},
+    {"path": "packages/contracts/events/v1/fragments/b9-learner-content.events.json", "algorithm": "sha256", "digest": "477d023ec8bcfce7ebb4952d38954862ef1c73ad12adf9051298515ff384df43"},
+    {"path": "packages/contracts/events/v1/reliability-policy.json", "algorithm": "sha256", "digest": "d6e9fafd4b2ce20705b4c5a6207046bbbea3cd3565179043d8f075be32367776"},
+    {"path": "packages/contracts/fragments/b1-content.openapi.json", "algorithm": "sha256", "digest": "ba271e9d90e84bf9943374458311eb4f149984755e1815b1d19b40e5450941e6"},
+    {"path": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json", "algorithm": "sha256", "digest": "f735975ad2547635e0ea35bb2c064b34c37f5b69b66002119660b98f844300db"},
+    {"path": "packages/contracts/fragments/b9/b9-content.openapi.json", "algorithm": "sha256", "digest": "7a2d4488ba3ec9b54ee5dd4c598872a13e3e1ced4e31d440d11accf9abe63a38"},
+    {"path": "packages/contracts/fragments/b9/b9-shared.openapi.json", "algorithm": "sha256", "digest": "e8aefdfdfb2049966fb21947e5200f3779c17b06ccb30af9b1ea3ff898b65356"},
+    {"path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "c71f705fe3f4355e6f461cdc6873dfdad8e2e2d1f667a96c6c09b185a59caa71"},
+    {"path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "b5257bdfe36e42f79df92d383a4ccd0a8dee3a323cb250d9b8c2a0b32ff00536"},
+    {"path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "a1a9d42d03dfba39aab8e1a87c817bcc3c3ce99dda1279385a8fb42f735622c9"},
+    {"path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "415e06a76ad474ffcbf49b7d86c51c2db8a9071f2f4df09580a57f612b513300"},
+    {"path": "packages/contracts/src/generated-oneof-assertions.ts", "algorithm": "sha256", "digest": "b38321a4c0e9178c98488feb671f1b50780d63af2478aaedea952e6e78927f61"},
+    {"path": "scripts/audit/generate-v2-design-package.mjs", "algorithm": "sha256", "digest": "feb037624fc8b928c6694d4d17a8a19f2e71aa6d83d03539e48388a52f2dd6ce"},
+    {"path": "scripts/audit/p1r-content-lifecycle-check.mjs", "algorithm": "sha256", "digest": "ee8ff8378b58b5128e9e956a6841ef4f6402f9e4a1fc216bd51cf7f18b255791"},
+    {"path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "d05d6ebb1fd249934a7d33ae3fdea1e7612bc00c518c5e56f5ab33cdff66efbd"},
+    {"path": "scripts/audit/p1r-event-reliability-check.mjs", "algorithm": "sha256", "digest": "b71886b8235374496208e8f86c65d0f9c9e6fb9c2afef751c09e97596cfb93c5"},
+    {"path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "c58331521ad0e0d647ea53d04156371f9a2c42e1512a26e8f3cad64a744ffdf1"},
+    {"path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "f58760cac3cbbc66a64adf1577f6150031c0d024959e25faaefcf1e6533105be"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "acde14358fd676c283b6dfbbda3e4c87bbbdc9f2bf0d44fd16893f2888669395"},
+    {"path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "08a8072c8ad7305b3c64018a29b6fd280e158e31d06f17902bbcde65a210fe22"},
+    {"path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "c4200854ada4030679524d9632d4dd0933a023aa8ec54fcc2fdc9e08edaa84a9"},
+    {"path": "scripts/contracts/schema-utils.mjs", "algorithm": "sha256", "digest": "21b4a07097682270d93d96e551878e1140e78421dea9f2ca410d0c7dea76cb4c"},
+    {"path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "71a58ce24b671f8689cfacf9967631de060ab679fdde75275ab86e158022cfc6"},
+    {"path": "tests/b10/b10-contract-boundaries.test.mjs", "algorithm": "sha256", "digest": "2db8c127dc9ae713fd353e091b5aad77569a3905e90a23488285fdeda1198468"},
+    {"path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "9650feeddcafdbbe10e2ddbc5caed0d0783251b5d434b3069d449ebfe3c13c9d"},
+    {"path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "75e67aba4eb5971ec8db7ca41e68eae04b0677b43d861cc17d9de2140e91d683"},
+    {"path": "tests/p1r/p1r-content-lifecycle.test.mjs", "algorithm": "sha256", "digest": "b5c45396ccba43949d4716bcbef636534d28fb2a75a8c090dc51094f14b54c1e"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "ddc9f2ea58081e881dd691d50df2102e635d4113f860454ecb83473a469b5019"},
+    {"path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "ac638762eb27e2357857c570bec243a387f077807829001610cf378ca5b10348"},
+    {"path": "tests/p1r/p1r-event-reliability.test.mjs", "algorithm": "sha256", "digest": "72e10c2079961ef408cf08501017b320eef04f6d5580d8f9f128463a26b4ea75"},
+    {"path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "c5f0bf8dcee6fd6331281811b975dbc7faa26b2fb7e1351c4f7c00fecc3d0482"}
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31",
+    "sourceRange": "18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31..e05c774b02ece081a5c05145b623f39d1ecd39e1",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "sourceContractBaseline": "6ce98a95b75e7efca05cc511f5f773dbf2be08a4",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "m2RuntimeTasks": {
+      "P1R-M2-004": "NOT_COMPLETED",
+      "P1R-M2-005": "NOT_COMPLETED",
+      "P1R-M2-006": "NOT_COMPLETED"
+    },
+    "releaseBlocker": "P1R-M0-006 BLOCKED"
+  },
+  "startedAt": "2026-08-30T09:15:05+08:00",
+  "finishedAt": "2026-08-30T12:32:26+08:00",
+  "actors": [
+    "root-coordinator"
+  ],
+  "sourceIds": [
+    "P1R-M1-008",
+    "JNY-P1-13",
+    "INT-P1-005",
+    "INT-P1-011",
+    "ARCH-EVT-001",
+    "ARCH-DATA-001"
+  ],
+  "journeys": [
+    "JNY-P1-13"
+  ],
+  "pages": [],
+  "rules": [
+    "All external content writes use one canonical B9 command entry with server-derived authority, expected state/version, idempotency and audit correlation.",
+    "Review records form a closed stage-keyed set bound to immutable contentVersionId and contentHash; FINAL requires an approved FIRST for the same identity.",
+    "Scheduled publication rechecks review, rights, media, Phase/feature Gate and state version at execution time instead of trusting the scheduling-time snapshot.",
+    "Public and learner projections expose explicit allow-lists; answer rules, review evidence, internal rights facts and authority context never enter public payloads.",
+    "Active session and attempt pins are immutable; emergency removal becomes explicit UNAVAILABLE and safe fallback is limited to future reads.",
+    "Static contracts, generated types, B26 candidates and local tests cannot promote runtime or release readiness."
+  ],
+  "integrations": [
+    "INT-P1-005",
+    "INT-P1-011"
+  ],
+  "e2eScenarios": [],
+  "serviceOwners": [
+    "content-service",
+    "admin-ops-service",
+    "audit-service",
+    "workflow-service",
+    "learning-service",
+    "assessment-service"
+  ],
+  "dataOwners": [
+    "content-service",
+    "audit-service",
+    "workflow-service",
+    "learning-service",
+    "assessment-service"
+  ],
+  "statusTrajectory": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED"
+  ],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "abcf6888cd3313a5a4672138f1b1f470b806b2fe",
+      "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "details": "The review found incomplete ARCHIVED retirement governance, conflicting B1 replay descriptions, an incomplete scheduled-publication recheck set and stale B26 operational counts. Commit 6e8838d closed these findings without adding a second external state machine."
+    },
+    {
+      "round": 2,
+      "sourceCommit": "6e8838d802c26508754e8c18c5620dc7202a1d7a",
+      "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "details": "Admin reviewRecords lacked immutable contentVersionId/contentHash and stage-set constraints, while content.version.reviewed.v1 lacked contentHash. Commit 6fb785e bound the review projection and event to the immutable version identity."
+    },
+    {
+      "round": 3,
+      "sourceCommit": "6fb785e83d1f3b7a8727eb6cc7c739ad0e2200cf",
+      "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "details": "The generated TypeScript discarded common/root and branch constraints around composed schemas, widened reviewRecords to unknown and did not represent forbidden fields. Commit e05c774 preserved common and branch required/discriminator fields and mapped supported not constraints to never with compile-time negative assertions."
+    },
+    {
+      "round": 4,
+      "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+      "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "details": "The final independent review found zero current-source P1/P2 blockers; lifecycle, B9/B10, generated TypeScript, event governance/reliability, Gateway, B26 static, typecheck and both fixed compatibility paths passed while retaining every D2/runtime boundary."
+    }
+  ],
+  "secondaryReviews": [
+    {
+      "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+      "reviewer": "agent:m1_008_contract_tooling:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "details": "Contract-tooling review accepted composed-schema generation, exact projection, compatibility and 27/27 targeted tests with zero P1/P2 blockers."
+    },
+    {
+      "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
+      "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "details": "Secondary independent review accepted the review-chain identity, all eleven command variants, B10 pin/recovery constraints, full P1R regression and D2/static boundaries with zero P1/P2 blockers."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:content-lifecycle:check -- --json",
+    "node --test tests/p1r/p1r-content-lifecycle.test.mjs",
+    "node --test tests/p1r/p1r-contract-tooling.test.mjs",
+    "node --test tests/b10/b10-contract-boundaries.test.mjs",
+    "pnpm test:p1r",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 6ce98a95b75e7efca05cc511f5f773dbf2be08a4 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:event-governance:check -- --json",
+    "pnpm p1r:event-reliability:check -- --json",
+    "pnpm p1r:gateway-contract:check",
+    "pnpm test:b26",
+    "pnpm typecheck",
+    "pnpm build",
+    "pnpm p1r:ci:check",
+    "pnpm plan:p1r:check",
+    "pnpm test:g",
+    "git diff --check",
+    "independent Luna Max acceptance review at e05c774b02ece081a5c05145b623f39d1ecd39e1",
+    "two secondary Luna Max acceptance reviews at e05c774b02ece081a5c05145b623f39d1ecd39e1"
+  ],
+  "results": [
+    {
+      "check": "content-lifecycle-and-review-projection",
+      "status": "PASS",
+      "details": "The audit freezes 11 commands, 5 persistent states, 5 schedule states and 5 canonical content events. Lifecycle tests pass 6/6 and reject review identity, duplicate stage, FINAL-only, command-field, retirement and scheduled-recheck drift."
+    },
+    {
+      "check": "contract-generation-and-validation",
+      "status": "PASS",
+      "details": "Contract tooling passes 27/27; merge and five generated outputs are current. Validation passes 378 operations, 549 OpenAPI schemas, 154 events, 104 payload schemas, 12 AsyncAPI channels, 45 operations and 13 JSON Schemas."
+    },
+    {
+      "check": "generated-typescript-composition",
+      "status": "PASS",
+      "details": "Generated B9/B10 types preserve common/root and branch required fields, required discriminators and supported not-to-never constraints. Compile-time assertions cover all 11 B9 commands plus invalid pin, fallback and recovery combinations."
+    },
+    {
+      "check": "event-gateway-and-b26-static",
+      "status": "PASS",
+      "details": "Event governance reports 12 canonical and 142 historical events with 33 consumer bindings; reliability reports 12 canonical events and 8 schemas; Gateway covers 327/327 public and denies 51/51 internal operations. B26 targeted static tests pass 26/26 without runtime promotion."
+    },
+    {
+      "check": "regression-and-fixed-compatibility",
+      "status": "PASS",
+      "details": "P1R passes 296/296 and workspace typecheck passes 7/7. Both fixed-source and historical Git compatibility checks report no breaking changes, while plan, CI and diff checks pass."
+    },
+    {
+      "check": "independent-review-closure",
+      "status": "PASS",
+      "details": "The primary reviewer issued three REWORK decisions before accepting e05c774; two independent Luna Max cross-reviews accepted the same SHA. All three report zero current-source P1/P2 blockers."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "All policies and generated outputs retain D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED. B26 stays static-only, pending and NO-GO; M2-004/005/006 remain incomplete and M0-006 remains BLOCKED."
+    },
+    {
+      "check": "historical-full-g-context",
+      "status": "NOT_APPLICABLE",
+      "details": "The full historical G suite remains 39/41 only because G0 and G3 assert a removed legacy marker. Task-relevant G1 passes 6/6 and no M1-008 failure is hidden."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "M1-008 source is isolated after checkpoint 18d7d38 in commits 2f5a4e7, 7cad90f, abcf688, 6e8838d, 6fb785e and e05c774. Revert those source commits in reverse order and rerun merge, generation, validation, compatibility, lifecycle, B9/B10, P1R, typecheck and diff checks; do not move baselines 6ce98a9, 463c4b2 or 868c217 and do not interpret source rollback as runtime data or broker recovery."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004 remains incomplete and must prove real content-owner schema, grants, migration, owner-local transaction/Outbox persistence, tenant denial and rollback evidence.",
+    "P1R-M2-005 remains incomplete and must prove real Kafka topics/ACLs, Outbox publication, consumer dedupe, retry, DLQ/replay, duplicate/disorder/outage/restart behavior and projection rebuilding.",
+    "P1R-M2-006 remains incomplete and must prove real scheduled execution, Saga/compensation, two-person recovery, reconciliation and immutable audit/closure receipts.",
+    "The existing content-service Java implementation, local tests and HTTP responses are historical candidates only; runtime role separation, projections, browser/device paths and end-to-end publish/unpublish/rollback are not verified here.",
+    "B26 remains a historical static candidate with runtimeGate=static-only, runtimeStatus=pending and defaultDecision=NO-GO; it is not broker or production evidence.",
+    "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and prevents M0-complete or release claims.",
+    "The full historical G suite remains 39/41 because G0 and G3 assert a removed legacy source marker; this pre-existing non-gating gap is not masked.",
+    "TypeScript cannot encode every cross-array identity/cardinality rule; those constraints remain enforced by OpenAPI/policy/audit and still require runtime enforcement in later tasks."
+  ],
+  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}

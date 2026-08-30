@@ -39,8 +39,12 @@ test('missing, duplicate and unknown GAP records fail closed', () => {
 
 test('a GAP cannot close before owner tasks and Evidence are accepted', () => {
   const changed = copyRegistry();
-  changed.gaps[0] = {
-    ...changed.gaps[0],
+  const openOwnerGapIndex = changed.gaps.findIndex((gap) =>
+    gap.closureTasks.some((taskId) => tasksById.get(taskId)?.status !== 'ACCEPTED'),
+  );
+  assert.notEqual(openOwnerGapIndex, -1, 'fixture requires at least one GAP with an unaccepted closure task');
+  changed.gaps[openOwnerGapIndex] = {
+    ...changed.gaps[openOwnerGapIndex],
     status: 'CLOSED',
     closureEvidence: 'evidence/p1r/m1/P1R-M1-008/manifest.json',
     closedAt: '2026-08-29T00:00:00.000Z',

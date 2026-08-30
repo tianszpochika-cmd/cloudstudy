@@ -2,28 +2,12 @@
   "taskId": "P1R-M1-001",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+  "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1",
   "artifactDigests": [
-    {
-      "path": "scripts/audit/p1r-api-contract-check.mjs",
-      "algorithm": "sha256",
-      "digest": "def72fb4c8acf34dcb5c431c1119419193a0d994e19af8e93e429c3ce2902f25"
-    },
-    {
-      "path": "scripts/contracts/compatibility-git-baseline.mjs",
-      "algorithm": "sha256",
-      "digest": "1306440c6fe3630cbaa1ce35bc40fa5140957b977b8b48c17a93ae147b859684"
-    },
-    {
-      "path": "tests/p1r/p1r-api-contract.test.mjs",
-      "algorithm": "sha256",
-      "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"
-    },
-    {
-      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
-      "algorithm": "sha256",
-      "digest": "7717e54ca9e3bda51c38aa8d81cd15207dbea557b3787d31a07359ff93463cc0"
-    }
+    {"path": "scripts/audit/p1r-api-contract-check.mjs", "algorithm": "sha256", "digest": "def72fb4c8acf34dcb5c431c1119419193a0d994e19af8e93e429c3ce2902f25"},
+    {"path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "acde14358fd676c283b6dfbbda3e4c87bbbdc9f2bf0d44fd16893f2888669395"},
+    {"path": "tests/p1r/p1r-api-contract.test.mjs", "algorithm": "sha256", "digest": "6ac8918510ecffdc21ab41af34edc15bc4cdbf6b54030e9794d77e9ac3a5c63f"},
+    {"path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "ddc9f2ea58081e881dd691d50df2102e635d4113f860454ecb83473a469b5019"}
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -37,12 +21,26 @@
     "originalFinishedAt": "2026-08-29T20:28:20+08:00",
     "originalReviewer": "m1_001_final_review",
     "originalAcceptedContractBaseline": "4d7f73a867ff3e1db8582eab7593c173625bc8a3",
-    "previousCurrentSourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-003",
-    "currentSourceRevalidationTask": "P1R-M1-006"
+    "previousCurrentSourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-006",
+    "currentSourceRevalidationTask": "P1R-M1-008",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-003",
+        "sourceCommit": "82b27f4108cfb976a274c2ac0cc34b1c9460a7a7"
+      },
+      {
+        "taskId": "P1R-M1-006",
+        "sourceCommit": "3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+      },
+      {
+        "taskId": "P1R-M1-008",
+        "sourceCommit": "e05c774b02ece081a5c05145b623f39d1ecd39e1"
+      }
+    ]
   },
   "startedAt": "2026-08-29T11:15:00+08:00",
-  "finishedAt": "2026-08-30T06:31:47+08:00",
+  "finishedAt": "2026-08-30T12:32:26+08:00",
   "actors": [
     "m1_api_contract",
     "m0_frontend_acceptance",
@@ -87,7 +85,8 @@
     "independent Luna Max current-source revalidation review at 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7",
     "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
     "pnpm p1r:ci:check",
-    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a"
+    "independent Luna Max current-source revalidation review at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a",
+    "M1-008 current-source revalidation at e05c774b02ece081a5c05145b623f39d1ecd39e1 by agent:m1_008_independent_review:gpt-5.6-luna:max"
   ],
   "results": [
     {
@@ -119,6 +118,11 @@
       "check": "tests-and-independent-review",
       "status": "PASS",
       "details": "P1R 186/186, G1 6/6, B7 28/28 and B8 29/29 pass at the current source; independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max revalidated the original M1-001 semantics at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a."
+    },
+    {
+      "check": "m1-008-current-source-revalidation",
+      "status": "PASS",
+      "details": "Independent reviewer agent:m1_008_independent_review:gpt-5.6-luna:max revalidated the accepted P1R-M1-001 semantics at source e05c774b02ece081a5c05145b623f39d1ecd39e1. The 296/296 P1R regression, 7/7 workspace typecheck, contract merge/generate/validate, fixed compatibility, relevant IAM/Gateway/data/event/reliability/lifecycle checks and D2 runtime boundaries remain passing; original acceptance provenance is preserved."
     }
   ],
   "rollbackEvidence": [
@@ -132,6 +136,6 @@
     "Authentication and authorization D2 contracts are now accepted by P1R-M1-002/003; Gateway, data-owner and event contracts remain owned by P1R-M1-004 through P1R-M1-018, while runtime IAM/PEP remains in M2.",
     "The full historical G suite retains two pre-existing stale source-marker failures in G0 and G3; the M1-001-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_005_independent_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_008_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }
