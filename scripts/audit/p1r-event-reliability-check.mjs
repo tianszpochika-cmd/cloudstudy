@@ -1226,6 +1226,18 @@ function checkB26(policy, b26Runtime, b26Fragment, catalog, errors) {
 }
 
 function checkSchemas(registry, policy, sagaPolicy, errors) {
+  exactKeys(
+    errors,
+    registry,
+    ["registryVersion", "schema", "schemas"],
+    "schema registry",
+  );
+  add(
+    errors,
+    registry?.registryVersion === "1.0.0" &&
+      registry?.schema === "platform.json-schema.registry.v1",
+    "schema registry identity is invalid",
+  );
   add(
     errors,
     isRecord(registry?.schemas),

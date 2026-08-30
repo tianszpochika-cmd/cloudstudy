@@ -373,6 +373,13 @@ const mutations = [
     /missing platform.event.dlq-record/,
   ],
   [
+    "schema registry unknown runtime field",
+    function (input) {
+      input.registry.runtimeProof = "PASS";
+    },
+    /schema registry has unknown or missing keys/,
+  ],
+  [
     "schema allows unknown fields",
     function (input) {
       input.registry.schemas[
