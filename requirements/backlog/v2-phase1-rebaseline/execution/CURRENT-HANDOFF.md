@@ -22,7 +22,9 @@ M1-007 事件可靠性与人工恢复 D2 契约已接受：原最终源码 `6ce9
 
 M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受：原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，主评审 `agent:m1_008_independent_review:gpt-5.6-luna:max` 与两条 Luna Max 交叉复核绑定同一 SHA 一致 `ACCEPT`，P1/P2 为 `0/0`；canonical manifest 为 `evidence/p1r/m1/P1R-M1-008/manifest.json`，共享制品最新在 `2e7304a` 完成 current-source revalidation。tooling `27/27`、lifecycle `6/6`、当时 P1R `296/296`、typecheck `7/7` 以及 contracts、event、Gateway、B26 static 与固定 compatibility 均 PASS。结论只覆盖 D2 静态契约，真实内容数据/Outbox、Kafka、排期/Saga、投影与 E2E 没有晋升为完成。
 
-M1-009 媒体与录音 D2 契约已接受：最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。当前台账计数为 `16 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 91 PLANNED`（共 108 项）。接手者必须以远程 `dev`、状态轨迹和 Evidence Gate 为准，不从聊天记录推断完成状态。
+M1-009 媒体与录音 D2 契约已接受：最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。
+
+`P1R-M1-010` 已从已同步的 `dev@760621e45b9adc95a6aa40fb1678a8d3ebc87797` 按状态机启动。当前台账计数为 `16 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 90 PLANNED`（共 108 项）。本任务只允许形成 assessment session/checkpoint/attempt/判分摘要/报告的 D2 契约；接手者必须以远程 `dev`、状态轨迹和 Evidence Gate 为准，不从聊天记录推断完成状态。
 
 ## 1. 获取检查点
 

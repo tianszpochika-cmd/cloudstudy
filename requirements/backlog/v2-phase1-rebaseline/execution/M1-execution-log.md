@@ -13,6 +13,7 @@
 - `P1R-M1-007`：`ACCEPTED`；不可变来源检查点 `93c764f31daa22c4c58228241a15c5dbd03930ec`，原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，Evidence `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。只接受可靠性与恢复的 D2 契约和失败关闭门禁，保持 `NOT_RUNTIME_VERIFIED`。
 - `P1R-M1-008`：`ACCEPTED`；不可变来源检查点 `18d7d38ed2ad55d95be8985d393c6e7f6c9bbf31`，原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，Evidence `evidence/p1r/m1/P1R-M1-008/manifest.json`；共享制品最新在 `2e7304a` 完成 current-source revalidation。只接受 D2 内容 lifecycle 契约和失败关闭门禁，不宣称真实发布链路已运行。
 - `P1R-M1-009`：`ACCEPTED`；不可变来源检查点 `ca282cd00dabeeb3fafbf6b4570054bd5b9f8549`，最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，Evidence `evidence/p1r/m1/P1R-M1-009/manifest.json`；独立 reviewer `agent:m1_009_contract_audit:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`，只接受媒体/录音 D2 契约与失败关闭门禁。
+- `P1R-M1-010`：`IN_PROGRESS`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，只冻结 assessment session/checkpoint/attempt、确定性判分摘要、报告快照、版本和幂等 D2 契约。
 - M1-009 更新了共享 OpenAPI、生成类型、Gateway/IAM 静态输入、兼容工具和审计测试，因此 `P1R-M1-001` 至 `P1R-M1-008` 的 manifest 已保留各自原始 provenance，并统一绑定 `2e7304a...` 完成 current-source revalidation；这不把旧任务重写为 M1-009 的实现成果。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
@@ -76,6 +77,16 @@
 - 终验结果：媒体专项 `45/45`、tooling `31/31`、P1R `345/345`、workspace typecheck `7/7`，contracts merge/generate/validate、IAM/Gateway/data/content/event/reliability、B26 static、CI/plan/diff 与固定 compatibility 均 PASS；独立 Luna Max reviewer 接受 `2e7304a`，P1/P2 `0/0`。
 - 已知非本任务问题：完整历史 G 保持 `39/41`；direct API audit 的 B9 content-publish-task envelope 缺口在 `ca282` 已存在。两项均记录但未伪装为全绿。
 - D2 边界：B26 继续 `static-only` / `pending` / `NO-GO`；真实对象存储、扫描/转码/字幕 worker、数据库、Kafka、浏览器/设备、精确保留/删除分别归 M1-017、M2-004/005/006 与 M3/M5/M8，M0-006 继续 `BLOCKED`。
+
+## M1-010 执行轨道
+
+不可变来源检查点：`dev@760621e45b9adc95a6aa40fb1678a8d3ebc87797`。
+
+1. 业务与状态边界：映射 ASM `0215…0266`、`JNY-P1-04/06/08/09`、`RULE-P1-SESSION/REPORT` 与 `INT-P1-004/006`，冻结 session/checkpoint/attempt/report 的 assessment owner、不可变内容/规则 pin 和失败恢复语义。
+2. 契约与兼容：修复 B10 assessment OpenAPI 与必要的 assessment producer 事件，固定单调 checkpoint、submissionDigest、客观 outcome、幂等 replay/conflict、报告版本与 learner-safe 输出；公共生成物和兼容投影由统筹统一合并。
+3. 安全与失败关闭：拒绝客户端 tenant/owner/score/rule authority，禁止答案密钥、原始作答和敏感输入进入事件/日志/普通审计；覆盖旧版本、重复/乱序、自动提交、失败报告、主观输入无 AI 评分和字段注入等对抗用例。
+
+统筹 Agent 负责统一模型、共享生成物、状态、Evidence、提交与推送；执行 Agent 只使用 Terra Ultra 或 Luna Max。M1-010 不完成 placement manifest/Saga（M1-012）、learning 的 SRS/mastery/report watermark（M1-013）、真实 owner 数据与 Outbox（M2-004）、Kafka（M2-005）、Saga/runtime（M2-006）或浏览器/E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，M0-006 继续 `BLOCKED`。
 
 ## M1-003 执行轨道
 
