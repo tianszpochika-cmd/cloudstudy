@@ -1732,6 +1732,11 @@ export const jsonSchemaRegistry = {
         },
         "then": {
           "properties": {
+            "attempt": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
             "leaseOwner": {
               "type": "null"
             },

@@ -11,6 +11,12 @@ function cloneInputs() {
   return structuredClone(baseline);
 }
 
+function canonicalGovernance(input) {
+  return input.catalog.events.find(function (event) {
+    return event.status === "CANONICAL_D2";
+  })["x-p1r-governance"];
+}
+
 test("canonical M1-007 reliability policy passes without runtime promotion", function () {
   const report = validateEventReliabilityData(cloneInputs());
   assert.equal(report.result, "PASS", report.errors.join("\n"));
@@ -40,6 +46,57 @@ const mutations = [
       input.catalog.events[0].compatibility.extra = "x";
     },
     /compatibility keys must be exactly/,
+  ],
+  [
+    "canonical producer service drift",
+    function (input) {
+      canonicalGovernance(input).producer.service = "iam-service";
+    },
+    /event governance: .*producer/,
+  ],
+  [
+    "canonical producer data owner drift",
+    function (input) {
+      canonicalGovernance(input).producer.dataOwner = "iam-service";
+    },
+    /event governance: .*producer/,
+  ],
+  [
+    "canonical publish operation drift",
+    function (input) {
+      canonicalGovernance(input).producer.publishOperationId = "publish_wrong";
+    },
+    /event governance: .*publishOperationId/,
+  ],
+  [
+    "canonical subscribe operation drift",
+    function (input) {
+      canonicalGovernance(input).consumers[0].subscriptionOperationId =
+        "subscribe_wrong";
+    },
+    /event governance: .*subscriptionOperationId/,
+  ],
+  [
+    "canonical payload reference drift",
+    function (input) {
+      canonicalGovernance(input).schema.payloadRef =
+        "#/payloadSchemas/DoesNotExist";
+    },
+    /event governance: .*payload/,
+  ],
+  [
+    "canonical governance status drift",
+    function (input) {
+      canonicalGovernance(input).status = "RUNTIME_VERIFIED";
+    },
+    /event governance: .*status/,
+  ],
+  [
+    "canonical correlation drift",
+    function (input) {
+      canonicalGovernance(input).correlation.pop();
+    },
+    /event governance: .*correlation/,
   ],
   [
     "runtime promotion",
@@ -426,6 +483,18 @@ const mutations = [
       ].properties.state.enum.pop();
     },
     /Outbox record states|structure drifted/,
+  ],
+  [
+    "Outbox PUBLISHED accepts zero attempts",
+    function (input) {
+      const rule = input.registry.schemas[
+        "platform.event.outbox-record.v1"
+      ].allOf.find(function (candidate) {
+        return candidate.if.properties.state.const === "PUBLISHED";
+      });
+      rule.then.properties.attempt.minimum = 0;
+    },
+    /PUBLISHED state must require attempt 1|structure drifted/,
   ],
   [
     "schema pattern weakened",

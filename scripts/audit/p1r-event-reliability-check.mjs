@@ -4,6 +4,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateFrozenEventCatalogPolicy } from "../contracts/event-catalog-policy.mjs";
 import { validateB26EventRuntime } from "../runtime/validate-b26-event-runtime.mjs";
+import {
+  listEventFragments,
+  validateEventGovernanceData,
+} from "./p1r-event-governance-check.mjs";
 import { validateSagaRecoveryData } from "./p1r-saga-recovery-check.mjs";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -59,7 +63,7 @@ const SCHEMA_DIGESTS = {
   "platform.event.dlq-record.v1":
     "a03717a3dcaee8b2f35b3b356763bfba09f010c79db119ed0836a3a9e64341b6",
   "platform.event.outbox-record.v1":
-    "95381205d6a5e7ed21191651064f41a1e83546f2e1c2048f8f9f712f85587375",
+    "629800a219cf9d7a815dc89003d236dc2e059dbbd6f65a6f6b565321a6ce16d9",
   "platform.event.publish-receipt.v1":
     "1f0622efe86fe06c89001c0fdac2db7bdf9c4dd225ca1fffb7db0387645bba04",
   "platform.event.reliability-context.v1":
@@ -1310,6 +1314,16 @@ function checkSchemas(registry, policy, sagaPolicy, errors) {
     outboxSchema?.allOf?.length === 5,
     "Outbox record must bind lease, retry, publish and DLQ state evidence",
   );
+  const publishedStateRule = outboxSchema?.allOf?.find(function (rule) {
+    return rule?.if?.properties?.state?.const === "PUBLISHED";
+  });
+  add(
+    errors,
+    publishedStateRule?.then?.properties?.attempt?.minimum === 1 &&
+      publishedStateRule?.then?.properties?.attempt?.maximum ===
+        policy?.retryBudget?.maxAttempts,
+    "Outbox PUBLISHED state must require attempt 1 through the retry budget",
+  );
   add(
     errors,
     registry?.schemas?.["platform.event.publish-receipt.v1"]?.properties
@@ -1412,9 +1426,35 @@ export function validateEventReliabilityData(input = {}) {
     isRecord(input.sagaPolicy),
     "Saga recovery policy must be an object",
   );
+  add(
+    errors,
+    isRecord(input.ownerPolicy),
+    "data ownership policy must be an object",
+  );
+  add(
+    errors,
+    Array.isArray(input.eventFragments),
+    "event fragments must be an array",
+  );
   if (errors.length === 0) {
     checkPolicy(policy, errors);
     checkCatalog(policy, input.catalog, errors);
+    try {
+      const governanceReport = validateEventGovernanceData({
+        catalog: input.catalog,
+        ownerPolicy: input.ownerPolicy,
+        b26Runtime: input.b26Runtime,
+        fragments: input.eventFragments,
+      });
+      for (const error of governanceReport.errors ?? []) {
+        errors.push("event governance: " + error);
+      }
+    } catch (error) {
+      errors.push(
+        "event governance validation failed: " +
+          (error instanceof Error ? error.message : String(error)),
+      );
+    }
     checkB26(
       policy,
       input.b26Runtime,
@@ -1469,6 +1509,8 @@ export function readEventReliabilityInputs(options = {}) {
     ),
     registry: readJson(root, "packages/contracts/schemas/v1/registry.json"),
     sagaPolicy: readJson(root, DEFAULT_SAGA_POLICY),
+    ownerPolicy: readJson(root, "config/p1r-data-ownership.v1.json"),
+    eventFragments: listEventFragments(root),
   };
 }
 
