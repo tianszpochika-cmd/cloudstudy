@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`21 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 86 PLANNED`（共 108 项）。
+- 当前台账计数：`21 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 85 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -24,6 +24,7 @@
 - `P1R-M1-012` 已由独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 绑定最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72` 接受，P1/P2 为 `0/0`；共享制品已在 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 完成 M1-014 current-source revalidation。四维 10 题 placement、不可变 result/report、`SKIPPED + UNVERIFIED`、canonical completion event、placement→plan Saga 与生成类型均通过静态失败关闭验收；真实数据库/Outbox/Kafka/workflow/browser/E2E 仍未验证。
 - `P1R-M1-013` 已接受：不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，原最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，共享制品已在 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 完成 M1-014 current-source revalidation；原独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`。结论仍仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 - `P1R-M1-014` 已接受：最终源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；28/28 canonical routes、10/10 canonical events 与定点 161/161 通过。三项 GAM/SOC GAP 已按 D2 Evidence 关闭，M1-010 的 post-C 绑定已在 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 完成，D 阐明提交为 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`，全局 Evidence Gate 已 PASS；B4/B12 v1 仍为 historical-only，真实 schema/Outbox/Kafka/WebSocket/browser/E2E 均未验证。
+- `P1R-M1-015` 已从干净且同步的 `dev@5d0bb3a0651d9205a942eca9d8e1c56b538ed73f` 启动；只冻结商品/价格快照、激活码、sandbox 验签、权益版本/失效/grace、退款/撤销/对账与生产支付 OFF 的 D2 契约。B5/B13 v1 和 B20 不作运行证明，B20/B21/B26 继续 `BLOCKED`/`NO-GO`/`pending`。
 
 ## M0 记录索引
 
@@ -58,3 +59,4 @@
 | `P1R-M1-012` | `P1R-M1-012.md` | `ACCEPTED` |
 | `P1R-M1-013` | `P1R-M1-013.md` | `ACCEPTED` |
 | `P1R-M1-014` | `P1R-M1-014.md` | `ACCEPTED` |
+| `P1R-M1-015` | `P1R-M1-015.md` | `IN_PROGRESS` |

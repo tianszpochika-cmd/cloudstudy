@@ -34,6 +34,8 @@ M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bc
 
 `P1R-M1-014` 已接受：不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，最终实现源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。专项 checker 覆盖 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；`CONTRACT-GAP-GAM-001`、`EVENT-GAP-BIND-GAM-001`、`EVENT-GAP-BIND-SOC-001` 已以 D2 Evidence 关闭。当前台账计数为 `21 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 86 PLANNED`（共 108 项）。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B4/B12 v1 继续 historical-only，B26 继续 `static-only`/`pending`/`NO-GO`，不冒充真实 Kafka、数据库、WebSocket、浏览器或 E2E。
 
+`P1R-M1-015` 已从同步且干净的 `dev@5d0bb3a0651d9205a942eca9d8e1c56b538ed73f` 按状态机启动。当前台账计数为 `21 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 85 PLANNED`（共 108 项）。本任务只冻结 sandbox 支付、激活码、权益 PEP/cache/grace、退款/撤销/对账和 production OFF 的 D2 契约；B5/B13 v1 与 B20 继续 historical/static-only，B20/B21/B26 继续 `BLOCKED`/`NO-GO`/`pending`，不冒充真实金流、schema、Kafka、PEP cache 或 E2E。
+
 M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/current-source 指针刷新到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，且保留各自原始 provenance/reviewHistory。D 阶段已将唯一例外 `P1R-M1-010` 绑定至 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50`，D 阐明提交为 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`；其审计实现源仍是 aab1，`a7f920...` 仅为历史来源。全局 Evidence Gate 已在干净 D 提交上 PASS。
 
 ## 1. 获取检查点
@@ -42,11 +44,11 @@ M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/
 git switch dev
 git fetch origin dev
 git pull --ff-only origin dev
-git merge-base --is-ancestor 76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078 origin/dev
+git merge-base --is-ancestor 5d0bb3a0651d9205a942eca9d8e1c56b538ed73f origin/dev
 git status --short
 ```
 
-预期：`76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078` 是 `origin/dev` 的祖先，M1-014 canonical manifest、M1-001..009/011..013 的 aab1 current-source revalidation 与 M1-010 的 post-C D-stage binding 均已同步，工作树干净。任一条件不满足都先停止后续任务；实现源和任务状态只从 Evidence、台账和 Git 读取。
+预期：`5d0bb3a0651d9205a942eca9d8e1c56b538ed73f` 是 `origin/dev` 的当前检查点，M1-014 canonical manifest、M1-001..009/011..013 的 aab1 current-source revalidation、M1-010 post-C binding 与最终交接记录均已同步，工作树干净。任一条件不满足都先停止后续任务；实现源和任务状态只从 Evidence、台账和 Git 读取。
 
 ## 2. 选择 Java 25（只影响当前终端）
 
@@ -117,8 +119,8 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先核对 M1-014 审计实现源 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`、C 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 与 D 阐明提交 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`，并复核 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs`、`pnpm p1r:gamification-social-contract:check -- --json` 与 `pnpm p1r:evidence:check`；全局 Evidence Gate 已在干净 D 提交上 PASS。
-2. M1-010 的 post-C D-stage current-source digest binding 已完成；下一推荐为 `P1R-M1-015`，不要将该 Evidence 集成变更误写为 runtime 结论。
+1. 先核对 `dev@5d0bb3a0651d9205a942eca9d8e1c56b538ed73f`、M1-014 审计实现源 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 与 M1-010 post-C binding，并复核 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs`、`pnpm p1r:gamification-social-contract:check -- --json` 与 `pnpm p1r:evidence:check`。
+2. 继续执行 `P1R-M1-015`：先冻结 commerce policy/security model，再并行更新 B13 canonical OpenAPI、commerce v2 events 和专项失败关闭 checker；不得将 B20 synthetic、B13 Java 或 B26 static 记录写成 runtime 结论。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

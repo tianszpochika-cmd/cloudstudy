@@ -4,7 +4,7 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-014` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-014 已把 M1-001..009、011..013 的共享制品重新绑定到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，并在 C/D 阶段完成 M1-010 的唯一摘要绑定，不重写旧任务实现成果。
+- `P1R-M1-001` 至 `P1R-M1-014` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。`P1R-M1-015` 已从 `dev@5d0bb3a0651d9205a942eca9d8e1c56b538ed73f` 启动为 `IN_PROGRESS`。M1-014 已把 M1-001..009、011..013 的共享制品重新绑定到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，并在 C/D 阶段完成 M1-010 的唯一摘要绑定，不重写旧任务实现成果。
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；post-C D 阶段已把其 current-source manifest 与全部 artifactDigests 绑定至 `36a2103b0dc9497a6421bbbf99627e10c7a88c50`，审计实现源为 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`；原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
@@ -150,6 +150,16 @@
 - 结果：专项 checker 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；三项 GAM/SOC GAP 关闭为 D2 静态治理，不作为 topic、ACL、Outbox、consumer、lease 或 E2E runtime 证据。
 - D 阶段：M1-010 全量摘要已在 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 重算并绑定，D 阐明提交为 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`；aab1 仍是 M1-014 审计实现源。全局 Evidence Gate 已在干净 D 提交上 PASS（108 tasks、21 ACCEPTED、1 BLOCKED、86 PLANNED、0 errors）。
 - 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26=`static-only`/`pending`/`NO-GO`；M2-004/005/006、M5-013、M7、M8-005 与 M0-006 仍保留原 owner 和状态。
+
+## M1-015 执行轨道
+
+不可变来源检查点：`dev@5d0bb3a0651d9205a942eca9d8e1c56b538ed73f`。
+
+1. policy-security：冻结 commerce owner、SKU/price snapshot、独立状态机、SANDBOX_HMAC provider gate、signature/freshness/nonce/dedupe、activation digest/redaction、entitlement version/cache/grace 与 refund/reconciliation receipt。
+2. contract-event：在 B13 中建立 M1-015 canonical operations/schemas，建立 commerce v2 事件治理；B5/B13 v1 保持 historical-only，事件不含 raw callback/signature/code/hash/credential/PII。
+3. validation-adversarial：建立专项 checker、mutation/generated-types 测试，覆盖客户端 authority 注入、签名覆盖漂移、nonce/时间重放、生产开关、权益乱序/缓存/grace、退款/对账恢复和 runtime promotion。
+
+三条实施轨道必须保持文件互斥；package script、catalog/AsyncAPI merge、B26 static binding、生成物、compatibility、GAP registry、状态、Evidence、最终提交和推送由统筹 Agent 独占。M1-015 不实现真实支付/provider/schema/Kafka/cache/browser/E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B20/B21/B26 继续 `BLOCKED`/`NO-GO`/`pending`，M0-006 继续 `BLOCKED`。
 
 ## M1-011 执行轨道
 
