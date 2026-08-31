@@ -217,6 +217,14 @@
       "actor": "root-coordinator",
       "reason": "Final source f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 was independently accepted by agent:m1_015_requirements_review:gpt-5.6-luna:max with P1/P2=0/0. The product, activation, SANDBOX_HMAC callback, entitlement fail-closed cache/grace, refund/revoke/reconciliation and production-payment-OFF result remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B5/B13 v1, B20/B21/B26 and database, Kafka, provider, cache, browser and E2E runtime evidence were not promoted.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-015/manifest.json"
+    },
+    {
+      "taskId": "P1R-M1-016",
+      "path": ["PLANNED", "READY", "IN_PROGRESS"],
+      "recordedAt": "2026-08-31T13:36:27+08:00",
+      "actor": "root-coordinator",
+      "reason": "Dependencies P1R-M1-003, P1R-M1-006, P1R-M1-007 and P1R-M1-013 are accepted. The coordinator froze 878f9ebc0591844467ac79facf4f00296058137f as the source checkpoint and started notification subscription/template/retry, owner-specific ordered sync/conflict recovery, and learner/admin shared admin-ops-service.support ticket/message/assignment/SLA/retention D2 contract work without promoting B11/B12/B5/B13 v1, B26 static governance or database, Kafka, provider, PEP, browser and E2E runtime evidence.",
+      "evidencePath": "evidence/p1r/m1/P1R-M1-016/manifest.json"
     }
   ]
 }

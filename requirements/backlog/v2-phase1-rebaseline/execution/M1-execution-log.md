@@ -4,7 +4,7 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-015` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-015 最终源码为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，独立 reviewer `agent:m1_015_requirements_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。C=`b41af4af17cf082b038438c2ce3694f95804a5f1`、D=`d0cd4fc812bb2ee20c78375b99f6310e80992237`，全局 Evidence Gate PASS；旧任务原始成果未被改写。
+- `P1R-M1-001` 至 `P1R-M1-015` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-015 最终源码为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，独立 reviewer `agent:m1_015_requirements_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。C=`b41af4af17cf082b038438c2ce3694f95804a5f1`、D=`d0cd4fc812bb2ee20c78375b99f6310e80992237`，全局 Evidence Gate PASS；旧任务原始成果未被改写。`P1R-M1-016` 已从 `dev@878f9ebc0591844467ac79facf4f00296058137f` 启动为 `IN_PROGRESS`。
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；M1-015 post-C D 阶段已把其 current-source manifest 与全部 artifactDigests 绑定至 `b41af4af17cf082b038438c2ce3694f95804a5f1`，本轮审计实现源为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`；原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
@@ -168,6 +168,16 @@
 - GAP：`CONTRACT-GAP-COM-001` 已关闭为 D2 静态治理，不作为 provider、真实支付、数据库、Kafka、PEP cache 或 E2E runtime 证据。
 - Evidence：C=`b41af4af17cf082b038438c2ce3694f95804a5f1`，D=`d0cd4fc812bb2ee20c78375b99f6310e80992237`；M1-010 GAP registry 摘要已重算，全局 Evidence Gate PASS（108 tasks、22 ACCEPTED、1 BLOCKED、85 PLANNED、0 errors）。
 - 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B20=`BLOCKED`、B21=`NO-GO`、B26=`static-only/pending/NO-GO`；M2-004/005/006、M7-006..011、M8-005 与 M0-006 仍保留原 owner 和状态。下一推荐为 `P1R-M1-016`。
+
+## M1-016 执行轨道
+
+不可变来源检查点：`dev@878f9ebc0591844467ac79facf4f00296058137f`。
+
+1. policy-security：冻结 notification template subscription/CAS/dedupe/retry、owner-specific sync ordering/conflict/recovery，以及 `admin-ops-service.support` 的 ticket/message/assignment/SLA/resolution/retention、PEP 与敏感内容引用边界。
+2. contract-event：收敛 B11/B12/B5/B13 历史 route/schema，建立 canonical notification/sync/support OpenAPI 与 v2 事件治理；旧 v1 不隐式晋升、不双发。
+3. validation-adversarial：建立专项 checker、mutation/generated-types 测试，覆盖客户端 authority、同意/偏好、版本冲突、重复/乱序、状态/assignment/SLA、附件扫描引用、legal hold、runtime promotion 与历史 route/event 逃逸。
+
+三条实施轨道必须保持文件互斥；package script、catalog/AsyncAPI merge、B26 static binding、Gateway projection、生成物、compatibility、GAP registry、状态、Evidence、最终提交和推送由统筹 Agent 独占。M1-016 不实现真实数据库、Outbox/Kafka、通知 provider、workflow/DLQ、PEP、浏览器/设备或 E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`。
 
 ## M1-011 执行轨道
 
