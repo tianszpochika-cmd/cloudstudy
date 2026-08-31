@@ -21,6 +21,22 @@
     "topic": "platform.commerce.v1",
     "partitionKey": "aggregateId"
   },
+  "x-m1016-contract": {
+    "task": "P1R-M1-016",
+    "owner": "admin-ops-service.support",
+    "canonicalOperations": [
+      "listM1016AdminSupportTickets",
+      "getM1016AdminSupportTicket",
+      "addM1016AdminSupportTicketMessage",
+      "submitM1016SupportTicketCommand"
+    ],
+    "historicalOperations": [
+      "createB13SupportTicket"
+    ],
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "clientAuthority": "NONE"
+  },
   "tags": [
     {
       "name": "B13-Commerce",
@@ -41,6 +57,10 @@
     {
       "name": "B13-OfficialSite",
       "description": "官网可公开的价格与权益投影"
+    },
+    {
+      "name": "M1-016-Support",
+      "description": "P1R-M1-016 admin support projections and owner commands"
     }
   ],
   "paths": {
@@ -1483,17 +1503,46 @@
         }
       }
     },
-    "/api/v1/admin/ops/tickets": {
-      "get": {
-        "tags": [
-          "B13-AdminOps"
+  "/api/v1/admin/ops/tickets": {
+    "get": {
+      "tags": [
+        "M1-016-Support"
+      ],
+      "summary": "List tenant-scoped support tickets for authorized support staff",
+      "operationId": "listM1016AdminSupportTickets",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "x-owner": "admin-ops-service",
+      "x-data-owner": "admin-ops-service.support",
+      "x-permission": "support.ticket.read.admin",
+      "x-contract": {
+        "task": "P1R-M1-016",
+        "canonical": true,
+        "maturity": "D2_CONTRACT_READY",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "clientAuthority": "NONE; tenant, requester, priority, assignment, SLA and state are server-derived"
+      },
+      "x-authorization": {
+        "defaultDecision": "DENY",
+        "requiredPermission": "support.ticket.read.admin",
+        "pep": "admin-ops-service-local",
+        "allowedActors": [
+          "SUPPORT_AGENT",
+          "SUPPORT_MANAGER"
         ],
-        "operationId": "listB13SupportTickets",
-        "security": [
-          {
-            "bearerAuth": []
-          }
+        "trustedFacts": [
+          "subject",
+          "tenant",
+          "roles",
+          "permissions",
+          "policyVersion"
         ],
+        "clientAuthority": "NONE for tenant, requester, assignment, SLA or state"
+      },
+      "x-migration": "Canonical M1-016 admin support list; B13 legacy ticket fields remain historical-only.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Cursor"
@@ -1522,7 +1571,7 @@
                           "type": "array",
                           "maxItems": 100,
                           "items": {
-                            "$ref": "#/components/schemas/B13SupportTicket"
+                        "$ref": "#/components/schemas/M1016SupportTicket"
                           }
                         }
                       }
@@ -1557,11 +1606,50 @@
           "responseMeta": "#/components/schemas/ApiCursorPageMeta"
         }
       },
-      "post": {
-        "tags": [
-          "B13-AdminOps"
+    "post": {
+      "tags": [
+        "B13-AdminOps"
+      ],
+      "operationId": "createB13SupportTicket",
+      "deprecated": true,
+      "x-p1r-deprecation": {
+        "deprecationAt": "2026-08-31T00:00:00Z",
+        "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+        "migrationLink": "/api/v1/support/tickets"
+      },
+      "x-canonical-replacement": {
+        "operationId": "createM1016SupportTicket",
+        "method": "POST",
+        "path": "/api/v1/support/tickets"
+      },
+      "x-owner": "admin-ops-service",
+      "x-data-owner": "admin-ops-service.support",
+      "x-permission": "support.ticket.create.self",
+      "x-contract": {
+        "task": "P1R-M1-016",
+        "canonical": false,
+        "adapterMode": "HISTORICAL_REQUEST_TO_CANONICAL_SUPPORT_OWNER",
+        "maturity": "D2_CONTRACT_READY",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "clientAuthority": "NONE"
+      },
+      "x-authorization": {
+        "defaultDecision": "DENY",
+        "requiredPermission": "support.ticket.create.self",
+        "pep": "admin-ops-service-local",
+        "allowedActors": [
+          "SELF"
         ],
-        "operationId": "createB13SupportTicket",
+        "trustedFacts": [
+          "subject",
+          "tenant",
+          "roles",
+          "permissions",
+          "policyVersion"
+        ],
+        "clientAuthority": "NONE"
+      },
+      "x-migration": "历史 B13 create adapter 只把经闭合校验的 M1-016 请求映射到唯一 admin-ops-service.support owner；requesterSubjectId、tenantId、priority、assignment、SLA 与 state 由服务端派生。新增学习者工单请使用 M1-016 learner route。",
         "security": [
           {
             "bearerAuth": []
@@ -1577,7 +1665,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13SupportTicketCreateRequest"
+                "$ref": "#/components/schemas/M1016SupportTicketCreateRequest"
               }
             }
           }
@@ -1632,6 +1720,321 @@
           },
           "403": {
             "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/tickets/{ticketId}": {
+      "get": {
+        "tags": [
+          "M1-016-Support"
+        ],
+        "summary": "Get a tenant-scoped support ticket for authorized support staff",
+        "operationId": "getM1016AdminSupportTicket",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.admin",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, requester, priority, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.admin",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, requester, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 admin support read; B13 legacy generic fields are not an authority source.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016SupportTicketId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "脱敏支持工单",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportTicket"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/tickets/{ticketId}/messages": {
+      "post": {
+        "tags": [
+          "M1-016-Support"
+        ],
+        "summary": "Append a redacted support message",
+        "operationId": "addM1016AdminSupportTicketMessage",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.message.create.admin",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; author, tenant and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.message.create.admin",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for author, tenant, role or state"
+        },
+        "x-migration": "Canonical M1-016 admin support message; body remains a redacted content reference.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016SupportTicketId"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1016SupportMessageCreateRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "m1016-support-message-create-cas",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 key 与规范化请求摘要回放原消息；摘要不同返回 409"
+        },
+        "responses": {
+          "201": {
+            "description": "支持消息已追加",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportMessage"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/tickets/{ticketId}/commands": {
+      "post": {
+        "tags": [
+          "M1-016-Support"
+        ],
+        "summary": "Submit a CAS-protected support workflow command",
+        "operationId": "submitM1016SupportTicketCommand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.command",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, assignment, priority, SLA and resulting state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.command",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "dualApproval"
+          ],
+          "clientAuthority": "NONE for tenant, requester, priority, assignment or SLA"
+        },
+        "x-migration": "Canonical M1-016 admin support command; every state change is CAS/idempotency protected and audit-linked.",
+        "x-command-policy": {
+          "defaultDecision": "DENY",
+          "commandField": "command",
+          "expectedVersionField": "expectedVersion",
+          "allowedCommandTypes": [
+            "ASSIGN",
+            "TRANSITION",
+            "RESOLVE"
+          ],
+          "requiresDualApproval": true,
+          "clientAuthority": "NONE for tenant, requester, priority, assignment, SLA or resulting state"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016SupportTicketId"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1016SupportAdminCommandRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "m1016-support-command-cas",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 key 与请求摘要回放原命令收据；摘要不同返回 409"
+        },
+        "responses": {
+          "202": {
+            "description": "支持命令已进入审批或工作流",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportCommandResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
@@ -2196,6 +2599,17 @@
           "type": "string",
           "minLength": 16,
           "maxLength": 200
+        }
+      },
+      "M1016SupportTicketId": {
+        "name": "ticketId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
         }
       },
       "B13OrderId": {
@@ -6150,6 +6564,1083 @@
           "reasonCode": {
             "type": "string",
             "maxLength": 96
+          }
+        }
+      },
+      "M1016SupportRestrictedContentRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentRefId",
+          "sha256",
+          "redactionVersion",
+          "scanStatus",
+          "objectVersion",
+          "safePreviewRef"
+        ],
+        "properties": {
+          "contentRefId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^content_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "redactionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "BLOCKED",
+              "ERROR"
+            ]
+          },
+          "objectVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "safePreviewRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^preview_[A-Za-z0-9._:-]{6,152}$"
+          }
+        },
+        "x-client-authority": "NONE; content is a server-issued redacted reference",
+        "x-forbidden-fields": [
+          "rawText",
+          "rawBytes",
+          "url",
+          "signedUrl",
+          "objectKey",
+          "credential",
+          "token",
+          "unredactedFreeText"
+        ]
+      },
+      "M1016SupportAttachmentRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mediaAssetId",
+          "assetVersion",
+          "authorizationRef",
+          "scanStatus"
+        ],
+        "properties": {
+          "mediaAssetId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^asset_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "authorizationRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^media-auth_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "BLOCKED",
+              "ERROR"
+            ]
+          }
+        },
+        "x-client-authority": "NONE; media authorization and scan status are server-derived",
+        "x-forbidden-fields": [
+          "url",
+          "signedUrl",
+          "objectKey",
+          "rawBytes",
+          "clientTenantId",
+          "clientSubjectId"
+        ]
+      },
+      "M1016SupportUsableContentRef": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "scanStatus": {
+                "type": "string",
+                "enum": [
+                  "CLEAN"
+                ]
+              }
+            }
+          }
+        ],
+        "x-input-policy": "Only CLEAN redacted content references may enter a ticket or message command"
+      },
+      "M1016SupportUsableAttachmentRef": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/M1016SupportAttachmentRef"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "scanStatus": {
+                "type": "string",
+                "enum": [
+                  "CLEAN"
+                ]
+              }
+            }
+          }
+        ],
+        "x-input-policy": "Only CLEAN scanned attachments may enter a ticket or message command"
+      },
+      "M1016SupportAssignmentHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assignmentVersion",
+          "fromQueueId",
+          "toQueueId",
+          "fromAssigneeRef",
+          "toAssigneeRef",
+          "reasonCode",
+          "changedAt",
+          "actorRef",
+          "auditId"
+        ],
+        "properties": {
+          "assignmentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "fromQueueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "toQueueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "fromAssigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "nullable": true
+          },
+          "toAssigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "nullable": true
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        }
+      },
+      "M1016SupportAssignment": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "queueId",
+          "assigneeRef",
+          "assignmentVersion",
+          "assignedAt",
+          "history"
+        ],
+        "properties": {
+          "queueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "assigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "nullable": true
+          },
+          "assignmentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "assignedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportAssignmentHistory"
+            }
+          }
+        },
+        "x-client-authority": "NONE; assignment is server-derived",
+        "x-state-invariant": "OPEN may have null assigneeRef/assignedAt; ASSIGNED, WAITING_INTERNAL, RESOLVED, CLOSED and REOPENED require both values after assignment"
+      },
+      "M1016SupportSlaHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyRef",
+          "policyVersion",
+          "dueAt",
+          "status",
+          "pausedAt",
+          "resumedAt",
+          "reasonCode",
+          "auditId"
+        ],
+        "properties": {
+          "policyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "policyVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ON_TRACK",
+              "AT_RISK",
+              "BREACHED",
+              "PAUSED",
+              "RESOLVED"
+            ]
+          },
+          "pausedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "resumedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        }
+      },
+      "M1016SupportSla": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyRef",
+          "policyVersion",
+          "dueAt",
+          "status",
+          "history"
+        ],
+        "properties": {
+          "policyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "policyVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ON_TRACK",
+              "AT_RISK",
+              "BREACHED",
+              "PAUSED",
+              "RESOLVED"
+            ]
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportSlaHistory"
+            }
+          }
+        },
+        "x-client-authority": "NONE; SLA is server-derived"
+      },
+      "M1016SupportResolution": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resolutionCode",
+          "explanationContentRef",
+          "ownerResultRef",
+          "decidedAt",
+          "auditId"
+        ],
+        "properties": {
+          "resolutionCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          },
+          "explanationContentRef": {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          "ownerResultRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^result_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "decidedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        }
+      },
+      "M1016SupportRetention": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "retentionPolicyRef",
+          "retentionPolicyVersion",
+          "retentionUntil",
+          "legalHold",
+          "ownerReceiptRef"
+        ],
+        "properties": {
+          "retentionPolicyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "retentionPolicyVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "retentionUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "legalHold": {
+            "type": "string",
+            "enum": [
+              "CLEAR",
+              "HELD",
+              "UNKNOWN"
+            ]
+          },
+          "ownerReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^retention-receipt_[A-Za-z0-9._:-]{6,152}$"
+          }
+        },
+        "x-client-authority": "NONE; retention and legal hold are server-derived"
+      },
+      "M1016SupportTicket": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "tenantId",
+          "requesterSubjectId",
+          "categoryCode",
+          "resourceRef",
+          "priority",
+          "descriptionContentRef",
+          "state",
+          "stateVersion",
+          "assignment",
+          "sla",
+          "retention",
+          "createdAt",
+          "lastAuditId"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^tenant_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "requesterSubjectId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^sub_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "categoryCode": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_SECURITY",
+              "CONTENT_CORRECTION",
+              "LEARNING_SYNC",
+              "MEDIA_DEVICE",
+              "ENTITLEMENT_ORDER",
+              "PRIVACY",
+              "OTHER"
+            ]
+          },
+          "resourceRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "NORMAL",
+              "HIGH",
+              "URGENT"
+            ]
+          },
+          "descriptionContentRef": {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportAttachmentRef"
+            }
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ASSIGNED",
+              "WAITING_USER",
+              "WAITING_INTERNAL",
+              "RESOLVED",
+              "CLOSED",
+              "REOPENED"
+            ]
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "assignment": {
+            "$ref": "#/components/schemas/M1016SupportAssignment"
+          },
+          "sla": {
+            "$ref": "#/components/schemas/M1016SupportSla"
+          },
+          "retention": {
+            "$ref": "#/components/schemas/M1016SupportRetention"
+          },
+          "resolution": {
+            "$ref": "#/components/schemas/M1016SupportResolution"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastAuditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "state",
+              "assignment"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "OPEN"
+                ]
+              },
+              "assignment": {
+                "$ref": "#/components/schemas/M1016SupportAssignment"
+              }
+            },
+            "not": {
+              "required": [
+                "resolution"
+              ]
+            }
+          },
+          {
+            "required": [
+              "state",
+              "assignment"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "ASSIGNED",
+                  "WAITING_USER",
+                  "WAITING_INTERNAL",
+                  "REOPENED"
+                ]
+              },
+              "assignment": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "queueId",
+                  "assigneeRef",
+                  "assignmentVersion",
+                  "assignedAt",
+                  "history"
+                ],
+                "properties": {
+                  "queueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+                  },
+                  "assigneeRef": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "assignmentVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "assignedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "history": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/M1016SupportAssignmentHistory"
+                    }
+                  }
+                }
+              }
+            },
+            "not": {
+              "required": [
+                "resolution"
+              ]
+            }
+          },
+          {
+            "required": [
+              "state",
+              "assignment",
+              "resolution"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "RESOLVED",
+                  "CLOSED"
+                ]
+              },
+              "assignment": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "queueId",
+                  "assigneeRef",
+                  "assignmentVersion",
+                  "assignedAt",
+                  "history"
+                ],
+                "properties": {
+                  "queueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+                  },
+                  "assigneeRef": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "assignmentVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "assignedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "history": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/M1016SupportAssignmentHistory"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-client-authority": "NONE for tenant, requester, priority, assignment, SLA, state, resolution and audit facts",
+        "x-state-invariant": "RESOLVED or CLOSED requires resolution; OPEN, ASSIGNED, WAITING_USER, WAITING_INTERNAL and REOPENED must not expose a resolution fact"
+      },
+      "M1016SupportTicketCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "categoryCode",
+          "resourceRef",
+          "descriptionContentRef",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "categoryCode": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_SECURITY",
+              "CONTENT_CORRECTION",
+              "LEARNING_SYNC",
+              "MEDIA_DEVICE",
+              "ENTITLEMENT_ORDER",
+              "PRIVACY",
+              "OTHER"
+            ]
+          },
+          "resourceRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$"
+          },
+          "descriptionContentRef": {
+            "$ref": "#/components/schemas/M1016SupportUsableContentRef"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportUsableAttachmentRef"
+            }
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 200,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,199}$"
+          }
+        },
+        "x-client-authority": "Only category/resource/redacted content references/attachment references/idempotencyKey are client-writable",
+        "x-forbidden-fields": [
+          "tenantId",
+          "requesterSubjectId",
+          "priority",
+          "state",
+          "stateVersion",
+          "assignment",
+          "sla",
+          "retention",
+          "subject",
+          "role"
+        ]
+      },
+      "M1016SupportMessage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "ticketId",
+          "clientMessageRef",
+          "authorType",
+          "bodyContentRef",
+          "bodyHash",
+          "redactionVersion",
+          "createdAt",
+          "messageVersion",
+          "lastAuditId"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^stm_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "ticketId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "clientMessageRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "authorType": {
+            "type": "string",
+            "enum": [
+              "LEARNER",
+              "SUPPORT_AGENT",
+              "SYSTEM"
+            ]
+          },
+          "bodyContentRef": {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          "bodyHash": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "redactionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportAttachmentRef"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "messageVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lastAuditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        },
+        "x-client-authority": "NONE for author, tenant and support state"
+      },
+      "M1016SupportMessageCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientMessageRef",
+          "bodyContentRef",
+          "expectedVersion",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "clientMessageRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "bodyContentRef": {
+            "$ref": "#/components/schemas/M1016SupportUsableContentRef"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportUsableAttachmentRef"
+            }
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 200,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,199}$"
+          }
+        },
+        "x-client-authority": "Only message reference/content, attachment references, expectedVersion and idempotencyKey are client-writable",
+        "x-forbidden-fields": [
+          "authorType",
+          "tenantId",
+          "requesterSubjectId",
+          "role",
+          "state",
+          "priority",
+          "assignment",
+          "sla",
+          "retention"
+        ]
+      },
+      "M1016SupportAssignCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandType",
+          "queueId",
+          "assigneeRef",
+          "reasonCode"
+        ],
+        "properties": {
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "ASSIGN"
+            ]
+          },
+          "queueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "assigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          }
+        },
+        "x-client-authority": "Only command input and CAS version are client-writable; assignment is PEP-checked and server-applied"
+      },
+      "M1016SupportTransitionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandType",
+          "toState",
+          "reasonCode"
+        ],
+        "properties": {
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "TRANSITION"
+            ]
+          },
+          "toState": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ASSIGNED",
+              "WAITING_USER",
+              "WAITING_INTERNAL",
+              "RESOLVED",
+              "CLOSED",
+              "REOPENED"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          }
+        }
+      },
+      "M1016SupportResolveCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandType",
+          "resolution"
+        ],
+        "properties": {
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "RESOLVE"
+            ]
+          },
+          "resolution": {
+            "$ref": "#/components/schemas/M1016SupportResolution"
+          }
+        }
+      },
+      "M1016SupportAdminCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "expectedVersion"
+        ],
+        "properties": {
+          "command": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/M1016SupportAssignCommand"
+              },
+              {
+                "$ref": "#/components/schemas/M1016SupportTransitionCommand"
+              },
+              {
+                "$ref": "#/components/schemas/M1016SupportResolveCommand"
+              }
+            ]
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-command-one-of": true,
+        "x-forbidden-fields": [
+          "tenantId",
+          "requesterSubjectId",
+          "priority",
+          "assignment",
+          "sla",
+          "role",
+          "subject"
+        ]
+      },
+      "M1016SupportCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandId",
+          "ticketId",
+          "commandType",
+          "state",
+          "accepted",
+          "receiptId",
+          "auditId"
+        ],
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^stcmd_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "ticketId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "ASSIGN",
+              "TRANSITION",
+              "RESOLVE"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ASSIGNED",
+              "WAITING_USER",
+              "WAITING_INTERNAL",
+              "RESOLVED",
+              "CLOSED",
+              "REOPENED"
+            ]
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "receiptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^support-receipt_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
           }
         }
       },

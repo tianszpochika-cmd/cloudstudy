@@ -19,6 +19,10 @@
       "description": "可信事件通知消费、重试、DLQ 和人工恢复"
     },
     {
+      "name": "M1-016-Notification",
+      "description": "P1R-M1-016 canonical notification preferences, messages and delivery recovery; runtime remains unverified"
+    },
+    {
       "name": "B12-Governance",
       "description": "审核与工作流恢复操作"
     },
@@ -31,6 +35,29 @@
       "description": "M1-014 canonical controlled social contracts; server-owned spaces, leases, focus, visibility and moderation"
     }
   ],
+  "x-m1016-contract": {
+    "task": "P1R-M1-016",
+    "owner": "notification-service",
+    "canonicalOperations": [
+      "listM1016NotificationPreferences",
+      "updateM1016NotificationPreference",
+      "listM1016NotificationMessages",
+      "markM1016NotificationMessageRead",
+      "markAllM1016NotificationMessagesRead",
+      "retryM1016NotificationDelivery",
+      "recoverM1016NotificationDelivery"
+    ],
+    "historicalAdapters": [
+      "consumeB12NotificationTrustedEvent",
+      "getB11NotificationPreference",
+      "updateB11NotificationPreference",
+      "listB11Messages",
+      "markB11MessageRead"
+    ],
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "clientAuthority": "NONE"
+  },
   "paths": {
     "/api/v1/gamification/me/summary": {
       "get": {
@@ -2651,9 +2678,39 @@
     "/api/v1/notifications/preferences": {
       "get": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "listB12NotificationPreferences",
+        "summary": "List the authenticated principal's notification subscriptions",
+        "operationId": "listM1016NotificationPreferences",
+        "x-owner": "notification-service",
+        "x-permission": "notification.preference.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; subject, tenant, owner and current preference version are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.preference.read.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-migration": "Canonical M1-016 notification preference read; the B11 settings/notification adapter is historical and must not create a second preference fact.",
         "security": [
           {
             "bearerAuth": []
@@ -2678,7 +2735,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/B12NotificationPreference"
+                            "$ref": "#/components/schemas/M1016NotificationPreference"
                           }
                         }
                       }
@@ -2725,9 +2782,133 @@
     "/api/v1/notifications/preferences/{notificationType}/{channel}": {
       "put": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "updateB12NotificationPreference",
+        "summary": "Replace one server-owned notification subscription with CAS",
+        "operationId": "updateM1016NotificationPreference",
+        "x-owner": "notification-service",
+        "x-permission": "notification.preference.write.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; only enabled, locale, consent version, DND and frequency intent are client inputs"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.preference.write.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, version and audit identity"
+        },
+        "x-migration": "Canonical M1-016 preference CAS; the B11 settings adapter is deprecated and maps to this notification-service fact only.",
+        "x-notification-policy": {
+          "pathParameter": "notificationType",
+          "bodyField": "category",
+          "pathBodyRelation": "EXACT_ALLOWLISTED_TYPE_CATEGORY_PAIR",
+          "typeCategoryPairs": [
+            {
+              "type": "LEARNING",
+              "category": "LEARNING"
+            },
+            {
+              "type": "REVIEW",
+              "category": "REVIEW"
+            },
+            {
+              "type": "STREAK",
+              "category": "STREAK"
+            },
+            {
+              "type": "EXAM",
+              "category": "EXAM"
+            },
+            {
+              "type": "CHECKPOINT",
+              "category": "CHECKPOINT"
+            },
+            {
+              "type": "STUDY_ROOM",
+              "category": "STUDY_ROOM"
+            },
+            {
+              "type": "REWARDS",
+              "category": "REWARDS"
+            },
+            {
+              "type": "COURSE",
+              "category": "COURSE"
+            },
+            {
+              "type": "MEMBERSHIP",
+              "category": "MEMBERSHIP"
+            },
+            {
+              "type": "MARKETING",
+              "category": "MARKETING"
+            },
+            {
+              "type": "SECURITY",
+              "category": "SECURITY"
+            },
+            {
+              "type": "ACCOUNT",
+              "category": "ACCOUNT"
+            },
+            {
+              "type": "PAYMENT",
+              "category": "PAYMENT"
+            },
+            {
+              "type": "SYSTEM",
+              "category": "SYSTEM"
+            },
+            {
+              "type": "ACCOUNT_VERIFICATION",
+              "category": "ACCOUNT"
+            },
+            {
+              "type": "SECURITY_ALERT",
+              "category": "SECURITY"
+            },
+            {
+              "type": "PHONE_BINDING_CHANGE",
+              "category": "ACCOUNT"
+            },
+            {
+              "type": "CRITICAL_ACCOUNT_PAYMENT",
+              "category": "PAYMENT"
+            }
+          ],
+          "sms": {
+            "allowedCategories": [
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT"
+            ],
+            "allowedTypes": [
+              "ACCOUNT_VERIFICATION",
+              "SECURITY_ALERT",
+              "PHONE_BINDING_CHANGE",
+              "CRITICAL_ACCOUNT_PAYMENT"
+            ],
+            "unknownPurposeDecision": "DENY",
+            "marketingDecision": "DENY"
+          }
+        },
         "security": [
           {
             "bearerAuth": []
@@ -2740,7 +2921,26 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^[A-Za-z0-9._:-]{1,80}$"
+              "enum": [
+                "LEARNING",
+                "REVIEW",
+                "STREAK",
+                "EXAM",
+                "CHECKPOINT",
+                "STUDY_ROOM",
+                "REWARDS",
+                "COURSE",
+                "MEMBERSHIP",
+                "MARKETING",
+                "SECURITY",
+                "ACCOUNT",
+                "PAYMENT",
+                "SYSTEM",
+                "ACCOUNT_VERIFICATION",
+                "SECURITY_ALERT",
+                "PHONE_BINDING_CHANGE",
+                "CRITICAL_ACCOUNT_PAYMENT"
+              ]
             }
           },
           {
@@ -2752,7 +2952,8 @@
               "enum": [
                 "IN_APP",
                 "PUSH",
-                "EMAIL"
+                "EMAIL",
+                "SMS"
               ]
             }
           },
@@ -2765,15 +2966,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12NotificationPreferenceCommand"
+                "$ref": "#/components/schemas/M1016NotificationPreferenceCommand"
               }
             }
           }
         },
         "x-idempotency": {
           "required": true,
-          "strategy": "principal-notification-type-channel-key",
-          "replayBehavior": "return-preference-fact"
+          "strategy": "principal-notification-subscription-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-preference-fact",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -2792,7 +2995,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12NotificationPreference"
+                          "$ref": "#/components/schemas/M1016NotificationPreference"
                         }
                       }
                     }
@@ -2827,9 +3030,39 @@
     "/api/v1/notifications/messages": {
       "get": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "listB12Notifications",
+        "summary": "List server-rendered notification messages for the authenticated principal",
+        "operationId": "listM1016NotificationMessages",
+        "x-owner": "notification-service",
+        "x-permission": "notification.message.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; message body, template, delivery and expiry facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.message.read.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for message, subject, tenant, owner or delivery state"
+        },
+        "x-migration": "Canonical M1-016 notification message projection; B11 /api/v1/messages is a deprecated compatibility adapter.",
         "security": [
           {
             "bearerAuth": []
@@ -2862,7 +3095,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/B12NotificationMessage"
+                            "$ref": "#/components/schemas/M1016NotificationMessage"
                           }
                         }
                       }
@@ -2901,9 +3134,37 @@
     "/api/v1/notifications/messages/{messageId}/read": {
       "put": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "markB12NotificationMessageRead",
+        "summary": "Record one server-owned notification read fact",
+        "operationId": "markM1016NotificationMessageRead",
+        "x-owner": "notification-service",
+        "x-permission": "notification.message.read-state.write.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; principal, tenant, message ownership and read timestamp are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.message.read-state.write.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, readAt or message state"
+        },
+        "x-migration": "Canonical M1-016 read fact; the B11 messages adapter must map to this operation and cannot write message content.",
         "security": [
           {
             "bearerAuth": []
@@ -2940,24 +3201,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "required": [
-                            "messageId",
-                            "updated",
-                            "source"
-                          ],
-                          "properties": {
-                            "messageId": {
-                              "type": "string"
-                            },
-                            "updated": {
-                              "type": "boolean"
-                            },
-                            "source": {
-                              "type": "string",
-                              "const": "mysql"
-                            }
-                          }
+                          "$ref": "#/components/schemas/M1016NotificationReadReceipt"
                         }
                       }
                     }
@@ -2992,9 +3236,37 @@
     "/api/v1/notifications/messages/read-all": {
       "put": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "markAllB12NotificationMessagesRead",
+        "summary": "Record the authenticated principal's notification read-all fact",
+        "operationId": "markAllM1016NotificationMessagesRead",
+        "x-owner": "notification-service",
+        "x-permission": "notification.message.read-state.write.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; selection, principal, tenant and read timestamp are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.message.read-state.write.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for message selection, subject, tenant, owner or read timestamp"
+        },
+        "x-migration": "Canonical M1-016 read-all fact; the B11 messages adapter is deprecated and cannot supply a client-owned message set.",
         "security": [
           {
             "bearerAuth": []
@@ -3028,25 +3300,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "required": [
-                            "messageId",
-                            "updated",
-                            "source"
-                          ],
-                          "properties": {
-                            "messageId": {
-                              "type": "string",
-                              "const": "all"
-                            },
-                            "updated": {
-                              "type": "boolean"
-                            },
-                            "source": {
-                              "type": "string",
-                              "const": "mysql"
-                            }
-                          }
+                          "$ref": "#/components/schemas/M1016NotificationReadAllReceipt"
                         }
                       }
                     }
@@ -3081,6 +3335,13 @@
           "B12-Notification"
         ],
         "operationId": "consumeB12NotificationTrustedEvent",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/internal/v1/notifications/retry"
+        },
+        "x-migration": "Historical trusted-event REST adapter. New notification facts are produced from the canonical M1-016 notification workflow; clients and arbitrary callers cannot submit notification ownership or delivery facts.",
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -3132,9 +3393,36 @@
     "/internal/v1/notifications/retry": {
       "post": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "dispatchB12NotificationRetry",
+        "summary": "Schedule one server-owned notification delivery retry",
+        "operationId": "retryM1016NotificationDelivery",
+        "x-owner": "notification-service",
+        "x-permission": "notification.delivery.retry.workload",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; notification, attempt and delivery state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.delivery.retry.workload",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "WORKLOAD"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "sourceService",
+            "notificationId",
+            "workflowTaskId",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, attempt, status or next run time"
+        },
+        "x-migration": "Canonical M1-016 delivery retry command; the historical trusted-event adapter cannot schedule arbitrary notification delivery.",
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -3150,15 +3438,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RetryCommand"
+                "$ref": "#/components/schemas/M1016NotificationRetryCommand"
               }
             }
           }
         },
         "x-idempotency": {
           "required": true,
-          "strategy": "workflow-task-id-key",
-          "replayBehavior": "return-current-delivery-state"
+          "strategy": "workflow-task-notification-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-current-delivery-state",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -3166,7 +3456,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B12RetryResult"
+                  "$ref": "#/components/schemas/M1016NotificationRetryResult"
                 }
               }
             }
@@ -3186,9 +3476,36 @@
     "/internal/v1/notifications/recovery": {
       "post": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "recoverB12NotificationTask",
+        "summary": "Recover one server-owned notification delivery task",
+        "operationId": "recoverM1016NotificationDelivery",
+        "x-owner": "notification-service",
+        "x-permission": "notification.delivery.recovery.workload",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; task state, notification ownership and recovery result are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.delivery.recovery.workload",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "WORKLOAD"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "sourceService",
+            "notificationId",
+            "workflowTaskId",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, delivery state or recovery receipt"
+        },
+        "x-migration": "Canonical M1-016 delivery recovery command; only the workflow-owned closed action set is accepted.",
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -3204,15 +3521,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RecoveryCommand"
+                "$ref": "#/components/schemas/M1016NotificationRecoveryCommand"
               }
             }
           }
         },
         "x-idempotency": {
           "required": true,
-          "strategy": "workflow-task-action-key",
-          "replayBehavior": "return-original-recovery"
+          "strategy": "workflow-task-notification-recovery-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-recovery",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -3220,7 +3539,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B12RecoveryResult"
+                  "$ref": "#/components/schemas/M1016NotificationRecoveryResult"
                 }
               }
             }
@@ -8405,6 +8724,604 @@
             "items": {
               "$ref": "#/components/schemas/B12RecoveryResult"
             }
+          }
+        }
+      },
+      "M1016NotificationDndWindow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "startLocalTime",
+          "endLocalTime",
+          "timezone"
+        ],
+        "properties": {
+          "startLocalTime": {
+            "type": "string",
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "endLocalTime": {
+            "type": "string",
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z][A-Za-z0-9_+./-]{1,63}$",
+            "description": "由服务端主体时区事实派生；客户端不能提交或覆盖。"
+          }
+        }
+      },
+      "M1016NotificationPreference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "channel",
+          "enabled",
+          "locale",
+          "consentVersion",
+          "dndWindow",
+          "frequencyPolicy",
+          "version",
+          "updatedAt"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "IN_APP",
+              "PUSH",
+              "EMAIL",
+              "SMS"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          "consentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dndWindow": {
+            "$ref": "#/components/schemas/M1016NotificationDndWindow"
+          },
+          "frequencyPolicy": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "DAILY_DIGEST",
+              "WEEKLY_DIGEST",
+              "DISABLED"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016NotificationPreferenceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "enabled",
+          "locale",
+          "consentVersion",
+          "dndWindow",
+          "frequencyPolicy",
+          "expectedVersion"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          "consentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dndWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "startLocalTime",
+              "endLocalTime"
+            ],
+            "properties": {
+              "startLocalTime": {
+                "type": "string",
+                "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+              },
+              "endLocalTime": {
+                "type": "string",
+                "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+              }
+            }
+          },
+          "frequencyPolicy": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "DAILY_DIGEST",
+              "WEEKLY_DIGEST",
+              "DISABLED"
+            ]
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "M1016NotificationMessage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "sourceEventId",
+          "requestId",
+          "principalId",
+          "notificationType",
+          "category",
+          "channel",
+          "templateKey",
+          "templateVersion",
+          "locale",
+          "parameterDigest",
+          "dedupeKey",
+          "createdAt",
+          "expiresAt",
+          "pinned",
+          "readAt",
+          "deliveryStatus",
+          "contentVersionId",
+          "version"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "pattern": "^nmsg_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "sourceEventId": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "requestId": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "principalId": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$",
+            "description": "仅由服务端认证主体生成；客户端不可提交或覆盖。"
+          },
+          "notificationType": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM",
+              "ACCOUNT_VERIFICATION",
+              "SECURITY_ALERT",
+              "PHONE_BINDING_CHANGE",
+              "CRITICAL_ACCOUNT_PAYMENT"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "IN_APP",
+              "PUSH",
+              "EMAIL",
+              "SMS"
+            ]
+          },
+          "templateKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "templateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "locale": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20,
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          "parameterDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "safeTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "safeBody": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "deepLink": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^/[a-z][A-Za-z0-9._/-]*(?:\\?[A-Za-z0-9._=&-]+)?$"
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 255,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deliveryStatus": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "SENT",
+              "DELIVERED",
+              "FAILED",
+              "RETRY_SCHEDULED",
+              "CANCELLED",
+              "DEAD_LETTER",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "contentVersionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "M1016NotificationReadReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "readAt",
+          "version"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "pattern": "^nmsg_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "M1016NotificationReadAllReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "updatedCount",
+          "readAt",
+          "version"
+        ],
+        "properties": {
+          "updatedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "M1016NotificationRetryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "expectedVersion",
+          "reasonCode"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "TRANSIENT_PROVIDER",
+              "TIMEOUT",
+              "RATE_LIMIT",
+              "TEMPORARY_NETWORK"
+            ]
+          }
+        }
+      },
+      "M1016NotificationRetryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "state",
+          "attempt",
+          "maxAttempts",
+          "nextAttemptAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "SENT",
+              "DELIVERED",
+              "FAILED",
+              "RETRY_SCHEDULED",
+              "CANCELLED",
+              "DEAD_LETTER",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "maxAttempts": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "enum": [
+              5
+            ]
+          },
+          "nextAttemptAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016NotificationRecoveryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "expectedVersion",
+          "action",
+          "reasonCode"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "SCHEDULE_RETRY",
+              "MOVE_TO_DLQ",
+              "REPLAY",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          }
+        }
+      },
+      "M1016NotificationRecoveryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "action",
+          "state",
+          "recoveryReceiptId",
+          "domainFactsUntouched",
+          "updatedAt"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "SCHEDULE_RETRY",
+              "MOVE_TO_DLQ",
+              "REPLAY",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "RECOVERED",
+              "RETRY_SCHEDULED",
+              "TERMINAL",
+              "REJECTED"
+            ]
+          },
+          "recoveryReceiptId": {
+            "type": "string",
+            "pattern": "^nrecovery_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

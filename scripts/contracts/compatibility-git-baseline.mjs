@@ -68,6 +68,22 @@ import {
   compareM1015OpenApiDescriptors,
   compareM1015EventDescriptors,
   compareM1015B26Descriptors,
+  M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID,
+  M1016_SOURCE_CONTRACT_BASELINE_REF,
+  M1016_IMMUTABLE_GOVERNANCE_BASELINE_REF,
+  M1016_PROMOTION_ALLOWANCE_KEYS,
+  M1016_POLICY_SEMANTIC_SHA256,
+  M1016_APPROVED_SOURCE_FILES_SEMANTIC_SHA256,
+  M1016_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256,
+  M1016_B26_STATIC_POLICY_SEMANTIC_SHA256,
+  M1016_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256,
+  M1016_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256,
+  buildM1016OpenApiExpectedProjection,
+  buildM1016EventExpectedProjection,
+  buildM1016B26ExpectedProjection,
+  compareM1016OpenApiDescriptors,
+  compareM1016EventDescriptors,
+  compareM1016B26Descriptors,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -92,6 +108,7 @@ const placementContractPolicyPath = 'config/p1r-placement-contract.v1.json';
 const learningLoopContractPolicyPath = 'config/p1r-learning-loop-contract.v1.json';
 const gamificationSocialContractPolicyPath = 'config/p1r-gamification-social-contract.v1.json';
 const commerceContractPolicyPath = 'config/p1r-commerce-contract.v1.json';
+const notificationSyncSupportContractPolicyPath = 'config/p1r-notification-sync-support-contract.v1.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
@@ -103,6 +120,7 @@ export const REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF = M1012_SOURCE_CONTRACT
 export const REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF = M1013_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF = M1014_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF = M1015_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF = M1016_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -1165,6 +1183,66 @@ export function validateM1015CompatibilityPolicy(policy) {
   return errors;
 }
 
+const M1016_POLICY_TOP_LEVEL_KEYS = Object.freeze([
+  '$schema', 'schemaVersion', 'task', 'phase', 'startCommit', 'sourceBaseline', 'maturity', 'runtimeStatus',
+  'collectionPolicy', 'canonicalSources', 'compatibilityPromotion', 'ownership', 'authority', 'notification',
+  'sync', 'support', 'events', 'legacyCompatibility', 'runtimeBoundary', 'requiredAcceptanceEvidence',
+  'adversarialCases',
+]);
+
+export function validateM1016CompatibilityPolicy(policy) {
+  const errors = [];
+  exactPolicyKeys(policy, M1016_POLICY_TOP_LEVEL_KEYS, 'notification/sync/support contract policy', errors);
+  exactPolicyValue(policy?.$schema, 'p1r.notification-sync-support-contract.v1', 'notification/sync/support policy $schema', errors);
+  exactPolicyValue(policy?.schemaVersion, 'p1r.notification-sync-support-contract.v1', 'notification/sync/support policy schemaVersion', errors);
+  exactPolicyValue(policy?.task, 'P1R-M1-016', 'notification/sync/support policy task', errors);
+  exactPolicyValue(policy?.phase, 'P1', 'notification/sync/support policy phase', errors);
+  exactPolicyValue(policy?.startCommit, '334447782ba22ceaa9c97dc2a6044c91ba75400a', 'notification/sync/support policy startCommit', errors);
+  exactPolicyValue(policy?.sourceBaseline, M1016_SOURCE_CONTRACT_BASELINE_REF, 'notification/sync/support source baseline', errors);
+  exactPolicyValue(policy?.maturity, 'D2_CONTRACT_READY', 'notification/sync/support policy maturity', errors);
+  exactPolicyValue(policy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'notification/sync/support policy runtimeStatus', errors);
+  if (stableGovernanceSha256(policy) !== M1016_POLICY_SEMANTIC_SHA256) {
+    errors.push('notification/sync/support contract policy is not the frozen M1-016 semantic policy value');
+  }
+
+  const promotion = policy?.compatibilityPromotion;
+  exactPolicyKeys(promotion, M1016_PROMOTION_ALLOWANCE_KEYS, 'M1-016 compatibility promotion', errors);
+  exactPolicyValue(promotion?.id, M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID, 'M1-016 promotion id', errors);
+  exactPolicyValue(promotion?.sourceContractBaseline, M1016_SOURCE_CONTRACT_BASELINE_REF, 'M1-016 promotion source baseline', errors);
+  exactPolicyValue(promotion?.previousPromotion, M1015_COMMERCE_PROMOTION_ID, 'M1-016 previous promotion', errors);
+  exactPolicyValue(promotion?.previousPromotionContract, 'config/p1r-commerce-contract.v1.json', 'M1-016 previous promotion contract', errors);
+  exactPolicyValue(promotion?.immutableGovernanceBaseline, M1016_IMMUTABLE_GOVERNANCE_BASELINE_REF, 'M1-016 immutable governance baseline', errors);
+  exactPolicyValue(promotion?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'M1-016 promotion runtimeStatus', errors);
+  exactPolicyValue(promotion?.scope, 'M1016_OPENAPI_EVENT_GOVERNANCE_B26_STATIC_WITH_B11_B5_B13_V1_HISTORICAL', 'M1-016 promotion scope', errors);
+  exactPolicyValue(promotion?.promotionMode, 'FUTURE_M1016_V2_ONLY', 'M1-016 promotion mode', errors);
+  exactPolicyValue(promotion?.allowsHistoricalV1Promotion, false, 'M1-016 historical v1 promotion allowance', errors);
+  exactPolicyValue(promotion?.allowsDualPublish, false, 'M1-016 dual-publish allowance', errors);
+  for (const [field, digest, label] of [
+    ['approvedSourceFiles', M1016_APPROVED_SOURCE_FILES_SEMANTIC_SHA256, 'M1-016 approved source files'],
+    ['requiredCompatibilityChecks', M1016_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256, 'M1-016 required compatibility checks'],
+    ['b26StaticPolicy', M1016_B26_STATIC_POLICY_SEMANTIC_SHA256, 'M1-016 B26 static policy'],
+    ['canonicalOpenApiSource', M1016_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256, 'M1-016 canonical OpenAPI source'],
+    ['canonicalEventSource', M1016_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256, 'M1-016 canonical event source'],
+  ]) {
+    if (stableGovernanceSha256(promotion?.[field]) !== digest) errors.push(`${label} is not the frozen M1-016 value`);
+  }
+  return errors;
+}
+
+function loadM1016CompatibilityPolicy(readFile) {
+  let policy;
+  try {
+    policy = JSON.parse(readFile(path.join(repoRoot, ...notificationSyncSupportContractPolicyPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M1-016 compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM1016CompatibilityPolicy(policy);
+  if (errors.length > 0) {
+    throw new Error(`M1-016 compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({ ...policy.compatibilityPromotion });
+}
+
 function loadM1015CompatibilityPolicy(readFile) {
   let policy;
   try {
@@ -1221,6 +1299,24 @@ function loadM1015SourceContractBaseline(promotion, git) {
   if (commit !== REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF) {
     throw new Error(
       `M1-015 source contract ref ${REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  return {
+    ref,
+    commit,
+    openapi: JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`])),
+    catalog: JSON.parse(git(['show', `${commit}:${contractPaths.events}`])),
+    b26Runtime: JSON.parse(git(['show', `${commit}:${b26RuntimePath}`])),
+    source: `git:${commit}:packages/contracts/{openapi/v1/openapi.json,events/v1/catalog.json,../config/b26-event-runtime.json}`,
+  };
+}
+
+function loadM1016SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M1-016 source contract ref ${REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
     );
   }
   return {
@@ -1381,6 +1477,20 @@ export function runGitBaselineCompatibility({
   const needsM1013Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1014Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1015Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM1016Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const m1016BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM1016Promotion = needsM1016Promotion && m1016BaselineRefs.has(baselineCommit);
   const m1015BaselineRefs = new Set([
     REQUIRED_CI_CONTRACT_BASELINE_REF,
     REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
@@ -1473,6 +1583,12 @@ export function runGitBaselineCompatibility({
     : undefined;
   const commerceSourceContractBaseline = useM1015Promotion
     ? loadM1015SourceContractBaseline(commercePromotion, git)
+    : undefined;
+  const notificationSyncSupportPromotion = useM1016Promotion
+    ? loadM1016CompatibilityPolicy(readFile)
+    : undefined;
+  const notificationSyncSupportSourceContractBaseline = useM1016Promotion
+    ? loadM1016SourceContractBaseline(notificationSyncSupportPromotion, git)
     : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
@@ -1676,7 +1792,81 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1015Promotion) {
+    if (contractKind === 'openapi' && useM1016Promotion) {
+      breakingChanges = [
+        ...m1008ToM1009IntegrityChanges,
+        ...m1009ToM1010OpenApiIntegrityChanges,
+        ...m1010ToM1011OpenApiIntegrityChanges,
+        ...m1011ToM1012OpenApiIntegrityChanges,
+        ...m1012ToM1013OpenApiIntegrityChanges,
+        ...m1013ToM1014OpenApiIntegrityChanges,
+        ...m1014ToM1015OpenApiIntegrityChanges,
+        ...compareContracts(
+          'openapi',
+          notificationSyncSupportSourceContractBaseline.openapi,
+          current,
+          { allowance: notificationSyncSupportPromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: notificationSyncSupportPromotion.id,
+        sourceContractBaseline: notificationSyncSupportSourceContractBaseline.commit,
+        previousPromotion: commercePromotion?.id ?? M1015_COMMERCE_PROMOTION_ID,
+        previousPromotionSource: commercePromotion
+          ? (commerceSourceContractBaseline?.commit ?? M1015_SOURCE_CONTRACT_BASELINE_REF)
+          : M1015_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: notificationSyncSupportPromotion.immutableGovernanceBaseline,
+        runtimeStatus: notificationSyncSupportPromotion.runtimeStatus,
+        scope: notificationSyncSupportPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'events' && useM1016Promotion) {
+      const currentB26 = JSON.parse(readFile(path.join(repoRoot, ...b26RuntimePath.split('/'))));
+      breakingChanges = [
+        ...m1008ToM1010EventIntegrityChanges,
+        ...m1010ToM1011EventIntegrityChanges,
+        ...m1011ToM1012EventIntegrityChanges,
+        ...m1012ToM1013EventIntegrityChanges,
+        ...m1013ToM1014EventIntegrityChanges,
+        ...m1014ToM1015EventIntegrityChanges,
+        ...compareContracts(
+          'events',
+          notificationSyncSupportSourceContractBaseline.catalog,
+          current,
+          { allowance: notificationSyncSupportPromotion },
+        ),
+        ...compareB26WorkflowGovernance(
+          notificationSyncSupportSourceContractBaseline.b26Runtime,
+          currentB26,
+          { allowance: notificationSyncSupportPromotion },
+        ),
+        ...m1011SourceB26IntegrityChanges,
+        ...m1011ToM1012B26IntegrityChanges,
+        ...m1012ToM1013B26IntegrityChanges,
+        ...m1013ToM1014B26IntegrityChanges,
+        ...m1014ToM1015B26IntegrityChanges,
+        ...immutableBaselineIntegrityChanges,
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      resultGovernanceBaseline = governanceSummary;
+      promotionResult = {
+        id: notificationSyncSupportPromotion.id,
+        sourceContractBaseline: notificationSyncSupportSourceContractBaseline.commit,
+        previousPromotion: commercePromotion?.id ?? M1015_COMMERCE_PROMOTION_ID,
+        previousPromotionSource: commercePromotion
+          ? (commerceSourceContractBaseline?.commit ?? M1015_SOURCE_CONTRACT_BASELINE_REF)
+          : M1015_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: immutableGovernanceBaseline.commit,
+        runtimeStatus: notificationSyncSupportPromotion.runtimeStatus,
+        scope: notificationSyncSupportPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1015Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...m1009ToM1010OpenApiIntegrityChanges,
@@ -2146,7 +2336,19 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1015Promotion
+    promotion: useM1016Promotion
+      ? {
+        id: notificationSyncSupportPromotion.id,
+        sourceContractBaseline: notificationSyncSupportSourceContractBaseline.commit,
+        previousPromotion: commercePromotion?.id ?? M1015_COMMERCE_PROMOTION_ID,
+        previousPromotionSource: commercePromotion
+          ? (commerceSourceContractBaseline?.commit ?? M1015_SOURCE_CONTRACT_BASELINE_REF)
+          : M1015_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: notificationSyncSupportPromotion.immutableGovernanceBaseline,
+        runtimeStatus: notificationSyncSupportPromotion.runtimeStatus,
+        scope: notificationSyncSupportPromotion.scope,
+      }
+      : useM1015Promotion
       ? {
         id: commercePromotion.id,
         sourceContractBaseline: commerceSourceContractBaseline.commit,

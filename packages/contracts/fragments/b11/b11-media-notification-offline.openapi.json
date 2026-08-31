@@ -19,10 +19,39 @@
       "description": "离线变更、cursor、冲突和恢复"
     },
     {
+      "name": "M1-016-Sync",
+      "description": "P1R-M1-016 learning-owned sync receipts, cursor, conflict projection and bounded recovery"
+    },
+    {
       "name": "B11-Compatibility",
       "description": "B3 legacy read/shadow compatibility"
     }
   ],
+  "x-m1016-contract": {
+    "task": "P1R-M1-016",
+    "owner": "learning-service",
+    "canonicalOperations": [
+      "listM1016LearningSyncReceipts",
+      "getM1016LearningSyncCursor",
+      "listM1016LearningSyncConflicts",
+      "recoverM1016LearningSyncConflict"
+    ],
+    "historicalAdapters": [
+      "enqueueB11SyncChanges",
+      "listB11SyncChanges",
+      "updateB11SyncCursor",
+      "getB11SyncCursor",
+      "listB11SyncConflicts",
+      "recoverB11SyncConflict",
+      "getB11NotificationPreference",
+      "updateB11NotificationPreference",
+      "listB11Messages",
+      "markB11MessageRead"
+    ],
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "clientAuthority": "NONE"
+  },
   "paths": {
     "/api/v1/media/assets/{assetId}": {
       "get": {
@@ -633,6 +662,18 @@
           "B11-Notification"
         ],
         "operationId": "getB11NotificationPreference",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/preferences"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016NotificationPreferences",
+          "method": "GET",
+          "path": "/api/v1/notifications/preferences"
+        },
+        "x-migration": "Historical B11 settings adapter; notification-service owns the single M1-016 preference fact at /api/v1/notifications/preferences.",
         "security": [
           {
             "bearerAuth": []
@@ -685,6 +726,18 @@
           "B11-Notification"
         ],
         "operationId": "updateB11NotificationPreference",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/preferences/{notificationType}/{channel}"
+        },
+        "x-canonical-replacement": {
+          "operationId": "updateM1016NotificationPreference",
+          "method": "PUT",
+          "path": "/api/v1/notifications/preferences/{notificationType}/{channel}"
+        },
+        "x-migration": "Historical B11 settings adapter; request fields are translated to the closed M1-016 subscription command and never create a second owner.",
         "security": [
           {
             "bearerAuth": []
@@ -762,6 +815,18 @@
           "B11-Notification"
         ],
         "operationId": "listB11Messages",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/messages"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016NotificationMessages",
+          "method": "GET",
+          "path": "/api/v1/notifications/messages"
+        },
+        "x-migration": "Historical B11 message adapter; it must project only the M1-016 notification message schema.",
         "security": [
           {
             "bearerAuth": []
@@ -834,6 +899,18 @@
           "B11-Notification"
         ],
         "operationId": "markB11MessageRead",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/messages/{messageId}/read"
+        },
+        "x-canonical-replacement": {
+          "operationId": "markM1016NotificationMessageRead",
+          "method": "PUT",
+          "path": "/api/v1/notifications/messages/{messageId}/read"
+        },
+        "x-migration": "Historical B11 message read adapter; it records only a server-owned read fact.",
         "security": [
           {
             "bearerAuth": []
@@ -871,6 +948,18 @@
           "B11-Offline"
         ],
         "operationId": "enqueueB11SyncChanges",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/receipts"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016LearningSyncReceipts",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/receipts"
+        },
+        "x-migration": "Historical arbitrary-entity sync write; learning-service accepts only its own canonical facts through the M1-016 protocol and does not become a cross-domain writer.",
         "security": [
           {
             "bearerAuth": []
@@ -952,6 +1041,18 @@
           "B11-Offline"
         ],
         "operationId": "listB11SyncChanges",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/receipts"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016LearningSyncReceipts",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/receipts"
+        },
+        "x-migration": "Historical generic sync response; only the learning-owned receipt projection is canonical in M1-016.",
         "security": [
           {
             "bearerAuth": []
@@ -1040,6 +1141,18 @@
           "B11-Offline"
         ],
         "operationId": "getB11SyncCursor",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/cursor"
+        },
+        "x-canonical-replacement": {
+          "operationId": "getM1016LearningSyncCursor",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/cursor"
+        },
+        "x-migration": "Historical client cursor adapter; cursor state is now a server-owned learning projection.",
         "security": [
           {
             "bearerAuth": []
@@ -1092,6 +1205,18 @@
           "B11-Offline"
         ],
         "operationId": "updateB11SyncCursor",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/cursor"
+        },
+        "x-canonical-replacement": {
+          "operationId": "getM1016LearningSyncCursor",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/cursor"
+        },
+        "x-migration": "Historical client-owned cursor write; clients cannot advance a server-owned cursor in M1-016.",
         "security": [
           {
             "bearerAuth": []
@@ -1169,6 +1294,18 @@
           "B11-Offline"
         ],
         "operationId": "listB11SyncConflicts",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/conflicts"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016LearningSyncConflicts",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/conflicts"
+        },
+        "x-migration": "Historical generic conflict adapter; conflict facts are exposed only through the learning-owned M1-016 projection.",
         "security": [
           {
             "bearerAuth": []
@@ -1240,6 +1377,18 @@
           "B11-Offline"
         ],
         "operationId": "recoverB11SyncConflict",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/conflicts/{conflictId}/recovery"
+        },
+        "x-canonical-replacement": {
+          "operationId": "recoverM1016LearningSyncConflict",
+          "method": "POST",
+          "path": "/api/v1/learning/sync/conflicts/{conflictId}/recovery"
+        },
+        "x-migration": "Historical generic conflict recovery adapter; only the M1-016 closed KEEP_SERVER_FACT/DISCARD_LOCAL_DRAFT/RETRY_CANONICAL_COMMAND actions are allowed.",
         "security": [
           {
             "bearerAuth": []
@@ -1280,6 +1429,415 @@
           },
           "409": {
             "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/sync/receipts": {
+      "get": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "List learning-owned sync command receipts",
+        "operationId": "listM1016LearningSyncReceipts",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.receipt.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; receipt, owner, tenant and server version are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.receipt.read.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for receipt identity, server version or owner"
+        },
+        "x-migration": "Canonical M1-016 learning-owned read projection; the arbitrary-entity B11 sync write/list adapter is historical.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "learning-service 拥有的同步命令回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/M1016SyncReceipt"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
+    },
+    "/api/v1/learning/sync/cursor": {
+      "get": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "Read the learning-owned sync cursor",
+        "operationId": "getM1016LearningSyncCursor",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.cursor.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; cursor and version are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.cursor.read.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for cursor, owner or version"
+        },
+        "x-migration": "Canonical M1-016 server-owned cursor read; the B11 client cursor PUT is deprecated and cannot advance this fact.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "learning-service server-owned cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SyncCursor"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/sync/conflicts": {
+      "get": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "List learning-owned sync conflicts",
+        "operationId": "listM1016LearningSyncConflicts",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.conflict.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; conflict, versions and owner are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.conflict.read.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for conflict identity, owner or server versions"
+        },
+        "x-migration": "Canonical M1-016 conflict projection; the B11 generic conflict adapter is historical.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "learning-service 未解决同步冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/M1016SyncConflict"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
+    },
+    "/api/v1/learning/sync/conflicts/{conflictId}/recovery": {
+      "post": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "Apply a bounded learning sync conflict recovery action",
+        "operationId": "recoverM1016LearningSyncConflict",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.conflict.recover.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; conflict state, server version and recovery receipt are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.conflict.recover.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "conflictId"
+          ],
+          "clientAuthority": "NONE for owner, server facts, merge outcome or recovery receipt"
+        },
+        "x-migration": "Canonical M1-016 bounded recovery; MERGE, REPLAY and MANUAL_RECOVERY actions are not accepted.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016ConflictId"
+          },
+          {
+            "$ref": "#/components/parameters/M1016IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1016SyncRecoveryRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-conflict-expected-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-recovery-receipt",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "responses": {
+          "200": {
+            "description": "同步冲突恢复回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SyncRecoveryResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B11Conflict"
           }
         }
       }
@@ -1607,6 +2165,25 @@
           "pattern": "^bytes=(\\d*-\\d*)$"
         },
         "description": "只支持单一 bytes Range；越界返回 416。"
+      },
+      "M1016ConflictId": {
+        "name": "conflictId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1016IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 192
+        }
       }
     },
     "responses": {
@@ -2621,6 +3198,327 @@
           "domainFactsUntouched": {
             "type": "boolean",
             "const": true
+          }
+        }
+      },
+      "M1016SyncProtocolContext": {
+        "type": "object",
+        "additionalProperties": false,
+      "required": [
+        "clientEventId",
+        "clientSeq",
+        "baseVersion",
+        "contentVersionId",
+        "payloadHash",
+        "entityType",
+        "entityId",
+        "operation",
+        "occurredAt",
+        "idempotencyKey"
+        ],
+        "properties": {
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "clientSeq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "baseVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "contentVersionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "payloadHash": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+        "entityType": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "UPSERT",
+            "DELETE",
+            "APPEND"
+          ]
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 192,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,191}$"
+        }
+      }
+      },
+      "M1016SyncReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+      "required": [
+        "receiptId",
+        "context",
+        "state",
+        "serverVersion",
+          "acceptedAt",
+          "replayed"
+        ],
+        "properties": {
+          "receiptId": {
+            "type": "string",
+            "pattern": "^sync-rec_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "context": {
+            "$ref": "#/components/schemas/M1016SyncProtocolContext"
+          },
+      "state": {
+        "type": "string",
+        "enum": [
+          "ACCEPTED",
+          "APPLIED",
+          "REPLAYED",
+          "PROCESSING",
+          "CONFLICT",
+          "REJECTED"
+        ]
+          },
+          "serverVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "acceptedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "M1016SyncCursor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cursor",
+          "version",
+          "issuedAt"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016SyncConflict": {
+        "type": "object",
+        "additionalProperties": false,
+      "required": [
+        "conflictId",
+        "clientEventId",
+        "entityType",
+        "entityId",
+        "baseVersion",
+        "localVersion",
+        "serverVersion",
+        "contentVersionId",
+        "reasonCode",
+        "safeServerReference",
+        "allowedResolution",
+        "recoveryTaskId"
+      ],
+      "properties": {
+        "conflictId": {
+          "type": "string",
+          "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "clientEventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "entityType": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "baseVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "localVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serverVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contentVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "DUPLICATE_EVENT_DIFFERENT_HASH",
+            "OUT_OF_ORDER",
+            "SEQUENCE_GAP",
+            "STALE_BASE_VERSION",
+            "FUTURE_BASE_VERSION",
+            "CONTENT_VERSION_MISMATCH",
+            "OWNER_VERSION_MISMATCH",
+            "PERMISSION_OR_RIGHTS_CHANGED"
+          ]
+        },
+        "safeServerReference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}$"
+        },
+        "allowedResolution": {
+          "type": "string",
+          "enum": [
+            "RELOAD_SERVER",
+            "KEEP_LOCAL_DRAFT",
+            "RETRY_WITH_NEW_BASE",
+            "CONTACT_SUPPORT",
+            "DISCARD_LOCAL"
+          ]
+        },
+        "recoveryTaskId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "context": {
+          "$ref": "#/components/schemas/M1016SyncProtocolContext"
+        },
+        "resolutionState": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "RECOVERY_PENDING",
+            "RECOVERED",
+            "TERMINAL"
+          ]
+        }
+      }
+      },
+      "M1016SyncRecoveryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "action"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "KEEP_SERVER_FACT",
+              "DISCARD_LOCAL_DRAFT",
+              "RETRY_CANONICAL_COMMAND"
+            ]
+          }
+        }
+      },
+      "M1016SyncRecoveryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conflictId",
+          "action",
+          "state",
+          "serverVersion",
+          "recoveryReceiptId",
+          "domainFactsUntouched",
+          "recoveredAt"
+        ],
+        "properties": {
+          "conflictId": {
+            "type": "string",
+            "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "KEEP_SERVER_FACT",
+              "DISCARD_LOCAL_DRAFT",
+              "RETRY_CANONICAL_COMMAND"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "RECOVERED",
+              "RETRY_REQUIRED",
+              "TERMINAL",
+              "REJECTED"
+            ]
+          },
+          "serverVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recoveryReceiptId": {
+            "type": "string",
+            "pattern": "^sync-recovery_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "recoveredAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

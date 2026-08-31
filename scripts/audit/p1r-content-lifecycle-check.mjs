@@ -93,6 +93,12 @@ const CANONICAL_CONTENT_EVENTS = [
   'content.version.unpublished.v1',
   'content.version.rolled_back.v1',
 ];
+const M1016_NOTIFICATION_BINDING_CLOSURE = {
+  gapId: 'EVENT-GAP-BIND-NOTIF-001',
+  family: 'EVENT-GAP-BIND',
+  status: 'D2_CONTRACT_CLOSED',
+  d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-016'],
+};
 const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-ONB-001',
   'EVENT-GAP-ONB-002',
@@ -103,12 +109,12 @@ const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-BIND-LRN-001',
   'EVENT-GAP-BIND-GAM-001',
   'EVENT-GAP-BIND-SOC-001',
+  M1016_NOTIFICATION_BINDING_CLOSURE.gapId,
 ];
 const EXPECTED_GLOBAL_PLANNED_EVENT_GAPS = [
   'EVENT-GAP-IAM-001',
   'EVENT-GAP-BIND-IAM-001',
   'EVENT-GAP-BIND-IAM-002',
-  'EVENT-GAP-BIND-NOTIF-001',
   'EVENT-GAP-BIND-PRIV-001',
   'EVENT-GAP-USR-DEL-001',
   'EVENT-GAP-BIND',
@@ -945,6 +951,13 @@ function checkEventGovernance(input, errors) {
     add(errors, closure && closure.status === 'D2_CONTRACT_CLOSED', gapId + ' must be D2_CONTRACT_CLOSED only under the frozen P1R-M1-014 successor');
     exact(errors, closure && closure.d2ClosureTasks, ['P1R-M1-006', 'P1R-M1-014'], gapId + ' P1R-M1-014 closure tasks');
   }
+  const notificationBindingClosure = closureById.get(M1016_NOTIFICATION_BINDING_CLOSURE.gapId);
+  exact(errors, notificationBindingClosure && {
+    gapId: notificationBindingClosure.gapId,
+    family: notificationBindingClosure.family,
+    status: notificationBindingClosure.status,
+    d2ClosureTasks: notificationBindingClosure.d2ClosureTasks,
+  }, M1016_NOTIFICATION_BINDING_CLOSURE, 'P1R-M1-016 notification binding closure');
   const actualClosed = (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
     .filter(function (closure) { return closure.status === 'D2_CONTRACT_CLOSED'; })
     .map(function (closure) { return closure.gapId; });

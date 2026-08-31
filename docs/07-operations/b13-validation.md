@@ -51,8 +51,8 @@ B13 的 8 项代码目标已形成可进入第一轮测试的切片。`commerce-
 
 | 命令/检查 | 当前结果 |
 |---|---|
-| `pnpm contracts:merge:check` | 通过；23 个 OpenAPI fragments、17 个 event fragments，canonical 372 routes / 175 events |
-| `pnpm contracts:validate` | 通过；403 operations、706 OpenAPI schemas、175 events、125 event payload schemas、34 AsyncAPI channels / 122 operations、13 JSON schemas |
+| `pnpm contracts:merge:check` | 通过；24 个 OpenAPI fragments、18 个 event fragments，canonical 379 routes / 183 events |
+| `pnpm contracts:validate` | 通过；410 operations、741 OpenAPI schemas、183 events、133 event payload schemas、42 AsyncAPI channels / 147 operations、13 JSON schemas |
 | `pnpm p1r:commerce:check -- --json` | 通过；`D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`，仅 `SANDBOX_HMAC` 静态候选 |
 | `node --test tests/p1r/p1r-commerce-contract.test.mjs tests/p1r/p1r-commerce-generated-types.test.mjs` | 通过；含 provider、callback、entitlement、refund、reconciliation、readiness 与生成类型负例 |
 

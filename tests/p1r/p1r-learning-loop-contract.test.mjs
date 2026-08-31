@@ -8,6 +8,7 @@ import {
   compareDailyPlanCandidates,
   dailyPlanBudget,
   effectiveQualityForOutcome,
+  M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE,
   readLearningLoopContractInputs,
   roundHalfUp,
   stableJsonDigest,
@@ -126,6 +127,23 @@ test('checker CLI emits machine-readable frozen-policy result', () => {
   assert.equal(report.summary.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
 });
 
+test('M1-016 signed learning notification addition retains the M1-013 consumers', () => {
+  const binding = M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE.bindings['learning.review.scheduled.v2'];
+  assert.deepEqual(binding, {
+    service: 'notification-service',
+    consumerGroup: 'cg.notification-from-learning.v1',
+  });
+  const event = sourceInputs.catalog.events.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  const consumers = event['x-p1r-governance'].consumers.map(({ service, consumerGroup }) => ({ service, consumerGroup }));
+  assert.deepEqual(consumers, [
+    { service: 'assessment-service', consumerGroup: 'cg.assessment-from-learning.v1' },
+    binding,
+    { service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' },
+  ]);
+  const route = sourceInputs.b26Runtime.eventRouting.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  assert.deepEqual(route.consumerGroups, consumers.map(({ consumerGroup }) => consumerGroup));
+});
+
 reject('unknown root key is denied', (input) => {
   input.policy.unapprovedRuntimeClaim = true;
 }, /policy keys/);
@@ -221,6 +239,39 @@ reject('M1-014 current-source revalidation requires the explicit social mastery 
   const route = input.b26Runtime.eventRouting.find((entry) => entry.eventName === 'learning.mastery.projected.v2');
   route.consumerGroups = route.consumerGroups.filter((consumerGroup) => consumerGroup !== 'cg.social-from-learning.v1');
 }, /learning\.mastery\.projected\.v2 B26 consumer groups must exactly match the source-bound M1-014 consumer revalidation/);
+
+reject('M1-016 review consumer owner drift', (input) => {
+  const event = input.catalog.events.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  event['x-p1r-governance'].consumers.find((consumer) => consumer.consumerGroup === 'cg.notification-from-learning.v1').service = 'workflow-service';
+}, /learning\.review\.scheduled\.v2 governance consumers must exactly match the signed M1-016 additive consumer revalidation/);
+
+reject('M1-016 review additive consumer deletes an original consumer', (input) => {
+  const event = input.catalog.events.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  event['x-p1r-governance'].consumers = event['x-p1r-governance'].consumers.filter((consumer) => consumer.service !== 'assessment-service');
+}, /learning\.review\.scheduled\.v2 governance consumers must exactly match the signed M1-016 additive consumer revalidation/);
+
+reject('M1-016 review consumer cannot be added to another learning event', (input) => {
+  const event = input.catalog.events.find((candidate) => candidate.eventName === 'learning.mastery.projected.v2');
+  event['x-p1r-governance'].consumers.splice(1, 0, {
+    service: 'notification-service',
+    consumerGroup: 'cg.notification-from-learning.v1',
+  });
+}, /learning\.mastery\.projected\.v2 governance consumers must exactly match the source-bound M1-014 consumer revalidation/);
+
+reject('M1-016 review B26 consumer cannot drift to another group', (input) => {
+  const route = input.b26Runtime.eventRouting.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  route.consumerGroups[1] = 'cg.notification-forged.v1';
+}, /learning\.review\.scheduled\.v2 B26 consumer groups must exactly match the signed M1-016 additive consumer revalidation/);
+
+reject('M1-016 review B26 topic drift remains denied', (input) => {
+  const route = input.b26Runtime.eventRouting.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  route.topic = 'platform.forged.v1';
+}, /learning\.review\.scheduled\.v2 B26 topic/);
+
+reject('M1-016 review governance runtime promotion remains denied', (input) => {
+  const event = input.catalog.events.find((candidate) => candidate.eventName === 'learning.review.scheduled.v2');
+  event['x-p1r-governance'].runtimeStatus = 'RUNTIME_VERIFIED';
+}, /learning\.review\.scheduled\.v2 governance runtime boundary|runtimeStatus/);
 
 reject('assessment event cannot omit its server-pinned objective policy', (input) => {
   delete input.b10LearningLoopEventFragment.payloadSchemas.B10AssessmentItemAssessedV2.properties.objectivePolicyPin;

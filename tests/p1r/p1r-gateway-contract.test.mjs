@@ -41,8 +41,8 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.summary, {
     routeRuleCount: 53,
-    publicOperationCount: 350,
-    coveredPublicOperationCount: 350,
+    publicOperationCount: 357,
+    coveredPublicOperationCount: 357,
     publicCoverageErrorCount: 0,
     internalOperationCount: 53,
     externalDeniedInternalOperationCount: 53,
@@ -114,6 +114,21 @@ test('M1-015 entitlement operations cannot weaken workload-only authorization', 
   assertMutationFails((document, canonicalOpenApi) => {
     canonicalOpenApi.paths['/internal/v1/commerce/entitlements/{entitlementId}/snapshot'].post.security = [{ bearerAuth: [] }];
   }, /must use B8WorkloadIdentity/);
+});
+
+test('M1-016 notification retry and recovery operations remain exact workload-only internal projections', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    canonicalOpenApi.paths['/internal/v1/notifications/retry'].post.security = [{ bearerAuth: [] }];
+  }, /M1-016 internal operation must use B8WorkloadIdentity/);
+  assertMutationFails((document, canonicalOpenApi) => {
+    canonicalOpenApi.paths['/internal/v1/notifications/recovery'].post['x-authorization'].allowedActors = ['CLIENT'];
+  }, /M1-016 internal operation authorization is invalid/);
+});
+
+test('M1-016 notification operations cannot be exposed under the public prefix', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    canonicalOpenApi.paths['/api/v1/notifications/retry'] = structuredClone(canonicalOpenApi.paths['/internal/v1/notifications/retry']);
+  }, /public operation baseline drift|must not be exposed under the public prefix/);
 });
 
 test('credentialed browser origins cannot use a wildcard', () => {

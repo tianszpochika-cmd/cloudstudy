@@ -402,6 +402,36 @@ const M1_014_CURRENT_SOURCE_REVALIDATION = Object.freeze({
     }),
   ]),
 });
+
+// M1-013's rule model keeps its original consumers.  M1-016 signed one
+// additive notification subscription for the current learning review event;
+// this allow-list is intentionally source-bound and finite so another
+// current-catalog consumer cannot self-authorize through revalidation.
+export const M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE = Object.freeze({
+  promotionId: 'P1R-M1-016',
+  sourceContractBaseline: '878f9ebc0591844467ac79facf4f00296058137f',
+  policyDigest: 'f5beb694bb91ecde227d1405c56f7fdc73d71169d2bbe7b5c32378c3235f8ea7',
+  bindings: Object.freeze({
+    'learning.review.scheduled.v2': Object.freeze({
+      service: 'notification-service',
+      consumerGroup: 'cg.notification-from-learning.v1',
+    }),
+  }),
+});
+
+function currentSourceEventConsumers(eventName, frozenConsumers) {
+  const additive = M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE.bindings[eventName];
+  if (!additive) return frozenConsumers;
+
+  // The signed M1-016 projection inserts notification between the existing
+  // assessment and workflow consumers.  The original consumers therefore
+  // remain required, including their order.
+  return [frozenConsumers[0], additive, ...frozenConsumers.slice(1)];
+}
+
+function exactSignedAdditiveConsumerRevalidation(errors, actual, expected, label) {
+  add(errors, same(actual, expected), `${label} must exactly match the signed M1-016 additive consumer revalidation`);
+}
 // This is deliberately a source-bound M1-013 inventory, rather than an
 // inventory of every adapter in the repository. M1-010 and M1-011 own other
 // adapter-only operations; their compatibility chains verify those operations
@@ -1276,10 +1306,13 @@ function checkSourceArtifacts(input, errors) {
     exact(errors, governance?.transport?.delivery, 'at-least-once', `${expected.eventName} governance delivery`);
     exact(errors, governance?.schema?.payloadRef, expected.payloadRef, `${expected.eventName} governance payload ref`);
     const currentSourceConsumers = m1014RevalidatedConsumers.get(expected.eventName);
-    const expectedConsumers = currentSourceConsumers ?? expected.consumers;
+    const signedM1016Consumers = currentSourceEventConsumers(expected.eventName, expected.consumers);
+    const expectedConsumers = currentSourceConsumers ?? signedM1016Consumers;
     const governanceConsumers = governance?.consumers?.map((consumer) => ({ service: consumer?.service, consumerGroup: consumer?.consumerGroup }));
     if (currentSourceConsumers) {
       exactCurrentSourceConsumerRevalidation(errors, governanceConsumers, expectedConsumers, `${expected.eventName} governance consumers`);
+    } else if (signedM1016Consumers !== expected.consumers) {
+      exactSignedAdditiveConsumerRevalidation(errors, governanceConsumers, expectedConsumers, `${expected.eventName} governance consumers`);
     } else {
       exact(errors, governanceConsumers, expectedConsumers, `${expected.eventName} governance consumers`);
     }
@@ -1288,6 +1321,8 @@ function checkSourceArtifacts(input, errors) {
     const expectedConsumerGroups = expectedConsumers.map((consumer) => consumer.consumerGroup);
     if (currentSourceConsumers) {
       exactCurrentSourceConsumerRevalidation(errors, route?.consumerGroups, expectedConsumerGroups, `${expected.eventName} B26 consumer groups`);
+    } else if (signedM1016Consumers !== expected.consumers) {
+      exactSignedAdditiveConsumerRevalidation(errors, route?.consumerGroups, expectedConsumerGroups, `${expected.eventName} B26 consumer groups`);
     } else {
       exact(errors, route?.consumerGroups, expectedConsumerGroups, `${expected.eventName} B26 consumer groups`);
     }

@@ -27,10 +27,10 @@ B26 的代码和静态验收基础已完成：Kafka/Outbox 可靠性边界、跨
 |---|---|
 | `pnpm b26:static` | PASS；浏览器矩阵、事件基线、旅程预览、B26 测试、契约、端口、B25 静态前置和基础设施静态校验全部通过 |
 | `pnpm test:b26` | PASS；26/26 |
-| `node scripts/runtime/validate-b26-event-runtime.mjs --mode static` | PASS；10 topics、`fragmentEventCount=7` 个可靠性 seed、`routedCanonicalEventCount=34` 条 canonical 路由、`fragmentPayloadSchemaCount=7`、32 consumer groups；`runtimeStatus=pending`、`runtimeGate=static-only`。兼容字段 `eventCount/routeCount/payloadSchemaCount` 仍保留，但不作为运行完成口径。 |
+| `node scripts/runtime/validate-b26-event-runtime.mjs` | PASS；11 topics、`fragmentEventCount=7` 个可靠性 seed、`m1016EventCount=8` 个通知/同步/客服治理事件、`routedCanonicalEventCount=42` 条 canonical 路由、`totalFragmentPayloadSchemaCount=15`、36 consumer groups；`runtimeStatus=pending`、`runtimeGate=static-only`。兼容字段 `eventCount/routeCount/payloadSchemaCount` 仍保留，但不作为运行完成口径。 |
 | `node scripts/runtime/validate-b26-browser-test.mjs` | PASS；4 applications、3 scenarios、4 viewports；runtime evidence blocked |
 | `node scripts/runtime/replay-b26-journey.mjs --mode=preview --summary` | PASS；10 steps、4 planned events，network/database/Kafka effects 均为 0，`decision=DENY_RUNTIME_CLAIM` |
-| `pnpm contracts:merge` / `contracts:validate` / `contracts:generate` | PASS；17 event fragments、175 events、125 event payload schemas、403 operations、706 OpenAPI schemas、34 AsyncAPI channels、122 AsyncAPI operations、5 generated files；均为静态契约结果。 |
+| `pnpm contracts:merge` / `contracts:validate` / `contracts:generate` | PASS；24 OpenAPI fragments / 18 event fragments、379 routes、183 events、133 event payload schemas、410 operations、741 OpenAPI schemas、42 AsyncAPI channels、147 AsyncAPI operations、5 generated files；均为静态契约结果。 |
 | 本地浏览器页面检查 | 四端固定端口均 HTTP 200；learner-web、admin-web、Mobile H5 未登录进入登录边界，official-site 公开页/课程页可访问；浏览器 Console/页面错误为 0 |
 | Mobile H5 `390×844` 检查 | PASS；登录边界、页面标题和无 Console/页面错误均符合矩阵 |
 

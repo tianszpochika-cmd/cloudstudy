@@ -50,6 +50,20 @@ const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-bound
 const requiredCanonicalGatewayMetadata = ['x-p1r-gateway-boundary'];
 const canonicalMediaFragment = 'packages/contracts/fragments/b11/p1r-media.openapi.json';
 const requiredCanonicalMediaMetadata = ['x-p1r-media-contract'];
+const canonicalHistoricalOperationProjections = Object.freeze([
+  Object.freeze({
+    sourceFile: 'packages/contracts/fragments/b5-commerce-admin.openapi.json',
+    task: 'P1R-M1-016',
+    operations: Object.freeze([
+      Object.freeze({ route: '/api/v1/support/tickets', method: 'get', operationId: 'listM1016LearnerSupportTickets' }),
+      Object.freeze({ route: '/api/v1/support/tickets', method: 'post', operationId: 'createM1016SupportTicket' }),
+      Object.freeze({ route: '/api/v1/support/tickets/{ticketId}', method: 'get', operationId: 'getM1016LearnerSupportTicket' }),
+      Object.freeze({ route: '/api/v1/support/tickets/{ticketId}/messages', method: 'post', operationId: 'addM1016LearnerSupportTicketMessage' }),
+    ]),
+    parameters: Object.freeze(['B5IdempotencyKey', 'B5TicketId']),
+  }),
+]);
+const openApiHttpMethods = new Set(['delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace']);
 
 // v2 canonicalization boundary. These routes were exposed by the historical B1/B2/B4/B6
 // slices or by the pre-B11 commerce/media naming. They must not leak back into the generated
@@ -171,6 +185,50 @@ function stableJson(value) {
 
 function normalizeRepoPath(filePath) {
   return filePath.replace(/\\/g, '/');
+}
+
+export function projectCanonicalOperationsFromHistoricalFragment(fragment, projectionPolicy) {
+  if (fragment?.['x-contract-status'] !== 'historical-compatibility') {
+    throw new Error(`${projectionPolicy.sourceFile} must remain historical-compatibility outside its frozen canonical operation projection`);
+  }
+
+  const expectedOperations = projectionPolicy.operations
+    .map(({ route, method, operationId }) => `${route}:${method}:${operationId}`)
+    .sort();
+  const actualCanonicalOperations = [];
+  for (const [route, pathItem] of Object.entries(fragment.paths ?? {})) {
+    for (const [method, operation] of Object.entries(pathItem ?? {})) {
+      if (!openApiHttpMethods.has(method) || operation?.['x-contract']?.canonical !== true) continue;
+      actualCanonicalOperations.push(`${route}:${method}:${operation.operationId ?? '(missing operationId)'}`);
+      if (operation['x-contract'].task !== projectionPolicy.task) {
+        throw new Error(`${projectionPolicy.sourceFile} ${method.toUpperCase()} ${route} canonical operation must belong to ${projectionPolicy.task}`);
+      }
+    }
+  }
+  if (stableJson(actualCanonicalOperations.sort()) !== stableJson(expectedOperations)) {
+    throw new Error(`${projectionPolicy.sourceFile} canonical operation projection must exactly match the frozen ${projectionPolicy.task} allowlist`);
+  }
+
+  const paths = {};
+  for (const { route, method, operationId } of projectionPolicy.operations) {
+    const operation = fragment.paths?.[route]?.[method];
+    if (!operation || operation.operationId !== operationId) {
+      throw new Error(`${projectionPolicy.sourceFile} missing frozen ${method.toUpperCase()} ${route} (${operationId})`);
+    }
+    (paths[route] ??= {})[method] = operation;
+  }
+
+  const parameters = {};
+  for (const name of projectionPolicy.parameters) {
+    const parameter = fragment.components?.parameters?.[name];
+    if (!parameter) throw new Error(`${projectionPolicy.sourceFile} missing frozen parameter ${name}`);
+    parameters[name] = parameter;
+  }
+
+  return {
+    paths,
+    components: { parameters },
+  };
 }
 
 function listJsonFiles(directory) {
@@ -402,6 +460,17 @@ export function merge({ write = false } = {}) {
     canonicalGatewayMetadataWrites,
     canonicalMediaMetadataWrites,
   );
+  for (const projectionPolicy of canonicalHistoricalOperationProjections) {
+    const sourcePath = path.join(repoRoot, ...projectionPolicy.sourceFile.split('/'));
+    mergeOpenApi(
+      openApi,
+      projectCanonicalOperationsFromHistoricalFragment(readJson(sourcePath), projectionPolicy),
+      projectionPolicy.sourceFile,
+      canonicalB8MetadataWrites,
+      canonicalGatewayMetadataWrites,
+      canonicalMediaMetadataWrites,
+    );
+  }
   const missingCanonicalB8Metadata = requiredCanonicalB8Metadata.filter((metadataKey) => !canonicalB8MetadataWrites.has(metadataKey));
   if (missingCanonicalB8Metadata.length > 0) {
     throw new Error(`${canonicalB8AuthFragment} must define ${missingCanonicalB8Metadata.join(', ')} during every canonical merge`);
@@ -480,7 +549,10 @@ export function merge({ write = false } = {}) {
   }
 
   return {
-    openApiFragments: openApiFiles.map((filePath) => path.relative(repoRoot, filePath)),
+    openApiFragments: [
+      ...openApiFiles.map((filePath) => path.relative(repoRoot, filePath)),
+      ...canonicalHistoricalOperationProjections.map(({ sourceFile }) => sourceFile),
+    ],
     eventFragments: eventFiles.map((filePath) => path.relative(repoRoot, filePath)),
     routes: Object.keys(openApi.paths).length,
     events: catalog.events.length,

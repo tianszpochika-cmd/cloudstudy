@@ -3492,6 +3492,442 @@ function compareM1015B26Promotion(previous, current, allowance) {
   return changes;
 }
 
+// M1-016 is a source-bound notification/sync/support promotion.  The
+// allowance is deliberately finite: B11/B5/B13 v1 remain historical adapters,
+// while only the named M1-016 operations, schemas, event projections and B26
+// static changes can be promoted from the 878f9eb source checkpoint.
+export const M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID = 'P1R-M1-016';
+export const M1016_SOURCE_CONTRACT_BASELINE_REF = '878f9ebc0591844467ac79facf4f00296058137f';
+export const M1016_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1016_OPENAPI_SOURCE_SEMANTIC_SHA256 = '919c96cb2f907429bd51e06badf2cc9937ad8491ca91ad7672e25fc1453af105';
+export const M1016_EVENT_SOURCE_SEMANTIC_SHA256 = 'f54a7adc444e81b293e9d186df263e889bc63a69f1d40896f3d10fdf84098cca';
+export const M1016_B26_SOURCE_SEMANTIC_SHA256 = '2fcf14ccdb34c4ce40cda36793c1bfe4234fa0de2af0de8066d9d739768c5a9b';
+// Filled from the explicit frozen-source builders after the current
+// canonical artifacts are revalidated.  These are intentionally not derived
+// from the mutable current artifact at runtime.
+export const M1016_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'd9e9f93e27e5e5249254d0433da7dd953d0cc9e6697da63def3ee037cb70255a';
+export const M1016_EVENT_EXPECTED_SEMANTIC_SHA256 = '6517444993e9e26fa09f2558fd9fb0bf4f24a12d78071ddf3e40a3f30db919b8';
+export const M1016_B26_EXPECTED_SEMANTIC_SHA256 = '6fa1b473ec91ab569d9be33f465e21651f20d372dd22d4ac25bae6fb10971120';
+export const M1016_POLICY_SEMANTIC_SHA256 = 'f5beb694bb91ecde227d1405c56f7fdc73d71169d2bbe7b5c32378c3235f8ea7';
+export const M1016_APPROVED_SOURCE_FILES_SEMANTIC_SHA256 = '17101bb26e4feb157e05c589b211fd06899e6c11185ac7e7ed2e08ca589ff8c3';
+export const M1016_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256 = 'd6abcadf170d1cdddd113863439bdc4a8e13e82683483c9b3a9285002d2e5d6b';
+export const M1016_B26_STATIC_POLICY_SEMANTIC_SHA256 = 'a967b692a61463029d4d899d8ebe32fbad0b57d1113824be5c9ad8a9dea4387e';
+export const M1016_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256 = '1f2e9cad834f2593fad58bf57ecbf7c8825fefe990d7bedd73ce8a3387ffbd11';
+export const M1016_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256 = 'b3f9fb4563a32ceb7e365679dc08ac326b65bc14766412c7738eefe64be7a323';
+export const M1016_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id', 'sourceContractBaseline', 'previousPromotion', 'previousPromotionContract',
+  'immutableGovernanceBaseline', 'runtimeStatus', 'scope', 'promotionMode',
+  'allowsHistoricalV1Promotion', 'allowsDualPublish', 'approvedSourceFiles',
+  'requiredCompatibilityChecks', 'b26StaticPolicy', 'canonicalOpenApiSource',
+  'canonicalEventSource',
+]);
+
+export const M1016_CANONICAL_ROUTE_PROJECTIONS = Object.freeze([
+  Object.freeze({ id: 'M1016-SYNC-RECEIPTS', method: 'GET', path: '/api/v1/learning/sync/receipts', operationId: 'listM1016LearningSyncReceipts' }),
+  Object.freeze({ id: 'M1016-SYNC-CURSOR', method: 'GET', path: '/api/v1/learning/sync/cursor', operationId: 'getM1016LearningSyncCursor' }),
+  Object.freeze({ id: 'M1016-SYNC-CONFLICTS', method: 'GET', path: '/api/v1/learning/sync/conflicts', operationId: 'listM1016LearningSyncConflicts' }),
+  Object.freeze({ id: 'M1016-SYNC-RECOVERY', method: 'POST', path: '/api/v1/learning/sync/conflicts/{conflictId}/recovery', operationId: 'recoverM1016LearningSyncConflict' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-PREFERENCES', method: 'GET', path: '/api/v1/notifications/preferences', operationId: 'listM1016NotificationPreferences' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-PREFERENCE-UPDATE', method: 'PUT', path: '/api/v1/notifications/preferences/{notificationType}/{channel}', operationId: 'updateM1016NotificationPreference' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-MESSAGES', method: 'GET', path: '/api/v1/notifications/messages', operationId: 'listM1016NotificationMessages' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-MESSAGE-READ', method: 'PUT', path: '/api/v1/notifications/messages/{messageId}/read', operationId: 'markM1016NotificationMessageRead' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-MESSAGES-READ-ALL', method: 'PUT', path: '/api/v1/notifications/messages/read-all', operationId: 'markAllM1016NotificationMessagesRead' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-RETRY', method: 'POST', path: '/internal/v1/notifications/retry', operationId: 'retryM1016NotificationDelivery' }),
+  Object.freeze({ id: 'M1016-NOTIFICATION-RECOVERY', method: 'POST', path: '/internal/v1/notifications/recovery', operationId: 'recoverM1016NotificationDelivery' }),
+  Object.freeze({ id: 'M1016-LEARNER-SUPPORT-LIST', method: 'GET', path: '/api/v1/support/tickets', operationId: 'listM1016LearnerSupportTickets' }),
+  Object.freeze({ id: 'M1016-LEARNER-SUPPORT-CREATE', method: 'POST', path: '/api/v1/support/tickets', operationId: 'createM1016SupportTicket' }),
+  Object.freeze({ id: 'M1016-LEARNER-SUPPORT-GET', method: 'GET', path: '/api/v1/support/tickets/{ticketId}', operationId: 'getM1016LearnerSupportTicket' }),
+  Object.freeze({ id: 'M1016-LEARNER-SUPPORT-MESSAGE', method: 'POST', path: '/api/v1/support/tickets/{ticketId}/messages', operationId: 'addM1016LearnerSupportTicketMessage' }),
+  Object.freeze({ id: 'M1016-ADMIN-SUPPORT-LIST', method: 'GET', path: '/api/v1/admin/ops/tickets', operationId: 'listM1016AdminSupportTickets' }),
+  Object.freeze({ id: 'M1016-ADMIN-SUPPORT-GET', method: 'GET', path: '/api/v1/admin/ops/tickets/{ticketId}', operationId: 'getM1016AdminSupportTicket' }),
+  Object.freeze({ id: 'M1016-ADMIN-SUPPORT-MESSAGE', method: 'POST', path: '/api/v1/admin/ops/tickets/{ticketId}/messages', operationId: 'addM1016AdminSupportTicketMessage' }),
+  Object.freeze({ id: 'M1016-ADMIN-SUPPORT-COMMAND', method: 'POST', path: '/api/v1/admin/ops/tickets/{ticketId}/commands', operationId: 'submitM1016SupportTicketCommand' }),
+]);
+
+// These adapter operations are intentionally part of the M1-016 projection
+// only for their explicit historical/deprecation and fail-closed migration
+// contract. Their v1 domain semantics are not promoted; the B13 create adapter
+// maps a closed request to the sole canonical support owner without accepting
+// client-owned priority, tenant, assignment, SLA or state.
+export const M1016_HISTORICAL_ADAPTER_ROUTE_PROJECTIONS = Object.freeze([
+  Object.freeze({ id: 'M1016-HISTORICAL-SYNC-ENQUEUE', method: 'POST', path: '/api/v1/sync/changes', operationId: 'enqueueB11SyncChanges' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-SYNC-LIST', method: 'GET', path: '/api/v1/sync/changes', operationId: 'listB11SyncChanges' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-NOTIFICATION-SETTINGS-GET', method: 'GET', path: '/api/v1/settings/notifications', operationId: 'getB11NotificationPreference' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-NOTIFICATION-SETTINGS-UPDATE', method: 'PUT', path: '/api/v1/settings/notifications', operationId: 'updateB11NotificationPreference' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-MESSAGES-LIST', method: 'GET', path: '/api/v1/messages', operationId: 'listB11Messages' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-MESSAGE-READ', method: 'POST', path: '/api/v1/messages/{messageId}/read', operationId: 'markB11MessageRead' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-SYNC-CURSOR-GET', method: 'GET', path: '/api/v1/sync/cursor', operationId: 'getB11SyncCursor' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-SYNC-CURSOR-UPDATE', method: 'PUT', path: '/api/v1/sync/cursor', operationId: 'updateB11SyncCursor' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-SYNC-CONFLICTS', method: 'GET', path: '/api/v1/sync/conflicts', operationId: 'listB11SyncConflicts' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-SYNC-RECOVERY', method: 'POST', path: '/api/v1/sync/conflicts/{conflictId}/recovery', operationId: 'recoverB11SyncConflict' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-TRUSTED-EVENTS', method: 'POST', path: '/internal/v1/notifications/trusted-events', operationId: 'consumeB12NotificationTrustedEvent' }),
+  Object.freeze({ id: 'M1016-HISTORICAL-ADMIN-SUPPORT-CREATE', method: 'POST', path: '/api/v1/admin/ops/tickets', operationId: 'createB13SupportTicket' }),
+]);
+export const M1016_B5_STABLE_PARAMETER_PROJECTIONS = Object.freeze(['B5TicketId', 'B5IdempotencyKey']);
+export const M1016_OPENAPI_PARAMETER_PROJECTIONS = Object.freeze(['M1016ConflictId', 'M1016IdempotencyKey', 'M1016SupportTicketId']);
+export const M1016_OPENAPI_SCHEMA_PROJECTIONS = Object.freeze([
+  'M1016SyncProtocolContext', 'M1016SyncReceipt', 'M1016SyncCursor', 'M1016SyncConflict',
+  'M1016SyncRecoveryRequest', 'M1016SyncRecoveryResult', 'M1016NotificationDndWindow',
+  'M1016NotificationPreference', 'M1016NotificationPreferenceCommand', 'M1016NotificationMessage',
+  'M1016NotificationReadReceipt', 'M1016NotificationReadAllReceipt', 'M1016NotificationRetryCommand',
+  'M1016NotificationRetryResult', 'M1016NotificationRecoveryCommand', 'M1016NotificationRecoveryResult',
+  'M1016SupportRestrictedContentRef', 'M1016SupportAttachmentRef', 'M1016SupportUsableContentRef',
+  'M1016SupportUsableAttachmentRef', 'M1016SupportAssignmentHistory', 'M1016SupportAssignment',
+  'M1016SupportSlaHistory', 'M1016SupportSla', 'M1016SupportResolution', 'M1016SupportRetention',
+  'M1016SupportTicket', 'M1016SupportTicketCreateRequest', 'M1016SupportMessage',
+  'M1016SupportMessageCreateRequest', 'M1016SupportAssignCommand', 'M1016SupportTransitionCommand',
+  'M1016SupportResolveCommand', 'M1016SupportAdminCommandRequest', 'M1016SupportCommandResult',
+]);
+export const M1016_OPENAPI_TAG_PROJECTIONS = Object.freeze(['M1-016-Sync', 'M1-016-Notification', 'M1-016-Support']);
+
+export const M1016_EVENT_NAMES = Object.freeze([
+  'notification.requested.v2', 'notification.retry_scheduled.v2', 'notification.recovery.completed.v2',
+  'sync.command_receipted.v2', 'sync.conflict_detected.v2', 'sync.recovered.v2',
+  'support.ticket.created.v2', 'support.ticket.resolved.v2',
+]);
+export const M1016_REWIRED_EVENT_NAMES = Object.freeze([
+  'learning.review.scheduled.v2', 'commerce.entitlement.activated.v2', 'commerce.refund.settled.v2',
+]);
+export const M1016_EVENT_PAYLOAD_SCHEMA_PROJECTIONS = Object.freeze([
+  'M1016NotificationRequested', 'M1016NotificationRetryScheduled', 'M1016NotificationRecoveryCompleted',
+  'M1016SyncCommandReceipted', 'M1016SyncConflictDetected', 'M1016SyncRecovered',
+  'M1016SupportTicketCreated', 'M1016SupportTicketResolved',
+]);
+export const M1016_EVENT_CONSUMERS = Object.freeze({
+  'notification.requested.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-notification.v1' }),
+    Object.freeze({ service: 'analytics-service', consumerGroup: 'cg.analytics-from-notification.v1' }),
+  ]),
+  'notification.retry_scheduled.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-notification.v1' }),
+  ]),
+  'notification.recovery.completed.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-notification.v1' }),
+    Object.freeze({ service: 'analytics-service', consumerGroup: 'cg.analytics-from-notification.v1' }),
+  ]),
+  'sync.command_receipted.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' }),
+  ]),
+  'sync.conflict_detected.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' }),
+  ]),
+  'sync.recovered.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-learning.v1' }),
+  ]),
+  'support.ticket.created.v2': Object.freeze([
+    Object.freeze({ service: 'notification-service', consumerGroup: 'cg.notification-from-admin-ops.v1' }),
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-admin-ops.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-admin-ops.v1' }),
+  ]),
+  'support.ticket.resolved.v2': Object.freeze([
+    Object.freeze({ service: 'notification-service', consumerGroup: 'cg.notification-from-admin-ops.v1' }),
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-admin-ops.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-admin-ops.v1' }),
+  ]),
+});
+export const M1016_ASYNCAPI_CHANNEL_PROJECTIONS = Object.freeze(M1016_EVENT_NAMES.map((eventName) => eventName.replaceAll('.', '_')));
+export const M1016_ASYNCAPI_OPERATION_PROJECTIONS = Object.freeze([
+  'subscribe_learning_review_scheduled_v2_cg_notification_from_learning_v1',
+  'subscribe_commerce_entitlement_activated_v2_cg_notification_from_commerce_v1',
+  'subscribe_commerce_refund_settled_v2_cg_notification_from_commerce_v1',
+  'publish_notification_requested_v2',
+  'subscribe_notification_requested_v2_cg_workflow_from_notification_v1',
+  'subscribe_notification_requested_v2_cg_analytics_from_notification_v1',
+  'publish_notification_retry_scheduled_v2',
+  'subscribe_notification_retry_scheduled_v2_cg_workflow_from_notification_v1',
+  'publish_notification_recovery_completed_v2',
+  'subscribe_notification_recovery_completed_v2_cg_workflow_from_notification_v1',
+  'subscribe_notification_recovery_completed_v2_cg_analytics_from_notification_v1',
+  'publish_sync_command_receipted_v2',
+  'subscribe_sync_command_receipted_v2_cg_workflow_from_learning_v1',
+  'publish_sync_conflict_detected_v2',
+  'subscribe_sync_conflict_detected_v2_cg_workflow_from_learning_v1',
+  'publish_sync_recovered_v2',
+  'subscribe_sync_recovered_v2_cg_workflow_from_learning_v1',
+  'publish_support_ticket_created_v2',
+  'subscribe_support_ticket_created_v2_cg_notification_from_admin_ops_v1',
+  'subscribe_support_ticket_created_v2_cg_workflow_from_admin_ops_v1',
+  'subscribe_support_ticket_created_v2_cg_audit_from_admin_ops_v1',
+  'publish_support_ticket_resolved_v2',
+  'subscribe_support_ticket_resolved_v2_cg_notification_from_admin_ops_v1',
+  'subscribe_support_ticket_resolved_v2_cg_workflow_from_admin_ops_v1',
+  'subscribe_support_ticket_resolved_v2_cg_audit_from_admin_ops_v1',
+]);
+export const M1016_FRAGMENT_INVENTORY_ENTRY = Object.freeze({
+  path: 'packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json',
+  eventNames: M1016_EVENT_NAMES,
+});
+export const M1016_EVENT_GOVERNANCE_CLOSURE = Object.freeze({
+  gapId: 'EVENT-GAP-BIND-NOTIF-001',
+  family: 'EVENT-GAP-BIND',
+  status: 'D2_CONTRACT_CLOSED',
+  d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-016'],
+});
+
+export const M1016_B26_SOURCE_REF = 'packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json';
+export const M1016_B26_ADDED_TOPIC_PROJECTIONS = Object.freeze(['platform.admin-ops.v1']);
+export const M1016_B26_REPLACED_TOPIC_PROJECTIONS = Object.freeze(['platform.commerce.v1']);
+export const M1016_B26_ADDED_ROUTE_PROJECTIONS = Object.freeze([...M1016_EVENT_NAMES]);
+export const M1016_B26_REPLACED_ROUTE_PROJECTIONS = Object.freeze([
+  'commerce.entitlement.activated.v2', 'commerce.refund.settled.v2', 'learning.review.scheduled.v2',
+]);
+
+export function isValidM1016PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1016_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1016_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1015_COMMERCE_PROMOTION_ID
+    && allowance.previousPromotionContract === 'config/p1r-commerce-contract.v1.json'
+    && allowance.immutableGovernanceBaseline === M1016_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'M1016_OPENAPI_EVENT_GOVERNANCE_B26_STATIC_WITH_B11_B5_B13_V1_HISTORICAL'
+    && allowance.promotionMode === 'FUTURE_M1016_V2_ONLY'
+    && allowance.allowsHistoricalV1Promotion === false
+    && allowance.allowsDualPublish === false
+    && stableGovernanceSha256(allowance.approvedSourceFiles) === M1016_APPROVED_SOURCE_FILES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.requiredCompatibilityChecks) === M1016_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.b26StaticPolicy) === M1016_B26_STATIC_POLICY_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.canonicalOpenApiSource) === M1016_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.canonicalEventSource) === M1016_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256;
+}
+
+function replaceM1016NamedArrayEntry(target, approved, key, name) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const targetMatches = target.filter((entry) => entry?.[key] === name);
+  const approvedMatches = approved.filter((entry) => entry?.[key] === name);
+  if (targetMatches.length !== 1 || approvedMatches.length !== 1) return false;
+  const targetIndex = target.findIndex((entry) => entry?.[key] === name);
+  target[targetIndex] = structuredClone(approvedMatches[0]);
+  return true;
+}
+
+function insertM1016FragmentInventoryEntry(expected, approved) {
+  const previousInventory = expected?.['x-p1r-event-governance']?.fragmentInventory;
+  const approvedInventory = approved?.['x-p1r-event-governance']?.fragmentInventory;
+  const approvedEntry = Array.isArray(approvedInventory)
+    ? approvedInventory.find((entry) => entry?.path === M1016_FRAGMENT_INVENTORY_ENTRY.path)
+    : undefined;
+  if (stableGovernanceValue(approvedEntry) !== stableGovernanceValue(M1016_FRAGMENT_INVENTORY_ENTRY)) return false;
+  return insertM1015NamedArrayEntry(previousInventory, approvedInventory, 'path', M1016_FRAGMENT_INVENTORY_ENTRY.path);
+}
+
+function replaceM1016EventGovernanceClosure(expected, approved) {
+  const previousClosures = expected?.['x-p1r-event-governance']?.plannedClosures;
+  const approvedClosures = approved?.['x-p1r-event-governance']?.plannedClosures;
+  const approvedMatches = Array.isArray(approvedClosures)
+    ? approvedClosures.filter((entry) => entry?.gapId === M1016_EVENT_GOVERNANCE_CLOSURE.gapId)
+    : [];
+  if (approvedMatches.length !== 1 || stableGovernanceValue(approvedMatches[0]) !== stableGovernanceValue(M1016_EVENT_GOVERNANCE_CLOSURE)) return false;
+  return replaceM1016NamedArrayEntry(previousClosures, approvedClosures, 'gapId', M1016_EVENT_GOVERNANCE_CLOSURE.gapId);
+}
+
+export function buildM1016OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1016PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1016_OPENAPI_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous.paths) || !isRecord(approved.paths)
+    || !isRecord(previous.components?.parameters) || !isRecord(previous.components?.schemas)
+    || !isRecord(approved.components?.parameters) || !isRecord(approved.components?.schemas)
+    || !Array.isArray(previous.tags) || !Array.isArray(approved.tags)) return undefined;
+  const expected = structuredClone(previous);
+  // The two B5 parameters are pre-existing stable identity inputs.  They are
+  // checked, never copied from a mutable current node.
+  for (const name of M1016_B5_STABLE_PARAMETER_PROJECTIONS) {
+    if (!Object.hasOwn(previous.components.parameters, name)
+      || !Object.hasOwn(approved.components.parameters, name)
+      || stableGovernanceValue(previous.components.parameters[name]) !== stableGovernanceValue(approved.components.parameters[name])) return undefined;
+  }
+  if (!M1016_CANONICAL_ROUTE_PROJECTIONS.every((projection) => copyM1015Operation(expected, approved, projection))) return undefined;
+  if (!M1016_HISTORICAL_ADAPTER_ROUTE_PROJECTIONS.every((projection) => copyM1015Operation(expected, approved, projection))) return undefined;
+  for (const name of M1016_OPENAPI_PARAMETER_PROJECTIONS) {
+    if (!insertM1015NamedEntry(expected.components.parameters, approved.components.parameters, name)) return undefined;
+  }
+  for (const name of M1016_OPENAPI_SCHEMA_PROJECTIONS) {
+    if (!insertM1015NamedEntry(expected.components.schemas, approved.components.schemas, name)) return undefined;
+  }
+  for (const name of M1016_OPENAPI_TAG_PROJECTIONS) {
+    if (!insertM1015NamedArrayEntry(expected.tags, approved.tags, 'name', name)) return undefined;
+  }
+  return expected;
+}
+
+export function buildM1016EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1016PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1016_EVENT_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous['x-p1r-event-governance']) || !isRecord(approved['x-p1r-event-governance'])) return undefined;
+  const expected = structuredClone(previous);
+  if (!insertM1016FragmentInventoryEntry(expected, approved)) return undefined;
+  if (!replaceM1016EventGovernanceClosure(expected, approved)) return undefined;
+  if (!M1016_REWIRED_EVENT_NAMES.every((name) => replaceM1016NamedArrayEntry(expected.events, approved.events, 'eventName', name))) return undefined;
+  if (!M1016_EVENT_NAMES.every((name) => insertM1015NamedArrayEntry(expected.events, approved.events, 'eventName', name))) return undefined;
+  if (!M1016_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.every((name) => insertM1015NamedEntry(expected.payloadSchemas, approved.payloadSchemas, name))) return undefined;
+  if (!M1016_ASYNCAPI_CHANNEL_PROJECTIONS.every((name) => insertM1015NamedEntry(expected.asyncapi?.channels, approved.asyncapi?.channels, name))) return undefined;
+  if (!M1016_ASYNCAPI_OPERATION_PROJECTIONS.every((name) => insertM1015NamedEntry(expected.asyncapi?.operations, approved.asyncapi?.operations, name))) return undefined;
+  return expected;
+}
+
+export function buildM1016B26ExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1016PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1016_B26_SOURCE_SEMANTIC_SHA256
+    || !Array.isArray(previous.sourceRefs) || !Array.isArray(approved.sourceRefs)
+    || !Array.isArray(previous.topics) || !Array.isArray(approved.topics)
+    || !Array.isArray(previous.eventRouting) || !Array.isArray(approved.eventRouting)) return undefined;
+  const expected = structuredClone(previous);
+  if (!insertM1015ArrayValue(expected.sourceRefs, approved.sourceRefs, M1016_B26_SOURCE_REF)) return undefined;
+  if (!M1016_B26_ADDED_TOPIC_PROJECTIONS.every((name) => insertM1015NamedArrayEntry(expected.topics, approved.topics, 'name', name))) return undefined;
+  if (!M1016_B26_REPLACED_TOPIC_PROJECTIONS.every((name) => replaceM1016NamedArrayEntry(expected.topics, approved.topics, 'name', name))) return undefined;
+  if (!M1016_B26_ADDED_ROUTE_PROJECTIONS.every((name) => insertM1015NamedArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', name))) return undefined;
+  if (!M1016_B26_REPLACED_ROUTE_PROJECTIONS.every((name) => replaceM1016NamedArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', name))) return undefined;
+  return expected;
+}
+
+function compareM1016Value(changes, kind, previousValue, currentValue, location, reason) {
+  if (stableGovernanceValue(previousValue) !== stableGovernanceValue(currentValue)) {
+    changes.push(describeChange(kind, location, reason));
+  }
+}
+
+export const M1016_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1016_CANONICAL_ROUTE_PROJECTIONS.map((projection) => [
+    `${projection.method} ${projection.path}`, 'approved canonical M1-016 operation changed',
+  ]),
+  ...M1016_HISTORICAL_ADAPTER_ROUTE_PROJECTIONS.map((projection) => [
+    `${projection.method} ${projection.path}`, 'approved historical M1-016 adapter migration contract changed',
+  ]),
+  ...M1016_OPENAPI_TAG_PROJECTIONS.map((name) => [`tags.${name}`, 'approved M1-016 API tag added']),
+  ...M1016_OPENAPI_PARAMETER_PROJECTIONS.map((name) => [`components.parameters.${name}`, 'approved M1-016 component parameter added']),
+  ...M1016_OPENAPI_SCHEMA_PROJECTIONS.map((name) => [`components.schemas.${name}`, 'approved M1-016 component schema added']),
+]);
+
+export const M1016_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ['x-p1r-event-governance.fragmentInventory', 'approved M1-016 event fragment inventory updated'],
+  ['x-p1r-event-governance.plannedClosures.EVENT-GAP-BIND-NOTIF-001', 'approved M1-016 event gap closure recorded'],
+  ...M1016_REWIRED_EVENT_NAMES.map((name) => [name, 'approved M1-016 event consumer binding added']),
+  ...M1016_EVENT_NAMES.map((name) => [name, 'approved canonical M1-016 event added']),
+  ...M1016_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.map((name) => [`payloadSchemas.${name}`, 'approved M1-016 event payload added']),
+  ...M1016_ASYNCAPI_CHANNEL_PROJECTIONS.map((name) => [`asyncapi.channels.${name}`, 'approved M1-016 AsyncAPI channel added']),
+  ...M1016_ASYNCAPI_OPERATION_PROJECTIONS.map((name) => [`asyncapi.operations.${name}`, 'approved M1-016 AsyncAPI operation added']),
+]);
+
+export const M1016_B26_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ['sourceRefs', 'approved M1-016 event fragment source reference added'],
+  ...M1016_B26_ADDED_TOPIC_PROJECTIONS.map((name) => [`topics.${name}`, 'approved M1-016 B26 topic added']),
+  ...M1016_B26_REPLACED_TOPIC_PROJECTIONS.map((name) => [`topics.${name}`, 'approved M1-016 B26 topic consumer policy changed']),
+  ...M1016_B26_ADDED_ROUTE_PROJECTIONS.map((name) => [`eventRouting.${name}`, 'approved M1-016 B26 route added']),
+  ...M1016_B26_REPLACED_ROUTE_PROJECTIONS.map((name) => [`eventRouting.${name}`, 'approved M1-016 B26 route consumer policy changed']),
+]);
+
+export function compareM1016OpenApiDescriptors(previous, current) {
+  const changes = [];
+  for (const projection of [...M1016_CANONICAL_ROUTE_PROJECTIONS, ...M1016_HISTORICAL_ADAPTER_ROUTE_PROJECTIONS]) {
+    const method = projection.method.toLowerCase();
+    compareM1016Value(changes, 'openapi', previous?.paths?.[projection.path]?.[method], current?.paths?.[projection.path]?.[method], `${projection.method} ${projection.path}`, projection.id.startsWith('M1016-HISTORICAL-') ? 'approved historical M1-016 adapter migration contract changed' : 'approved canonical M1-016 operation changed');
+  }
+  for (const name of M1016_OPENAPI_TAG_PROJECTIONS) {
+    compareM1016Value(changes, 'openapi', (previous?.tags ?? []).find((tag) => tag?.name === name), (current?.tags ?? []).find((tag) => tag?.name === name), `tags.${name}`, 'approved M1-016 API tag added');
+  }
+  for (const name of M1016_OPENAPI_PARAMETER_PROJECTIONS) {
+    compareM1016Value(changes, 'openapi', previous?.components?.parameters?.[name], current?.components?.parameters?.[name], `components.parameters.${name}`, 'approved M1-016 component parameter added');
+  }
+  for (const name of M1016_OPENAPI_SCHEMA_PROJECTIONS) {
+    compareM1016Value(changes, 'openapi', previous?.components?.schemas?.[name], current?.components?.schemas?.[name], `components.schemas.${name}`, 'approved M1-016 component schema added');
+  }
+  return changes;
+}
+
+export function compareM1016EventDescriptors(previous, current) {
+  const changes = [];
+  compareM1016Value(changes, 'events', previous?.['x-p1r-event-governance']?.fragmentInventory, current?.['x-p1r-event-governance']?.fragmentInventory, 'x-p1r-event-governance.fragmentInventory', 'approved M1-016 event fragment inventory updated');
+  compareM1016Value(changes, 'events', (previous?.['x-p1r-event-governance']?.plannedClosures ?? []).find((entry) => entry?.gapId === M1016_EVENT_GOVERNANCE_CLOSURE.gapId), (current?.['x-p1r-event-governance']?.plannedClosures ?? []).find((entry) => entry?.gapId === M1016_EVENT_GOVERNANCE_CLOSURE.gapId), 'x-p1r-event-governance.plannedClosures.EVENT-GAP-BIND-NOTIF-001', 'approved M1-016 event gap closure recorded');
+  for (const name of M1016_EVENT_NAMES) {
+    compareM1016Value(changes, 'events', (previous?.events ?? []).find((event) => event?.eventName === name), (current?.events ?? []).find((event) => event?.eventName === name), name, 'approved canonical M1-016 event added');
+  }
+  for (const name of M1016_REWIRED_EVENT_NAMES) {
+    compareM1016Value(changes, 'events', (previous?.events ?? []).find((event) => event?.eventName === name), (current?.events ?? []).find((event) => event?.eventName === name), name, 'approved M1-016 event consumer binding added');
+  }
+  for (const name of M1016_EVENT_PAYLOAD_SCHEMA_PROJECTIONS) {
+    compareM1016Value(changes, 'events', previous?.payloadSchemas?.[name], current?.payloadSchemas?.[name], `payloadSchemas.${name}`, 'approved M1-016 event payload added');
+  }
+  for (const name of M1016_ASYNCAPI_CHANNEL_PROJECTIONS) {
+    compareM1016Value(changes, 'events', previous?.asyncapi?.channels?.[name], current?.asyncapi?.channels?.[name], `asyncapi.channels.${name}`, 'approved M1-016 AsyncAPI channel added');
+  }
+  for (const name of M1016_ASYNCAPI_OPERATION_PROJECTIONS) {
+    compareM1016Value(changes, 'events', previous?.asyncapi?.operations?.[name], current?.asyncapi?.operations?.[name], `asyncapi.operations.${name}`, 'approved M1-016 AsyncAPI operation added');
+  }
+  return changes;
+}
+
+export function compareM1016B26Descriptors(previous, current) {
+  const changes = [];
+  compareM1016Value(changes, 'events', previous?.sourceRefs, current?.sourceRefs, 'sourceRefs', 'approved M1-016 event fragment source reference added');
+  for (const name of M1016_B26_ADDED_TOPIC_PROJECTIONS) {
+    compareM1016Value(changes, 'events', (previous?.topics ?? []).find((topic) => topic?.name === name), (current?.topics ?? []).find((topic) => topic?.name === name), `topics.${name}`, 'approved M1-016 B26 topic added');
+  }
+  for (const name of M1016_B26_REPLACED_TOPIC_PROJECTIONS) {
+    compareM1016Value(changes, 'events', (previous?.topics ?? []).find((topic) => topic?.name === name), (current?.topics ?? []).find((topic) => topic?.name === name), `topics.${name}`, 'approved M1-016 B26 topic consumer policy changed');
+  }
+  for (const name of M1016_B26_ADDED_ROUTE_PROJECTIONS) {
+    compareM1016Value(changes, 'events', (previous?.eventRouting ?? []).find((entry) => entry?.eventName === name), (current?.eventRouting ?? []).find((entry) => entry?.eventName === name), `eventRouting.${name}`, 'approved M1-016 B26 route added');
+  }
+  for (const name of M1016_B26_REPLACED_ROUTE_PROJECTIONS) {
+    compareM1016Value(changes, 'events', (previous?.eventRouting ?? []).find((entry) => entry?.eventName === name), (current?.eventRouting ?? []).find((entry) => entry?.eventName === name), `eventRouting.${name}`, 'approved M1-016 B26 route consumer policy changed');
+  }
+  return changes;
+}
+
+function compareM1016OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1016PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-016.openapiPromotion', 'M1-016 promotion allowance cannot be applied without the frozen notification/sync/support policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1016_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-016.openapiPromotion.source', 'M1-016 OpenAPI promotion source is not the frozen 878f9eb source projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet('openapi', previous, current, M1016_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS, 'm1-016.openapiPromotion.change-descriptors', 'current OpenAPI changes do not exactly match the frozen M1-016 descriptor set', compareM1016OpenApiDescriptors));
+  const expectedProjection = buildM1016OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-016.openapiPromotion.projection', 'the approved canonical M1-016 OpenAPI projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1016_OPENAPI_EXPECTED_SEMANTIC_SHA256) changes.push(describeChange('openapi', 'm1-016.openapiPromotion.expected-projection', 'the allowlisted M1-016 OpenAPI projection does not match its frozen semantic digest'));
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) changes.push(describeChange('openapi', 'm1-016.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source M1-016 projection'));
+  }
+  return changes;
+}
+
+function compareM1016EventPromotion(previous, current, allowance) {
+  if (!isValidM1016PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-016.eventPromotion', 'M1-016 event allowance cannot be applied without the frozen notification/sync/support policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1016_EVENT_SOURCE_SEMANTIC_SHA256) changes.push(describeChange('events', 'm1-016.eventPromotion.source', 'M1-016 event source is not the frozen 878f9eb source projection'));
+  changes.push(...compareFrozenDescriptorSet('events', previous, current, M1016_EVENT_EXPECTED_CHANGE_DESCRIPTORS, 'm1-016.eventPromotion.change-descriptors', 'current event changes do not exactly match the frozen M1-016 descriptor set', compareM1016EventDescriptors));
+  const expectedProjection = buildM1016EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-016.eventPromotion.projection', 'the approved canonical M1-016 event projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1016_EVENT_EXPECTED_SEMANTIC_SHA256) changes.push(describeChange('events', 'm1-016.eventPromotion.expected-projection', 'the allowlisted M1-016 event projection does not match its frozen semantic digest'));
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) changes.push(describeChange('events', 'm1-016.eventPromotion.projection', 'current event catalog is not the unique frozen-source M1-016 projection'));
+  }
+  return changes;
+}
+
+function compareM1016B26Promotion(previous, current, allowance) {
+  if (!isValidM1016PromotionAllowance(allowance)) {
+    return [describeChange('events', 'b26.m1-016.compatibilityPromotion', 'M1-016 B26 allowance cannot be applied without the frozen notification/sync/support policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1016_B26_SOURCE_SEMANTIC_SHA256) changes.push(describeChange('events', 'b26.m1-016.source', 'M1-016 B26 source is not the frozen 878f9eb static projection'));
+  changes.push(...compareFrozenDescriptorSet('events', previous, current, M1016_B26_EXPECTED_CHANGE_DESCRIPTORS, 'b26.m1-016.change-descriptors', 'current B26 changes do not exactly match the frozen M1-016 descriptor set', compareM1016B26Descriptors));
+  const expectedProjection = buildM1016B26ExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'b26.m1-016.projection', 'the approved static M1-016 B26 topics and routes cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1016_B26_EXPECTED_SEMANTIC_SHA256) changes.push(describeChange('events', 'b26.m1-016.expected-projection', 'the allowlisted M1-016 B26 projection does not match its frozen semantic digest'));
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) changes.push(describeChange('events', 'b26.m1-016.projection', 'current B26 policy differs from the explicit static-only M1-016 projection'));
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -3593,6 +4029,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID) {
+    return compareM1016B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1015_COMMERCE_PROMOTION_ID) {
     return compareM1015B26Promotion(governanceBaseline, current, allowance);
   }
@@ -3760,6 +4199,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID) {
+    return compareM1016EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1015_COMMERCE_PROMOTION_ID) {
     return compareM1015EventPromotion(previous, current, allowance);
   }
@@ -3895,6 +4337,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID) {
+      return compareM1016OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1015_COMMERCE_PROMOTION_ID) {
       return compareM1015OpenApiPromotion(previous, current, allowance);
     }

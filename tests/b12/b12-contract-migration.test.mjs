@@ -94,7 +94,7 @@ test('B12 OpenAPI fragment remains a fail-closed composition input without share
   for (const [route, pathItem] of Object.entries(fragmentOpenApi.paths)) {
     for (const [method, operation] of Object.entries(pathItem)) {
       if (!['get', 'post', 'put', 'patch', 'delete'].includes(method)) continue
-      assert.match(operation.operationId, /(?:B12|M1014)/)
+      assert.match(operation.operationId, /(?:B12|M1014|M1016)/)
       assert.equal(operationIds.has(operation.operationId), false, `duplicate operation ${operation.operationId}`)
       operationIds.add(operation.operationId)
       assert.ok(Array.isArray(operation.security) && operation.security.length > 0, `${method} ${route} security`)

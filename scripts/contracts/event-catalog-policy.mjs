@@ -75,7 +75,8 @@ const fragmentInventory = (path, eventNames) => ({ path, eventNames: eventNames.
 // and the ordered event contribution of each path, so a coordinated catalog
 // edit cannot hide a rename, nested file, or cross-fragment move. Later M1
 // tasks add isolated source fragments for their approved canonical facts;
-// M1-015 contributes only the nine frozen commerce v2 facts below.
+// M1-016 contributes only the eight frozen notification, sync and support
+// v2 facts below.
 export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/b1-assessment-privacy.events.json', 'assessment.item.submitted.v1 auth.device.kicked.v1 privacy.export.requested.v1 privacy.export.completed.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/b10-learning-assessment.events.json', 'assessment.attempt.submitted.v1 assessment.attempt.assessed.v1 assessment.placement.completed.v1 learning.mastery.projected.v1 learning.review.scheduled.v1 workflow.assessment_learning.saga_started.v1 workflow.assessment_learning.saga_compensated.v1 workflow.event.replayed.v1'),
@@ -94,6 +95,7 @@ export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/b9-learner-content.events.json', 'learner.profile.updated.v1 learner.target.updated.v1 learner.first_day.projected.v1 content.version.submitted.v1 content.version.reviewed.v1 content.version.published.v1 content.version.unpublished.v1 content.version.rolled_back.v1 content.public_projection.invalidated.v1'),
   fragmentInventory('packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json', 'learning.task.completed.v2 gamification.xp.ledger_posted.v2 gamification.reward.granted.v2 study_room.seat_joined.v2 study_room.focus_started.v2 study_room.seat_left.v2 leaderboard.snapshot_published.v2 social.report.created.v2'),
   fragmentInventory('packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json', 'commerce.order.created.v2 commerce.payment.requested.v2 commerce.payment.callback_received.v2 commerce.payment.verified.v2 commerce.entitlement.activated.v2 commerce.entitlement.revoked.v2 commerce.refund.settled.v2 commerce.reconciliation.discrepancy_recorded.v2 commerce.reconciliation.recovery_receipted.v2'),
+  fragmentInventory('packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json', 'notification.requested.v2 notification.retry_scheduled.v2 notification.recovery.completed.v2 sync.command_receipted.v2 sync.conflict_detected.v2 sync.recovered.v2 support.ticket.created.v2 support.ticket.resolved.v2'),
 ]);
 
 export const EXPECTED_FORBIDDEN_PAYLOAD_FIELD_PATTERNS = [

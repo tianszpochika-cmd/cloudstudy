@@ -73,7 +73,7 @@ test('B13 OpenAPI covers commerce, admin-ops, analytics and official-site bounda
 
   const operationIds = new Set()
   for (const { route, method, operation } of operations(openApi)) {
-    assert.match(operation.operationId, /(?:B13|M1015)/, `${method} ${route} must have a B13/M1-015 operation id`)
+    assert.match(operation.operationId, /(?:B13|M1015|M1016)/, `${method} ${route} must have a B13/M1-015/M1-016 operation id`)
     assert.equal(operationIds.has(operation.operationId), false, `duplicate operation ${operation.operationId}`)
     operationIds.add(operation.operationId)
 
@@ -104,14 +104,43 @@ test('B13 OpenAPI covers commerce, admin-ops, analytics and official-site bounda
 
   walk(openApi.components.schemas, (value, location) => {
     if (!value || typeof value !== 'object') return
-    if (value.type === 'object' && value.properties) assert.equal(value.additionalProperties, false, `${location} must be closed`)
+    const isM1016ScanStatusRefinement = /^\$\.M1016SupportUsable(?:Content|Attachment)Ref\.allOf\.1$/.test(location)
+    if (value.type === 'object' && value.properties && !isM1016ScanStatusRefinement) {
+      assert.equal(value.additionalProperties, false, `${location} must be closed`)
+    }
     for (const name of Object.keys(value.properties ?? {})) {
-      assert.doesNotMatch(name, forbiddenProperty, `${location}.${name} is a client authority or sensitive raw field`)
+      const isM1016ServerDerivedTenant = location === '$.M1016SupportTicket' && name === 'tenantId'
+      if (isM1016ServerDerivedTenant) {
+        assert.match(value['x-client-authority'] ?? '', /^NONE\b/, `${location}.${name} must remain server-derived`)
+      } else {
+        assert.doesNotMatch(name, forbiddenProperty, `${location}.${name} is a client authority or sensitive raw field`)
+      }
     }
   })
 
   const publicCatalogProperties = Object.keys(openApi.components.schemas.B13PublicCatalog.properties)
   assert.doesNotMatch(publicCatalogProperties.join('|'), /order|payment|refund|activation/i, 'official site catalog must not expose write-domain facts')
+
+  const historicalCreateAdapter = openApi.paths['/api/v1/admin/ops/tickets'].post
+  assert.equal(historicalCreateAdapter.deprecated, true)
+  assert.equal(historicalCreateAdapter['x-owner'], 'admin-ops-service')
+  assert.equal(historicalCreateAdapter['x-data-owner'], 'admin-ops-service.support')
+  assert.equal(historicalCreateAdapter['x-permission'], 'support.ticket.create.self')
+  assert.equal(historicalCreateAdapter['x-contract']?.canonical, false)
+  assert.equal(historicalCreateAdapter['x-contract']?.runtimeStatus, 'NOT_RUNTIME_VERIFIED')
+  assert.equal(historicalCreateAdapter['x-contract']?.clientAuthority, 'NONE')
+  assert.equal(historicalCreateAdapter['x-authorization']?.defaultDecision, 'DENY')
+  assert.equal(historicalCreateAdapter['x-authorization']?.requiredPermission, 'support.ticket.create.self')
+  assert.equal(historicalCreateAdapter['x-authorization']?.clientAuthority, 'NONE')
+  assert.equal(
+    historicalCreateAdapter.requestBody.content['application/json'].schema.$ref,
+    '#/components/schemas/M1016SupportTicketCreateRequest',
+  )
+  assert.equal(
+    Object.hasOwn(openApi.components.schemas.M1016SupportTicketCreateRequest.properties, 'priority'),
+    false,
+    'historical create adapter must not accept client-owned priority',
+  )
 })
 
 test('B13 v1 events use the canonical envelope, closed payloads and remain historical-only', () => {

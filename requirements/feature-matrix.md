@@ -275,14 +275,14 @@ P1R-M1-014 的专注与榜单 D2 边界：`P1_FOCUS_CREDIT_V1` 只允许服务�
 | **FEAT-USR-005** | 设备管理 | 多设备在线列表与顶号互踢 | 记录登录设备型号与最后活跃时间，支持在个人中心一键踢出其他设备 | App/Web/H5 | Phase 1 (P0) | PRD §17.2 |
 | **FEAT-USR-006** | 用户档案 | 学员个人资料修改 | 昵称、头像上传裁剪、发音偏好 (美音/英音)、每日学习目标修改 | App/Web/H5 | Phase 1 (P0) | PRD §17.3, §18.1 |
 | **FEAT-USR-007** | 合规注销 | 账号注销与数据脱敏 | 提供 7 天注销冷静期，确认注销后彻底匿名化脱敏所有历史个人信息 | App/Web/H5 | Phase 1 (P0) | PRD §17.4, §18.15 |
-| **FEAT-INF-001** | 统一通知 | 站内消息中心 | 聚合系统升级公告、复习到期提醒、好友打气互动通知 | App/Web/H5 | Phase 1 (P0) | PRD §18.3 |
-| **FEAT-INF-002** | 统一通知 | App 移动端本地/远程 Push | 支持个推/极光 Push，每日 20:00 发送未完成学习流召回提醒 | Mobile App | Phase 1 (P0) | PRD §18.4 |
-| **FEAT-INF-003** | 统一通知 | 通知偏好开关细粒度控制 | 允许独立关闭打卡提醒、营销促销、好友互动等单类通知渠道 | App/Web/H5 | Phase 1 (P0) | PRD §18.7 |
-| **FEAT-INF-004** | 离线与存储 | 离线词书与音频包下载 | 支持一键离线整本四六级/考研词书与音频，支持管理本地缓存空间 | Mobile App | Phase 1 (P0) | PRD §18.16 |
-| **FEAT-INF-005** | 多端同步 | 断点续学与增量同步引擎 | 本地 SQLite/IndexDB 暂存作答流水，网络恢复后增量上报合并 | All | Phase 1 (P0) | PRD §18.17 |
-| **FEAT-INF-006** | 异常与弱网 | 弱网重试与骨架屏 UX | 接口请求失败自动指数退避重试 3 次，页面加载展示动效骨架屏 | All | Phase 1 (P0) | PRD §18.21 |
-| **FEAT-INF-007** | 内容纠错 | 一键题目内容纠错上报 | 任何题目/释义/音频界面均提供“报错”入口，直通教研审核后台 | App/Web/H5 | Phase 1 (P0) | PRD §18.14 |
-| **FEAT-INF-008** | 客服中心 | 常见 FAQ 与工单提交 | 内置 20+ 常见问题自助解答知识库，支持上传截图提交客服工单 | App/Web/H5 | Phase 1 (P0) | PRD §18.13 |
+| **FEAT-INF-001** | 统一通知 | 站内消息中心 | 以 M1-016 policy 的 B12 canonical 模型聚合系统升级、复习到期和互动通知；消息、投递、读回执由 notification-service 拥有，B11 仅历史输入 | App/Web/H5 | Phase 1 (P0) | PRD §18.3；M1-016 policy |
+| **FEAT-INF-002** | 统一通知 | App 移动端本地/远程 Push | 支持 Push 与明确的每日召回策略；source event→template→channel 必须精确订阅，最多 5 次（含首次）重试，运行渠道仍待 Evidence | Mobile App | Phase 1 (P0) | PRD §18.4；M1-016 policy |
+| **FEAT-INF-003** | 统一通知 | 通知偏好开关细粒度控制 | 按 category/channel 使用 consentVersion、DND、frequency 和 version/expectedVersion CAS；SMS 仅验证码、安全、换绑、极重要账户支付，学习/营销 SMS 禁止 | App/Web/H5 | Phase 1 (P0) | PRD §18.7；M1-016 policy |
+| **FEAT-INF-004** | 离线与存储 | 离线词书与音频包下载 | 支持已授权内容的本地缓存与空间管理；权限撤销、版权/权益失效优先于离线可用性，客户端不得把缓存当 owner 事实 | Mobile App | Phase 1 (P0) | PRD §18.16；M1-016 policy |
+| **FEAT-INF-005** | 多端同步 | 断点续学与增量同步引擎 | 本地 SQLite/IndexDB 暂存作答流水；owner-specific command 统一使用 clientEventId/clientSeq/baseVersion/contentVersionId/payloadHash，同 hash replay，异 hash/乱序/gap/stale/future 显式冲突，禁止客户端合并 attempt/mastery/XP/权益 | All | Phase 1 (P0) | PRD §18.17；M1-016 policy |
+| **FEAT-INF-006** | 异常与弱网 | 弱网重试与骨架屏 UX | 读请求可按预算指数退避；写请求先查幂等结果，通知最多 5 次含首次后转 DLQ/恢复，不以重试修改领域事实 | All | Phase 1 (P0) | PRD §18.21；M1-016 policy |
+| **FEAT-INF-007** | 内容纠错 | 一键题目内容纠错上报 | 通过 admin-ops-service.support 唯一 owner 进入七类客服/纠错分类；原文、截图和附件必须走内容扫描、脱敏、版本和授权引用 | App/Web/H5 | Phase 1 (P0) | PRD §18.14；M1-016 policy |
+| **FEAT-INF-008** | 客服中心 | 常见 FAQ 与工单提交 | FAQ 与学员/后台统一工单使用七态、CAS、assignment/SLA history、resolution、retention/legal hold 和 owner receipt；真实双端路由和 E2E 仍待完成 | App/Web/H5 | Phase 1 (P0) | PRD §18.13；M1-016 policy |
 
 ---
 

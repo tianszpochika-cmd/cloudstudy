@@ -198,6 +198,42 @@ const EXPECTED_EVENT_CONSUMERS = {
   ],
 };
 
+// M1-015's policy remains frozen at its original consumer matrix.  M1-016
+// signed one additive notification subscription for these two current-source
+// commerce events.  Keep the promotion identity and policy digest beside the
+// allow-list so a future consumer cannot be accepted merely because the
+// current catalog happened to contain it.
+export const M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE = Object.freeze({
+  promotionId: 'P1R-M1-016',
+  sourceContractBaseline: '878f9ebc0591844467ac79facf4f00296058137f',
+  policyDigest: 'f5beb694bb91ecde227d1405c56f7fdc73d71169d2bbe7b5c32378c3235f8ea7',
+  bindings: Object.freeze({
+    'commerce.entitlement.activated.v2': Object.freeze({
+      service: 'notification-service',
+      consumerGroup: 'cg.notification-from-commerce.v1',
+    }),
+    'commerce.refund.settled.v2': Object.freeze({
+      service: 'notification-service',
+      consumerGroup: 'cg.notification-from-commerce.v1',
+    }),
+  }),
+});
+
+function currentSourceEventConsumers(eventName) {
+  const frozenConsumers = EXPECTED_EVENT_CONSUMERS[eventName];
+  const additive = M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE.bindings[eventName];
+  if (!additive) return frozenConsumers;
+
+  // The signed M1-016 projection inserts notification before the terminal
+  // audit consumer.  Returning a fresh array prevents callers from mutating
+  // the frozen M1-015 matrix while preserving every original consumer.
+  return [
+    ...frozenConsumers.slice(0, -1),
+    additive,
+    ...frozenConsumers.slice(-1),
+  ];
+}
+
 const EXPECTED_PHASE1_PROHIBITIONS = [
   'PRODUCTION_PAYMENT',
   'AUTO_RENEWAL',
@@ -1523,7 +1559,7 @@ function assertCanonicalEventProjection(
     addError(errors, sameJson(governance?.consumers?.map((consumer) => ({
       service: consumer.service,
       consumerGroup: consumer.consumerGroup,
-    })), EXPECTED_EVENT_CONSUMERS[expectedEvent.eventName]),
+    })), currentSourceEventConsumers(expectedEvent.eventName)),
     `${expectedEvent.eventName} catalog consumers must equal the frozen matrix`);
     addError(errors, governance?.transport?.protocol === 'kafka'
       && governance?.transport?.topic === 'platform.commerce.v1'
@@ -1623,7 +1659,7 @@ function assertGlobalGateBoundary(errors, b20Runtime, b21Runtime, b26Runtime) {
     }
     addError(errors, route.topic === 'platform.commerce.v1' && route.partitionKey === 'aggregateId',
       `B26 ${eventName} must retain platform.commerce.v1 aggregateId routing`);
-    addError(errors, sameJson(route.consumerGroups, EXPECTED_EVENT_CONSUMERS[eventName].map((consumer) => consumer.consumerGroup)),
+    addError(errors, sameJson(route.consumerGroups, currentSourceEventConsumers(eventName).map((consumer) => consumer.consumerGroup)),
       `B26 ${eventName} consumer groups must equal the frozen matrix`);
   }
   return 'BOUND_STATIC';

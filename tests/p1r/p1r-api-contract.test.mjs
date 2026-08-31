@@ -21,6 +21,22 @@ const canonicalErrors = {
   503: 'ApiServiceUnavailable',
   504: 'ApiGatewayTimeout',
 };
+const preM1016ExternalListOperationCount = 60;
+const preM1016CursorPaginatedOperationCount = 62;
+const m1016AddedExternalListOperations = [
+  {
+    route: '/api/v1/learning/sync/receipts',
+    method: 'get',
+    operationId: 'listM1016LearningSyncReceipts',
+    owner: 'learning-service',
+  },
+  {
+    route: '/api/v1/learning/sync/conflicts',
+    method: 'get',
+    operationId: 'listM1016LearningSyncConflicts',
+    owner: 'learning-service',
+  },
+];
 
 function canonicalFixture() {
   const document = structuredClone(openApi);
@@ -66,14 +82,34 @@ function validateChanged(mutate) {
   return validateApiContractData({ openApi: changedOpenApi, schemaRegistry: changedRegistry }).errors;
 }
 
+function m1016ExternalListOperationBindings(document) {
+  return m1016AddedExternalListOperations.map(({ route, method }) => {
+    const operation = document.paths[route]?.[method];
+    return {
+      route,
+      method,
+      operationId: operation?.operationId,
+      owner: operation?.['x-owner'],
+      task: operation?.['x-contract']?.task,
+      canonical: operation?.['x-contract']?.canonical,
+    };
+  });
+}
+
 test('canonical external API fixture passes the P1R governance gate', () => {
-  const report = validateApiContractData({ openApi: canonicalFixture(), schemaRegistry });
+  const document = canonicalFixture();
+  const report = validateApiContractData({ openApi: document, schemaRegistry });
   assert.deepEqual(report.errors, []);
   assert(report.summary.operationCount > 300);
   assert(report.summary.externalWriteCount > 100);
   assert.equal(report.summary.idempotencyExceptionCount, 1);
-  assert.equal(report.summary.listOperationCount, 60);
-  assert.equal(report.summary.cursorPaginatedOperationCount, 62);
+  assert.deepEqual(m1016ExternalListOperationBindings(document), m1016AddedExternalListOperations.map((binding) => ({
+    ...binding,
+    task: 'P1R-M1-016',
+    canonical: true,
+  })));
+  assert.equal(report.summary.listOperationCount, preM1016ExternalListOperationCount + m1016AddedExternalListOperations.length);
+  assert.equal(report.summary.cursorPaginatedOperationCount, preM1016CursorPaginatedOperationCount + m1016AddedExternalListOperations.length);
 });
 
 test('missing canonical error response and correlation headers fail closed', () => {

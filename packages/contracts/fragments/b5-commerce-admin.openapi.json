@@ -27,8 +27,26 @@
     {
       "name": "b5-support",
       "description": "用户纠错和客服工单，默认仅保存脱敏引用"
+    },
+    {
+      "name": "M1-016-Support",
+      "description": "P1R-M1-016 learner support entry points backed by admin-ops-service.support"
     }
   ],
+  "x-m1016-contract": {
+    "task": "P1R-M1-016",
+    "owner": "admin-ops-service.support",
+    "canonicalOperations": [
+      "listM1016LearnerSupportTickets",
+      "createM1016SupportTicket",
+      "getM1016LearnerSupportTicket",
+      "addM1016LearnerSupportTicketMessage"
+    ],
+    "historicalOperations": "All non-M1-016 B5 commerce, CMS and operations routes remain historical compatibility.",
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "clientAuthority": "NONE"
+  },
   "paths": {
     "/api/v1/commerce/skus": {
       "get": {
@@ -661,13 +679,80 @@
     },
     "/api/v1/support/tickets": {
       "get": {
-        "operationId": "listSupportTickets",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "summary": "List support tickets visible to the authenticated learner",
+        "operationId": "listM1016LearnerSupportTickets",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; subject, tenant, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for requester, tenant, owner, assignment or SLA"
+        },
+        "x-migration": "Canonical M1-016 learner support list; the old B5 response is only a compatibility projection.",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
+            "description": "学习者可见的脱敏客服工单",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/M1016SupportTicket"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         },
         "parameters": [
@@ -686,15 +771,88 @@
         }
       },
       "post": {
-        "operationId": "createSupportTicket",
+        "summary": "Create a learner support ticket using server-owned requester and tenant facts",
+        "operationId": "createM1016SupportTicket",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.create.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; requesterSubjectId, tenantId, priority, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.create.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for requester, tenant, priority, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 learner support create; B5SupportTicketRequest remains historical-only.",
+        "responses": {
+          "201": {
+            "description": "支持工单已创建",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportTicket"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        },
         "x-idempotency": {
           "required": true,
-          "strategy": "support-ticket-create",
+          "strategy": "m1016-support-ticket-create-cas",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一纠错引用只创建一个工单"
+          "replayBehavior": "同一 key 与规范化请求摘要回放原工单；摘要不同返回 409"
         },
         "parameters": [
           {
@@ -706,53 +864,185 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B5SupportTicketRequest"
+                "$ref": "#/components/schemas/M1016SupportTicketCreateRequest"
               }
             }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "409": {
-            "$ref": "#/components/responses/B5Conflict"
           }
         }
       }
     },
     "/api/v1/support/tickets/{ticketId}": {
       "get": {
-        "operationId": "getSupportTicket",
+        "summary": "Get a learner-owned support ticket",
+        "operationId": "getM1016LearnerSupportTicket",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; requester, tenant and workflow facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for requester, tenant, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 learner support read; old B5 generic envelope is historical-only.",
+        "responses": {
+          "200": {
+            "description": "脱敏支持工单",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportTicket"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        },
         "parameters": [
           {
             "$ref": "#/components/parameters/B5TicketId"
           }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/B5GenericResponse"
-          },
-          "404": {
-            "$ref": "#/components/responses/B5NotFound"
-          }
-        }
+        ]
       }
     },
     "/api/v1/support/tickets/{ticketId}/messages": {
       "post": {
-        "operationId": "addSupportTicketMessage",
+        "summary": "Add a redacted learner support message",
+        "operationId": "addM1016LearnerSupportTicketMessage",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.message.create.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; author and tenant facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.message.create.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for author, tenant, role or state"
+        },
+        "x-migration": "Canonical M1-016 learner support message; old B5 message hash request remains historical-only.",
+        "responses": {
+          "201": {
+            "description": "支持消息已追加",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportMessage"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        },
         "x-idempotency": {
           "required": true,
-          "strategy": "support-ticket-message",
+          "strategy": "m1016-support-message-create-cas",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "工单消息按客户端引用幂等追加"
+          "replayBehavior": "同一 key 与规范化请求摘要回放原消息；摘要不同返回 409"
         },
         "parameters": [
           {
@@ -767,14 +1057,9 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B5SupportMessageRequest"
+                "$ref": "#/components/schemas/M1016SupportMessageCreateRequest"
               }
             }
-          }
-        },
-        "responses": {
-          "201": {
-            "$ref": "#/components/responses/B5GenericResponse"
           }
         }
       }

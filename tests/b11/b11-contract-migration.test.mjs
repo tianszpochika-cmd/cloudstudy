@@ -10,6 +10,7 @@ const readText = (relativePath) => fs.readFileSync(path.join(root, relativePath)
 
 const openApi = readJson('packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json');
 const events = readJson('packages/contracts/events/v1/fragments/b11-media-notification-offline.events.json');
+const eventCatalog = readJson('packages/contracts/events/v1/catalog.json');
 const migration = readText('database/mysql/migrations/V0019__create_media_notification_offline_b11.sql');
 const manifest = readJson('database/mysql/migrations/migration-manifest.json');
 
@@ -112,7 +113,7 @@ test('B11 OpenAPI defines media, notification, offline and B3 compatibility boun
   for (const [route, pathItem] of Object.entries(openApi.paths)) {
     for (const [method, operation] of Object.entries(pathItem)) {
       if (!['get', 'post', 'put', 'patch', 'delete'].includes(method)) continue;
-      assert.ok(operation.operationId?.startsWith('getB11') || operation.operationId?.startsWith('listB11') || operation.operationId?.startsWith('createB11') || operation.operationId?.startsWith('updateB11') || operation.operationId?.startsWith('markB11') || operation.operationId?.startsWith('enqueueB11') || operation.operationId?.startsWith('recoverB11') || operation.operationId?.startsWith('revokeB11') || operation.operationId?.startsWith('streamB11'), `${method} ${route} needs a B11 operation id`);
+      assert.ok(operation.operationId?.startsWith('getB11') || operation.operationId?.startsWith('listB11') || operation.operationId?.startsWith('createB11') || operation.operationId?.startsWith('updateB11') || operation.operationId?.startsWith('markB11') || operation.operationId?.startsWith('enqueueB11') || operation.operationId?.startsWith('recoverB11') || operation.operationId?.startsWith('revokeB11') || operation.operationId?.startsWith('streamB11') || operation.operationId?.startsWith('listM1016') || operation.operationId?.startsWith('getM1016') || operation.operationId?.startsWith('recoverM1016'), `${method} ${route} needs a B11 operation id`);
       assert.equal(operationIds.has(operation.operationId), false, `duplicate operation ${operation.operationId}`);
       operationIds.add(operation.operationId);
       assert.ok(Array.isArray(operation.security) && operation.security.length > 0, `${method} ${route} needs explicit security`);
@@ -176,10 +177,23 @@ test('B11 AsyncAPI events use the canonical envelope and safe summaries only', (
   assert.equal(events.payloadSchemas.B11RecordingSaved.properties.aiScoringAvailable.const, false);
   assert.equal(events.payloadSchemas.B11ShadowingCompleted.properties.aiScoringAvailable.const, false);
 
-  const addresses = new Set(Object.values(events.asyncapi.channels).map((channel) => channel.address));
-  for (const eventName of byName.keys()) assert.ok(addresses.has(eventName), `AsyncAPI channel missing ${eventName}`);
-  assert.ok(addresses.has('media.started.v1'));
-  assert.ok(addresses.has('sync.conflict_detected.v1'));
+  // Event fragments are historical inputs only.  AsyncAPI is projected once
+  // from the merged catalog, so a fragment-local asyncapi object would create
+  // a second source of truth.  Verify the historical boundary and inspect the
+  // merged projection instead of reading a field that must not exist here.
+  assert.equal(Object.hasOwn(events, 'asyncapi'), false, 'B11 fragment must not own an AsyncAPI projection');
+  assert.equal(eventCatalog.asyncapi['x-runtime-status'], 'NOT_RUNTIME_VERIFIED');
+  const projectedEventNames = new Set(
+    Object.values(eventCatalog.asyncapi.channels ?? {})
+      .flatMap((channel) => Object.values(channel.messages ?? {}))
+      .map((message) => message['x-event-name'] ?? message.name),
+  );
+  for (const eventName of byName.keys()) {
+    const catalogEvent = eventCatalog.events.find((candidate) => candidate.eventName === eventName);
+    assert.ok(catalogEvent, `merged catalog must retain historical event ${eventName}`);
+    assert.equal(catalogEvent.status, 'HISTORICAL_CANDIDATE', `${eventName} must remain historical`);
+    assert.equal(projectedEventNames.has(eventName), false, `historical ${eventName} must not be promoted into AsyncAPI`);
+  }
 });
 
 test('B11 V0019 is additive, manifest-complete and replay-safe', () => {

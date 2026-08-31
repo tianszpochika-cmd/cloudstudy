@@ -10,6 +10,7 @@ const scriptPath = fileURLToPath(import.meta.url)
 const repoRoot = path.resolve(path.dirname(scriptPath), '..', '..')
 const manifestRelativePath = 'config/b26-event-runtime.json'
 const fragmentRelativePath = 'packages/contracts/events/v1/fragments/b26-reliability.events.json'
+const m1016FragmentRelativePath = 'packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json'
 const catalogRelativePath = 'packages/contracts/events/v1/catalog.json'
 const localPortsRelativePath = 'config/local-ports.json'
 const telemetrySchemaRelativePath = 'packages/telemetry/schemas/telemetry-event.schema.json'
@@ -96,6 +97,7 @@ const expectedSourceRefs = [
   'config/g2-implementation-interaction.json',
   'config/g3-test-security-observability.json',
   'packages/contracts/events/v1/catalog.json',
+  'packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json',
   'packages/telemetry/schemas/telemetry-event.schema.json',
   'packages/telemetry/policies/telemetry-events.json',
   'requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md',
@@ -129,6 +131,104 @@ const expectedB26PayloadRequired = {
   B26WorkflowCompensationRequested: ['sagaId', 'step', 'aggregateId', 'compensationCode', 'reasonCode', 'state'],
   B26WorkflowManualRecoveryRequested: ['recoveryId', 'sagaId', 'aggregateId', 'failedStep', 'reasonCode', 'approvalState', 'runbookRef'],
 }
+const expectedM1016Events = {
+  'notification.requested.v2': {
+    domain: 'notification',
+    schema: 'notification.event.v2',
+    aggregateType: 'notification_delivery',
+    aggregateIdField: 'notificationId',
+    payloadSchema: 'M1016NotificationRequested',
+    topic: 'platform.notification.v1',
+    producer: 'notification-service',
+    consumers: [
+      ['workflow-service', 'cg.workflow-from-notification.v1'],
+      ['analytics-service', 'cg.analytics-from-notification.v1'],
+    ],
+  },
+  'notification.retry_scheduled.v2': {
+    domain: 'notification',
+    schema: 'notification.event.v2',
+    aggregateType: 'notification_delivery',
+    aggregateIdField: 'notificationId',
+    payloadSchema: 'M1016NotificationRetryScheduled',
+    topic: 'platform.notification.v1',
+    producer: 'notification-service',
+    consumers: [['workflow-service', 'cg.workflow-from-notification.v1']],
+  },
+  'notification.recovery.completed.v2': {
+    domain: 'notification',
+    schema: 'notification.event.v2',
+    aggregateType: 'notification_recovery',
+    aggregateIdField: 'notificationId',
+    payloadSchema: 'M1016NotificationRecoveryCompleted',
+    topic: 'platform.notification.v1',
+    producer: 'notification-service',
+    consumers: [
+      ['workflow-service', 'cg.workflow-from-notification.v1'],
+      ['analytics-service', 'cg.analytics-from-notification.v1'],
+    ],
+  },
+  'sync.command_receipted.v2': {
+    domain: 'learning',
+    schema: 'learning.event.v2',
+    aggregateType: 'offline_sync_command',
+    aggregateIdField: 'clientEventId',
+    payloadSchema: 'M1016SyncCommandReceipted',
+    topic: 'platform.learning.v1',
+    producer: 'learning-service',
+    consumers: [['workflow-service', 'cg.workflow-from-learning.v1']],
+  },
+  'sync.conflict_detected.v2': {
+    domain: 'learning',
+    schema: 'learning.event.v2',
+    aggregateType: 'offline_sync_conflict',
+    aggregateIdField: 'conflictId',
+    payloadSchema: 'M1016SyncConflictDetected',
+    topic: 'platform.learning.v1',
+    producer: 'learning-service',
+    consumers: [['workflow-service', 'cg.workflow-from-learning.v1']],
+  },
+  'sync.recovered.v2': {
+    domain: 'learning',
+    schema: 'learning.event.v2',
+    aggregateType: 'offline_sync_recovery',
+    aggregateIdField: 'conflictId',
+    payloadSchema: 'M1016SyncRecovered',
+    topic: 'platform.learning.v1',
+    producer: 'learning-service',
+    consumers: [['workflow-service', 'cg.workflow-from-learning.v1']],
+  },
+  'support.ticket.created.v2': {
+    domain: 'support',
+    schema: 'support.event.v2',
+    aggregateType: 'support_ticket',
+    aggregateIdField: 'ticketId',
+    payloadSchema: 'M1016SupportTicketCreated',
+    topic: 'platform.admin-ops.v1',
+    producer: 'admin-ops-service',
+    consumers: [
+      ['notification-service', 'cg.notification-from-admin-ops.v1'],
+      ['workflow-service', 'cg.workflow-from-admin-ops.v1'],
+      ['audit-service', 'cg.audit-from-admin-ops.v1'],
+    ],
+  },
+  'support.ticket.resolved.v2': {
+    domain: 'support',
+    schema: 'support.event.v2',
+    aggregateType: 'support_ticket',
+    aggregateIdField: 'ticketId',
+    payloadSchema: 'M1016SupportTicketResolved',
+    topic: 'platform.admin-ops.v1',
+    producer: 'admin-ops-service',
+    consumers: [
+      ['notification-service', 'cg.notification-from-admin-ops.v1'],
+      ['workflow-service', 'cg.workflow-from-admin-ops.v1'],
+      ['audit-service', 'cg.audit-from-admin-ops.v1'],
+    ],
+  },
+}
+const expectedM1016EventNames = Object.keys(expectedM1016Events)
+const expectedM1016PayloadSchemaNames = Object.values(expectedM1016Events).map((event) => event.payloadSchema).sort()
 const expectedTopicBindings = [
   {
     name: 'platform.assessment.v1',
@@ -154,14 +254,32 @@ const expectedTopicBindings = [
       'cg.audit-from-commerce.v1:audit-service:cg.audit-from-commerce.v1:true',
       'cg.content-from-commerce.v1:content-service:cg.content-from-commerce.v1:true',
       'cg.learning-from-commerce.v1:learning-service:cg.learning-from-commerce.v1:true',
+      'cg.notification-from-commerce.v1:notification-service:cg.notification-from-commerce.v1:true',
       'cg.workflow-from-commerce.v1:workflow-service:cg.workflow-from-commerce.v1:true',
     ],
     acl: [
       'cg.audit-from-commerce.v1:READ:ALLOW',
       'cg.content-from-commerce.v1:READ:ALLOW',
       'cg.learning-from-commerce.v1:READ:ALLOW',
+      'cg.notification-from-commerce.v1:READ:ALLOW',
       'cg.workflow-from-commerce.v1:READ:ALLOW',
       'svc.commerce-service:WRITE:ALLOW',
+    ],
+  },
+  {
+    name: 'platform.admin-ops.v1',
+    ownerService: 'admin-ops-service',
+    producerPrincipal: 'svc.admin-ops-service',
+    consumerGroups: [
+      'cg.audit-from-admin-ops.v1:audit-service:cg.audit-from-admin-ops.v1:true',
+      'cg.notification-from-admin-ops.v1:notification-service:cg.notification-from-admin-ops.v1:true',
+      'cg.workflow-from-admin-ops.v1:workflow-service:cg.workflow-from-admin-ops.v1:true',
+    ],
+    acl: [
+      'cg.audit-from-admin-ops.v1:READ:ALLOW',
+      'cg.notification-from-admin-ops.v1:READ:ALLOW',
+      'cg.workflow-from-admin-ops.v1:READ:ALLOW',
+      'svc.admin-ops-service:WRITE:ALLOW',
     ],
   },
   {
@@ -298,7 +416,7 @@ const expectedTopicBindings = [
 const expectedEventRoutingBindings = [
   'assessment.item.assessed.v2|platform.assessment.v1|aggregateId|cg.gamification-from-assessment.v1,cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'assessment.placement.completed.v1|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
-  'commerce.entitlement.activated.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1',
+  'commerce.entitlement.activated.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1,cg.notification-from-commerce.v1',
   'commerce.entitlement.revoked.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1',
   'commerce.order.created.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
   'commerce.payment.callback_received.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
@@ -306,7 +424,7 @@ const expectedEventRoutingBindings = [
   'commerce.payment.verified.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
   'commerce.reconciliation.discrepancy_recorded.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
   'commerce.reconciliation.recovery_receipted.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1',
-  'commerce.refund.settled.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1',
+  'commerce.refund.settled.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1,cg.notification-from-commerce.v1',
   'content.version.published.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.reviewed.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.rolled_back.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
@@ -317,7 +435,7 @@ const expectedEventRoutingBindings = [
   'leaderboard.snapshot_published.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
   'learner.target.updated.v1|platform.learner.v1|aggregateId|cg.learning-from-learner.v1,cg.workflow-from-learner.v1',
   'learning.mastery.projected.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.gamification-from-learning.v1,cg.social-from-learning.v1,cg.workflow-from-learning.v1',
-  'learning.review.scheduled.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.workflow-from-learning.v1',
+  'learning.review.scheduled.v2|platform.learning.v1|aggregateId|cg.assessment-from-learning.v1,cg.notification-from-learning.v1,cg.workflow-from-learning.v1',
   'learning.task.completed.v2|platform.learning.v1|aggregateId|cg.gamification-from-learning.v1,cg.workflow-from-learning.v1',
   'social.report.created.v2|platform.social.v1|aggregateId|cg.admin-ops-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
   'study_room.focus_started.v2|platform.social.v1|aggregateId|cg.analytics-from-social.v1,cg.audit-from-social.v1,cg.workflow-from-social.v1',
@@ -330,6 +448,14 @@ const expectedEventRoutingBindings = [
   'workflow.outbox.published.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
   'workflow.saga.compensation_requested.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-reliability.v1',
   'workflow.saga.manual_recovery_requested.v1|platform.workflow.v1|aggregateId|cg.audit-from-workflow.v1,cg.workflow-manual-recovery.v1',
+  'notification.recovery.completed.v2|platform.notification.v1|aggregateId|cg.analytics-from-notification.v1,cg.workflow-from-notification.v1',
+  'notification.requested.v2|platform.notification.v1|aggregateId|cg.analytics-from-notification.v1,cg.workflow-from-notification.v1',
+  'notification.retry_scheduled.v2|platform.notification.v1|aggregateId|cg.workflow-from-notification.v1',
+  'support.ticket.created.v2|platform.admin-ops.v1|aggregateId|cg.audit-from-admin-ops.v1,cg.notification-from-admin-ops.v1,cg.workflow-from-admin-ops.v1',
+  'support.ticket.resolved.v2|platform.admin-ops.v1|aggregateId|cg.audit-from-admin-ops.v1,cg.notification-from-admin-ops.v1,cg.workflow-from-admin-ops.v1',
+  'sync.command_receipted.v2|platform.learning.v1|aggregateId|cg.workflow-from-learning.v1',
+  'sync.conflict_detected.v2|platform.learning.v1|aggregateId|cg.workflow-from-learning.v1',
+  'sync.recovered.v2|platform.learning.v1|aggregateId|cg.workflow-from-learning.v1',
 ]
 const runtimeClaimSubject = /(?:\bruntime\b|\bkafka\b|\bbroker\b|\btopic\b|\boutbox\b|\bdelivery\b|\bconsumer\b|\bsaga\b|\breplay\b)/i
 const forbiddenRuntimeResults = /(?:\bcaptured\b|\bverified\b|\baccepted\b|\bpassed\b|\bready\b|\bconnected\b|\bconfirmed\b|\brunning\b|\bhealthy\b|\bsuccessful\b|\bsucceeded\b|\bcompleted?\b|\bavailable\b|\bonline\b|\breachable\b|\bcertified\b|\bdeployed\b|\boperational\b)/i
@@ -505,13 +631,14 @@ function validateTopics(manifest, errors) {
     }))
     .sort((left, right) => String(left.name).localeCompare(String(right.name), 'en'))
   requireCondition(
-    stableJson(actualTopicBindings) === stableJson(expectedTopicBindings),
+    stableJson(actualTopicBindings) === stableJson([...expectedTopicBindings]
+      .sort((left, right) => String(left.name).localeCompare(String(right.name), 'en'))),
     'B26 topic owner, consumer-group and ACL bindings must exactly match the frozen M1-006/M1-015 policy',
     errors,
   )
   const groupNames = []
   for (const topic of topics) {
-    requireCondition(/^platform\.[a-z0-9.]+\.v[0-9]+$/.test(topic?.name ?? ''), `${topic?.name} topic name is invalid`, errors)
+    requireCondition(/^platform\.[a-z0-9.-]+\.v[0-9]+$/.test(topic?.name ?? ''), `${topic?.name} topic name is invalid`, errors)
     requireString(topic?.ownerService, `${topic?.name}.ownerService`, errors)
     requireCondition(/^[a-z][a-z0-9-]+-service$/.test(topic?.ownerService ?? '') && topic.ownerService !== 'api-gateway', `${topic?.name} ownerService must be a domain or platform service`, errors)
     requireString(topic?.purpose, `${topic?.name}.purpose`, errors)
@@ -629,7 +756,7 @@ function validateFragment(manifest, fragment, catalog, errors) {
     .map((item) => `${item?.eventName}|${item?.topic}|${item?.partitionKey}|${[...(item?.consumerGroups ?? [])].sort().join(',')}`)
     .sort()
   requireCondition(
-    stableJson(actualRoutingBindings) === stableJson(expectedEventRoutingBindings),
+    stableJson(actualRoutingBindings) === stableJson([...expectedEventRoutingBindings].sort()),
     'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006/M1-008/M1-015 policy',
     errors,
   )
@@ -673,6 +800,72 @@ function validateFragment(manifest, fragment, catalog, errors) {
   requireCondition(fragment.asyncapi === undefined, 'B26 fragment must not define a second AsyncAPI source', errors)
 }
 
+function validateM1016Fragment(manifest, fragment, catalog, errors) {
+  requireExactKeys(fragment, ['version', 'events', 'payloadSchemas'], 'M1-016 notification/sync/support event fragment', errors)
+  requireCondition(fragment?.version === '2.0.0', 'M1-016 event fragment version must be 2.0.0', errors)
+  requireCondition(Array.isArray(fragment?.events) && fragment.events.length === expectedM1016EventNames.length, 'M1-016 event fragment must contain exactly eight events', errors)
+  requireCondition(
+    stableJson((fragment?.events ?? []).map((event) => event?.eventName)) === stableJson(expectedM1016EventNames),
+    'M1-016 event fragment event order and names must exactly match the frozen v2 source',
+    errors,
+  )
+  requireCondition(
+    isRecord(fragment?.payloadSchemas)
+      && stableJson(Object.keys(fragment.payloadSchemas).sort()) === stableJson(expectedM1016PayloadSchemaNames),
+    'M1-016 payload schema registry must exactly match the eight frozen v2 event payloads',
+    errors,
+  )
+  requireCondition(fragment?.asyncapi === undefined, 'M1-016 fragment must not define a second AsyncAPI source', errors)
+
+  const routing = new Map((manifest?.eventRouting ?? []).map((item) => [item?.eventName, item]))
+  const catalogEvents = new Map((catalog?.events ?? []).map((event) => [event?.eventName, event]))
+  const names = []
+  for (const event of fragment?.events ?? []) {
+    const expected = expectedM1016Events[event?.eventName]
+    names.push(event?.eventName)
+    requireCondition(expected !== undefined, `${event?.eventName ?? 'M1-016 event'} is not an allowed M1-016 event`, errors)
+    requireExactKeys(event, ['eventName', 'domain', 'version', 'schema', 'aggregateType', 'aggregateIdField', 'x-envelope-required', 'payloadSchema', 'compatibility'], `${event?.eventName ?? 'M1-016 event'} fragment`, errors)
+    requireExactKeys(event?.payloadSchema, ['$ref'], `${event?.eventName ?? 'M1-016 event'} payloadSchema`, errors)
+    requireExactKeys(event?.compatibility, ['strategy', 'breakingChange', 'consumerRule'], `${event?.eventName ?? 'M1-016 event'} compatibility`, errors)
+    if (!expected) continue
+
+    requireCondition(event?.version === 2 && event?.domain === expected.domain && event?.schema === expected.schema, `${event.eventName} version/domain/schema is invalid`, errors)
+    requireCondition(event?.aggregateType === expected.aggregateType && event?.aggregateIdField === expected.aggregateIdField, `${event.eventName} aggregate identity is invalid`, errors)
+    requireCondition(event?.payloadSchema?.$ref === `#/payloadSchemas/${expected.payloadSchema}`, `${event.eventName} payloadSchema.$ref must match the frozen M1-016 mapping`, errors)
+    requireExactArray(event?.['x-envelope-required'], requiredEnvelope, `${event.eventName}.x-envelope-required`, errors)
+    requireCondition(event?.compatibility?.strategy === 'additive', `${event.eventName} compatibility policy must be additive`, errors)
+
+    const payload = resolvePointer(fragment, event?.payloadSchema?.$ref)
+    requireCondition(isRecord(payload) && payload.type === 'object' && payload.additionalProperties === false, `${event.eventName} payload schema must be a closed object`, errors)
+    requireCondition(Array.isArray(payload?.required) && payload.required.length > 0, `${event.eventName} payload must have required fields`, errors)
+    requireCondition(event?.['x-kafka'] === undefined, `${event.eventName} fragment must not duplicate canonical Kafka governance`, errors)
+
+    const route = routing.get(event.eventName)
+    requireCondition(route?.topic === expected.topic && route?.partitionKey === 'aggregateId', `${event.eventName} B26 routing must match its exact topic and aggregate partition key`, errors)
+    requireCondition(stableJson(route?.consumerGroups) === stableJson(expected.consumers.map(([, group]) => group)), `${event.eventName} B26 consumer groups must exactly match the frozen source subscriptions`, errors)
+
+    const canonicalEvent = catalogEvents.get(event.eventName)
+    const governance = canonicalEvent?.['x-p1r-governance']
+    requireCondition(canonicalEvent?.status === 'CANONICAL_D2', `${event.eventName} must be a CANONICAL_D2 catalog event`, errors)
+    for (const field of ['domain', 'version', 'schema', 'aggregateType', 'aggregateIdField']) {
+      requireCondition(event?.[field] === canonicalEvent?.[field], `${event.eventName} fragment ${field} must exactly match the canonical catalog`, errors)
+    }
+    requireCondition(stableJson(event?.payloadSchema) === stableJson(canonicalEvent?.payloadSchema), `${event.eventName} fragment payloadSchema must exactly match the canonical catalog`, errors)
+    requireCondition(stableJson(event?.['x-envelope-required']) === stableJson(canonicalEvent?.['x-envelope-required']), `${event.eventName} fragment envelope fields must exactly match the canonical catalog`, errors)
+    requireCondition(stableJson(event?.compatibility) === stableJson(canonicalEvent?.compatibility), `${event.eventName} fragment compatibility must exactly match the canonical catalog`, errors)
+    requireCondition(stableJson(payload) === stableJson(resolvePointer(catalog, canonicalEvent?.payloadSchema?.$ref)), `${event.eventName} fragment payload definition must exactly match the canonical catalog`, errors)
+    requireCondition(governance?.status === 'CANONICAL_D2' && governance?.runtimeStatus === 'NOT_RUNTIME_VERIFIED', `${event.eventName} catalog governance must remain canonical D2 and NOT_RUNTIME_VERIFIED`, errors)
+    requireCondition(governance?.scope === 'CROSS_SERVICE_INTEGRATION_FACT', `${event.eventName} governance scope must be a cross-service integration fact`, errors)
+    requireCondition(governance?.producer?.service === expected.producer && governance?.producer?.dataOwner === expected.producer && governance?.producer?.outboxRequired === true, `${event.eventName} producer/data owner governance is invalid`, errors)
+    requireCondition(governance?.transport?.protocol === 'kafka' && governance?.transport?.topic === expected.topic && governance?.transport?.partitionKey === 'aggregateId' && governance?.transport?.aggregateIdSource === `payload.${expected.aggregateIdField}` && governance?.transport?.delivery === 'at-least-once' && governance?.transport?.bindingVersion === '0.5.0', `${event.eventName} Kafka governance is incomplete`, errors)
+    const governedConsumers = (governance?.consumers ?? []).map((consumer) => [consumer?.service, consumer?.consumerGroup])
+    requireCondition(stableJson(governedConsumers) === stableJson(expected.consumers), `${event.eventName} consumer governance differs from the frozen source subscriptions`, errors)
+    requireCondition(governance?.schema?.schemaVersion === expected.schema && governance?.schema?.payloadRef === event?.payloadSchema?.$ref && governance?.schema?.compatibility === 'additive', `${event.eventName} schema governance is incomplete`, errors)
+  }
+  unique(names, 'M1-016 event names', errors)
+  requireCondition(names.every((eventName) => routing.has(eventName)), 'B26 routing must cover every M1-016 notification/sync/support event', errors)
+}
+
 function validateTelemetryBridge(manifest, telemetrySchema, telemetryPolicy, errors) {
   const bridge = manifest.telemetryBridge
   requireCondition(bridge?.eventContractIsSeparateFromTelemetryEnvelope === true, 'B26 must keep event and telemetry envelopes distinct', errors)
@@ -690,18 +883,25 @@ export function validateB26EventRuntime(manifest, fragment, {
   catalog = readJson(catalogRelativePath),
   telemetrySchema = readJson(telemetrySchemaRelativePath),
   telemetryPolicy = readJson(telemetryPolicyRelativePath),
+  m1016Fragment,
   runtimeRequested = false,
 } = {}) {
   const errors = []
   if (!isRecord(manifest)) errors.push('B26 manifest must be a JSON object')
   if (!isRecord(fragment)) errors.push('B26 event fragment must be a JSON object')
   if (!isRecord(catalog)) errors.push('canonical event catalog must be a JSON object')
+  if (m1016Fragment !== undefined && !isRecord(m1016Fragment)) errors.push('M1-016 event fragment must be a JSON object')
   if (errors.length === 0) {
     validateManifestShape(manifest, 'manifest', errors)
     scanForUnsafeValues(manifest, 'manifest', errors)
     scanForUnsafeValues(fragment, 'fragment', errors)
     scanFragmentRuntimeClaimKeys(fragment, 'fragment', errors)
     errors.push(...validateEventPayloadSchemas(fragment.payloadSchemas, 'B26 fragment payloadSchemas'))
+    if (m1016Fragment !== undefined) {
+      scanForUnsafeValues(m1016Fragment, 'm1016Fragment', errors)
+      scanFragmentRuntimeClaimKeys(m1016Fragment, 'm1016Fragment', errors)
+      errors.push(...validateEventPayloadSchemas(m1016Fragment.payloadSchemas, 'M1-016 fragment payloadSchemas'))
+    }
     errors.push(...validateCanonicalEventPayloadMappings(catalog.events, 'B26 canonical catalog events'))
     validateIdentity(manifest, errors)
     validateExecutionAndSafety(manifest, errors)
@@ -710,6 +910,7 @@ export function validateB26EventRuntime(manifest, fragment, {
     validateTopics(manifest, errors)
     validateOutboxAndRecovery(manifest, errors)
     validateFragment(manifest, fragment, catalog, errors)
+    if (m1016Fragment !== undefined) validateM1016Fragment(manifest, m1016Fragment, catalog, errors)
     validateTelemetryBridge(manifest, telemetrySchema, telemetryPolicy, errors)
   }
   if (runtimeRequested) {
@@ -726,8 +927,12 @@ export function validateB26EventRuntime(manifest, fragment, {
     runtimeEvidencePending: manifest?.runtimeStatus === 'pending',
     topicCount: manifest?.topics?.length ?? 0,
     fragmentEventCount: fragment?.events?.length ?? 0,
+    m1016EventCount: m1016Fragment?.events?.length ?? 0,
     routedCanonicalEventCount: manifest?.eventRouting?.length ?? 0,
     fragmentPayloadSchemaCount: Object.keys(fragment?.payloadSchemas ?? {}).length,
+    m1016PayloadSchemaCount: Object.keys(m1016Fragment?.payloadSchemas ?? {}).length,
+    totalFragmentEventCount: (fragment?.events?.length ?? 0) + (m1016Fragment?.events?.length ?? 0),
+    totalFragmentPayloadSchemaCount: Object.keys(fragment?.payloadSchemas ?? {}).length + Object.keys(m1016Fragment?.payloadSchemas ?? {}).length,
     // Compatibility aliases retained for existing callers. Prefer the explicit fields above.
     eventCount: fragment?.events?.length ?? 0,
     routeCount: manifest?.eventRouting?.length ?? 0,
@@ -741,14 +946,15 @@ export function readB26Inputs() {
   return {
     manifest: readJson(manifestRelativePath),
     fragment: readJson(fragmentRelativePath),
+    m1016Fragment: readJson(m1016FragmentRelativePath),
     catalog: readJson(catalogRelativePath),
   }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === scriptPath) {
   try {
-    const { manifest, fragment } = readB26Inputs()
-    const summary = validateB26EventRuntime(manifest, fragment, { runtimeRequested: process.argv.includes('--runtime') })
+    const { manifest, fragment, m1016Fragment } = readB26Inputs()
+    const summary = validateB26EventRuntime(manifest, fragment, { m1016Fragment, runtimeRequested: process.argv.includes('--runtime') })
     console.log(JSON.stringify(summary, null, 2))
     if (summary.result !== 'PASS') process.exitCode = 1
   } catch (error) {

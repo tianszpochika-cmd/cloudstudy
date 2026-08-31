@@ -6,7 +6,7 @@ import { isDeepStrictEqual } from 'node:util';
 const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gateway-boundary.openapi.json');
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
-const EXPECTED_PUBLIC_OPERATION_COUNT = 350;
+const EXPECTED_PUBLIC_OPERATION_COUNT = 357;
 const EXPECTED_INTERNAL_OPERATION_COUNT = 53;
 const EXPECTED_M1015_INTERNAL_OPERATIONS = [
   {
@@ -33,6 +33,54 @@ const EXPECTED_M1015_INTERNAL_OPERATIONS = [
       requiredPermission: 'commerce.entitlement.revoke.finance',
       allowedActors: ['WORKLOAD', 'FINANCE'],
       clientAuthority: 'NONE',
+    },
+  },
+];
+const EXPECTED_M1016_INTERNAL_OPERATIONS = [
+  {
+    route: '/internal/v1/notifications/retry',
+    method: 'POST',
+    operationId: 'retryM1016NotificationDelivery',
+    owner: 'notification-service',
+    permission: 'notification.delivery.retry.workload',
+    security: [{ B8WorkloadIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-016',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE; notification, attempt and delivery state are server-derived',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'notification.delivery.retry.workload',
+      pep: 'notification-service-local',
+      allowedActors: ['WORKLOAD'],
+      trustedFacts: ['workloadIdentity', 'sourceService', 'notificationId', 'workflowTaskId', 'policyVersion'],
+      clientAuthority: 'NONE for subject, tenant, owner, attempt, status or next run time',
+    },
+  },
+  {
+    route: '/internal/v1/notifications/recovery',
+    method: 'POST',
+    operationId: 'recoverM1016NotificationDelivery',
+    owner: 'notification-service',
+    permission: 'notification.delivery.recovery.workload',
+    security: [{ B8WorkloadIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-016',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE; task state, notification ownership and recovery result are server-derived',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'notification.delivery.recovery.workload',
+      pep: 'notification-service-local',
+      allowedActors: ['WORKLOAD'],
+      trustedFacts: ['workloadIdentity', 'sourceService', 'notificationId', 'workflowTaskId', 'policyVersion'],
+      clientAuthority: 'NONE for subject, tenant, owner, delivery state or recovery receipt',
     },
   },
 ];
@@ -285,6 +333,31 @@ function checkInternalPolicy(policy, canonicalOpenApi, errors) {
       `M1-015 internal operation authorization is invalid or not fail-closed: ${expected.operationId}`,
     );
     add(errors, !publicOperations.some((item) => item.operation?.operationId === expected.operationId), `M1-015 internal operation must not be exposed under the public prefix: ${expected.operationId}`);
+  }
+  const expectedM1016Keys = new Set(EXPECTED_M1016_INTERNAL_OPERATIONS.map((expected) => `${expected.method} ${expected.route}`));
+  const expectedM1016OperationIds = new Set(EXPECTED_M1016_INTERNAL_OPERATIONS.map((expected) => expected.operationId));
+  const m1016Operations = internalOperations.filter((item) => expectedM1016OperationIds.has(item.operation?.operationId));
+  const actualM1016Keys = new Set(m1016Operations.map((item) => `${item.method} ${item.route}`));
+  add(
+    errors,
+    m1016Operations.length === EXPECTED_M1016_INTERNAL_OPERATIONS.length
+      && actualM1016Keys.size === expectedM1016Keys.size
+      && [...expectedM1016Keys].every((key) => actualM1016Keys.has(key)),
+    'M1-016 internal operation set must exactly contain the notification retry and recovery projections',
+  );
+  for (const expected of EXPECTED_M1016_INTERNAL_OPERATIONS) {
+    const operation = internalOperations.find((item) => item.route === expected.route && item.method === expected.method);
+    add(
+      errors,
+      operation?.operation?.operationId === expected.operationId
+        && operation?.operation?.['x-owner'] === expected.owner
+        && operation?.operation?.['x-permission'] === expected.permission
+        && isDeepStrictEqual(operation?.operation?.['x-contract'], expected.contract),
+      `expected M1-016 internal operation is missing or has an invalid identity: ${expected.method} ${expected.route}`,
+    );
+    add(errors, isDeepStrictEqual(operation?.operation?.security, expected.security), `M1-016 internal operation must use B8WorkloadIdentity: ${expected.operationId}`);
+    add(errors, isDeepStrictEqual(operation?.operation?.['x-authorization'], expected.authorization), `M1-016 internal operation authorization is invalid or not fail-closed: ${expected.operationId}`);
+    add(errors, !publicOperations.some((item) => item.operation?.operationId === expected.operationId), `M1-016 internal operation must not be exposed under the public prefix: ${expected.operationId}`);
   }
   return { internalOperations, denied: internal?.externalExposure === 'DENY' ? internalOperations.length : 0 };
 }

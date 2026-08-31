@@ -3532,6 +3532,181 @@ export type M1015EntitlementRevokeRequest = { reasonCode: string; expectedStateV
  */
 export type M1015EntitlementRevokeReceipt = { entitlementId: string; previousState: "PENDING" | "ACTIVE" | "GRACE" | "EXPIRED"; state: "REVOKED"; entitlementVersion: number; expectedStateVersion: number; stateVersion: number; approvalRef: string; auditRef: string; receiptRef: string; effectiveAt: string; invalidation: M1015EntitlementInvalidation; tombstone: M1015EntitlementTombstone & { present: true; version: number; effectiveAt: string; }; postRecoveryRerunRequired: false; };
 
+/**
+ * Generated from the contract source.
+ */
+export type M1016SyncProtocolContext = { clientEventId: string; clientSeq: number; baseVersion: number; contentVersionId: string; payloadHash: string; entityType: string; entityId: string; operation: "UPSERT" | "DELETE" | "APPEND"; occurredAt: string; idempotencyKey: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SyncReceipt = { receiptId: string; context: M1016SyncProtocolContext; state: "ACCEPTED" | "APPLIED" | "REPLAYED" | "PROCESSING" | "CONFLICT" | "REJECTED"; serverVersion: number; acceptedAt: string; replayed: boolean; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SyncCursor = { cursor: string; version: number; issuedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SyncConflict = { conflictId: string; clientEventId: string; entityType: string; entityId: string; baseVersion: number; localVersion: number; serverVersion: number; contentVersionId: string; reasonCode: "DUPLICATE_EVENT_DIFFERENT_HASH" | "OUT_OF_ORDER" | "SEQUENCE_GAP" | "STALE_BASE_VERSION" | "FUTURE_BASE_VERSION" | "CONTENT_VERSION_MISMATCH" | "OWNER_VERSION_MISMATCH" | "PERMISSION_OR_RIGHTS_CHANGED"; safeServerReference: string; allowedResolution: "RELOAD_SERVER" | "KEEP_LOCAL_DRAFT" | "RETRY_WITH_NEW_BASE" | "CONTACT_SUPPORT" | "DISCARD_LOCAL"; recoveryTaskId: string; context?: M1016SyncProtocolContext; resolutionState?: "OPEN" | "RECOVERY_PENDING" | "RECOVERED" | "TERMINAL"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SyncRecoveryRequest = { expectedVersion: number; action: "KEEP_SERVER_FACT" | "DISCARD_LOCAL_DRAFT" | "RETRY_CANONICAL_COMMAND"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SyncRecoveryResult = { conflictId: string; action: "KEEP_SERVER_FACT" | "DISCARD_LOCAL_DRAFT" | "RETRY_CANONICAL_COMMAND"; state: "RECOVERED" | "RETRY_REQUIRED" | "TERMINAL" | "REJECTED"; serverVersion: number; recoveryReceiptId: string; domainFactsUntouched: true; recoveredAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationDndWindow = { startLocalTime: string; endLocalTime: string; timezone: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationPreference = { category: "LEARNING" | "REVIEW" | "STREAK" | "EXAM" | "CHECKPOINT" | "STUDY_ROOM" | "REWARDS" | "COURSE" | "MEMBERSHIP" | "MARKETING" | "SECURITY" | "ACCOUNT" | "PAYMENT" | "SYSTEM"; channel: "IN_APP" | "PUSH" | "EMAIL" | "SMS"; enabled: boolean; locale: "zh-CN"; consentVersion: number; dndWindow: M1016NotificationDndWindow; frequencyPolicy: "IMMEDIATE" | "DAILY_DIGEST" | "WEEKLY_DIGEST" | "DISABLED"; version: number; expectedVersion?: number; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationPreferenceCommand = { category: "LEARNING" | "REVIEW" | "STREAK" | "EXAM" | "CHECKPOINT" | "STUDY_ROOM" | "REWARDS" | "COURSE" | "MEMBERSHIP" | "MARKETING" | "SECURITY" | "ACCOUNT" | "PAYMENT" | "SYSTEM"; enabled: boolean; locale: "zh-CN"; consentVersion: number; dndWindow: { startLocalTime: string; endLocalTime: string; }; frequencyPolicy: "IMMEDIATE" | "DAILY_DIGEST" | "WEEKLY_DIGEST" | "DISABLED"; expectedVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationMessage = { messageId: string; sourceEventId: string; requestId: string; principalId: string; notificationType: "LEARNING" | "REVIEW" | "STREAK" | "EXAM" | "CHECKPOINT" | "STUDY_ROOM" | "REWARDS" | "COURSE" | "MEMBERSHIP" | "MARKETING" | "SECURITY" | "ACCOUNT" | "PAYMENT" | "SYSTEM" | "ACCOUNT_VERIFICATION" | "SECURITY_ALERT" | "PHONE_BINDING_CHANGE" | "CRITICAL_ACCOUNT_PAYMENT"; category: "LEARNING" | "REVIEW" | "STREAK" | "EXAM" | "CHECKPOINT" | "STUDY_ROOM" | "REWARDS" | "COURSE" | "MEMBERSHIP" | "MARKETING" | "SECURITY" | "ACCOUNT" | "PAYMENT" | "SYSTEM"; channel: "IN_APP" | "PUSH" | "EMAIL" | "SMS"; templateKey: string; templateVersion: number; locale: "zh-CN"; parameterDigest: string; safeTitle?: string; safeBody?: string; deepLink?: string; dedupeKey: string; createdAt: string; pinned: boolean; readAt: string | null; expiresAt: string; deliveryStatus: "QUEUED" | "SENT" | "DELIVERED" | "FAILED" | "RETRY_SCHEDULED" | "CANCELLED" | "DEAD_LETTER" | "MANUAL_RECOVERY"; contentVersionId: string; version: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationReadReceipt = { messageId: string; readAt: string; version: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationReadAllReceipt = { updatedCount: number; readAt: string; version: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationRetryCommand = { notificationId: string; deliveryVersion: number; expectedVersion: number; reasonCode: "TRANSIENT_PROVIDER" | "TIMEOUT" | "RATE_LIMIT" | "TEMPORARY_NETWORK"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationRetryResult = { notificationId: string; deliveryVersion: number; state: "QUEUED" | "SENT" | "DELIVERED" | "FAILED" | "RETRY_SCHEDULED" | "CANCELLED" | "DEAD_LETTER" | "MANUAL_RECOVERY"; attempt: number; maxAttempts: 5; nextAttemptAt: string | null; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationRecoveryCommand = { notificationId: string; deliveryVersion: number; expectedVersion: number; action: "SCHEDULE_RETRY" | "MOVE_TO_DLQ" | "REPLAY" | "MANUAL_RECOVERY"; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016NotificationRecoveryResult = { notificationId: string; deliveryVersion: number; action: "SCHEDULE_RETRY" | "MOVE_TO_DLQ" | "REPLAY" | "MANUAL_RECOVERY"; state: "RECOVERED" | "RETRY_SCHEDULED" | "TERMINAL" | "REJECTED"; recoveryReceiptId: string; domainFactsUntouched: true; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportRestrictedContentRef = { contentRefId: string; sha256: string; redactionVersion: number; scanStatus: "PENDING" | "CLEAN" | "BLOCKED" | "ERROR"; objectVersion: number; safePreviewRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportAttachmentRef = { mediaAssetId: string; assetVersion: number; authorizationRef: string; scanStatus: "PENDING" | "CLEAN" | "BLOCKED" | "ERROR"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportUsableContentRef = M1016SupportRestrictedContentRef & { scanStatus?: "CLEAN"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportUsableAttachmentRef = M1016SupportAttachmentRef & { scanStatus?: "CLEAN"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportAssignmentHistory = { assignmentVersion: number; fromQueueId: string; toQueueId: string; fromAssigneeRef: string | null; toAssigneeRef: string | null; reasonCode: string; changedAt: string; actorRef: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportAssignment = { queueId: string; assigneeRef: string | null; assignmentVersion: number; assignedAt: string | null; history: ReadonlyArray<M1016SupportAssignmentHistory>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportSlaHistory = { policyRef: string; policyVersion: number; dueAt: string; status: "ON_TRACK" | "AT_RISK" | "BREACHED" | "PAUSED" | "RESOLVED"; pausedAt: string | null; resumedAt: string | null; reasonCode: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportSla = { policyRef: string; policyVersion: number; dueAt: string; status: "ON_TRACK" | "AT_RISK" | "BREACHED" | "PAUSED" | "RESOLVED"; history: ReadonlyArray<M1016SupportSlaHistory>; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportResolution = { resolutionCode: string; explanationContentRef: M1016SupportRestrictedContentRef; ownerResultRef: string; decidedAt: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportRetention = { retentionPolicyRef: string; retentionPolicyVersion: number; retentionUntil: string; legalHold: "CLEAR" | "HELD" | "UNKNOWN"; ownerReceiptRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportTicket = ({ ticketId: string; tenantId: string; requesterSubjectId: string; categoryCode: "ACCOUNT_SECURITY" | "CONTENT_CORRECTION" | "LEARNING_SYNC" | "MEDIA_DEVICE" | "ENTITLEMENT_ORDER" | "PRIVACY" | "OTHER"; resourceRef: string; priority: "LOW" | "NORMAL" | "HIGH" | "URGENT"; descriptionContentRef: M1016SupportRestrictedContentRef; attachmentRefs?: readonly [] | readonly [M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef]; state: "OPEN" | "ASSIGNED" | "WAITING_USER" | "WAITING_INTERNAL" | "RESOLVED" | "CLOSED" | "REOPENED"; stateVersion: number; assignment: M1016SupportAssignment; sla: M1016SupportSla; retention: M1016SupportRetention; resolution?: M1016SupportResolution; createdAt: string; lastAuditId: string; }) & ({ state: "OPEN"; assignment: M1016SupportAssignment; resolution?: never; } | { state: "ASSIGNED" | "WAITING_USER" | "WAITING_INTERNAL" | "REOPENED"; assignment: { queueId: string; assigneeRef: string; assignmentVersion: number; assignedAt: string; history: ReadonlyArray<M1016SupportAssignmentHistory>; }; resolution?: never; } | { resolution: M1016SupportResolution; state: "RESOLVED" | "CLOSED"; assignment: { queueId: string; assigneeRef: string; assignmentVersion: number; assignedAt: string; history: ReadonlyArray<M1016SupportAssignmentHistory>; }; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportTicketCreateRequest = { categoryCode: "ACCOUNT_SECURITY" | "CONTENT_CORRECTION" | "LEARNING_SYNC" | "MEDIA_DEVICE" | "ENTITLEMENT_ORDER" | "PRIVACY" | "OTHER"; resourceRef: string; descriptionContentRef: M1016SupportUsableContentRef; attachmentRefs?: readonly [] | readonly [M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef]; idempotencyKey: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportMessage = { messageId: string; ticketId: string; clientMessageRef: string; authorType: "LEARNER" | "SUPPORT_AGENT" | "SYSTEM"; bodyContentRef: M1016SupportRestrictedContentRef; bodyHash: string; redactionVersion: number; attachmentRefs?: readonly [] | readonly [M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef] | readonly [M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef, M1016SupportAttachmentRef]; createdAt: string; messageVersion: number; lastAuditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportMessageCreateRequest = { clientMessageRef: string; bodyContentRef: M1016SupportUsableContentRef; attachmentRefs?: readonly [] | readonly [M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef] | readonly [M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef, M1016SupportUsableAttachmentRef]; expectedVersion: number; idempotencyKey: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportAssignCommand = { commandType: "ASSIGN"; queueId: string; assigneeRef: string; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportTransitionCommand = { commandType: "TRANSITION"; toState: "OPEN" | "ASSIGNED" | "WAITING_USER" | "WAITING_INTERNAL" | "RESOLVED" | "CLOSED" | "REOPENED"; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportResolveCommand = { commandType: "RESOLVE"; resolution: M1016SupportResolution; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportAdminCommandRequest = { command: M1016SupportAssignCommand | M1016SupportTransitionCommand | M1016SupportResolveCommand; expectedVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1016SupportCommandResult = { commandId: string; ticketId: string; commandType: "ASSIGN" | "TRANSITION" | "RESOLVE"; state: "OPEN" | "ASSIGNED" | "WAITING_USER" | "WAITING_INTERNAL" | "RESOLVED" | "CLOSED" | "REOPENED"; accepted: boolean; receiptId: string; auditId: string; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -3771,10 +3946,10 @@ export interface ApiOperationRegistry {
   requestB13OrderRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: M1015RefundRequest; response: ApiSuccessEnvelope & { data: M1015Refund; }; idempotent: true };
   listInvoices: { method: "GET"; path: "/api/v1/commerce/invoices"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   createInvoice: { method: "POST"; path: "/api/v1/commerce/invoices"; request: B5InvoiceRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  listSupportTickets: { method: "GET"; path: "/api/v1/support/tickets"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  createSupportTicket: { method: "POST"; path: "/api/v1/support/tickets"; request: B5SupportTicketRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  getSupportTicket: { method: "GET"; path: "/api/v1/support/tickets/{ticketId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  addSupportTicketMessage: { method: "POST"; path: "/api/v1/support/tickets/{ticketId}/messages"; request: B5SupportMessageRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
+  listM1016LearnerSupportTickets: { method: "GET"; path: "/api/v1/support/tickets"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1016SupportTicket>; }; idempotent: false };
+  createM1016SupportTicket: { method: "POST"; path: "/api/v1/support/tickets"; request: M1016SupportTicketCreateRequest; response: ApiSuccessEnvelope & { data: M1016SupportTicket; }; idempotent: true };
+  getM1016LearnerSupportTicket: { method: "GET"; path: "/api/v1/support/tickets/{ticketId}"; request: never; response: ApiSuccessEnvelope & { data: M1016SupportTicket; }; idempotent: false };
+  addM1016LearnerSupportTicketMessage: { method: "POST"; path: "/api/v1/support/tickets/{ticketId}/messages"; request: M1016SupportMessageCreateRequest; response: ApiSuccessEnvelope & { data: M1016SupportMessage; }; idempotent: true };
   recordB6E2ERun: { method: "POST"; path: "/api/v1/quality/e2e-runs"; request: B6E2ERunRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   getB6E2ERun: { method: "GET"; path: "/api/v1/quality/e2e-runs/{runId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   recordB6SecurityScan: { method: "POST"; path: "/api/v1/quality/security-scans"; request: B6SecurityScanRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
@@ -3858,23 +4033,23 @@ export interface ApiOperationRegistry {
   getM1014SocialReport: { method: "GET"; path: "/api/v1/social/reports/{reportId}"; request: never; response: ApiSuccessEnvelope & { data: M1014Report; }; idempotent: false };
   consumeM1014SocialTrustedEvent: { method: "POST"; path: "/internal/v1/social/trusted-events"; request: M1014TrustedSocialEvent; response: B12EventReceipt; idempotent: true };
   consumeB12NotificationTrustedEvent: { method: "POST"; path: "/internal/v1/notifications/trusted-events"; request: B12NotificationTrustedEvent; response: B12EventReceipt; idempotent: true };
-  dispatchB12NotificationRetry: { method: "POST"; path: "/internal/v1/notifications/retry"; request: B12RetryCommand; response: B12RetryResult; idempotent: true };
-  recoverB12NotificationTask: { method: "POST"; path: "/internal/v1/notifications/recovery"; request: B12RecoveryCommand; response: B12RecoveryResult; idempotent: true };
+  retryM1016NotificationDelivery: { method: "POST"; path: "/internal/v1/notifications/retry"; request: M1016NotificationRetryCommand; response: M1016NotificationRetryResult; idempotent: true };
+  recoverM1016NotificationDelivery: { method: "POST"; path: "/internal/v1/notifications/recovery"; request: M1016NotificationRecoveryCommand; response: M1016NotificationRecoveryResult; idempotent: true };
   listB12ModerationReports: { method: "GET"; path: "/api/v1/admin/moderation/reports"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B12Report>; }; }; idempotent: false };
   executeB12ModerationCommand: { method: "POST"; path: "/api/v1/admin/moderation/reports/{reportId}/commands"; request: B12ModerationCommand; response: ApiSuccessEnvelope & { data: B12Report; }; idempotent: true };
   listB12RecoveryTasks: { method: "GET"; path: "/api/v1/admin/recovery/tasks"; request: never; response: ApiCursorPageEnvelope & { data: { items: ReadonlyArray<B12RecoveryResult>; }; }; idempotent: false };
   executeB12RecoveryCommand: { method: "POST"; path: "/api/v1/admin/recovery/tasks/{taskId}/commands"; request: B12RecoveryCommand; response: ApiSuccessEnvelope & { data: B12RecoveryResult; }; idempotent: true };
-  listB12NotificationPreferences: { method: "GET"; path: "/api/v1/notifications/preferences"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12NotificationPreference>; }; idempotent: false };
-  updateB12NotificationPreference: { method: "PUT"; path: "/api/v1/notifications/preferences/{notificationType}/{channel}"; request: B12NotificationPreferenceCommand; response: ApiSuccessEnvelope & { data: B12NotificationPreference; }; idempotent: true };
-  listB12Notifications: { method: "GET"; path: "/api/v1/notifications/messages"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12NotificationMessage>; }; idempotent: false };
+  listM1016NotificationPreferences: { method: "GET"; path: "/api/v1/notifications/preferences"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1016NotificationPreference>; }; idempotent: false };
+  updateM1016NotificationPreference: { method: "PUT"; path: "/api/v1/notifications/preferences/{notificationType}/{channel}"; request: M1016NotificationPreferenceCommand; response: ApiSuccessEnvelope & { data: M1016NotificationPreference; }; idempotent: true };
+  listM1016NotificationMessages: { method: "GET"; path: "/api/v1/notifications/messages"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1016NotificationMessage>; }; idempotent: false };
   getB13PublicCommerceCatalog: { method: "GET"; path: "/api/v1/public/commerce/catalog"; request: never; response: ApiSuccessEnvelope & { data: M1015PublicCatalog; }; idempotent: false };
   getB13CommerceReadiness: { method: "GET"; path: "/api/v1/commerce/readiness"; request: never; response: ApiSuccessEnvelope & { data: M1015PaymentReadiness; }; idempotent: false };
   prepareB13PaymentIntent: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-intents"; request: M1015PaymentIntentRequest; response: ApiSuccessEnvelope & { data: M1015PaymentIntentResult; }; idempotent: true };
   consumeB13PaymentProviderCallback: { method: "POST"; path: "/internal/v1/commerce/providers/{provider}/callbacks"; request: M1015ProviderCallbackRequest; response: M1015ProviderCallbackReceipt; idempotent: true };
   replayB13CommerceReconciliation: { method: "POST"; path: "/internal/v1/commerce/reconciliation/replay"; request: M1015ReconciliationReplayRequest; response: M1015ReconciliationRecoveryReceipt; idempotent: true };
   listB13AdminCommerceOrders: { method: "GET"; path: "/api/v1/admin/ops/commerce/orders"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13AdminOrderView>; }; idempotent: false };
-  listB13SupportTickets: { method: "GET"; path: "/api/v1/admin/ops/tickets"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13SupportTicket>; }; idempotent: false };
-  createB13SupportTicket: { method: "POST"; path: "/api/v1/admin/ops/tickets"; request: B13SupportTicketCreateRequest; response: ApiSuccessEnvelope & { data: B13SupportTicket; }; idempotent: true };
+  listM1016AdminSupportTickets: { method: "GET"; path: "/api/v1/admin/ops/tickets"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1016SupportTicket>; }; idempotent: false };
+  createB13SupportTicket: { method: "POST"; path: "/api/v1/admin/ops/tickets"; request: M1016SupportTicketCreateRequest; response: ApiSuccessEnvelope & { data: B13SupportTicket; }; idempotent: true };
   submitB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands"; request: B13AdminCommandRequest; response: ApiSuccessEnvelope & { data: B13AdminCommandResult; }; idempotent: true };
   listB13AdminMetrics: { method: "GET"; path: "/api/v1/admin/ops/metrics"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13MetricProjection>; }; idempotent: false };
   ingestB13AnalyticsEvent: { method: "POST"; path: "/internal/v1/analytics/events"; request: B13AnalyticsEvent; response: B13AnalyticsReceipt; idempotent: true };
@@ -3904,8 +4079,8 @@ export interface ApiOperationRegistry {
   b25ReadNotificationPreferences: { method: "GET"; path: "/internal/v1/notifications/preferences"; request: never; response: unknown; idempotent: false };
   b25UpdateNotificationPreference: { method: "PUT"; path: "/internal/v1/notifications/preferences/{notificationType}/{channel}"; request: never; response: unknown; idempotent: true };
   b25EnsureDailyTask: { method: "POST"; path: "/internal/v1/learner/onboarding/daily-tasks/ensure"; request: B25EnsureDailyTaskRequest; response: unknown; idempotent: true };
-  markB12NotificationMessageRead: { method: "PUT"; path: "/api/v1/notifications/messages/{messageId}/read"; request: never; response: ApiSuccessEnvelope & { data: { messageId: string; updated: boolean; source: "mysql"; }; }; idempotent: true };
-  markAllB12NotificationMessagesRead: { method: "PUT"; path: "/api/v1/notifications/messages/read-all"; request: never; response: ApiSuccessEnvelope & { data: { messageId: "all"; updated: boolean; source: "mysql"; }; }; idempotent: true };
+  markM1016NotificationMessageRead: { method: "PUT"; path: "/api/v1/notifications/messages/{messageId}/read"; request: never; response: ApiSuccessEnvelope & { data: M1016NotificationReadReceipt; }; idempotent: true };
+  markAllM1016NotificationMessagesRead: { method: "PUT"; path: "/api/v1/notifications/messages/read-all"; request: never; response: ApiSuccessEnvelope & { data: M1016NotificationReadAllReceipt; }; idempotent: true };
   createB11MediaAccess: { method: "POST"; path: "/api/v1/media/assets/{assetId}/signed-url"; request: B11MediaAccessRequest; response: ApiSuccessEnvelope & { data: B11SignedMediaUrl; }; idempotent: true };
   getB4Season: { method: "GET"; path: "/api/v1/gamification/season"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   prepareB13AdminCommand: { method: "POST"; path: "/api/v1/admin/ops/commands/prepare"; request: B13AdminCommandRequest; response: ApiSuccessEnvelope & { data: B13CommandPreparation; }; idempotent: true };
@@ -3954,6 +4129,13 @@ export interface ApiOperationRegistry {
   getB10LearningReport: { method: "GET"; path: "/api/v1/learning/reports/{reportType}"; request: never; response: ApiSuccessEnvelope & { data: B10LearningReport; }; idempotent: false };
   resolveM1015CommerceEntitlementSnapshot: { method: "POST"; path: "/internal/v1/commerce/entitlements/{entitlementId}/snapshot"; request: M1015EntitlementSnapshotResolveRequest; response: M1015EntitlementSnapshot; idempotent: true };
   revokeM1015CommerceEntitlement: { method: "POST"; path: "/internal/v1/commerce/entitlements/{entitlementId}/revoke"; request: M1015EntitlementRevokeRequest; response: M1015EntitlementRevokeReceipt; idempotent: true };
+  listM1016LearningSyncReceipts: { method: "GET"; path: "/api/v1/learning/sync/receipts"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1016SyncReceipt>; }; idempotent: false };
+  getM1016LearningSyncCursor: { method: "GET"; path: "/api/v1/learning/sync/cursor"; request: never; response: ApiSuccessEnvelope & { data: M1016SyncCursor; }; idempotent: false };
+  listM1016LearningSyncConflicts: { method: "GET"; path: "/api/v1/learning/sync/conflicts"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1016SyncConflict>; }; idempotent: false };
+  recoverM1016LearningSyncConflict: { method: "POST"; path: "/api/v1/learning/sync/conflicts/{conflictId}/recovery"; request: M1016SyncRecoveryRequest; response: ApiSuccessEnvelope & { data: M1016SyncRecoveryResult; }; idempotent: true };
+  getM1016AdminSupportTicket: { method: "GET"; path: "/api/v1/admin/ops/tickets/{ticketId}"; request: never; response: ApiSuccessEnvelope & { data: M1016SupportTicket; }; idempotent: false };
+  addM1016AdminSupportTicketMessage: { method: "POST"; path: "/api/v1/admin/ops/tickets/{ticketId}/messages"; request: M1016SupportMessageCreateRequest; response: ApiSuccessEnvelope & { data: M1016SupportMessage; }; idempotent: true };
+  submitM1016SupportTicketCommand: { method: "POST"; path: "/api/v1/admin/ops/tickets/{ticketId}/commands"; request: M1016SupportAdminCommandRequest; response: ApiSuccessEnvelope & { data: M1016SupportCommandResult; }; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

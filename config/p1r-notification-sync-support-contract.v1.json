@@ -1,0 +1,1585 @@
+{
+  "$schema": "p1r.notification-sync-support-contract.v1",
+  "schemaVersion": "p1r.notification-sync-support-contract.v1",
+  "task": "P1R-M1-016",
+  "phase": "P1",
+  "startCommit": "334447782ba22ceaa9c97dc2a6044c91ba75400a",
+  "sourceBaseline": "878f9ebc0591844467ac79facf4f00296058137f",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "collectionPolicy": {
+    "unknownFieldDecision": "DENY",
+    "unknownEnumDecision": "DENY",
+    "additionalProperties": "DENY",
+    "clientAuthorityExpansion": "PROHIBITED",
+    "unverifiedRuntimeClaim": "DENY",
+    "implicitDefault": "DENY"
+  },
+  "canonicalSources": {
+    "productRequirements": "requirements/product-requirements.md",
+    "featureMatrix": "requirements/feature-matrix.md",
+    "phase1BusinessJourney": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+    "phase1BusinessOperations": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
+    "phase1IntegrationMatrix": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+    "phase1StateAndRecovery": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
+    "ownershipDecision": "docs/10-decisions/0014-phase1-support-privacy-ownership.md",
+    "architectureRules": "AGENTS.md",
+    "sourceBaseline": "878f9ebc0591844467ac79facf4f00296058137f",
+    "historicalNotificationOpenApi": "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json",
+    "canonicalNotificationOpenApiFamily": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+    "historicalLearnerSupportOpenApi": "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+    "historicalAdminSupportOpenApi": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+    "gatewayBoundary": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+    "canonicalEventFragment": "packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "eventReliabilityPolicy": "packages/contracts/events/v1/reliability-policy.json"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-016",
+    "sourceContractBaseline": "878f9ebc0591844467ac79facf4f00296058137f",
+    "previousPromotion": "P1R-M1-015",
+    "previousPromotionContract": "config/p1r-commerce-contract.v1.json",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "M1016_OPENAPI_EVENT_GOVERNANCE_B26_STATIC_WITH_B11_B5_B13_V1_HISTORICAL",
+    "promotionMode": "FUTURE_M1016_V2_ONLY",
+    "allowsHistoricalV1Promotion": false,
+    "allowsDualPublish": false,
+    "approvedSourceFiles": [
+      "config/p1r-notification-sync-support-contract.v1.json",
+      "requirements/feature-matrix.md",
+      "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
+      "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+      "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
+      "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json",
+      "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+      "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+      "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+      "scripts/contracts/merge-b1-fragments.mjs",
+      "packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json",
+      "config/b26-event-runtime.json",
+      "packages/contracts/events/v1/catalog.json",
+      "packages/contracts/events/v1/reliability-policy.json"
+    ],
+    "requiredCompatibilityChecks": [
+      "M1016_POLICY_SCHEMA_STRICT_AND_FAIL_CLOSED",
+      "B12_NOTIFICATION_CANONICAL_B11_HISTORICAL",
+      "B5_B13_SUPPORT_HISTORICAL_ADAPTER_ONLY",
+      "NOTIFICATION_EVENT_TEMPLATE_SUBSCRIPTION_EXACT",
+      "NOTIFICATION_SMS_ALLOWLIST_EXACT",
+      "NOTIFICATION_RETRY_MAX_FIVE_INCLUDING_FIRST",
+      "SYNC_OWNER_SPECIFIC_UNIQUE_WRITER",
+      "SYNC_HASH_REPLAY_AND_CONFLICT_MATRIX",
+      "SUPPORT_SINGLE_OWNER_ROUTE_SCHEMA_STATE",
+      "SUPPORT_CONTENT_SCAN_REDACTION_AND_LEGAL_HOLD_DENY",
+      "NO_HISTORICAL_V1_PROMOTION",
+      "NO_DUAL_PUBLISH",
+      "NO_RUNTIME_STATUS_PROMOTION"
+    ],
+    "b26StaticPolicy": {
+      "contract": "config/b26-event-runtime.json",
+      "classification": "STATIC_GOVERNANCE_ONLY",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "allowsRuntimePromotion": false,
+      "requiresSeparateRuntimeEvidence": true
+    },
+    "canonicalOpenApiSource": {
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "sources": [
+        {
+          "surface": "B11_SYNC",
+          "sourceFile": "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json",
+          "canonicalV2Projection": true,
+          "historicalV1Semantics": "HISTORICAL_V1_OPERATIONS_ONLY",
+          "classification": "M1016_SYNC_POLICY_PROJECTION_SOURCE",
+          "v2Policy": "M1016_SYNC_FIELDS_AND_OWNER_POLICY"
+        },
+        {
+          "surface": "B12_NOTIFICATION",
+          "sourceFile": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+          "canonicalV2Projection": true,
+          "historicalV1Semantics": "HISTORICAL_V1_CANDIDATES_ONLY",
+          "classification": "M1016_B12_CANONICAL_NOTIFICATION_FAMILY",
+          "v2Policy": "M1016_NOTIFICATION_POLICY_PROJECTION"
+        },
+        {
+          "surface": "B5_LEARNER_SUPPORT",
+          "sourceFile": "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+          "canonicalV2Projection": true,
+          "canonicalV2ProjectionMode": "FIXED_PATH_METHOD_OPERATION_ID_ALLOWLIST",
+          "historicalV1Semantics": "HISTORICAL_V1_OPERATIONS_ONLY",
+          "classification": "M1016_SUPPORT_POLICY_PROJECTION_SOURCE",
+          "v2Policy": "M1016_SUPPORT_SINGLE_OWNER_ADAPTER"
+        },
+        {
+          "surface": "B13_ADMIN_SUPPORT",
+          "sourceFile": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+          "canonicalV2Projection": true,
+          "historicalV1Semantics": "HISTORICAL_V1_OPERATIONS_ONLY",
+          "classification": "M1016_SUPPORT_POLICY_PROJECTION_SOURCE",
+          "v2Policy": "M1016_SUPPORT_SINGLE_OWNER_ADAPTER"
+        }
+      ],
+      "canonicalPolicySource": "config/p1r-notification-sync-support-contract.v1.json",
+      "promotionRequiresExactProjection": true,
+      "b11B5B13V1Promotion": "PROHIBITED",
+      "b12Semantics": "CANONICAL_V2_POLICY_TARGET"
+    },
+    "canonicalEventSource": {
+      "sourceFile": "packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json",
+      "classification": "M1016_V2_EVENT_GOVERNANCE_SOURCE",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "v1Semantics": "HISTORICAL_INPUT_ONLY",
+      "catalogProjection": "packages/contracts/events/v1/catalog.json",
+      "promotionRequires": [
+        "producer",
+        "dataOwner",
+        "consumerGroup",
+        "topic",
+        "aggregatePartition",
+        "payloadSchema",
+        "dedupeAndReplayPolicy"
+      ]
+    }
+  },
+  "ownership": {
+    "notification-service": {
+      "canonicalFacts": [
+        "notification-preference",
+        "notification-template-reference",
+        "notification-message",
+        "notification-delivery",
+        "notification-read-receipt"
+      ],
+      "mayWriteDomainFacts": false,
+      "mayWriteSupportFacts": false
+    },
+    "workflow-service": {
+      "canonicalFacts": [
+        "notification-retry-task",
+        "notification-dlq-task",
+        "notification-recovery-task",
+        "sync-recovery-task"
+      ],
+      "mayWriteNotificationMessage": false,
+      "mayWriteDomainFacts": false,
+      "mayWriteSupportFacts": false
+    },
+    "owner-specific-domain-service": {
+      "canonicalFacts": [
+        "owner-specific-sync-business-fact"
+      ],
+      "uniqueWriter": true,
+      "mayUseCentralSyncWriter": false
+    },
+    "admin-ops-service.support": {
+      "canonicalFacts": [
+        "support-ticket",
+        "support-message",
+        "support-assignment",
+        "support-sla",
+        "support-resolution",
+        "support-retention"
+      ],
+      "uniqueWriter": true,
+      "mayCopyDomainFacts": false,
+      "mayReadDomainContext": "REDACTED_AUTHORIZED_REFERENCE_ONLY"
+    },
+    "audit-service": {
+      "canonicalFacts": [
+        "immutable-audit-reference"
+      ],
+      "appendOnly": true,
+      "mayWriteBusinessFacts": false
+    }
+  },
+  "authority": {
+    "principalAndTenant": "SERVER_DERIVED_FROM_VERIFIED_TOKEN",
+    "deviceBinding": "SERVER_DERIVED_FROM_VERIFIED_SESSION_AND_DEVICE",
+    "notificationOwner": "notification-service",
+    "syncWriter": "OWNER_SPECIFIC_DOMAIN_SERVICE_ONLY",
+    "supportOwner": "admin-ops-service.support",
+    "workflowRole": "RETRY_DLQ_RECOVERY_ORCHESTRATION_ONLY",
+    "clientMaySet": [
+      "clientEventId",
+      "clientSeq",
+      "baseVersion",
+      "contentVersionId",
+      "payloadHash",
+      "entityType",
+      "entityId",
+      "operation",
+      "occurredAt",
+      "idempotencyKey"
+    ],
+    "serverDerivedFields": [
+      "tenantId",
+      "principalId",
+      "deviceId",
+      "ownerService",
+      "notificationId",
+      "messageId",
+      "deliveryStatus",
+      "readAt",
+      "ticketId",
+      "state",
+      "stateVersion",
+      "assignment",
+      "sla",
+      "retention",
+      "auditId"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "tenant",
+      "tenantId",
+      "subject",
+      "subjectId",
+      "principalId",
+      "role",
+      "permission",
+      "owner",
+      "ownerService",
+      "assignment",
+      "assignee",
+      "queueId",
+      "sla",
+      "slaDueAt",
+      "priority",
+      "state",
+      "stateVersion",
+      "deliveryStatus",
+      "readAt",
+      "retentionPolicyRef",
+      "legalHold",
+      "auditId"
+    ]
+  },
+  "notification": {
+    "canonicalFamily": "B12",
+    "canonicalStatus": "D2_CANONICAL_B12_NOTIFICATION_B11_HISTORICAL",
+    "historicalFamilies": [
+      "B11"
+    ],
+    "channels": [
+      "IN_APP",
+      "PUSH",
+      "EMAIL",
+      "SMS"
+    ],
+    "allowedLocales": [
+      "zh-CN"
+    ],
+    "categories": [
+      "LEARNING",
+      "REVIEW",
+      "STREAK",
+      "EXAM",
+      "CHECKPOINT",
+      "STUDY_ROOM",
+      "REWARDS",
+      "COURSE",
+      "MEMBERSHIP",
+      "MARKETING",
+      "SECURITY",
+      "ACCOUNT",
+      "PAYMENT",
+      "SYSTEM"
+    ],
+    "smsPolicy": {
+      "allowlistPurposes": [
+        "ACCOUNT_VERIFICATION",
+        "SECURITY_ALERT",
+        "PHONE_BINDING_CHANGE",
+        "CRITICAL_ACCOUNT_PAYMENT"
+      ],
+      "allowlistCategories": [
+        "SECURITY",
+        "ACCOUNT",
+        "PAYMENT"
+      ],
+      "prohibitedCategories": [
+        "LEARNING",
+        "REVIEW",
+        "STREAK",
+        "EXAM",
+        "CHECKPOINT",
+        "STUDY_ROOM",
+        "REWARDS",
+        "COURSE",
+        "MEMBERSHIP",
+        "MARKETING",
+        "SYSTEM"
+      ],
+      "securityAndNecessaryTransactionOverride": true,
+      "unknownPurposeDecision": "DENY",
+      "marketingSms": "DENY"
+    },
+    "preference": {
+      "requiredFields": [
+        "category",
+        "channel",
+        "enabled",
+        "locale",
+        "consentVersion",
+        "dndWindow",
+        "frequencyPolicy",
+        "version",
+        "updatedAt"
+      ],
+      "allowedFields": [
+        "category",
+        "channel",
+        "enabled",
+        "locale",
+        "consentVersion",
+        "dndWindow",
+        "frequencyPolicy",
+        "version",
+        "expectedVersion",
+        "updatedAt"
+      ],
+      "clientWritableFields": [
+        "category",
+        "channel",
+        "enabled",
+        "locale",
+        "consentVersion",
+        "dndWindow",
+        "frequencyPolicy",
+        "expectedVersion"
+      ],
+      "serverDerivedFields": [
+        "tenantId",
+        "principalId",
+        "version",
+        "updatedAt"
+      ],
+      "compareAndSet": {
+        "required": true,
+        "versionField": "version",
+        "expectedField": "expectedVersion",
+        "sameVersionSameDigest": "REPLAY_OR_CURRENT_RESULT",
+        "staleVersion": "CONFLICT",
+        "missingVersion": "DENY"
+      },
+      "dndWindow": {
+        "defaultStart": "23:00",
+        "defaultEnd": "08:00",
+        "timezone": "SERVER_DERIVED_IANA_TIMEZONE",
+        "securityAndNecessaryTransactionBypass": true
+      },
+      "frequencyPolicy": {
+        "allowed": [
+          "IMMEDIATE",
+          "DAILY_DIGEST",
+          "WEEKLY_DIGEST",
+          "DISABLED"
+        ],
+        "serverEnforced": true,
+        "unknownDecision": "DENY"
+      }
+    },
+    "template": {
+      "requiredFields": [
+        "templateKey",
+        "templateVersion",
+        "category",
+        "locale",
+        "parameterAllowlist",
+        "deepLinkPolicy",
+        "expiryPolicy",
+        "pinPolicy",
+        "redactionPolicy",
+        "status"
+      ],
+      "status": [
+        "ACTIVE",
+        "DEPRECATED",
+        "DISABLED"
+      ],
+      "parameterValues": "STRUCTURED_ALLOWLIST_ONLY",
+      "rawFreeText": "DENY",
+      "rawTokenAudioPaymentCredential": "DENY",
+      "deepLinkPolicy": "ALLOWLISTED_INTERNAL_ROUTE_ONLY",
+      "expiryPolicy": "EXPLICIT_PER_TEMPLATE",
+      "pinPolicy": "EXPLICIT_PER_TEMPLATE",
+      "redactionPolicy": "SAFE_RENDERED_BODY_ONLY"
+    },
+    "message": {
+      "requiredFields": [
+        "messageId",
+        "sourceEventId",
+        "requestId",
+        "principalId",
+        "notificationType",
+        "category",
+        "channel",
+        "templateKey",
+        "templateVersion",
+        "locale",
+        "parameterDigest",
+        "dedupeKey",
+        "createdAt",
+        "expiresAt",
+        "pinned",
+        "readAt",
+        "deliveryStatus",
+        "contentVersionId",
+        "version"
+      ],
+      "allowedFields": [
+        "messageId",
+        "sourceEventId",
+        "requestId",
+        "principalId",
+        "notificationType",
+        "category",
+        "channel",
+        "templateKey",
+        "templateVersion",
+        "locale",
+        "parameterDigest",
+        "safeTitle",
+        "safeBody",
+        "deepLink",
+        "dedupeKey",
+        "createdAt",
+        "expiresAt",
+        "pinned",
+        "readAt",
+        "deliveryStatus",
+        "contentVersionId",
+        "version"
+      ],
+      "clientWritableFields": [],
+      "forbiddenFields": [
+        "token",
+        "password",
+        "rawAudio",
+        "paymentCredential",
+        "unredactedFreeText",
+        "clientPrincipalId",
+        "clientTenantId"
+      ],
+      "readReceipt": {
+        "owner": "notification-service",
+        "writeKey": "messageId",
+        "clientMaySet": [
+          "messageId"
+        ],
+        "readAt": "SERVER_CLOCK"
+      }
+    },
+    "delivery": {
+      "owner": "notification-service",
+      "states": [
+        "QUEUED",
+        "SENT",
+        "DELIVERED",
+        "FAILED",
+        "RETRY_SCHEDULED",
+        "CANCELLED",
+        "DEAD_LETTER",
+        "MANUAL_RECOVERY"
+      ],
+      "terminalStates": [
+        "DELIVERED",
+        "FAILED",
+        "CANCELLED",
+        "DEAD_LETTER"
+      ],
+      "dedupeKey": [
+        "sourceEventId",
+        "principalId",
+        "category",
+        "channel",
+        "businessDedupeKey"
+      ],
+      "domainFactRollback": "PROHIBITED",
+      "unknownChannelDecision": "DENY"
+    },
+    "retry": {
+      "policyRef": "P1R-M1-007",
+      "maxAttemptsIncludingFirst": 5,
+      "firstAttemptNumber": 1,
+      "maxRetriesAfterFirst": 4,
+      "strategy": "EXPONENTIAL_BACKOFF_WITH_JITTER",
+      "retryableFailureClasses": [
+        "TRANSIENT_PROVIDER",
+        "TIMEOUT",
+        "RATE_LIMIT",
+        "TEMPORARY_NETWORK"
+      ],
+      "nonRetryableFailureClasses": [
+        "CONSENT_REVOKED",
+        "INVALID_DESTINATION",
+        "TEMPLATE_INVALID",
+        "SENSITIVE_CONTENT",
+        "UNKNOWN"
+      ],
+      "unknownFailureDecision": "DENY_TO_DLQ",
+      "workflowOnlyOperations": [
+        "SCHEDULE_RETRY",
+        "MOVE_TO_DLQ",
+        "REPLAY",
+        "MANUAL_RECOVERY"
+      ],
+      "notificationOwnerKeepsDeliveryFact": true,
+      "domainFactMutation": "PROHIBITED"
+    },
+    "subscriptionPromotion": {
+      "status": "D2_EXACT_SUBSCRIPTIONS_FROZEN_NOT_RUNTIME_VERIFIED",
+      "exactSourceEventsOnly": true,
+      "futureUnboundSubscriptionsAreActive": false,
+      "unknownProducerDecision": "DENY",
+      "dualPublish": false
+    },
+    "exactSubscriptions": [
+      {
+        "sourceEvent": "learning.review.scheduled.v2",
+        "sourceEventStatus": "M1016_PLANNED_CANONICAL_PRODUCER_FACT",
+        "templateKey": "learning.review.due",
+        "templateVersion": 1,
+        "category": "REVIEW",
+        "channels": [
+          "IN_APP",
+          "PUSH"
+        ],
+        "locales": [
+          "zh-CN"
+        ],
+        "parameterAllowlist": [
+          "reviewQueueId",
+          "dueAt",
+          "contentVersionId"
+        ],
+        "deepLink": "/learn/review",
+        "expiry": "P7D",
+        "pinned": false,
+        "dedupeKey": [
+          "sourceEventId",
+          "principalId",
+          "reviewQueueId",
+          "channel"
+        ],
+        "sms": "DENY"
+      },
+      {
+        "sourceEvent": "commerce.entitlement.activated.v2",
+        "sourceEventStatus": "EXISTING_M1015_CANONICAL_PRODUCER_FACT",
+        "templateKey": "commerce.entitlement.activated",
+        "templateVersion": 1,
+        "category": "MEMBERSHIP",
+        "channels": [
+          "IN_APP",
+          "EMAIL"
+        ],
+        "locales": [
+          "zh-CN"
+        ],
+        "parameterAllowlist": [
+          "entitlementId",
+          "entitlementVersion",
+          "scopeCode"
+        ],
+        "deepLink": "/account/entitlements",
+        "expiry": "P180D",
+        "pinned": false,
+        "dedupeKey": [
+          "sourceEventId",
+          "principalId",
+          "entitlementId",
+          "channel"
+        ],
+        "sms": "DENY"
+      },
+      {
+        "sourceEvent": "support.ticket.created.v2",
+        "sourceEventStatus": "M1016_PLANNED_CANONICAL_PRODUCER_FACT",
+        "templateKey": "support.ticket.created",
+        "templateVersion": 1,
+        "category": "SYSTEM",
+        "channels": [
+          "IN_APP",
+          "EMAIL"
+        ],
+        "locales": [
+          "zh-CN"
+        ],
+        "parameterAllowlist": [
+          "ticketId",
+          "ticketState",
+          "slaDueAt"
+        ],
+        "deepLink": "/support/tickets",
+        "expiry": "P30D",
+        "pinned": false,
+        "dedupeKey": [
+          "sourceEventId",
+          "principalId",
+          "ticketId",
+          "channel"
+        ],
+        "sms": "DENY"
+      },
+      {
+        "sourceEvent": "support.ticket.resolved.v2",
+        "sourceEventStatus": "M1016_PLANNED_CANONICAL_PRODUCER_FACT",
+        "templateKey": "support.ticket.resolved",
+        "templateVersion": 1,
+        "category": "SYSTEM",
+        "channels": [
+          "IN_APP",
+          "EMAIL"
+        ],
+        "locales": [
+          "zh-CN"
+        ],
+        "parameterAllowlist": [
+          "ticketId",
+          "ticketState",
+          "resolutionCode"
+        ],
+        "deepLink": "/support/tickets",
+        "expiry": "P90D",
+        "pinned": false,
+        "dedupeKey": [
+          "sourceEventId",
+          "principalId",
+          "ticketId",
+          "channel"
+        ],
+        "sms": "DENY"
+      },
+      {
+        "sourceEvent": "commerce.refund.settled.v2",
+        "sourceEventStatus": "EXISTING_M1015_CANONICAL_PRODUCER_FACT",
+        "templateKey": "commerce.refund.settled",
+        "templateVersion": 1,
+        "category": "PAYMENT",
+        "channels": [
+          "IN_APP",
+          "EMAIL"
+        ],
+        "locales": [
+          "zh-CN"
+        ],
+        "parameterAllowlist": [
+          "orderId",
+          "refundId",
+          "entitlementVersion"
+        ],
+        "deepLink": "/commerce/orders",
+        "expiry": "P180D",
+        "pinned": false,
+        "dedupeKey": [
+          "sourceEventId",
+          "principalId",
+          "orderId",
+          "channel"
+        ],
+        "sms": "DENY"
+      }
+    ],
+    "futureUnboundTemplateAllowlist": [
+      {
+        "templateKey": "security.account.alert",
+        "templateVersion": 1,
+        "category": "SECURITY",
+        "channels": [
+          "IN_APP",
+          "PUSH",
+          "SMS",
+          "EMAIL"
+        ],
+        "locales": [
+          "zh-CN"
+        ],
+        "parameterAllowlist": [
+          "alertCode",
+          "occurredAt",
+          "deviceLabel"
+        ],
+        "deepLink": "/settings/security",
+        "expiry": "P30D",
+        "pinned": true,
+        "sms": "SECURITY_ALERT",
+        "promotionStatus": "UNBOUND_NO_CANONICAL_SOURCE_EVENT",
+        "active": false
+      }
+    ]
+  },
+  "sync": {
+    "canonicalMode": "OWNER_SPECIFIC_COMMAND_ONLY",
+    "centralWriter": "PROHIBITED",
+    "clientKafkaProducer": false,
+    "requiredFields": [
+      "clientEventId",
+      "clientSeq",
+      "baseVersion",
+      "contentVersionId",
+      "payloadHash",
+      "entityType",
+      "entityId",
+      "operation",
+      "occurredAt",
+      "idempotencyKey"
+    ],
+    "contentVersionBinding": {
+      "requiredField": "contentVersionId",
+      "nonContentValue": "NOT_APPLICABLE_EXPLICITLY_DECLARED_BY_OWNER",
+      "clientMayOmit": false,
+      "clientMayInvent": false,
+      "staleOrUnknownDecision": "CONFLICT_OR_DENY"
+    },
+    "serverDerivedFields": [
+      "tenantId",
+      "principalId",
+      "deviceId",
+      "ownerService",
+      "acceptedAt",
+      "serverVersion",
+      "conflictId",
+      "recoveryTaskId"
+    ],
+    "clientForbiddenFields": [
+      "tenantId",
+      "principalId",
+      "subjectId",
+      "ownerService",
+      "serverVersion",
+      "conflictId",
+      "recoveryTaskId",
+      "mastery",
+      "xp",
+      "entitlementState"
+    ],
+    "sequence": {
+      "scope": [
+        "principalId",
+        "deviceId"
+      ],
+      "startsAt": 1,
+      "ordering": "STRICT_SERVER_ORDER",
+      "sameEventSameHash": "REPLAY_OR_ORIGINAL_RESULT",
+      "sameEventDifferentHash": "CONFLICT",
+      "gap": "CONFLICT",
+      "outOfOrder": "CONFLICT",
+      "staleBaseVersion": "CONFLICT",
+      "futureBaseVersion": "CONFLICT",
+      "blindLastWriteWins": "DENY"
+    },
+    "outcomes": [
+      "ACCEPTED",
+      "APPLIED",
+      "REPLAYED",
+      "PROCESSING",
+      "CONFLICT",
+      "REJECTED"
+    ],
+    "conflict": {
+      "requiredFields": [
+        "conflictId",
+        "clientEventId",
+        "entityType",
+        "entityId",
+        "baseVersion",
+        "localVersion",
+        "serverVersion",
+        "contentVersionId",
+        "reasonCode",
+        "safeServerReference",
+        "allowedResolution",
+        "recoveryTaskId"
+      ],
+      "reasonCodes": [
+        "DUPLICATE_EVENT_DIFFERENT_HASH",
+        "OUT_OF_ORDER",
+        "SEQUENCE_GAP",
+        "STALE_BASE_VERSION",
+        "FUTURE_BASE_VERSION",
+        "CONTENT_VERSION_MISMATCH",
+        "OWNER_VERSION_MISMATCH",
+        "PERMISSION_OR_RIGHTS_CHANGED"
+      ],
+      "allowedResolutions": [
+        "RELOAD_SERVER",
+        "KEEP_LOCAL_DRAFT",
+        "RETRY_WITH_NEW_BASE",
+        "CONTACT_SUPPORT",
+        "DISCARD_LOCAL"
+      ],
+      "clientMerge": "DENY_FOR_ATTEMPT_MASTERY_XP_ENTITLEMENT",
+      "serverFactRollback": "PROHIBITED"
+    },
+    "ownerMap": {
+      "LEARNING_PLAN": "learning-service",
+      "LEARNING_PROGRESS": "learning-service",
+      "SRS_REVIEW": "learning-service",
+      "MASTERY_PROJECTION": "learning-service",
+      "ASSESSMENT_SESSION": "assessment-service",
+      "ASSESSMENT_CHECKPOINT": "assessment-service",
+      "ATTEMPT": "assessment-service",
+      "FAVORITE": "learner-service",
+      "EXPRESSION_VOCAB": "learner-service",
+      "NOTIFICATION_PREFERENCE": "notification-service",
+      "SUPPORT_TICKET": "admin-ops-service.support",
+      "UNKNOWN": "DENY"
+    },
+    "workflowRecovery": {
+      "owner": "workflow-service",
+      "taskFields": [
+        "taskId",
+        "clientEventId",
+        "entityId",
+        "stage",
+        "retryCount",
+        "lastErrorCode",
+        "nextAction",
+        "ownerService",
+        "auditId",
+        "closureReceipt"
+      ],
+      "mayWriteOwnerFact": false,
+      "closureRequiresOwnerReconciliation": true
+    }
+  },
+  "support": {
+    "owner": "admin-ops-service.support",
+    "canonicalRoutes": {
+      "learner": "/api/v1/support/tickets",
+      "admin": "/api/v1/admin/ops/tickets",
+      "sameOwnerSchema": true,
+      "sameStateMachine": true,
+      "sameIdempotencyDomain": true,
+      "routeAdapterRequiredUntilMigration": true
+    },
+    "states": [
+      "OPEN",
+      "ASSIGNED",
+      "WAITING_USER",
+      "WAITING_INTERNAL",
+      "RESOLVED",
+      "CLOSED",
+      "REOPENED"
+    ],
+    "initialStates": [
+      "OPEN"
+    ],
+    "terminalStates": [
+      "CLOSED"
+    ],
+    "transitions": [
+      {
+        "from": "OPEN",
+        "to": [
+          "ASSIGNED"
+        ],
+        "requires": [
+          "assignmentVersion",
+          "auditId"
+        ]
+      },
+      {
+        "from": "ASSIGNED",
+        "to": [
+          "WAITING_USER",
+          "WAITING_INTERNAL",
+          "RESOLVED"
+        ],
+        "requires": [
+          "expectedVersion",
+          "assignmentVersion",
+          "auditId"
+        ]
+      },
+      {
+        "from": "WAITING_USER",
+        "to": [
+          "ASSIGNED",
+          "RESOLVED"
+        ],
+        "requires": [
+          "expectedVersion",
+          "auditId"
+        ]
+      },
+      {
+        "from": "WAITING_INTERNAL",
+        "to": [
+          "ASSIGNED",
+          "RESOLVED"
+        ],
+        "requires": [
+          "expectedVersion",
+          "ownerResultRef",
+          "auditId"
+        ]
+      },
+      {
+        "from": "RESOLVED",
+        "to": [
+          "CLOSED",
+          "REOPENED"
+        ],
+        "requires": [
+          "expectedVersion",
+          "resolution",
+          "auditId"
+        ]
+      },
+      {
+        "from": "CLOSED",
+        "to": [
+          "REOPENED"
+        ],
+        "requires": [
+          "reopenWindow",
+          "expectedVersion",
+          "auditId"
+        ]
+      },
+      {
+        "from": "REOPENED",
+        "to": [
+          "ASSIGNED"
+        ],
+        "requires": [
+          "assignmentVersion",
+          "expectedVersion",
+          "auditId"
+        ]
+      }
+    ],
+    "categories": [
+      "ACCOUNT_SECURITY",
+      "CONTENT_CORRECTION",
+      "LEARNING_SYNC",
+      "MEDIA_DEVICE",
+      "ENTITLEMENT_ORDER",
+      "PRIVACY",
+      "OTHER"
+    ],
+    "ticket": {
+      "requiredFields": [
+        "ticketId",
+        "tenantId",
+        "requesterSubjectId",
+        "categoryCode",
+        "resourceRef",
+        "priority",
+        "descriptionContentRef",
+        "state",
+        "stateVersion",
+        "assignment",
+        "sla",
+        "retention",
+        "createdAt",
+        "lastAuditId"
+      ],
+      "clientWritableFields": [
+        "categoryCode",
+        "resourceRef",
+        "descriptionContentRef",
+        "attachmentRefs",
+        "idempotencyKey"
+      ],
+      "serverDerivedFields": [
+        "ticketId",
+        "tenantId",
+        "requesterSubjectId",
+        "priority",
+        "state",
+        "stateVersion",
+        "assignment",
+        "sla",
+        "retention",
+        "createdAt",
+        "lastAuditId"
+      ],
+      "expectedVersion": {
+        "requiredForMutation": true,
+        "missingDecision": "DENY",
+        "staleDecision": "CONFLICT",
+        "sameVersionSameDigest": "REPLAY_OR_ORIGINAL_RESULT"
+      },
+      "unknownCategoryDecision": "DENY"
+    },
+    "contentReference": {
+      "requiredFields": [
+        "contentRefId",
+        "sha256",
+        "redactionVersion",
+        "scanStatus",
+        "objectVersion",
+        "safePreviewRef"
+      ],
+      "sha256Pattern": "^[A-Fa-f0-9]{64}$",
+      "scanStatus": [
+        "PENDING",
+        "CLEAN",
+        "BLOCKED",
+        "ERROR"
+      ],
+      "usableStatus": "CLEAN",
+      "unknownScanDecision": "DENY",
+      "rawFreeTextInTicketOrEvent": "PROHIBITED",
+      "safePreview": "REDACTED_SERVER_RENDERED_REFERENCE_ONLY"
+    },
+    "attachmentReference": {
+      "requiredFields": [
+        "mediaAssetId",
+        "assetVersion",
+        "authorizationRef",
+        "scanStatus"
+      ],
+      "scanStatus": [
+        "PENDING",
+        "CLEAN",
+        "BLOCKED",
+        "ERROR"
+      ],
+      "usableStatus": "CLEAN",
+      "authorization": "MEDIA_OWNER_SIGNED_SCOPE_REFERENCE",
+      "forbiddenFields": [
+        "url",
+        "signedUrl",
+        "objectKey",
+        "rawBytes",
+        "clientTenantId",
+        "clientSubjectId"
+      ],
+      "unknownScanDecision": "DENY"
+    },
+    "message": {
+      "requiredFields": [
+        "messageId",
+        "ticketId",
+        "clientMessageRef",
+        "authorType",
+        "bodyContentRef",
+        "bodyHash",
+        "redactionVersion",
+        "createdAt",
+        "messageVersion",
+        "lastAuditId"
+      ],
+      "authorTypes": [
+        "LEARNER",
+        "SUPPORT_AGENT",
+        "SYSTEM"
+      ],
+      "clientWritableFields": [
+        "clientMessageRef",
+        "bodyContentRef",
+        "attachmentRefs",
+        "expectedVersion",
+        "idempotencyKey"
+      ],
+      "bodyContentRefUses": "CONTENT_REFERENCE_POLICY",
+      "rawFreeTextInEventLogOrOrdinaryAudit": "PROHIBITED",
+      "messageOrder": "SERVER_CREATED_AT_PLUS_MESSAGE_VERSION",
+      "unknownAuthorDecision": "DENY"
+    },
+    "assignment": {
+      "requiredFields": [
+        "queueId",
+        "assigneeRef",
+        "assignmentVersion",
+        "assignedAt"
+      ],
+      "historyRequired": true,
+      "historyFields": [
+        "assignmentVersion",
+        "fromQueueId",
+        "toQueueId",
+        "fromAssigneeRef",
+        "toAssigneeRef",
+        "reasonCode",
+        "changedAt",
+        "actorRef",
+        "auditId"
+      ],
+      "clientMaySet": [],
+      "unknownAssignmentDecision": "DENY"
+    },
+    "sla": {
+      "requiredFields": [
+        "policyRef",
+        "policyVersion",
+        "dueAt",
+        "status",
+        "history"
+      ],
+      "statuses": [
+        "ON_TRACK",
+        "AT_RISK",
+        "BREACHED",
+        "PAUSED",
+        "RESOLVED"
+      ],
+      "historyRequired": true,
+      "historyFields": [
+        "policyRef",
+        "policyVersion",
+        "status",
+        "dueAt",
+        "pausedAt",
+        "resumedAt",
+        "reasonCode",
+        "auditId"
+      ],
+      "publicPromise": "PROHIBITED_UNTIL_OPERATIONS_AND_COMPLIANCE_APPROVAL",
+      "clientMaySet": [],
+      "unknownStatusDecision": "DENY"
+    },
+    "resolution": {
+      "requiredOn": [
+        "RESOLVED",
+        "CLOSED"
+      ],
+      "requiredFields": [
+        "resolutionCode",
+        "explanationContentRef",
+        "ownerResultRef",
+        "decidedAt",
+        "auditId"
+      ],
+      "ownerFactMutation": "PROHIBITED",
+      "closeRequiresOwnerReconciliation": true
+    },
+    "retention": {
+      "requiredFields": [
+        "retentionPolicyRef",
+        "retentionPolicyVersion",
+        "retentionUntil",
+        "legalHold",
+        "ownerReceiptRef"
+      ],
+      "legalHoldStates": [
+        "CLEAR",
+        "HELD",
+        "UNKNOWN"
+      ],
+      "unknownLegalHoldDecision": "DENY",
+      "purgeRequires": [
+        "retentionUntil_reached",
+        "legalHold=CLEAR",
+        "ownerReceiptRef"
+      ],
+      "ttlIsNotRetentionPolicy": true,
+      "ownerReceiptRequired": true,
+      "policyOwner": "P1R-M1-017"
+    },
+    "events": {
+      "version": "v2",
+      "dualPublish": false,
+      "canonical": [
+        "support.ticket.created.v2",
+        "support.ticket.resolved.v2"
+      ],
+      "payloadForbiddenFields": [
+        "rawFreeText",
+        "rawAttachmentBytes",
+        "token",
+        "password",
+        "paymentCredential",
+        "unredactedDescription"
+      ],
+      "payloadRequiredFields": [
+        "eventId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "ticketId",
+        "ticketVersion",
+        "state",
+        "categoryCode",
+        "slaPolicyRef",
+        "redactionVersion",
+        "auditId"
+      ],
+      "sourceFactOwner": "admin-ops-service.support"
+    }
+  },
+  "events": {
+    "canonicalVersion": "v2",
+    "historicalVersion": "v1",
+    "dualPublish": false,
+    "canonicalPlanned": [
+      "notification.requested.v2",
+      "notification.retry_scheduled.v2",
+      "notification.recovery.completed.v2",
+      "sync.command_receipted.v2",
+      "sync.conflict_detected.v2",
+      "sync.recovered.v2",
+      "support.ticket.created.v2",
+      "support.ticket.resolved.v2"
+    ],
+      "governanceBindings": [
+        {
+          "eventName": "notification.requested.v2",
+          "producer": "notification-service",
+          "dataOwner": "notification-service",
+          "topic": "platform.notification.v1",
+          "aggregateIdSource": "payload.notificationId",
+          "consumers": [
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-notification.v1"
+            },
+            {
+              "service": "analytics-service",
+              "consumerGroup": "cg.analytics-from-notification.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "notification.retry_scheduled.v2",
+          "producer": "notification-service",
+          "dataOwner": "notification-service",
+          "topic": "platform.notification.v1",
+          "aggregateIdSource": "payload.notificationId",
+          "consumers": [
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-notification.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "notification.recovery.completed.v2",
+          "producer": "notification-service",
+          "dataOwner": "notification-service",
+          "topic": "platform.notification.v1",
+          "aggregateIdSource": "payload.notificationId",
+          "consumers": [
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-notification.v1"
+            },
+            {
+              "service": "analytics-service",
+              "consumerGroup": "cg.analytics-from-notification.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "sync.command_receipted.v2",
+          "producer": "learning-service",
+          "dataOwner": "learning-service",
+          "topic": "platform.learning.v1",
+          "aggregateIdSource": "payload.clientEventId",
+          "consumers": [
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-learning.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "sync.conflict_detected.v2",
+          "producer": "learning-service",
+          "dataOwner": "learning-service",
+          "topic": "platform.learning.v1",
+          "aggregateIdSource": "payload.conflictId",
+          "consumers": [
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-learning.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "sync.recovered.v2",
+          "producer": "learning-service",
+          "dataOwner": "learning-service",
+          "topic": "platform.learning.v1",
+          "aggregateIdSource": "payload.conflictId",
+          "consumers": [
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-learning.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "support.ticket.created.v2",
+          "producer": "admin-ops-service",
+          "dataOwner": "admin-ops-service",
+          "topic": "platform.admin-ops.v1",
+          "aggregateIdSource": "payload.ticketId",
+          "consumers": [
+            {
+              "service": "notification-service",
+              "consumerGroup": "cg.notification-from-admin-ops.v1"
+            },
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-admin-ops.v1"
+            },
+            {
+              "service": "audit-service",
+              "consumerGroup": "cg.audit-from-admin-ops.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        },
+        {
+          "eventName": "support.ticket.resolved.v2",
+          "producer": "admin-ops-service",
+          "dataOwner": "admin-ops-service",
+          "topic": "platform.admin-ops.v1",
+          "aggregateIdSource": "payload.ticketId",
+          "consumers": [
+            {
+              "service": "notification-service",
+              "consumerGroup": "cg.notification-from-admin-ops.v1"
+            },
+            {
+              "service": "workflow-service",
+              "consumerGroup": "cg.workflow-from-admin-ops.v1"
+            },
+            {
+              "service": "audit-service",
+              "consumerGroup": "cg.audit-from-admin-ops.v1"
+            }
+          ],
+          "partitionKey": "aggregateId"
+        }
+      ],
+      "sourceSubscriptionBindings": [
+        {
+          "sourceEvent": "learning.review.scheduled.v2",
+          "topic": "platform.learning.v1",
+          "consumerGroup": "cg.notification-from-learning.v1"
+        },
+        {
+          "sourceEvent": "commerce.entitlement.activated.v2",
+          "topic": "platform.commerce.v1",
+          "consumerGroup": "cg.notification-from-commerce.v1"
+        },
+        {
+          "sourceEvent": "support.ticket.created.v2",
+          "topic": "platform.admin-ops.v1",
+          "consumerGroup": "cg.notification-from-admin-ops.v1"
+        },
+        {
+          "sourceEvent": "support.ticket.resolved.v2",
+          "topic": "platform.admin-ops.v1",
+          "consumerGroup": "cg.notification-from-admin-ops.v1"
+        },
+        {
+          "sourceEvent": "commerce.refund.settled.v2",
+          "topic": "platform.commerce.v1",
+          "consumerGroup": "cg.notification-from-commerce.v1"
+        }
+      ],
+      "b26StaticProjection": {
+        "newTopic": {
+          "name": "platform.admin-ops.v1",
+          "ownerService": "admin-ops-service",
+          "purpose": "support ticket integration facts owned by admin-ops-service.support",
+          "partitions": 6,
+          "partitionKey": "aggregateId",
+          "retentionMs": 2592000000,
+          "cleanupPolicy": "delete",
+          "replicationFactor": 3,
+          "minInSyncReplicas": 2,
+          "localRuntimeOverride": {
+            "replicationFactor": 1,
+            "minInSyncReplicas": 1
+          },
+          "producerPrincipal": "svc.admin-ops-service",
+          "consumerGroups": [
+            {
+              "name": "cg.notification-from-admin-ops.v1",
+              "service": "notification-service",
+              "principal": "cg.notification-from-admin-ops.v1",
+              "replayEnabled": true
+            },
+            {
+              "name": "cg.workflow-from-admin-ops.v1",
+              "service": "workflow-service",
+              "principal": "cg.workflow-from-admin-ops.v1",
+              "replayEnabled": true
+            },
+            {
+              "name": "cg.audit-from-admin-ops.v1",
+              "service": "audit-service",
+              "principal": "cg.audit-from-admin-ops.v1",
+              "replayEnabled": true
+            }
+          ],
+          "acl": [
+            {
+              "principal": "svc.admin-ops-service",
+              "operation": "WRITE",
+              "effect": "ALLOW"
+            },
+            {
+              "principal": "cg.notification-from-admin-ops.v1",
+              "operation": "READ",
+              "effect": "ALLOW"
+            },
+            {
+              "principal": "cg.workflow-from-admin-ops.v1",
+              "operation": "READ",
+              "effect": "ALLOW"
+            },
+            {
+              "principal": "cg.audit-from-admin-ops.v1",
+              "operation": "READ",
+              "effect": "ALLOW"
+            }
+          ]
+        },
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "mode": "STATIC_GOVERNANCE_ONLY",
+        "defaultDecision": "NO-GO"
+      },
+    "historicalOnly": [
+      "notification.requested.v1",
+      "notification.retry_scheduled.v1",
+      "notification.recovery.completed.v1",
+      "sync.enqueued.v1",
+      "sync.conflict_detected.v1",
+      "sync.recovered.v1",
+      "support.ticket.created.v1",
+      "support.ticket.resolved.v1"
+    ],
+    "producerOwnerRequired": true,
+    "consumerBindingRequired": true,
+    "topicAndPartitionRequired": true,
+    "promotionStatus": "D2_V2_EVENT_GOVERNANCE_TARGET_NOT_RUNTIME_VERIFIED",
+    "unboundEventDecision": "DENY",
+    "payloadPolicy": {
+      "requiredEnvelopeFields": [
+        "eventId",
+        "eventName",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "aggregateType",
+        "aggregateId",
+        "dedupeKey"
+      ],
+      "forbiddenFields": [
+        "password",
+        "token",
+        "rawAudio",
+        "paymentCredential",
+        "rawAttachmentBytes",
+        "unredactedFreeText",
+        "clientTenantId",
+        "clientSubjectId",
+        "clientRole"
+      ]
+    }
+  },
+  "legacyCompatibility": {
+    "notification": {
+      "B12": "CANONICAL_V2_POLICY_FAMILY",
+      "B11": "HISTORICAL_ONLY",
+      "dualPublish": false
+    },
+    "support": {
+      "B5": "HISTORICAL_V1_ADAPTER_ONLY",
+      "B13": "HISTORICAL_V1_ADAPTER_ONLY",
+      "dualPublish": false,
+      "adapterMappingRequired": true,
+      "adapterMayCreateSecondFact": false
+    },
+    "sync": {
+      "legacyBaseCursor": "HISTORICAL_INPUT_ONLY",
+      "legacyEntityVersion": "HISTORICAL_INPUT_ONLY",
+      "legacyPayloadHashAlias": "HISTORICAL_INPUT_ONLY",
+      "canonicalFields": [
+        "clientEventId",
+        "clientSeq",
+        "baseVersion",
+        "contentVersionId",
+        "payloadHash"
+      ]
+    }
+  },
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+    "d2Status": "D2_CONTRACT_READY",
+    "productionNotificationProviders": false,
+    "realSmsEmailPushTraffic": false,
+    "realKafkaBroker": false,
+    "realDatabaseSchemaAndMigrations": false,
+    "realOutboxAndConsumerDeduplication": false,
+    "realRetryDlqReplay": false,
+    "realSupportPepAndCrossTenantEvidence": false,
+    "realRetentionLegalHoldPurge": false,
+    "realBrowserDeviceE2E": false,
+    "prohibitedRuntimeClaims": [
+      "NOTIFICATION_DELIVERY_RUNTIME_VERIFIED",
+      "SMS_PROVIDER_OR_EMAIL_PROVIDER_RUNTIME_VERIFIED",
+      "KAFKA_OUTBOX_CONSUMER_RUNTIME_VERIFIED",
+      "SYNC_CONFLICT_RECOVERY_RUNTIME_VERIFIED",
+      "SUPPORT_ROUTE_OR_PEP_RUNTIME_VERIFIED",
+      "SLA_CLOCK_RUNTIME_PROMISE",
+      "RETENTION_OR_LEGAL_HOLD_RUNTIME_VERIFIED",
+      "B11_OR_B5_OR_B13_HISTORICAL_INPUT_IS_CANONICAL_RUNTIME",
+      "DUAL_PUBLISH_IS_ALLOWED"
+    ],
+    "deferredTasks": [
+      "P1R-M1-017",
+      "P1R-M2-004",
+      "P1R-M2-005",
+      "P1R-M2-006",
+      "P1R-M6-001",
+      "P1R-M6-002",
+      "P1R-M6-003",
+      "P1R-M6-005",
+      "P1R-M8-006"
+    ]
+  },
+  "requiredAcceptanceEvidence": {
+    "contract": [
+      "strict policy validation with unknown field/enum rejection",
+      "B12 canonical and B11 historical route mapping",
+      "notification event-to-template exact subscription validation",
+      "sync same-hash replay and conflict matrix validation",
+      "support learner/admin same-schema/state/idempotency validation",
+      "content reference and attachment scan/redaction negative cases",
+      "client authority injection negative cases"
+    ],
+    "runtime": "REQUIRES_SEPARATE_M2_M6_M8_EVIDENCE_AND_CANNOT_BE_SATISFIED_BY_THIS_POLICY"
+  },
+  "adversarialCases": [
+    "UNKNOWN_NOTIFICATION_CHANNEL_OR_CATEGORY",
+    "MARKETING_OR_LEARNING_SMS",
+    "MISSING_OR_STALE_PREFERENCE_EXPECTED_VERSION",
+    "UNKNOWN_TEMPLATE_PARAMETER_OR_DEEP_LINK",
+    "RAW_TOKEN_AUDIO_FREE_TEXT_NOTIFICATION_PAYLOAD",
+    "DUPLICATE_NOTIFICATION_EVENT_SAME_AND_DIFFERENT_DIGEST",
+    "RETRY_ATTEMPT_SIX_OR_UNKNOWN_FAILURE",
+    "CLIENT_NOTIFICATION_DELIVERY_OR_READ_STATUS_INJECTION",
+    "CLIENT_SYNC_TENANT_SUBJECT_DEVICE_OWNER_INJECTION",
+    "SYNC_MISSING_CONTENT_VERSION_OR_PAYLOAD_HASH",
+    "SYNC_OUT_OF_ORDER_GAP_STALE_FUTURE_BASE_OR_DIFFERENT_HASH",
+    "CLIENT_ATTEMPT_MASTERY_XP_ENTITLEMENT_MERGE",
+    "UNKNOWN_SYNC_ENTITY_OWNER",
+    "SUPPORT_LEARNER_ADMIN_SECOND_STORE_OR_STATE_MACHINE",
+    "SUPPORT_UNKNOWN_CATEGORY_OR_STATE_TRANSITION",
+    "SUPPORT_CLIENT_PRIORITY_ASSIGNMENT_SLA_OR_RETENTION_INJECTION",
+    "SUPPORT_RAW_FREE_TEXT_OR_UNSCANNED_ATTACHMENT",
+    "SUPPORT_UNKNOWN_LEGAL_HOLD",
+    "SUPPORT_CLOSE_WITHOUT_OWNER_RECONCILIATION_OR_RECEIPT",
+    "HISTORICAL_V1_DUAL_PUBLISH_OR_CANONICAL_PROMOTION",
+    "RUNTIME_STATUS_PROMOTION"
+  ]
+}

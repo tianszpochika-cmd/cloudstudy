@@ -435,6 +435,18 @@
     {
       "name": "M1-015-Commerce",
       "description": "P1R-M1-015 canonical commerce D2 contract; runtime remains unverified"
+    },
+    {
+      "name": "M1-016-Sync",
+      "description": "P1R-M1-016 learning-owned sync receipts, cursor, conflict projection and bounded recovery"
+    },
+    {
+      "name": "M1-016-Notification",
+      "description": "P1R-M1-016 canonical notification preferences, messages and delivery recovery; runtime remains unverified"
+    },
+    {
+      "name": "M1-016-Support",
+      "description": "P1R-M1-016 admin support projections and owner commands"
     }
   ],
   "paths": {
@@ -16375,6 +16387,18 @@
           "B11-Offline"
         ],
         "operationId": "enqueueB11SyncChanges",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/receipts"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016LearningSyncReceipts",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/receipts"
+        },
+        "x-migration": "Historical arbitrary-entity sync write; learning-service accepts only its own canonical facts through the M1-016 protocol and does not become a cross-domain writer.",
         "security": [
           {
             "bearerAuth": []
@@ -16456,6 +16480,18 @@
           "B11-Offline"
         ],
         "operationId": "listB11SyncChanges",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/receipts"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016LearningSyncReceipts",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/receipts"
+        },
+        "x-migration": "Historical generic sync response; only the learning-owned receipt projection is canonical in M1-016.",
         "security": [
           {
             "bearerAuth": []
@@ -18624,13 +18660,47 @@
     },
     "/api/v1/support/tickets": {
       "get": {
-        "operationId": "listSupportTickets",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "summary": "List support tickets visible to the authenticated learner",
+        "operationId": "listM1016LearnerSupportTickets",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; subject, tenant, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for requester, tenant, owner, assignment or SLA"
+        },
+        "x-migration": "Canonical M1-016 learner support list; the old B5 response is only a compatibility projection.",
         "responses": {
           "200": {
-            "description": "B5 response envelope",
+            "description": "学习者可见的脱敏客服工单",
             "content": {
               "application/json": {
                 "schema": {
@@ -18640,31 +18710,30 @@
                     },
                     {
                       "type": "object",
+                      "additionalProperties": false,
                       "required": [
                         "data"
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/M1016SupportTicket"
+                          }
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           }
         },
         "parameters": [
@@ -18683,15 +18752,88 @@
         }
       },
       "post": {
-        "operationId": "createSupportTicket",
+        "summary": "Create a learner support ticket using server-owned requester and tenant facts",
+        "operationId": "createM1016SupportTicket",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.create.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; requesterSubjectId, tenantId, priority, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.create.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for requester, tenant, priority, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 learner support create; B5SupportTicketRequest remains historical-only.",
+        "responses": {
+          "201": {
+            "description": "支持工单已创建",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportTicket"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        },
         "x-idempotency": {
           "required": true,
-          "strategy": "support-ticket-create",
+          "strategy": "m1016-support-ticket-create-cas",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "同一纠错引用只创建一个工单"
+          "replayBehavior": "同一 key 与规范化请求摘要回放原工单；摘要不同返回 409"
         },
         "parameters": [
           {
@@ -18703,69 +18845,56 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B5SupportTicketRequest"
+                "$ref": "#/components/schemas/M1016SupportTicketCreateRequest"
               }
             }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "B5 response envelope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
-                    },
-                    {
-                      "type": "object",
-                      "required": [
-                        "data"
-                      ],
-                      "properties": {
-                        "data": {
-                          "type": "object",
-                          "additionalProperties": true
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
-            }
-          },
-          "409": {
-            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
     },
     "/api/v1/support/tickets/{ticketId}": {
       "get": {
-        "operationId": "getSupportTicket",
+        "summary": "Get a learner-owned support ticket",
+        "operationId": "getM1016LearnerSupportTicket",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
-        "parameters": [
+        "security": [
           {
-            "$ref": "#/components/parameters/B5TicketId"
+            "bearerAuth": []
           }
         ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; requester, tenant and workflow facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for requester, tenant, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 learner support read; old B5 generic envelope is historical-only.",
         "responses": {
           "200": {
-            "description": "B5 response envelope",
+            "description": "脱敏支持工单",
             "content": {
               "application/json": {
                 "schema": {
@@ -18775,49 +18904,126 @@
                     },
                     {
                       "type": "object",
+                      "additionalProperties": false,
                       "required": [
                         "data"
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "additionalProperties": true
+                          "$ref": "#/components/schemas/M1016SupportTicket"
                         }
                       }
                     }
                   ]
                 }
               }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
-              }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "404": {
             "$ref": "#/components/responses/ApiNotFound"
           }
-        }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B5TicketId"
+          }
+        ]
       }
     },
     "/api/v1/support/tickets/{ticketId}/messages": {
       "post": {
-        "operationId": "addSupportTicketMessage",
+        "summary": "Add a redacted learner support message",
+        "operationId": "addM1016LearnerSupportTicketMessage",
         "tags": [
-          "b5-support"
+          "M1-016-Support"
         ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.message.create.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; author and tenant facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.message.create.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for author, tenant, role or state"
+        },
+        "x-migration": "Canonical M1-016 learner support message; old B5 message hash request remains historical-only.",
+        "responses": {
+          "201": {
+            "description": "支持消息已追加",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportMessage"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        },
         "x-idempotency": {
           "required": true,
-          "strategy": "support-ticket-message",
+          "strategy": "m1016-support-message-create-cas",
           "keyHeader": "Idempotency-Key",
-          "replayBehavior": "工单消息按客户端引用幂等追加"
+          "replayBehavior": "同一 key 与规范化请求摘要回放原消息；摘要不同返回 409"
         },
         "parameters": [
           {
@@ -18832,46 +19038,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B5SupportMessageRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "B5 response envelope",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
-                    },
-                    {
-                      "type": "object",
-                      "required": [
-                        "data"
-                      ],
-                      "properties": {
-                        "data": {
-                          "type": "object",
-                          "additionalProperties": true
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "$ref": "#/components/headers/XRequestId"
-              },
-              "X-Trace-Id": {
-                "$ref": "#/components/headers/XTraceId"
-              },
-              "X-API-Version": {
-                "$ref": "#/components/headers/XApiVersion"
+                "$ref": "#/components/schemas/M1016SupportMessageCreateRequest"
               }
             }
           }
@@ -23231,6 +23398,18 @@
           "B11-Notification"
         ],
         "operationId": "getB11NotificationPreference",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/preferences"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016NotificationPreferences",
+          "method": "GET",
+          "path": "/api/v1/notifications/preferences"
+        },
+        "x-migration": "Historical B11 settings adapter; notification-service owns the single M1-016 preference fact at /api/v1/notifications/preferences.",
         "security": [
           {
             "bearerAuth": []
@@ -23283,6 +23462,18 @@
           "B11-Notification"
         ],
         "operationId": "updateB11NotificationPreference",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/preferences/{notificationType}/{channel}"
+        },
+        "x-canonical-replacement": {
+          "operationId": "updateM1016NotificationPreference",
+          "method": "PUT",
+          "path": "/api/v1/notifications/preferences/{notificationType}/{channel}"
+        },
+        "x-migration": "Historical B11 settings adapter; request fields are translated to the closed M1-016 subscription command and never create a second owner.",
         "security": [
           {
             "bearerAuth": []
@@ -23360,6 +23551,18 @@
           "B11-Notification"
         ],
         "operationId": "listB11Messages",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/messages"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016NotificationMessages",
+          "method": "GET",
+          "path": "/api/v1/notifications/messages"
+        },
+        "x-migration": "Historical B11 message adapter; it must project only the M1-016 notification message schema.",
         "security": [
           {
             "bearerAuth": []
@@ -23432,6 +23635,18 @@
           "B11-Notification"
         ],
         "operationId": "markB11MessageRead",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/notifications/messages/{messageId}/read"
+        },
+        "x-canonical-replacement": {
+          "operationId": "markM1016NotificationMessageRead",
+          "method": "PUT",
+          "path": "/api/v1/notifications/messages/{messageId}/read"
+        },
+        "x-migration": "Historical B11 message read adapter; it records only a server-owned read fact.",
         "security": [
           {
             "bearerAuth": []
@@ -23469,6 +23684,18 @@
           "B11-Offline"
         ],
         "operationId": "getB11SyncCursor",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/cursor"
+        },
+        "x-canonical-replacement": {
+          "operationId": "getM1016LearningSyncCursor",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/cursor"
+        },
+        "x-migration": "Historical client cursor adapter; cursor state is now a server-owned learning projection.",
         "security": [
           {
             "bearerAuth": []
@@ -23521,6 +23748,18 @@
           "B11-Offline"
         ],
         "operationId": "updateB11SyncCursor",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/cursor"
+        },
+        "x-canonical-replacement": {
+          "operationId": "getM1016LearningSyncCursor",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/cursor"
+        },
+        "x-migration": "Historical client-owned cursor write; clients cannot advance a server-owned cursor in M1-016.",
         "security": [
           {
             "bearerAuth": []
@@ -23598,6 +23837,18 @@
           "B11-Offline"
         ],
         "operationId": "listB11SyncConflicts",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/conflicts"
+        },
+        "x-canonical-replacement": {
+          "operationId": "listM1016LearningSyncConflicts",
+          "method": "GET",
+          "path": "/api/v1/learning/sync/conflicts"
+        },
+        "x-migration": "Historical generic conflict adapter; conflict facts are exposed only through the learning-owned M1-016 projection.",
         "security": [
           {
             "bearerAuth": []
@@ -23669,6 +23920,18 @@
           "B11-Offline"
         ],
         "operationId": "recoverB11SyncConflict",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/learning/sync/conflicts/{conflictId}/recovery"
+        },
+        "x-canonical-replacement": {
+          "operationId": "recoverM1016LearningSyncConflict",
+          "method": "POST",
+          "path": "/api/v1/learning/sync/conflicts/{conflictId}/recovery"
+        },
+        "x-migration": "Historical generic conflict recovery adapter; only the M1-016 closed KEEP_SERVER_FACT/DISCARD_LOCAL_DRAFT/RETRY_CANONICAL_COMMAND actions are allowed.",
         "security": [
           {
             "bearerAuth": []
@@ -25374,6 +25637,13 @@
           "B12-Notification"
         ],
         "operationId": "consumeB12NotificationTrustedEvent",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/internal/v1/notifications/retry"
+        },
+        "x-migration": "Historical trusted-event REST adapter. New notification facts are produced from the canonical M1-016 notification workflow; clients and arbitrary callers cannot submit notification ownership or delivery facts.",
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -25425,9 +25695,36 @@
     "/internal/v1/notifications/retry": {
       "post": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "dispatchB12NotificationRetry",
+        "summary": "Schedule one server-owned notification delivery retry",
+        "operationId": "retryM1016NotificationDelivery",
+        "x-owner": "notification-service",
+        "x-permission": "notification.delivery.retry.workload",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; notification, attempt and delivery state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.delivery.retry.workload",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "WORKLOAD"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "sourceService",
+            "notificationId",
+            "workflowTaskId",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, attempt, status or next run time"
+        },
+        "x-migration": "Canonical M1-016 delivery retry command; the historical trusted-event adapter cannot schedule arbitrary notification delivery.",
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -25443,15 +25740,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RetryCommand"
+                "$ref": "#/components/schemas/M1016NotificationRetryCommand"
               }
             }
           }
         },
         "x-idempotency": {
           "required": true,
-          "strategy": "workflow-task-id-key",
-          "replayBehavior": "return-current-delivery-state"
+          "strategy": "workflow-task-notification-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-current-delivery-state",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -25459,7 +25758,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B12RetryResult"
+                  "$ref": "#/components/schemas/M1016NotificationRetryResult"
                 }
               }
             }
@@ -25479,9 +25778,36 @@
     "/internal/v1/notifications/recovery": {
       "post": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "recoverB12NotificationTask",
+        "summary": "Recover one server-owned notification delivery task",
+        "operationId": "recoverM1016NotificationDelivery",
+        "x-owner": "notification-service",
+        "x-permission": "notification.delivery.recovery.workload",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; task state, notification ownership and recovery result are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.delivery.recovery.workload",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "WORKLOAD"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "sourceService",
+            "notificationId",
+            "workflowTaskId",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, delivery state or recovery receipt"
+        },
+        "x-migration": "Canonical M1-016 delivery recovery command; only the workflow-owned closed action set is accepted.",
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -25497,15 +25823,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12RecoveryCommand"
+                "$ref": "#/components/schemas/M1016NotificationRecoveryCommand"
               }
             }
           }
         },
         "x-idempotency": {
           "required": true,
-          "strategy": "workflow-task-action-key",
-          "replayBehavior": "return-original-recovery"
+          "strategy": "workflow-task-notification-recovery-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-recovery",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -25513,7 +25841,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B12RecoveryResult"
+                  "$ref": "#/components/schemas/M1016NotificationRecoveryResult"
                 }
               }
             }
@@ -25873,9 +26201,39 @@
     "/api/v1/notifications/preferences": {
       "get": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "listB12NotificationPreferences",
+        "summary": "List the authenticated principal's notification subscriptions",
+        "operationId": "listM1016NotificationPreferences",
+        "x-owner": "notification-service",
+        "x-permission": "notification.preference.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; subject, tenant, owner and current preference version are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.preference.read.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-migration": "Canonical M1-016 notification preference read; the B11 settings/notification adapter is historical and must not create a second preference fact.",
         "security": [
           {
             "bearerAuth": []
@@ -25900,7 +26258,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/B12NotificationPreference"
+                            "$ref": "#/components/schemas/M1016NotificationPreference"
                           }
                         }
                       }
@@ -25947,9 +26305,133 @@
     "/api/v1/notifications/preferences/{notificationType}/{channel}": {
       "put": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "updateB12NotificationPreference",
+        "summary": "Replace one server-owned notification subscription with CAS",
+        "operationId": "updateM1016NotificationPreference",
+        "x-owner": "notification-service",
+        "x-permission": "notification.preference.write.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; only enabled, locale, consent version, DND and frequency intent are client inputs"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.preference.write.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, version and audit identity"
+        },
+        "x-migration": "Canonical M1-016 preference CAS; the B11 settings adapter is deprecated and maps to this notification-service fact only.",
+        "x-notification-policy": {
+          "pathParameter": "notificationType",
+          "bodyField": "category",
+          "pathBodyRelation": "EXACT_ALLOWLISTED_TYPE_CATEGORY_PAIR",
+          "typeCategoryPairs": [
+            {
+              "type": "LEARNING",
+              "category": "LEARNING"
+            },
+            {
+              "type": "REVIEW",
+              "category": "REVIEW"
+            },
+            {
+              "type": "STREAK",
+              "category": "STREAK"
+            },
+            {
+              "type": "EXAM",
+              "category": "EXAM"
+            },
+            {
+              "type": "CHECKPOINT",
+              "category": "CHECKPOINT"
+            },
+            {
+              "type": "STUDY_ROOM",
+              "category": "STUDY_ROOM"
+            },
+            {
+              "type": "REWARDS",
+              "category": "REWARDS"
+            },
+            {
+              "type": "COURSE",
+              "category": "COURSE"
+            },
+            {
+              "type": "MEMBERSHIP",
+              "category": "MEMBERSHIP"
+            },
+            {
+              "type": "MARKETING",
+              "category": "MARKETING"
+            },
+            {
+              "type": "SECURITY",
+              "category": "SECURITY"
+            },
+            {
+              "type": "ACCOUNT",
+              "category": "ACCOUNT"
+            },
+            {
+              "type": "PAYMENT",
+              "category": "PAYMENT"
+            },
+            {
+              "type": "SYSTEM",
+              "category": "SYSTEM"
+            },
+            {
+              "type": "ACCOUNT_VERIFICATION",
+              "category": "ACCOUNT"
+            },
+            {
+              "type": "SECURITY_ALERT",
+              "category": "SECURITY"
+            },
+            {
+              "type": "PHONE_BINDING_CHANGE",
+              "category": "ACCOUNT"
+            },
+            {
+              "type": "CRITICAL_ACCOUNT_PAYMENT",
+              "category": "PAYMENT"
+            }
+          ],
+          "sms": {
+            "allowedCategories": [
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT"
+            ],
+            "allowedTypes": [
+              "ACCOUNT_VERIFICATION",
+              "SECURITY_ALERT",
+              "PHONE_BINDING_CHANGE",
+              "CRITICAL_ACCOUNT_PAYMENT"
+            ],
+            "unknownPurposeDecision": "DENY",
+            "marketingDecision": "DENY"
+          }
+        },
         "security": [
           {
             "bearerAuth": []
@@ -25962,7 +26444,26 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^[A-Za-z0-9._:-]{1,80}$"
+              "enum": [
+                "LEARNING",
+                "REVIEW",
+                "STREAK",
+                "EXAM",
+                "CHECKPOINT",
+                "STUDY_ROOM",
+                "REWARDS",
+                "COURSE",
+                "MEMBERSHIP",
+                "MARKETING",
+                "SECURITY",
+                "ACCOUNT",
+                "PAYMENT",
+                "SYSTEM",
+                "ACCOUNT_VERIFICATION",
+                "SECURITY_ALERT",
+                "PHONE_BINDING_CHANGE",
+                "CRITICAL_ACCOUNT_PAYMENT"
+              ]
             }
           },
           {
@@ -25974,7 +26475,8 @@
               "enum": [
                 "IN_APP",
                 "PUSH",
-                "EMAIL"
+                "EMAIL",
+                "SMS"
               ]
             }
           },
@@ -25987,15 +26489,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B12NotificationPreferenceCommand"
+                "$ref": "#/components/schemas/M1016NotificationPreferenceCommand"
               }
             }
           }
         },
         "x-idempotency": {
           "required": true,
-          "strategy": "principal-notification-type-channel-key",
-          "replayBehavior": "return-preference-fact"
+          "strategy": "principal-notification-subscription-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-preference-fact",
+          "sameKeyDifferentPayload": "CONFLICT_409"
         },
         "responses": {
           "200": {
@@ -26014,7 +26518,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B12NotificationPreference"
+                          "$ref": "#/components/schemas/M1016NotificationPreference"
                         }
                       }
                     }
@@ -26049,9 +26553,39 @@
     "/api/v1/notifications/messages": {
       "get": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "listB12Notifications",
+        "summary": "List server-rendered notification messages for the authenticated principal",
+        "operationId": "listM1016NotificationMessages",
+        "x-owner": "notification-service",
+        "x-permission": "notification.message.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; message body, template, delivery and expiry facts are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.message.read.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for message, subject, tenant, owner or delivery state"
+        },
+        "x-migration": "Canonical M1-016 notification message projection; B11 /api/v1/messages is a deprecated compatibility adapter.",
         "security": [
           {
             "bearerAuth": []
@@ -26084,7 +26618,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/B12NotificationMessage"
+                            "$ref": "#/components/schemas/M1016NotificationMessage"
                           }
                         }
                       }
@@ -26719,14 +27253,43 @@
     "/api/v1/admin/ops/tickets": {
       "get": {
         "tags": [
-          "B13-AdminOps"
+          "M1-016-Support"
         ],
-        "operationId": "listB13SupportTickets",
+        "summary": "List tenant-scoped support tickets for authorized support staff",
+        "operationId": "listM1016AdminSupportTickets",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.admin",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, requester, priority, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.admin",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, requester, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 admin support list; B13 legacy ticket fields remain historical-only.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Cursor"
@@ -26755,7 +27318,7 @@
                           "type": "array",
                           "maxItems": 100,
                           "items": {
-                            "$ref": "#/components/schemas/B13SupportTicket"
+                            "$ref": "#/components/schemas/M1016SupportTicket"
                           }
                         }
                       }
@@ -26795,6 +27358,45 @@
           "B13-AdminOps"
         ],
         "operationId": "createB13SupportTicket",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-08-31T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_P1R-M3-006_ACCEPTED",
+          "migrationLink": "/api/v1/support/tickets"
+        },
+        "x-canonical-replacement": {
+          "operationId": "createM1016SupportTicket",
+          "method": "POST",
+          "path": "/api/v1/support/tickets"
+        },
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.create.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": false,
+          "adapterMode": "HISTORICAL_REQUEST_TO_CANONICAL_SUPPORT_OWNER",
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.create.self",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-migration": "历史 B13 create adapter 只把经闭合校验的 M1-016 请求映射到唯一 admin-ops-service.support owner；requesterSubjectId、tenantId、priority、assignment、SLA 与 state 由服务端派生。新增学习者工单请使用 M1-016 learner route。",
         "security": [
           {
             "bearerAuth": []
@@ -26810,7 +27412,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13SupportTicketCreateRequest"
+                "$ref": "#/components/schemas/M1016SupportTicketCreateRequest"
               }
             }
           }
@@ -27759,9 +28361,37 @@
     "/api/v1/notifications/messages/{messageId}/read": {
       "put": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "markB12NotificationMessageRead",
+        "summary": "Record one server-owned notification read fact",
+        "operationId": "markM1016NotificationMessageRead",
+        "x-owner": "notification-service",
+        "x-permission": "notification.message.read-state.write.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; principal, tenant, message ownership and read timestamp are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.message.read-state.write.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for subject, tenant, owner, readAt or message state"
+        },
+        "x-migration": "Canonical M1-016 read fact; the B11 messages adapter must map to this operation and cannot write message content.",
         "security": [
           {
             "bearerAuth": []
@@ -27798,24 +28428,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "required": [
-                            "messageId",
-                            "updated",
-                            "source"
-                          ],
-                          "properties": {
-                            "messageId": {
-                              "type": "string"
-                            },
-                            "updated": {
-                              "type": "boolean"
-                            },
-                            "source": {
-                              "type": "string",
-                              "const": "mysql"
-                            }
-                          }
+                          "$ref": "#/components/schemas/M1016NotificationReadReceipt"
                         }
                       }
                     }
@@ -27850,9 +28463,37 @@
     "/api/v1/notifications/messages/read-all": {
       "put": {
         "tags": [
-          "B12-Notification"
+          "M1-016-Notification"
         ],
-        "operationId": "markAllB12NotificationMessagesRead",
+        "summary": "Record the authenticated principal's notification read-all fact",
+        "operationId": "markAllM1016NotificationMessagesRead",
+        "x-owner": "notification-service",
+        "x-permission": "notification.message.read-state.write.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; selection, principal, tenant and read timestamp are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "notification.message.read-state.write.self",
+          "pep": "notification-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for message selection, subject, tenant, owner or read timestamp"
+        },
+        "x-migration": "Canonical M1-016 read-all fact; the B11 messages adapter is deprecated and cannot supply a client-owned message set.",
         "security": [
           {
             "bearerAuth": []
@@ -27886,25 +28527,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "type": "object",
-                          "required": [
-                            "messageId",
-                            "updated",
-                            "source"
-                          ],
-                          "properties": {
-                            "messageId": {
-                              "type": "string",
-                              "const": "all"
-                            },
-                            "updated": {
-                              "type": "boolean"
-                            },
-                            "source": {
-                              "type": "string",
-                              "const": "mysql"
-                            }
-                          }
+                          "$ref": "#/components/schemas/M1016NotificationReadAllReceipt"
                         }
                       }
                     }
@@ -32319,6 +32942,730 @@
           }
         }
       }
+    },
+    "/api/v1/learning/sync/receipts": {
+      "get": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "List learning-owned sync command receipts",
+        "operationId": "listM1016LearningSyncReceipts",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.receipt.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; receipt, owner, tenant and server version are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.receipt.read.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for receipt identity, server version or owner"
+        },
+        "x-migration": "Canonical M1-016 learning-owned read projection; the arbitrary-entity B11 sync write/list adapter is historical.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "learning-service 拥有的同步命令回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/M1016SyncReceipt"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
+    },
+    "/api/v1/learning/sync/cursor": {
+      "get": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "Read the learning-owned sync cursor",
+        "operationId": "getM1016LearningSyncCursor",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.cursor.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; cursor and version are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.cursor.read.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for cursor, owner or version"
+        },
+        "x-migration": "Canonical M1-016 server-owned cursor read; the B11 client cursor PUT is deprecated and cannot advance this fact.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "learning-service server-owned cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SyncCursor"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/learning/sync/conflicts": {
+      "get": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "List learning-owned sync conflicts",
+        "operationId": "listM1016LearningSyncConflicts",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.conflict.read.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; conflict, versions and owner are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.conflict.read.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for conflict identity, owner or server versions"
+        },
+        "x-migration": "Canonical M1-016 conflict projection; the B11 generic conflict adapter is historical.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/PageSize"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "learning-service 未解决同步冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiCursorPageEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "maxItems": 100,
+                          "items": {
+                            "$ref": "#/components/schemas/M1016SyncConflict"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          }
+        },
+        "x-pagination": {
+          "mode": "cursor",
+          "cursorParameter": "#/components/parameters/Cursor",
+          "pageSizeParameter": "#/components/parameters/PageSize",
+          "responseMeta": "#/components/schemas/ApiCursorPageMeta"
+        }
+      }
+    },
+    "/api/v1/learning/sync/conflicts/{conflictId}/recovery": {
+      "post": {
+        "tags": [
+          "M1-016-Sync"
+        ],
+        "summary": "Apply a bounded learning sync conflict recovery action",
+        "operationId": "recoverM1016LearningSyncConflict",
+        "x-owner": "learning-service",
+        "x-permission": "learning.sync.conflict.recover.self",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; conflict state, server version and recovery receipt are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "learning.sync.conflict.recover.self",
+          "pep": "learning-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "conflictId"
+          ],
+          "clientAuthority": "NONE for owner, server facts, merge outcome or recovery receipt"
+        },
+        "x-migration": "Canonical M1-016 bounded recovery; MERGE, REPLAY and MANUAL_RECOVERY actions are not accepted.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016ConflictId"
+          },
+          {
+            "$ref": "#/components/parameters/M1016IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1016SyncRecoveryRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "principal-conflict-expected-version-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-recovery-receipt",
+          "sameKeyDifferentPayload": "CONFLICT_409"
+        },
+        "responses": {
+          "200": {
+            "description": "同步冲突恢复回执",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SyncRecoveryResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/B11Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B11Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B11Conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/tickets/{ticketId}": {
+      "get": {
+        "tags": [
+          "M1-016-Support"
+        ],
+        "summary": "Get a tenant-scoped support ticket for authorized support staff",
+        "operationId": "getM1016AdminSupportTicket",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.read.admin",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, requester, priority, assignment, SLA and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.read.admin",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for tenant, requester, assignment, SLA or state"
+        },
+        "x-migration": "Canonical M1-016 admin support read; B13 legacy generic fields are not an authority source.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016SupportTicketId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "脱敏支持工单",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportTicket"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/tickets/{ticketId}/messages": {
+      "post": {
+        "tags": [
+          "M1-016-Support"
+        ],
+        "summary": "Append a redacted support message",
+        "operationId": "addM1016AdminSupportTicketMessage",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.message.create.admin",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; author, tenant and state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.message.create.admin",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE for author, tenant, role or state"
+        },
+        "x-migration": "Canonical M1-016 admin support message; body remains a redacted content reference.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016SupportTicketId"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1016SupportMessageCreateRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "m1016-support-message-create-cas",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 key 与规范化请求摘要回放原消息；摘要不同返回 409"
+        },
+        "responses": {
+          "201": {
+            "description": "支持消息已追加",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportMessage"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/ops/tickets/{ticketId}/commands": {
+      "post": {
+        "tags": [
+          "M1-016-Support"
+        ],
+        "summary": "Submit a CAS-protected support workflow command",
+        "operationId": "submitM1016SupportTicketCommand",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "admin-ops-service",
+        "x-data-owner": "admin-ops-service.support",
+        "x-permission": "support.ticket.command",
+        "x-contract": {
+          "task": "P1R-M1-016",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE; tenant, assignment, priority, SLA and resulting state are server-derived"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "support.ticket.command",
+          "pep": "admin-ops-service-local",
+          "allowedActors": [
+            "SUPPORT_AGENT",
+            "SUPPORT_MANAGER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "dualApproval"
+          ],
+          "clientAuthority": "NONE for tenant, requester, priority, assignment or SLA"
+        },
+        "x-migration": "Canonical M1-016 admin support command; every state change is CAS/idempotency protected and audit-linked.",
+        "x-command-policy": {
+          "defaultDecision": "DENY",
+          "commandField": "command",
+          "expectedVersionField": "expectedVersion",
+          "allowedCommandTypes": [
+            "ASSIGN",
+            "TRANSITION",
+            "RESOLVE"
+          ],
+          "requiresDualApproval": true,
+          "clientAuthority": "NONE for tenant, requester, priority, assignment, SLA or resulting state"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1016SupportTicketId"
+          },
+          {
+            "$ref": "#/components/parameters/B13IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1016SupportAdminCommandRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "m1016-support-command-cas",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "同一 key 与请求摘要回放原命令收据；摘要不同返回 409"
+        },
+        "responses": {
+          "202": {
+            "description": "支持命令已进入审批或工作流",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1016SupportCommandResult"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -34103,6 +35450,36 @@
         },
         "x-production-payment-enabled": false,
         "x-client-authority": "NONE"
+      },
+      "M1016ConflictId": {
+        "name": "conflictId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+        }
+      },
+      "M1016IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 192
+        }
+      },
+      "M1016SupportTicketId": {
+        "name": "ticketId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+        }
       }
     },
     "headers": {
@@ -67964,6 +69341,2002 @@
             "enum": [
               false
             ]
+          }
+        }
+      },
+      "M1016SyncProtocolContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientEventId",
+          "clientSeq",
+          "baseVersion",
+          "contentVersionId",
+          "payloadHash",
+          "entityType",
+          "entityId",
+          "operation",
+          "occurredAt",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "clientSeq": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "baseVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "contentVersionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "payloadHash": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "entityType": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+          },
+          "entityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "UPSERT",
+              "DELETE",
+              "APPEND"
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 192,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,191}$"
+          }
+        }
+      },
+      "M1016SyncReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "receiptId",
+          "context",
+          "state",
+          "serverVersion",
+          "acceptedAt",
+          "replayed"
+        ],
+        "properties": {
+          "receiptId": {
+            "type": "string",
+            "pattern": "^sync-rec_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "context": {
+            "$ref": "#/components/schemas/M1016SyncProtocolContext"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "APPLIED",
+              "REPLAYED",
+              "PROCESSING",
+              "CONFLICT",
+              "REJECTED"
+            ]
+          },
+          "serverVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "acceptedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "M1016SyncCursor": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cursor",
+          "version",
+          "issuedAt"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016SyncConflict": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conflictId",
+          "clientEventId",
+          "entityType",
+          "entityId",
+          "baseVersion",
+          "localVersion",
+          "serverVersion",
+          "contentVersionId",
+          "reasonCode",
+          "safeServerReference",
+          "allowedResolution",
+          "recoveryTaskId"
+        ],
+        "properties": {
+          "conflictId": {
+            "type": "string",
+            "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "entityType": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+          },
+          "entityId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "baseVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "localVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "serverVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "contentVersionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "DUPLICATE_EVENT_DIFFERENT_HASH",
+              "OUT_OF_ORDER",
+              "SEQUENCE_GAP",
+              "STALE_BASE_VERSION",
+              "FUTURE_BASE_VERSION",
+              "CONTENT_VERSION_MISMATCH",
+              "OWNER_VERSION_MISMATCH",
+              "PERMISSION_OR_RIGHTS_CHANGED"
+            ]
+          },
+          "safeServerReference": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}$"
+          },
+          "allowedResolution": {
+            "type": "string",
+            "enum": [
+              "RELOAD_SERVER",
+              "KEEP_LOCAL_DRAFT",
+              "RETRY_WITH_NEW_BASE",
+              "CONTACT_SUPPORT",
+              "DISCARD_LOCAL"
+            ]
+          },
+          "recoveryTaskId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "context": {
+            "$ref": "#/components/schemas/M1016SyncProtocolContext"
+          },
+          "resolutionState": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "RECOVERY_PENDING",
+              "RECOVERED",
+              "TERMINAL"
+            ]
+          }
+        }
+      },
+      "M1016SyncRecoveryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "action"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "KEEP_SERVER_FACT",
+              "DISCARD_LOCAL_DRAFT",
+              "RETRY_CANONICAL_COMMAND"
+            ]
+          }
+        }
+      },
+      "M1016SyncRecoveryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conflictId",
+          "action",
+          "state",
+          "serverVersion",
+          "recoveryReceiptId",
+          "domainFactsUntouched",
+          "recoveredAt"
+        ],
+        "properties": {
+          "conflictId": {
+            "type": "string",
+            "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "KEEP_SERVER_FACT",
+              "DISCARD_LOCAL_DRAFT",
+              "RETRY_CANONICAL_COMMAND"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "RECOVERED",
+              "RETRY_REQUIRED",
+              "TERMINAL",
+              "REJECTED"
+            ]
+          },
+          "serverVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recoveryReceiptId": {
+            "type": "string",
+            "pattern": "^sync-recovery_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "recoveredAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016NotificationDndWindow": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "startLocalTime",
+          "endLocalTime",
+          "timezone"
+        ],
+        "properties": {
+          "startLocalTime": {
+            "type": "string",
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "endLocalTime": {
+            "type": "string",
+            "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z][A-Za-z0-9_+./-]{1,63}$",
+            "description": "由服务端主体时区事实派生；客户端不能提交或覆盖。"
+          }
+        }
+      },
+      "M1016NotificationPreference": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "channel",
+          "enabled",
+          "locale",
+          "consentVersion",
+          "dndWindow",
+          "frequencyPolicy",
+          "version",
+          "updatedAt"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "IN_APP",
+              "PUSH",
+              "EMAIL",
+              "SMS"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          "consentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dndWindow": {
+            "$ref": "#/components/schemas/M1016NotificationDndWindow"
+          },
+          "frequencyPolicy": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "DAILY_DIGEST",
+              "WEEKLY_DIGEST",
+              "DISABLED"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016NotificationPreferenceCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "category",
+          "enabled",
+          "locale",
+          "consentVersion",
+          "dndWindow",
+          "frequencyPolicy",
+          "expectedVersion"
+        ],
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          "consentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dndWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "startLocalTime",
+              "endLocalTime"
+            ],
+            "properties": {
+              "startLocalTime": {
+                "type": "string",
+                "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+              },
+              "endLocalTime": {
+                "type": "string",
+                "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+              }
+            }
+          },
+          "frequencyPolicy": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "DAILY_DIGEST",
+              "WEEKLY_DIGEST",
+              "DISABLED"
+            ]
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "M1016NotificationMessage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "sourceEventId",
+          "requestId",
+          "principalId",
+          "notificationType",
+          "category",
+          "channel",
+          "templateKey",
+          "templateVersion",
+          "locale",
+          "parameterDigest",
+          "dedupeKey",
+          "createdAt",
+          "expiresAt",
+          "pinned",
+          "readAt",
+          "deliveryStatus",
+          "contentVersionId",
+          "version"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "pattern": "^nmsg_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "sourceEventId": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "requestId": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "principalId": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$",
+            "description": "仅由服务端认证主体生成；客户端不可提交或覆盖。"
+          },
+          "notificationType": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM",
+              "ACCOUNT_VERIFICATION",
+              "SECURITY_ALERT",
+              "PHONE_BINDING_CHANGE",
+              "CRITICAL_ACCOUNT_PAYMENT"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "LEARNING",
+              "REVIEW",
+              "STREAK",
+              "EXAM",
+              "CHECKPOINT",
+              "STUDY_ROOM",
+              "REWARDS",
+              "COURSE",
+              "MEMBERSHIP",
+              "MARKETING",
+              "SECURITY",
+              "ACCOUNT",
+              "PAYMENT",
+              "SYSTEM"
+            ]
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "IN_APP",
+              "PUSH",
+              "EMAIL",
+              "SMS"
+            ]
+          },
+          "templateKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "templateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "locale": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20,
+            "enum": [
+              "zh-CN"
+            ]
+          },
+          "parameterDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "safeTitle": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "safeBody": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "deepLink": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "pattern": "^/[a-z][A-Za-z0-9._/-]*(?:\\?[A-Za-z0-9._=&-]+)?$"
+          },
+          "dedupeKey": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 255,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deliveryStatus": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "SENT",
+              "DELIVERED",
+              "FAILED",
+              "RETRY_SCHEDULED",
+              "CANCELLED",
+              "DEAD_LETTER",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "contentVersionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "M1016NotificationReadReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "readAt",
+          "version"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "pattern": "^nmsg_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "M1016NotificationReadAllReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "updatedCount",
+          "readAt",
+          "version"
+        ],
+        "properties": {
+          "updatedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "M1016NotificationRetryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "expectedVersion",
+          "reasonCode"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "TRANSIENT_PROVIDER",
+              "TIMEOUT",
+              "RATE_LIMIT",
+              "TEMPORARY_NETWORK"
+            ]
+          }
+        }
+      },
+      "M1016NotificationRetryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "state",
+          "attempt",
+          "maxAttempts",
+          "nextAttemptAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "QUEUED",
+              "SENT",
+              "DELIVERED",
+              "FAILED",
+              "RETRY_SCHEDULED",
+              "CANCELLED",
+              "DEAD_LETTER",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "maxAttempts": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "enum": [
+              5
+            ]
+          },
+          "nextAttemptAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016NotificationRecoveryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "expectedVersion",
+          "action",
+          "reasonCode"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "SCHEDULE_RETRY",
+              "MOVE_TO_DLQ",
+              "REPLAY",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          }
+        }
+      },
+      "M1016NotificationRecoveryResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "notificationId",
+          "deliveryVersion",
+          "action",
+          "state",
+          "recoveryReceiptId",
+          "domainFactsUntouched",
+          "updatedAt"
+        ],
+        "properties": {
+          "notificationId": {
+            "type": "string",
+            "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "deliveryVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "SCHEDULE_RETRY",
+              "MOVE_TO_DLQ",
+              "REPLAY",
+              "MANUAL_RECOVERY"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "RECOVERED",
+              "RETRY_SCHEDULED",
+              "TERMINAL",
+              "REJECTED"
+            ]
+          },
+          "recoveryReceiptId": {
+            "type": "string",
+            "pattern": "^nrecovery_[A-Za-z0-9._:-]{8,127}$"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1016SupportRestrictedContentRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "contentRefId",
+          "sha256",
+          "redactionVersion",
+          "scanStatus",
+          "objectVersion",
+          "safePreviewRef"
+        ],
+        "properties": {
+          "contentRefId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^content_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "redactionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "BLOCKED",
+              "ERROR"
+            ]
+          },
+          "objectVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "safePreviewRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^preview_[A-Za-z0-9._:-]{6,152}$"
+          }
+        },
+        "x-client-authority": "NONE; content is a server-issued redacted reference",
+        "x-forbidden-fields": [
+          "rawText",
+          "rawBytes",
+          "url",
+          "signedUrl",
+          "objectKey",
+          "credential",
+          "token",
+          "unredactedFreeText"
+        ]
+      },
+      "M1016SupportAttachmentRef": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mediaAssetId",
+          "assetVersion",
+          "authorizationRef",
+          "scanStatus"
+        ],
+        "properties": {
+          "mediaAssetId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^asset_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "assetVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "authorizationRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^media-auth_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "scanStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CLEAN",
+              "BLOCKED",
+              "ERROR"
+            ]
+          }
+        },
+        "x-client-authority": "NONE; media authorization and scan status are server-derived",
+        "x-forbidden-fields": [
+          "url",
+          "signedUrl",
+          "objectKey",
+          "rawBytes",
+          "clientTenantId",
+          "clientSubjectId"
+        ]
+      },
+      "M1016SupportUsableContentRef": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "scanStatus": {
+                "type": "string",
+                "enum": [
+                  "CLEAN"
+                ]
+              }
+            }
+          }
+        ],
+        "x-input-policy": "Only CLEAN redacted content references may enter a ticket or message command"
+      },
+      "M1016SupportUsableAttachmentRef": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/M1016SupportAttachmentRef"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "scanStatus": {
+                "type": "string",
+                "enum": [
+                  "CLEAN"
+                ]
+              }
+            }
+          }
+        ],
+        "x-input-policy": "Only CLEAN scanned attachments may enter a ticket or message command"
+      },
+      "M1016SupportAssignmentHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assignmentVersion",
+          "fromQueueId",
+          "toQueueId",
+          "fromAssigneeRef",
+          "toAssigneeRef",
+          "reasonCode",
+          "changedAt",
+          "actorRef",
+          "auditId"
+        ],
+        "properties": {
+          "assignmentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "fromQueueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "toQueueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "fromAssigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "nullable": true
+          },
+          "toAssigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "nullable": true
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        }
+      },
+      "M1016SupportAssignment": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "queueId",
+          "assigneeRef",
+          "assignmentVersion",
+          "assignedAt",
+          "history"
+        ],
+        "properties": {
+          "queueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "assigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+            "nullable": true
+          },
+          "assignmentVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "assignedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportAssignmentHistory"
+            }
+          }
+        },
+        "x-client-authority": "NONE; assignment is server-derived",
+        "x-state-invariant": "OPEN may have null assigneeRef/assignedAt; ASSIGNED, WAITING_INTERNAL, RESOLVED, CLOSED and REOPENED require both values after assignment"
+      },
+      "M1016SupportSlaHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyRef",
+          "policyVersion",
+          "dueAt",
+          "status",
+          "pausedAt",
+          "resumedAt",
+          "reasonCode",
+          "auditId"
+        ],
+        "properties": {
+          "policyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "policyVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ON_TRACK",
+              "AT_RISK",
+              "BREACHED",
+              "PAUSED",
+              "RESOLVED"
+            ]
+          },
+          "pausedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "resumedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        }
+      },
+      "M1016SupportSla": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "policyRef",
+          "policyVersion",
+          "dueAt",
+          "status",
+          "history"
+        ],
+        "properties": {
+          "policyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "policyVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "dueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ON_TRACK",
+              "AT_RISK",
+              "BREACHED",
+              "PAUSED",
+              "RESOLVED"
+            ]
+          },
+          "history": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportSlaHistory"
+            }
+          }
+        },
+        "x-client-authority": "NONE; SLA is server-derived"
+      },
+      "M1016SupportResolution": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "resolutionCode",
+          "explanationContentRef",
+          "ownerResultRef",
+          "decidedAt",
+          "auditId"
+        ],
+        "properties": {
+          "resolutionCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          },
+          "explanationContentRef": {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          "ownerResultRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^result_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "decidedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        }
+      },
+      "M1016SupportRetention": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "retentionPolicyRef",
+          "retentionPolicyVersion",
+          "retentionUntil",
+          "legalHold",
+          "ownerReceiptRef"
+        ],
+        "properties": {
+          "retentionPolicyRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "retentionPolicyVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "retentionUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "legalHold": {
+            "type": "string",
+            "enum": [
+              "CLEAR",
+              "HELD",
+              "UNKNOWN"
+            ]
+          },
+          "ownerReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^retention-receipt_[A-Za-z0-9._:-]{6,152}$"
+          }
+        },
+        "x-client-authority": "NONE; retention and legal hold are server-derived"
+      },
+      "M1016SupportTicket": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ticketId",
+          "tenantId",
+          "requesterSubjectId",
+          "categoryCode",
+          "resourceRef",
+          "priority",
+          "descriptionContentRef",
+          "state",
+          "stateVersion",
+          "assignment",
+          "sla",
+          "retention",
+          "createdAt",
+          "lastAuditId"
+        ],
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "tenantId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^tenant_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "requesterSubjectId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^sub_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "categoryCode": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_SECURITY",
+              "CONTENT_CORRECTION",
+              "LEARNING_SYNC",
+              "MEDIA_DEVICE",
+              "ENTITLEMENT_ORDER",
+              "PRIVACY",
+              "OTHER"
+            ]
+          },
+          "resourceRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "NORMAL",
+              "HIGH",
+              "URGENT"
+            ]
+          },
+          "descriptionContentRef": {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportAttachmentRef"
+            }
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ASSIGNED",
+              "WAITING_USER",
+              "WAITING_INTERNAL",
+              "RESOLVED",
+              "CLOSED",
+              "REOPENED"
+            ]
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "assignment": {
+            "$ref": "#/components/schemas/M1016SupportAssignment"
+          },
+          "sla": {
+            "$ref": "#/components/schemas/M1016SupportSla"
+          },
+          "retention": {
+            "$ref": "#/components/schemas/M1016SupportRetention"
+          },
+          "resolution": {
+            "$ref": "#/components/schemas/M1016SupportResolution"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastAuditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "state",
+              "assignment"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "OPEN"
+                ]
+              },
+              "assignment": {
+                "$ref": "#/components/schemas/M1016SupportAssignment"
+              }
+            },
+            "not": {
+              "required": [
+                "resolution"
+              ]
+            }
+          },
+          {
+            "required": [
+              "state",
+              "assignment"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "ASSIGNED",
+                  "WAITING_USER",
+                  "WAITING_INTERNAL",
+                  "REOPENED"
+                ]
+              },
+              "assignment": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "queueId",
+                  "assigneeRef",
+                  "assignmentVersion",
+                  "assignedAt",
+                  "history"
+                ],
+                "properties": {
+                  "queueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+                  },
+                  "assigneeRef": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "assignmentVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "assignedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "history": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/M1016SupportAssignmentHistory"
+                    }
+                  }
+                }
+              }
+            },
+            "not": {
+              "required": [
+                "resolution"
+              ]
+            }
+          },
+          {
+            "required": [
+              "state",
+              "assignment",
+              "resolution"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "RESOLVED",
+                  "CLOSED"
+                ]
+              },
+              "assignment": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "queueId",
+                  "assigneeRef",
+                  "assignmentVersion",
+                  "assignedAt",
+                  "history"
+                ],
+                "properties": {
+                  "queueId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 96,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+                  },
+                  "assigneeRef": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "assignmentVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "assignedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "history": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/M1016SupportAssignmentHistory"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "x-client-authority": "NONE for tenant, requester, priority, assignment, SLA, state, resolution and audit facts",
+        "x-state-invariant": "RESOLVED or CLOSED requires resolution; OPEN, ASSIGNED, WAITING_USER, WAITING_INTERNAL and REOPENED must not expose a resolution fact"
+      },
+      "M1016SupportTicketCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "categoryCode",
+          "resourceRef",
+          "descriptionContentRef",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "categoryCode": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_SECURITY",
+              "CONTENT_CORRECTION",
+              "LEARNING_SYNC",
+              "MEDIA_DEVICE",
+              "ENTITLEMENT_ORDER",
+              "PRIVACY",
+              "OTHER"
+            ]
+          },
+          "resourceRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,159}$"
+          },
+          "descriptionContentRef": {
+            "$ref": "#/components/schemas/M1016SupportUsableContentRef"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportUsableAttachmentRef"
+            }
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 200,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,199}$"
+          }
+        },
+        "x-client-authority": "Only category/resource/redacted content references/attachment references/idempotencyKey are client-writable",
+        "x-forbidden-fields": [
+          "tenantId",
+          "requesterSubjectId",
+          "priority",
+          "state",
+          "stateVersion",
+          "assignment",
+          "sla",
+          "retention",
+          "subject",
+          "role"
+        ]
+      },
+      "M1016SupportMessage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "messageId",
+          "ticketId",
+          "clientMessageRef",
+          "authorType",
+          "bodyContentRef",
+          "bodyHash",
+          "redactionVersion",
+          "createdAt",
+          "messageVersion",
+          "lastAuditId"
+        ],
+        "properties": {
+          "messageId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^stm_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "ticketId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "clientMessageRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "authorType": {
+            "type": "string",
+            "enum": [
+              "LEARNER",
+              "SUPPORT_AGENT",
+              "SYSTEM"
+            ]
+          },
+          "bodyContentRef": {
+            "$ref": "#/components/schemas/M1016SupportRestrictedContentRef"
+          },
+          "bodyHash": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "redactionVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportAttachmentRef"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "messageVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "lastAuditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+          }
+        },
+        "x-client-authority": "NONE for author, tenant and support state"
+      },
+      "M1016SupportMessageCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientMessageRef",
+          "bodyContentRef",
+          "expectedVersion",
+          "idempotencyKey"
+        ],
+        "properties": {
+          "clientMessageRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "bodyContentRef": {
+            "$ref": "#/components/schemas/M1016SupportUsableContentRef"
+          },
+          "attachmentRefs": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "$ref": "#/components/schemas/M1016SupportUsableAttachmentRef"
+            }
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 200,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{15,199}$"
+          }
+        },
+        "x-client-authority": "Only message reference/content, attachment references, expectedVersion and idempotencyKey are client-writable",
+        "x-forbidden-fields": [
+          "authorType",
+          "tenantId",
+          "requesterSubjectId",
+          "role",
+          "state",
+          "priority",
+          "assignment",
+          "sla",
+          "retention"
+        ]
+      },
+      "M1016SupportAssignCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandType",
+          "queueId",
+          "assigneeRef",
+          "reasonCode"
+        ],
+        "properties": {
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "ASSIGN"
+            ]
+          },
+          "queueId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "assigneeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          }
+        },
+        "x-client-authority": "Only command input and CAS version are client-writable; assignment is PEP-checked and server-applied"
+      },
+      "M1016SupportTransitionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandType",
+          "toState",
+          "reasonCode"
+        ],
+        "properties": {
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "TRANSITION"
+            ]
+          },
+          "toState": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ASSIGNED",
+              "WAITING_USER",
+              "WAITING_INTERNAL",
+              "RESOLVED",
+              "CLOSED",
+              "REOPENED"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 96,
+            "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+          }
+        }
+      },
+      "M1016SupportResolveCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandType",
+          "resolution"
+        ],
+        "properties": {
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "RESOLVE"
+            ]
+          },
+          "resolution": {
+            "$ref": "#/components/schemas/M1016SupportResolution"
+          }
+        }
+      },
+      "M1016SupportAdminCommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "expectedVersion"
+        ],
+        "properties": {
+          "command": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/M1016SupportAssignCommand"
+              },
+              {
+                "$ref": "#/components/schemas/M1016SupportTransitionCommand"
+              },
+              {
+                "$ref": "#/components/schemas/M1016SupportResolveCommand"
+              }
+            ]
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-command-one-of": true,
+        "x-forbidden-fields": [
+          "tenantId",
+          "requesterSubjectId",
+          "priority",
+          "assignment",
+          "sla",
+          "role",
+          "subject"
+        ]
+      },
+      "M1016SupportCommandResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandId",
+          "ticketId",
+          "commandType",
+          "state",
+          "accepted",
+          "receiptId",
+          "auditId"
+        ],
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^stcmd_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "ticketId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+          },
+          "commandType": {
+            "type": "string",
+            "enum": [
+              "ASSIGN",
+              "TRANSITION",
+              "RESOLVE"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ASSIGNED",
+              "WAITING_USER",
+              "WAITING_INTERNAL",
+              "RESOLVED",
+              "CLOSED",
+              "REOPENED"
+            ]
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "receiptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^support-receipt_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "auditId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
           }
         }
       }

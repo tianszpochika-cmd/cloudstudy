@@ -8,6 +8,7 @@ import {
   EXPECTED_CANONICAL_EVENT_NAMES,
   EXPECTED_CANONICAL_ROUTE_OPERATION_IDS,
   FROZEN_POLICY_SHA256,
+  M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE,
   policyDigest,
   readCommerceContract,
   validateCommerceCallbackCandidate,
@@ -105,6 +106,27 @@ test('M1-015 checker CLI emits a JSON D2 PASS rather than runtime evidence', () 
   assert.equal(report.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
   assert.equal(report.policyDigest, FROZEN_POLICY_SHA256);
   assert.equal(report.b26BindingStatus, 'BOUND_STATIC');
+});
+
+test('M1-016 signed commerce notification additions retain the M1-015 consumers', () => {
+  assert.deepEqual(
+    M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE.bindings['commerce.entitlement.activated.v2'],
+    { service: 'notification-service', consumerGroup: 'cg.notification-from-commerce.v1' },
+  );
+  assert.deepEqual(
+    M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE.bindings['commerce.refund.settled.v2'],
+    { service: 'notification-service', consumerGroup: 'cg.notification-from-commerce.v1' },
+  );
+  for (const eventName of ['commerce.entitlement.activated.v2', 'commerce.refund.settled.v2']) {
+    const event = baselineInputs.eventCatalog.events.find((candidate) => candidate.eventName === eventName);
+    const consumers = event['x-p1r-governance'].consumers.map(({ service, consumerGroup }) => ({ service, consumerGroup }));
+    assert.deepEqual(consumers.slice(0, 2), [
+      { service: 'content-service', consumerGroup: 'cg.content-from-commerce.v1' },
+      { service: 'learning-service', consumerGroup: 'cg.learning-from-commerce.v1' },
+    ]);
+    assert.deepEqual(consumers.at(-1), { service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' });
+    assert.deepEqual(consumers[2], M1016_SIGNED_NOTIFICATION_CONSUMER_ALLOWANCE.bindings[eventName]);
+  }
 });
 
 test('adversarial commerce policy mutations fail closed', async (t) => {
@@ -245,6 +267,29 @@ test('adversarial OpenAPI, event fragment, catalog, and global-gate mutations fa
       if (event) event['x-p1r-governance'].consumers.pop();
       else inputs.eventCatalog.events.push({ eventName: 'unexpected-commerce-catalog-entry' });
     }],
+    ['M1-016 commerce consumer owner drift', (inputs) => {
+      const event = inputs.eventCatalog.events.find((candidate) => candidate.eventName === 'commerce.entitlement.activated.v2');
+      event['x-p1r-governance'].consumers.find((consumer) => consumer.consumerGroup === 'cg.notification-from-commerce.v1').service = 'workflow-service';
+    }],
+    ['M1-016 commerce additive consumer deletes an original consumer', (inputs) => {
+      const event = inputs.eventCatalog.events.find((candidate) => candidate.eventName === 'commerce.refund.settled.v2');
+      event['x-p1r-governance'].consumers = event['x-p1r-governance'].consumers.filter((consumer) => consumer.service !== 'learning-service');
+    }],
+    ['M1-016 commerce consumer is added to an unapproved event', (inputs) => {
+      const event = inputs.eventCatalog.events.find((candidate) => candidate.eventName === 'commerce.order.created.v2');
+      event['x-p1r-governance'].consumers.splice(1, 0, {
+        service: 'notification-service',
+        consumerGroup: 'cg.notification-from-commerce.v1',
+      });
+    }],
+    ['M1-016 commerce topic drift remains denied', (inputs) => {
+      const event = inputs.eventCatalog.events.find((candidate) => candidate.eventName === 'commerce.entitlement.activated.v2');
+      event['x-p1r-governance'].transport.topic = 'platform.forged.v1';
+    }],
+    ['M1-016 commerce runtime promotion remains denied', (inputs) => {
+      const event = inputs.eventCatalog.events.find((candidate) => candidate.eventName === 'commerce.refund.settled.v2');
+      event['x-p1r-governance'].runtimeStatus = 'RUNTIME_VERIFIED';
+    }],
     ['catalog topic drift', (inputs) => {
       const event = inputs.eventCatalog.events.find((candidate) => candidate.eventName === 'commerce.order.created.v2');
       if (event) event['x-p1r-governance'].transport.topic = 'platform.commerce.v2';
@@ -259,6 +304,18 @@ test('adversarial OpenAPI, event fragment, catalog, and global-gate mutations fa
     ['B26 runtime promotion', (inputs) => { inputs.b26Runtime.defaultDecision = 'GO'; }],
     ['B26 unknown runtime attestation', (inputs) => { inputs.b26Runtime.commerceAttestation = 'PASS'; }],
     ['B26 partial commerce binding', (inputs) => { inputs.b26Runtime.eventRouting = inputs.b26Runtime.eventRouting.filter((route) => route.eventName !== 'commerce.refund.settled.v2'); }],
+    ['M1-016 commerce B26 consumer deletes an original group', (inputs) => {
+      const route = inputs.b26Runtime.eventRouting.find((entry) => entry.eventName === 'commerce.entitlement.activated.v2');
+      route.consumerGroups = route.consumerGroups.filter((consumerGroup) => consumerGroup !== 'cg.learning-from-commerce.v1');
+    }],
+    ['M1-016 commerce B26 consumer cannot drift to another group', (inputs) => {
+      const route = inputs.b26Runtime.eventRouting.find((entry) => entry.eventName === 'commerce.refund.settled.v2');
+      route.consumerGroups[2] = 'cg.notification-forged.v1';
+    }],
+    ['M1-016 commerce B26 topic drift remains denied', (inputs) => {
+      const route = inputs.b26Runtime.eventRouting.find((entry) => entry.eventName === 'commerce.refund.settled.v2');
+      route.topic = 'platform.forged.v1';
+    }],
   ];
   for (const [name, mutate] of cases) {
     await t.test(name, () => assertProjectionMutationFails(mutate));

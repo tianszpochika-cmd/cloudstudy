@@ -7,28 +7,32 @@ import { projectCanonicalAsyncApi } from '../../scripts/contracts/event-governan
 import { readB26Inputs, validateB26EventRuntime } from '../../scripts/runtime/validate-b26-event-runtime.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
-const { manifest, fragment, catalog } = readB26Inputs()
+const { manifest, fragment, m1016Fragment, catalog } = readB26Inputs()
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
 }
 
 test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pending', () => {
-  const result = validateB26EventRuntime(manifest, fragment)
+  const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment })
   assert.equal(result.result, 'PASS', result.errors.join('\n'))
   assert.equal(result.gate, 'B26')
   assert.deepEqual(result.taskIds, ['V2-B26-EVT-001', 'V2-B26-EVT-002'])
   assert.equal(result.staticStatus, 'PASS')
   assert.equal(result.runtimeStatus, 'pending')
   assert.equal(result.runtimeGate, 'static-only')
-  assert.equal(result.topicCount, 10)
+  assert.equal(result.topicCount, 11)
   assert.equal(result.fragmentEventCount, 7)
-  assert.equal(result.routedCanonicalEventCount, 34)
+  assert.equal(result.m1016EventCount, 8)
+  assert.equal(result.routedCanonicalEventCount, 42)
   assert.equal(result.fragmentPayloadSchemaCount, 7)
+  assert.equal(result.m1016PayloadSchemaCount, 8)
+  assert.equal(result.totalFragmentEventCount, 15)
+  assert.equal(result.totalFragmentPayloadSchemaCount, 15)
   assert.equal(result.eventCount, 7)
-  assert.equal(result.routeCount, 34)
+  assert.equal(result.routeCount, 42)
   assert.equal(result.payloadSchemaCount, 7)
-  assert.equal(result.consumerGroupCount, 32)
+  assert.equal(result.consumerGroupCount, 36)
   assert.equal(result.runtimeEvidencePending, true)
 })
 
@@ -70,9 +74,9 @@ test('B26 freezes M1-014 trusted source, gamification, and social routes with le
     'commerce.payment.requested.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
     'commerce.payment.callback_received.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
     'commerce.payment.verified.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
-    'commerce.entitlement.activated.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.entitlement.activated.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.notification-from-commerce.v1', 'cg.audit-from-commerce.v1']],
     'commerce.entitlement.revoked.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.audit-from-commerce.v1']],
-    'commerce.refund.settled.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.refund.settled.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.notification-from-commerce.v1', 'cg.audit-from-commerce.v1']],
     'commerce.reconciliation.discrepancy_recorded.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
     'commerce.reconciliation.recovery_receipted.v2': ['platform.commerce.v1', ['cg.audit-from-commerce.v1']],
     'assessment.item.assessed.v2': ['platform.assessment.v1', ['cg.learning-from-assessment.v1', 'cg.gamification-from-assessment.v1', 'cg.workflow-from-assessment.v1']],
@@ -97,6 +101,7 @@ test('B26 freezes M1-014 trusted source, gamification, and social routes with le
   const reviewRoute = manifest.eventRouting.find((route) => route.eventName === 'learning.review.scheduled.v2')
   assert.ok(reviewRoute)
   assert.equal(reviewRoute.consumerGroups.includes('cg.gamification-from-learning.v1'), false)
+  assert.deepEqual(reviewRoute.consumerGroups, ['cg.assessment-from-learning.v1', 'cg.notification-from-learning.v1', 'cg.workflow-from-learning.v1'])
 
   for (const [topicName, ownerService] of [['platform.gamification.v1', 'gamification-service'], ['platform.social.v1', 'social-service'], ['platform.commerce.v1', 'commerce-service']]) {
     const topic = manifest.topics.find((candidate) => candidate.name === topicName)
@@ -105,6 +110,90 @@ test('B26 freezes M1-014 trusted source, gamification, and social routes with le
     assert.equal(topic.acl.filter((entry) => entry.operation === 'WRITE').length, 1)
     assert.equal(topic.acl.find((entry) => entry.operation === 'WRITE').principal, topic.producerPrincipal)
     assert.ok(topic.acl.filter((entry) => entry.operation === 'READ').every((entry) => topic.consumerGroups.some((group) => group.name === entry.principal)))
+  }
+})
+
+test('B26 freezes the eight M1-016 notification, sync and support routes and five notification source subscriptions', () => {
+  const expectedRoutes = {
+    'notification.requested.v2': ['platform.notification.v1', ['cg.workflow-from-notification.v1', 'cg.analytics-from-notification.v1']],
+    'notification.retry_scheduled.v2': ['platform.notification.v1', ['cg.workflow-from-notification.v1']],
+    'notification.recovery.completed.v2': ['platform.notification.v1', ['cg.workflow-from-notification.v1', 'cg.analytics-from-notification.v1']],
+    'sync.command_receipted.v2': ['platform.learning.v1', ['cg.workflow-from-learning.v1']],
+    'sync.conflict_detected.v2': ['platform.learning.v1', ['cg.workflow-from-learning.v1']],
+    'sync.recovered.v2': ['platform.learning.v1', ['cg.workflow-from-learning.v1']],
+    'support.ticket.created.v2': ['platform.admin-ops.v1', ['cg.notification-from-admin-ops.v1', 'cg.workflow-from-admin-ops.v1', 'cg.audit-from-admin-ops.v1']],
+    'support.ticket.resolved.v2': ['platform.admin-ops.v1', ['cg.notification-from-admin-ops.v1', 'cg.workflow-from-admin-ops.v1', 'cg.audit-from-admin-ops.v1']],
+  }
+  assert.deepEqual(m1016Fragment.events.map((event) => event.eventName), Object.keys(expectedRoutes))
+  for (const [eventName, [topic, consumerGroups]] of Object.entries(expectedRoutes)) {
+    assert.deepEqual(manifest.eventRouting.find((route) => route.eventName === eventName), {
+      eventName,
+      topic,
+      partitionKey: 'aggregateId',
+      consumerGroups,
+    })
+    const event = catalog.events.find((candidate) => candidate.eventName === eventName)
+    assert.equal(event.status, 'CANONICAL_D2')
+    assert.equal(event['x-p1r-governance'].runtimeStatus, 'NOT_RUNTIME_VERIFIED')
+    assert.equal(event['x-p1r-governance'].transport.topic, topic)
+    assert.equal(event['x-p1r-governance'].transport.partitionKey, 'aggregateId')
+    assert.deepEqual(event['x-p1r-governance'].consumers.map((consumer) => consumer.consumerGroup), consumerGroups)
+  }
+
+  const adminOpsTopic = manifest.topics.find((topic) => topic.name === 'platform.admin-ops.v1')
+  assert.deepEqual(adminOpsTopic, {
+    name: 'platform.admin-ops.v1',
+    ownerService: 'admin-ops-service',
+    purpose: 'support ticket integration facts owned by admin-ops-service.support',
+    partitions: 6,
+    partitionKey: 'aggregateId',
+    retentionMs: 2592000000,
+    cleanupPolicy: 'delete',
+    replicationFactor: 3,
+    minInSyncReplicas: 2,
+    localRuntimeOverride: { replicationFactor: 1, minInSyncReplicas: 1 },
+    producerPrincipal: 'svc.admin-ops-service',
+    consumerGroups: [
+      { name: 'cg.notification-from-admin-ops.v1', service: 'notification-service', principal: 'cg.notification-from-admin-ops.v1', replayEnabled: true },
+      { name: 'cg.workflow-from-admin-ops.v1', service: 'workflow-service', principal: 'cg.workflow-from-admin-ops.v1', replayEnabled: true },
+      { name: 'cg.audit-from-admin-ops.v1', service: 'audit-service', principal: 'cg.audit-from-admin-ops.v1', replayEnabled: true },
+    ],
+    acl: [
+      { principal: 'svc.admin-ops-service', operation: 'WRITE', effect: 'ALLOW' },
+      { principal: 'cg.notification-from-admin-ops.v1', operation: 'READ', effect: 'ALLOW' },
+      { principal: 'cg.workflow-from-admin-ops.v1', operation: 'READ', effect: 'ALLOW' },
+      { principal: 'cg.audit-from-admin-ops.v1', operation: 'READ', effect: 'ALLOW' },
+    ],
+  })
+  const sourceSubscriptions = {
+    'learning.review.scheduled.v2': ['platform.learning.v1', 'cg.notification-from-learning.v1'],
+    'commerce.entitlement.activated.v2': ['platform.commerce.v1', 'cg.notification-from-commerce.v1'],
+    'commerce.refund.settled.v2': ['platform.commerce.v1', 'cg.notification-from-commerce.v1'],
+    'support.ticket.created.v2': ['platform.admin-ops.v1', 'cg.notification-from-admin-ops.v1'],
+    'support.ticket.resolved.v2': ['platform.admin-ops.v1', 'cg.notification-from-admin-ops.v1'],
+  }
+  for (const [eventName, [topic, consumerGroup]] of Object.entries(sourceSubscriptions)) {
+    const route = manifest.eventRouting.find((candidate) => candidate.eventName === eventName)
+    assert.equal(route.topic, topic)
+    assert.ok(route.consumerGroups.includes(consumerGroup), `${eventName} must route to ${consumerGroup}`)
+  }
+})
+
+test('B26 M1-016 integration source is fail-closed against semantic or duplicate governance drift', () => {
+  const cases = [
+    (candidate) => { candidate.version = '2.1.0' },
+    (candidate) => { candidate.events.push(clone(candidate.events[0])) },
+    (candidate) => { candidate.events[0].payloadSchema.$ref = '#/payloadSchemas/M1016SyncRecovered' },
+    (candidate) => { candidate.events[0]['x-kafka'] = { topic: 'platform.notification.v1' } },
+    (candidate) => { candidate.payloadSchemas.M1016SupportTicketCreated.additionalProperties = true },
+    (candidate) => { candidate.events[0].aggregateIdField = 'clientProvidedId' },
+  ]
+  for (const mutate of cases) {
+    const candidate = clone(m1016Fragment)
+    mutate(candidate)
+    const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment: candidate })
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => /M1-016|canonical catalog|closed object|payloadSchema|Kafka governance|routing/.test(error)), result.errors.join('\n'))
   }
 })
 

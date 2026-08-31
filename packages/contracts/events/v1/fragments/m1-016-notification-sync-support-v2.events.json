@@ -1,0 +1,951 @@
+{
+  "version": "2.0.0",
+  "events": [
+    {
+      "eventName": "notification.requested.v2",
+      "domain": "notification",
+      "version": 2,
+      "schema": "notification.event.v2",
+      "aggregateType": "notification_delivery",
+      "aggregateIdField": "notificationId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016NotificationRequested"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish notification.requested.v3",
+        "consumerRule": "按 notificationId、deliveryVersion、dedupeKey 幂等；只消费服务端模板和结构化参数摘要。"
+      }
+    },
+    {
+      "eventName": "notification.retry_scheduled.v2",
+      "domain": "notification",
+      "version": 2,
+      "schema": "notification.event.v2",
+      "aggregateType": "notification_delivery",
+      "aggregateIdField": "notificationId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016NotificationRetryScheduled"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish notification.retry_scheduled.v3",
+        "consumerRule": "仅 workflow-service 调度重试；attempt 从 1 开始且最多 5 次，失败类别未知时进入 DLQ。"
+      }
+    },
+    {
+      "eventName": "notification.recovery.completed.v2",
+      "domain": "notification",
+      "version": 2,
+      "schema": "notification.event.v2",
+      "aggregateType": "notification_recovery",
+      "aggregateIdField": "notificationId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016NotificationRecoveryCompleted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish notification.recovery.completed.v3",
+        "consumerRule": "恢复事件只记录 delivery 状态和 receipt；不得修改 learning、commerce 或 support 领域事实。"
+      }
+    },
+    {
+      "eventName": "sync.command_receipted.v2",
+      "domain": "learning",
+      "version": 2,
+      "schema": "learning.event.v2",
+      "aggregateType": "offline_sync_command",
+      "aggregateIdField": "clientEventId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016SyncCommandReceipted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish sync.command_receipted.v3",
+        "consumerRule": "receipt 由实际 owner 产生；按 clientEventId、payloadHash 和 idempotencyKey 区分新请求、回放和冲突。"
+      }
+    },
+    {
+      "eventName": "sync.conflict_detected.v2",
+      "domain": "learning",
+      "version": 2,
+      "schema": "learning.event.v2",
+      "aggregateType": "offline_sync_conflict",
+      "aggregateIdField": "conflictId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016SyncConflictDetected"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish sync.conflict_detected.v3",
+        "consumerRule": "冲突只携带安全引用和版本事实；禁止客户端合并 attempt、mastery、XP 或 entitlement。"
+      }
+    },
+    {
+      "eventName": "sync.recovered.v2",
+      "domain": "learning",
+      "version": 2,
+      "schema": "learning.event.v2",
+      "aggregateType": "offline_sync_recovery",
+      "aggregateIdField": "conflictId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016SyncRecovered"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish sync.recovered.v3",
+        "consumerRule": "恢复 receipt 只能表示 owner 已确认的安全动作；workflow 不得直接写入领域事实。"
+      }
+    },
+    {
+      "eventName": "support.ticket.created.v2",
+      "domain": "support",
+      "version": 2,
+      "schema": "support.event.v2",
+      "aggregateType": "support_ticket",
+      "aggregateIdField": "ticketId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016SupportTicketCreated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish support.ticket.created.v3",
+        "consumerRule": "只发布工单状态、类别、SLA 和脱敏版本事实；正文、附件原文和 requester PII 不进入事件。"
+      }
+    },
+    {
+      "eventName": "support.ticket.resolved.v2",
+      "domain": "support",
+      "version": 2,
+      "schema": "support.event.v2",
+      "aggregateType": "support_ticket",
+      "aggregateIdField": "ticketId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1016SupportTicketResolved"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish support.ticket.resolved.v3",
+        "consumerRule": "只有 owner 已写入 resolution、audit 和 retention receipt 后发布；消费者按 ticketId/ticketVersion 幂等。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "M1016NotificationRequested": {
+      "$id": "platform.events.notification.requested.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notificationId",
+        "deliveryVersion",
+        "sourceEventId",
+        "notificationType",
+        "category",
+        "channel",
+        "templateKey",
+        "templateVersion",
+        "locale",
+        "parameterDigest",
+        "dedupeKey",
+        "contentVersionId"
+      ],
+      "properties": {
+        "notificationId": {
+          "type": "string",
+          "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "deliveryVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceEventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "notificationType": {
+          "type": "string",
+          "enum": [
+            "LEARNING",
+            "REVIEW",
+            "STREAK",
+            "EXAM",
+            "CHECKPOINT",
+            "STUDY_ROOM",
+            "REWARDS",
+            "COURSE",
+            "MEMBERSHIP",
+            "MARKETING",
+            "SECURITY",
+            "ACCOUNT",
+            "PAYMENT",
+            "SYSTEM",
+            "ACCOUNT_VERIFICATION",
+            "SECURITY_ALERT",
+            "PHONE_BINDING_CHANGE",
+            "CRITICAL_ACCOUNT_PAYMENT"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "LEARNING",
+            "REVIEW",
+            "STREAK",
+            "EXAM",
+            "CHECKPOINT",
+            "STUDY_ROOM",
+            "REWARDS",
+            "COURSE",
+            "MEMBERSHIP",
+            "MARKETING",
+            "SECURITY",
+            "ACCOUNT",
+            "PAYMENT",
+            "SYSTEM"
+          ]
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "IN_APP",
+            "PUSH",
+            "EMAIL",
+            "SMS"
+          ]
+        },
+        "templateKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "templateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "zh-CN"
+          ]
+        },
+        "parameterDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "dedupeKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 255,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+        },
+        "contentVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      }
+    },
+    "M1016NotificationRetryScheduled": {
+      "$id": "platform.events.notification.retry_scheduled.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notificationId",
+        "deliveryVersion",
+        "attempt",
+        "maxAttempts",
+        "failureClass",
+        "nextAttemptAt",
+        "workflowTaskRef",
+        "notificationStatus"
+      ],
+      "properties": {
+        "notificationId": {
+          "type": "string",
+          "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "deliveryVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "maxAttempts": {
+          "type": "integer",
+          "enum": [
+            5
+          ]
+        },
+        "failureClass": {
+          "type": "string",
+          "enum": [
+            "TRANSIENT_PROVIDER",
+            "TIMEOUT",
+            "RATE_LIMIT",
+            "TEMPORARY_NETWORK"
+          ]
+        },
+        "nextAttemptAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workflowTaskRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 160,
+          "pattern": "^workflow-task_[A-Za-z0-9._:-]{6,152}$"
+        },
+        "notificationStatus": {
+          "type": "string",
+          "enum": [
+            "RETRY_SCHEDULED"
+          ]
+        }
+      }
+    },
+    "M1016NotificationRecoveryCompleted": {
+      "$id": "platform.events.notification.recovery.completed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "notificationId",
+        "deliveryVersion",
+        "action",
+        "state",
+        "recoveryReceiptId",
+        "domainFactsUntouched",
+        "notificationStatus"
+      ],
+      "properties": {
+        "notificationId": {
+          "type": "string",
+          "pattern": "^notif_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "deliveryVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "SCHEDULE_RETRY",
+            "MOVE_TO_DLQ",
+            "REPLAY",
+            "MANUAL_RECOVERY"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "RECOVERED",
+            "REJECTED"
+          ]
+        },
+        "recoveryReceiptId": {
+          "type": "string",
+          "pattern": "^nrecovery_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        },
+        "notificationStatus": {
+          "type": "string",
+          "enum": [
+            "DELIVERED",
+            "FAILED",
+            "CANCELLED",
+            "DEAD_LETTER",
+            "MANUAL_RECOVERY",
+            "RETRY_SCHEDULED"
+          ]
+        }
+      }
+    },
+    "M1016SyncCommandReceipted": {
+      "$id": "platform.events.sync.command_receipted.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientEventId",
+        "clientSeq",
+        "baseVersion",
+        "contentVersionId",
+        "payloadHash",
+        "entityType",
+        "entityId",
+        "operation",
+        "occurredAt",
+        "idempotencyKey",
+        "outcome",
+        "serverVersion",
+        "receiptId",
+        "ownerService"
+      ],
+      "properties": {
+        "clientEventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "clientSeq": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "baseVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contentVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "payloadHash": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "entityType": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "UPSERT",
+            "DELETE",
+            "APPEND"
+          ]
+        },
+        "occurredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 192,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,191}$"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "ACCEPTED",
+            "APPLIED",
+            "REPLAYED",
+            "PROCESSING",
+            "CONFLICT",
+            "REJECTED"
+          ]
+        },
+        "serverVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "receiptId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 160,
+          "pattern": "^sync-receipt_[A-Za-z0-9._:-]{6,152}$"
+        },
+        "ownerService": {
+          "type": "string",
+          "enum": [
+            "learning-service",
+            "assessment-service",
+            "learner-service",
+            "notification-service",
+            "admin-ops-service"
+          ]
+        }
+      }
+    },
+    "M1016SyncConflictDetected": {
+      "$id": "platform.events.sync.conflict_detected.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflictId",
+        "clientEventId",
+        "entityType",
+        "entityId",
+        "baseVersion",
+        "localVersion",
+        "serverVersion",
+        "contentVersionId",
+        "reasonCode",
+        "safeServerReference",
+        "allowedResolution",
+        "recoveryTaskId"
+      ],
+      "properties": {
+        "conflictId": {
+          "type": "string",
+          "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "clientEventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "entityType": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "baseVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "localVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "serverVersion": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contentVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "DUPLICATE_EVENT_DIFFERENT_HASH",
+            "OUT_OF_ORDER",
+            "SEQUENCE_GAP",
+            "STALE_BASE_VERSION",
+            "FUTURE_BASE_VERSION",
+            "CONTENT_VERSION_MISMATCH",
+            "OWNER_VERSION_MISMATCH",
+            "PERMISSION_OR_RIGHTS_CHANGED"
+          ]
+        },
+        "safeServerReference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,254}$"
+        },
+        "allowedResolution": {
+          "type": "string",
+          "enum": [
+            "RELOAD_SERVER",
+            "KEEP_LOCAL_DRAFT",
+            "RETRY_WITH_NEW_BASE",
+            "CONTACT_SUPPORT",
+            "DISCARD_LOCAL"
+          ]
+        },
+        "recoveryTaskId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      }
+    },
+    "M1016SyncRecovered": {
+      "$id": "platform.events.sync.recovered.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflictId",
+        "clientEventId",
+        "entityType",
+        "entityId",
+        "contentVersionId",
+        "action",
+        "recoveryReceiptId",
+        "outcome",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "conflictId": {
+          "type": "string",
+          "pattern": "^sync-conf_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "clientEventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "entityType": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9._-]{1,63}$"
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "contentVersionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "KEEP_SERVER_FACT",
+            "DISCARD_LOCAL_DRAFT",
+            "RETRY_CANONICAL_COMMAND"
+          ]
+        },
+        "recoveryReceiptId": {
+          "type": "string",
+          "pattern": "^sync-recovery_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "RECOVERED",
+            "RETRY_REQUIRED",
+            "REJECTED"
+          ]
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "enum": [
+            true
+          ]
+        }
+      }
+    },
+    "M1016SupportTicketCreated": {
+      "$id": "platform.events.support.ticket.created.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "ticketId",
+        "ticketVersion",
+        "state",
+        "categoryCode",
+        "slaPolicyRef",
+        "redactionVersion",
+        "auditId"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ticketId": {
+          "type": "string",
+          "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+        },
+        "ticketVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "ASSIGNED",
+            "WAITING_USER",
+            "WAITING_INTERNAL",
+            "RESOLVED",
+            "CLOSED",
+            "REOPENED"
+          ]
+        },
+        "categoryCode": {
+          "type": "string",
+          "enum": [
+            "ACCOUNT_SECURITY",
+            "CONTENT_CORRECTION",
+            "LEARNING_SYNC",
+            "MEDIA_DEVICE",
+            "ENTITLEMENT_ORDER",
+            "PRIVACY",
+            "OTHER"
+          ]
+        },
+        "slaPolicyRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+        },
+        "redactionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "auditId": {
+          "type": "string",
+          "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+        }
+      }
+    },
+    "M1016SupportTicketResolved": {
+      "$id": "platform.events.support.ticket.resolved.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "ticketId",
+        "ticketVersion",
+        "state",
+        "categoryCode",
+        "slaPolicyRef",
+        "resolutionCode",
+        "ownerResultRef",
+        "redactionVersion",
+        "auditId"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "traceId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ticketId": {
+          "type": "string",
+          "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
+        },
+        "ticketVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "RESOLVED",
+            "CLOSED"
+          ]
+        },
+        "categoryCode": {
+          "type": "string",
+          "enum": [
+            "ACCOUNT_SECURITY",
+            "CONTENT_CORRECTION",
+            "LEARNING_SYNC",
+            "MEDIA_DEVICE",
+            "ENTITLEMENT_ORDER",
+            "PRIVACY",
+            "OTHER"
+          ]
+        },
+        "slaPolicyRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+        },
+        "resolutionCode": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 96,
+          "pattern": "^[A-Z][A-Z0-9._:-]{2,95}$"
+        },
+        "ownerResultRef": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 160,
+          "pattern": "^result_[A-Za-z0-9._:-]{6,152}$"
+        },
+        "redactionVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "auditId": {
+          "type": "string",
+          "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+        }
+      }
+    }
+  }
+}
