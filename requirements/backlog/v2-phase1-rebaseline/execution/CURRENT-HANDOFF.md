@@ -4,41 +4,41 @@
 
 M0 canonical Evidence 的实现源提交：`0f8b60ae4e83d0f31d891eed8d9383c007485130`。交接提交在其后，只增加任务状态、manifest、Gate 摘要与交接记录。
 
-M1-001 canonical API 基座的原实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`；共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation，验收状态与摘要以 `evidence/p1r/m1/P1R-M1-001/manifest.json` 为准。
+M1-001 canonical API 基座的原实现源提交：`96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4`；共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation，验收状态与摘要以 `evidence/p1r/m1/P1R-M1-001/manifest.json` 为准。
 
-M1-002 自有 IAM 认证生命周期契约已接受：原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，共享 B8/canonical/generated 制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-002/manifest.json`。
+M1-002 自有 IAM 认证生命周期契约已接受：原最终实现源 `25705c4caab46449cfaa577db08bd13c8ad13fba`，共享 B8/canonical/generated 制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-002/manifest.json`。
 
-M1-003 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2 契约已接受：原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-003/manifest.json`。
+M1-003 IAM 权限、成人 Gate、consent、tenant、admin policy 与 PEP/PDP D2 契约已接受：原最终实现源 `82b27f4108cfb976a274c2ac0cc34b1c9460a7a7`，共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-003/manifest.json`。
 
-M1-004 Gateway 边界与浏览器安全 D2 契约已接受：原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-004/manifest.json`。现有 Java Gateway 仍只是 M2-001 的候选实现，不能据此声明真实运行验收。
+M1-004 Gateway 边界与浏览器安全 D2 契约已接受：原实现源 `e4618b324e5a93926da0750a8100fc9377ac97ec`，共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-004/manifest.json`。现有 Java Gateway 仍只是 M2-001 的候选实现，不能据此声明真实运行验收。
 
-M1-005 数据所有权与迁移政策 D2 已接受：原最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-005/manifest.json`。现有 `config/b25-data.json`、历史 `core-api.*` Redis owner 和 migration 目录均只作为候选输入；真实 schema/grants、TenantScope、Redis rebuild 与 rollback 仍由 M2-004 验收。
+M1-005 数据所有权与迁移政策 D2 已接受：原最终实现源 `21cdd3a94d0c721c96f5257d26efbb0c1b9354fb`，共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation；canonical manifest 为 `evidence/p1r/m1/P1R-M1-005/manifest.json`。现有 `config/b25-data.json`、历史 `core-api.*` Redis owner 和 migration 目录均只作为候选输入；真实 schema/grants、TenantScope、Redis rebuild 与 rollback 仍由 M2-004 验收。
 
-M1-006 Kafka 事件目录与 AsyncAPI 治理 D2 已接受：原最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation。其双不可变基线、175 条事件分类、AsyncAPI 投影和 B26 静态绑定只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不代表 Kafka、Outbox、ACL 或 consumer runtime PASS。
+M1-006 Kafka 事件目录与 AsyncAPI 治理 D2 已接受：原最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。其双不可变基线、175 条事件分类、AsyncAPI 投影和 B26 静态绑定只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不代表 Kafka、Outbox、ACL 或 consumer runtime PASS。
 
 M1-013 接受前曾把共享 OpenAPI、生成类型、兼容工具、审计与测试制品绑定到 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`；该记录保留为历史 revalidation。M1-014 C/D 已在集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 完成唯一例外 M1-010 的摘要绑定；各 manifest 的 `provenance` 继续保留原始实现源、完成时间、reviewer、兼容基线和历次复核链。
 
-M1-007 事件可靠性与人工恢复 D2 契约已接受：原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，独立终验 `agent:m1_007_independent_review:gpt-5.6-luna:max` 与另一位 Luna Max 交叉复核均接受，canonical manifest 为 `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品已在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation。结论仍是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续是 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`。
+M1-007 事件可靠性与人工恢复 D2 契约已接受：原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，独立终验 `agent:m1_007_independent_review:gpt-5.6-luna:max` 与另一位 Luna Max 交叉复核均接受，canonical manifest 为 `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。结论仍是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续是 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`。
 
-M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受：原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，主评审 `agent:m1_008_independent_review:gpt-5.6-luna:max` 与两条 Luna Max 交叉复核绑定同一 SHA 一致 `ACCEPT`，P1/P2 为 `0/0`；canonical manifest 为 `evidence/p1r/m1/P1R-M1-008/manifest.json`，共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation。tooling `27/27`、lifecycle `6/6`、当时 P1R `296/296`、typecheck `7/7` 以及 contracts、event、Gateway、B26 static 与固定 compatibility 均 PASS。结论只覆盖 D2 静态契约，真实内容数据/Outbox、Kafka、排期/Saga、投影与 E2E 没有晋升为完成。
+M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受：原最终源码 `e05c774b02ece081a5c05145b623f39d1ecd39e1`，主评审 `agent:m1_008_independent_review:gpt-5.6-luna:max` 与两条 Luna Max 交叉复核绑定同一 SHA 一致 `ACCEPT`，P1/P2 为 `0/0`；canonical manifest 为 `evidence/p1r/m1/P1R-M1-008/manifest.json`，共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。tooling `27/27`、lifecycle `6/6`、当时 P1R `296/296`、typecheck `7/7` 以及 contracts、event、Gateway、B26 static 与固定 compatibility 均 PASS。结论只覆盖 D2 静态契约，真实内容数据/Outbox、Kafka、排期/Saga、投影与 E2E 没有晋升为完成。
 
-M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品最新在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation，canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。
+M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation，canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。
 
 `P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`。M1-015 post-C D 阶段已在 `b41af4af17cf082b038438c2ce3694f95804a5f1` 完成 current-source 摘要绑定，本轮审计实现源为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，D 提交为 `d0cd4fc812bb2ee20c78375b99f6310e80992237`。
 
-`P1R-M1-011` 已接受：不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`；首轮 `5b6a3d5` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`；共享制品已在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation。
+`P1R-M1-011` 已接受：不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`；首轮 `5b6a3d5` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`；共享制品已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。
 
-`P1R-M1-012` 已接受：不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence/台账关闭提交为 `a07a58a7d245295c54d39487a6669545d077c513`；独立 Luna Max reviewer 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品已在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation。
+`P1R-M1-012` 已接受：不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence/台账关闭提交为 `a07a58a7d245295c54d39487a6669545d077c513`；独立 Luna Max reviewer 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。
 
 `P1R-M1-013` 已接受：不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，Evidence/台账关闭集成提交 `c9a67577db590b92982571a1aecba6200adcb9cf`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`。learning `67/67`、tooling `50/50`、P1R `818/818`、typecheck `7/7`，contracts `401/646/158/108/17/60/13`，fixed compatibility/Gateway/event/reliability/B26/plan/CI/diff 均 PASS；仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 pending/NO-GO，M0-006 `BLOCKED`。
 
-`P1R-M1-014` 已接受：不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，原最终实现源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；共享制品已在 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 完成 M1-015 current-source revalidation。专项 checker 覆盖 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；三项 GAM/SOC GAP 已以 D2 Evidence 关闭。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B4/B12 v1 继续 historical-only，B26 继续 `static-only`/`pending`/`NO-GO`，不冒充真实 Kafka、数据库、WebSocket、浏览器或 E2E。
+`P1R-M1-014` 已接受：不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，原最终实现源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；共享制品已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。专项 checker 覆盖 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；三项 GAM/SOC GAP 已以 D2 Evidence 关闭。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B4/B12 v1 继续 historical-only，B26 继续 `static-only`/`pending`/`NO-GO`，不冒充真实 Kafka、数据库、WebSocket、浏览器或 E2E。
 
 `P1R-M1-015` 已接受：不可变来源检查点 `5d0bb3a0651d9205a942eca9d8e1c56b538ed73f`，最终实现源码 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，独立 reviewer `agent:m1_015_requirements_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。`CONTRACT-GAP-COM-001` 已以 D2 Evidence 关闭；B20/B21/B26 继续 `BLOCKED`/`NO-GO`/`pending`，不冒充真实金流、schema、Kafka、PEP cache 或 E2E。
 
-`P1R-M1-016` 已从同步且干净的 `dev@878f9ebc0591844467ac79facf4f00296058137f` 按状态机启动。当前台账计数为 `22 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 84 PLANNED`（共 108 项）。本任务只冻结 notification subscription/template/retry、owner-specific 有序同步/冲突恢复和 learner/admin 共用 `admin-ops-service.support` ticket/message/assignment/SLA/retention 的 D2 契约；B11/B12/B5/B13 v1 保持 historical-only，四个相关 GAP 仍 OPEN，B26 继续 `static-only/pending/NO-GO`。
+`P1R-M1-016` 已接受：最终实现源码 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。当前台账计数为 `23 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 84 PLANNED`（共 108 项）；四个通知/同步/客服 GAP 已按 D2 Evidence 关闭，B11/B5/B13 v1 仍为 historical-only，B26 继续 `static-only/pending/NO-GO`。
 
-M1-015 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..014` 的 artifactDigests/current-source 指针刷新到 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，并保留各自原始 provenance/reviewHistory；C 检查点为 `b41af4af17cf082b038438c2ce3694f95804a5f1`。D 提交 `d0cd4fc812bb2ee20c78375b99f6310e80992237` 已把唯一包含 GAP registry 摘要的 `P1R-M1-010` 绑定到 C；全局 Evidence Gate 在干净 D 提交上 PASS。
+M1-016 本轮 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..015` 的 artifactDigests/current-source 指针刷新到 `9a38ff2185286bc8e279f785ff3fad5de30de569`，并保留各自原始 provenance/reviewHistory；唯一包含 GAP registry 摘要的 `P1R-M1-010` 将在 post-C D 阶段绑定本轮 C 检查点，之后才可宣称全局 Evidence Gate PASS。
 
 M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/current-source 指针刷新到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，且保留各自原始 provenance/reviewHistory。D 阶段已将唯一例外 `P1R-M1-010` 绑定至 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50`，D 阐明提交为 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`；其审计实现源仍是 aab1，`a7f920...` 仅为历史来源。全局 Evidence Gate 已在干净 D 提交上 PASS。
 
@@ -48,11 +48,11 @@ M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/
 git switch dev
 git fetch origin dev
 git pull --ff-only origin dev
-git merge-base --is-ancestor 878f9ebc0591844467ac79facf4f00296058137f origin/dev
+git merge-base --is-ancestor 9a38ff2185286bc8e279f785ff3fad5de30de569 origin/dev
 git status --short
 ```
 
-预期：`878f9ebc0591844467ac79facf4f00296058137f` 是 `origin/dev` 的 M1-016 不可变来源检查点，M1-015 canonical manifest、M1-001..009/011..014 的 f7a2 current-source revalidation、M1-010 post-C binding 与最终交接记录均已同步。接手实现前还必须确认 M1-016 的 `IN_PROGRESS` 启动提交存在且工作树干净；任一条件不满足都先停止后续任务。
+预期：`9a38ff2185286bc8e279f785ff3fad5de30de569` 是 `origin/dev` 的 M1-016 审计实现源，M1-016 canonical manifest、M1-001..009/011..015 的 current-source revalidation、M1-010 post-C binding 与最终交接记录均已同步。接手下一任务前还必须确认 Evidence/plan/gap Gate 通过且工作树干净；任一条件不满足都先停止后续任务。
 
 ## 2. 选择 Java 25（只影响当前终端）
 
@@ -116,6 +116,7 @@ pnpm --dir apps/mobile test:b12
 - `P1R-M1-010` 已接受：5 个 canonical assessment route、8/4/4 的 session/attempt/report 状态、受保护六类答案、单调 checkpoint、幂等提交、确定性 outcome 与 learner-safe report 已冻结；精确审计脱敏和非空 `ASSESSED.assessedAt` 经 REWORK 后闭合。assessment `83/83`、CLI `77` cases、P1R `433/433`、tooling `35/35`、typecheck `7/7` 与固定 compatibility 均 PASS；真实 DB/Outbox/Kafka/workflow/browser/E2E 未验证。
 - `P1R-M1-011` 已接受：10 个 canonical learner route、goalCode exactly-once、`5/15/30/45`、profile/target/preferences 版本与三写并发/幂等、planning-input eligibility pin、四态 first-day、只读 recovery 及唯一 canonical target 事件已冻结。M1-012 生成器加固后 READY `tasks` 为非空 tuple；数值最小值和 `taskCount=tasks.length` 仍由 OpenAPI/checker/service 执行，真实 DB/Outbox/Kafka/workflow/browser/E2E 未验证。
 - `P1R-M1-012` 已接受：`P1_PLACEMENT_V1` 固定四维 10 题、25% 等权、二值正误、A1–C2 边界、覆盖/置信度、不可变 result/report 与 `SKIPPED + UNVERIFIED`；五条 B10 canonical route、唯一 completion event 与 placement→plan 去重/恢复边界已冻结。旧 core-api/B25/客户端计分仍为历史候选，真实 DB/Outbox/Kafka/Saga/browser/E2E 未验证。
+- `P1R-M1-016` 已接受：19 条 canonical operation、35 个 M1016 schema、8 条 canonical v2 event、5 条来源通知订阅和 B26 11 topics/42 routes/36 groups 已冻结；专项 `85/85`、generated-types `2/2`、tooling `59/59`、P1R `1261/1261` 与 typecheck `7/7` 通过。真实 provider/流量、DB、Kafka/Outbox/consumer、workflow、support PEP/SLA/retention、浏览器/设备/E2E 未验证。
 - M2-001 运行缺口仍开放：真实 WebFlux CORS/CSRF/Origin、public-path parity、Redis 限流及故障语义、持久审计、网络直连隔离、真实浏览器/JWKS/跨进程/网络 Evidence。
 - M2-004 运行缺口仍开放：真实 owner schema/grants、空库/存量库迁移、TenantScope/跨租户拒绝、Redis ACL/rebuild/restart、回滚/补偿和 retention/delete/legal-hold Evidence。
 - `P1R-M1-001` 已接受：公共成功/错误 envelope、追踪/版本 headers、写幂等、统一 cursor 分页、只读 merge/generate 与真实 Git baseline compatibility 已有当前提交 Evidence。
@@ -123,8 +124,8 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先核对 `dev` 包含 M1-016 来源检查点 `878f9ebc0591844467ac79facf4f00296058137f`、M1-015 审计实现源 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 与 M1-010 C=`b41af4af17cf082b038438c2ce3694f95804a5f1` binding，并复核 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs --json` 与 `pnpm p1r:evidence:check`。
-2. 继续 `P1R-M1-016`：先冻结 notification subscription/template/retry、owner-specific 通用同步协议/冲突恢复和 learner/admin 共用 support ticket owner，再并行更新 canonical OpenAPI/events 与失败关闭 checker；不得把 B11/B12/B5/B13 历史 route、客户端 SLA/assignment 或 B26 static 记录写成 runtime 结论。
+1. 先核对 `dev` 包含 M1-016 审计实现源 `9a38ff2185286bc8e279f785ff3fad5de30de569`、canonical Evidence、current-source revalidation 与 M1-010 post-C binding，并复核 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs --json` 与 `pnpm p1r:evidence:check`。
+2. 下一依赖就绪任务为 `P1R-M1-017`：冻结隐私导出、账号删除冷静期/receipt、analytics ingress 与审计导出契约；先建立不可变来源检查点并保持 privacy/analytics/audit owner、脱敏、同意/删除联动和运行边界失败关闭。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。

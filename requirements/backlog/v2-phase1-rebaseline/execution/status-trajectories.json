@@ -220,10 +220,10 @@
     },
     {
       "taskId": "P1R-M1-016",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-31T13:36:27+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-31T20:28:21+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-003, P1R-M1-006, P1R-M1-007 and P1R-M1-013 are accepted. The coordinator froze 878f9ebc0591844467ac79facf4f00296058137f as the source checkpoint and started notification subscription/template/retry, owner-specific ordered sync/conflict recovery, and learner/admin shared admin-ops-service.support ticket/message/assignment/SLA/retention D2 contract work without promoting B11/B12/B5/B13 v1, B26 static governance or database, Kafka, provider, PEP, browser and E2E runtime evidence.",
+      "reason": "Final source 9a38ff2185286bc8e279f785ff3fad5de30de569 was independently accepted by agent:m1_016_independent_review:gpt-5.6-luna:max with P1/P2=0/0. Notification subscription/template/retry, owner-specific ordered sync/conflict recovery and learner/admin shared admin-ops-service.support ticket/message/assignment/SLA/retention remain D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B11/B5/B13 v1, B26 static governance and database, Kafka, provider, PEP, browser and E2E runtime evidence were not promoted.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-016/manifest.json"
     }
   ]

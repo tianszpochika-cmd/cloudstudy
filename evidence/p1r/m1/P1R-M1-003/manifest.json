@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+  "sourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "505afbc9c098ebfd02cd2e0a4617921945cd98fd8e08bf2d2543cc436329c442"
+      "digest": "be37d99f606b8ed0e84e031b7c8a197b584cd8ec7ce88f62dc3042273a889277"
     },
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -17,17 +17,17 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "4a5525701713338e99d51a43baded8e2c3aac9028a6641731d4d6eff0851acec"
+      "digest": "44006e80f8bbd5f2cb355ddf49686727f7b127c0d2ee376f93db3c3db8869402"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "2ee9a9dfb78eacf28db3ec2581fdaeed6364ceab71bdcca83ada30ec18f80663"
+      "digest": "bdaa8fa0ebfa811bca7c3e3ad400f7c426752a930e5e6e4edc4d05e1c8f4cc9f"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "2dfbe7a67a18e32db747d07698c3d6dad2de9ccadaf7fd57861e684ac59b3ccc"
+      "digest": "d33e2b9bbb21d65bd64ad7d4fddd7be28cd49aed77ff840d621d20777aa9d4eb"
     },
     {
       "path": "scripts/audit/p1r-iam-policy-contract-check.mjs",
@@ -42,7 +42,7 @@
     {
       "path": "tests/p1r/p1r-api-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "bb5f5de7ea6173fd3ef3f4cbd8d961e817b9f16867b73dc7648ce6f2d459034a"
+      "digest": "bafd3e4a9d283e35f8dff243ee3bd079391ea520d33c2307ab4cb99a33d68bb5"
     },
     {
       "path": "docs/10-decisions/0010-java25-microservices-gateway-iam.md",
@@ -62,12 +62,12 @@
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
       "algorithm": "sha256",
-      "digest": "e9c403f52cb1e2be9ece76cb99f2f7f0ead3e73f8dbec97e054066b56081bd4d"
+      "digest": "438f65d34e129d3e89dcd08f1cb20081d00f79551c690c9feb9f961130a040bc"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
       "algorithm": "sha256",
-      "digest": "808349720965cb76a6248ebba7a8d1559247612f7861b20785d778f684d25eb5"
+      "digest": "807022b67ad0c4d6a19b4130d3e4711a0a02415be0ae3b083c179591fb006fd7"
     },
     {
       "path": "packages/contracts/README.md",
@@ -77,12 +77,12 @@
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "358f8c5eeb92be6d920662d282308f6c36ea067094d016b2af51a48c8dcd1771"
+      "digest": "085d024e2baca3fdd03389eefa2768a63f979a01439d7234d4038fd397a96652"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "e0d0e88811c65ae675b86e2336e4ee95f6e61a342edfd32439d5e940496fbc1a"
+      "digest": "f5d18961122b58565c199f23ff95fee5b6c9b76cfdb85f68f467ea3c74454653"
     }
   ],
   "environment": {
@@ -162,20 +162,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-31T12:49:28+08:00",
         "details": "C-stage artifact SHA-256 refresh after M1-015 accepted; original task decision, implementation provenance and runtime boundary remain unchanged."
+      },
+      {
+        "taskId": "P1R-M1-016",
+        "sourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
+        "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T20:28:21+08:00",
+        "details": "C-stage artifact SHA-256 refresh after M1-016 accepted; original task decision, implementation provenance and runtime boundary remain unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-014",
-    "currentSourceRevalidationTask": "P1R-M1-015",
-    "currentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-015",
+    "currentSourceRevalidationTask": "P1R-M1-016",
+    "currentSourceRevalidationReviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T07:48:15+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T12:49:28+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-31T12:49:28+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T20:28:21+08:00"
   },
   "startedAt": "2026-08-29T22:19:13+08:00",
-  "finishedAt": "2026-08-31T12:49:28+08:00",
+  "finishedAt": "2026-08-31T20:28:21+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -289,6 +297,11 @@
       "check": "M1-015-current-source-revalidation",
       "status": "PASS",
       "details": "Artifact SHA-256 entries were recomputed against f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 after M1-015 acceptance. The 1153/1153 P1R regression, contract merge/generate/validate, fixed compatibility, Gateway, event governance/reliability, B26 static, plan and CI guards pass. Original implementation provenance and runtimeStatus=NOT_RUNTIME_VERIFIED are preserved."
+    },
+    {
+      "check": "M1-016-current-source-revalidation",
+      "status": "PASS",
+      "details": "Artifact SHA-256 entries were recomputed against 9a38ff2185286bc8e279f785ff3fad5de30de569 after M1-016 acceptance. The 1261/1261 P1R regression, contract merge/generate/validate, fixed compatibility, Gateway, event governance/reliability, B26 static, plan and CI guards pass. Original implementation provenance and runtimeStatus=NOT_RUNTIME_VERIFIED are preserved."
     }
   ],
   "rollbackEvidence": [
@@ -304,6 +317,6 @@
     "The deprecated authorization decision route keeps its historical response shape for compatibility; runtime integrations must use the strict structured PDP context rather than omit server-authoritative facts.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the M1-003-relevant G1 slice passes 6/6 and these failures predate the task source."
   ],
-  "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

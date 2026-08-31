@@ -2,51 +2,223 @@
   "taskId": "P1R-M1-015",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+  "sourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
   "artifactDigests": [
-    { "path": "config/b20-commerce-dr-evidence.json", "algorithm": "sha256", "digest": "bc879931fbb2309fdfe7b8603cdb7cce3e3fe9674590af9ada4772fa0c1ed404" },
-    { "path": "config/b21-release-gate-evidence.json", "algorithm": "sha256", "digest": "529baa9e84351bb726209d81dd43fafcf46f510671a6bc84295019927180a83e" },
-    { "path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "1e6433582c1497425269f3a0178533ab069eb84dca5dd7b31150f58b0d6c39c9" },
-    { "path": "config/g1-contract-data.json", "algorithm": "sha256", "digest": "358f8c5eeb92be6d920662d282308f6c36ea067094d016b2af51a48c8dcd1771" },
-    { "path": "config/p1r-commerce-contract.v1.json", "algorithm": "sha256", "digest": "26535e674b5bdf6cfe4e304b3db0a0e64d82099a2b146cc7c541bf8f68e69a61" },
-    { "path": "docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md", "algorithm": "sha256", "digest": "30c0c7c8c5278369a1d4b50486c193f8b1f5e679ff70b3845f8b5e39b5f7b5a6" },
-    { "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md", "algorithm": "sha256", "digest": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c" },
-    { "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md", "algorithm": "sha256", "digest": "ee8a7f49d42e78f5382c054860e6c2f7bf538d2dea594fff7759395a9ebaec71" },
-    { "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md", "algorithm": "sha256", "digest": "41652ab95962706d1b64e606a123acb6a32f004238e1a350dabc8b2295870d95" },
-    { "path": "docs/07-operations/b13-validation.md", "algorithm": "sha256", "digest": "22597d297ba9e734c77e02c86d209a91e33316e6618b95887b293c58afaf8c70" },
-    { "path": "docs/07-operations/b26-validation.md", "algorithm": "sha256", "digest": "34355e9193c115e8995aaba3267d7f0bdf5cff9694084782ef6d055369599440" },
-    { "path": "package.json", "algorithm": "sha256", "digest": "505afbc9c098ebfd02cd2e0a4617921945cd98fd8e08bf2d2543cc436329c442" },
-    { "path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "2dfbe7a67a18e32db747d07698c3d6dad2de9ccadaf7fd57861e684ac59b3ccc" },
-    { "path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "f0feafa92ed124cebeb12701e96c2525c6cb0423a5f7a9d68eab5ed0d60daa93" },
-    { "path": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json", "algorithm": "sha256", "digest": "777c8cd3d5836e5d495c72644afcf7b5fa99bc044817886536c3f6440d079d24" },
-    { "path": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json", "algorithm": "sha256", "digest": "e34f9b76afb1151c7e792cbcb1ef2d7d8862f0cf03828075e031fa15f25611bd" },
-    { "path": "packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json", "algorithm": "sha256", "digest": "4ae2a246d82f0655ff567164225e3c44e67c30459c62c1b2b75780f84bb41b84" },
-    { "path": "packages/contracts/events/v1/reliability-policy.json", "algorithm": "sha256", "digest": "92f98a6fe6c384d6c442da8531b6b0794c10386e1694c22c2d425a2af75d96cc" },
-    { "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json", "algorithm": "sha256", "digest": "ec60663adf0516e185ab675b552005bc801057d87c5193104db82d61c7150fae" },
-    { "path": "packages/contracts/fragments/b5-commerce-admin.openapi.json", "algorithm": "sha256", "digest": "6dd113f0306c02c1d489aaa654db18e8ec9fa4f8bbce7b784e2904126f0bf9aa" },
-    { "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json", "algorithm": "sha256", "digest": "6211b894e1c1bf9d0e2b87de4357feb7744c15fd55e5633e327ec18c4565a8c1" },
-    { "path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "63bbb095a44d8a8f8630b3e06a3a3e489cd8da5680fe954144f233ddfa831cf9" },
-    { "path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "2ee9a9dfb78eacf28db3ec2581fdaeed6364ceab71bdcca83ada30ec18f80663" },
-    { "path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "4a5525701713338e99d51a43baded8e2c3aac9028a6641731d4d6eff0851acec" },
-    { "path": "requirements/feature-matrix.md", "algorithm": "sha256", "digest": "99a1c1bd8d46a51dca4a80876c574a587db64a8279a15eaf535b67f47a1eba60" },
-    { "path": "scripts/audit/p1r-commerce-contract-check.mjs", "algorithm": "sha256", "digest": "f5b841aabeeea5947afc8fbbb295d074e2d13e03fc9999d20b0ca5e2f248bee7" },
-    { "path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "56aa0927056eb72422b38461bb83ae90ebc415da1a99afa73176b93c08db5597" },
-    { "path": "scripts/audit/p1r-event-reliability-check.mjs", "algorithm": "sha256", "digest": "e54042a37e8dda991347b5ae38c4dbd85745473d070f3b142e84460ea7bc2ced" },
-    { "path": "scripts/audit/p1r-gateway-contract-check.mjs", "algorithm": "sha256", "digest": "e0e0a118da900fb75bb454542f61fd1b13609a63248f07ab97b2881417ad2b0d" },
-    { "path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "af4b45b7da2978d5e48f13c0d61a074503cd9b2deeeac467eb7b282c9b709ddf" },
-    { "path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "a63a37b6dc56916d20cd96080982f63e6fa32494d63af5825ca6cf3179d63acc" },
-    { "path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "30c47582210c83e93285d1a061e47eee8db163bf8599fe71cfe7376384f8e674" },
-    { "path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "d6044265cddc63ae6832e918f9573067de491eb9669f934c40d3f6787231a54b" },
-    { "path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "0185ff837ec35f3e3bb6b7793a5a9312c9cdd18c1715b9ac5a4779a6364c5461" },
-    { "path": "tests/b13/b13-contract-migration.test.mjs", "algorithm": "sha256", "digest": "4730499da89f7c84cd1974099ffb4eeaa71e054dd07a6d69cac883e2433a5ff4" },
-    { "path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "8985163ef8453f109f682250c4b14aae4bdd77bfeab02380f2bc6194029277d0" },
-    { "path": "tests/g/g1-contract-data.test.mjs", "algorithm": "sha256", "digest": "e0d0e88811c65ae675b86e2336e4ee95f6e61a342edfd32439d5e940496fbc1a" },
-    { "path": "tests/p1r/p1r-commerce-contract.test.mjs", "algorithm": "sha256", "digest": "5b01770552bc3ce4094b7f942bb89296a1415dec3c051fdad489ebf193263332" },
-    { "path": "tests/p1r/p1r-commerce-generated-types.test.mjs", "algorithm": "sha256", "digest": "05907a7ec250f98c2c2eb6ad6ed31c67bdd26735bae827041b148e731f9bc5c3" },
-    { "path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "26688b495be12fd8884f5fa8e406f719e66551ff262664927499160cea5401a9" },
-    { "path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "061fb45316a1bee46cf1900c6c3d11c2260eb734871a90e3f62451d94e4fab0e" },
-    { "path": "tests/p1r/p1r-event-reliability.test.mjs", "algorithm": "sha256", "digest": "9ab98de869587e39794f6646890af9429a36b8ed8966882f201192726799322e" },
-    { "path": "tests/p1r/p1r-gateway-contract.test.mjs", "algorithm": "sha256", "digest": "d318aa341da30dce59550233f0289df5779d48aaa80a525657b8e274af1332fe" }
+    {
+      "path": "config/b20-commerce-dr-evidence.json",
+      "algorithm": "sha256",
+      "digest": "bc879931fbb2309fdfe7b8603cdb7cce3e3fe9674590af9ada4772fa0c1ed404"
+    },
+    {
+      "path": "config/b21-release-gate-evidence.json",
+      "algorithm": "sha256",
+      "digest": "529baa9e84351bb726209d81dd43fafcf46f510671a6bc84295019927180a83e"
+    },
+    {
+      "path": "config/b26-event-runtime.json",
+      "algorithm": "sha256",
+      "digest": "3427aa0119d9712c79c0b6653b9588e4d641b5424b2d21d3bde1304f3beb8697"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "085d024e2baca3fdd03389eefa2768a63f979a01439d7234d4038fd397a96652"
+    },
+    {
+      "path": "config/p1r-commerce-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "26535e674b5bdf6cfe4e304b3db0a0e64d82099a2b146cc7c541bf8f68e69a61"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md",
+      "algorithm": "sha256",
+      "digest": "30c0c7c8c5278369a1d4b50486c193f8b1f5e679ff70b3845f8b5e39b5f7b5a6"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+      "algorithm": "sha256",
+      "digest": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+      "algorithm": "sha256",
+      "digest": "28fee299ff0eb8eb17b5eccc83555395964e978481979931f29fe4b6dc32ab38"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+      "algorithm": "sha256",
+      "digest": "9822cf05d0d618ca3d47eef62eca90a09eba9f2c7522c4a0f980170cb76a8043"
+    },
+    {
+      "path": "docs/07-operations/b13-validation.md",
+      "algorithm": "sha256",
+      "digest": "c582bd2707a6827290251708952d9a171ff0084966c253de6d704a9e0ac91e0d"
+    },
+    {
+      "path": "docs/07-operations/b26-validation.md",
+      "algorithm": "sha256",
+      "digest": "5b535d617ed3678bcc92ae216443aaea7da7c7bf3689f9bf30af60f42730a4d0"
+    },
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "be37d99f606b8ed0e84e031b7c8a197b584cd8ec7ce88f62dc3042273a889277"
+    },
+    {
+      "path": "packages/api-client/src/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "d33e2b9bbb21d65bd64ad7d4fddd7be28cd49aed77ff840d621d20777aa9d4eb"
+    },
+    {
+      "path": "packages/contracts/events/v1/catalog.json",
+      "algorithm": "sha256",
+      "digest": "bf29b2036a38aed5d1be50dcdbb589d4520d8dabeddf618a3f07b78fc6181a92"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json",
+      "algorithm": "sha256",
+      "digest": "777c8cd3d5836e5d495c72644afcf7b5fa99bc044817886536c3f6440d079d24"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json",
+      "algorithm": "sha256",
+      "digest": "e34f9b76afb1151c7e792cbcb1ef2d7d8862f0cf03828075e031fa15f25611bd"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json",
+      "algorithm": "sha256",
+      "digest": "4ae2a246d82f0655ff567164225e3c44e67c30459c62c1b2b75780f84bb41b84"
+    },
+    {
+      "path": "packages/contracts/events/v1/reliability-policy.json",
+      "algorithm": "sha256",
+      "digest": "6f24c9754a64cfafd221d24327ad4bef9f189f695320381bf6fd40c406417459"
+    },
+    {
+      "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "algorithm": "sha256",
+      "digest": "e6545c5152b111c9e80b8243c6ba11447b273118f8d76130b90c774662cd5ea4"
+    },
+    {
+      "path": "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+      "algorithm": "sha256",
+      "digest": "f0fc59aaffa62f6d3853b507a084185fe1f899463abc5db3879c0bac94230f87"
+    },
+    {
+      "path": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+      "algorithm": "sha256",
+      "digest": "6211b894e1c1bf9d0e2b87de4357feb7744c15fd55e5633e327ec18c4565a8c1"
+    },
+    {
+      "path": "packages/contracts/generated/events.ts",
+      "algorithm": "sha256",
+      "digest": "6f0b9269ec7041cc5ca3a0c4ec42eda66c9dd1a77df00914a02a066f6b60cd62"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "algorithm": "sha256",
+      "digest": "bdaa8fa0ebfa811bca7c3e3ad400f7c426752a930e5e6e4edc4d05e1c8f4cc9f"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "44006e80f8bbd5f2cb355ddf49686727f7b127c0d2ee376f93db3c3db8869402"
+    },
+    {
+      "path": "requirements/feature-matrix.md",
+      "algorithm": "sha256",
+      "digest": "0c2feaf86d0c6fc6391c6acd22eea52b614f09670f33bb8b6221b0fd1c6d8fc8"
+    },
+    {
+      "path": "scripts/audit/p1r-commerce-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "30fd3a77c21f91758703c59584d62e87b9b332adc9e6d32c69c7cc39beaa58f6"
+    },
+    {
+      "path": "scripts/audit/p1r-event-governance-check.mjs",
+      "algorithm": "sha256",
+      "digest": "2c6b4f6d24add797963277f6eef492c510f977da9d427598720b09b0f3d91f11"
+    },
+    {
+      "path": "scripts/audit/p1r-event-reliability-check.mjs",
+      "algorithm": "sha256",
+      "digest": "1f4a6c09a70cf74f0603bd1895d619de497893ab5b2b0182f92aea27f5e42358"
+    },
+    {
+      "path": "scripts/audit/p1r-gateway-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "56192116c8aa6f1f6d63a49d4a401ff381aca6b94a7e0962056005bc96e767f5"
+    },
+    {
+      "path": "scripts/contracts/compatibility-diff.mjs",
+      "algorithm": "sha256",
+      "digest": "fdc70d55c9ec4e1372002ea9f97fc8d850c112b9ea37dd4d9731859a151b1c7f"
+    },
+    {
+      "path": "scripts/contracts/compatibility-git-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "71af70d403c4189cce3530d1c9efeee12286339a954955b9e51bba013d9083fe"
+    },
+    {
+      "path": "scripts/contracts/event-catalog-policy.mjs",
+      "algorithm": "sha256",
+      "digest": "0479b65099f4c0a6c6d65c47c523c8c65d75c78d23fb518b4b4907136cc36f67"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "71e0e90f22c8e694360a04e7e89f28f2cd775f1b1429f992971db727feee6d51"
+    },
+    {
+      "path": "scripts/runtime/validate-b26-event-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "1f745f93adf986f9e4d7240f8cdc50b1c1a1284acfc2ced92fd8783725876efb"
+    },
+    {
+      "path": "tests/b13/b13-contract-migration.test.mjs",
+      "algorithm": "sha256",
+      "digest": "e36f009110750951b016ebd57ac2d63cf4ac9ad36063d0c9f5f3722478ed907c"
+    },
+    {
+      "path": "tests/b26/b26-event-runtime.test.mjs",
+      "algorithm": "sha256",
+      "digest": "4f04de2b528e3f5c6afb2d00c496dd6db5760ec01f763892c538d0a2c59fa458"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "f5d18961122b58565c199f23ff95fee5b6c9b76cfdb85f68f467ea3c74454653"
+    },
+    {
+      "path": "tests/p1r/p1r-commerce-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "2be32514c47da2df3c7be7ca4ef38471be3dd5146f7155a9fd8382128387deca"
+    },
+    {
+      "path": "tests/p1r/p1r-commerce-generated-types.test.mjs",
+      "algorithm": "sha256",
+      "digest": "05907a7ec250f98c2c2eb6ad6ed31c67bdd26735bae827041b148e731f9bc5c3"
+    },
+    {
+      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
+      "algorithm": "sha256",
+      "digest": "e1f39d456d291008298eda157f6173a606a25d21521731d2b1d5b7884becd88d"
+    },
+    {
+      "path": "tests/p1r/p1r-event-governance.test.mjs",
+      "algorithm": "sha256",
+      "digest": "33f702b86a6d8eeb459be019cdbf67fa107616c80790dc231a3234b77d432710"
+    },
+    {
+      "path": "tests/p1r/p1r-event-reliability.test.mjs",
+      "algorithm": "sha256",
+      "digest": "32caa8710b6256d3bb587fe57c6e20c6cdb19adf87655434159895309861a4a0"
+    },
+    {
+      "path": "tests/p1r/p1r-gateway-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "a179719beaf0960d27047331e535329388a8388a1ff3fa276a711e5fbc124cc9"
+    }
   ],
   "environment": {
     "kind": "repository-contract-governance",
@@ -79,7 +251,7 @@
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
   "startedAt": "2026-08-31T09:07:48+08:00",
-  "finishedAt": "2026-08-31T12:49:28+08:00",
+  "finishedAt": "2026-08-31T20:28:21+08:00",
   "actors": [
     "root-coordinator",
     "m1_015_gateway_sync",
@@ -95,14 +267,45 @@
     "INT-P1-010",
     "CONTRACT-GAP-COM-001"
   ],
-  "journeys": ["JNY-P1-12"],
-  "pages": ["PAGE-P1-OFFICIAL-PRICING", "PAGE-P1-COMMERCE", "PAGE-P1-ADMIN-COMMERCE"],
-  "rules": ["P1R_COMMERCE_CONTRACT_V1", "SANDBOX_HMAC_CALLBACK_V1", "ENTITLEMENT_FAIL_CLOSED_V1", "FULL_ONLY_REFUND_V1"],
-  "integrations": ["INT-P1-010"],
-  "e2eScenarios": ["E2E-P1-ENTITLEMENT"],
-  "serviceOwners": ["commerce-service", "content-service", "learning-service", "iam-service", "api-gateway", "workflow-service", "audit-service"],
-  "dataOwners": ["commerce-service"],
-  "statusTrajectory": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+  "journeys": [
+    "JNY-P1-12"
+  ],
+  "pages": [
+    "PAGE-P1-OFFICIAL-PRICING",
+    "PAGE-P1-COMMERCE",
+    "PAGE-P1-ADMIN-COMMERCE"
+  ],
+  "rules": [
+    "P1R_COMMERCE_CONTRACT_V1",
+    "SANDBOX_HMAC_CALLBACK_V1",
+    "ENTITLEMENT_FAIL_CLOSED_V1",
+    "FULL_ONLY_REFUND_V1"
+  ],
+  "integrations": [
+    "INT-P1-010"
+  ],
+  "e2eScenarios": [
+    "E2E-P1-ENTITLEMENT"
+  ],
+  "serviceOwners": [
+    "commerce-service",
+    "content-service",
+    "learning-service",
+    "iam-service",
+    "api-gateway",
+    "workflow-service",
+    "audit-service"
+  ],
+  "dataOwners": [
+    "commerce-service"
+  ],
+  "statusTrajectory": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED"
+  ],
   "reviewHistory": [
     {
       "round": 1,
@@ -168,6 +371,11 @@
       "check": "runtime-boundary",
       "status": "PASS",
       "details": "Production payment, auto-renewal, live providers, credentials, external traffic, database, Kafka, Outbox, PEP cache, browser/device and E2E runtime evidence remain unverified and disabled."
+    },
+    {
+      "check": "M1-016-current-source-revalidation",
+      "status": "PASS",
+      "details": "Artifact SHA-256 entries were recomputed against 9a38ff2185286bc8e279f785ff3fad5de30de569 after M1-016 acceptance. The 1261/1261 P1R regression, contract merge/generate/validate, fixed compatibility, Gateway, event governance/reliability, B26 static, plan and CI guards pass. Original implementation provenance and runtimeStatus=NOT_RUNTIME_VERIFIED are preserved."
     }
   ],
   "requestIds": [],
@@ -189,6 +397,31 @@
     "B20 remains BLOCKED, B21 remains NO-GO, B26 remains static-only/pending/NO-GO and P1R-M0-006 remains BLOCKED.",
     "M1-015 C/D Evidence integration is complete: M1-010 is bound to checkpoint b41af4af17cf082b038438c2ce3694f95804a5f1 and the global Evidence Gate passes at D commit d0cd4fc812bb2ee20c78375b99f6310e80992237; f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 remains the audited implementation source."
   ],
-  "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
-  "decision": "ACCEPTED"
+  "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED",
+  "provenance": {
+    "originalSourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+    "originalFinishedAt": "2026-08-31T12:49:28+08:00",
+    "originalReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+    "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-016",
+        "sourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
+        "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T20:28:21+08:00",
+        "details": "C-stage artifact SHA-256 refresh after M1-016 accepted; original task decision, implementation provenance and runtime boundary remain unchanged."
+      }
+    ],
+    "previousCurrentSourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-015",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T12:49:28+08:00",
+    "currentSourceRevalidationTask": "P1R-M1-016",
+    "currentSourceRevalidationReviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-31T20:28:21+08:00"
+  }
 }
