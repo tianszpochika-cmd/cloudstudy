@@ -402,6 +402,11 @@
       "details": "agent:m1_016_independent_review:gpt-5.6-luna:max accepted 9a38ff2185286bc8e279f785ff3fad5de30de569 with P1/P2=0/0 and made no repository changes."
     },
     {
+      "check": "evidence-integration",
+      "status": "PASS",
+      "details": "C checkpoint cbf25c329dba70c29a793d30908f53724a05f371 records M1-016 Evidence, four GAP closures and M1-001..009/011..015 current-source refresh. D commit 034a36973656721dbb1e7d2dce764aa5baddb8e2 binds M1-010 to C. The global Evidence Gate passes 108 tasks with 23 ACCEPTED, 1 BLOCKED, 84 PLANNED and zero errors."
+    },
+    {
       "check": "runtime-boundary",
       "status": "PASS",
       "details": "Notification providers and traffic, database, Kafka, Outbox, consumers, DLQ/replay, support PEP/SLA/retention, browser/device and E2E runtime evidence remain unverified."
@@ -423,7 +428,8 @@
     "Real MySQL/Flyway/grants, Kafka broker/topic/ACL, Outbox, consumer dedupe, DLQ/replay and retry/recovery execution are not verified.",
     "Gateway/service PEP, cross-tenant isolation, sync conflict recovery, support SLA clocks, retention/legal-hold purge, browser/device and E2E behavior are not verified.",
     "B11/B5/B13 v1 remain historical input only; they are not canonical runtime and dual publish remains prohibited.",
-    "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED."
+    "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
+    "M1-016 C/D Evidence integration is complete: P1R-M1-010 is bound to checkpoint cbf25c329dba70c29a793d30908f53724a05f371 and the global Evidence Gate passes at D commit 034a36973656721dbb1e7d2dce764aa5baddb8e2; 9a38ff2185286bc8e279f785ff3fad5de30de569 remains the audited implementation source."
   ],
   "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"

@@ -24,7 +24,7 @@ M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受�
 
 M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品最新在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation，canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。
 
-`P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`。M1-015 post-C D 阶段已在 `b41af4af17cf082b038438c2ce3694f95804a5f1` 完成 current-source 摘要绑定，本轮审计实现源为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，D 提交为 `d0cd4fc812bb2ee20c78375b99f6310e80992237`。
+`P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`。M1-016 post-C D 阶段已在 `cbf25c329dba70c29a793d30908f53724a05f371` 完成 current-source 摘要绑定，本轮审计实现源为 `9a38ff2185286bc8e279f785ff3fad5de30de569`，D 提交为 `034a36973656721dbb1e7d2dce764aa5baddb8e2`。
 
 `P1R-M1-011` 已接受：不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`；首轮 `5b6a3d5` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`；共享制品已在 `9a38ff2185286bc8e279f785ff3fad5de30de569` 完成 M1-016 current-source revalidation。
 
@@ -38,7 +38,7 @@ M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bc
 
 `P1R-M1-016` 已接受：最终实现源码 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。当前台账计数为 `23 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 84 PLANNED`（共 108 项）；四个通知/同步/客服 GAP 已按 D2 Evidence 关闭，B11/B5/B13 v1 仍为 historical-only，B26 继续 `static-only/pending/NO-GO`。
 
-M1-016 本轮 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..015` 的 artifactDigests/current-source 指针刷新到 `9a38ff2185286bc8e279f785ff3fad5de30de569`，并保留各自原始 provenance/reviewHistory；唯一包含 GAP registry 摘要的 `P1R-M1-010` 将在 post-C D 阶段绑定本轮 C 检查点，之后才可宣称全局 Evidence Gate PASS。
+M1-016 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..015` 的 artifactDigests/current-source 指针刷新到 `9a38ff2185286bc8e279f785ff3fad5de30de569`，并保留各自原始 provenance/reviewHistory；C=`cbf25c329dba70c29a793d30908f53724a05f371`。D=`034a36973656721dbb1e7d2dce764aa5baddb8e2` 已把唯一包含 GAP registry 摘要的 `P1R-M1-010` 绑定到 C；全局 Evidence Gate 在干净 D 提交上 PASS。
 
 M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/current-source 指针刷新到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，且保留各自原始 provenance/reviewHistory。D 阶段已将唯一例外 `P1R-M1-010` 绑定至 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50`，D 阐明提交为 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`；其审计实现源仍是 aab1，`a7f920...` 仅为历史来源。全局 Evidence Gate 已在干净 D 提交上 PASS。
 
