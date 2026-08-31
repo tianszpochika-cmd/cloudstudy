@@ -212,10 +212,10 @@
     },
     {
       "taskId": "P1R-M1-015",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-31T09:07:48+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-31T12:49:28+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-003, P1R-M1-005, P1R-M1-006 and P1R-M1-008 are accepted. The coordinator froze 5d0bb3a0651d9205a942eca9d8e1c56b538ed73f as the source checkpoint and started the product, activation-code, sandbox callback, entitlement PEP/cache invalidation/grace, refund/revoke/reconciliation and production-payment-OFF D2 contract task without promoting B5/B13 v1, B20 synthetic evidence or database, Kafka, provider, cache, browser and E2E runtime evidence.",
+      "reason": "Final source f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 was independently accepted by agent:m1_015_requirements_review:gpt-5.6-luna:max with P1/P2=0/0. The product, activation, SANDBOX_HMAC callback, entitlement fail-closed cache/grace, refund/revoke/reconciliation and production-payment-OFF result remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B5/B13 v1, B20/B21/B26 and database, Kafka, provider, cache, browser and E2E runtime evidence were not promoted.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-015/manifest.json"
     }
   ]

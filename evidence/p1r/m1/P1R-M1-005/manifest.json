@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+  "sourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "dcd50129cbbc443e6d0b64b01518d592e9194d8d30e8862f59e2911de7635266"
+      "digest": "505afbc9c098ebfd02cd2e0a4617921945cd98fd8e08bf2d2543cc436329c442"
     },
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -105,20 +105,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-31T07:48:15+08:00",
         "details": "C-stage artifact SHA-256 refresh after M1-014 accepted; original task decision and runtime boundary remain unchanged."
+      },
+      {
+        "taskId": "P1R-M1-015",
+        "sourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+        "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T12:49:28+08:00",
+        "details": "C-stage artifact SHA-256 refresh after M1-015 accepted; original task decision, implementation provenance and runtime boundary remain unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-013",
-    "currentSourceRevalidationTask": "P1R-M1-014",
-    "currentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+    "previousCurrentSourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-014",
+    "currentSourceRevalidationTask": "P1R-M1-015",
+    "currentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T04:18:36+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T07:48:15+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-31T07:48:15+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T12:49:28+08:00"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
-  "finishedAt": "2026-08-31T07:48:15+08:00",
+  "finishedAt": "2026-08-31T12:49:28+08:00",
   "actors": [
     "m1_004_evidence",
     "m1_004_evidence/data_owner_audit",
@@ -231,6 +239,11 @@
       "check": "M1-014-current-source-revalidation",
       "status": "PASS",
       "details": "Artifact SHA-256 entries were recomputed against aab1fa24bb7d46e3dd730fe3801ab2e986301e0d after M1-014 acceptance. This preserves the original decision/review history and does not promote runtime evidence."
+    },
+    {
+      "check": "M1-015-current-source-revalidation",
+      "status": "PASS",
+      "details": "Artifact SHA-256 entries were recomputed against f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 after M1-015 acceptance. The 1153/1153 P1R regression, contract merge/generate/validate, fixed compatibility, Gateway, event governance/reliability, B26 static, plan and CI guards pass. Original implementation provenance and runtimeStatus=NOT_RUNTIME_VERIFIED are preserved."
     }
   ],
   "rollbackEvidence": [
@@ -247,6 +260,6 @@
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the task-relevant G1 slice passes 6/6."
   ],
-  "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

@@ -2,17 +2,17 @@
   "taskId": "P1R-M1-012",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+  "sourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
       "algorithm": "sha256",
-      "digest": "3a3629865a36b15b4f65c06dbc4f736fa756fa0d7f10d95d408852107e104b97"
+      "digest": "1e6433582c1497425269f3a0178533ab069eb84dca5dd7b31150f58b0d6c39c9"
     },
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "d8e4bd903118822d3a90adb27ad2cfdc0fbd18667bfe3c51211cecbe005cdd50"
+      "digest": "358f8c5eeb92be6d920662d282308f6c36ea067094d016b2af51a48c8dcd1771"
     },
     {
       "path": "config/p1r-placement-contract.v1.json",
@@ -67,12 +67,12 @@
     {
       "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
       "algorithm": "sha256",
-      "digest": "27e921adf69cfa5ee4d41da18ae1dbbda4aeaf471caba6a3a7d706da8024b775"
+      "digest": "c96f3587c7e825c4d961cc56a44a15e5f198c59f8bdaa9cea11ba105956b526c"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
       "algorithm": "sha256",
-      "digest": "a7090fe39eb7fdde741e0301b7dc593564f788a9f448438157f35fca7af9b816"
+      "digest": "ee8a7f49d42e78f5382c054860e6c2f7bf538d2dea594fff7759395a9ebaec71"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
@@ -87,7 +87,7 @@
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
       "algorithm": "sha256",
-      "digest": "87f90549cbf799861642957696cc0f154301374c9c8afe7a213789bb965b9ebf"
+      "digest": "41652ab95962706d1b64e606a123acb6a32f004238e1a350dabc8b2295870d95"
     },
     {
       "path": "docs/technical-specs/modules/01_用户与认证域详细设计.md",
@@ -97,17 +97,17 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "dcd50129cbbc443e6d0b64b01518d592e9194d8d30e8862f59e2911de7635266"
+      "digest": "505afbc9c098ebfd02cd2e0a4617921945cd98fd8e08bf2d2543cc436329c442"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "a55409cd77aa21d0dda6a859e5b7fcbb9a5a0d26bbcad272153c38ab10dbadae"
+      "digest": "2dfbe7a67a18e32db747d07698c3d6dad2de9ccadaf7fd57861e684ac59b3ccc"
     },
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "f3a66eea0bef909f652daf2a906dc4f09c47096dcc935e592020d0ffc3a97a30"
+      "digest": "f0feafa92ed124cebeb12701e96c2525c6cb0423a5f7a9d68eab5ed0d60daa93"
     },
     {
       "path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
@@ -117,7 +117,7 @@
     {
       "path": "packages/contracts/events/v1/reliability-policy.json",
       "algorithm": "sha256",
-      "digest": "7d701810e3d640c866b0aa3fb79e744c09edf92de0696b1441ce6ccea7e81cd7"
+      "digest": "92f98a6fe6c384d6c442da8531b6b0794c10386e1694c22c2d425a2af75d96cc"
     },
     {
       "path": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
@@ -142,22 +142,22 @@
     {
       "path": "packages/contracts/generated/events.ts",
       "algorithm": "sha256",
-      "digest": "1ae1087e4a45b596de969f6cbf96c35cca0a5eb626e2d8c6be5e67fc686139f2"
+      "digest": "63bbb095a44d8a8f8630b3e06a3a3e489cd8da5680fe954144f233ddfa831cf9"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "2e4972645c69534829c01dbdfd8265c963613e361fe90b71e027d3bd37fd0114"
+      "digest": "2ee9a9dfb78eacf28db3ec2581fdaeed6364ceab71bdcca83ada30ec18f80663"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "7e3f643aa1cb7f0c85094224385c35101eb4633788c74d0ac8c5f2c8af5b7a04"
+      "digest": "4a5525701713338e99d51a43baded8e2c3aac9028a6641731d4d6eff0851acec"
     },
     {
       "path": "requirements/feature-matrix.md",
       "algorithm": "sha256",
-      "digest": "f723ab7971363ae55ed7622d6f34f8fc4936533b7c9f0819913c5bf18272ce32"
+      "digest": "99a1c1bd8d46a51dca4a80876c574a587db64a8279a15eaf535b67f47a1eba60"
     },
     {
       "path": "requirements/product-requirements.md",
@@ -187,17 +187,17 @@
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
       "algorithm": "sha256",
-      "digest": "3942e17cd21fb4b18f519bb648e0dfda4344014dcb0623724041148c297007aa"
+      "digest": "56aa0927056eb72422b38461bb83ae90ebc415da1a99afa73176b93c08db5597"
     },
     {
       "path": "scripts/audit/p1r-event-reliability-check.mjs",
       "algorithm": "sha256",
-      "digest": "71b374ae63df61654c1bccb9f7f1f62f2f6e36c205168def45afa6b03f759e60"
+      "digest": "e54042a37e8dda991347b5ae38c4dbd85745473d070f3b142e84460ea7bc2ced"
     },
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "ce9ceaf3c373bd9acded03983ab904061ed779fd0fc2006c4a2c6c41f3588eaa"
+      "digest": "e0e0a118da900fb75bb454542f61fd1b13609a63248f07ab97b2881417ad2b0d"
     },
     {
       "path": "scripts/audit/p1r-learner-planning-contract-check.mjs",
@@ -212,22 +212,22 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "afedb77bfe0864ad59765f768b7b579f02a06bbef4a96e22f41ab351bc568d54"
+      "digest": "af4b45b7da2978d5e48f13c0d61a074503cd9b2deeeac467eb7b282c9b709ddf"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "3fb145903f0403761b067a9baf90abe7eaac4ae88a293b3d6e557fa06f61ec55"
+      "digest": "a63a37b6dc56916d20cd96080982f63e6fa32494d63af5825ca6cf3179d63acc"
     },
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
       "algorithm": "sha256",
-      "digest": "a14da8d4525b7fb827175dc271036321c64cadf188474a620f3d3b18134bab4a"
+      "digest": "30c47582210c83e93285d1a061e47eee8db163bf8599fe71cfe7376384f8e674"
     },
     {
       "path": "scripts/contracts/merge-b1-fragments.mjs",
       "algorithm": "sha256",
-      "digest": "e40716fe73f1f194694e2daf4ad4b0eb90077c6e205059b53d4c4ac303d44e71"
+      "digest": "d6044265cddc63ae6832e918f9573067de491eb9669f934c40d3f6787231a54b"
     },
     {
       "path": "scripts/contracts/schema-utils.mjs",
@@ -237,17 +237,17 @@
     {
       "path": "scripts/runtime/validate-b26-event-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "effde806cefe7870a608e8f235165b6783d1ae291d83817b1c4bda32d23c54ee"
+      "digest": "0185ff837ec35f3e3bb6b7793a5a9312c9cdd18c1715b9ac5a4779a6364c5461"
     },
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
       "algorithm": "sha256",
-      "digest": "41450f757831585eb16ac1ad614fcabe42eb1a32266a8333a8b206524ab19014"
+      "digest": "8985163ef8453f109f682250c4b14aae4bdd77bfeab02380f2bc6194029277d0"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "12f416910e88abb4d1a2e6b0b8d52b994808608bbb007d59363c1a46c52bbe27"
+      "digest": "e0d0e88811c65ae675b86e2336e4ee95f6e61a342edfd32439d5e940496fbc1a"
     },
     {
       "path": "tests/p1r/p1r-assessment-contract.test.mjs",
@@ -262,22 +262,22 @@
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "a7a11fe00a390a72c920f4e5937f230e4b56c99149c4532452d7176ef31b97fb"
+      "digest": "26688b495be12fd8884f5fa8e406f719e66551ff262664927499160cea5401a9"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
       "algorithm": "sha256",
-      "digest": "f3b7f99c10094fa181d191c84e6886c12d874b852a7a2a320013cc34591f323c"
+      "digest": "061fb45316a1bee46cf1900c6c3d11c2260eb734871a90e3f62451d94e4fab0e"
     },
     {
       "path": "tests/p1r/p1r-event-reliability.test.mjs",
       "algorithm": "sha256",
-      "digest": "39b34805f3d4ff24c14f900317a9c167b6d88974f8d7e3ad69cb1c3f3b60d175"
+      "digest": "9ab98de869587e39794f6646890af9429a36b8ed8966882f201192726799322e"
     },
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "b3508c8847e9358e3f7e4b5569bb2892dde6a87e147392c31bd7fb8d9baccf62"
+      "digest": "d318aa341da30dce59550233f0289df5779d48aaa80a525657b8e274af1332fe"
     },
     {
       "path": "tests/p1r/p1r-learner-planning-contract.test.mjs",
@@ -320,7 +320,7 @@
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
   "startedAt": "2026-08-30T22:23:12+08:00",
-  "finishedAt": "2026-08-31T07:48:15+08:00",
+  "finishedAt": "2026-08-31T12:49:28+08:00",
   "actors": [
     "root-coordinator",
     "m1_010_test_inventory",
@@ -450,6 +450,11 @@
       "check": "M1-014-current-source-revalidation",
       "status": "PASS",
       "details": "Artifact SHA-256 entries were recomputed against aab1fa24bb7d46e3dd730fe3801ab2e986301e0d after M1-014 acceptance. This preserves the original decision/review history and does not promote runtime evidence."
+    },
+    {
+      "check": "M1-015-current-source-revalidation",
+      "status": "PASS",
+      "details": "Artifact SHA-256 entries were recomputed against f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 after M1-015 acceptance. The 1153/1153 P1R regression, contract merge/generate/validate, fixed compatibility, Gateway, event governance/reliability, B26 static, plan and CI guards pass. Original implementation provenance and runtimeStatus=NOT_RUNTIME_VERIFIED are preserved."
     }
   ],
   "requestIds": [],
@@ -471,7 +476,7 @@
     "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
     "The historical full G suite remains 39/41 because of G0/G3 stale markers."
   ],
-  "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED",
   "provenance": {
     "originalSourceCommit": "aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72",
@@ -500,16 +505,24 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-31T07:48:15+08:00",
         "details": "C-stage artifact SHA-256 refresh after M1-014 accepted; original task decision and runtime boundary remain unchanged."
+      },
+      {
+        "taskId": "P1R-M1-015",
+        "sourceCommit": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
+        "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T12:49:28+08:00",
+        "details": "C-stage artifact SHA-256 refresh after M1-015 accepted; original task decision, implementation provenance and runtime boundary remain unchanged."
       }
     ],
-    "previousCurrentSourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-013",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+    "previousCurrentSourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-014",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T04:18:36+08:00",
-    "currentSourceRevalidationTask": "P1R-M1-014",
-    "currentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T07:48:15+08:00",
+    "currentSourceRevalidationTask": "P1R-M1-015",
+    "currentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-31T07:48:15+08:00"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T12:49:28+08:00"
   }
 }
