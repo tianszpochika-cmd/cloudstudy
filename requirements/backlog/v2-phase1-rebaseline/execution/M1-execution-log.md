@@ -148,7 +148,7 @@
 
 - 最终验收：`aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 经 `agent:m1_014_final_review:gpt-5.6-luna:max` 独立终验 `ACCEPT`，P1/P2=`0/0`；Evidence 为 `evidence/p1r/m1/P1R-M1-014/manifest.json`。
 - 结果：专项 checker 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；三项 GAM/SOC GAP 关闭为 D2 静态治理，不作为 topic、ACL、Outbox、consumer、lease 或 E2E runtime 证据。
-- D 阶段：M1-010 全量摘要已在 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 重算并绑定；aab1 仍是 M1-014 审计实现源。后续全局 Evidence Gate 仅待干净、已提交工作树验证。
+- D 阶段：M1-010 全量摘要已在 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 重算并绑定，D 阐明提交为 `76ca7806c7c19cb10ce1eb28aaf60a4cc3eec078`；aab1 仍是 M1-014 审计实现源。全局 Evidence Gate 已在干净 D 提交上 PASS（108 tasks、21 ACCEPTED、1 BLOCKED、86 PLANNED、0 errors）。
 - 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26=`static-only`/`pending`/`NO-GO`；M2-004/005/006、M5-013、M7、M8-005 与 M0-006 仍保留原 owner 和状态。
 
 ## M1-011 执行轨道
