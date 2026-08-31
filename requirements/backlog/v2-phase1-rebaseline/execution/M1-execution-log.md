@@ -4,8 +4,8 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-015` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-015 最终源码为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，独立 reviewer `agent:m1_015_requirements_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。本轮先把 M1-001..009、011..014 的共享制品重新绑定到 f7a2e76；M1-010 的 GAP registry 摘要将在 post-C D 阶段单独绑定，不重写旧任务实现成果。
-- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；post-C D 阶段已把其 current-source manifest 与全部 artifactDigests 绑定至 `36a2103b0dc9497a6421bbbf99627e10c7a88c50`，审计实现源为 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`；原复审 P1/P2 为 `0/0`。
+- `P1R-M1-001` 至 `P1R-M1-015` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-015 最终源码为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`，独立 reviewer `agent:m1_015_requirements_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。C=`b41af4af17cf082b038438c2ce3694f95804a5f1`、D=`d0cd4fc812bb2ee20c78375b99f6310e80992237`，全局 Evidence Gate PASS；旧任务原始成果未被改写。
+- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；M1-015 post-C D 阶段已把其 current-source manifest 与全部 artifactDigests 绑定至 `b41af4af17cf082b038438c2ce3694f95804a5f1`，本轮审计实现源为 `f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573`；原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
 - `P1R-M1-013`：`ACCEPTED`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，原最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品已在 f7a2e76 完成 M1-015 current-source revalidation。
@@ -166,6 +166,7 @@
 - 最终验收：`f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573` 经 `agent:m1_015_requirements_review:gpt-5.6-luna:max` 独立终验 `ACCEPT`，P1/P2=`0/0`；Evidence 为 `evidence/p1r/m1/P1R-M1-015/manifest.json`。
 - 结果：专项 checker 13/13 canonical routes、9/9 commerce v2 events；定点 contract/generated-types 146/146、全量 P1R 1153/1153、First-day 221/221、typecheck 7/7 通过。contracts、fixed compatibility、Gateway、event governance/reliability、B26 static、plan 与 CI guard 均 PASS。
 - GAP：`CONTRACT-GAP-COM-001` 已关闭为 D2 静态治理，不作为 provider、真实支付、数据库、Kafka、PEP cache 或 E2E runtime 证据。
+- Evidence：C=`b41af4af17cf082b038438c2ce3694f95804a5f1`，D=`d0cd4fc812bb2ee20c78375b99f6310e80992237`；M1-010 GAP registry 摘要已重算，全局 Evidence Gate PASS（108 tasks、22 ACCEPTED、1 BLOCKED、85 PLANNED、0 errors）。
 - 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B20=`BLOCKED`、B21=`NO-GO`、B26=`static-only/pending/NO-GO`；M2-004/005/006、M7-006..011、M8-005 与 M0-006 仍保留原 owner 和状态。下一推荐为 `P1R-M1-016`。
 
 ## M1-011 执行轨道

@@ -350,7 +350,8 @@
     "P1R-M2-006 remains responsible for Saga, compensation, scheduled recovery, manual recovery and immutable closure receipts.",
     "Database, browser/device, E2E and production runtime behavior are not verified by this D2 contract task.",
     "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
-    "The historical full G suite remains 39/41 because of G0/G3 stale markers, and the pre-existing B9 direct API envelope issue remains outside M1-010."
+    "The historical full G suite remains 39/41 because of G0/G3 stale markers, and the pre-existing B9 direct API envelope issue remains outside M1-010.",
+    "M1-015 post-C binding is complete: sourceCommit and all artifactDigests are bound to b41af4af17cf082b038438c2ce3694f95804a5f1; f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 remains the audited M1-015 implementation source and d0cd4fc812bb2ee20c78375b99f6310e80992237 is the D binding commit. Runtime remains NOT_RUNTIME_VERIFIED."
   ],
   "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED",
