@@ -306,6 +306,32 @@
       ]
     },
     {
+      "name": "platform.commerce.v1",
+      "ownerService": "commerce-service",
+      "purpose": "order, verified payment, entitlement, refund and reconciliation integration facts",
+      "partitions": 12,
+      "partitionKey": "aggregateId",
+      "retentionMs": 2592000000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.commerce-service",
+      "consumerGroups": [
+        { "name": "cg.content-from-commerce.v1", "service": "content-service", "principal": "cg.content-from-commerce.v1", "replayEnabled": true },
+        { "name": "cg.learning-from-commerce.v1", "service": "learning-service", "principal": "cg.learning-from-commerce.v1", "replayEnabled": true },
+        { "name": "cg.workflow-from-commerce.v1", "service": "workflow-service", "principal": "cg.workflow-from-commerce.v1", "replayEnabled": true },
+        { "name": "cg.audit-from-commerce.v1", "service": "audit-service", "principal": "cg.audit-from-commerce.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.commerce-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.content-from-commerce.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.learning-from-commerce.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-commerce.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-commerce.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
       "name": "platform.workflow.v1",
       "ownerService": "workflow-service",
       "purpose": "reliability facts, Saga transitions and recovery records",
@@ -480,6 +506,15 @@
     { "eventName": "learner.target.updated.v1", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-learner.v1", "cg.workflow-from-learner.v1"] },
     { "eventName": "assessment.placement.completed.v1", "topic": "platform.assessment.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-assessment.v1", "cg.workflow-from-assessment.v1"] },
     { "eventName": "assessment.item.assessed.v2", "topic": "platform.assessment.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learning-from-assessment.v1", "cg.gamification-from-assessment.v1", "cg.workflow-from-assessment.v1"] },
+    { "eventName": "commerce.order.created.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.payment.requested.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.payment.callback_received.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.payment.verified.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.entitlement.activated.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.content-from-commerce.v1", "cg.learning-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.entitlement.revoked.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.content-from-commerce.v1", "cg.learning-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.refund.settled.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.content-from-commerce.v1", "cg.learning-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.reconciliation.discrepancy_recorded.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-commerce.v1", "cg.audit-from-commerce.v1"] },
+    { "eventName": "commerce.reconciliation.recovery_receipted.v2", "topic": "platform.commerce.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.audit-from-commerce.v1"] },
     { "eventName": "learning.task.completed.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.gamification-from-learning.v1", "cg.workflow-from-learning.v1"] },
     { "eventName": "learning.mastery.projected.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.assessment-from-learning.v1", "cg.gamification-from-learning.v1", "cg.social-from-learning.v1", "cg.workflow-from-learning.v1"] },
     { "eventName": "learning.review.scheduled.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.assessment-from-learning.v1", "cg.workflow-from-learning.v1"] },

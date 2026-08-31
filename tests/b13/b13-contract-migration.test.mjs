@@ -23,6 +23,8 @@ const requiredRoutes = [
   '/api/v1/commerce/orders/{orderId}/payment-intents',
   '/api/v1/commerce/orders/{orderId}/refunds',
   '/api/v1/commerce/activation-codes/redeem',
+  '/internal/v1/commerce/entitlements/{entitlementId}/snapshot',
+  '/internal/v1/commerce/entitlements/{entitlementId}/revoke',
   '/internal/v1/commerce/providers/{provider}/callbacks',
   '/internal/v1/commerce/reconciliation/replay',
   '/api/v1/admin/ops/commerce/orders',
@@ -71,7 +73,7 @@ test('B13 OpenAPI covers commerce, admin-ops, analytics and official-site bounda
 
   const operationIds = new Set()
   for (const { route, method, operation } of operations(openApi)) {
-    assert.match(operation.operationId, /B13/, `${method} ${route} must have a B13 operation id`)
+    assert.match(operation.operationId, /(?:B13|M1015)/, `${method} ${route} must have a B13/M1-015 operation id`)
     assert.equal(operationIds.has(operation.operationId), false, `duplicate operation ${operation.operationId}`)
     operationIds.add(operation.operationId)
 
@@ -88,10 +90,15 @@ test('B13 OpenAPI covers commerce, admin-ops, analytics and official-site bounda
     }
 
     if (['post', 'put', 'patch', 'delete'].includes(method)) {
-      assert.equal(operation['x-idempotency']?.required, true, `${method} ${route} must require Idempotency-Key`)
+      if (operation.operationId === 'resolveM1015CommerceEntitlementSnapshot') {
+        assert.equal(operation['x-idempotency']?.required, false, `${method} ${route} is a non-mutating snapshot read`)
+        assert.equal(operation['x-p1r-idempotency-exception']?.owner, 'commerce-service')
+      } else {
+        assert.equal(operation['x-idempotency']?.required, true, `${method} ${route} must require Idempotency-Key`)
+      }
     }
     walk(operation, (value, location) => {
-      if (value && typeof value === 'object' && value.$ref) resolve(openApi, value.$ref)
+      if (value && typeof value === 'object' && value.$ref) resolve(canonicalOpenApi, value.$ref)
     }, `${method} ${route}`)
   }
 
@@ -107,17 +114,19 @@ test('B13 OpenAPI covers commerce, admin-ops, analytics and official-site bounda
   assert.doesNotMatch(publicCatalogProperties.join('|'), /order|payment|refund|activation/i, 'official site catalog must not expose write-domain facts')
 })
 
-test('B13 events use the canonical envelope, closed payloads and matching channels', () => {
+test('B13 v1 events use the canonical envelope, closed payloads and remain historical-only', () => {
   assert.equal(events.version, '1.0.0')
+  assert.equal(events.asyncapi, undefined, 'event fragments must not define a second AsyncAPI source')
   const names = new Set(events.events.map((event) => event.eventName))
   for (const eventName of requiredEvents) assert.ok(names.has(eventName), `missing B13 event ${eventName}`)
 
-  const channels = Object.values(events.asyncapi.channels).map((channel) => channel.address)
   for (const event of events.events) {
     for (const field of ['eventId', 'eventName', 'schema', 'version', 'occurredAt', 'aggregateType', 'aggregateId', 'actorId', 'traceId', 'requestId', 'schemaVersion', 'dedupeKey', 'payload']) {
       assert.ok(event['x-envelope-required'].includes(field), `${event.eventName} envelope missing ${field}`)
     }
-    assert.ok(channels.includes(event.eventName), `${event.eventName} must have an AsyncAPI channel`)
+    const catalogEntry = canonicalEvents.events.find((candidate) => candidate.eventName === event.eventName)
+    assert.equal(catalogEntry?.status, 'HISTORICAL_CANDIDATE', `${event.eventName} must remain historical-only`)
+    assert.equal(catalogEntry?.['x-p1r-governance'], undefined, `${event.eventName} must not gain canonical Kafka governance`)
 
     const payload = resolve(events, event.payloadSchema.$ref)
     assert.equal(payload.additionalProperties, false, `${event.eventName} payload must be closed`)

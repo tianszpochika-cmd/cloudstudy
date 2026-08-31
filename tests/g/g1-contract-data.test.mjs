@@ -18,9 +18,9 @@ test('G1 static contract/data Gate passes with canonical/generated parity and re
   assert.equal(result.gate, 'G1')
   assert.equal(result.defaultDecision, 'BLOCKED')
   assert.equal(result.runtimeGate, 'static-only')
-  assert.equal(result.operationCount, 401)
-  assert.equal(result.schemaCount, 646)
-  assert.equal(result.eventCount, 158)
+  assert.equal(result.operationCount, 403)
+  assert.equal(result.schemaCount, 706)
+  assert.equal(result.eventCount, 175)
   assert.equal(result.payloadSchemaCount, manifest.contractSources.asyncapi.expectedPayloadSchemaCount)
   assert.equal(result.dataOwnerCount, 15)
 })
@@ -43,7 +43,7 @@ test('G1 source-backed marker tampering fails the static Gate', () => {
 
 test('G1 operationId contract conflict is rejected instead of hidden by generated files', () => {
   const candidate = clone(manifest)
-  candidate.contractSources.openapi.expectedOperationCount = 403
+  candidate.contractSources.openapi.expectedOperationCount = 405
   const result = validateG1ContractData(candidate, { runtimeRequested: false, env: {} })
   assert.equal(result.result, 'FAIL')
   assert.ok(result.errors.some((error) => error.includes('OpenAPI operation count mismatch')))

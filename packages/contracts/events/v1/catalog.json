@@ -272,6 +272,20 @@
           "leaderboard.snapshot_published.v2",
           "social.report.created.v2"
         ]
+      },
+      {
+        "path": "packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json",
+        "eventNames": [
+          "commerce.order.created.v2",
+          "commerce.payment.requested.v2",
+          "commerce.payment.callback_received.v2",
+          "commerce.payment.verified.v2",
+          "commerce.entitlement.activated.v2",
+          "commerce.entitlement.revoked.v2",
+          "commerce.refund.settled.v2",
+          "commerce.reconciliation.discrepancy_recorded.v2",
+          "commerce.reconciliation.recovery_receipted.v2"
+        ]
       }
     ],
     "plannedClosures": [
@@ -516,6 +530,7 @@
     "^(rawAnswer|answerText|answerContent|userInput|prompt)$",
     "^(audio|video|rawRecording|recordingBytes|screenPixels|imageBytes)$",
     "^(paymentCallbackRaw|jws|signedPayload|webhookBody)$",
+    "^(activationCode|activationCodeHash|codeHash|signature|nonce|providerCredential|merchantIdentifier|customerIdentifier)$",
     "^(deviceFingerprint|ipAddress|cookie)$"
   ],
   "payloadSchemas": {
@@ -8347,6 +8362,707 @@
           "maxLength": 128
         }
       }
+    },
+    "M1015CommerceOrderCreated": {
+      "$id": "platform.events.commerce.order.created.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "orderId",
+        "orderVersion",
+        "skuId",
+        "priceSnapshotId",
+        "amountMinor",
+        "currency",
+        "state",
+        "sourcePlatform"
+      ],
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "orderVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "skuId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "priceSnapshotId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "CREATED",
+            "PAYMENT_PENDING"
+          ]
+        },
+        "sourcePlatform": {
+          "type": "string",
+          "enum": [
+            "MOBILE",
+            "WEB",
+            "PWA"
+          ]
+        }
+      }
+    },
+    "M1015CommercePaymentRequested": {
+      "$id": "platform.events.commerce.payment.requested.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentAttemptId",
+        "paymentAttemptVersion",
+        "orderId",
+        "provider",
+        "environment",
+        "state",
+        "amountMinor",
+        "currency"
+      ],
+      "properties": {
+        "paymentAttemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "paymentAttemptVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "provider": {
+          "type": "string",
+          "const": "SANDBOX_HMAC"
+        },
+        "environment": {
+          "type": "string",
+          "const": "SANDBOX"
+        },
+        "state": {
+          "type": "string",
+          "const": "REQUESTED"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "M1015CommercePaymentCallbackReceived": {
+      "$id": "platform.events.commerce.payment.callback_received.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "callbackReceiptRef",
+        "orderId",
+        "paymentAttemptId",
+        "provider",
+        "environment",
+        "providerEventId",
+        "transactionRef",
+        "state",
+        "verificationRef",
+        "tupleDigest"
+      ],
+      "properties": {
+        "callbackReceiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^callback-receipt:[A-Za-z0-9._:-]+$"
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "paymentAttemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "provider": {
+          "type": "string",
+          "const": "SANDBOX_HMAC"
+        },
+        "environment": {
+          "type": "string",
+          "const": "SANDBOX"
+        },
+        "providerEventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "transactionRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^transaction-ref:[A-Za-z0-9._:-]+$"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "RECEIVED",
+            "VERIFIED",
+            "REJECTED"
+          ]
+        },
+        "verificationRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^verification-ref:[A-Za-z0-9._:-]+$"
+        },
+        "tupleDigest": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^tuple-digest:[A-Za-z0-9._:-]+$"
+        }
+      }
+    },
+    "M1015CommercePaymentVerified": {
+      "$id": "platform.events.commerce.payment.verified.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentAttemptId",
+        "orderId",
+        "callbackReceiptRef",
+        "provider",
+        "environment",
+        "amountMinor",
+        "currency",
+        "verificationRef",
+        "verifiedAt",
+        "state"
+      ],
+      "properties": {
+        "paymentAttemptId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "callbackReceiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^callback-receipt:[A-Za-z0-9._:-]+$"
+        },
+        "provider": {
+          "type": "string",
+          "const": "SANDBOX_HMAC"
+        },
+        "environment": {
+          "type": "string",
+          "const": "SANDBOX"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "verificationRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^verification-ref:[A-Za-z0-9._:-]+$"
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string",
+          "const": "VERIFIED"
+        }
+      }
+    },
+    "M1015CommerceEntitlementActivated": {
+      "$id": "platform.events.commerce.entitlement.activated.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "entitlementVersion",
+        "entitlementCode",
+        "scopeCode",
+        "sourceType",
+        "sourceRef",
+        "sourceVersion",
+        "policyVersion",
+        "effectiveAt",
+        "startsAt",
+        "expiresAt",
+        "invalidationVersion",
+        "state"
+      ],
+      "properties": {
+        "entitlementId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "entitlementVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "entitlementCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "scopeCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "VERIFIED_PAYMENT",
+            "REDEEMED_ACTIVATION"
+          ]
+        },
+        "sourceRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^(payment|redemption)-ref:[A-Za-z0-9._:-]+$"
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "effectiveAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "startsAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "invalidationVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "const": "ACTIVE"
+        }
+      }
+    },
+    "M1015CommerceEntitlementRevoked": {
+      "$id": "platform.events.commerce.entitlement.revoked.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "entitlementVersion",
+        "scopeCode",
+        "sourceVersion",
+        "policyVersion",
+        "state",
+        "reasonCode",
+        "tombstoneVersion",
+        "invalidationVersion",
+        "effectiveAt",
+        "receiptRef",
+        "auditRef",
+        "postRecoveryRerunRequired"
+      ],
+      "properties": {
+        "entitlementId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "entitlementVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scopeCode": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "sourceVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "state": {
+          "type": "string",
+          "const": "REVOKED"
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "FULL_REFUND",
+            "MANUAL_REVOKE",
+            "SECURITY",
+            "EXPIRED"
+          ]
+        },
+        "tombstoneVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "invalidationVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "effectiveAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "receiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^(revoke|refund)-receipt:[A-Za-z0-9._:-]+$"
+        },
+        "auditRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+        },
+        "postRecoveryRerunRequired": {
+          "type": "boolean"
+        }
+      }
+    },
+    "M1015CommerceRefundSettled": {
+      "$id": "platform.events.commerce.refund.settled.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundId",
+        "stateVersion",
+        "orderId",
+        "refundMode",
+        "state",
+        "settlementRef",
+        "amountMinor",
+        "currency",
+        "settledAt",
+        "expectedStateVersion",
+        "receiptRef",
+        "auditRef",
+        "entitlementRevocationReceiptRef"
+      ],
+      "properties": {
+        "refundId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "stateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "orderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "refundMode": {
+          "type": "string",
+          "const": "FULL_ONLY"
+        },
+        "state": {
+          "type": "string",
+          "const": "SETTLED"
+        },
+        "settlementRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^settlement-ref:[A-Za-z0-9._:-]+$"
+        },
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "settledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expectedStateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "receiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^refund-receipt:[A-Za-z0-9._:-]+$"
+        },
+        "auditRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+        },
+        "entitlementRevocationReceiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^revoke-receipt:[A-Za-z0-9._:-]+$"
+        }
+      }
+    },
+    "M1015CommerceReconciliationDiscrepancyRecorded": {
+      "$id": "platform.events.commerce.reconciliation.discrepancy_recorded.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reconciliationCaseRef",
+        "reconciliationVersion",
+        "batchRef",
+        "provider",
+        "environment",
+        "discrepancyCode",
+        "differenceCount",
+        "state",
+        "recordedAt",
+        "expectedStateVersion",
+        "expectedStateDigest",
+        "actualStateDigest",
+        "manualHoldRef",
+        "auditRef",
+        "receiptRef",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "reconciliationCaseRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^reconciliation-case:[A-Za-z0-9._:-]+$"
+        },
+        "reconciliationVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "batchRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^batch-ref:[A-Za-z0-9._:-]+$"
+        },
+        "provider": {
+          "type": "string",
+          "const": "SANDBOX_HMAC"
+        },
+        "environment": {
+          "type": "string",
+          "const": "SANDBOX"
+        },
+        "discrepancyCode": {
+          "type": "string",
+          "enum": [
+            "STATE_MISMATCH",
+            "MISSING_RECEIPT",
+            "DUPLICATE_RECEIPT",
+            "AMOUNT_MISMATCH"
+          ]
+        },
+        "differenceCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "type": "string",
+          "const": "MISMATCH"
+        },
+        "recordedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expectedStateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expectedStateDigest": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^state-digest:[A-Za-z0-9._:-]+$"
+        },
+        "actualStateDigest": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^state-digest:[A-Za-z0-9._:-]+$"
+        },
+        "manualHoldRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^manual-hold:[A-Za-z0-9._:-]+$"
+        },
+        "auditRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+        },
+        "receiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^reconciliation-receipt:[A-Za-z0-9._:-]+$"
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "M1015CommerceReconciliationRecoveryReceipted": {
+      "$id": "platform.events.commerce.reconciliation.recovery_receipted.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reconciliationCaseRef",
+        "reconciliationVersion",
+        "batchRef",
+        "closureReceiptRef",
+        "state",
+        "postRerunStatus",
+        "ownerReceiptRefs",
+        "approvalRefs",
+        "closedAt",
+        "auditRef",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "reconciliationCaseRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^reconciliation-case:[A-Za-z0-9._:-]+$"
+        },
+        "reconciliationVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "batchRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^batch-ref:[A-Za-z0-9._:-]+$"
+        },
+        "closureReceiptRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^closure-receipt:[A-Za-z0-9._:-]+$"
+        },
+        "state": {
+          "type": "string",
+          "const": "CLOSED"
+        },
+        "postRerunStatus": {
+          "type": "string",
+          "const": "MATCHED_AFTER_RECOVERY"
+        },
+        "ownerReceiptRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          }
+        },
+        "approvalRefs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^approval-ref:[A-Za-z0-9._:-]+$"
+          }
+        },
+        "closedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auditRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+        },
+        "domainFactsUntouched": {
+          "type": "boolean",
+          "const": true
+        }
+      }
     }
   },
   "events": [
@@ -13331,6 +14047,736 @@
           "INT-P1-017"
         ]
       }
+    },
+    {
+      "eventName": "commerce.order.created.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_order",
+      "aggregateIdField": "orderId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommerceOrderCreated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.order.created.v3",
+        "consumerRule": "只接受 commerce-service 已确认的订单创建事实；按 orderId、orderVersion 和 dedupeKey 幂等。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_order_created_v2"
+        },
+        "consumers": [
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_order_created_v2_cg_workflow_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_order_created_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.orderId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_order_created_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommerceOrderCreated",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.payment.requested.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_payment_attempt",
+      "aggregateIdField": "paymentAttemptId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommercePaymentRequested"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.payment.requested.v3",
+        "consumerRule": "只记录 SANDBOX_HMAC payment attempt 请求；production payment 与 auto-renewal 不在本契约内启用。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_payment_requested_v2"
+        },
+        "consumers": [
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_payment_requested_v2_cg_workflow_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_payment_requested_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.paymentAttemptId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_payment_requested_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommercePaymentRequested",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.payment.callback_received.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_callback_receipt",
+      "aggregateIdField": "callbackReceiptRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommercePaymentCallbackReceived"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.payment.callback_received.v3",
+        "consumerRule": "只发布 sanitized receipt；原始 callback、签名、JWS、nonce、keyId、credential 和原始 transactionId 不进入事件，事件只使用 opaque transactionRef。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_payment_callback_received_v2"
+        },
+        "consumers": [
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_payment_callback_received_v2_cg_workflow_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_payment_callback_received_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.callbackReceiptRef",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_payment_callback_received_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommercePaymentCallbackReceived",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.payment.verified.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_payment_attempt",
+      "aggregateIdField": "paymentAttemptId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommercePaymentVerified"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.payment.verified.v3",
+        "consumerRule": "verified 事实只能在 callback 绑定及金额、币种和 provider 校验完成后产生。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_payment_verified_v2"
+        },
+        "consumers": [
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_payment_verified_v2_cg_workflow_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_payment_verified_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.paymentAttemptId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_payment_verified_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommercePaymentVerified",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.entitlement.activated.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_entitlement",
+      "aggregateIdField": "entitlementId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommerceEntitlementActivated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.entitlement.activated.v3",
+        "consumerRule": "权益激活由已确认 payment 或一次性 redemption 事实产生；content/learning 只更新自身 PEP 投影。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_entitlement_activated_v2"
+        },
+        "consumers": [
+          {
+            "service": "content-service",
+            "consumerGroup": "cg.content-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_entitlement_activated_v2_cg_content_from_commerce_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_entitlement_activated_v2_cg_learning_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_entitlement_activated_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.entitlementId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_entitlement_activated_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommerceEntitlementActivated",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.entitlement.revoked.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_entitlement",
+      "aggregateIdField": "entitlementId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommerceEntitlementRevoked"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.entitlement.revoked.v3",
+        "consumerRule": "撤销是不可逆的版本化失效事实；content/learning 必须失效自身投影，退款撤销不得使用 grace。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_entitlement_revoked_v2"
+        },
+        "consumers": [
+          {
+            "service": "content-service",
+            "consumerGroup": "cg.content-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_entitlement_revoked_v2_cg_content_from_commerce_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_entitlement_revoked_v2_cg_learning_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_entitlement_revoked_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.entitlementId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_entitlement_revoked_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommerceEntitlementRevoked",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.refund.settled.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_refund",
+      "aggregateIdField": "refundId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommerceRefundSettled"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.refund.settled.v3",
+        "consumerRule": "只有 FULL_ONLY 且已结算的退款事实可触发权益失效；按 refundId、stateVersion 和 expectedStateVersion 幂等。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_refund_settled_v2"
+        },
+        "consumers": [
+          {
+            "service": "content-service",
+            "consumerGroup": "cg.content-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_refund_settled_v2_cg_content_from_commerce_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_refund_settled_v2_cg_learning_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_refund_settled_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.refundId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_refund_settled_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommerceRefundSettled",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.reconciliation.discrepancy_recorded.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "reconciliationCaseRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommerceReconciliationDiscrepancyRecorded"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.reconciliation.discrepancy_recorded.v3",
+        "consumerRule": "只发布差异摘要和恢复所需 receipt 引用；不得跨服务改写 commerce domain facts。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_reconciliation_discrepancy_recorded_v2"
+        },
+        "consumers": [
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_reconciliation_discrepancy_recorded_v2_cg_workflow_from_commerce_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_reconciliation_discrepancy_recorded_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.reconciliationCaseRef",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_reconciliation_discrepancy_recorded_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommerceReconciliationDiscrepancyRecorded",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
+    },
+    {
+      "eventName": "commerce.reconciliation.recovery_receipted.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "reconciliationCaseRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1015CommerceReconciliationRecoveryReceipted"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.reconciliation.recovery_receipted.v3",
+        "consumerRule": "这是 post-rerun closure receipt，不等同于 replay response；只有 CLOSED 且 MATCHED_AFTER_RECOVERY 的恢复事实可发布。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "commerce-service",
+          "dataOwner": "commerce-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_commerce_reconciliation_recovery_receipted_v2"
+        },
+        "consumers": [
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-commerce.v1",
+            "subscriptionOperationId": "subscribe_commerce_reconciliation_recovery_receipted_v2_cg_audit_from_commerce_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.commerce.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.reconciliationCaseRef",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "commerce_reconciliation_recovery_receipted_v2"
+        },
+        "schema": {
+          "schemaVersion": "commerce.event.v2",
+          "payloadRef": "#/payloadSchemas/M1015CommerceReconciliationRecoveryReceipted",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-017"
+        ]
+      }
     }
   ],
   "asyncapi": {
@@ -14004,6 +15450,249 @@
             "x-event-name": "social.report.created.v2",
             "payload": {
               "$ref": "#/payloadSchemas/M1014SocialReportCreated"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_order_created_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.order.created.v2",
+            "x-event-name": "commerce.order.created.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommerceOrderCreated"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_payment_requested_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.payment.requested.v2",
+            "x-event-name": "commerce.payment.requested.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommercePaymentRequested"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_payment_callback_received_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.payment.callback_received.v2",
+            "x-event-name": "commerce.payment.callback_received.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommercePaymentCallbackReceived"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_payment_verified_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.payment.verified.v2",
+            "x-event-name": "commerce.payment.verified.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommercePaymentVerified"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_entitlement_activated_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.entitlement.activated.v2",
+            "x-event-name": "commerce.entitlement.activated.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommerceEntitlementActivated"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_entitlement_revoked_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.entitlement.revoked.v2",
+            "x-event-name": "commerce.entitlement.revoked.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommerceEntitlementRevoked"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_refund_settled_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.refund.settled.v2",
+            "x-event-name": "commerce.refund.settled.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommerceRefundSettled"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_reconciliation_discrepancy_recorded_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.reconciliation.discrepancy_recorded.v2",
+            "x-event-name": "commerce.reconciliation.discrepancy_recorded.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommerceReconciliationDiscrepancyRecorded"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "commerce_reconciliation_recovery_receipted_v2": {
+        "address": "platform.commerce.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.commerce.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "commerce.reconciliation.recovery_receipted.v2",
+            "x-event-name": "commerce.reconciliation.recovery_receipted.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1015CommerceReconciliationRecoveryReceipted"
             },
             "bindings": {
               "kafka": {
@@ -16032,6 +17721,628 @@
           }
         },
         "x-consumer-service": "workflow-service"
+      },
+      "publish_commerce_order_created_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_order_created_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_order_created_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_order_created_v2_cg_workflow_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_order_created_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_order_created_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "subscribe_commerce_order_created_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_order_created_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_order_created_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_payment_requested_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_requested_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_requested_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_payment_requested_v2_cg_workflow_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_requested_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_requested_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "subscribe_commerce_payment_requested_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_requested_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_requested_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_payment_callback_received_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_callback_received_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_callback_received_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_payment_callback_received_v2_cg_workflow_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_callback_received_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_callback_received_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "subscribe_commerce_payment_callback_received_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_callback_received_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_callback_received_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_payment_verified_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_verified_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_verified_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_payment_verified_v2_cg_workflow_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_verified_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_verified_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "subscribe_commerce_payment_verified_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_payment_verified_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_payment_verified_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_entitlement_activated_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_entitlement_activated_v2_cg_content_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.content-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "content-service"
+      },
+      "subscribe_commerce_entitlement_activated_v2_cg_learning_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_commerce_entitlement_activated_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_activated_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_entitlement_revoked_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_entitlement_revoked_v2_cg_content_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.content-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "content-service"
+      },
+      "subscribe_commerce_entitlement_revoked_v2_cg_learning_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_commerce_entitlement_revoked_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_entitlement_revoked_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_refund_settled_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_refund_settled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_refund_settled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_refund_settled_v2_cg_content_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_refund_settled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_refund_settled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.content-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "content-service"
+      },
+      "subscribe_commerce_refund_settled_v2_cg_learning_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_refund_settled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_refund_settled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_commerce_refund_settled_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_refund_settled_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_refund_settled_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_reconciliation_discrepancy_recorded_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_reconciliation_discrepancy_recorded_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_reconciliation_discrepancy_recorded_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_reconciliation_discrepancy_recorded_v2_cg_workflow_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_reconciliation_discrepancy_recorded_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_reconciliation_discrepancy_recorded_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
+      },
+      "subscribe_commerce_reconciliation_discrepancy_recorded_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_reconciliation_discrepancy_recorded_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_reconciliation_discrepancy_recorded_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "publish_commerce_reconciliation_recovery_receipted_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_reconciliation_recovery_receipted_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_reconciliation_recovery_receipted_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "commerce-service",
+        "x-data-owner": "commerce-service"
+      },
+      "subscribe_commerce_reconciliation_recovery_receipted_v2_cg_audit_from_commerce_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/commerce_reconciliation_recovery_receipted_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/commerce_reconciliation_recovery_receipted_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-commerce.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
       }
     }
   }

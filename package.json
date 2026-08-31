@@ -43,6 +43,7 @@
     "p1r:placement-contract:check": "node scripts/audit/p1r-placement-contract-check.mjs",
     "p1r:learning-loop-contract:check": "node scripts/audit/p1r-learning-loop-contract-check.mjs",
     "p1r:gamification-social-contract:check": "node scripts/audit/p1r-gamification-social-contract-check.mjs",
+    "p1r:commerce-contract:check": "node scripts/audit/p1r-commerce-contract-check.mjs",
     "test:p1r": "node scripts/dev/run-node-tests.mjs tests/p1r",
     "services:build": "node scripts/runtime/build-v2-services.mjs",
     "services:run": "node scripts/runtime/run-v2-services.mjs",

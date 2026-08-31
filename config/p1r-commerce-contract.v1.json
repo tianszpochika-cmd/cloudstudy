@@ -1,0 +1,2846 @@
+{
+  "$schema": "p1r.commerce-contract.v1",
+  "schemaVersion": "p1r.commerce-contract.v1",
+  "task": "P1R-M1-015",
+  "phase": "P1",
+  "startCommit": "798e68c217ee4fbc12720a05c402486d35563fdb",
+  "sourceBaseline": "5d0bb3a0651d9205a942eca9d8e1c56b538ed73f",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "collectionPolicy": {
+    "unknownFieldDecision": "DENY",
+    "unknownEnumDecision": "DENY",
+    "additionalProperties": "DENY",
+    "clientAuthorityExpansion": "PROHIBITED"
+  },
+  "canonicalSources": {
+    "productRequirements": "requirements/product-requirements.md",
+    "featureMatrix": "requirements/feature-matrix.md",
+    "phase1CommerceDesign": "docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md",
+    "v2980Registry": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md",
+    "phase1BusinessJourney": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+    "phase1BusinessOperations": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
+    "phase1IntegrationMatrix": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+    "phase1StateAndRecovery": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
+    "m1015TaskLedger": "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md",
+    "m1015Acceptance": "requirements/backlog/v2-phase1-rebaseline/03-阶段验收与Evidence标准.md",
+    "m1015Traceability": "requirements/backlog/v2-phase1-rebaseline/04-追溯覆盖矩阵.md",
+    "m1003Authority": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M1-003.md",
+    "m1005DataOwnership": "config/p1r-data-ownership.v1.json",
+    "m1006EventGovernance": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M1-006.md",
+    "m1008ContentRights": "requirements/backlog/v2-phase1-rebaseline/execution/P1R-M1-008.md",
+    "m1014Promotion": "config/p1r-gamification-social-contract.v1.json",
+    "b5HistoricalOpenApi": "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+    "b5HistoricalEvents": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json",
+    "m1015CanonicalOpenApi": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+    "m1015CanonicalEventFragment": "packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json",
+    "b13HistoricalEvents": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json",
+    "b20HistoricalEvidence": "config/b20-commerce-dr-evidence.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "eventReliabilityPolicy": "packages/contracts/events/v1/reliability-policy.json"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-015",
+    "sourceContractBaseline": "5d0bb3a0651d9205a942eca9d8e1c56b538ed73f",
+    "previousPromotion": "P1R-M1-014",
+    "previousPromotionContract": "config/p1r-gamification-social-contract.v1.json",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "OPENAPI_EVENT_GOVERNANCE_M1015_V2_B26_STATIC_WITH_B5_B13_V1_B20_HISTORICAL",
+    "promotionMode": "FUTURE_M1015_V2_ONLY",
+    "allowsHistoricalV1Promotion": false,
+    "allowsDualPublish": false,
+    "approvedSourceFiles": [
+      "config/p1r-commerce-contract.v1.json",
+      "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+      "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json",
+      "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json",
+      "packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json",
+      "config/b26-event-runtime.json",
+      "config/b20-commerce-dr-evidence.json",
+      "packages/contracts/events/v1/catalog.json",
+      "packages/contracts/events/v1/reliability-policy.json"
+    ],
+    "requiredCompatibilityChecks": [
+      "CANONICAL_V2_NAMES_UNIQUE",
+      "HISTORICAL_V1_NAMES_NEVER_CANONICAL",
+      "NO_DUAL_PUBLISH",
+      "EVENT_PAYLOAD_SENSITIVE_DENY",
+      "ROUTE_AUTHORITY_SERVER_DERIVED",
+      "STATE_TRANSITION_DENY_BY_DEFAULT"
+    ],
+    "b26StaticPolicy": {
+      "contract": "config/b26-event-runtime.json",
+      "classification": "STATIC_GOVERNANCE_ONLY",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "allowsRuntimePromotion": false,
+      "requiresSeparateRuntimeEvidence": true
+    },
+    "canonicalOpenApiSource": {
+      "sourceFile": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "classification": "M1015_CANONICAL_OPENAPI_SOURCE",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "b13V1Semantics": "HISTORICAL_INPUT_ONLY"
+    },
+    "canonicalEventSource": {
+      "sourceFile": "packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json",
+      "classification": "M1015_CANONICAL_V2_EVENT_SOURCE",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "b5AndB13V1Semantics": "HISTORICAL_INPUT_ONLY"
+    }
+  },
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+    "productionPaymentEnabled": false,
+    "autoRenewalEnabled": false,
+    "liveProviders": [],
+    "realCredentialUse": "PROHIBITED",
+    "realProviderRoute": "PROHIBITED",
+    "realProviderTraffic": "PROHIBITED",
+    "deferredTasks": [
+      "P1R-M2-003",
+      "P1R-M2-004",
+      "P1R-M2-005",
+      "P1R-M2-006",
+      "P1R-M7-006",
+      "P1R-M7-007",
+      "P1R-M7-008",
+      "P1R-M7-009",
+      "P1R-M7-010",
+      "P1R-M7-011",
+      "P1R-M8-005"
+    ],
+    "prohibitedRuntimeClaims": [
+      "D2_COMMERCE_CONTRACT_IS_RUNTIME_EVIDENCE",
+      "SANDBOX_HMAC_IS_REAL_PAYMENT_PROVIDER_VERIFIED",
+      "B5_OR_B13_V1_IS_CANONICAL_RUNTIME",
+      "B20_HISTORICAL_EVIDENCE_IS_CURRENT_RUNTIME_EVIDENCE",
+      "PRODUCTION_PAYMENT_ENABLED",
+      "REAL_CREDENTIAL_OR_ROUTE_OR_TRAFFIC_ALLOWED",
+      "CLIENT_SUCCESS_PAGE_GRANTS_ENTITLEMENT",
+      "GATEWAY_OR_CLIENT_IS_ENTITLEMENT_FACT_OWNER",
+      "REFUND_OR_RECONCILIATION_IS_RUNTIME_VERIFIED"
+    ]
+  },
+  "owners": {
+    "commerce-service": [
+      "sku",
+      "price-snapshot",
+      "activation-code",
+      "order",
+      "payment-attempt",
+      "callback-receipt",
+      "entitlement-ledger",
+      "entitlement-snapshot",
+      "refund",
+      "reconciliation"
+    ],
+    "content-service": [
+      "content-rights-fact",
+      "content-side-entitlement-pep-decision"
+    ],
+    "learning-service": [
+      "learning-side-entitlement-pep-decision"
+    ],
+    "iam-service": [
+      "principal",
+      "adult-gate",
+      "consent",
+      "tenant",
+      "role-and-policy"
+    ],
+    "workflow-service": [
+      "controlled-reconciliation-retry",
+      "manual-recovery-orchestration"
+    ],
+    "audit-service": [
+      "immutable-audit-reference"
+    ]
+  },
+  "authority": {
+    "phase1Population": "ADULT_18_PLUS_ONLY",
+    "principalAndTenant": "SERVER_DERIVED_FROM_VERIFIED_TOKEN",
+    "gatewayIsNotDomainWriter": true,
+    "commerceServicePepRequired": true,
+    "contentServicePepRequired": true,
+    "learningServicePepRequired": true,
+    "clientMayProduceKafkaFacts": false,
+    "clientMaySet": [],
+    "serverDerivedFields": [
+      "principalId",
+      "tenantId",
+      "ownerId",
+      "adultGateDecision",
+      "consentDecision",
+      "role",
+      "permission",
+      "skuState",
+      "priceSnapshotId",
+      "priceSnapshotVersion",
+      "orderState",
+      "paymentAttemptId",
+      "paymentState",
+      "callbackReceiptId",
+      "callbackReceiptRef",
+      "callbackVerificationDecision",
+      "entitlementId",
+      "entitlementVersion",
+      "scopeCode",
+      "sourceVersion",
+      "policyVersion",
+      "refundState",
+      "reconciliationState",
+      "auditRef"
+    ],
+    "opaqueServerIssuedReferenceFields": [
+      "orderId",
+      "paymentAttemptId",
+      "callbackReceiptId",
+      "callbackReceiptRef",
+      "transactionRef",
+      "entitlementId",
+      "redemptionRef",
+      "refundId",
+      "reconciliationId",
+      "reconciliationCaseRef",
+      "closureReceiptId",
+      "closureReceiptRef"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "principalId",
+      "tenantId",
+      "ownerId",
+      "adultGateDecision",
+      "consentDecision",
+      "role",
+      "permission",
+      "amountMinor",
+      "currency",
+      "priceSnapshotId",
+      "priceSnapshotVersion",
+      "orderState",
+      "paymentState",
+      "providerVerificationDecision",
+      "callbackVerificationDecision",
+      "entitlementState",
+      "entitlementVersion",
+      "sourceVersion",
+      "policyVersion",
+      "refundState",
+      "reconciliationState",
+      "auditRef",
+      "productionPaymentEnabled",
+      "autoRenewalEnabled",
+      "providerEnvironment"
+    ]
+  },
+  "stateMachines": {
+    "sku": {
+      "owner": "commerce-service",
+      "states": [
+        "DRAFT",
+        "ACTIVE",
+        "SUSPENDED",
+        "RETIRED"
+      ],
+      "initialStates": [
+        "DRAFT"
+      ],
+      "terminalStates": [
+        "RETIRED"
+      ],
+      "transitions": [
+        {
+          "from": "DRAFT",
+          "to": "ACTIVE",
+          "actor": "commerce-service",
+          "requires": [
+            "catalogVersion",
+            "rightsScope",
+            "sandboxOnlyOffer"
+          ]
+        },
+        {
+          "from": "DRAFT",
+          "to": "RETIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "auditRef"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "SUSPENDED",
+          "actor": "commerce-service",
+          "requires": [
+            "reasonCode",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "RETIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "auditRef"
+          ]
+        },
+        {
+          "from": "SUSPENDED",
+          "to": "ACTIVE",
+          "actor": "commerce-service",
+          "requires": [
+            "reasonCode",
+            "policyVersion",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "SUSPENDED",
+          "to": "RETIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "auditRef"
+          ]
+        }
+      ],
+      "versionField": "skuVersion",
+      "idempotency": "SERVER_COMMAND_DEDUPE",
+      "writeModel": "OWNER_VERSIONED",
+      "directClientWrite": "DENY"
+    },
+    "priceSnapshot": {
+      "owner": "commerce-service",
+      "states": [
+        "CAPTURED",
+        "EXPIRED",
+        "INVALIDATED"
+      ],
+      "initialStates": [
+        "CAPTURED"
+      ],
+      "terminalStates": [
+        "EXPIRED",
+        "INVALIDATED"
+      ],
+      "transitions": [
+        {
+          "from": "CAPTURED",
+          "to": "EXPIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "serverClock"
+          ]
+        },
+        {
+          "from": "CAPTURED",
+          "to": "INVALIDATED",
+          "actor": "commerce-service",
+          "requires": [
+            "reasonCode",
+            "auditRef"
+          ]
+        }
+      ],
+      "versionField": "priceSnapshotVersion",
+      "idempotency": "ORDER_BINDING_UNIQUE",
+      "writeModel": "IMMUTABLE_AFTER_CAPTURE",
+      "directClientWrite": "DENY"
+    },
+    "activation": {
+      "owner": "commerce-service",
+      "states": [
+        "ACTIVE",
+        "REDEEMED",
+        "REVOKED",
+        "EXPIRED"
+      ],
+      "initialStates": [
+        "ACTIVE"
+      ],
+      "terminalStates": [
+        "REDEEMED",
+        "REVOKED",
+        "EXPIRED"
+      ],
+      "transitions": [
+        {
+          "from": "ACTIVE",
+          "to": "REDEEMED",
+          "actor": "commerce-service",
+          "requires": [
+            "atomicClaim",
+            "redemptionRef",
+            "entitlementLedgerRef",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "REVOKED",
+          "actor": "commerce-service",
+          "requires": [
+            "reasonCode",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "EXPIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "serverClock"
+          ]
+        }
+      ],
+      "versionField": "activationVersion",
+      "idempotency": "ONE_REDEMPTION_PER_ACTIVATION_CODE_DIGEST",
+      "writeModel": "OWNER_ATOMIC_CLAIM",
+      "directClientWrite": "DENY"
+    },
+    "order": {
+      "owner": "commerce-service",
+      "states": [
+        "CREATED",
+        "PAYMENT_PENDING",
+        "PAID",
+        "PAYMENT_FAILED",
+        "CANCELLED",
+        "REFUND_PENDING",
+        "REFUNDED",
+        "RECONCILIATION_HOLD"
+      ],
+      "initialStates": [
+        "CREATED"
+      ],
+      "terminalStates": [
+        "PAYMENT_FAILED",
+        "CANCELLED",
+        "REFUNDED"
+      ],
+      "transitions": [
+        {
+          "from": "CREATED",
+          "to": "PAYMENT_PENDING",
+          "actor": "commerce-service",
+          "requires": [
+            "priceSnapshotId",
+            "sandboxProvider",
+            "paymentAttemptId"
+          ]
+        },
+        {
+          "from": "CREATED",
+          "to": "CANCELLED",
+          "actor": "commerce-service",
+          "requires": [
+            "reasonCode",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "PAYMENT_PENDING",
+          "to": "PAID",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedPaymentAttempt",
+            "verifiedCallbackReceipt"
+          ]
+        },
+        {
+          "from": "PAYMENT_PENDING",
+          "to": "PAYMENT_FAILED",
+          "actor": "commerce-service",
+          "requires": [
+            "failureReasonCode"
+          ]
+        },
+        {
+          "from": "PAYMENT_PENDING",
+          "to": "CANCELLED",
+          "actor": "commerce-service",
+          "requires": [
+            "expiryOrCancellationReason"
+          ]
+        },
+        {
+          "from": "PAYMENT_PENDING",
+          "to": "RECONCILIATION_HOLD",
+          "actor": "commerce-service",
+          "requires": [
+            "reconciliationId",
+            "mismatchOrCollision"
+          ]
+        },
+        {
+          "from": "PAID",
+          "to": "REFUND_PENDING",
+          "actor": "commerce-service",
+          "requires": [
+            "refundId",
+            "fullRefundOnly"
+          ]
+        },
+        {
+          "from": "PAID",
+          "to": "RECONCILIATION_HOLD",
+          "actor": "commerce-service",
+          "requires": [
+            "reconciliationId",
+            "mismatchOrProjectionFailure"
+          ]
+        },
+        {
+          "from": "REFUND_PENDING",
+          "to": "REFUNDED",
+          "actor": "commerce-service",
+          "requires": [
+            "settledRefund",
+            "entitlementRevocationLedgerRef"
+          ]
+        },
+        {
+          "from": "REFUND_PENDING",
+          "to": "PAID",
+          "actor": "commerce-service",
+          "requires": [
+            "refundRejectedOrFailed",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "RECONCILIATION_HOLD",
+          "to": "PAID",
+          "actor": "commerce-service",
+          "requires": [
+            "matchedReconciliationClosureReceipt"
+          ]
+        },
+        {
+          "from": "RECONCILIATION_HOLD",
+          "to": "PAYMENT_FAILED",
+          "actor": "commerce-service",
+          "requires": [
+            "matchedNonPaymentClosureReceipt"
+          ]
+        }
+      ],
+      "versionField": "orderVersion",
+      "idempotency": "PRINCIPAL_SKU_PRICE_SNAPSHOT_CLIENT_KEY_UNIQUE",
+      "writeModel": "OWNER_VERSIONED",
+      "directClientWrite": "DENY"
+    },
+    "paymentAttempt": {
+      "owner": "commerce-service",
+      "states": [
+        "PREPARED",
+        "AWAITING_CALLBACK",
+        "VERIFIED",
+        "REJECTED",
+        "EXPIRED"
+      ],
+      "initialStates": [
+        "PREPARED"
+      ],
+      "terminalStates": [
+        "VERIFIED",
+        "REJECTED",
+        "EXPIRED"
+      ],
+      "transitions": [
+        {
+          "from": "PREPARED",
+          "to": "AWAITING_CALLBACK",
+          "actor": "commerce-service",
+          "requires": [
+            "sandboxProvider",
+            "providerEnvironment"
+          ]
+        },
+        {
+          "from": "AWAITING_CALLBACK",
+          "to": "VERIFIED",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedCallbackReceipt",
+            "orderBinding"
+          ]
+        },
+        {
+          "from": "AWAITING_CALLBACK",
+          "to": "REJECTED",
+          "actor": "commerce-service",
+          "requires": [
+            "callbackRejectedOrCollision"
+          ]
+        },
+        {
+          "from": "AWAITING_CALLBACK",
+          "to": "EXPIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "serverClock"
+          ]
+        }
+      ],
+      "versionField": "paymentAttemptVersion",
+      "idempotency": "ORDER_PROVIDER_ATTEMPT_KEY_UNIQUE",
+      "writeModel": "OWNER_VERSIONED",
+      "directClientWrite": "DENY"
+    },
+    "callbackReceipt": {
+      "owner": "commerce-service",
+      "states": [
+        "RECEIVED",
+        "VERIFIED",
+        "REJECTED",
+        "STALE",
+        "DUPLICATE",
+        "COLLISION"
+      ],
+      "initialStates": [
+        "RECEIVED"
+      ],
+      "terminalStates": [
+        "VERIFIED",
+        "REJECTED",
+        "STALE",
+        "DUPLICATE",
+        "COLLISION"
+      ],
+      "transitions": [
+        {
+          "from": "RECEIVED",
+          "to": "VERIFIED",
+          "actor": "commerce-service",
+          "requires": [
+            "validHmac",
+            "freshTimestamp",
+            "uniqueNonce",
+            "orderBinding",
+            "tupleDigest"
+          ]
+        },
+        {
+          "from": "RECEIVED",
+          "to": "REJECTED",
+          "actor": "commerce-service",
+          "requires": [
+            "invalidSignatureOrBinding"
+          ]
+        },
+        {
+          "from": "RECEIVED",
+          "to": "STALE",
+          "actor": "commerce-service",
+          "requires": [
+            "timestampOutsideBound"
+          ]
+        },
+        {
+          "from": "RECEIVED",
+          "to": "DUPLICATE",
+          "actor": "commerce-service",
+          "requires": [
+            "sameDedupeTupleAndDigest"
+          ]
+        },
+        {
+          "from": "RECEIVED",
+          "to": "COLLISION",
+          "actor": "commerce-service",
+          "requires": [
+            "sameProviderEventIdentityDifferentTupleDigest",
+            "reconciliationManualHold"
+          ]
+        }
+      ],
+      "versionField": "callbackReceiptVersion",
+      "idempotency": "PROVIDER_ENVIRONMENT_EVENT_OR_TRANSACTION_TUPLE_UNIQUE",
+      "writeModel": "IMMUTABLE_RECEIPT",
+      "directClientWrite": "DENY"
+    },
+    "entitlementLedger": {
+      "owner": "commerce-service",
+      "states": [
+        "POSTED",
+        "COMPENSATED"
+      ],
+      "initialStates": [
+        "POSTED"
+      ],
+      "terminalStates": [
+        "POSTED",
+        "COMPENSATED"
+      ],
+      "transitions": [
+        {
+          "from": "POSTED",
+          "to": "COMPENSATED",
+          "actor": "commerce-service",
+          "requires": [
+            "newCompensatingLedgerEntry",
+            "verifiedSourceFact",
+            "auditRef"
+          ]
+        }
+      ],
+      "versionField": "sourceVersion",
+      "idempotency": "SOURCE_FACT_ENTITLEMENT_SCOPE_UNIQUE",
+      "writeModel": "APPEND_ONLY_COMPENSATION_ONLY",
+      "directClientWrite": "DENY"
+    },
+    "entitlementSnapshot": {
+      "owner": "commerce-service",
+      "states": [
+        "PENDING",
+        "ACTIVE",
+        "GRACE",
+        "EXPIRED",
+        "REVOKED"
+      ],
+      "initialStates": [
+        "PENDING"
+      ],
+      "terminalStates": [
+        "EXPIRED",
+        "REVOKED"
+      ],
+      "transitions": [
+        {
+          "from": "PENDING",
+          "to": "ACTIVE",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedPaymentOrRedeemedActivationLedger",
+            "entitlementVersion",
+            "sourceVersion",
+            "policyVersion"
+          ]
+        },
+        {
+          "from": "PENDING",
+          "to": "REVOKED",
+          "actor": "commerce-service",
+          "requires": [
+            "securityOrInvalidSourceFact",
+            "entitlementVersion",
+            "tombstone"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "GRACE",
+          "actor": "commerce-service",
+          "requires": [
+            "explicitNonZeroGracePolicy",
+            "graceUntil",
+            "policyVersion"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "EXPIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "serverClock",
+            "entitlementVersion",
+            "tombstone"
+          ]
+        },
+        {
+          "from": "ACTIVE",
+          "to": "REVOKED",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedRefundOrRevocationOrSecurityFact",
+            "entitlementVersion",
+            "tombstone"
+          ]
+        },
+        {
+          "from": "GRACE",
+          "to": "ACTIVE",
+          "actor": "commerce-service",
+          "requires": [
+            "explicitPolicyRevalidation",
+            "entitlementVersion"
+          ]
+        },
+        {
+          "from": "GRACE",
+          "to": "EXPIRED",
+          "actor": "commerce-service",
+          "requires": [
+            "serverClock",
+            "entitlementVersion",
+            "tombstone"
+          ]
+        },
+        {
+          "from": "GRACE",
+          "to": "REVOKED",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedRevocationOrSecurityFact",
+            "entitlementVersion",
+            "tombstone"
+          ]
+        }
+      ],
+      "versionField": "entitlementVersion",
+      "idempotency": "SOURCE_FACT_SCOPE_SUBJECT_UNIQUE",
+      "writeModel": "VERSIONED_SNAPSHOT_FROM_APPEND_ONLY_LEDGER",
+      "directClientWrite": "DENY"
+    },
+    "refund": {
+      "owner": "commerce-service",
+      "states": [
+        "REQUESTED",
+        "REVIEW_PENDING",
+        "PROVIDER_PENDING",
+        "SETTLED",
+        "REJECTED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "initialStates": [
+        "REQUESTED"
+      ],
+      "terminalStates": [
+        "SETTLED",
+        "REJECTED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "transitions": [
+        {
+          "from": "REQUESTED",
+          "to": "REVIEW_PENDING",
+          "actor": "commerce-service",
+          "requires": [
+            "fullRefundOnly",
+            "requesterAuthority",
+            "idempotencyKey"
+          ]
+        },
+        {
+          "from": "REQUESTED",
+          "to": "CANCELLED",
+          "actor": "commerce-service",
+          "requires": [
+            "requestCancellationPolicy",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "REVIEW_PENDING",
+          "to": "PROVIDER_PENDING",
+          "actor": "commerce-service",
+          "requires": [
+            "financeAuthorization",
+            "secondaryConfirmation",
+            "providerEligibility",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "REVIEW_PENDING",
+          "to": "REJECTED",
+          "actor": "commerce-service",
+          "requires": [
+            "financeRejectionReason",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "PROVIDER_PENDING",
+          "to": "SETTLED",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedProviderRefundSettlement",
+            "fullAmountMatchesOrder",
+            "entitlementRevocationLedgerRef",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "PROVIDER_PENDING",
+          "to": "FAILED",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedProviderFailure",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "PROVIDER_PENDING",
+          "to": "REJECTED",
+          "actor": "commerce-service",
+          "requires": [
+            "verifiedProviderRejection",
+            "auditRef"
+          ]
+        }
+      ],
+      "versionField": "refundVersion",
+      "idempotency": "ORDER_FULL_REFUND_REQUEST_KEY_UNIQUE",
+      "writeModel": "OWNER_VERSIONED_WITH_IMMUTABLE_SETTLEMENT",
+      "directClientWrite": "DENY"
+    },
+    "reconciliation": {
+      "owner": "commerce-service",
+      "states": [
+        "QUEUED",
+        "MATCHED",
+        "MISMATCH",
+        "MANUAL_HOLD",
+        "APPROVAL_PENDING",
+        "REMEDIATING",
+        "POST_RERUN_PENDING",
+        "MATCHED_AFTER_RECOVERY",
+        "CLOSED"
+      ],
+      "initialStates": [
+        "QUEUED"
+      ],
+      "terminalStates": [
+        "CLOSED"
+      ],
+      "transitions": [
+        {
+          "from": "QUEUED",
+          "to": "MATCHED",
+          "actor": "commerce-service",
+          "requires": [
+            "precheckMatched"
+          ]
+        },
+        {
+          "from": "QUEUED",
+          "to": "MISMATCH",
+          "actor": "commerce-service",
+          "requires": [
+            "precheckMismatch",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "MISMATCH",
+          "to": "MANUAL_HOLD",
+          "actor": "commerce-service",
+          "requires": [
+            "discrepancyRecord",
+            "manualTaskRef",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "MANUAL_HOLD",
+          "to": "APPROVAL_PENDING",
+          "actor": "workflow-service",
+          "requires": [
+            "remediationPlanDigest",
+            "preconditionDigest",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "APPROVAL_PENDING",
+          "to": "REMEDIATING",
+          "actor": "workflow-service",
+          "requires": [
+            "twoDistinctApprovals",
+            "preconditionsCurrent",
+            "idempotencyKey",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "REMEDIATING",
+          "to": "POST_RERUN_PENDING",
+          "actor": "workflow-service",
+          "requires": [
+            "ownerReceiptIds",
+            "replayOrCompensationResult",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "POST_RERUN_PENDING",
+          "to": "MATCHED_AFTER_RECOVERY",
+          "actor": "commerce-service",
+          "requires": [
+            "postRerunMatched",
+            "postRerunStatus=MATCHED_AFTER_RECOVERY"
+          ]
+        },
+        {
+          "from": "MATCHED",
+          "to": "CLOSED",
+          "actor": "commerce-service",
+          "requires": [
+            "closureReceipt",
+            "precheckMatched",
+            "auditRef"
+          ]
+        },
+        {
+          "from": "MATCHED_AFTER_RECOVERY",
+          "to": "CLOSED",
+          "actor": "commerce-service",
+          "requires": [
+            "closureReceipt",
+            "postRerunStatus=MATCHED_AFTER_RECOVERY",
+            "auditRef"
+          ]
+        }
+      ],
+      "versionField": "reconciliationVersion",
+      "idempotency": "SOURCE_FACT_SET_AND_REMEDIATION_PLAN_DIGEST_UNIQUE",
+      "writeModel": "OWNER_VERSIONED_WITH_WORKFLOW_CONTROLLED_REMEDIATION",
+      "directClientWrite": "DENY"
+    }
+  },
+  "objects": {
+    "sku": {
+      "requiredFields": [
+        "skuId",
+        "skuVersion",
+        "catalogVersion",
+        "state",
+        "termType",
+        "rightsScope",
+        "sandboxOnlyOffer",
+        "auditRef"
+      ],
+      "termTypes": [
+        "FREE",
+        "ONE_TIME",
+        "MONTH",
+        "QUARTER",
+        "YEAR",
+        "PERPETUAL"
+      ],
+      "sellableLifetime": false,
+      "clientMaySet": [],
+      "additionalProperties": "DENY"
+    },
+    "priceSnapshot": {
+      "requiredFields": [
+        "priceSnapshotId",
+        "priceSnapshotVersion",
+        "skuId",
+        "amountMinor",
+        "currency",
+        "capturedAt",
+        "state",
+        "policyVersion"
+      ],
+      "currencyFormat": "ISO_4217_ALPHA_3",
+      "amountMinorMustBeNonNegative": true,
+      "clientMaySet": [],
+      "additionalProperties": "DENY"
+    },
+    "activation": {
+      "requiredFields": [
+        "activationId",
+        "activationVersion",
+        "activationCodeDigest",
+        "skuId",
+        "tenantId",
+        "state",
+        "expiresAt",
+        "redemptionRef"
+      ],
+      "clientMaySet": [
+        "activationCode"
+      ],
+      "serverDerivedFields": [
+        "activationCodeDigest",
+        "redemptionRef",
+        "state",
+        "tenantId",
+        "principalId",
+        "entitlementLedgerRef",
+        "auditRef"
+      ],
+      "additionalProperties": "DENY"
+    },
+    "order": {
+      "requiredFields": [
+        "orderId",
+        "orderVersion",
+        "skuId",
+        "priceSnapshotId",
+        "state",
+        "channel",
+        "sourcePlatform",
+        "idempotencyKey",
+        "auditRef"
+      ],
+      "clientMaySet": [
+        "skuId",
+        "channel",
+        "sourcePlatform"
+      ],
+      "serverDerivedFields": [
+        "orderId",
+        "orderVersion",
+        "priceSnapshotId",
+        "state",
+        "principalId",
+        "tenantId",
+        "amountMinor",
+        "currency",
+        "auditRef"
+      ],
+      "additionalProperties": "DENY"
+    },
+    "paymentAttempt": {
+      "requiredFields": [
+        "paymentAttemptId",
+        "paymentAttemptVersion",
+        "orderId",
+        "provider",
+        "environment",
+        "state",
+        "providerIntentRef",
+        "createdAt"
+      ],
+      "clientMaySet": [
+        "provider"
+      ],
+      "serverDerivedFields": [
+        "paymentAttemptId",
+        "paymentAttemptVersion",
+        "environment",
+        "state",
+        "providerIntentRef",
+        "amountMinor",
+        "currency"
+      ],
+      "additionalProperties": "DENY"
+    },
+    "callbackReceipt": {
+      "requiredFields": [
+        "callbackReceiptId",
+        "callbackReceiptVersion",
+        "tupleDigest",
+        "state",
+        "receivedAt",
+        "verificationRef",
+        "auditRef"
+      ],
+      "clientMaySet": [],
+      "serverDerivedFields": [
+        "callbackReceiptId",
+        "callbackReceiptVersion",
+        "tupleDigest",
+        "state",
+        "verificationRef",
+        "auditRef"
+      ],
+      "additionalProperties": "DENY"
+    },
+    "entitlementLedger": {
+      "requiredFields": [
+        "ledgerEntryId",
+        "entitlementId",
+        "principalId",
+        "tenantId",
+        "scopeCode",
+        "entryType",
+        "sourceRef",
+        "sourceVersion",
+        "policyVersion",
+        "createdAt",
+        "auditRef"
+      ],
+      "entryTypes": [
+        "GRANT",
+        "REVOKE",
+        "EXPIRE",
+        "COMPENSATE"
+      ],
+      "clientMaySet": [],
+      "additionalProperties": "DENY"
+    },
+    "entitlementSnapshot": {
+      "requiredFields": [
+        "entitlementId",
+        "entitlementVersion",
+        "sourceVersion",
+        "policyVersion",
+        "state",
+        "scopeCode",
+        "startsAt",
+        "expiresAt",
+        "tombstone"
+      ],
+      "clientMaySet": [],
+      "additionalProperties": "DENY"
+    },
+    "refund": {
+      "requiredFields": [
+        "refundId",
+        "refundVersion",
+        "orderId",
+        "state",
+        "amountMinor",
+        "currency",
+        "refundScope",
+        "idempotencyKey",
+        "auditRef"
+      ],
+      "refundScopes": [
+        "FULL_ONLY"
+      ],
+      "clientMaySet": [
+        "reasonCode"
+      ],
+      "serverDerivedFields": [
+        "refundId",
+        "refundVersion",
+        "state",
+        "amountMinor",
+        "currency",
+        "refundScope",
+        "financeAuthorizationRef",
+        "auditRef"
+      ],
+      "additionalProperties": "DENY"
+    },
+    "reconciliation": {
+      "requiredFields": [
+        "reconciliationId",
+        "reconciliationVersion",
+        "orderId",
+        "state",
+        "expectedStateDigest",
+        "actualStateDigest",
+        "preconditionDigest",
+        "auditRef"
+      ],
+      "clientMaySet": [],
+      "serverDerivedFields": [
+        "reconciliationId",
+        "reconciliationVersion",
+        "state",
+        "expectedStateDigest",
+        "actualStateDigest",
+        "preconditionDigest",
+        "closureReceiptId",
+        "auditRef"
+      ],
+      "additionalProperties": "DENY"
+    }
+  },
+  "paymentPolicy": {
+    "productionPaymentEnabled": false,
+    "autoRenewalEnabled": false,
+    "activeProviders": [
+      "SANDBOX_HMAC"
+    ],
+    "liveProviders": [],
+    "providerEnvironment": "SANDBOX",
+    "providerAllowListOnly": true,
+    "realCredentials": "PROHIBITED",
+    "realRoutes": "PROHIBITED",
+    "realTraffic": "PROHIBITED",
+    "clientMaySelectEnvironment": false,
+    "clientMaySetPaymentResult": false,
+    "clientMayGrantEntitlement": false,
+    "productionEnablement": "SEPARATE_APPROVAL_AND_RUNTIME_GATE_REQUIRED",
+    "requiredFutureProductionEvidence": [
+      "merchant-or-channel-qualification",
+      "platform-review",
+      "sandbox-evidence",
+      "callback-signature-evidence",
+      "refund-evidence",
+      "reconciliation-evidence",
+      "rollback-evidence",
+      "audit-evidence",
+      "privacy-and-security-evidence"
+    ],
+    "additionalProperties": "DENY"
+  },
+  "activationPolicy": {
+    "owner": "commerce-service",
+    "digestAlgorithm": "SHA-256",
+    "storage": "DIGEST_ONLY_OWNER_PROTECTED_STORE",
+    "opaqueRedemptionRefRequired": true,
+    "oneRedemptionOnly": true,
+    "atomicClaimRequired": true,
+    "clientCodeAcceptedOnlyAt": "REDEEM_ROUTE",
+    "maximumRedeemAttemptsPerPrincipalPerWindow": 5,
+    "redeemAttemptWindowSeconds": 900,
+    "cooldownAfterLimitSeconds": 900,
+    "sameKeySamePayload": "RETURN_ORIGINAL_REDEMPTION_RESULT",
+    "sameKeyDifferentPayload": "DENY_CONFLICT",
+    "eventAndAuditProhibitedFields": [
+      "activationCode",
+      "rawActivationCode",
+      "activationCodeDigest",
+      "activationCodeHash",
+      "activationCodeHashPrefix",
+      "activationCodePrefix",
+      "redemptionSecret"
+    ],
+    "allowedEventAndAuditReferenceFields": [
+      "activationId",
+      "redemptionRef",
+      "skuId",
+      "state",
+      "reasonCode",
+      "auditRef"
+    ],
+    "supportMayResetCode": false,
+    "additionalProperties": "DENY"
+  },
+  "callbackPolicy": {
+    "owner": "commerce-service",
+    "internalRouteOnly": true,
+    "signatureAlgorithm": "HMAC-SHA256",
+    "allowedProvider": "SANDBOX_HMAC",
+    "allowedEnvironment": "SANDBOX",
+    "canonicalSigningTuple": [
+      "provider",
+      "environment",
+      "providerEventId",
+      "transactionId",
+      "orderId",
+      "paymentAttemptId",
+      "amountMinor",
+      "currency",
+      "result",
+      "occurredAt",
+      "nonce",
+      "keyId"
+    ],
+    "signingTupleOrderImmutable": true,
+    "canonicalSigningTupleSources": {
+      "provider": "path.provider",
+      "environment": "header.X-Provider-Environment",
+      "providerEventId": "body.providerEventId",
+      "transactionId": "body.transactionId",
+      "orderId": "body.orderId",
+      "paymentAttemptId": "body.paymentAttemptId",
+      "amountMinor": "body.amountMinor",
+      "currency": "body.currency",
+      "result": "body.result",
+      "occurredAt": "body.occurredAt",
+      "nonce": "header.X-Provider-Nonce",
+      "keyId": "header.X-Provider-Key-Id"
+    },
+    "singleSourceRequired": true,
+    "forbiddenCallbackBodyFields": [
+      "provider",
+      "environment",
+      "nonce",
+      "keyId"
+    ],
+    "freshnessMaxAgeSeconds": 300,
+    "futureSkewMaxSeconds": 30,
+    "nonceRetentionSeconds": 86400,
+    "nonceReuseDecision": "DENY",
+    "dedupeKeyFields": [
+      "tenantId",
+      "provider",
+      "providerEventId"
+    ],
+    "dedupeTenantSource": "SERVER_DERIVED_AUTHENTICATED_TENANT",
+    "tupleDigestAlgorithm": "SHA-256",
+    "duplicateDecision": "DEDUPE_NO_NEW_PAYMENT_OR_ENTITLEMENT",
+    "collisionDefinition": "SAME_SERVER_DERIVED_TENANT_PROVIDER_EVENT_WITH_DIFFERENT_SIGNED_TUPLE_DIGEST",
+    "collisionDecision": "DENY_AND_CREATE_RECONCILIATION_MANUAL_HOLD",
+    "orderBinding": {
+      "required": true,
+      "mustMatchFields": [
+        "orderId",
+        "paymentAttemptId",
+        "provider",
+        "amountMinor",
+        "currency",
+        "result"
+      ],
+      "mismatchDecision": "DENY"
+    },
+    "keyLifecycle": {
+      "keyType": "HMAC_SHARED_SECRET_REFERENCE",
+      "keyIdSource": "header.X-Provider-Key-Id",
+      "rotationMode": "ATOMIC_SINGLE_ACTIVE",
+      "acceptedStatuses": [
+        "ACTIVE"
+      ],
+      "maximumActiveKeys": 1,
+      "unknownKeyDecision": "DENY",
+      "revokedKeyDecision": "DENY",
+      "expiredKeyDecision": "DENY",
+      "overlapDecision": "DENY",
+      "rotationAuditRequired": true,
+      "rotationReceiptRequired": true,
+      "keyMaterialInContractLogEvent": "PROHIBITED"
+    },
+    "forbiddenCallbackFieldsInEventsAndAudit": [
+      "rawBody",
+      "rawHeaders",
+      "signature",
+      "hmac",
+      "sharedSecret",
+      "credential",
+      "providerToken",
+      "transactionId",
+      "providerTransactionRef",
+      "rawTransactionId",
+      "rawProviderTransactionId",
+      "rawProviderEventId",
+      "keyId",
+      "nonce",
+      "keyMaterial"
+    ],
+    "additionalProperties": "DENY"
+  },
+  "entitlementPolicy": {
+    "commerceOwner": "commerce-service",
+    "contentPepOwner": "content-service",
+    "learningPepOwner": "learning-service",
+    "clientOrGatewayMayCacheAsFact": false,
+    "requiredVersionFields": [
+      "entitlementVersion",
+      "sourceVersion",
+      "policyVersion"
+    ],
+    "snapshotReadRequiredBeforeRendering": true,
+    "cache": {
+      "mode": "LOCAL_PEP_SAFE_SHORT_CACHE_ONLY",
+      "ttlSeconds": 30,
+      "cacheKeyFields": [
+        "principalId",
+        "tenantId",
+        "scopeCode",
+        "entitlementVersion",
+        "policyVersion"
+      ],
+      "monotonicInvalidationRequired": true,
+      "tombstoneRequired": true,
+      "tombstoneMinimumRetentionSeconds": 86400,
+      "cacheMissDecision": "DENY",
+      "expiredDecision": "DENY",
+      "unknownDecision": "DENY",
+      "versionMismatchDecision": "DENY",
+      "revocationUncertainDecision": "DENY",
+      "pdpUnavailableDecision": "DENY"
+    },
+    "grace": {
+      "defaultGraceSeconds": 0,
+      "requiresExplicitServerPolicy": true,
+      "allowedMode": "BOUNDED_ACTIVE_ONLY",
+      "eligibleState": "ACTIVE",
+      "maximumGraceSeconds": 300,
+      "requiredFieldsWhenEnabled": [
+        "graceUntil",
+        "graceReason",
+        "policyVersion"
+      ],
+      "neverGraceReasons": [
+        "REFUND",
+        "REVOKE",
+        "EXPIRE",
+        "SECURITY",
+        "UNKNOWN"
+      ]
+    },
+    "activationSources": [
+      "VERIFIED_PAYMENT",
+      "REDEEMED_ACTIVATION"
+    ],
+    "forbiddenActivationSources": [
+      "CLIENT_SUCCESS_PAGE",
+      "UNVERIFIED_CALLBACK",
+      "GATEWAY_CACHE",
+      "CLIENT_CACHE",
+      "SUPPORT_DIRECT_WRITE"
+    ],
+    "additionalProperties": "DENY"
+  },
+  "refundPolicy": {
+    "owner": "commerce-service",
+    "refundScope": "FULL_ONLY",
+    "partialRefundAllowed": false,
+    "financeAuthorizationRequired": true,
+    "secondaryConfirmationRequired": true,
+    "supportMaySettleOrRevoke": false,
+    "revokeOnlyAfter": "SETTLED",
+    "preSettlementEntitlementRevocation": "DENY",
+    "settlementRequires": [
+      "verifiedProviderRefundSettlement",
+      "fullAmountMatchesOrder",
+      "immutableRefundFact",
+      "entitlementRevocationLedgerRef",
+      "auditRef"
+    ],
+    "successEvent": "commerce.refund.settled.v2",
+    "additionalProperties": "DENY"
+  },
+  "reconciliationPolicy": {
+    "owner": "commerce-service",
+    "workflowCoordinator": "workflow-service",
+    "mismatchMustCreateManualHold": true,
+    "manualHoldDirectDomainWrite": "DENY",
+    "twoDistinctApprovalsRequired": true,
+    "approvalBindingFields": [
+      "reconciliationId",
+      "reconciliationVersion",
+      "remediationPlanDigest",
+      "preconditionDigest",
+      "sourceFactDigest",
+      "policyVersion"
+    ],
+    "approvalResolution": {
+      "source": "SERVER_RESOLVED_IAM_APPROVAL_RECEIPTS",
+      "requiredCount": 2,
+      "approverPrincipalsMustBeDistinct": true,
+      "requiredPermission": "commerce.reconciliation.approve.finance",
+      "requiredApprovalStatus": "ACTIVE",
+      "bindingFields": [
+        "reconciliationId",
+        "reconciliationVersion",
+        "remediationPlanDigest",
+        "preconditionDigest",
+        "sourceFactDigest",
+        "policyVersion"
+      ],
+      "unknownRefDecision": "DENY",
+      "samePrincipalDecision": "DENY",
+      "staleApprovalDecision": "DENY",
+      "revokedApprovalDecision": "DENY",
+      "mismatchedBindingDecision": "DENY",
+      "principalIdsInContractOrEvent": "PROHIBITED",
+      "resolutionAuditRequired": true
+    },
+    "preconditionsRequired": [
+      "expectedStateVersion",
+      "expectedOrderState",
+      "expectedPaymentAttemptState",
+      "expectedEntitlementVersion",
+      "sourceFactDigests"
+    ],
+    "idempotency": "SOURCE_FACT_SET_AND_REMEDIATION_PLAN_DIGEST_UNIQUE",
+    "auditRequired": true,
+    "closureReceiptRequired": true,
+    "closureReceiptFields": [
+      "closureReceiptId",
+      "reconciliationId",
+      "reconciliationVersion",
+      "postRerunStatus",
+      "ownerReceiptIds",
+      "approvalRefs",
+      "auditRef",
+      "closedAt"
+    ],
+    "requiredPostRerunStatus": "MATCHED_AFTER_RECOVERY",
+    "ticketOrDlqCloseIsNotReconciliation": true,
+    "discrepancyEvent": "commerce.reconciliation.discrepancy_recorded.v2",
+    "recoveryReceiptEvent": "commerce.reconciliation.recovery_receipted.v2",
+    "additionalProperties": "DENY"
+  },
+  "sensitiveDataPolicy": {
+    "eventPayloadAllowList": [
+      "aggregateId",
+      "state",
+      "reasonCode",
+      "amountMinor",
+      "currency",
+      "provider",
+      "environment",
+      "priceSnapshotId",
+      "entitlementId",
+      "entitlementVersion",
+      "sourceVersion",
+      "policyVersion",
+      "refundId",
+      "reconciliationId",
+      "callbackReceiptRef",
+      "transactionRef",
+      "reconciliationCaseRef",
+      "closureReceiptRef",
+      "approvalRefs",
+      "opaqueReference",
+      "auditRef"
+    ],
+    "eventPayloadDenyList": [
+      "activationCode",
+      "rawActivationCode",
+      "activationCodeDigest",
+      "activationCodeHash",
+      "activationCodeHashPrefix",
+      "activationCodePrefix",
+      "activationSecret",
+      "redemptionSecret",
+      "rawCallback",
+      "rawBody",
+      "rawHeaders",
+      "signature",
+      "hmac",
+      "sharedSecret",
+      "credential",
+      "providerToken",
+      "transactionId",
+      "providerTransactionRef",
+      "rawTransactionId",
+      "rawProviderTransactionId",
+      "rawProviderEventId",
+      "providerCustomerId",
+      "providerUserId",
+      "nonce",
+      "keyId",
+      "keyMaterial",
+      "cardNumber",
+      "bankAccount",
+      "paymentInstrument",
+      "personalIdentityDocument",
+      "accessToken",
+      "refreshToken"
+    ],
+    "auditPayloadDenyList": [
+      "activationCode",
+      "activationCodeDigest",
+      "activationCodeHash",
+      "activationCodeHashPrefix",
+      "activationSecret",
+      "redemptionSecret",
+      "rawCallback",
+      "rawBody",
+      "rawHeaders",
+      "signature",
+      "hmac",
+      "sharedSecret",
+      "credential",
+      "providerToken",
+      "transactionId",
+      "providerTransactionRef",
+      "rawTransactionId",
+      "rawProviderTransactionId",
+      "rawProviderEventId",
+      "providerCustomerId",
+      "providerUserId",
+      "nonce",
+      "keyId",
+      "keyMaterial",
+      "paymentInstrument"
+    ],
+    "redactionRequired": true,
+    "additionalProperties": "DENY"
+  },
+  "canonicalRouteExpectations": [
+    {
+      "id": "M1015-PUBLIC-CATALOG",
+      "method": "GET",
+      "path": "/api/v1/public/commerce/catalog",
+      "operationId": "getB13PublicCommerceCatalog",
+      "historicalOperationId": "getB13PublicCommerceCatalog",
+      "requestSchema": "NONE",
+      "responseSchema": "M1015PublicCatalog",
+      "owner": "commerce-service",
+      "security": "NONE_PUBLIC_READ",
+      "requiredPermission": "commerce.catalog.read.public",
+      "idempotency": "NOT_REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "catalogVersion",
+          "productionPaymentEnabled"
+        ],
+        "forbiddenFields": [
+          "orderId",
+          "paymentResult",
+          "entitlementState"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-COMMERCE-READINESS",
+      "method": "GET",
+      "path": "/api/v1/commerce/readiness",
+      "operationId": "getB13CommerceReadiness",
+      "historicalOperationId": "getB13CommerceReadiness",
+      "requestSchema": "NONE",
+      "responseSchema": "M1015PaymentReadiness",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.readiness.read.self",
+      "idempotency": "NOT_REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "adultGateDecision",
+          "productionPaymentEnabled",
+          "activeProviders"
+        ],
+        "forbiddenFields": [
+          "productionPaymentEnabled",
+          "providerEnvironment",
+          "liveProvider"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-SKU-LIST",
+      "method": "GET",
+      "path": "/api/v1/commerce/skus",
+      "operationId": "listB13CommerceSkus",
+      "historicalOperationId": "listB13CommerceSkus",
+      "requestSchema": "NONE",
+      "responseSchema": "M1015Sku[]",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.sku.read.self",
+      "idempotency": "NOT_REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "adultGateDecision",
+          "catalogVersion"
+        ],
+        "forbiddenFields": [
+          "priceOverride",
+          "providerEnvironment",
+          "productionPaymentEnabled"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-ENTITLEMENT-LIST",
+      "method": "GET",
+      "path": "/api/v1/commerce/entitlements/me",
+      "operationId": "listB13MyEntitlements",
+      "historicalOperationId": "listB13MyEntitlements",
+      "requestSchema": "NONE",
+      "responseSchema": "M1015Entitlement[]",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.entitlement.read.self",
+      "idempotency": "NOT_REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "entitlementVersion",
+          "sourceVersion",
+          "policyVersion"
+        ],
+        "forbiddenFields": [
+          "entitlementState",
+          "entitlementVersion",
+          "graceUntil",
+          "tenantId"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-ORDER-LIST",
+      "method": "GET",
+      "path": "/api/v1/commerce/orders",
+      "operationId": "listB13CommerceOrders",
+      "historicalOperationId": "listB13CommerceOrders",
+      "requestSchema": "NONE",
+      "responseSchema": "M1015Order[]",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.order.read.self",
+      "idempotency": "NOT_REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "orderState",
+          "refundState"
+        ],
+        "forbiddenFields": [
+          "principalId",
+          "tenantId",
+          "ownerId",
+          "supportScope",
+          "financeScope"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-ORDER-CREATE",
+      "method": "POST",
+      "path": "/api/v1/commerce/orders",
+      "operationId": "createB13CommerceOrder",
+      "historicalOperationId": "createB13CommerceOrder",
+      "requestSchema": "M1015OrderCreateRequest",
+      "responseSchema": "M1015Order",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.order.write.self",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [
+          "skuId",
+          "expectedPriceSnapshotId",
+          "sourcePlatform"
+        ],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "priceSnapshotId",
+          "amountMinor",
+          "currency",
+          "orderState"
+        ],
+        "forbiddenFields": [
+          "priceSnapshotId",
+          "channel",
+          "amountMinor",
+          "currency",
+          "orderState",
+          "entitlementState",
+          "providerEnvironment"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-PAYMENT-INTENT",
+      "method": "POST",
+      "path": "/api/v1/commerce/orders/{orderId}/payment-intents",
+      "operationId": "prepareB13PaymentIntent",
+      "historicalOperationId": "prepareB13PaymentIntent",
+      "requestSchema": "M1015PaymentIntentRequest",
+      "responseSchema": "M1015PaymentIntentResult",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.payment-attempt.write.self",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [
+          "provider",
+          "expectedOrderStateVersion"
+        ],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "orderId",
+          "environment",
+          "amountMinor",
+          "currency",
+          "paymentAttemptId"
+        ],
+        "forbiddenFields": [
+          "environment",
+          "amountMinor",
+          "currency",
+          "paymentResult",
+          "signature",
+          "productionPaymentEnabled"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-REFUND-REQUEST",
+      "method": "POST",
+      "path": "/api/v1/commerce/orders/{orderId}/refunds",
+      "operationId": "requestB13OrderRefund",
+      "historicalOperationId": "requestB13OrderRefund",
+      "requestSchema": "M1015RefundRequest",
+      "responseSchema": "M1015Refund",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.refund.request.self",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [
+          "reasonCode",
+          "expectedStateVersion"
+        ],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "orderId",
+          "refundId",
+          "refundScope",
+          "refundMode",
+          "amountMinor",
+          "currency",
+          "refundState"
+        ],
+        "forbiddenFields": [
+          "refundMode",
+          "amountMinor",
+          "currency",
+          "refundScope",
+          "refundState",
+          "financeAuthorization",
+          "entitlementState"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-ACTIVATION-REDEEM",
+      "method": "POST",
+      "path": "/api/v1/commerce/activation-codes/redeem",
+      "operationId": "redeemB13ActivationCode",
+      "historicalOperationId": "redeemB13ActivationCode",
+      "requestSchema": "M1015ActivationRedeemRequest",
+      "responseSchema": "M1015Entitlement",
+      "owner": "commerce-service",
+      "security": "bearerAuth",
+      "requiredPermission": "commerce.activation.redeem.self",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [
+          "activationCode"
+        ],
+        "serverDerivedFields": [
+          "principalId",
+          "tenantId",
+          "redemptionRef",
+          "activationCodeDigest",
+          "entitlementState"
+        ],
+        "forbiddenFields": [
+          "activationCodeDigest",
+          "redemptionRef",
+          "entitlementState",
+          "skuId",
+          "tenantId"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-PROVIDER-CALLBACK",
+      "method": "POST",
+      "path": "/internal/v1/commerce/providers/{provider}/callbacks",
+      "operationId": "consumeB13PaymentProviderCallback",
+      "historicalOperationId": "consumeB13PaymentProviderCallback",
+      "requestSchema": "M1015ProviderCallbackRequest",
+      "responseSchema": "M1015ProviderCallbackReceipt",
+      "owner": "commerce-service",
+      "security": "B8WorkloadIdentity",
+      "requiredPermission": "commerce.payment-callback.write.workload",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "callbackReceiptRef",
+          "verificationDecision",
+          "tupleDigest",
+          "auditRef"
+        ],
+        "forbiddenFields": [
+          "principalId",
+          "tenantId",
+          "orderState",
+          "entitlementState",
+          "productionPaymentEnabled"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-RECONCILIATION-REPLAY",
+      "method": "POST",
+      "path": "/internal/v1/commerce/reconciliation/replay",
+      "operationId": "replayB13CommerceReconciliation",
+      "historicalOperationId": "replayB13CommerceReconciliation",
+      "requestSchema": "M1015ReconciliationReplayRequest",
+      "responseSchema": "M1015ReconciliationRecoveryReceipt",
+      "owner": "commerce-service",
+      "security": "B8WorkloadIdentity",
+      "requiredPermission": "commerce.reconciliation.replay.finance",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "serverDerivedFields": [
+          "reconciliationId",
+          "reconciliationVersion",
+          "preconditionDigest",
+          "closureReceiptId",
+          "auditRef",
+          "provider",
+          "environment",
+          "result"
+        ],
+        "trustedWorkloadSuppliedFields": [
+          "reconciliationCaseRef",
+          "batchRef",
+          "windowStart",
+          "windowEnd",
+          "expectedStateVersion",
+          "expectedOrderState",
+          "expectedPaymentAttemptState",
+          "expectedEntitlementVersion",
+          "sourceFactDigests",
+          "remediationPlanDigest",
+          "approvalRefs",
+          "policyVersion",
+          "recoveryMode",
+          "recoveryReasonCode"
+        ],
+        "forbiddenFields": [
+          "orderState",
+          "paymentState",
+          "entitlementState",
+          "refundState",
+          "approvalDecision",
+          "tenantId"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-ENTITLEMENT-SNAPSHOT-RESOLVE",
+      "method": "POST",
+      "path": "/internal/v1/commerce/entitlements/{entitlementId}/snapshot",
+      "operationId": "resolveM1015CommerceEntitlementSnapshot",
+      "historicalOperationId": "NONE",
+      "requestSchema": "M1015EntitlementSnapshotResolveRequest",
+      "responseSchema": "M1015EntitlementSnapshot",
+      "owner": "commerce-service",
+      "security": "B8WorkloadIdentity",
+      "requiredPermission": "commerce.entitlement.snapshot.read.workload",
+      "idempotency": "NOT_REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "trustedWorkloadSuppliedFields": [
+          "minimumPolicyVersion",
+          "expectedInvalidationVersion"
+        ],
+        "serverDerivedFields": [
+          "consumerService",
+          "tenantId",
+          "entitlementVersion",
+          "sourceVersion",
+          "policyVersion",
+          "decision"
+        ],
+        "forbiddenFields": [
+          "allow",
+          "entitlementState",
+          "graceUntil",
+          "tenantId",
+          "policyVersion"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "id": "M1015-ENTITLEMENT-REVOKE",
+      "method": "POST",
+      "path": "/internal/v1/commerce/entitlements/{entitlementId}/revoke",
+      "operationId": "revokeM1015CommerceEntitlement",
+      "historicalOperationId": "NONE",
+      "requestSchema": "M1015EntitlementRevokeRequest",
+      "responseSchema": "M1015EntitlementRevokeReceipt",
+      "owner": "commerce-service",
+      "security": "B8WorkloadIdentity",
+      "requiredPermission": "commerce.entitlement.revoke.finance",
+      "idempotency": "REQUIRED",
+      "requestAuthority": {
+        "clientAllowedFields": [],
+        "trustedWorkloadSuppliedFields": [
+          "reasonCode",
+          "expectedStateVersion",
+          "sourceFactRef",
+          "approvalRef"
+        ],
+        "serverDerivedFields": [
+          "callerService",
+          "entitlementVersion",
+          "sourceVersion",
+          "policyVersion",
+          "tombstone",
+          "auditRef"
+        ],
+        "forbiddenFields": [
+          "entitlementId",
+          "allow",
+          "graceUntil",
+          "refundState",
+          "tenantId"
+        ]
+      },
+      "status": "EXPECTED_CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    }
+  ],
+  "canonicalRoutes": {
+    "count": 13,
+    "operationIds": [
+      "getB13PublicCommerceCatalog",
+      "getB13CommerceReadiness",
+      "listB13CommerceSkus",
+      "listB13MyEntitlements",
+      "listB13CommerceOrders",
+      "createB13CommerceOrder",
+      "prepareB13PaymentIntent",
+      "requestB13OrderRefund",
+      "redeemB13ActivationCode",
+      "consumeB13PaymentProviderCallback",
+      "replayB13CommerceReconciliation",
+      "resolveM1015CommerceEntitlementSnapshot",
+      "revokeM1015CommerceEntitlement"
+    ],
+    "detailSource": "canonicalRouteExpectations",
+    "unknownOperationDecision": "DENY",
+    "additionalProperties": "DENY"
+  },
+  "canonicalEventExpectations": [
+    {
+      "eventName": "commerce.order.created.v2",
+      "aggregateType": "commerce_order",
+      "aggregateIdField": "orderId",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "workflow-service",
+          "consumerGroup": "cg.workflow-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "orderId:orderVersion",
+      "requiredPayloadFields": [
+        "orderId",
+        "orderVersion",
+        "skuId",
+        "priceSnapshotId",
+        "amountMinor",
+        "currency",
+        "state",
+        "sourcePlatform"
+      ],
+      "prohibitedPayloadFields": [
+        "principalId",
+        "tenantId",
+        "paymentCredential",
+        "providerIntentSecret",
+        "activationCode",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "rawCallback",
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "sharedSecret",
+        "credential",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.payment.requested.v2",
+      "aggregateType": "commerce_payment_attempt",
+      "aggregateIdField": "paymentAttemptId",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "workflow-service",
+          "consumerGroup": "cg.workflow-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "paymentAttemptId:paymentAttemptVersion",
+      "requiredPayloadFields": [
+        "paymentAttemptId",
+        "paymentAttemptVersion",
+        "orderId",
+        "provider",
+        "environment",
+        "state",
+        "amountMinor",
+        "currency"
+      ],
+      "prohibitedPayloadFields": [
+        "providerIntentSecret",
+        "paymentCredential",
+        "activationCode",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "rawCallback",
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "sharedSecret",
+        "credential",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.payment.callback_received.v2",
+      "aggregateType": "commerce_callback_receipt",
+      "aggregateIdField": "callbackReceiptRef",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "workflow-service",
+          "consumerGroup": "cg.workflow-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "tenantId:provider:providerEventId",
+      "requiredPayloadFields": [
+        "callbackReceiptRef",
+        "orderId",
+        "paymentAttemptId",
+        "provider",
+        "environment",
+        "providerEventId",
+        "transactionRef",
+        "state",
+        "verificationRef",
+        "tupleDigest"
+      ],
+      "prohibitedPayloadFields": [
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "nonce",
+        "keyId",
+        "keyMaterial",
+        "credential",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "activationCode",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "principalId",
+        "tenantId"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.payment.verified.v2",
+      "aggregateType": "commerce_payment_attempt",
+      "aggregateIdField": "paymentAttemptId",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "workflow-service",
+          "consumerGroup": "cg.workflow-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "paymentAttemptId:callbackReceiptRef:verified",
+      "requiredPayloadFields": [
+        "paymentAttemptId",
+        "orderId",
+        "callbackReceiptRef",
+        "provider",
+        "environment",
+        "amountMinor",
+        "currency",
+        "verificationRef",
+        "verifiedAt",
+        "state"
+      ],
+      "prohibitedPayloadFields": [
+        "rawCallback",
+        "signature",
+        "hmac",
+        "credential",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "activationCode",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "principalId",
+        "tenantId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.entitlement.activated.v2",
+      "aggregateType": "commerce_entitlement",
+      "aggregateIdField": "entitlementId",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "content-service",
+          "consumerGroup": "cg.content-from-commerce.v1"
+        },
+        {
+          "service": "learning-service",
+          "consumerGroup": "cg.learning-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "entitlementId:entitlementVersion:ACTIVE",
+      "requiredPayloadFields": [
+        "entitlementId",
+        "entitlementVersion",
+        "entitlementCode",
+        "scopeCode",
+        "sourceType",
+        "sourceRef",
+        "sourceVersion",
+        "policyVersion",
+        "effectiveAt",
+        "startsAt",
+        "expiresAt",
+        "invalidationVersion",
+        "state"
+      ],
+      "prohibitedPayloadFields": [
+        "principalId",
+        "tenantId",
+        "activationCode",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "rawCallback",
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "sharedSecret",
+        "credential",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.entitlement.revoked.v2",
+      "aggregateType": "commerce_entitlement",
+      "aggregateIdField": "entitlementId",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "content-service",
+          "consumerGroup": "cg.content-from-commerce.v1"
+        },
+        {
+          "service": "learning-service",
+          "consumerGroup": "cg.learning-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "entitlementId:entitlementVersion:REVOKED",
+      "requiredPayloadFields": [
+        "entitlementId",
+        "entitlementVersion",
+        "scopeCode",
+        "sourceVersion",
+        "policyVersion",
+        "state",
+        "reasonCode",
+        "tombstoneVersion",
+        "invalidationVersion",
+        "effectiveAt",
+        "receiptRef",
+        "auditRef",
+        "postRecoveryRerunRequired"
+      ],
+      "prohibitedPayloadFields": [
+        "principalId",
+        "tenantId",
+        "activationCode",
+        "rawCallback",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "sharedSecret",
+        "credential",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.refund.settled.v2",
+      "aggregateType": "commerce_refund",
+      "aggregateIdField": "refundId",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "content-service",
+          "consumerGroup": "cg.content-from-commerce.v1"
+        },
+        {
+          "service": "learning-service",
+          "consumerGroup": "cg.learning-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "refundId:stateVersion:SETTLED",
+      "requiredPayloadFields": [
+        "refundId",
+        "stateVersion",
+        "orderId",
+        "refundMode",
+        "state",
+        "settlementRef",
+        "amountMinor",
+        "currency",
+        "settledAt",
+        "expectedStateVersion",
+        "receiptRef",
+        "auditRef",
+        "entitlementRevocationReceiptRef"
+      ],
+      "prohibitedPayloadFields": [
+        "paymentCredential",
+        "rawCallback",
+        "signature",
+        "hmac",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "activationCode",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "principalId",
+        "tenantId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.reconciliation.discrepancy_recorded.v2",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "reconciliationCaseRef",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "workflow-service",
+          "consumerGroup": "cg.workflow-from-commerce.v1"
+        },
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "reconciliationCaseRef:reconciliationVersion:MISMATCH",
+      "requiredPayloadFields": [
+        "reconciliationCaseRef",
+        "reconciliationVersion",
+        "batchRef",
+        "provider",
+        "environment",
+        "discrepancyCode",
+        "differenceCount",
+        "state",
+        "recordedAt",
+        "expectedStateVersion",
+        "expectedStateDigest",
+        "actualStateDigest",
+        "manualHoldRef",
+        "auditRef",
+        "receiptRef",
+        "domainFactsUntouched"
+      ],
+      "prohibitedPayloadFields": [
+        "rawCallback",
+        "activationCode",
+        "credential",
+        "principalId",
+        "tenantId",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "sharedSecret",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    },
+    {
+      "eventName": "commerce.reconciliation.recovery_receipted.v2",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "reconciliationCaseRef",
+      "producer": "commerce-service",
+      "consumers": [
+        {
+          "service": "audit-service",
+          "consumerGroup": "cg.audit-from-commerce.v1"
+        }
+      ],
+      "topic": "platform.commerce.v1",
+      "partitionKey": "aggregateId",
+      "dedupeKey": "reconciliationCaseRef:reconciliationVersion:closureReceiptRef",
+      "requiredPayloadFields": [
+        "reconciliationCaseRef",
+        "reconciliationVersion",
+        "batchRef",
+        "closureReceiptRef",
+        "state",
+        "postRerunStatus",
+        "ownerReceiptRefs",
+        "approvalRefs",
+        "closedAt",
+        "auditRef",
+        "domainFactsUntouched"
+      ],
+      "requiredFieldValues": {
+        "state": "CLOSED",
+        "postRerunStatus": "MATCHED_AFTER_RECOVERY"
+      },
+      "prohibitedPayloadFields": [
+        "rawCallback",
+        "activationCode",
+        "credential",
+        "approvalPrincipalIds",
+        "activationCodeDigest",
+        "activationCodeHash",
+        "activationCodeHashPrefix",
+        "activationSecret",
+        "redemptionSecret",
+        "rawBody",
+        "rawHeaders",
+        "signature",
+        "hmac",
+        "sharedSecret",
+        "providerToken",
+        "transactionId",
+        "providerTransactionRef",
+        "transactionRef",
+        "rawTransactionId",
+        "rawProviderTransactionId",
+        "rawProviderEventId",
+        "providerCustomerId",
+        "providerUserId",
+        "principalId",
+        "tenantId",
+        "nonce",
+        "keyId",
+        "keyMaterial"
+      ],
+      "status": "CANONICAL_D2",
+      "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+    }
+  ],
+  "historicalCandidates": {
+    "b5CommerceV1": {
+      "sourceFile": "packages/contracts/events/v1/fragments/b5-commerce-admin.events.json",
+      "classification": "B5_LEGACY_HISTORICAL_STATIC_INPUT_ONLY",
+      "canonical": false,
+      "runtimeAuthority": false,
+      "legacySemanticsOnly": true,
+      "eventNames": [
+        "commerce.order.created.v1",
+        "commerce.payment.requested.v1",
+        "commerce.payment.callback_received.v1",
+        "commerce.payment.verified.v1",
+        "commerce.refund.completed.v1",
+        "commerce.household.changed.v1",
+        "finance.reconciliation.discrepancy.v1"
+      ]
+    },
+    "b13CommerceV1": {
+      "sourceFile": "packages/contracts/events/v1/fragments/b13-commerce-admin-analytics.events.json",
+      "classification": "B13_V1_LEGACY_SEMANTICS_INPUT_ONLY",
+      "canonical": false,
+      "runtimeAuthority": false,
+      "legacySemanticsOnly": true,
+      "currentB13OpenApiRole": "M1015_CANONICAL_OPENAPI_SOURCE",
+      "eventNames": [
+        "commerce.order.created.v1",
+        "commerce.payment.callback_received.v1",
+        "commerce.entitlement.activated.v1",
+        "commerce.refund.completed.v1",
+        "commerce.order.reconciled.v1"
+      ]
+    },
+    "b5LegacyOpenApi": {
+      "sourceFile": "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+      "classification": "HISTORICAL_STATIC_ONLY",
+      "canonical": false,
+      "runtimeAuthority": false,
+      "replacement": "M1015_ROUTE_EXPECTATIONS"
+    },
+    "b20CommerceEvidence": {
+      "sourceFile": "config/b20-commerce-dr-evidence.json",
+      "classification": "HISTORICAL_STATIC_ONLY",
+      "canonical": false,
+      "runtimeAuthority": false,
+      "maySatisfyM1015RuntimeEvidence": false
+    }
+  },
+  "scopeExclusions": {
+    "household": {
+      "enabled": false,
+      "reason": "HOUSEHOLD_COMMANDS_AND_CROSS_MEMBER_SHARING_REQUIRE_SEPARATE_PRODUCT_PLATFORM_AND_PRIVACY_GATE",
+      "clientMayCreateOrMutate": false
+    },
+    "coupon": {
+      "enabled": false,
+      "reason": "COUPON_STACKING_PRICING_TAX_REFUND_RULES_NOT_FROZEN",
+      "clientMayApply": false
+    },
+    "accountMerge": {
+      "enabled": false,
+      "reason": "CROSS_OWNER_ACCOUNT_MEMBERSHIP_HOUSEHOLD_AND_LEARNING_MERGE_REQUIRES_SEPARATE_SAGA",
+      "clientMayMerge": false
+    },
+    "sellableLifetimeSku": {
+      "enabled": false,
+      "reason": "LIFETIME_TERM_CONFLICT_REQUIRES_PRODUCT_LEGAL_REFUND_AND_MIGRATION_DECISION",
+      "clientMayPurchase": false
+    },
+    "iOSProductionPurchaseRestore": {
+      "enabled": false,
+      "reason": "PRODUCTION_PAYMENT_OFF_AND_PLATFORM_RULE_REVIEW_REQUIRED",
+      "clientMayTreatRestoreAsEntitlementGrant": false
+    },
+    "additionalProperties": "DENY"
+  },
+  "handoff": {
+    "P1R-M2-003": [
+      "commerce-content-learning-service-side-PEP",
+      "fail-closed-policy-cache-and-revocation-uncertainty"
+    ],
+    "P1R-M2-004": [
+      "commerce-schema",
+      "owner-credential",
+      "tenant-scope",
+      "durable-ledger-and-tombstone",
+      "redis-not-source-of-truth"
+    ],
+    "P1R-M2-005": [
+      "outbox",
+      "kafka-topic-acl",
+      "consumer-dedupe",
+      "retry-dlq-replay"
+    ],
+    "P1R-M2-006": [
+      "workflow-reconciliation-compensation",
+      "manual-recovery-approval-and-audit"
+    ],
+    "P1R-M7-006": [
+      "sku-public-projection",
+      "free-entitlement",
+      "activation-code-runtime"
+    ],
+    "P1R-M7-007": [
+      "sandbox-order",
+      "payment-intent",
+      "callback-verification-and-dedupe"
+    ],
+    "P1R-M7-008": [
+      "entitlement-pep",
+      "cache-invalidation",
+      "grace",
+      "refund-revoke-expire-reconciliation"
+    ],
+    "P1R-M7-009": [
+      "learner-commerce-page",
+      "admin-finance-refund-reconciliation-workbench"
+    ],
+    "P1R-M7-010": [
+      "controlled-release",
+      "feature-flag-and-permission-gates"
+    ],
+    "P1R-M7-011": [
+      "independent-finance-security-qa-d3-gate",
+      "production-payment-off"
+    ],
+    "P1R-M8-005": [
+      "sandbox-to-entitlement-to-content-learning-pep-e2e",
+      "refund-revoke-access-denial",
+      "production-payment-off-evidence"
+    ]
+  },
+  "phase1Prohibitions": [
+    "PRODUCTION_PAYMENT",
+    "AUTO_RENEWAL",
+    "LIVE_PROVIDER_CREDENTIAL",
+    "LIVE_PROVIDER_ROUTE",
+    "LIVE_PROVIDER_TRAFFIC",
+    "CLIENT_AUTHORITATIVE_PRICE_PAYMENT_OR_ENTITLEMENT",
+    "CLIENT_OR_GATEWAY_ENTITLEMENT_CACHE_AS_FACT",
+    "ACTIVATION_SECRET_OR_DIGEST_IN_EVENT_OR_AUDIT",
+    "RAW_CALLBACK_OR_SIGNATURE_IN_EVENT_OR_AUDIT",
+    "PARTIAL_REFUND",
+    "PRE_SETTLEMENT_REFUND_REVOKE",
+    "HOUSEHOLD_COMMANDS",
+    "COUPON_APPLICATION",
+    "ACCOUNT_MERGE",
+    "SELLABLE_LIFETIME_SKU"
+  ]
+}

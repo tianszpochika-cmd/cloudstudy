@@ -431,6 +431,10 @@
     {
       "name": "M1-014-SOC",
       "description": "M1-014 canonical controlled social contracts; server-owned spaces, leases, focus, visibility and moderation"
+    },
+    {
+      "name": "M1-015-Commerce",
+      "description": "P1R-M1-015 canonical commerce D2 contract; runtime remains unverified"
     }
   ],
   "paths": {
@@ -17092,9 +17096,38 @@
     "/api/v1/commerce/skus": {
       "get": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "listB13CommerceSkus",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.sku.read.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -17119,7 +17152,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/B13Sku"
+                            "$ref": "#/components/schemas/M1015Sku"
                           }
                         }
                       }
@@ -17221,9 +17254,37 @@
     "/api/v1/commerce/orders": {
       "get": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "listB13CommerceOrders",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.order.read.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -17257,7 +17318,7 @@
                           "type": "array",
                           "maxItems": 100,
                           "items": {
-                            "$ref": "#/components/schemas/B13Order"
+                            "$ref": "#/components/schemas/M1015Order"
                           }
                         }
                       }
@@ -17294,9 +17355,38 @@
       },
       "post": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "createB13CommerceOrder",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.order.write.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -17304,7 +17394,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -17312,7 +17402,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13OrderCreateRequest"
+                "$ref": "#/components/schemas/M1015OrderCreateRequest"
               }
             }
           }
@@ -17320,7 +17410,10 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-sku-price-snapshot-key",
-          "replayBehavior": "return-original-order"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-order",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
         },
         "responses": {
           "201": {
@@ -17339,7 +17432,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B13Order"
+                          "$ref": "#/components/schemas/M1015Order"
                         }
                       }
                     }
@@ -17781,9 +17874,39 @@
     "/api/v1/commerce/entitlements/me": {
       "get": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "listB13MyEntitlements",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.entitlement.read.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion",
+            "entitlementVersion",
+            "invalidationVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -17808,7 +17931,7 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "$ref": "#/components/schemas/B13Entitlement"
+                            "$ref": "#/components/schemas/M1015Entitlement"
                           }
                         }
                       }
@@ -18138,9 +18261,38 @@
     "/api/v1/commerce/activation-codes/redeem": {
       "post": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "redeemB13ActivationCode",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.activation.redeem.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion",
+            "activationPolicy"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -18148,7 +18300,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -18156,7 +18308,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13ActivationRedeemRequest"
+                "$ref": "#/components/schemas/M1015ActivationRedeemRequest"
               }
             }
           }
@@ -18164,7 +18316,10 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-code-digest-key",
-          "replayBehavior": "return-original-entitlement-state"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-entitlement-state",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
         },
         "responses": {
           "200": {
@@ -18183,7 +18338,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B13Entitlement"
+                          "$ref": "#/components/schemas/M1015Entitlement"
                         }
                       }
                     }
@@ -18221,9 +18376,39 @@
     "/api/v1/commerce/orders/{orderId}/refunds": {
       "post": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "requestB13OrderRefund",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.refund.request.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion",
+            "orderState",
+            "orderStateVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -18231,10 +18416,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B13OrderId"
+            "$ref": "#/components/parameters/M1015OrderId"
           },
           {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -18242,7 +18427,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13RefundRequest"
+                "$ref": "#/components/schemas/M1015RefundRequest"
               }
             }
           }
@@ -18250,7 +18435,10 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-order-refund-key",
-          "replayBehavior": "return-original-refund-state"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-refund-state",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
         },
         "responses": {
           "202": {
@@ -18269,7 +18457,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B13Refund"
+                          "$ref": "#/components/schemas/M1015Refund"
                         }
                       }
                     }
@@ -25935,9 +26123,33 @@
     "/api/v1/public/commerce/catalog": {
       "get": {
         "tags": [
-          "B13-OfficialSite"
+          "M1-015-Commerce"
         ],
         "operationId": "getB13PublicCommerceCatalog",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.catalog.read.public",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "PUBLIC"
+          ],
+          "trustedFacts": [
+            "serverCatalog",
+            "catalogVersion",
+            "phase",
+            "contentRights",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [],
         "responses": {
           "200": {
@@ -25956,7 +26168,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B13PublicCatalog"
+                          "$ref": "#/components/schemas/M1015PublicCatalog"
                         }
                       }
                     }
@@ -25985,9 +26197,37 @@
     "/api/v1/commerce/readiness": {
       "get": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "getB13CommerceReadiness",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.readiness.read.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -26010,7 +26250,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B13PaymentReadiness"
+                          "$ref": "#/components/schemas/M1015PaymentReadiness"
                         }
                       }
                     }
@@ -26042,9 +26282,38 @@
     "/api/v1/commerce/orders/{orderId}/payment-intents": {
       "post": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "prepareB13PaymentIntent",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.payment-attempt.write.self",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "SELF"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "resourceOwner",
+            "roles",
+            "permissions",
+            "phase",
+            "adultGate",
+            "consent",
+            "policyVersion",
+            "paymentGate"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "bearerAuth": []
@@ -26052,10 +26321,10 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B13OrderId"
+            "$ref": "#/components/parameters/M1015OrderId"
           },
           {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -26063,7 +26332,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13PaymentIntentRequest"
+                "$ref": "#/components/schemas/M1015PaymentIntentRequest"
               }
             }
           }
@@ -26071,7 +26340,10 @@
         "x-idempotency": {
           "required": true,
           "strategy": "principal-order-provider-key",
-          "replayBehavior": "return-readiness-or-intent-state"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-readiness-or-intent-state",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
         },
         "responses": {
           "200": {
@@ -26090,7 +26362,7 @@
                       ],
                       "properties": {
                         "data": {
-                          "$ref": "#/components/schemas/B13PaymentIntentResult"
+                          "$ref": "#/components/schemas/M1015PaymentIntentResult"
                         }
                       }
                     }
@@ -26128,9 +26400,34 @@
     "/internal/v1/commerce/providers/{provider}/callbacks": {
       "post": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "consumeB13PaymentProviderCallback",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.payment-callback.write.workload",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "WORKLOAD"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "provider",
+            "environment",
+            "signatureCoverage",
+            "tenant",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -26138,10 +26435,22 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B13Provider"
+            "$ref": "#/components/parameters/M1015Provider"
           },
           {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
+          },
+          {
+            "$ref": "#/components/parameters/M1015ProviderSignature"
+          },
+          {
+            "$ref": "#/components/parameters/M1015ProviderNonce"
+          },
+          {
+            "$ref": "#/components/parameters/M1015ProviderKeyId"
+          },
+          {
+            "$ref": "#/components/parameters/M1015ProviderEnvironment"
           }
         ],
         "requestBody": {
@@ -26149,7 +26458,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13ProviderCallback"
+                "$ref": "#/components/schemas/M1015ProviderCallbackRequest"
               }
             }
           }
@@ -26157,7 +26466,71 @@
         "x-idempotency": {
           "required": true,
           "strategy": "provider-event-dedupe-key",
-          "replayBehavior": "return-original-callback-receipt"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-callback-receipt",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-callback-binding": {
+          "providerAllowList": [
+            "SANDBOX_HMAC"
+          ],
+          "environment": "SANDBOX",
+          "signatureHeaders": [
+            "X-Provider-Signature",
+            "X-Provider-Nonce",
+            "X-Provider-Key-Id",
+            "X-Provider-Environment"
+          ],
+          "binds": [
+            "provider",
+            "environment",
+            "providerEventId",
+            "transactionId",
+            "orderId",
+            "paymentAttemptId",
+            "amountMinor",
+            "currency",
+            "result",
+            "occurredAt",
+            "nonce",
+            "keyId"
+          ],
+          "tupleSources": {
+            "provider": "path.provider",
+            "environment": "header.X-Provider-Environment",
+            "providerEventId": "body.providerEventId",
+            "transactionId": "body.transactionId",
+            "orderId": "body.orderId",
+            "paymentAttemptId": "body.paymentAttemptId",
+            "amountMinor": "body.amountMinor",
+            "currency": "body.currency",
+            "result": "body.result",
+            "occurredAt": "body.occurredAt",
+            "nonce": "header.X-Provider-Nonce",
+            "keyId": "header.X-Provider-Key-Id"
+          },
+          "signatureCoverage": "canonical-request-body-and-named-headers",
+          "keyLifecycle": {
+            "keyType": "HMAC_SHARED_SECRET_REFERENCE",
+            "keyIdSource": "header.X-Provider-Key-Id",
+            "rotationMode": "ATOMIC_SINGLE_ACTIVE",
+            "acceptedStatuses": [
+              "ACTIVE"
+            ],
+            "maximumActiveKeys": 1,
+            "unknownKeyDecision": "DENY",
+            "revokedKeyDecision": "DENY",
+            "expiredKeyDecision": "DENY",
+            "overlapDecision": "DENY",
+            "rotationAuditRequired": true,
+            "rotationReceiptRequired": true,
+            "keyMaterialInContractLogEvent": "PROHIBITED"
+          },
+          "productionPaymentEnabled": false,
+          "autoRenewalEnabled": false,
+          "rawPayloadPersistence": "PROHIBITED",
+          "rawSignaturePersistence": "PROHIBITED"
         },
         "responses": {
           "202": {
@@ -26165,22 +26538,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B13CallbackResult"
+                  "$ref": "#/components/schemas/M1015ProviderCallbackReceipt"
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/B13Invalid"
+            "$ref": "#/components/responses/ApiBadRequest"
           },
           "401": {
-            "$ref": "#/components/responses/B13Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B13Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
-            "$ref": "#/components/responses/B13Conflict"
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
@@ -26188,9 +26561,35 @@
     "/internal/v1/commerce/reconciliation/replay": {
       "post": {
         "tags": [
-          "B13-Commerce"
+          "M1-015-Commerce"
         ],
         "operationId": "replayB13CommerceReconciliation",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.reconciliation.replay.finance",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "WORKLOAD",
+            "FINANCE"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "financeApproval",
+            "tenant",
+            "provider",
+            "policyVersion",
+            "expectedStateVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
             "B8WorkloadIdentity": []
@@ -26198,7 +26597,7 @@
         ],
         "parameters": [
           {
-            "$ref": "#/components/parameters/B13IdempotencyKey"
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
           }
         ],
         "requestBody": {
@@ -26206,7 +26605,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/B13ReconciliationRequest"
+                "$ref": "#/components/schemas/M1015ReconciliationReplayRequest"
               }
             }
           }
@@ -26214,27 +26613,30 @@
         "x-idempotency": {
           "required": true,
           "strategy": "reconciliation-batch-replay-key",
-          "replayBehavior": "return-original-reconciliation-state"
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-reconciliation-state",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
         },
         "responses": {
           "202": {
-            "description": "对账重放已受理",
+            "description": "对账重放/受控恢复已受理，返回 replay recovery receipt；post-rerun closure receipt 事件是后续独立的 MATCHED_AFTER_RECOVERY/CLOSED 事实，不由此响应伪装表示。",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/B13ReconciliationResult"
+                  "$ref": "#/components/schemas/M1015ReconciliationRecoveryReceipt"
                 }
               }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B13Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B13Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
-            "$ref": "#/components/responses/B13Conflict"
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
@@ -31731,6 +32133,192 @@
           }
         }
       }
+    },
+    "/internal/v1/commerce/entitlements/{entitlementId}/snapshot": {
+      "post": {
+        "tags": [
+          "M1-015-Commerce"
+        ],
+        "operationId": "resolveM1015CommerceEntitlementSnapshot",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.entitlement.snapshot.read.workload",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "WORKLOAD"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "consumerService",
+            "tenant",
+            "entitlementId",
+            "policyVersion",
+            "invalidationVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": false,
+          "strategy": "versioned-entitlement-snapshot-read",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "resolve the current versioned entitlement snapshot without creating a durable domain mutation"
+        },
+        "x-p1r-idempotency-exception": {
+          "rule": "writeIdempotency",
+          "reason": "This internal POST carries a closed read precondition body and resolves a versioned entitlement fact; it does not mutate the entitlement ledger.",
+          "owner": "commerce-service",
+          "safeBehavior": "Every call is workload-authorized and fail-closed against the current policy and invalidation versions; no payment, order, refund, or entitlement mutation is permitted."
+        },
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1015EntitlementId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1015EntitlementSnapshotResolveRequest"
+              }
+            }
+          }
+        },
+        "x-cache-policy": {
+          "owner": "consumer-local-pep",
+          "sourceOfTruth": "commerce-service-entitlement-ledger",
+          "cacheMode": "short-lived-versioned",
+          "invalidation": "monotonic-invalidation-version",
+          "grace": "ACTIVE_ONLY_BOUNDED_DEFAULT_ZERO",
+          "failureMode": "FAIL_CLOSED"
+        },
+        "responses": {
+          "200": {
+            "description": "供 content/learning 自身 PEP 判定的版本化权益事实快照",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1015EntitlementSnapshot"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/commerce/entitlements/{entitlementId}/revoke": {
+      "post": {
+        "tags": [
+          "M1-015-Commerce"
+        ],
+        "operationId": "revokeM1015CommerceEntitlement",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "commerce.entitlement.revoke.finance",
+          "pep": "commerce-service-local",
+          "allowedActors": [
+            "WORKLOAD",
+            "FINANCE"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "financeApproval",
+            "tenant",
+            "entitlementId",
+            "expectedStateVersion",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1015EntitlementId"
+          },
+          {
+            "$ref": "#/components/parameters/M1015IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1015EntitlementRevokeRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "entitlement-expected-version-revoke-key",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "return-original-revoke-receipt",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "responses": {
+          "202": {
+            "description": "撤销已按版本前置条件受理",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1015EntitlementRevokeReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -33409,6 +33997,112 @@
             "WEEK"
           ]
         }
+      },
+      "M1015IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "同一路由、主体和 tenant 的同 key 同摘要重放原回执；同 key 不同请求摘要必须返回 409。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+        },
+        "x-client-authority": "NONE"
+      },
+      "M1015OrderId": {
+        "name": "orderId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "x-server-derived": true,
+        "x-client-authority": "NONE"
+      },
+      "M1015EntitlementId": {
+        "name": "entitlementId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "x-server-derived": true,
+        "x-client-authority": "NONE"
+      },
+      "M1015Provider": {
+        "name": "provider",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "SANDBOX_HMAC"
+          ]
+        },
+        "description": "Phase 1 只允许 sandbox HMAC；生产 provider、凭据和真实流量不可达。",
+        "x-production-payment-enabled": false,
+        "x-client-authority": "NONE"
+      },
+      "M1015ProviderSignature": {
+        "name": "X-Provider-Signature",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 1024
+        },
+        "description": "仅供受控 provider ingress 短暂验签，禁止持久化、事件传播或日志记录。",
+        "x-sensitive-transient": true,
+        "x-client-authority": "NONE"
+      },
+      "M1015ProviderNonce": {
+        "name": "X-Provider-Nonce",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "description": "provider callback 的短时防重放 nonce；只在验签/去重边界使用。",
+        "x-sensitive-transient": true,
+        "x-client-authority": "NONE"
+      },
+      "M1015ProviderKeyId": {
+        "name": "X-Provider-Key-Id",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "description": "HMAC shared-secret 的不透明服务端 key reference；仅 ACTIVE 单一 key 可用于验签，unknown/revoked/expired key 一律拒绝，key material 不进入契约、日志或事件。",
+        "x-client-authority": "NONE"
+      },
+      "M1015ProviderEnvironment": {
+        "name": "X-Provider-Environment",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "SANDBOX"
+          ]
+        },
+        "x-production-payment-enabled": false,
+        "x-client-authority": "NONE"
       }
     },
     "headers": {
@@ -64634,6 +65328,2644 @@
           "consumerGroup": "cg.social-from-gamification.v1",
           "qualification": "APPEND_ONLY_LEDGER_ENTRY_WITH_ENTRY_TYPE_SIGN"
         }
+      },
+      "M1015GracePolicy": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mode",
+          "maxSeconds",
+          "eligibleState",
+          "denyOn"
+        ],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "BOUNDED_ACTIVE_ONLY"
+            ]
+          },
+          "maxSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 300
+          },
+          "eligibleState": {
+            "type": "string",
+            "enum": [
+              "ACTIVE"
+            ]
+          },
+          "denyOn": {
+            "type": "array",
+            "minItems": 5,
+            "maxItems": 5,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "REFUND",
+                "REVOKE",
+                "EXPIRE",
+                "SECURITY",
+                "UNKNOWN"
+              ]
+            }
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "mode",
+              "maxSeconds"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "NONE"
+                ]
+              },
+              "maxSeconds": {
+                "type": "integer",
+                "enum": [
+                  0
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "mode",
+              "maxSeconds"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "BOUNDED_ACTIVE_ONLY"
+                ]
+              },
+              "maxSeconds": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 300
+              }
+            }
+          }
+        ]
+      },
+      "M1015EntitlementTombstone": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "present",
+          "version",
+          "effectiveAt"
+        ],
+        "properties": {
+          "present": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "present",
+              "version",
+              "effectiveAt"
+            ],
+            "properties": {
+              "present": {
+                "type": "boolean",
+                "enum": [
+                  false
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "enum": [
+                  0
+                ]
+              },
+              "effectiveAt": {
+                "type": "string",
+                "nullable": true,
+                "enum": [
+                  null
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "present",
+              "version",
+              "effectiveAt"
+            ],
+            "properties": {
+              "present": {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "effectiveAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        ]
+      },
+      "M1015EntitlementInvalidation": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "required",
+          "version",
+          "receiptRef",
+          "reasonCode"
+        ],
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "receiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^invalidation-ref:[A-Za-z0-9._:-]+$"
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          }
+        }
+      },
+      "M1015PublicCatalog": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogVersion",
+          "uiLocale",
+          "contentLocale",
+          "plans",
+          "publishedAt",
+          "checkoutPath",
+          "productionPaymentEnabled",
+          "autoRenewalEnabled"
+        ],
+        "properties": {
+          "catalogVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "uiLocale": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "contentLocale": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20
+          },
+          "plans": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/M1015PublicPlan"
+            }
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "checkoutPath": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "productionPaymentEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "autoRenewalEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          }
+        }
+      },
+      "M1015PublicPlan": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "skuId",
+          "title",
+          "billingPeriod",
+          "currency",
+          "amountMinor",
+          "priceSnapshotId",
+          "availability",
+          "entitlementCode"
+        ],
+        "properties": {
+          "planId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "skuId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "billingPeriod": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "MONTH",
+              "QUARTER",
+              "YEAR",
+              "PERPETUAL"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "priceSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "PUBLISHED",
+              "COMING_SOON",
+              "UNAVAILABLE"
+            ]
+          },
+          "entitlementCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "billingPeriod",
+              "availability"
+            ],
+            "properties": {
+              "billingPeriod": {
+                "type": "string",
+                "enum": [
+                  "PERPETUAL"
+                ]
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "COMING_SOON",
+                  "UNAVAILABLE"
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "billingPeriod"
+            ],
+            "properties": {
+              "billingPeriod": {
+                "type": "string",
+                "enum": [
+                  "FREE",
+                  "MONTH",
+                  "QUARTER",
+                  "YEAR"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "M1015Sku": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skuId",
+          "title",
+          "description",
+          "billingPeriod",
+          "currency",
+          "amountMinor",
+          "availability",
+          "entitlementCode",
+          "priceSnapshotId"
+        ],
+        "properties": {
+          "skuId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "billingPeriod": {
+            "type": "string",
+            "enum": [
+              "FREE",
+              "ONE_TIME",
+              "MONTH",
+              "QUARTER",
+              "YEAR",
+              "PERPETUAL"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "PUBLISHED",
+              "COMING_SOON",
+              "UNAVAILABLE"
+            ]
+          },
+          "entitlementCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "priceSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "billingPeriod",
+              "availability"
+            ],
+            "properties": {
+              "billingPeriod": {
+                "type": "string",
+                "enum": [
+                  "PERPETUAL"
+                ]
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "COMING_SOON",
+                  "UNAVAILABLE"
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "billingPeriod"
+            ],
+            "properties": {
+              "billingPeriod": {
+                "type": "string",
+                "enum": [
+                  "FREE",
+                  "ONE_TIME",
+                  "MONTH",
+                  "QUARTER",
+                  "YEAR"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "M1015Entitlement": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entitlementId",
+          "entitlementCode",
+          "scopeCode",
+          "entitlementVersion",
+          "state",
+          "sourceType",
+          "sourceRef",
+          "sourceVersion",
+          "policyVersion",
+          "effectiveAt",
+          "startsAt",
+          "expiresAt",
+          "gracePolicy",
+          "tombstone",
+          "invalidation",
+          "stateVersion"
+        ],
+        "properties": {
+          "entitlementId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "entitlementCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "scopeCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "entitlementVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ACTIVE",
+              "GRACE",
+              "EXPIRED",
+              "REVOKED"
+            ]
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "VERIFIED_PAYMENT",
+              "REDEEMED_ACTIVATION"
+            ]
+          },
+          "sourceRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^(payment|redemption)-ref:[A-Za-z0-9._:-]+$",
+            "description": "仅 opaque payment/refund/redemption reference，不得是 code、digest、hash 或 PII。"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "graceUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "graceReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "not": {
+              "enum": [
+                "REFUND",
+                "REVOKE",
+                "EXPIRE",
+                "SECURITY",
+                "UNKNOWN"
+              ]
+            }
+          },
+          "gracePolicy": {
+            "$ref": "#/components/schemas/M1015GracePolicy"
+          },
+          "tombstone": {
+            "$ref": "#/components/schemas/M1015EntitlementTombstone"
+          },
+          "invalidation": {
+            "$ref": "#/components/schemas/M1015EntitlementInvalidation"
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "state",
+              "tombstone"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "ACTIVE"
+                ]
+              },
+              "tombstone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      false
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "enum": [
+                      0
+                    ]
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": [
+                      null
+                    ]
+                  }
+                }
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "graceUntil"
+                  ]
+                },
+                {
+                  "required": [
+                    "graceReason"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "required": [
+              "state",
+              "graceUntil",
+              "graceReason",
+              "gracePolicy",
+              "tombstone"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "GRACE"
+                ]
+              },
+              "gracePolicy": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "maxSeconds"
+                ],
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "BOUNDED_ACTIVE_ONLY"
+                    ]
+                  },
+                  "maxSeconds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 300
+                  }
+                }
+              },
+              "tombstone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      false
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "enum": [
+                      0
+                    ]
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": [
+                      null
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "required": [
+              "state",
+              "tombstone"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "EXPIRED",
+                  "REVOKED"
+                ]
+              },
+              "tombstone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "graceUntil"
+                  ]
+                },
+                {
+                  "required": [
+                    "graceReason"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "x-grace-policy": "GRACE defaults to zero; only the most recently verified ACTIVE fact may use bounded grace. Refund, revoke, expire, security and unknown always deny."
+      },
+      "M1015Order": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "orderId",
+          "skuId",
+          "priceSnapshotId",
+          "state",
+          "stateVersion",
+          "currency",
+          "amountMinor",
+          "channel",
+          "environment",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "skuId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "priceSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "PAYMENT_PENDING",
+              "PAID",
+              "REFUND_PENDING",
+              "REFUNDED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "SANDBOX_HMAC"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "SANDBOX"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1015OrderCreateRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "skuId",
+          "expectedPriceSnapshotId",
+          "sourcePlatform"
+        ],
+        "properties": {
+          "skuId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "expectedPriceSnapshotId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "sourcePlatform": {
+            "type": "string",
+            "enum": [
+              "MOBILE",
+              "WEB",
+              "PWA"
+            ]
+          }
+        },
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "owner",
+          "ownerId",
+          "provider",
+          "environment",
+          "priceSnapshotId",
+          "channel",
+          "autoRenewalEnabled",
+          "region",
+          "providerEnvironment",
+          "amount",
+          "amountMinor",
+          "currency",
+          "state",
+          "stateVersion",
+          "orderState",
+          "entitlementState",
+          "entitlementId",
+          "policyVersion"
+        ]
+      },
+      "M1015PaymentReadiness": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "reasonCode",
+          "providerAllowList",
+          "providers",
+          "productionPaymentEnabled",
+          "autoRenewalEnabled",
+          "sandboxOnly"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "CONTRACT_ONLY_NOT_RUNTIME_VERIFIED"
+            ]
+          },
+          "providerAllowList": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "SANDBOX_HMAC"
+              ]
+            }
+          },
+          "providers": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/M1015ProviderReadiness"
+            }
+          },
+          "productionPaymentEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "autoRenewalEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "sandboxOnly": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "M1015ProviderReadiness": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "environment",
+          "enabled",
+          "sandbox",
+          "productionPaymentEnabled",
+          "autoRenewalEnabled",
+          "reasonCode"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "SANDBOX_HMAC"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "SANDBOX"
+            ]
+          },
+          "enabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "sandbox": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "productionPaymentEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "autoRenewalEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "CONTRACT_ONLY_NOT_RUNTIME_VERIFIED"
+            ]
+          }
+        }
+      },
+      "M1015PaymentIntentRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "provider",
+          "expectedOrderStateVersion"
+        ],
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "SANDBOX_HMAC"
+            ]
+          },
+          "expectedOrderStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "owner",
+          "ownerId",
+          "environment",
+          "amountMinor",
+          "currency",
+          "paymentResult",
+          "signature",
+          "productionPaymentEnabled",
+          "intentRef",
+          "payableCredential",
+          "credential",
+          "token"
+        ]
+      },
+      "M1015PaymentIntentResult": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "orderId",
+          "paymentAttemptId",
+          "state",
+          "stateVersion",
+          "provider",
+          "environment",
+          "payable",
+          "reasonCode",
+          "productionPaymentEnabled",
+          "autoRenewalEnabled"
+        ],
+        "properties": {
+          "orderId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "paymentAttemptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PREPARED",
+              "AWAITING_CALLBACK",
+              "VERIFIED",
+              "REJECTED",
+              "EXPIRED"
+            ]
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "SANDBOX_HMAC"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "SANDBOX"
+            ]
+          },
+          "payable": {
+            "type": "boolean"
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "productionPaymentEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "autoRenewalEnabled": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "intentRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^intent-ref:[A-Za-z0-9._:-]+$",
+            "nullable": true
+          }
+        },
+        "x-state-projection": {
+          "policyStateMachine": "paymentAttempt",
+          "apiField": "state",
+          "mapping": "IDENTITY"
+        },
+        "x-forbidden-client-fields": [
+          "payableCredential",
+          "credential",
+          "secret",
+          "token",
+          "providerSignature"
+        ]
+      },
+      "M1015RefundRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reasonCode",
+          "expectedStateVersion"
+        ],
+        "properties": {
+          "reasonCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "owner",
+          "ownerId",
+          "provider",
+          "environment",
+          "refundMode",
+          "amountMinor",
+          "currency",
+          "refundScope",
+          "refundState",
+          "financeAuthorization",
+          "state",
+          "entitlementState",
+          "entitlementId",
+          "approvalRef",
+          "auditRef",
+          "receiptRef"
+        ]
+      },
+      "M1015Refund": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "refundId",
+          "orderId",
+          "refundMode",
+          "state",
+          "reasonCode",
+          "expectedStateVersion",
+          "stateVersion",
+          "approvalState",
+          "approvalRef",
+          "auditRef",
+          "receiptRef",
+          "createdAt",
+          "updatedAt",
+          "postRecoveryRerunRequired"
+        ],
+        "properties": {
+          "refundId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "orderId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "refundMode": {
+            "type": "string",
+            "enum": [
+              "FULL_ONLY"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "REQUESTED",
+              "REVIEW_PENDING",
+              "PROVIDER_PENDING",
+              "SETTLED",
+              "REJECTED",
+              "FAILED",
+              "CANCELLED"
+            ]
+          },
+          "reasonCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approvalState": {
+            "type": "string",
+            "enum": [
+              "NOT_REQUIRED",
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "approvalRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^approval-ref:[A-Za-z0-9._:-]+$"
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+          },
+          "receiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^refund-receipt:[A-Za-z0-9._:-]+$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "postRecoveryRerunRequired": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "settlementReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^settlement-receipt:[A-Za-z0-9._:-]+$"
+          },
+          "entitlementRevocationReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^(revoke|refund)-receipt:[A-Za-z0-9._:-]+$"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "state",
+              "approvalState",
+              "settlementReceiptRef",
+              "entitlementRevocationReceiptRef"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "SETTLED"
+                ]
+              },
+              "approvalState": {
+                "type": "string",
+                "enum": [
+                  "APPROVED"
+                ]
+              }
+            }
+          },
+          {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "REQUESTED",
+                  "REVIEW_PENDING",
+                  "PROVIDER_PENDING",
+                  "REJECTED",
+                  "FAILED",
+                  "CANCELLED"
+                ]
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "settlementReceiptRef"
+                  ]
+                },
+                {
+                  "required": [
+                    "entitlementRevocationReceiptRef"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "x-state-projection": {
+          "policyStateMachine": "refund",
+          "apiField": "state",
+          "mapping": "IDENTITY"
+        }
+      },
+      "M1015ActivationRedeemRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "activationCode"
+        ],
+        "properties": {
+          "activationCode": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "description": "仅通过 TLS 短暂传输；只在服务端内存中用于 SHA-256 digest，一次兑换后不得再次使用。"
+          }
+        },
+        "x-sensitive-transient-fields": [
+          "activationCode"
+        ],
+        "x-sensitive-fields": [
+          "activationCode"
+        ],
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "owner",
+          "ownerId",
+          "provider",
+          "environment",
+          "skuId",
+          "entitlementId",
+          "sourceRef",
+          "redemptionRef",
+          "activationCodeDigest",
+          "entitlementState",
+          "codeDigest",
+          "hash",
+          "hashPrefix"
+        ]
+      },
+      "M1015ProviderCallbackRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "providerEventId",
+          "transactionId",
+          "orderId",
+          "paymentAttemptId",
+          "amountMinor",
+          "currency",
+          "result",
+          "occurredAt"
+        ],
+        "properties": {
+          "providerEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160
+          },
+          "transactionId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160
+          },
+          "orderId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "paymentAttemptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "PAID",
+              "REFUNDED",
+              "REJECTED"
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "x-sensitive-transient-fields": [
+          "transactionId"
+        ],
+        "x-callback-protection": {
+          "signatureHeaders": [
+            "X-Provider-Signature",
+            "X-Provider-Nonce",
+            "X-Provider-Key-Id",
+            "X-Provider-Environment"
+          ],
+          "signatureCoverage": "canonical-request-body-and-named-headers",
+          "freshness": "bounded-occurredAt-window",
+          "dedupe": "tenantId:provider:providerEventId",
+          "sameEventDifferentDigest": "CONFLICT_409",
+          "rawPayloadPersistence": "PROHIBITED",
+          "rawSignaturePersistence": "PROHIBITED"
+        }
+      },
+      "M1015ProviderCallbackReceipt": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "callbackReceiptRef",
+          "provider",
+          "environment",
+          "providerEventId",
+          "transactionRef",
+          "orderId",
+          "paymentAttemptId",
+          "amountMinor",
+          "currency",
+          "result",
+          "occurredAt",
+          "receivedAt",
+          "replayed",
+          "entitlementActivated",
+          "verificationRef",
+          "sanitized"
+        ],
+        "properties": {
+          "callbackReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^callback-receipt:[A-Za-z0-9._:-]+$"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "SANDBOX_HMAC"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "enum": [
+              "SANDBOX"
+            ]
+          },
+          "providerEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160
+          },
+          "transactionRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^transaction-ref:[A-Za-z0-9._:-]+$"
+          },
+          "orderId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "paymentAttemptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "amountMinor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "PAID",
+              "REFUNDED",
+              "REJECTED"
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "entitlementActivated": {
+            "type": "boolean"
+          },
+          "verificationRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^verification-ref:[A-Za-z0-9._:-]+$"
+          },
+          "sanitized": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "result",
+              "entitlementActivated"
+            ],
+            "properties": {
+              "result": {
+                "type": "string",
+                "enum": [
+                  "PAID"
+                ]
+              },
+              "entitlementActivated": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "required": [
+              "result",
+              "entitlementActivated"
+            ],
+            "properties": {
+              "result": {
+                "type": "string",
+                "enum": [
+                  "REFUNDED",
+                  "REJECTED"
+                ]
+              },
+              "entitlementActivated": {
+                "type": "boolean",
+                "enum": [
+                  false
+                ]
+              }
+            }
+          }
+        ],
+        "x-forbidden-fields": [
+          "rawPayload",
+          "payload",
+          "signature",
+          "jws",
+          "nonce",
+          "keyId",
+          "credential",
+          "code",
+          "hash",
+          "pii"
+        ]
+      },
+      "M1015ReconciliationReplayRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reconciliationCaseRef",
+          "batchRef",
+          "windowStart",
+          "windowEnd",
+          "expectedStateVersion",
+          "expectedOrderState",
+          "expectedPaymentAttemptState",
+          "expectedEntitlementVersion",
+          "sourceFactDigests",
+          "remediationPlanDigest",
+          "approvalRefs",
+          "policyVersion",
+          "recoveryMode",
+          "recoveryReasonCode"
+        ],
+        "properties": {
+          "reconciliationCaseRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^reconciliation-case:[A-Za-z0-9._:-]+$"
+          },
+          "batchRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "windowStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "windowEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedOrderState": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "expectedPaymentAttemptState": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "expectedEntitlementVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sourceFactDigests": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            }
+          },
+          "remediationPlanDigest": {
+            "type": "string",
+            "pattern": "^[A-Fa-f0-9]{64}$"
+          },
+          "approvalRefs": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 160,
+              "pattern": "^approval-ref:[A-Za-z0-9._:-]+$"
+            }
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "recoveryMode": {
+            "type": "string",
+            "enum": [
+              "REPLAY_ONLY",
+              "CONTROLLED_RECOVERY"
+            ]
+          },
+          "recoveryReasonCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          }
+        },
+        "x-approval-resolution": {
+          "source": "SERVER_RESOLVED_IAM_APPROVAL_RECEIPTS",
+          "requiredCount": 2,
+          "approverPrincipalsMustBeDistinct": true,
+          "requiredPermission": "commerce.reconciliation.approve.finance",
+          "requiredApprovalStatus": "ACTIVE",
+          "bindingFields": [
+            "reconciliationId",
+            "reconciliationVersion",
+            "remediationPlanDigest",
+            "preconditionDigest",
+            "sourceFactDigest",
+            "policyVersion"
+          ],
+          "unknownRefDecision": "DENY",
+          "samePrincipalDecision": "DENY",
+          "staleApprovalDecision": "DENY",
+          "revokedApprovalDecision": "DENY",
+          "mismatchedBindingDecision": "DENY",
+          "principalIdsInContractOrEvent": "PROHIBITED",
+          "resolutionAuditRequired": true
+        },
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "provider",
+          "environment",
+          "orderState",
+          "paymentState",
+          "entitlementState",
+          "refundState",
+          "approvalDecision",
+          "amount",
+          "amountMinor",
+          "currency",
+          "state",
+          "owner",
+          "postRecoveryRerunRequired",
+          "domainFactsUntouched",
+          "rawProviderPayload",
+          "credential"
+        ]
+      },
+      "M1015ReconciliationRecoveryReceipt": {
+        "description": "Replay/recovery request receipt only. It is not the post-rerun closure event; commerce.reconciliation.recovery_receipted.v2 separately records CLOSED with MATCHED_AFTER_RECOVERY.",
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reconciliationCaseRef",
+          "batchRef",
+          "state",
+          "expectedStateVersion",
+          "stateVersion",
+          "replayReceiptRef",
+          "recoveryReceiptRef",
+          "approvalRefs",
+          "auditRef",
+          "domainFactsUntouched",
+          "postRecoveryRerun"
+        ],
+        "properties": {
+          "reconciliationCaseRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^reconciliation-case:[A-Za-z0-9._:-]+$"
+          },
+          "batchRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "REPLAYED",
+              "RECOVERY_PENDING",
+              "RECOVERED",
+              "REJECTED"
+            ]
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "replayReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^replay-receipt:[A-Za-z0-9._:-]+$"
+          },
+          "recoveryReceiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^recovery-receipt:[A-Za-z0-9._:-]+$"
+          },
+          "approvalRefs": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 8,
+              "maxLength": 160,
+              "pattern": "^approval-ref:[A-Za-z0-9._:-]+$"
+            }
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "postRecoveryRerun": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "required",
+              "state",
+              "rerunRef"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean",
+                "enum": [
+                  true
+                ]
+              },
+              "state": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "COMPLETED",
+                  "FAILED"
+                ]
+              },
+              "rerunRef": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 160,
+                "pattern": "^rerun-ref:[A-Za-z0-9._:-]+$"
+              }
+            }
+          }
+        }
+      },
+      "M1015EntitlementSnapshotResolveRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "minimumPolicyVersion",
+          "expectedInvalidationVersion"
+        ],
+        "properties": {
+          "minimumPolicyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "expectedInvalidationVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "owner",
+          "ownerId",
+          "provider",
+          "environment",
+          "consumerService",
+          "decision",
+          "allow",
+          "entitlementState",
+          "graceUntil",
+          "policyVersion"
+        ]
+      },
+      "M1015EntitlementSnapshot": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "snapshotRef",
+          "entitlementId",
+          "entitlementVersion",
+          "entitlementCode",
+          "scopeCode",
+          "state",
+          "sourceType",
+          "sourceRef",
+          "sourceVersion",
+          "policyVersion",
+          "effectiveAt",
+          "startsAt",
+          "expiresAt",
+          "gracePolicy",
+          "tombstone",
+          "invalidation",
+          "pepDecisionAuthority"
+        ],
+        "properties": {
+          "snapshotRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^entitlement-snapshot:[A-Za-z0-9._:-]+$"
+          },
+          "entitlementId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "entitlementVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "entitlementCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "scopeCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ACTIVE",
+              "GRACE",
+              "EXPIRED",
+              "REVOKED"
+            ]
+          },
+          "sourceType": {
+            "type": "string",
+            "enum": [
+              "VERIFIED_PAYMENT",
+              "REDEEMED_ACTIVATION"
+            ]
+          },
+          "sourceRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^(payment|redemption)-ref:[A-Za-z0-9._:-]+$"
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "graceUntil": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "graceReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "not": {
+              "enum": [
+                "REFUND",
+                "REVOKE",
+                "EXPIRE",
+                "SECURITY",
+                "UNKNOWN"
+              ]
+            }
+          },
+          "gracePolicy": {
+            "$ref": "#/components/schemas/M1015GracePolicy"
+          },
+          "tombstone": {
+            "$ref": "#/components/schemas/M1015EntitlementTombstone"
+          },
+          "invalidation": {
+            "$ref": "#/components/schemas/M1015EntitlementInvalidation"
+          },
+          "pepDecisionAuthority": {
+            "type": "string",
+            "enum": [
+              "CONSUMER_LOCAL_PEP"
+            ]
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "state",
+              "tombstone"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "PENDING",
+                  "ACTIVE"
+                ]
+              },
+              "tombstone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      false
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "enum": [
+                      0
+                    ]
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": [
+                      null
+                    ]
+                  }
+                }
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "graceUntil"
+                  ]
+                },
+                {
+                  "required": [
+                    "graceReason"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "required": [
+              "state",
+              "graceUntil",
+              "graceReason",
+              "gracePolicy",
+              "tombstone"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "GRACE"
+                ]
+              },
+              "gracePolicy": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mode",
+                  "maxSeconds"
+                ],
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "BOUNDED_ACTIVE_ONLY"
+                    ]
+                  },
+                  "maxSeconds": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 300
+                  }
+                }
+              },
+              "tombstone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      false
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "enum": [
+                      0
+                    ]
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "nullable": true,
+                    "enum": [
+                      null
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "required": [
+              "state",
+              "tombstone"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "EXPIRED",
+                  "REVOKED"
+                ]
+              },
+              "tombstone": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            },
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "graceUntil"
+                  ]
+                },
+                {
+                  "required": [
+                    "graceReason"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "x-read-policy": {
+          "consumers": [
+            "content-service",
+            "learning-service"
+          ],
+          "consumerOwnsDecision": true,
+          "unknownOrStale": "DENY",
+          "grace": "ACTIVE_ONLY_BOUNDED_DEFAULT_ZERO"
+        }
+      },
+      "M1015EntitlementRevokeRequest": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reasonCode",
+          "expectedStateVersion",
+          "sourceFactRef",
+          "approvalRef"
+        ],
+        "properties": {
+          "reasonCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "sourceFactRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^source-fact-ref:[A-Za-z0-9._:-]+$"
+          },
+          "approvalRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^approval-ref:[A-Za-z0-9._:-]+$"
+          }
+        },
+        "x-trusted-workload-supplied-fields": [
+          "reasonCode",
+          "expectedStateVersion",
+          "sourceFactRef",
+          "approvalRef"
+        ],
+        "x-forbidden-external-client-fields": [
+          "reasonCode",
+          "expectedStateVersion",
+          "sourceFactRef",
+          "approvalRef"
+        ],
+        "x-forbidden-client-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "subjectId",
+          "owner",
+          "ownerId",
+          "provider",
+          "environment",
+          "state",
+          "entitlementVersion",
+          "sourceRef",
+          "invalidationVersion",
+          "entitlementId",
+          "allow",
+          "graceUntil",
+          "refundState",
+          "auditRef",
+          "receiptRef",
+          "receiptMode"
+        ]
+      },
+      "M1015EntitlementRevokeReceipt": {
+        "x-owner": "commerce-service",
+        "x-contract": {
+          "task": "P1R-M1-015",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entitlementId",
+          "previousState",
+          "state",
+          "entitlementVersion",
+          "expectedStateVersion",
+          "stateVersion",
+          "approvalRef",
+          "auditRef",
+          "receiptRef",
+          "effectiveAt",
+          "invalidation",
+          "tombstone",
+          "postRecoveryRerunRequired"
+        ],
+        "properties": {
+          "entitlementId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "previousState": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ACTIVE",
+              "GRACE",
+              "EXPIRED"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "REVOKED"
+            ]
+          },
+          "entitlementVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "approvalRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^approval-ref:[A-Za-z0-9._:-]+$"
+          },
+          "auditRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^audit-ref:[A-Za-z0-9._:-]+$"
+          },
+          "receiptRef": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^revoke-receipt:[A-Za-z0-9._:-]+$"
+          },
+          "effectiveAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "invalidation": {
+            "$ref": "#/components/schemas/M1015EntitlementInvalidation"
+          },
+          "tombstone": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/M1015EntitlementTombstone"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "present",
+                  "version",
+                  "effectiveAt"
+                ],
+                "properties": {
+                  "present": {
+                    "type": "boolean",
+                    "enum": [
+                      true
+                    ]
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "effectiveAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            ]
+          },
+          "postRecoveryRerunRequired": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          }
+        }
       }
     },
     "requestBodies": {},
@@ -65646,7 +68978,7 @@
       "externalExposure": "DENY",
       "externalCors": "DENY",
       "requiredCallerIdentity": "VALIDATED_WORKLOAD_IDENTITY",
-      "baselineOperationCount": 51,
+      "baselineOperationCount": 53,
       "networkIsolationRequired": true,
       "applicationDenyIsSufficient": false
     },

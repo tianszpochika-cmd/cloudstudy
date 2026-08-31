@@ -1,0 +1,564 @@
+{
+  "version": "2.0.0",
+  "events": [
+    {
+      "eventName": "commerce.order.created.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_order",
+      "aggregateIdField": "orderId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommerceOrderCreated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.order.created.v3",
+        "consumerRule": "只接受 commerce-service 已确认的订单创建事实；按 orderId、orderVersion 和 dedupeKey 幂等。"
+      }
+    },
+    {
+      "eventName": "commerce.payment.requested.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_payment_attempt",
+      "aggregateIdField": "paymentAttemptId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommercePaymentRequested" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.payment.requested.v3",
+        "consumerRule": "只记录 SANDBOX_HMAC payment attempt 请求；production payment 与 auto-renewal 不在本契约内启用。"
+      }
+    },
+    {
+      "eventName": "commerce.payment.callback_received.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_callback_receipt",
+      "aggregateIdField": "callbackReceiptRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommercePaymentCallbackReceived" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.payment.callback_received.v3",
+        "consumerRule": "只发布 sanitized receipt；原始 callback、签名、JWS、nonce、keyId、credential 和原始 transactionId 不进入事件，事件只使用 opaque transactionRef。"
+      }
+    },
+    {
+      "eventName": "commerce.payment.verified.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_payment_attempt",
+      "aggregateIdField": "paymentAttemptId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommercePaymentVerified" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.payment.verified.v3",
+        "consumerRule": "verified 事实只能在 callback 绑定及金额、币种和 provider 校验完成后产生。"
+      }
+    },
+    {
+      "eventName": "commerce.entitlement.activated.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_entitlement",
+      "aggregateIdField": "entitlementId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommerceEntitlementActivated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.entitlement.activated.v3",
+        "consumerRule": "权益激活由已确认 payment 或一次性 redemption 事实产生；content/learning 只更新自身 PEP 投影。"
+      }
+    },
+    {
+      "eventName": "commerce.entitlement.revoked.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_entitlement",
+      "aggregateIdField": "entitlementId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommerceEntitlementRevoked" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.entitlement.revoked.v3",
+        "consumerRule": "撤销是不可逆的版本化失效事实；content/learning 必须失效自身投影，退款撤销不得使用 grace。"
+      }
+    },
+    {
+      "eventName": "commerce.refund.settled.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_refund",
+      "aggregateIdField": "refundId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommerceRefundSettled" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.refund.settled.v3",
+        "consumerRule": "只有 FULL_ONLY 且已结算的退款事实可触发权益失效；按 refundId、stateVersion 和 expectedStateVersion 幂等。"
+      }
+    },
+    {
+      "eventName": "commerce.reconciliation.discrepancy_recorded.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "reconciliationCaseRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommerceReconciliationDiscrepancyRecorded" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.reconciliation.discrepancy_recorded.v3",
+        "consumerRule": "只发布差异摘要和恢复所需 receipt 引用；不得跨服务改写 commerce domain facts。"
+      }
+    },
+    {
+      "eventName": "commerce.reconciliation.recovery_receipted.v2",
+      "domain": "commerce",
+      "version": 2,
+      "schema": "commerce.event.v2",
+      "aggregateType": "commerce_reconciliation",
+      "aggregateIdField": "reconciliationCaseRef",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1015CommerceReconciliationRecoveryReceipted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish commerce.reconciliation.recovery_receipted.v3",
+        "consumerRule": "这是 post-rerun closure receipt，不等同于 replay response；只有 CLOSED 且 MATCHED_AFTER_RECOVERY 的恢复事实可发布。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "M1015CommerceOrderCreated": {
+      "$id": "platform.events.commerce.order.created.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "orderId",
+        "orderVersion",
+        "skuId",
+        "priceSnapshotId",
+        "amountMinor",
+        "currency",
+        "state",
+        "sourcePlatform"
+      ],
+      "properties": {
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "orderVersion": { "type": "integer", "minimum": 1 },
+        "skuId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "priceSnapshotId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "state": { "type": "string", "enum": ["CREATED", "PAYMENT_PENDING"] },
+        "sourcePlatform": { "type": "string", "enum": ["MOBILE", "WEB", "PWA"] }
+      }
+    },
+    "M1015CommercePaymentRequested": {
+      "$id": "platform.events.commerce.payment.requested.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentAttemptId",
+        "paymentAttemptVersion",
+        "orderId",
+        "provider",
+        "environment",
+        "state",
+        "amountMinor",
+        "currency"
+      ],
+      "properties": {
+        "paymentAttemptId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "paymentAttemptVersion": { "type": "integer", "minimum": 1 },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "provider": { "type": "string", "const": "SANDBOX_HMAC" },
+        "environment": { "type": "string", "const": "SANDBOX" },
+        "state": { "type": "string", "const": "REQUESTED" },
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "M1015CommercePaymentCallbackReceived": {
+      "$id": "platform.events.commerce.payment.callback_received.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "callbackReceiptRef",
+        "orderId",
+        "paymentAttemptId",
+        "provider",
+        "environment",
+        "providerEventId",
+        "transactionRef",
+        "state",
+        "verificationRef",
+        "tupleDigest"
+      ],
+      "properties": {
+        "callbackReceiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^callback-receipt:[A-Za-z0-9._:-]+$" },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "paymentAttemptId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "provider": { "type": "string", "const": "SANDBOX_HMAC" },
+        "environment": { "type": "string", "const": "SANDBOX" },
+        "providerEventId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "transactionRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^transaction-ref:[A-Za-z0-9._:-]+$" },
+        "state": { "type": "string", "enum": ["RECEIVED", "VERIFIED", "REJECTED"] },
+        "verificationRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^verification-ref:[A-Za-z0-9._:-]+$" },
+        "tupleDigest": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^tuple-digest:[A-Za-z0-9._:-]+$" }
+      }
+    },
+    "M1015CommercePaymentVerified": {
+      "$id": "platform.events.commerce.payment.verified.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentAttemptId",
+        "orderId",
+        "callbackReceiptRef",
+        "provider",
+        "environment",
+        "amountMinor",
+        "currency",
+        "verificationRef",
+        "verifiedAt",
+        "state"
+      ],
+      "properties": {
+        "paymentAttemptId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "callbackReceiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^callback-receipt:[A-Za-z0-9._:-]+$" },
+        "provider": { "type": "string", "const": "SANDBOX_HMAC" },
+        "environment": { "type": "string", "const": "SANDBOX" },
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "verificationRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^verification-ref:[A-Za-z0-9._:-]+$" },
+        "verifiedAt": { "type": "string", "format": "date-time" },
+        "state": { "type": "string", "const": "VERIFIED" }
+      }
+    },
+    "M1015CommerceEntitlementActivated": {
+      "$id": "platform.events.commerce.entitlement.activated.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "entitlementVersion",
+        "entitlementCode",
+        "scopeCode",
+        "sourceType",
+        "sourceRef",
+        "sourceVersion",
+        "policyVersion",
+        "effectiveAt",
+        "startsAt",
+        "expiresAt",
+        "invalidationVersion",
+        "state"
+      ],
+      "properties": {
+        "entitlementId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "entitlementVersion": { "type": "integer", "minimum": 1 },
+        "entitlementCode": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "scopeCode": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "sourceType": { "type": "string", "enum": ["VERIFIED_PAYMENT", "REDEEMED_ACTIVATION"] },
+        "sourceRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^(payment|redemption)-ref:[A-Za-z0-9._:-]+$" },
+        "sourceVersion": { "type": "integer", "minimum": 1 },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "effectiveAt": { "type": "string", "format": "date-time" },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": ["string", "null"], "format": "date-time" },
+        "invalidationVersion": { "type": "integer", "minimum": 1 },
+        "state": { "type": "string", "const": "ACTIVE" }
+      }
+    },
+    "M1015CommerceEntitlementRevoked": {
+      "$id": "platform.events.commerce.entitlement.revoked.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entitlementId",
+        "entitlementVersion",
+        "scopeCode",
+        "sourceVersion",
+        "policyVersion",
+        "state",
+        "reasonCode",
+        "tombstoneVersion",
+        "invalidationVersion",
+        "effectiveAt",
+        "receiptRef",
+        "auditRef",
+        "postRecoveryRerunRequired"
+      ],
+      "properties": {
+        "entitlementId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "entitlementVersion": { "type": "integer", "minimum": 1 },
+        "scopeCode": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+        "sourceVersion": { "type": "integer", "minimum": 1 },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "state": { "type": "string", "const": "REVOKED" },
+        "reasonCode": { "type": "string", "enum": ["FULL_REFUND", "MANUAL_REVOKE", "SECURITY", "EXPIRED"] },
+        "tombstoneVersion": { "type": "integer", "minimum": 1 },
+        "invalidationVersion": { "type": "integer", "minimum": 1 },
+        "effectiveAt": { "type": "string", "format": "date-time" },
+        "receiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^(revoke|refund)-receipt:[A-Za-z0-9._:-]+$" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^audit-ref:[A-Za-z0-9._:-]+$" },
+        "postRecoveryRerunRequired": { "type": "boolean" }
+      }
+    },
+    "M1015CommerceRefundSettled": {
+      "$id": "platform.events.commerce.refund.settled.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "refundId",
+        "stateVersion",
+        "orderId",
+        "refundMode",
+        "state",
+        "settlementRef",
+        "amountMinor",
+        "currency",
+        "settledAt",
+        "expectedStateVersion",
+        "receiptRef",
+        "auditRef",
+        "entitlementRevocationReceiptRef"
+      ],
+      "properties": {
+        "refundId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "stateVersion": { "type": "integer", "minimum": 1 },
+        "orderId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "refundMode": { "type": "string", "const": "FULL_ONLY" },
+        "state": { "type": "string", "const": "SETTLED" },
+        "settlementRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^settlement-ref:[A-Za-z0-9._:-]+$" },
+        "amountMinor": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "settledAt": { "type": "string", "format": "date-time" },
+        "expectedStateVersion": { "type": "integer", "minimum": 1 },
+        "receiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^refund-receipt:[A-Za-z0-9._:-]+$" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^audit-ref:[A-Za-z0-9._:-]+$" },
+        "entitlementRevocationReceiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^revoke-receipt:[A-Za-z0-9._:-]+$" }
+      }
+    },
+    "M1015CommerceReconciliationDiscrepancyRecorded": {
+      "$id": "platform.events.commerce.reconciliation.discrepancy_recorded.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reconciliationCaseRef",
+        "reconciliationVersion",
+        "batchRef",
+        "provider",
+        "environment",
+        "discrepancyCode",
+        "differenceCount",
+        "state",
+        "recordedAt",
+        "expectedStateVersion",
+        "expectedStateDigest",
+        "actualStateDigest",
+        "manualHoldRef",
+        "auditRef",
+        "receiptRef",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "reconciliationCaseRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^reconciliation-case:[A-Za-z0-9._:-]+$" },
+        "reconciliationVersion": { "type": "integer", "minimum": 1 },
+        "batchRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^batch-ref:[A-Za-z0-9._:-]+$" },
+        "provider": { "type": "string", "const": "SANDBOX_HMAC" },
+        "environment": { "type": "string", "const": "SANDBOX" },
+        "discrepancyCode": { "type": "string", "enum": ["STATE_MISMATCH", "MISSING_RECEIPT", "DUPLICATE_RECEIPT", "AMOUNT_MISMATCH"] },
+        "differenceCount": { "type": "integer", "minimum": 1 },
+        "state": { "type": "string", "const": "MISMATCH" },
+        "recordedAt": { "type": "string", "format": "date-time" },
+        "expectedStateVersion": { "type": "integer", "minimum": 1 },
+        "expectedStateDigest": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^state-digest:[A-Za-z0-9._:-]+$" },
+        "actualStateDigest": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^state-digest:[A-Za-z0-9._:-]+$" },
+        "manualHoldRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^manual-hold:[A-Za-z0-9._:-]+$" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^audit-ref:[A-Za-z0-9._:-]+$" },
+        "receiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^reconciliation-receipt:[A-Za-z0-9._:-]+$" },
+        "domainFactsUntouched": { "type": "boolean", "const": true }
+      }
+    },
+    "M1015CommerceReconciliationRecoveryReceipted": {
+      "$id": "platform.events.commerce.reconciliation.recovery_receipted.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reconciliationCaseRef",
+        "reconciliationVersion",
+        "batchRef",
+        "closureReceiptRef",
+        "state",
+        "postRerunStatus",
+        "ownerReceiptRefs",
+        "approvalRefs",
+        "closedAt",
+        "auditRef",
+        "domainFactsUntouched"
+      ],
+      "properties": {
+        "reconciliationCaseRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^reconciliation-case:[A-Za-z0-9._:-]+$" },
+        "reconciliationVersion": { "type": "integer", "minimum": 1 },
+        "batchRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^batch-ref:[A-Za-z0-9._:-]+$" },
+        "closureReceiptRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^closure-receipt:[A-Za-z0-9._:-]+$" },
+        "state": { "type": "string", "const": "CLOSED" },
+        "postRerunStatus": { "type": "string", "const": "MATCHED_AFTER_RECOVERY" },
+        "ownerReceiptRefs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^[A-Za-z0-9._:-]+$" }
+        },
+        "approvalRefs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 8, "maxLength": 160, "pattern": "^approval-ref:[A-Za-z0-9._:-]+$" }
+        },
+        "closedAt": { "type": "string", "format": "date-time" },
+        "auditRef": { "type": "string", "minLength": 1, "maxLength": 160, "pattern": "^audit-ref:[A-Za-z0-9._:-]+$" },
+        "domainFactsUntouched": { "type": "boolean", "const": true }
+      }
+    }
+  }
+}

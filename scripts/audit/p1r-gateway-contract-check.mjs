@@ -7,7 +7,35 @@ const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gatew
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
 const EXPECTED_PUBLIC_OPERATION_COUNT = 350;
-const EXPECTED_INTERNAL_OPERATION_COUNT = 51;
+const EXPECTED_INTERNAL_OPERATION_COUNT = 53;
+const EXPECTED_M1015_INTERNAL_OPERATIONS = [
+  {
+    route: '/internal/v1/commerce/entitlements/{entitlementId}/snapshot',
+    method: 'POST',
+    operationId: 'resolveM1015CommerceEntitlementSnapshot',
+    owner: 'commerce-service',
+    security: [{ B8WorkloadIdentity: [] }],
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'commerce.entitlement.snapshot.read.workload',
+      allowedActors: ['WORKLOAD'],
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/commerce/entitlements/{entitlementId}/revoke',
+    method: 'POST',
+    operationId: 'revokeM1015CommerceEntitlement',
+    owner: 'commerce-service',
+    security: [{ B8WorkloadIdentity: [] }],
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'commerce.entitlement.revoke.finance',
+      allowedActors: ['WORKLOAD', 'FINANCE'],
+      clientAuthority: 'NONE',
+    },
+  },
+];
 const EXPECTED_CONTENT_TASK_RULE = {
   ruleId: 'admin-content-publish-tasks',
   priority: 800,
@@ -224,6 +252,40 @@ function checkInternalPolicy(policy, canonicalOpenApi, errors) {
   add(errors, internal?.baselineOperationCount === EXPECTED_INTERNAL_OPERATION_COUNT, `internal operation baseline must be ${EXPECTED_INTERNAL_OPERATION_COUNT}`);
   const internalOperations = operations(canonicalOpenApi, internal?.pathPrefix ?? '/internal/v1');
   add(errors, internalOperations.length === EXPECTED_INTERNAL_OPERATION_COUNT, `internal operation baseline drift: expected ${EXPECTED_INTERNAL_OPERATION_COUNT}, got ${internalOperations.length}`);
+  const publicOperations = operations(canonicalOpenApi, policy.d2Boundary?.publicPrefix ?? '/api/v1');
+  const expectedM1015Keys = new Set(EXPECTED_M1015_INTERNAL_OPERATIONS.map((expected) => `${expected.method} ${expected.route}`));
+  const expectedM1015OperationIds = new Set(EXPECTED_M1015_INTERNAL_OPERATIONS.map((expected) => expected.operationId));
+  const m1015Operations = internalOperations.filter((item) => expectedM1015OperationIds.has(item.operation?.operationId));
+  const actualM1015Keys = new Set(m1015Operations.map((item) => `${item.method} ${item.route}`));
+  add(
+    errors,
+    m1015Operations.length === EXPECTED_M1015_INTERNAL_OPERATIONS.length
+      && actualM1015Keys.size === expectedM1015Keys.size
+      && [...expectedM1015Keys].every((key) => actualM1015Keys.has(key)),
+    'M1-015 internal operation set must exactly contain the canonical snapshot and revoke operations',
+  );
+  for (const expected of EXPECTED_M1015_INTERNAL_OPERATIONS) {
+    const operation = internalOperations.find((item) => item.route === expected.route && item.method === expected.method);
+    add(
+      errors,
+      operation?.operation?.operationId === expected.operationId
+        && operation?.operation?.['x-owner'] === expected.owner
+        && operation?.operation?.['x-contract']?.task === 'P1R-M1-015'
+        && operation?.operation?.['x-contract']?.canonical === true,
+      `expected M1-015 internal operation is missing or has an invalid identity: ${expected.method} ${expected.route}`,
+    );
+    add(errors, isDeepStrictEqual(operation?.operation?.security, expected.security), `M1-015 internal operation must use B8WorkloadIdentity: ${expected.operationId}`);
+    const authorization = operation?.operation?.['x-authorization'];
+    add(
+      errors,
+      authorization?.defaultDecision === expected.authorization.defaultDecision
+        && authorization?.requiredPermission === expected.authorization.requiredPermission
+        && exactArray(authorization?.allowedActors, expected.authorization.allowedActors)
+        && authorization?.clientAuthority === expected.authorization.clientAuthority,
+      `M1-015 internal operation authorization is invalid or not fail-closed: ${expected.operationId}`,
+    );
+    add(errors, !publicOperations.some((item) => item.operation?.operationId === expected.operationId), `M1-015 internal operation must not be exposed under the public prefix: ${expected.operationId}`);
+  }
   return { internalOperations, denied: internal?.externalExposure === 'DENY' ? internalOperations.length : 0 };
 }
 

@@ -107,14 +107,16 @@
 
 **逐条登记**：在 [980plus 功能点设计登记册](08-980plus-功能点设计登记册.md) 中按域筛选 INF；每一条需保留来源、状态、设计锚点和 review 结论。
 
-### COM · 商业化会员、统一收银台与家庭组共享
+### COM · 商业化会员与统一收银台（家庭组仅保留后续目标）
 
 **本版单元**：46；Phase 1 32 / Phase 2 8 / Phase 3 6  
 **设计入口**：[04-Phase1-成长社群商业后台功能设计.md](04-Phase1-成长社群商业后台功能设计.md)  
 **路由宿主**：commerce/*；me/membership；orders；official-site/pricing  
 **终端**：apps/mobile + apps/learner-web + apps/official-site；收银和回调由 commerce-service 统一拥有
 
-**交互意图**：P0 仅建设微信/支付宝/Apple provider 适配、回调验签、退款/对账与沙盒验证；生产开关默认关闭，只有资质、平台审核、沙盒、验签、退款、对账、回滚和审计 Gate 全部通过后才可开启；首发不启用自动续费。 把 SKU、订单、支付回调、权益、退款和家庭组放在可审计的商业链路中，避免前端自行判断权益。
+**当前冻结边界**：`P1R-M1-015` 只冻结 D2 静态契约，唯一 active provider 为 `SANDBOX_HMAC`；`productionPaymentEnabled=false`、`autoRenewalEnabled=false`，真实凭据、真实 provider route/traffic 均禁止。微信、支付宝、Apple IAP 是后续生产接入目标，家庭组、优惠券和账号/会员合并也不进入当前 canonical 写路径；它们不得被本文的功能库存描述解释为已经实现或可运行。
+
+**交互意图**：把 SKU、不可变价格快照、订单、支付尝试、回调收据、权益流水/快照、退款、对账和审计引用放入可追溯的商业链路，避免前端、Gateway 或支付成功页自行授予权益。生产支付只有在资质、平台审核、sandbox、验签、退款、对账、回滚、审计、隐私与安全/PEP Gate 全部形成运行证据后才可另行开启。
 
 **主流程**：浏览方案 → 选择 SKU → 创建订单 → 支付/回调 → 权益激活 → 使用 → 到期/退款/降级
 
@@ -122,11 +124,11 @@
 
 **状态设计**：ST-L/ST-J；PENDING/ACTIVE/GRACE/EXPIRED/REVOKED；支付等待、重复回调、退款和权益延迟可追溯。八态细则见 [统一交互与页面状态设计](01-统一交互与页面状态设计.md)。
 
-**契约与事实源**：Gateway → commerce-service；sku、order、payment_callback、entitlement、household、refund、audit_log。P0 仅建设微信/支付宝/Apple provider 适配、回调验签、退款/对账与沙盒验证；生产开关默认关闭，只有资质、平台审核、沙盒、验签、退款、对账、回滚和审计 Gate 全部通过后才可开启；首发不启用自动续费。 订单与权益按主体隔离；财务、客服、审计为独立 scope。
+**契约与事实源**：Gateway → commerce-service；`sku`、`price_snapshot`、`order`、`payment_attempt`、`callback_receipt`、`entitlement_ledger`、`entitlement_snapshot`、`refund`、`reconciliation` 与 `audit_ref`。家庭组不属于当前事实集合。订单与权益按服务端主体隔离；财务、客服、审计为独立 scope，客户端提交的 tenant/owner/provider/result/entitlement 等权限或结果事实一律不可信。
 
-**事件**：order.created.v1、payment.callback_received.v1、entitlement.activated.v1、refund.completed.v1。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
+**事件**：当前 canonical 仅为 `commerce.order.created.v2`、`commerce.payment.requested.v2`、`commerce.payment.callback_received.v2`、`commerce.payment.verified.v2`、`commerce.entitlement.activated.v2`、`commerce.entitlement.revoked.v2`、`commerce.refund.settled.v2`、`commerce.reconciliation.discrepancy_recorded.v2`、`commerce.reconciliation.recovery_receipted.v2`。B5/B13 的 v1 commerce 事件只作 historical input，不双发、不晋升 canonical。所有事件沿 requestId、traceId、eventId/clientEventId 关联到领域事实。
 
-**验收**：支付回调按供应商事件号/JWS 去重；前端不展示未确认权益；退款和到期降级为不可变流水并可回放。
+**验收**：`SANDBOX_HMAC` 回调必须验证 workload 身份、单 active HMAC key、规范化签名元组以及订单/支付尝试/金额/币种绑定，并按 tenant + provider + providerEventId 去重；同事件不同摘要必须拒绝。前端不展示或授予未确认权益；退款和到期降级为不可变流水并可回放。以上均为静态验收口径，不代表 sandbox runtime、真实渠道、密钥轮换或回放已经验证。
 
 **逐条登记**：在 [980plus 功能点设计登记册](08-980plus-功能点设计登记册.md) 中按域筛选 COM；每一条需保留来源、状态、设计锚点和 review 结论。
 

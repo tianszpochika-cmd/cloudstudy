@@ -44,8 +44,8 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
     publicOperationCount: 350,
     coveredPublicOperationCount: 350,
     publicCoverageErrorCount: 0,
-    internalOperationCount: 51,
-    externalDeniedInternalOperationCount: 51,
+    internalOperationCount: 53,
+    externalDeniedInternalOperationCount: 53,
     canonicalProjectionMatches: true,
   });
 });
@@ -101,6 +101,19 @@ test('all internal operations remain externally denied and require network isola
     document[extension].internalOperationPolicy.externalExposure = 'ALLOW';
     document[extension].internalOperationPolicy.applicationDenyIsSufficient = true;
   }, /all internal operations must deny public exposure|require network isolation/);
+});
+
+test('M1-015 entitlement operations remain internal-only and cannot be exposed publicly', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    const revoke = canonicalOpenApi.paths['/internal/v1/commerce/entitlements/{entitlementId}/revoke'];
+    canonicalOpenApi.paths['/api/v1/commerce/entitlements/{entitlementId}/revoke'] = structuredClone(revoke);
+  }, /public operation baseline drift|must not be exposed under the public prefix/);
+});
+
+test('M1-015 entitlement operations cannot weaken workload-only authorization', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    canonicalOpenApi.paths['/internal/v1/commerce/entitlements/{entitlementId}/snapshot'].post.security = [{ bearerAuth: [] }];
+  }, /must use B8WorkloadIdentity/);
 });
 
 test('credentialed browser origins cannot use a wildcard', () => {

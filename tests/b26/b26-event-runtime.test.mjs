@@ -21,14 +21,14 @@ test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pen
   assert.equal(result.staticStatus, 'PASS')
   assert.equal(result.runtimeStatus, 'pending')
   assert.equal(result.runtimeGate, 'static-only')
-  assert.equal(result.topicCount, 9)
+  assert.equal(result.topicCount, 10)
   assert.equal(result.fragmentEventCount, 7)
-  assert.equal(result.routedCanonicalEventCount, 25)
+  assert.equal(result.routedCanonicalEventCount, 34)
   assert.equal(result.fragmentPayloadSchemaCount, 7)
   assert.equal(result.eventCount, 7)
-  assert.equal(result.routeCount, 25)
+  assert.equal(result.routeCount, 34)
   assert.equal(result.payloadSchemaCount, 7)
-  assert.equal(result.consumerGroupCount, 28)
+  assert.equal(result.consumerGroupCount, 32)
   assert.equal(result.runtimeEvidencePending, true)
 })
 
@@ -66,6 +66,15 @@ test('B26 freezes assessment placement completion on the assessment topic with b
 
 test('B26 freezes M1-014 trusted source, gamification, and social routes with least-privilege consumer groups', () => {
   const expectedRoutes = {
+    'commerce.order.created.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.payment.requested.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.payment.callback_received.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.payment.verified.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.entitlement.activated.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.entitlement.revoked.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.refund.settled.v2': ['platform.commerce.v1', ['cg.content-from-commerce.v1', 'cg.learning-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.reconciliation.discrepancy_recorded.v2': ['platform.commerce.v1', ['cg.workflow-from-commerce.v1', 'cg.audit-from-commerce.v1']],
+    'commerce.reconciliation.recovery_receipted.v2': ['platform.commerce.v1', ['cg.audit-from-commerce.v1']],
     'assessment.item.assessed.v2': ['platform.assessment.v1', ['cg.learning-from-assessment.v1', 'cg.gamification-from-assessment.v1', 'cg.workflow-from-assessment.v1']],
     'learning.task.completed.v2': ['platform.learning.v1', ['cg.gamification-from-learning.v1', 'cg.workflow-from-learning.v1']],
     'learning.mastery.projected.v2': ['platform.learning.v1', ['cg.assessment-from-learning.v1', 'cg.gamification-from-learning.v1', 'cg.social-from-learning.v1', 'cg.workflow-from-learning.v1']],
@@ -89,7 +98,7 @@ test('B26 freezes M1-014 trusted source, gamification, and social routes with le
   assert.ok(reviewRoute)
   assert.equal(reviewRoute.consumerGroups.includes('cg.gamification-from-learning.v1'), false)
 
-  for (const [topicName, ownerService] of [['platform.gamification.v1', 'gamification-service'], ['platform.social.v1', 'social-service']]) {
+  for (const [topicName, ownerService] of [['platform.gamification.v1', 'gamification-service'], ['platform.social.v1', 'social-service'], ['platform.commerce.v1', 'commerce-service']]) {
     const topic = manifest.topics.find((candidate) => candidate.name === topicName)
     assert.equal(topic.ownerService, ownerService)
     assert.equal(topic.producerPrincipal, `svc.${ownerService}`)

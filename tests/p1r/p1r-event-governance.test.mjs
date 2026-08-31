@@ -49,16 +49,16 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   const report = validateEventGovernance({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
-    totalEvents: 166,
-    canonicalEvents: 25,
+    totalEvents: 175,
+    canonicalEvents: 34,
     historicalCandidates: 141,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 68,
+    canonicalConsumerBindings: 88,
     plannedEventGaps: 7,
     d2ContractClosedEventGaps: 9,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 25,
-    asyncApiOperations: 93,
+    asyncApiChannels: 34,
+    asyncApiOperations: 122,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -68,10 +68,10 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 25);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 25);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 68);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 25, operationCount: 93 });
+  assert.equal(Object.keys(projection.channels).length, 34);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 34);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 88);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 34, operationCount: 122 });
 });
 
 test('M1-014 reward-source policy requires a complete approved profile and predicate beyond a Kafka consumer binding', () => {
@@ -147,9 +147,9 @@ test('M1-014 reward-source policy requires a complete approved profile and predi
   assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', { ...correctAssessment, eventName: 'learning.review.scheduled.v2' }), false);
 });
 
-test('M1-014 fragment inventory has the exact sixteenth GAM/SOC source fragment and event order', () => {
+test('M1-014/M1-015 fragment inventory freezes the GAM/SOC and commerce source order', () => {
   const inventory = baseline.catalog['x-p1r-event-governance'].fragmentInventory;
-  assert.equal(inventory.length, 16);
+  assert.equal(inventory.length, 17);
   assert.deepEqual(inventory.find((entry) => entry.path === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json'), {
     path: 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json',
     eventNames: [
@@ -161,6 +161,20 @@ test('M1-014 fragment inventory has the exact sixteenth GAM/SOC source fragment 
       'study_room.seat_left.v2',
       'leaderboard.snapshot_published.v2',
       'social.report.created.v2',
+    ],
+  });
+  assert.deepEqual(inventory.find((entry) => entry.path === 'packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json'), {
+    path: 'packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json',
+    eventNames: [
+      'commerce.order.created.v2',
+      'commerce.payment.requested.v2',
+      'commerce.payment.callback_received.v2',
+      'commerce.payment.verified.v2',
+      'commerce.entitlement.activated.v2',
+      'commerce.entitlement.revoked.v2',
+      'commerce.refund.settled.v2',
+      'commerce.reconciliation.discrepancy_recorded.v2',
+      'commerce.reconciliation.recovery_receipted.v2',
     ],
   });
   assert.deepEqual(inventory.map((entry) => entry.path), [...inventory.map((entry) => entry.path)].sort());
@@ -403,7 +417,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     ['topic owner drift', (input) => {
       input.b26Runtime.topics.find((topic) => topic.name === 'platform.workflow.v1').ownerService = 'audit-service';
     }, /producer must match the B26 topic owner/],
-    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact twenty-five canonical governance events/],
+    ['extra B26 event route', (input) => { input.b26Runtime.eventRouting.push(structuredClone(input.b26Runtime.eventRouting[0])); }, /duplicates event routes|exact thirty-four canonical governance events/],
     ['consumer order drift', (input) => { canonical(input)['x-p1r-governance'].consumers.reverse(); }, /consumers and order must match/],
     ['client consumer group', (input) => { canonical(input)['x-p1r-governance'].consumers[0].consumerGroup = 'cg.browser-client.v1'; }, /cannot represent a client/],
     ['duplicate consumer group', (input) => {
@@ -435,7 +449,7 @@ test('event governance fails closed on owner, routing, status, shape, projection
     }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
-    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact twenty-five/],
+    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact thirty-four/],
     ['wrong planned closure family', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].family = 'WRONG'; }, /family must match the frozen gap registry/],
     ['closed content gap regresses to planned', (input) => {
       input.catalog['x-p1r-event-governance'].plannedClosures

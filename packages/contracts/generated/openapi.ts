@@ -3412,6 +3412,126 @@ export type M1014LeaderboardMasteryFact = { tenantId: string; principalId: strin
  */
 export type M1014LeaderboardXpFact = { ledgerEntryId: string; principalId: string; tenantId: string; entryType: "CREDIT" | "DEBIT" | "COMPENSATION"; amount: number; currency: "NON_CASH_PLATFORM_CREDIT"; tupleKey: string; dedupeKey: string; lineageDigest: string; rewardRuleVersion: string; sourceEventId: string; sourceEventName: "learning.task.completed.v2" | "assessment.item.assessed.v2" | "learning.mastery.projected.v2"; createdAt: string; auditRef: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type M1015GracePolicy = ({ mode: "NONE" | "BOUNDED_ACTIVE_ONLY"; maxSeconds: number; eligibleState: "ACTIVE"; denyOn: readonly ["REFUND" | "REVOKE" | "EXPIRE" | "SECURITY" | "UNKNOWN", "REFUND" | "REVOKE" | "EXPIRE" | "SECURITY" | "UNKNOWN", "REFUND" | "REVOKE" | "EXPIRE" | "SECURITY" | "UNKNOWN", "REFUND" | "REVOKE" | "EXPIRE" | "SECURITY" | "UNKNOWN", "REFUND" | "REVOKE" | "EXPIRE" | "SECURITY" | "UNKNOWN"]; }) & ({ mode: "NONE"; maxSeconds: 0; } | { mode: "BOUNDED_ACTIVE_ONLY"; maxSeconds: number; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015EntitlementTombstone = ({ present: boolean; version: number; effectiveAt: string | null; }) & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015EntitlementInvalidation = { required: true; version: number; receiptRef: string; reasonCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015PublicCatalog = { catalogVersion: string; uiLocale: string; contentLocale: string; plans: ReadonlyArray<M1015PublicPlan>; publishedAt: string | null; checkoutPath: string; productionPaymentEnabled: false; autoRenewalEnabled: false; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015PublicPlan = ({ planId: string; skuId: string; title: string; billingPeriod: "FREE" | "MONTH" | "QUARTER" | "YEAR" | "PERPETUAL"; currency: string; amountMinor: number; priceSnapshotId: string; availability: "PUBLISHED" | "COMING_SOON" | "UNAVAILABLE"; entitlementCode: string; }) & ({ billingPeriod: "PERPETUAL"; availability: "COMING_SOON" | "UNAVAILABLE"; } | { billingPeriod: "FREE" | "MONTH" | "QUARTER" | "YEAR"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015Sku = ({ skuId: string; title: string; description: string; billingPeriod: "FREE" | "ONE_TIME" | "MONTH" | "QUARTER" | "YEAR" | "PERPETUAL"; currency: string; amountMinor: number; availability: "PUBLISHED" | "COMING_SOON" | "UNAVAILABLE"; entitlementCode: string; priceSnapshotId: string; }) & ({ billingPeriod: "PERPETUAL"; availability: "COMING_SOON" | "UNAVAILABLE"; } | { billingPeriod: "FREE" | "ONE_TIME" | "MONTH" | "QUARTER" | "YEAR"; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015Entitlement = ({ entitlementId: string; entitlementCode: string; scopeCode: string; entitlementVersion: number; state: "PENDING" | "ACTIVE" | "GRACE" | "EXPIRED" | "REVOKED"; sourceType: "VERIFIED_PAYMENT" | "REDEEMED_ACTIVATION"; sourceRef: string; sourceVersion: number; policyVersion: string; effectiveAt: string; startsAt: string; expiresAt: string | null; graceUntil?: string; graceReason?: string; gracePolicy: M1015GracePolicy; tombstone: M1015EntitlementTombstone; invalidation: M1015EntitlementInvalidation; stateVersion: number; }) & ({ state: "PENDING" | "ACTIVE"; tombstone: { present: false; version: 0; effectiveAt: null; } & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; }); graceUntil?: never; graceReason?: never; } | { graceUntil: string; graceReason: string; state: "GRACE"; gracePolicy: { mode: "BOUNDED_ACTIVE_ONLY"; maxSeconds: number; } & ({ mode: "NONE"; maxSeconds: 0; } | { mode: "BOUNDED_ACTIVE_ONLY"; maxSeconds: number; }); tombstone: { present: false; version: 0; effectiveAt: null; } & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; }); } | { state: "EXPIRED" | "REVOKED"; tombstone: { present: true; version: number; effectiveAt: string; } & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; }); graceUntil?: never; graceReason?: never; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015Order = { orderId: string; skuId: string; priceSnapshotId: string; state: "CREATED" | "PAYMENT_PENDING" | "PAID" | "REFUND_PENDING" | "REFUNDED" | "CANCELLED" | "EXPIRED"; stateVersion: number; currency: string; amountMinor: number; channel: "SANDBOX_HMAC"; environment: "SANDBOX"; createdAt: string; updatedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015OrderCreateRequest = { skuId: string; expectedPriceSnapshotId: string; sourcePlatform: "MOBILE" | "WEB" | "PWA"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015PaymentReadiness = { enabled: false; reasonCode: "CONTRACT_ONLY_NOT_RUNTIME_VERIFIED"; providerAllowList: readonly ["SANDBOX_HMAC"]; providers: readonly [M1015ProviderReadiness]; productionPaymentEnabled: false; autoRenewalEnabled: false; sandboxOnly: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015ProviderReadiness = { provider: "SANDBOX_HMAC"; environment: "SANDBOX"; enabled: false; sandbox: true; productionPaymentEnabled: false; autoRenewalEnabled: false; reasonCode: "CONTRACT_ONLY_NOT_RUNTIME_VERIFIED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015PaymentIntentRequest = { provider: "SANDBOX_HMAC"; expectedOrderStateVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015PaymentIntentResult = { orderId: string; paymentAttemptId: string; state: "PREPARED" | "AWAITING_CALLBACK" | "VERIFIED" | "REJECTED" | "EXPIRED"; stateVersion: number; provider: "SANDBOX_HMAC"; environment: "SANDBOX"; payable: boolean; reasonCode: string; productionPaymentEnabled: false; autoRenewalEnabled: false; intentRef?: string | null; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015RefundRequest = { reasonCode: string; expectedStateVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015Refund = ({ refundId: string; orderId: string; refundMode: "FULL_ONLY"; state: "REQUESTED" | "REVIEW_PENDING" | "PROVIDER_PENDING" | "SETTLED" | "REJECTED" | "FAILED" | "CANCELLED"; reasonCode: string; expectedStateVersion: number; stateVersion: number; approvalState: "NOT_REQUIRED" | "PENDING" | "APPROVED" | "REJECTED"; approvalRef: string; auditRef: string; receiptRef: string; createdAt: string; updatedAt: string; postRecoveryRerunRequired: true; settlementReceiptRef?: string; entitlementRevocationReceiptRef?: string; }) & ({ settlementReceiptRef: string; entitlementRevocationReceiptRef: string; state: "SETTLED"; approvalState: "APPROVED"; } | { state: "REQUESTED" | "REVIEW_PENDING" | "PROVIDER_PENDING" | "REJECTED" | "FAILED" | "CANCELLED"; settlementReceiptRef?: never; entitlementRevocationReceiptRef?: never; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015ActivationRedeemRequest = { activationCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015ProviderCallbackRequest = { providerEventId: string; transactionId: string; orderId: string; paymentAttemptId: string; amountMinor: number; currency: string; result: "PAID" | "REFUNDED" | "REJECTED"; occurredAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015ProviderCallbackReceipt = ({ callbackReceiptRef: string; provider: "SANDBOX_HMAC"; environment: "SANDBOX"; providerEventId: string; transactionRef: string; orderId: string; paymentAttemptId: string; amountMinor: number; currency: string; result: "PAID" | "REFUNDED" | "REJECTED"; occurredAt: string; receivedAt: string; replayed: boolean; entitlementActivated: boolean; verificationRef: string; sanitized: true; }) & ({ result: "PAID"; entitlementActivated: boolean; } | { result: "REFUNDED" | "REJECTED"; entitlementActivated: false; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015ReconciliationReplayRequest = { reconciliationCaseRef: string; batchRef: string; windowStart: string; windowEnd: string; expectedStateVersion: number; expectedOrderState: string; expectedPaymentAttemptState: string; expectedEntitlementVersion: number; sourceFactDigests: readonly [string, ...Array<string>]; remediationPlanDigest: string; approvalRefs: readonly [string, string]; policyVersion: string; recoveryMode: "REPLAY_ONLY" | "CONTROLLED_RECOVERY"; recoveryReasonCode: string; };
+
+/**
+ * Replay/recovery request receipt only. It is not the post-rerun closure event; commerce.reconciliation.recovery_receipted.v2 separately records CLOSED with MATCHED_AFTER_RECOVERY.
+ */
+export type M1015ReconciliationRecoveryReceipt = { reconciliationCaseRef: string; batchRef: string; state: "ACCEPTED" | "REPLAYED" | "RECOVERY_PENDING" | "RECOVERED" | "REJECTED"; expectedStateVersion: number; stateVersion: number; replayReceiptRef: string; recoveryReceiptRef: string; approvalRefs: readonly [string, string]; auditRef: string; domainFactsUntouched: true; postRecoveryRerun: { required: true; state: "PENDING" | "COMPLETED" | "FAILED"; rerunRef: string; }; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015EntitlementSnapshotResolveRequest = { minimumPolicyVersion: string; expectedInvalidationVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015EntitlementSnapshot = ({ snapshotRef: string; entitlementId: string; entitlementVersion: number; entitlementCode: string; scopeCode: string; state: "PENDING" | "ACTIVE" | "GRACE" | "EXPIRED" | "REVOKED"; sourceType: "VERIFIED_PAYMENT" | "REDEEMED_ACTIVATION"; sourceRef: string; sourceVersion: number; policyVersion: string; effectiveAt: string; startsAt: string; expiresAt: string | null; graceUntil?: string; graceReason?: string; gracePolicy: M1015GracePolicy; tombstone: M1015EntitlementTombstone; invalidation: M1015EntitlementInvalidation; pepDecisionAuthority: "CONSUMER_LOCAL_PEP"; }) & ({ state: "PENDING" | "ACTIVE"; tombstone: { present: false; version: 0; effectiveAt: null; } & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; }); graceUntil?: never; graceReason?: never; } | { graceUntil: string; graceReason: string; state: "GRACE"; gracePolicy: { mode: "BOUNDED_ACTIVE_ONLY"; maxSeconds: number; } & ({ mode: "NONE"; maxSeconds: 0; } | { mode: "BOUNDED_ACTIVE_ONLY"; maxSeconds: number; }); tombstone: { present: false; version: 0; effectiveAt: null; } & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; }); } | { state: "EXPIRED" | "REVOKED"; tombstone: { present: true; version: number; effectiveAt: string; } & ({ present: false; version: 0; effectiveAt: null; } | { present: true; version: number; effectiveAt: string; }); graceUntil?: never; graceReason?: never; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015EntitlementRevokeRequest = { reasonCode: string; expectedStateVersion: number; sourceFactRef: string; approvalRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1015EntitlementRevokeReceipt = { entitlementId: string; previousState: "PENDING" | "ACTIVE" | "GRACE" | "EXPIRED"; state: "REVOKED"; entitlementVersion: number; expectedStateVersion: number; stateVersion: number; approvalRef: string; auditRef: string; receiptRef: string; effectiveAt: string; invalidation: M1015EntitlementInvalidation; tombstone: M1015EntitlementTombstone & { present: true; version: number; effectiveAt: string; }; postRecoveryRerunRequired: false; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -3632,23 +3752,23 @@ export interface ApiOperationRegistry {
   updateB4OfflineDownload: { method: "PATCH"; path: "/api/v1/sync/offline-downloads/{downloadId}"; request: B4OfflineDownloadRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   cleanupB4OfflineDownload: { method: "POST"; path: "/api/v1/sync/offline-downloads/{downloadId}/cleanup"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   appealB4ModerationReport: { method: "POST"; path: "/api/v1/social/moderation/reports/{reportId}/appeal"; request: B4AppealRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  listB13CommerceSkus: { method: "GET"; path: "/api/v1/commerce/skus"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13Sku>; }; idempotent: false };
+  listB13CommerceSkus: { method: "GET"; path: "/api/v1/commerce/skus"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1015Sku>; }; idempotent: false };
   getCommerceSku: { method: "GET"; path: "/api/v1/commerce/skus/{skuId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
-  listB13CommerceOrders: { method: "GET"; path: "/api/v1/commerce/orders"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13Order>; }; idempotent: false };
-  createB13CommerceOrder: { method: "POST"; path: "/api/v1/commerce/orders"; request: B13OrderCreateRequest; response: ApiSuccessEnvelope & { data: B13Order; }; idempotent: true };
+  listB13CommerceOrders: { method: "GET"; path: "/api/v1/commerce/orders"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1015Order>; }; idempotent: false };
+  createB13CommerceOrder: { method: "POST"; path: "/api/v1/commerce/orders"; request: M1015OrderCreateRequest; response: ApiSuccessEnvelope & { data: M1015Order; }; idempotent: true };
   getCommerceOrder: { method: "GET"; path: "/api/v1/commerce/orders/{orderId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   receiveWechatCallback: { method: "POST"; path: "/api/v1/commerce/wechat/callback"; request: B5ProviderCallbackRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   receiveAlipayNotify: { method: "POST"; path: "/api/v1/commerce/alipay/notify"; request: B5ProviderCallbackRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   verifyAppleTransaction: { method: "POST"; path: "/api/v1/commerce/apple/transactions/verify"; request: B5AppleVerificationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   scanAppleRecovery: { method: "POST"; path: "/api/v1/commerce/apple/recovery/scan"; request: B5AppleVerificationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   receiveAppleNotification: { method: "POST"; path: "/api/v1/commerce/apple/notifications"; request: B5ProviderCallbackRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  listB13MyEntitlements: { method: "GET"; path: "/api/v1/commerce/entitlements/me"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13Entitlement>; }; idempotent: false };
+  listB13MyEntitlements: { method: "GET"; path: "/api/v1/commerce/entitlements/me"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<M1015Entitlement>; }; idempotent: false };
   createHousehold: { method: "POST"; path: "/api/v1/commerce/households"; request: B5HouseholdRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   createHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/{householdId}/invitations"; request: B5InvitationRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   acceptHouseholdInvitation: { method: "POST"; path: "/api/v1/commerce/households/invitations/accept"; request: B5InvitationAcceptRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   removeHouseholdMember: { method: "DELETE"; path: "/api/v1/commerce/households/{householdId}/members/{memberUserId}"; request: never; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
-  redeemB13ActivationCode: { method: "POST"; path: "/api/v1/commerce/activation-codes/redeem"; request: B13ActivationRedeemRequest; response: ApiSuccessEnvelope & { data: B13Entitlement; }; idempotent: true };
-  requestB13OrderRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: B13RefundRequest; response: ApiSuccessEnvelope & { data: B13Refund; }; idempotent: true };
+  redeemB13ActivationCode: { method: "POST"; path: "/api/v1/commerce/activation-codes/redeem"; request: M1015ActivationRedeemRequest; response: ApiSuccessEnvelope & { data: M1015Entitlement; }; idempotent: true };
+  requestB13OrderRefund: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/refunds"; request: M1015RefundRequest; response: ApiSuccessEnvelope & { data: M1015Refund; }; idempotent: true };
   listInvoices: { method: "GET"; path: "/api/v1/commerce/invoices"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
   createInvoice: { method: "POST"; path: "/api/v1/commerce/invoices"; request: B5InvoiceRequest; response: ApiSuccessEnvelope & { data: { [key: string]: unknown; }; }; idempotent: true };
   listSupportTickets: { method: "GET"; path: "/api/v1/support/tickets"; request: never; response: ApiCursorPageEnvelope & { data: { [key: string]: unknown; }; }; idempotent: false };
@@ -3747,11 +3867,11 @@ export interface ApiOperationRegistry {
   listB12NotificationPreferences: { method: "GET"; path: "/api/v1/notifications/preferences"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12NotificationPreference>; }; idempotent: false };
   updateB12NotificationPreference: { method: "PUT"; path: "/api/v1/notifications/preferences/{notificationType}/{channel}"; request: B12NotificationPreferenceCommand; response: ApiSuccessEnvelope & { data: B12NotificationPreference; }; idempotent: true };
   listB12Notifications: { method: "GET"; path: "/api/v1/notifications/messages"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B12NotificationMessage>; }; idempotent: false };
-  getB13PublicCommerceCatalog: { method: "GET"; path: "/api/v1/public/commerce/catalog"; request: never; response: ApiSuccessEnvelope & { data: B13PublicCatalog; }; idempotent: false };
-  getB13CommerceReadiness: { method: "GET"; path: "/api/v1/commerce/readiness"; request: never; response: ApiSuccessEnvelope & { data: B13PaymentReadiness; }; idempotent: false };
-  prepareB13PaymentIntent: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-intents"; request: B13PaymentIntentRequest; response: ApiSuccessEnvelope & { data: B13PaymentIntentResult; }; idempotent: true };
-  consumeB13PaymentProviderCallback: { method: "POST"; path: "/internal/v1/commerce/providers/{provider}/callbacks"; request: B13ProviderCallback; response: B13CallbackResult; idempotent: true };
-  replayB13CommerceReconciliation: { method: "POST"; path: "/internal/v1/commerce/reconciliation/replay"; request: B13ReconciliationRequest; response: B13ReconciliationResult; idempotent: true };
+  getB13PublicCommerceCatalog: { method: "GET"; path: "/api/v1/public/commerce/catalog"; request: never; response: ApiSuccessEnvelope & { data: M1015PublicCatalog; }; idempotent: false };
+  getB13CommerceReadiness: { method: "GET"; path: "/api/v1/commerce/readiness"; request: never; response: ApiSuccessEnvelope & { data: M1015PaymentReadiness; }; idempotent: false };
+  prepareB13PaymentIntent: { method: "POST"; path: "/api/v1/commerce/orders/{orderId}/payment-intents"; request: M1015PaymentIntentRequest; response: ApiSuccessEnvelope & { data: M1015PaymentIntentResult; }; idempotent: true };
+  consumeB13PaymentProviderCallback: { method: "POST"; path: "/internal/v1/commerce/providers/{provider}/callbacks"; request: M1015ProviderCallbackRequest; response: M1015ProviderCallbackReceipt; idempotent: true };
+  replayB13CommerceReconciliation: { method: "POST"; path: "/internal/v1/commerce/reconciliation/replay"; request: M1015ReconciliationReplayRequest; response: M1015ReconciliationRecoveryReceipt; idempotent: true };
   listB13AdminCommerceOrders: { method: "GET"; path: "/api/v1/admin/ops/commerce/orders"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13AdminOrderView>; }; idempotent: false };
   listB13SupportTickets: { method: "GET"; path: "/api/v1/admin/ops/tickets"; request: never; response: ApiCursorPageEnvelope & { data: ReadonlyArray<B13SupportTicket>; }; idempotent: false };
   createB13SupportTicket: { method: "POST"; path: "/api/v1/admin/ops/tickets"; request: B13SupportTicketCreateRequest; response: ApiSuccessEnvelope & { data: B13SupportTicket; }; idempotent: true };
@@ -3832,6 +3952,8 @@ export interface ApiOperationRegistry {
   getB10LearningRepair: { method: "GET"; path: "/api/v1/learning/repairs/{repairId}"; request: never; response: ApiSuccessEnvelope & { data: B10RepairItem; }; idempotent: false };
   getB10LearningMasteryOverview: { method: "GET"; path: "/api/v1/learning/mastery"; request: never; response: ApiSuccessEnvelope & { data: B10MasteryOverview; }; idempotent: false };
   getB10LearningReport: { method: "GET"; path: "/api/v1/learning/reports/{reportType}"; request: never; response: ApiSuccessEnvelope & { data: B10LearningReport; }; idempotent: false };
+  resolveM1015CommerceEntitlementSnapshot: { method: "POST"; path: "/internal/v1/commerce/entitlements/{entitlementId}/snapshot"; request: M1015EntitlementSnapshotResolveRequest; response: M1015EntitlementSnapshot; idempotent: true };
+  revokeM1015CommerceEntitlement: { method: "POST"; path: "/internal/v1/commerce/entitlements/{entitlementId}/revoke"; request: M1015EntitlementRevokeRequest; response: M1015EntitlementRevokeReceipt; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

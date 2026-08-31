@@ -147,6 +147,24 @@ const expectedTopicBindings = [
     ],
   },
   {
+    name: 'platform.commerce.v1',
+    ownerService: 'commerce-service',
+    producerPrincipal: 'svc.commerce-service',
+    consumerGroups: [
+      'cg.audit-from-commerce.v1:audit-service:cg.audit-from-commerce.v1:true',
+      'cg.content-from-commerce.v1:content-service:cg.content-from-commerce.v1:true',
+      'cg.learning-from-commerce.v1:learning-service:cg.learning-from-commerce.v1:true',
+      'cg.workflow-from-commerce.v1:workflow-service:cg.workflow-from-commerce.v1:true',
+    ],
+    acl: [
+      'cg.audit-from-commerce.v1:READ:ALLOW',
+      'cg.content-from-commerce.v1:READ:ALLOW',
+      'cg.learning-from-commerce.v1:READ:ALLOW',
+      'cg.workflow-from-commerce.v1:READ:ALLOW',
+      'svc.commerce-service:WRITE:ALLOW',
+    ],
+  },
+  {
     name: 'platform.content.v1',
     ownerService: 'content-service',
     producerPrincipal: 'svc.content-service',
@@ -280,6 +298,15 @@ const expectedTopicBindings = [
 const expectedEventRoutingBindings = [
   'assessment.item.assessed.v2|platform.assessment.v1|aggregateId|cg.gamification-from-assessment.v1,cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
   'assessment.placement.completed.v1|platform.assessment.v1|aggregateId|cg.learning-from-assessment.v1,cg.workflow-from-assessment.v1',
+  'commerce.entitlement.activated.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1',
+  'commerce.entitlement.revoked.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1',
+  'commerce.order.created.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
+  'commerce.payment.callback_received.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
+  'commerce.payment.requested.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
+  'commerce.payment.verified.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
+  'commerce.reconciliation.discrepancy_recorded.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.workflow-from-commerce.v1',
+  'commerce.reconciliation.recovery_receipted.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1',
+  'commerce.refund.settled.v2|platform.commerce.v1|aggregateId|cg.audit-from-commerce.v1,cg.content-from-commerce.v1,cg.learning-from-commerce.v1',
   'content.version.published.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
   'content.version.reviewed.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.audit-from-content.v1',
   'content.version.rolled_back.v1|platform.content.v1|aggregateId|cg.admin-ops-from-content.v1,cg.assessment-from-content.v1,cg.audit-from-content.v1,cg.learner-from-content.v1,cg.learning-from-content.v1',
@@ -462,7 +489,7 @@ function validateBroker(manifest, localPorts, errors) {
 
 function validateTopics(manifest, errors) {
   const topics = manifest.topics ?? []
-  requireArray(topics, 'topics', errors, 9)
+  requireArray(topics, 'topics', errors, 10)
   unique(topics.map((topic) => topic?.name), 'topic names', errors)
   const actualTopicBindings = topics
     .map((topic) => ({
@@ -479,7 +506,7 @@ function validateTopics(manifest, errors) {
     .sort((left, right) => String(left.name).localeCompare(String(right.name), 'en'))
   requireCondition(
     stableJson(actualTopicBindings) === stableJson(expectedTopicBindings),
-    'B26 topic owner, consumer-group and ACL bindings must exactly match the frozen M1-006/M1-014 policy',
+    'B26 topic owner, consumer-group and ACL bindings must exactly match the frozen M1-006/M1-015 policy',
     errors,
   )
   const groupNames = []
@@ -603,7 +630,7 @@ function validateFragment(manifest, fragment, catalog, errors) {
     .sort()
   requireCondition(
     stableJson(actualRoutingBindings) === stableJson(expectedEventRoutingBindings),
-    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006/M1-008/M1-014 policy',
+    'B26 event routing topic, partition key and consumer groups must exactly match the frozen M1-006/M1-008/M1-015 policy',
     errors,
   )
   const routing = new Map((manifest.eventRouting ?? []).map((item) => [item.eventName, item]))

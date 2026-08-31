@@ -288,7 +288,8 @@ export function mergeEvents(base, fragment, filePath) {
   }
   const normalizedFragmentPath = normalizeRepoPath(filePath);
   const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|26)-/i.test(filePath)
-    || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json';
+    || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json'
+    || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json';
   for (const event of fragment.events ?? []) {
     if (event.status !== undefined || event['x-p1r-governance'] !== undefined) {
       throw new Error(`${filePath} must not define catalog-owned status or x-p1r-governance for ${event.eventName ?? '(missing eventName)'}`);

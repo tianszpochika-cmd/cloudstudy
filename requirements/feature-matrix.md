@@ -288,19 +288,19 @@ P1R-M1-014 的专注与榜单 D2 边界：`P1_FOCUS_CREDIT_V1` 只允许服务�
 
 ## 9. 商业化收单、VIP 权益与家庭计划 (COM 域)
 
-Phase 1 P0 的支付交付限定为 SKU/订单/权益/激活码建模、渠道 provider 适配、回调验签以及沙盒验证。微信、支付宝与 Apple IAP 的生产开关默认关闭，且首发不启用自动续费；只有商户/渠道资质、平台审核、沙盒、验签、退款、对账、回滚和审计证据齐全后才能开启。
+P1R-M1-015 只冻结 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`：SKU/price snapshot、订单、activation、sandbox 回调验签、entitlement、退款和对账都有唯一 commerce owner 与失败关闭边界，但不代表支付或权益运行。当前唯一 active provider 是 `SANDBOX_HMAC`；`productionPaymentEnabled=false`、`autoRenewalEnabled=false`、`liveProviders=[]`，真实凭据、route 与 traffic 禁止。微信、支付宝与 Apple IAP 在下表仅为后续商业/渠道目标，不是当前 active canonical provider；B5/B13 v1 是 historical input，B20 static Gate 不能替代 runtime Evidence，B20/B21/B26 继续 `BLOCKED`/`NO-GO`/`pending`。只有商户/渠道资质、平台审核、sandbox runtime、验签、退款、对账、回滚、审计、安全/PEP 与 M2/M7/M8 证据齐全后才可单独申请开启。
 
 | 功能编号 | 功能大类 | 功能名称 | 细分功能与验收要点 | 适用终端 | 阶段/优先级 | 关联 PRD |
 | :--- | :--- | :--- | :--- | :--- | :---: | :--- |
-| **FEAT-COM-001** | 会员体系 | 免费层 (Free) 权益边界 | 每日免费背词 20 个、基础语法卡片、普通自习室、标准模考 1 套 | All | Phase 1 (P0) | 商业篇 §18.1 |
-| **FEAT-COM-002** | 会员体系 | VIP 专业版 (Pro) 权益矩阵 | 无限背词/复习、长难句 X 光机全开、全量自有、开放许可或合法授权训练内容、双倍星币、免广告 | All | Phase 1 (P0) | 商业篇 §18.2 |
-| **FEAT-COM-003** | 会员周期 | 非自动续费周期 SKU | 月卡、季卡、年度畅学卡与终身权益 SKU 的建模；首发不启用自动续费，具体价格和生产可售状态受商业 Gate 控制 | All | Phase 1 (P0) | 商业篇 §18.3 |
-| **FEAT-COM-004** | 收银台 | 微信支付 provider 适配与沙盒 | 完成 App/H5 provider 适配、订单绑定、回调验签和沙盒对账；生产开关默认关闭 | App/Web/H5 | Phase 1 (P0) | 商业篇 §18.4 |
-| **FEAT-COM-005** | 收银台 | 支付宝 provider 适配与沙盒 | 完成 App/H5 provider 适配、RSA2 签名/异步验签和沙盒退款/对账；生产开关默认关闭 | App/Web/H5 | Phase 1 (P0) | 商业篇 §18.4 |
-| **FEAT-COM-006** | 收银台 | Apple IAP provider 适配与沙盒 | 完成 iOS StoreKit 2 沙盒和服务端 JWS 验签；自动续费与生产开关默认关闭 | iOS App | Phase 1 (P0) | 商业篇 §18.4 |
-| **FEAT-COM-007** | 收单状态机 | 沙盒防丢单补单机制 | 在沙盒中扫描未完结 IAP 事务并上报服务端重放补单；生产支付未通过 Gate 前不得启用 | iOS App | Phase 1 (P0) | 商业篇 §18.4 |
-| **FEAT-COM-008** | 权益共享 | Household 多账户共享计划 | 1 个主账号购买家庭版 VIP，可邀请绑定最多 3 个独立家庭成员账号 | App/Web/H5 | Phase 1 (P1) | 商业篇 §18.5 |
-| **FEAT-COM-009** | 订单中心 | 统一订单与账单明细 | 查询历史购买记录、支付渠道、发票申请入口与权益状态；自动续费管理仅在后续 Gate 通过并启用后展示 | App/Web/H5 | Phase 1 (P0) | PRD §18.12 |
+| **FEAT-COM-001** | 会员体系 | 免费层 (Free) 权益边界 | 每日免费背词 20 个、基础语法卡片、普通自习室、标准模考 1 套；权益准入必须由 content/learning 本地 PEP 回读版本化 commerce snapshot，cache miss/expired/unknown 均拒绝。D2 静态已冻结，运行未验证 | All | Phase 1 (P0) | 商业篇 §18.1 |
+| **FEAT-COM-002** | 会员体系 | VIP 专业版 (Pro) 权益矩阵 | 无限背词/复习、长难句 X 光机全开、全量自有、开放许可或合法授权训练内容、双倍星币、免广告；退款/撤销/到期只降级访问、不删除学习数据，GRACE 默认 0。D2 不代表权益已在任一端生效 | All | Phase 1 (P0) | 商业篇 §18.2 |
+| **FEAT-COM-003** | 会员周期 | 非自动续费周期 SKU | 月卡、季卡、年度畅学卡为版本化 catalog 候选；SKU 模型可表达 `PERPETUAL`，但 Phase 1 不得标为可售，且不得硬编码价格或永久权益。首发不启用自动续费，具体价格和生产可售状态受后续商业 Gate 控制 | All | Phase 1 (P0) | 商业篇 §18.3 |
+| **FEAT-COM-004** | 收银台 | 微信支付 provider 适配与沙盒 | 后续 App/H5 微信渠道的订单绑定、回调验签和 sandbox 对账目标；M1-015 当前不启用微信 provider，唯一 active provider 为 `SANDBOX_HMAC`，生产开关关闭 | App/Web/H5 | Phase 1 (P0) | 商业篇 §18.4 |
+| **FEAT-COM-005** | 收银台 | 支付宝 provider 适配与沙盒 | 后续 App/H5 支付宝 RSA2/异步验签、sandbox 退款/对账目标；M1-015 当前不启用支付宝 provider，真实凭据、route/traffic 与生产开关关闭 | App/Web/H5 | Phase 1 (P0) | 商业篇 §18.4 |
+| **FEAT-COM-006** | 收银台 | Apple IAP provider 适配与沙盒 | 后续 iOS StoreKit 2 sandbox 与服务端 JWS 验签目标；M1-015 不启用 Apple IAP/自动续费/生产路径，也不将其 sandbox 视为已运行 | iOS App | Phase 1 (P0) | 商业篇 §18.4 |
+| **FEAT-COM-007** | 收单状态机 | 沙盒防丢单补单机制 | D2 冻结 generic callback 去重、绑定、replay/reconciliation 与恢复边界；未实现或验证 iOS IAP 未完结事务扫描。生产支付未通过 Gate 前不得启用 | iOS App | Phase 1 (P0) | 商业篇 §18.4 |
+| **FEAT-COM-008** | 权益共享 | Household 多账户共享计划 | 产品候选：家庭版 VIP 的人数、账务、撤销和跨 owner Saga 尚未冻结；M1-015 禁止 Household canonical 写命令，不以“最多 3 人”作为当前实现承诺 | App/Web/H5 | Phase 1 (P1) | 商业篇 §18.5 |
+| **FEAT-COM-009** | 订单中心 | 统一订单与账单明细 | 可定义历史订单列表、支付渠道、发票入口与权益状态的 D2 读取边界；不新增 order detail，不开启自动续费。真实订单/账单/发票读取、权限与跨端运行仍由 M2/M7/M8 验证 | App/Web/H5 | Phase 1 (P0) | PRD §18.12 |
 
 ---
 

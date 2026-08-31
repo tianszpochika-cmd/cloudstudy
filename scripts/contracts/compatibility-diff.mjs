@@ -917,6 +917,158 @@ export const M1014_ASYNCAPI_OPERATION_PROJECTIONS = Object.freeze([
 const M1014_B26_ADDED_TOPIC_PROJECTIONS = Object.freeze(['platform.gamification.v1', 'platform.social.v1']);
 const M1014_B26_REPLACED_TOPIC_PROJECTIONS = Object.freeze(['platform.assessment.v1', 'platform.learning.v1']);
 
+// M1-015 is a source-bound commerce promotion from the fully integrated
+// M1-014 checkpoint.  The promotion is deliberately expressed as named
+// operation/component/event/topic nodes.  B5/B13 v1 and B20 remain historical
+// or static inputs; they are never promoted by this allowance.
+export const M1015_COMMERCE_PROMOTION_ID = 'P1R-M1-015';
+export const M1015_SOURCE_CONTRACT_BASELINE_REF = '5d0bb3a0651d9205a942eca9d8e1c56b538ed73f';
+export const M1015_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1015_OPENAPI_SOURCE_SEMANTIC_SHA256 = '4ed99e38984eb422b42477d04149301d2ba05cfa1b7af1b7e5ff5344c459d0a4';
+export const M1015_EVENT_SOURCE_SEMANTIC_SHA256 = '88397f7c17eb79f73686904f69983278009ee701c9b0bea2b69e26875206cc0c';
+export const M1015_B26_SOURCE_SEMANTIC_SHA256 = 'cb5b6c24a62997861956a2f5b46b7f1e20c467430ea58caa19018af9e6682a9e';
+// These fingerprints are recomputed from the frozen-source projections.  They
+// are intentionally checked in rather than treating the mutable current
+// artifact as its own baseline.
+export const M1015_OPENAPI_EXPECTED_SEMANTIC_SHA256 = '919c96cb2f907429bd51e06badf2cc9937ad8491ca91ad7672e25fc1453af105';
+export const M1015_EVENT_EXPECTED_SEMANTIC_SHA256 = 'f54a7adc444e81b293e9d186df263e889bc63a69f1d40896f3d10fdf84098cca';
+export const M1015_B26_EXPECTED_SEMANTIC_SHA256 = '2fcf14ccdb34c4ce40cda36793c1bfe4234fa0de2af0de8066d9d739768c5a9b';
+export const M1015_POLICY_SEMANTIC_SHA256 = '388d3fc0c508428412fa669a298c9c73da3ba725e6208b6bd69e82f1e3bd62d8';
+export const M1015_APPROVED_SOURCE_FILES_SEMANTIC_SHA256 = '6a3042ac3d28c98cfc51c79fa5dceb77fc5687506ed9222bb9d8daaabd17f462';
+export const M1015_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256 = 'adb97bb4a37d6e8a8953368a5f3737fe3fb29c0f7f3c18393a2c31af45d8670c';
+export const M1015_B26_STATIC_POLICY_SEMANTIC_SHA256 = 'a967b692a61463029d4d899d8ebe32fbad0b57d1113824be5c9ad8a9dea4387e';
+export const M1015_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256 = '698d9d35ac27af19cbf7b52369c1d4d70bee5df2c9863fe59a32295a4df797c5';
+export const M1015_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256 = '3c8740c4ad362040cf6dd97913cd9de3462a85630780caf8a38ea817c970bc25';
+export const M1015_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id', 'sourceContractBaseline', 'previousPromotion', 'previousPromotionContract',
+  'immutableGovernanceBaseline', 'runtimeStatus', 'scope', 'promotionMode',
+  'allowsHistoricalV1Promotion', 'allowsDualPublish', 'approvedSourceFiles',
+  'requiredCompatibilityChecks', 'b26StaticPolicy', 'canonicalOpenApiSource',
+  'canonicalEventSource',
+]);
+export const M1015_CANONICAL_ROUTE_PROJECTIONS = Object.freeze([
+  Object.freeze({ id: 'M1015-PUBLIC-CATALOG', method: 'GET', path: '/api/v1/public/commerce/catalog', operationId: 'getB13PublicCommerceCatalog' }),
+  Object.freeze({ id: 'M1015-COMMERCE-READINESS', method: 'GET', path: '/api/v1/commerce/readiness', operationId: 'getB13CommerceReadiness' }),
+  Object.freeze({ id: 'M1015-SKU-LIST', method: 'GET', path: '/api/v1/commerce/skus', operationId: 'listB13CommerceSkus' }),
+  Object.freeze({ id: 'M1015-ENTITLEMENT-LIST', method: 'GET', path: '/api/v1/commerce/entitlements/me', operationId: 'listB13MyEntitlements' }),
+  Object.freeze({ id: 'M1015-ORDER-LIST', method: 'GET', path: '/api/v1/commerce/orders', operationId: 'listB13CommerceOrders' }),
+  Object.freeze({ id: 'M1015-ORDER-CREATE', method: 'POST', path: '/api/v1/commerce/orders', operationId: 'createB13CommerceOrder' }),
+  Object.freeze({ id: 'M1015-PAYMENT-INTENT', method: 'POST', path: '/api/v1/commerce/orders/{orderId}/payment-intents', operationId: 'prepareB13PaymentIntent' }),
+  Object.freeze({ id: 'M1015-REFUND-REQUEST', method: 'POST', path: '/api/v1/commerce/orders/{orderId}/refunds', operationId: 'requestB13OrderRefund' }),
+  Object.freeze({ id: 'M1015-ACTIVATION-REDEEM', method: 'POST', path: '/api/v1/commerce/activation-codes/redeem', operationId: 'redeemB13ActivationCode' }),
+  Object.freeze({ id: 'M1015-PROVIDER-CALLBACK', method: 'POST', path: '/internal/v1/commerce/providers/{provider}/callbacks', operationId: 'consumeB13PaymentProviderCallback' }),
+  Object.freeze({ id: 'M1015-RECONCILIATION-REPLAY', method: 'POST', path: '/internal/v1/commerce/reconciliation/replay', operationId: 'replayB13CommerceReconciliation' }),
+  Object.freeze({ id: 'M1015-ENTITLEMENT-SNAPSHOT-RESOLVE', method: 'POST', path: '/internal/v1/commerce/entitlements/{entitlementId}/snapshot', operationId: 'resolveM1015CommerceEntitlementSnapshot' }),
+  Object.freeze({ id: 'M1015-ENTITLEMENT-REVOKE', method: 'POST', path: '/internal/v1/commerce/entitlements/{entitlementId}/revoke', operationId: 'revokeM1015CommerceEntitlement' }),
+]);
+// The two new internal commerce operations are the only approved Gateway root
+// governance change in this promotion.  Keep this as a scalar projection so a
+// mutable current artifact cannot smuggle unrelated boundary changes through
+// the promotion by copying the whole Gateway policy object.
+export const M1015_OPENAPI_GATEWAY_BASELINE_OPERATION_COUNT = Object.freeze({
+  location: 'x-p1r-gateway-boundary.internalOperationPolicy.baselineOperationCount',
+  from: 51,
+  to: 53,
+});
+export const M1015_OPENAPI_PARAMETER_PROJECTIONS = Object.freeze([
+  'M1015EntitlementId', 'M1015IdempotencyKey', 'M1015OrderId', 'M1015Provider',
+  'M1015ProviderEnvironment', 'M1015ProviderKeyId', 'M1015ProviderNonce', 'M1015ProviderSignature',
+]);
+export const M1015_OPENAPI_SCHEMA_PROJECTIONS = Object.freeze([
+  'M1015ActivationRedeemRequest', 'M1015Entitlement', 'M1015EntitlementInvalidation',
+  'M1015EntitlementRevokeReceipt', 'M1015EntitlementRevokeRequest', 'M1015EntitlementSnapshot',
+  'M1015EntitlementSnapshotResolveRequest', 'M1015EntitlementTombstone', 'M1015GracePolicy',
+  'M1015Order', 'M1015OrderCreateRequest', 'M1015PaymentIntentRequest', 'M1015PaymentIntentResult',
+  'M1015PaymentReadiness', 'M1015ProviderCallbackReceipt', 'M1015ProviderCallbackRequest',
+  'M1015ProviderReadiness', 'M1015PublicCatalog', 'M1015PublicPlan',
+  'M1015ReconciliationRecoveryReceipt', 'M1015ReconciliationReplayRequest', 'M1015Refund',
+  'M1015RefundRequest', 'M1015Sku',
+]);
+export const M1015_OPENAPI_TAG_PROJECTIONS = Object.freeze(['M1-015-Commerce']);
+export const M1015_EVENT_NAMES = Object.freeze([
+  'commerce.order.created.v2',
+  'commerce.payment.requested.v2',
+  'commerce.payment.callback_received.v2',
+  'commerce.payment.verified.v2',
+  'commerce.entitlement.activated.v2',
+  'commerce.entitlement.revoked.v2',
+  'commerce.refund.settled.v2',
+  'commerce.reconciliation.discrepancy_recorded.v2',
+  'commerce.reconciliation.recovery_receipted.v2',
+]);
+export const M1015_EVENT_CONSUMERS = Object.freeze({
+  'commerce.order.created.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.payment.requested.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.payment.callback_received.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.payment.verified.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.entitlement.activated.v2': Object.freeze([
+    Object.freeze({ service: 'content-service', consumerGroup: 'cg.content-from-commerce.v1' }),
+    Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.entitlement.revoked.v2': Object.freeze([
+    Object.freeze({ service: 'content-service', consumerGroup: 'cg.content-from-commerce.v1' }),
+    Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.refund.settled.v2': Object.freeze([
+    Object.freeze({ service: 'content-service', consumerGroup: 'cg.content-from-commerce.v1' }),
+    Object.freeze({ service: 'learning-service', consumerGroup: 'cg.learning-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.reconciliation.discrepancy_recorded.v2': Object.freeze([
+    Object.freeze({ service: 'workflow-service', consumerGroup: 'cg.workflow-from-commerce.v1' }),
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+  'commerce.reconciliation.recovery_receipted.v2': Object.freeze([
+    Object.freeze({ service: 'audit-service', consumerGroup: 'cg.audit-from-commerce.v1' }),
+  ]),
+});
+export const M1015_EVENT_PAYLOAD_SCHEMA_PROJECTIONS = Object.freeze([
+  'M1015CommerceOrderCreated', 'M1015CommercePaymentRequested', 'M1015CommercePaymentCallbackReceived',
+  'M1015CommercePaymentVerified', 'M1015CommerceEntitlementActivated', 'M1015CommerceEntitlementRevoked',
+  'M1015CommerceRefundSettled', 'M1015CommerceReconciliationDiscrepancyRecorded',
+  'M1015CommerceReconciliationRecoveryReceipted',
+]);
+export const M1015_ASYNCAPI_CHANNEL_PROJECTIONS = Object.freeze(M1015_EVENT_NAMES.map((eventName) => eventName.replaceAll('.', '_')));
+export const M1015_ASYNCAPI_OPERATION_PROJECTIONS = Object.freeze(M1015_EVENT_NAMES.flatMap((eventName) => {
+  const channelId = eventName.replaceAll('.', '_');
+  return [
+    `publish_${channelId}`,
+    ...(M1015_EVENT_CONSUMERS[eventName] ?? []).map(({ consumerGroup }) => `subscribe_${channelId}_${consumerGroup.replace(/[.-]/g, '_')}`),
+  ];
+}));
+export const M1015_B26_TOPIC_PROJECTIONS = Object.freeze(['platform.commerce.v1']);
+export const M1015_B26_ROUTE_PROJECTIONS = Object.freeze(M1015_EVENT_NAMES);
+export const M1015_FRAGMENT_INVENTORY_ENTRY = Object.freeze({
+  path: 'packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json',
+  eventNames: M1015_EVENT_NAMES,
+});
+export const M1015_FORBIDDEN_PAYLOAD_FIELD_PATTERNS = Object.freeze([
+  '^(access|refresh)?token$',
+  '^authorization$',
+  '^password$',
+  '^(apiKey|secret|privateKey|clientSecret)$',
+  '^(phone|mobile|email|realName|identityToken|thirdPartySubject)$',
+  '^(rawAnswer|answerText|answerContent|userInput|prompt)$',
+  '^(audio|video|rawRecording|recordingBytes|screenPixels|imageBytes)$',
+  '^(paymentCallbackRaw|jws|signedPayload|webhookBody)$',
+  '^(activationCode|activationCodeHash|codeHash|signature|nonce|providerCredential|merchantIdentifier|customerIdentifier)$',
+  '^(deviceFingerprint|ipAddress|cookie)$',
+]);
+
 export const M1008_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
   ["POST /api/v1/content.request.description", "description contract changed"],
   ["POST /api/v1/content.request.x-compatibility-only", "unknown schema keyword or extension changed"],
@@ -3040,6 +3192,306 @@ function compareM1014B26Promotion(previous, current, allowance) {
   return changes;
 }
 
+function isValidM1015PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1015_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1015_COMMERCE_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1015_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID
+    && allowance.previousPromotionContract === 'config/p1r-gamification-social-contract.v1.json'
+    && allowance.immutableGovernanceBaseline === M1015_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'OPENAPI_EVENT_GOVERNANCE_M1015_V2_B26_STATIC_WITH_B5_B13_V1_B20_HISTORICAL'
+    && allowance.promotionMode === 'FUTURE_M1015_V2_ONLY'
+    && allowance.allowsHistoricalV1Promotion === false
+    && allowance.allowsDualPublish === false
+    && stableGovernanceSha256(allowance.approvedSourceFiles) === M1015_APPROVED_SOURCE_FILES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.requiredCompatibilityChecks) === M1015_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.b26StaticPolicy) === M1015_B26_STATIC_POLICY_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.canonicalOpenApiSource) === M1015_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.canonicalEventSource) === M1015_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256;
+}
+
+function copyM1015Operation(expected, approved, projection) {
+  const method = projection.method.toLowerCase();
+  const approvedPath = approved?.paths?.[projection.path];
+  if (!isRecord(approvedPath) || !isRecord(approvedPath[method])
+    || approvedPath[method].operationId !== projection.operationId) return false;
+  if (!Object.hasOwn(expected.paths ?? {}, projection.path)) {
+    expected.paths[projection.path] = { [method]: structuredClone(approvedPath[method]) };
+    return true;
+  }
+  const expectedPath = expected.paths[projection.path];
+  if (!isRecord(expectedPath) || !isRecord(expectedPath[method])) return false;
+  expectedPath[method] = structuredClone(approvedPath[method]);
+  return true;
+}
+
+function insertM1015NamedEntry(target, approved, name) {
+  if (!isRecord(target) || !isRecord(approved) || Object.hasOwn(target, name) || !isRecord(approved[name])) return false;
+  target[name] = structuredClone(approved[name]);
+  return true;
+}
+
+function insertM1015NamedArrayEntry(target, approved, key, name) {
+  if (!Array.isArray(target) || !Array.isArray(approved)) return false;
+  const targetMatches = target.filter((entry) => entry?.[key] === name);
+  const approvedMatches = approved.filter((entry) => entry?.[key] === name);
+  if (targetMatches.length !== 0 || approvedMatches.length !== 1) return false;
+  const insertionIndex = approved.findIndex((entry) => entry?.[key] === name);
+  if (insertionIndex < 0) return false;
+  target.splice(insertionIndex, 0, structuredClone(approvedMatches[0]));
+  return true;
+}
+
+function insertM1015ArrayValue(target, approved, value) {
+  if (!Array.isArray(target) || !Array.isArray(approved)
+    || target.includes(value) || approved.filter((entry) => entry === value).length !== 1) return false;
+  const insertionIndex = approved.indexOf(value);
+  const approvedWithoutValue = approved.filter((entry) => entry !== value);
+  if (stableGovernanceValue(approvedWithoutValue) !== stableGovernanceValue(target)) return false;
+  target.splice(insertionIndex, 0, value);
+  return true;
+}
+
+function insertM1015FragmentInventoryEntry(expected, approved) {
+  const previousInventory = expected?.['x-p1r-event-governance']?.fragmentInventory;
+  const approvedInventory = approved?.['x-p1r-event-governance']?.fragmentInventory;
+  const approvedEntry = Array.isArray(approvedInventory)
+    ? approvedInventory.find((entry) => entry?.path === M1015_FRAGMENT_INVENTORY_ENTRY.path)
+    : undefined;
+  if (stableGovernanceValue(approvedEntry) !== stableGovernanceValue(M1015_FRAGMENT_INVENTORY_ENTRY)) return false;
+  return insertM1015NamedArrayEntry(previousInventory, approvedInventory, 'path', M1015_FRAGMENT_INVENTORY_ENTRY.path);
+}
+
+export function buildM1015OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1015PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1015_OPENAPI_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous.paths) || !isRecord(approved.paths)
+    || !isRecord(previous.components?.parameters) || !isRecord(previous.components?.schemas)
+    || !isRecord(approved.components?.parameters) || !isRecord(approved.components?.schemas)) return undefined;
+  const expected = structuredClone(previous);
+  const previousGatewayCount = previous?.['x-p1r-gateway-boundary']?.internalOperationPolicy?.baselineOperationCount;
+  const approvedGatewayCount = approved?.['x-p1r-gateway-boundary']?.internalOperationPolicy?.baselineOperationCount;
+  if (previousGatewayCount !== M1015_OPENAPI_GATEWAY_BASELINE_OPERATION_COUNT.from
+    || approvedGatewayCount !== M1015_OPENAPI_GATEWAY_BASELINE_OPERATION_COUNT.to) return undefined;
+  expected['x-p1r-gateway-boundary'].internalOperationPolicy.baselineOperationCount = approvedGatewayCount;
+  if (!M1015_CANONICAL_ROUTE_PROJECTIONS.every((projection) => copyM1015Operation(expected, approved, projection))) return undefined;
+  for (const name of M1015_OPENAPI_PARAMETER_PROJECTIONS) {
+    if (!insertM1015NamedEntry(expected.components.parameters, approved.components.parameters, name)) return undefined;
+  }
+  for (const name of M1015_OPENAPI_SCHEMA_PROJECTIONS) {
+    if (!insertM1015NamedEntry(expected.components.schemas, approved.components.schemas, name)) return undefined;
+  }
+  for (const name of M1015_OPENAPI_TAG_PROJECTIONS) {
+    if (!insertM1015NamedArrayEntry(expected.tags, approved.tags, 'name', name)) return undefined;
+  }
+  return expected;
+}
+
+export function buildM1015EventExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1015PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1015_EVENT_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous['x-p1r-event-governance']) || !isRecord(approved['x-p1r-event-governance'])) return undefined;
+  const expected = structuredClone(previous);
+  if (!insertM1015FragmentInventoryEntry(expected, approved)) return undefined;
+  if (!insertM1015ArrayValue(expected.forbiddenPayloadFieldPatterns, approved.forbiddenPayloadFieldPatterns, M1015_FORBIDDEN_PAYLOAD_FIELD_PATTERNS[8])) return undefined;
+  if (!M1015_EVENT_NAMES.every((name) => insertM1015NamedArrayEntry(expected.events, approved.events, 'eventName', name))) return undefined;
+  if (!M1015_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.every((name) => insertM1015NamedEntry(expected.payloadSchemas, approved.payloadSchemas, name))) return undefined;
+  if (!M1015_ASYNCAPI_CHANNEL_PROJECTIONS.every((name) => insertM1015NamedEntry(expected.asyncapi?.channels, approved.asyncapi?.channels, name))) return undefined;
+  if (!M1015_ASYNCAPI_OPERATION_PROJECTIONS.every((name) => insertM1015NamedEntry(expected.asyncapi?.operations, approved.asyncapi?.operations, name))) return undefined;
+  return expected;
+}
+
+export function buildM1015B26ExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1015PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1015_B26_SOURCE_SEMANTIC_SHA256) return undefined;
+  const expected = structuredClone(previous);
+  if (!M1015_B26_TOPIC_PROJECTIONS.every((name) => insertM1015NamedArrayEntry(expected.topics, approved.topics, 'name', name))) return undefined;
+  if (!M1015_B26_ROUTE_PROJECTIONS.every((name) => insertM1015NamedArrayEntry(expected.eventRouting, approved.eventRouting, 'eventName', name))) return undefined;
+  return expected;
+}
+
+function compareM1015Value(changes, kind, previousValue, currentValue, location, reason) {
+  if (stableGovernanceValue(previousValue) !== stableGovernanceValue(currentValue)) {
+    changes.push(describeChange(kind, location, reason));
+  }
+}
+
+export const M1015_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1015_CANONICAL_ROUTE_PROJECTIONS.map((projection) => [
+    `${projection.method} ${projection.path}`,
+    'approved canonical M1-015 commerce operation changed',
+  ]),
+  ...M1015_OPENAPI_TAG_PROJECTIONS.map((name) => [`tags.${name}`, 'approved M1-015 API tag added']),
+  [M1015_OPENAPI_GATEWAY_BASELINE_OPERATION_COUNT.location, 'approved M1-015 Gateway internal operation baseline count changed from 51 to 53'],
+  ...M1015_OPENAPI_PARAMETER_PROJECTIONS.map((name) => [`components.parameters.${name}`, 'approved M1-015 component parameter added']),
+  ...M1015_OPENAPI_SCHEMA_PROJECTIONS.map((name) => [`components.schemas.${name}`, 'approved M1-015 component schema added']),
+]);
+
+export const M1015_EVENT_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ['x-p1r-event-governance.fragmentInventory', 'approved M1-015 event fragment inventory updated'],
+  ['forbiddenPayloadFieldPatterns', 'approved M1-015 forbidden payload patterns updated'],
+  ...M1015_EVENT_NAMES.map((name) => [name, 'approved canonical M1-015 commerce event added']),
+  ...M1015_EVENT_PAYLOAD_SCHEMA_PROJECTIONS.map((name) => [`payloadSchemas.${name}`, 'approved M1-015 event payload added']),
+  ...M1015_ASYNCAPI_CHANNEL_PROJECTIONS.map((name) => [`asyncapi.channels.${name}`, 'approved M1-015 AsyncAPI channel added']),
+  ...M1015_ASYNCAPI_OPERATION_PROJECTIONS.map((name) => [`asyncapi.operations.${name}`, 'approved M1-015 AsyncAPI operation added']),
+]);
+
+export const M1015_B26_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1015_B26_TOPIC_PROJECTIONS.map((name) => [`topics.${name}`, 'approved M1-015 B26 topic added']),
+  ...M1015_B26_ROUTE_PROJECTIONS.map((name) => [`eventRouting.${name}`, 'approved M1-015 B26 route added']),
+]);
+
+export function compareM1015OpenApiDescriptors(previous, current) {
+  const changes = [];
+  for (const projection of M1015_CANONICAL_ROUTE_PROJECTIONS) {
+    const method = projection.method.toLowerCase();
+    compareM1015Value(changes, 'openapi', previous?.paths?.[projection.path]?.[method], current?.paths?.[projection.path]?.[method], `${projection.method} ${projection.path}`, 'approved canonical M1-015 commerce operation changed');
+  }
+  for (const name of M1015_OPENAPI_TAG_PROJECTIONS) {
+    compareM1015Value(changes, 'openapi', (previous?.tags ?? []).find((tag) => tag?.name === name), (current?.tags ?? []).find((tag) => tag?.name === name), `tags.${name}`, 'approved M1-015 API tag added');
+  }
+  compareM1015Value(
+    changes,
+    'openapi',
+    previous?.['x-p1r-gateway-boundary']?.internalOperationPolicy?.baselineOperationCount,
+    current?.['x-p1r-gateway-boundary']?.internalOperationPolicy?.baselineOperationCount,
+    M1015_OPENAPI_GATEWAY_BASELINE_OPERATION_COUNT.location,
+    'approved M1-015 Gateway internal operation baseline count changed from 51 to 53',
+  );
+  for (const name of M1015_OPENAPI_PARAMETER_PROJECTIONS) {
+    compareM1015Value(changes, 'openapi', previous?.components?.parameters?.[name], current?.components?.parameters?.[name], `components.parameters.${name}`, 'approved M1-015 component parameter added');
+  }
+  for (const name of M1015_OPENAPI_SCHEMA_PROJECTIONS) {
+    compareM1015Value(changes, 'openapi', previous?.components?.schemas?.[name], current?.components?.schemas?.[name], `components.schemas.${name}`, 'approved M1-015 component schema added');
+  }
+  return changes;
+}
+
+export function compareM1015EventDescriptors(previous, current) {
+  const changes = [];
+  compareM1015Value(changes, 'events', previous?.['x-p1r-event-governance']?.fragmentInventory, current?.['x-p1r-event-governance']?.fragmentInventory, 'x-p1r-event-governance.fragmentInventory', 'approved M1-015 event fragment inventory updated');
+  compareM1015Value(changes, 'events', previous?.forbiddenPayloadFieldPatterns, current?.forbiddenPayloadFieldPatterns, 'forbiddenPayloadFieldPatterns', 'approved M1-015 forbidden payload patterns updated');
+  for (const name of M1015_EVENT_NAMES) {
+    compareM1015Value(changes, 'events', (previous?.events ?? []).find((event) => event?.eventName === name), (current?.events ?? []).find((event) => event?.eventName === name), name, 'approved canonical M1-015 commerce event added');
+  }
+  for (const name of M1015_EVENT_PAYLOAD_SCHEMA_PROJECTIONS) {
+    compareM1015Value(changes, 'events', previous?.payloadSchemas?.[name], current?.payloadSchemas?.[name], `payloadSchemas.${name}`, 'approved M1-015 event payload added');
+  }
+  for (const name of M1015_ASYNCAPI_CHANNEL_PROJECTIONS) {
+    compareM1015Value(changes, 'events', previous?.asyncapi?.channels?.[name], current?.asyncapi?.channels?.[name], `asyncapi.channels.${name}`, 'approved M1-015 AsyncAPI channel added');
+  }
+  for (const name of M1015_ASYNCAPI_OPERATION_PROJECTIONS) {
+    compareM1015Value(changes, 'events', previous?.asyncapi?.operations?.[name], current?.asyncapi?.operations?.[name], `asyncapi.operations.${name}`, 'approved M1-015 AsyncAPI operation added');
+  }
+  return changes;
+}
+
+export function compareM1015B26Descriptors(previous, current) {
+  const changes = [];
+  for (const name of M1015_B26_TOPIC_PROJECTIONS) {
+    compareM1015Value(changes, 'events', (previous?.topics ?? []).find((topic) => topic?.name === name), (current?.topics ?? []).find((topic) => topic?.name === name), `topics.${name}`, 'approved M1-015 B26 topic added');
+  }
+  for (const name of M1015_B26_ROUTE_PROJECTIONS) {
+    compareM1015Value(changes, 'events', (previous?.eventRouting ?? []).find((entry) => entry?.eventName === name), (current?.eventRouting ?? []).find((entry) => entry?.eventName === name), `eventRouting.${name}`, 'approved M1-015 B26 route added');
+  }
+  return changes;
+}
+
+function compareM1015OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1015PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-015.openapiPromotion', 'M1-015 promotion allowance cannot be applied without the frozen commerce policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1015_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-015.openapiPromotion.source', 'M1-015 OpenAPI promotion source is not the frozen 5d0bb3a M1-014 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'openapi',
+    previous,
+    current,
+    M1015_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-015.openapiPromotion.change-descriptors',
+    'current OpenAPI changes do not exactly match the frozen M1-015 descriptor set',
+    compareM1015OpenApiDescriptors,
+  ));
+  const expectedProjection = buildM1015OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-015.openapiPromotion.projection', 'the approved canonical commerce OpenAPI projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1015_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-015.openapiPromotion.expected-projection', 'the allowlisted M1-015 OpenAPI projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-015.openapiPromotion.projection', 'current OpenAPI is not the unique frozen-source M1-015 commerce projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1015EventPromotion(previous, current, allowance) {
+  if (!isValidM1015PromotionAllowance(allowance)) {
+    return [describeChange('events', 'm1-015.eventPromotion', 'M1-015 event allowance cannot be applied without the frozen commerce policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1015_EVENT_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'm1-015.eventPromotion.source', 'M1-015 event source is not the frozen 5d0bb3a M1-014 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1015_EVENT_EXPECTED_CHANGE_DESCRIPTORS,
+    'm1-015.eventPromotion.change-descriptors',
+    'current event changes do not exactly match the frozen M1-015 descriptor set',
+    compareM1015EventDescriptors,
+  ));
+  const expectedProjection = buildM1015EventExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'm1-015.eventPromotion.projection', 'the approved canonical commerce event projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1015_EVENT_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'm1-015.eventPromotion.expected-projection', 'the allowlisted M1-015 event projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'm1-015.eventPromotion.projection', 'current event catalog is not the unique frozen-source M1-015 commerce projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1015B26Promotion(previous, current, allowance) {
+  if (!isValidM1015PromotionAllowance(allowance)) {
+    return [describeChange('events', 'b26.m1-015.compatibilityPromotion', 'M1-015 B26 allowance cannot be applied without the frozen commerce policy allowance')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1015_B26_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('events', 'b26.m1-015.source', 'M1-015 B26 promotion source is not the frozen 5d0bb3a M1-014 projection'));
+  }
+  changes.push(...compareFrozenDescriptorSet(
+    'events',
+    previous,
+    current,
+    M1015_B26_EXPECTED_CHANGE_DESCRIPTORS,
+    'b26.m1-015.change-descriptors',
+    'current B26 changes do not exactly match the frozen M1-015 descriptor set',
+    compareM1015B26Descriptors,
+  ));
+  const expectedProjection = buildM1015B26ExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('events', 'b26.m1-015.projection', 'the approved static M1-015 commerce topic and routes cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1015_B26_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('events', 'b26.m1-015.expected-projection', 'the allowlisted M1-015 B26 projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('events', 'b26.m1-015.projection', 'current B26 policy differs from the explicit static-only M1-015 commerce projection'));
+    }
+  }
+  return changes;
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -3141,6 +3593,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1015_COMMERCE_PROMOTION_ID) {
+    return compareM1015B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID) {
     return compareM1014B26Promotion(governanceBaseline, current, allowance);
   }
@@ -3305,6 +3760,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1015_COMMERCE_PROMOTION_ID) {
+    return compareM1015EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID) {
     return compareM1014EventPromotion(previous, current, allowance);
   }
@@ -3437,6 +3895,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1015_COMMERCE_PROMOTION_ID) {
+      return compareM1015OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1014_GAMIFICATION_SOCIAL_PROMOTION_ID) {
       return compareM1014OpenApiPromotion(previous, current, allowance);
     }

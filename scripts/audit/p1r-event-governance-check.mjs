@@ -27,6 +27,15 @@ const BASE_EVENT_KEYS = [
 const EXPECTED_CANONICAL_EVENTS = [
   'assessment.item.assessed.v2',
   'assessment.placement.completed.v1',
+  'commerce.entitlement.activated.v2',
+  'commerce.entitlement.revoked.v2',
+  'commerce.order.created.v2',
+  'commerce.payment.callback_received.v2',
+  'commerce.payment.requested.v2',
+  'commerce.payment.verified.v2',
+  'commerce.reconciliation.discrepancy_recorded.v2',
+  'commerce.reconciliation.recovery_receipted.v2',
+  'commerce.refund.settled.v2',
   'content.version.published.v1',
   'content.version.reviewed.v1',
   'content.version.rolled_back.v1',
@@ -440,7 +449,7 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, governance.traceability?.sourceRefs?.includes('INT-P1-017'), 'event governance must trace to INT-P1-017');
 
   add(errors, stableJson(governance.fragmentInventory) === stableJson(EXPECTED_EVENT_FRAGMENT_INVENTORY), 'fragmentInventory must exactly match the frozen M1-006 source inventory');
-  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 16, 'fragmentInventory must contain the exact 16 governed fragment records');
+  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 17, 'fragmentInventory must contain the exact 17 governed fragment records');
   const inventoryPaths = [];
   for (const [index, fragment] of (governance.fragmentInventory ?? []).entries()) {
     exactKeys(errors, fragment, ['path', 'eventNames'], `fragmentInventory[${index}]`);
@@ -709,7 +718,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
 
   checkPlatformGovernance(catalog, errors);
   add(errors, b26Runtime.mode === 'static-only' && b26Runtime.runtimeStatus === 'pending' && b26Runtime.defaultDecision === 'NO-GO', 'B26 input must remain static-only, pending and NO-GO');
-  add(errors, Array.isArray(catalog.events) && catalog.events.length === 166, 'event catalog must contain exactly 166 current candidates');
+  add(errors, Array.isArray(catalog.events) && catalog.events.length === 175, 'event catalog must contain exactly 175 current candidates');
 
   const services = new Set((ownerPolicy.serviceOwners ?? []).map((owner) => owner.service));
   const dataOwners = new Set((ownerPolicy.serviceOwners ?? []).filter((owner) => owner.dataOwner === true).map((owner) => owner.service));
@@ -720,7 +729,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact twenty-five canonical governance events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact thirty-four canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
   if (gamificationSocialPolicy !== undefined) checkTrustedCompletionPolicy(gamificationSocialPolicy, catalog, routeByEvent, errors);
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
@@ -755,8 +764,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact twenty-five governed events');
-  add(errors, counts.canonical === 25 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 25 canonical / 141 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact thirty-four governed events');
+  add(errors, counts.canonical === 34 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 34 canonical / 141 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);

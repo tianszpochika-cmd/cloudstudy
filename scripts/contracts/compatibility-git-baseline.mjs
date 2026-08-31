@@ -52,6 +52,22 @@ import {
   compareM1014OpenApiDescriptors,
   compareM1014EventDescriptors,
   compareM1014B26Descriptors,
+  M1015_COMMERCE_PROMOTION_ID,
+  M1015_SOURCE_CONTRACT_BASELINE_REF,
+  M1015_IMMUTABLE_GOVERNANCE_BASELINE_REF,
+  M1015_PROMOTION_ALLOWANCE_KEYS,
+  M1015_POLICY_SEMANTIC_SHA256,
+  M1015_APPROVED_SOURCE_FILES_SEMANTIC_SHA256,
+  M1015_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256,
+  M1015_B26_STATIC_POLICY_SEMANTIC_SHA256,
+  M1015_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256,
+  M1015_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256,
+  buildM1015OpenApiExpectedProjection,
+  buildM1015EventExpectedProjection,
+  buildM1015B26ExpectedProjection,
+  compareM1015OpenApiDescriptors,
+  compareM1015EventDescriptors,
+  compareM1015B26Descriptors,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -75,6 +91,7 @@ const learnerPlanningContractPolicyPath = 'config/p1r-learner-planning-contract.
 const placementContractPolicyPath = 'config/p1r-placement-contract.v1.json';
 const learningLoopContractPolicyPath = 'config/p1r-learning-loop-contract.v1.json';
 const gamificationSocialContractPolicyPath = 'config/p1r-gamification-social-contract.v1.json';
+const commerceContractPolicyPath = 'config/p1r-commerce-contract.v1.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
@@ -85,6 +102,7 @@ export const REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF = M1011_SOURCE_CONTRACT
 export const REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF = M1012_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF = M1013_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF = M1014_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF = M1015_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -1100,6 +1118,67 @@ function loadM1014CompatibilityPolicy(readFile) {
   return Object.freeze({ ...policy.compatibilityPromotion });
 }
 
+const M1015_POLICY_TOP_LEVEL_KEYS = Object.freeze([
+  '$schema', 'schemaVersion', 'task', 'phase', 'startCommit', 'sourceBaseline', 'maturity', 'runtimeStatus',
+  'collectionPolicy', 'canonicalSources', 'compatibilityPromotion', 'runtimeBoundary', 'owners', 'authority',
+  'stateMachines', 'objects', 'paymentPolicy', 'activationPolicy', 'callbackPolicy', 'entitlementPolicy',
+  'refundPolicy', 'reconciliationPolicy', 'sensitiveDataPolicy', 'canonicalRouteExpectations', 'canonicalRoutes',
+  'canonicalEventExpectations', 'historicalCandidates', 'scopeExclusions', 'handoff', 'phase1Prohibitions',
+]);
+
+export function validateM1015CompatibilityPolicy(policy) {
+  const errors = [];
+  exactPolicyKeys(policy, M1015_POLICY_TOP_LEVEL_KEYS, 'commerce contract policy', errors);
+  exactPolicyValue(policy?.$schema, 'p1r.commerce-contract.v1', 'commerce contract policy $schema', errors);
+  exactPolicyValue(policy?.schemaVersion, 'p1r.commerce-contract.v1', 'commerce contract policy schemaVersion', errors);
+  exactPolicyValue(policy?.task, 'P1R-M1-015', 'commerce contract policy task', errors);
+  exactPolicyValue(policy?.phase, 'P1', 'commerce contract policy phase', errors);
+  exactPolicyValue(policy?.startCommit, '798e68c217ee4fbc12720a05c402486d35563fdb', 'commerce contract policy startCommit', errors);
+  exactPolicyValue(policy?.sourceBaseline, M1015_SOURCE_CONTRACT_BASELINE_REF, 'commerce contract source baseline', errors);
+  exactPolicyValue(policy?.maturity, 'D2_CONTRACT_READY', 'commerce contract policy maturity', errors);
+  exactPolicyValue(policy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'commerce contract policy runtimeStatus', errors);
+  if (stableGovernanceSha256(policy) !== M1015_POLICY_SEMANTIC_SHA256) {
+    errors.push('commerce contract policy is not the frozen M1-015 semantic policy value');
+  }
+
+  const promotion = policy?.compatibilityPromotion;
+  exactPolicyKeys(promotion, M1015_PROMOTION_ALLOWANCE_KEYS, 'M1-015 compatibility promotion', errors);
+  exactPolicyValue(promotion?.id, M1015_COMMERCE_PROMOTION_ID, 'M1-015 promotion id', errors);
+  exactPolicyValue(promotion?.sourceContractBaseline, M1015_SOURCE_CONTRACT_BASELINE_REF, 'M1-015 promotion source baseline', errors);
+  exactPolicyValue(promotion?.previousPromotion, M1014_GAMIFICATION_SOCIAL_PROMOTION_ID, 'M1-015 previous promotion', errors);
+  exactPolicyValue(promotion?.previousPromotionContract, 'config/p1r-gamification-social-contract.v1.json', 'M1-015 previous promotion contract', errors);
+  exactPolicyValue(promotion?.immutableGovernanceBaseline, M1015_IMMUTABLE_GOVERNANCE_BASELINE_REF, 'M1-015 immutable governance baseline', errors);
+  exactPolicyValue(promotion?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'M1-015 promotion runtimeStatus', errors);
+  exactPolicyValue(promotion?.scope, 'OPENAPI_EVENT_GOVERNANCE_M1015_V2_B26_STATIC_WITH_B5_B13_V1_B20_HISTORICAL', 'M1-015 promotion scope', errors);
+  exactPolicyValue(promotion?.promotionMode, 'FUTURE_M1015_V2_ONLY', 'M1-015 promotion mode', errors);
+  exactPolicyValue(promotion?.allowsHistoricalV1Promotion, false, 'M1-015 historical v1 promotion allowance', errors);
+  exactPolicyValue(promotion?.allowsDualPublish, false, 'M1-015 dual-publish allowance', errors);
+  for (const [field, digest, label] of [
+    ['approvedSourceFiles', M1015_APPROVED_SOURCE_FILES_SEMANTIC_SHA256, 'M1-015 approved source files'],
+    ['requiredCompatibilityChecks', M1015_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256, 'M1-015 required compatibility checks'],
+    ['b26StaticPolicy', M1015_B26_STATIC_POLICY_SEMANTIC_SHA256, 'M1-015 B26 static policy'],
+    ['canonicalOpenApiSource', M1015_CANONICAL_OPENAPI_SOURCE_SEMANTIC_SHA256, 'M1-015 canonical OpenAPI source'],
+    ['canonicalEventSource', M1015_CANONICAL_EVENT_SOURCE_SEMANTIC_SHA256, 'M1-015 canonical event source'],
+  ]) {
+    if (stableGovernanceSha256(promotion?.[field]) !== digest) errors.push(`${label} is not the frozen M1-015 value`);
+  }
+  return errors;
+}
+
+function loadM1015CompatibilityPolicy(readFile) {
+  let policy;
+  try {
+    policy = JSON.parse(readFile(path.join(repoRoot, ...commerceContractPolicyPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M1-015 compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM1015CompatibilityPolicy(policy);
+  if (errors.length > 0) {
+    throw new Error(`M1-015 compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({ ...policy.compatibilityPromotion });
+}
+
 function loadM1013SourceContractBaseline(promotion, git) {
   const ref = promotion.sourceContractBaseline;
   const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
@@ -1124,6 +1203,24 @@ function loadM1014SourceContractBaseline(promotion, git) {
   if (commit !== M1014_SOURCE_CONTRACT_BASELINE_REF) {
     throw new Error(
       `M1-014 source contract ref ${M1014_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  return {
+    ref,
+    commit,
+    openapi: JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`])),
+    catalog: JSON.parse(git(['show', `${commit}:${contractPaths.events}`])),
+    b26Runtime: JSON.parse(git(['show', `${commit}:${b26RuntimePath}`])),
+    source: `git:${commit}:packages/contracts/{openapi/v1/openapi.json,events/v1/catalog.json,../config/b26-event-runtime.json}`,
+  };
+}
+
+function loadM1015SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M1-015 source contract ref ${REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
     );
   }
   return {
@@ -1283,6 +1380,19 @@ export function runGitBaselineCompatibility({
   const needsM1012Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1013Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1014Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM1015Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const m1015BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM1015Promotion = needsM1015Promotion && m1015BaselineRefs.has(baselineCommit);
   const m1014BaselineRefs = new Set([
     REQUIRED_CI_CONTRACT_BASELINE_REF,
     REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
@@ -1292,6 +1402,7 @@ export function runGitBaselineCompatibility({
     REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
     REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
     REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF,
   ]);
   const useM1014Promotion = needsM1014Promotion && m1014BaselineRefs.has(baselineCommit);
   const m1013BaselineRefs = new Set([
@@ -1303,6 +1414,7 @@ export function runGitBaselineCompatibility({
     REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
     REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
     REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF,
   ]);
   const useM1013Promotion = needsM1013Promotion && m1013BaselineRefs.has(baselineCommit);
   const needsM1009Promotion = selectedKinds.includes('openapi');
@@ -1355,6 +1467,12 @@ export function runGitBaselineCompatibility({
     : undefined;
   const gamificationSocialSourceContractBaseline = useM1014Promotion
     ? loadM1014SourceContractBaseline(gamificationSocialPromotion, git)
+    : undefined;
+  const commercePromotion = useM1015Promotion
+    ? loadM1015CompatibilityPolicy(readFile)
+    : undefined;
+  const commerceSourceContractBaseline = useM1015Promotion
+    ? loadM1015SourceContractBaseline(commercePromotion, git)
     : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
@@ -1485,6 +1603,22 @@ export function runGitBaselineCompatibility({
       { allowance: learningLoopPromotion },
     )
     : [];
+  const m1014ToM1015OpenApiIntegrityChanges = useM1015Promotion
+    ? compareContracts(
+      'openapi',
+      gamificationSocialSourceContractBaseline.openapi,
+      commerceSourceContractBaseline.openapi,
+      { allowance: gamificationSocialPromotion },
+    )
+    : [];
+  const m1014ToM1015EventIntegrityChanges = useM1015Promotion && needsEventGovernance
+    ? compareContracts(
+      'events',
+      gamificationSocialSourceContractBaseline.catalog,
+      commerceSourceContractBaseline.catalog,
+      { allowance: gamificationSocialPromotion },
+    )
+    : [];
   const m1011SourceB26IntegrityChanges = needsEventGovernance
     ? compareB26WorkflowGovernance(
       immutableGovernanceBaseline.b26Runtime,
@@ -1513,6 +1647,13 @@ export function runGitBaselineCompatibility({
       { allowance: learningLoopPromotion },
     )
     : [];
+  const m1014ToM1015B26IntegrityChanges = useM1015Promotion && needsEventGovernance
+    ? compareB26WorkflowGovernance(
+      gamificationSocialSourceContractBaseline.b26Runtime,
+      commerceSourceContractBaseline.b26Runtime,
+      { allowance: gamificationSocialPromotion },
+    )
+    : [];
 
   const governanceSummary = immutableGovernanceBaseline === undefined
     ? undefined
@@ -1535,7 +1676,77 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1014Promotion) {
+    if (contractKind === 'openapi' && useM1015Promotion) {
+      breakingChanges = [
+        ...m1008ToM1009IntegrityChanges,
+        ...m1009ToM1010OpenApiIntegrityChanges,
+        ...m1010ToM1011OpenApiIntegrityChanges,
+        ...m1011ToM1012OpenApiIntegrityChanges,
+        ...m1012ToM1013OpenApiIntegrityChanges,
+        ...m1013ToM1014OpenApiIntegrityChanges,
+        ...m1014ToM1015OpenApiIntegrityChanges,
+        ...compareContracts(
+          'openapi',
+          commerceSourceContractBaseline.openapi,
+          current,
+          { allowance: commercePromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: commercePromotion.id,
+        sourceContractBaseline: commerceSourceContractBaseline.commit,
+        previousPromotion: gamificationSocialPromotion.id,
+        previousPromotionSource: gamificationSocialSourceContractBaseline.commit,
+        immutableGovernanceBaseline: commercePromotion.immutableGovernanceBaseline,
+        runtimeStatus: commercePromotion.runtimeStatus,
+        scope: commercePromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'events' && useM1015Promotion) {
+      const currentB26 = JSON.parse(readFile(path.join(repoRoot, ...b26RuntimePath.split('/'))));
+      breakingChanges = [
+        ...m1008ToM1010EventIntegrityChanges,
+        ...m1010ToM1011EventIntegrityChanges,
+        ...m1011ToM1012EventIntegrityChanges,
+        ...m1012ToM1013EventIntegrityChanges,
+        ...m1013ToM1014EventIntegrityChanges,
+        ...m1014ToM1015EventIntegrityChanges,
+        ...compareContracts(
+          'events',
+          commerceSourceContractBaseline.catalog,
+          current,
+          { allowance: commercePromotion },
+        ),
+        ...m1011SourceB26IntegrityChanges,
+        ...m1011ToM1012B26IntegrityChanges,
+        ...m1012ToM1013B26IntegrityChanges,
+        ...m1013ToM1014B26IntegrityChanges,
+        ...m1014ToM1015B26IntegrityChanges,
+        ...compareB26WorkflowGovernance(
+          commerceSourceContractBaseline.b26Runtime,
+          currentB26,
+          { allowance: commercePromotion },
+        ),
+        ...immutableBaselineIntegrityChanges,
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      resultGovernanceBaseline = governanceSummary;
+      promotionResult = {
+        id: commercePromotion.id,
+        sourceContractBaseline: commerceSourceContractBaseline.commit,
+        previousPromotion: gamificationSocialPromotion.id,
+        previousPromotionSource: gamificationSocialSourceContractBaseline.commit,
+        immutableGovernanceBaseline: immutableGovernanceBaseline.commit,
+        runtimeStatus: commercePromotion.runtimeStatus,
+        scope: commercePromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1014Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...m1009ToM1010OpenApiIntegrityChanges,
@@ -1935,7 +2146,17 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1014Promotion
+    promotion: useM1015Promotion
+      ? {
+        id: commercePromotion.id,
+        sourceContractBaseline: commerceSourceContractBaseline.commit,
+        previousPromotion: gamificationSocialPromotion.id,
+        previousPromotionSource: gamificationSocialSourceContractBaseline.commit,
+        immutableGovernanceBaseline: commercePromotion.immutableGovernanceBaseline,
+        runtimeStatus: commercePromotion.runtimeStatus,
+        scope: commercePromotion.scope,
+      }
+      : useM1014Promotion
       ? {
         id: gamificationSocialPromotion.id,
         sourceContractBaseline: gamificationSocialSourceContractBaseline.commit,
