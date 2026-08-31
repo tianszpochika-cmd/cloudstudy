@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-013",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+  "sourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
       "algorithm": "sha256",
-      "digest": "5034e52fa654c6d8f99929789cdcc7fc5e13d7d7fbddd983a51ad72afb5f5a9e"
+      "digest": "3a3629865a36b15b4f65c06dbc4f736fa756fa0d7f10d95d408852107e104b97"
     },
     {
       "path": "config/g1-contract-data.json",
@@ -37,17 +37,17 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "1a3ddc87c2c549a2ffb7ea4ac5ee27d37bb1548645ba1c21805d67c3d009b536"
+      "digest": "dcd50129cbbc443e6d0b64b01518d592e9194d8d30e8862f59e2911de7635266"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "73d9b8cedc93a3edd982d748ad48d38c3671f62c4254991bc8acc972a69d41f4"
+      "digest": "a55409cd77aa21d0dda6a859e5b7fcbb9a5a0d26bbcad272153c38ab10dbadae"
     },
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "4ec1443c33194572aff1e4d382d91086d442656aa7dd22f409844acd813c0f8f"
+      "digest": "f3a66eea0bef909f652daf2a906dc4f09c47096dcc935e592020d0ffc3a97a30"
     },
     {
       "path": "packages/contracts/events/v1/fragments/b10-learning-loop.events.json",
@@ -57,7 +57,7 @@
     {
       "path": "packages/contracts/events/v1/reliability-policy.json",
       "algorithm": "sha256",
-      "digest": "40d1a6de5165fab94247d4be2b4096745dba86f256bce29d8df44e19ba6d13e7"
+      "digest": "7d701810e3d640c866b0aa3fb79e744c09edf92de0696b1441ce6ccea7e81cd7"
     },
     {
       "path": "packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json",
@@ -87,17 +87,17 @@
     {
       "path": "packages/contracts/generated/events.ts",
       "algorithm": "sha256",
-      "digest": "a845d5329baf906d9e6f625c08a731cf9f22545b7162394f20be87d0bed648f4"
+      "digest": "1ae1087e4a45b596de969f6cbf96c35cca0a5eb626e2d8c6be5e67fc686139f2"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "534d286a94486fe1815e11960a31e63797dc39e25a23d92cd2dcbf30ac6bf0d4"
+      "digest": "2e4972645c69534829c01dbdfd8265c963613e361fe90b71e027d3bd37fd0114"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "45c37bab210b5d151fc3445ef0edffbdcf30cc37b292be94d8d0fea7bb85e670"
+      "digest": "7e3f643aa1cb7f0c85094224385c35101eb4633788c74d0ac8c5f2c8af5b7a04"
     },
     {
       "path": "scripts/audit/p1r-assessment-contract-check.mjs",
@@ -107,17 +107,17 @@
     {
       "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
       "algorithm": "sha256",
-      "digest": "60840406a8c36f253a15f7ffd5860cd23dd9f8d06ab258f7fada76c6f7ee5dde"
+      "digest": "9856b6b0551613a8971133cb8ab1732d3ee1b962e2b7e05ce20bfe51fbd2885b"
     },
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
       "algorithm": "sha256",
-      "digest": "3193d9b4bb725a97822fbc4b39ff47be88f9c39ea9b8f0cf48f2d7548cdd4e55"
+      "digest": "3942e17cd21fb4b18f519bb648e0dfda4344014dcb0623724041148c297007aa"
     },
     {
       "path": "scripts/audit/p1r-event-reliability-check.mjs",
       "algorithm": "sha256",
-      "digest": "fd4f83e280483d5726cd6e6585e61eed69cbeb631580d746ab9db91e4ad07699"
+      "digest": "71b374ae63df61654c1bccb9f7f1f62f2f6e36c205168def45afa6b03f759e60"
     },
     {
       "path": "scripts/audit/p1r-gateway-contract-check.mjs",
@@ -127,37 +127,37 @@
     {
       "path": "scripts/audit/p1r-learning-loop-contract-check.mjs",
       "algorithm": "sha256",
-      "digest": "490974536a0304ddaee3e1551cd2cd802c50eae0074bcb263027cb64ff3edb7c"
+      "digest": "3be26e9b7724284bc117576f187b20e54061abd1cd3511bcb0d41bd795832e73"
     },
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "981f7aabc1624555f311322897f1219d1d740cced69b621bc7b7164b8ecbbcf9"
+      "digest": "afedb77bfe0864ad59765f768b7b579f02a06bbef4a96e22f41ab351bc568d54"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "993863a43431d22f9d7e17baf6c014971dd6add5f33f3ee049adc354f2d61248"
+      "digest": "3fb145903f0403761b067a9baf90abe7eaac4ae88a293b3d6e557fa06f61ec55"
     },
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
       "algorithm": "sha256",
-      "digest": "69429fc50dd6c22ac447b3f46e7aefc8fd9cfdf7761d3679673228894f06b206"
+      "digest": "a14da8d4525b7fb827175dc271036321c64cadf188474a620f3d3b18134bab4a"
     },
     {
       "path": "scripts/contracts/merge-b1-fragments.mjs",
       "algorithm": "sha256",
-      "digest": "dafc718d31549151c3088f0a3b3ecce07de2bbf49c17d29153b8622123215660"
+      "digest": "e40716fe73f1f194694e2daf4ad4b0eb90077c6e205059b53d4c4ac303d44e71"
     },
     {
       "path": "scripts/runtime/validate-b26-event-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "0035869710381a7df2865adf1090929036db7aba115d0879ee81fffadaf5bf06"
+      "digest": "effde806cefe7870a608e8f235165b6783d1ae291d83817b1c4bda32d23c54ee"
     },
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
       "algorithm": "sha256",
-      "digest": "2ad2c458748d38a3a758825621a5866e07cd4011812622e44a09bd1dc76e0eea"
+      "digest": "41450f757831585eb16ac1ad614fcabe42eb1a32266a8333a8b206524ab19014"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
@@ -177,22 +177,22 @@
     {
       "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
       "algorithm": "sha256",
-      "digest": "b429e42c12a84e59114d7318325c61f90a32e6fc5fb4bb03a1582c5929686100"
+      "digest": "95ac9e0ad891dd72d6c5516311be7a8d53bec406d233ee464115d1a136c1b4ff"
     },
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "b59cabd33f79106edac77f331f74b6f87b9eb78e8e55566030d2e9d0b3691e85"
+      "digest": "a7a11fe00a390a72c920f4e5937f230e4b56c99149c4532452d7176ef31b97fb"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
       "algorithm": "sha256",
-      "digest": "a57c30422b94f351cfc447a4d072098b106dd4f67a4b8a86b041108d333d4854"
+      "digest": "f3b7f99c10094fa181d191c84e6886c12d874b852a7a2a320013cc34591f323c"
     },
     {
       "path": "tests/p1r/p1r-event-reliability.test.mjs",
       "algorithm": "sha256",
-      "digest": "9954564518397bcba5bf34c882ab411fcecb400f6dfb452ce04249e90d3e4fa2"
+      "digest": "39b34805f3d4ff24c14f900317a9c167b6d88974f8d7e3ad69cb1c3f3b60d175"
     },
     {
       "path": "tests/p1r/p1r-gateway-contract.test.mjs",
@@ -202,7 +202,7 @@
     {
       "path": "tests/p1r/p1r-learning-loop-contract.test.mjs",
       "algorithm": "sha256",
-      "digest": "5bdc7df85b22ecb9943c9d816909712b07f276f14e1ae569c4013ea9c0934686"
+      "digest": "4488f8a140601938d38b4749adb69817ba6980434be729bb632378d5c321537c"
     },
     {
       "path": "tests/p1r/p1r-learning-loop-generated-types.test.mjs",
@@ -265,7 +265,7 @@
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
   "startedAt": "2026-08-31T01:15:41+08:00",
-  "finishedAt": "2026-08-31T04:20:54+08:00",
+  "finishedAt": "2026-08-31T07:48:15+08:00",
   "actors": [
     "root-coordinator",
     "m1_013_rule_model",
@@ -425,6 +425,11 @@
       "check": "historical-full-g-context",
       "status": "NOT_APPLICABLE",
       "details": "The historical full G suite remains 39/41 because of known historical G0/G3 stale source-marker failures. It is not presented as a green suite, a source regression, or runtime evidence."
+    },
+    {
+      "check": "M1-014-current-source-revalidation",
+      "status": "PASS",
+      "details": "Artifact SHA-256 entries were recomputed against aab1fa24bb7d46e3dd730fe3801ab2e986301e0d after M1-014 acceptance. This preserves the original decision/review history and does not promote runtime evidence."
     }
   ],
   "requestIds": [],
@@ -446,6 +451,27 @@
     "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
     "The historical full G suite remains 39/41 because of G0/G3 stale source markers."
   ],
-  "reviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
-  "decision": "ACCEPTED"
+  "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED",
+  "provenance": {
+    "originalSourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+    "originalFinishedAt": "2026-08-31T04:20:54+08:00",
+    "originalReviewer": "agent:m1_013_evidence_plan:gpt-5.6-terra:max",
+    "originalAcceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "currentSourceRevalidationHistory": [
+      {
+        "taskId": "P1R-M1-014",
+        "sourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+        "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T07:48:15+08:00",
+        "details": "C-stage artifact SHA-256 refresh after M1-014 accepted; original task decision and runtime boundary remain unchanged."
+      }
+    ],
+    "previousCurrentSourceCommit": "a7f92095323f2afc4e6d28eeaff977e2197fcd0c",
+    "currentSourceRevalidationTask": "P1R-M1-014",
+    "currentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+    "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "currentSourceRevalidationFinishedAt": "2026-08-31T07:48:15+08:00"
+  }
 }

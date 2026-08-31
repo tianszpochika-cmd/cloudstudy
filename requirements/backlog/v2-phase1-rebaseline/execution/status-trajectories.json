@@ -204,10 +204,10 @@
     },
     {
       "taskId": "P1R-M1-014",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-08-31T04:58:33+08:00",
+      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "recordedAt": "2026-08-31T07:48:15+08:00",
       "actor": "root-coordinator",
-      "reason": "Dependencies P1R-M1-003, P1R-M1-006, P1R-M1-007 and P1R-M1-013 are accepted. The coordinator froze e3514c359e6f6be5445cf46a7734325b2835b941 as the source checkpoint and started the trusted-completion whitelist, immutable reward ledger, Phase-1 game catalog, controlled room/lease/focus, leaderboard and moderation D2 contract task without promoting B4/B12 historical candidates or database, Kafka, WebSocket, browser and E2E runtime evidence.",
+      "reason": "Final source aab1fa24bb7d46e3dd730fe3801ab2e986301e0d was independently accepted by agent:m1_014_final_review:gpt-5.6-luna:max with P1/P2=0/0. The trusted-completion whitelist, immutable reward ledger, Sentence Train P0 catalog and controlled room/lease/focus/leaderboard/moderation result remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B4/B12 historical candidates and database, Kafka, WebSocket, browser and E2E runtime evidence were not promoted.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-014/manifest.json"
     }
   ]

@@ -4,13 +4,13 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-012` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`，共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。
-- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；共享制品在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation，原复审 P1/P2 为 `0/0`。
+- `P1R-M1-001` 至 `P1R-M1-014` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-014 已把 M1-001..009、011..013 的共享制品重新绑定到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，不重写旧任务实现成果。
+- `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；其 current-source manifest 暂停在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，因为本 C 阶段关闭其 tracked GAP registry 摘要，必须由 C 集成提交后的 D 阶段重新绑定；原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
-- `P1R-M1-013`：`ACCEPTED`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2 为 `0/0`。
-- `P1R-M1-014`：`IN_PROGRESS`；不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，只冻结可信完成白名单、不可变奖励账本、P0 游戏 catalog、受控社交空间与 lease/focus/leaderboard/moderation 的 D2 契约。
-- M1-013 接受前完成共享 OpenAPI、生成类型、兼容工具和审计测试的 current-source revalidation；`P1R-M1-001` 至 `P1R-M1-012` 的 manifest 继续保留各自原始 provenance，并统一绑定 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，不把旧任务重写为 M1-013 的实现成果。
+- `P1R-M1-013`：`ACCEPTED`；不可变来源检查点 `a07a58a7d245295c54d39487a6669545d077c513`，原最终源码 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`，独立 reviewer `agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；M1-014 已在 aab1 完成 current-source revalidation。
+- `P1R-M1-014`：`ACCEPTED`；不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，最终源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；冻结可信完成白名单、不可变奖励账本、P0 游戏 catalog、受控社交空间与 lease/focus/leaderboard/moderation 的 D2 契约。
+- C 阶段 revalidation 保留旧任务原始 provenance/reviewHistory，并追加 M1-014 current-source 链；`P1R-M1-010` 是唯一刻意延后的 D 阶段摘要绑定，不把它误写成 aab1 已完成。
 - M1-006 修改了共享契约、CI 与文档制品，因此 `P1R-M0-005`、`P1R-M1-001` 至 `P1R-M1-005` 的 manifest 已在不覆盖原始 provenance 的前提下绑定 `3e4ba856...` 完成 current-source revalidation；原实现源、原完成时间、原 reviewer 和原 compatibility baseline 仍保留在各自 `provenance`。
 - M0 供应链阻塞不在 M1-001 显式依赖内，但继续禁止发布与“M0 全绿”声明。
 
@@ -134,7 +134,7 @@
 - 终验结果：learning `67/67`、tooling `50/50`、P1R `818/818`、workspace typecheck `7/7`；contracts `401 operations/646 schemas/158 events/108 payload schemas/17 AsyncAPI channels/60 operations/13 JSON Schemas`；fixed compatibility、Gateway、event、reliability、B26、plan、CI、diff 均 PASS。
 - 独立 reviewer：`agent:m1_013_evidence_plan:gpt-5.6-terra:max` 判定 `ACCEPT`，P1/P2=`0/0`；Evidence：`evidence/p1r/m1/P1R-M1-013/manifest.json`。
 - D2 边界：结果仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`，`P1R-M0-006` 继续 `BLOCKED`，真实 schema/Outbox/Kafka/worker/Saga、浏览器/设备和 E2E 未验证。
-- Evidence/台账关闭集成提交：`c9a67577db590b92982571a1aecba6200adcb9cf`。当前台账为 `20 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 87 PLANNED`；下一推荐任务为 `P1R-M1-014`，保持 `PLANNED`，不启动。
+- 历史 M1-013 Evidence/台账关闭集成提交：`c9a67577db590b92982571a1aecba6200adcb9cf`。当前台账为 `21 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 86 PLANNED`；M1-014 已接受，下一推荐任务为 `P1R-M1-015`。
 
 ## M1-014 执行轨道
 
@@ -145,6 +145,10 @@
 3. validation-compat：建立专用 checker、对抗测试、B4/B12 canonical projection 测试、B26 static binding、source-bound compatibility 与 generated TypeScript 边界。
 
 三条实施轨道必须保持文件互斥，公共生成物、catalog projection、compatibility、状态、Evidence、最终提交和推送由统筹 Agent 独占。M1-014 不实现真实数据库、Outbox/Kafka consumer、WebSocket/Redis lease、页面或 E2E；所有结论保持 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+
+- 最终验收：`aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 经 `agent:m1_014_final_review:gpt-5.6-luna:max` 独立终验 `ACCEPT`，P1/P2=`0/0`；Evidence 为 `evidence/p1r/m1/P1R-M1-014/manifest.json`。
+- 结果：专项 checker 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；三项 GAM/SOC GAP 关闭为 D2 静态治理，不作为 topic、ACL、Outbox、consumer、lease 或 E2E runtime 证据。
+- 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26=`static-only`/`pending`/`NO-GO`；M2-004/005/006、M5-013、M7、M8-005 与 M0-006 仍保留原 owner 和状态。
 
 ## M1-011 执行轨道
 

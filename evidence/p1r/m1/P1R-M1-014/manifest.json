@@ -1,0 +1,184 @@
+{
+  "taskId": "P1R-M1-014",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+  "artifactDigests": [
+    { "path": "config/b26-event-runtime.json", "algorithm": "sha256", "digest": "3a3629865a36b15b4f65c06dbc4f736fa756fa0d7f10d95d408852107e104b97" },
+    { "path": "config/p1r-gamification-social-contract.v1.json", "algorithm": "sha256", "digest": "371e2bb707c96ddad1586e5c62ad39d512f5bb8d7db4de2a1775a553e41ad62c" },
+    { "path": "docs/06-design/detailed-specs/07_自习室社群与用户基础服务详细设计.md", "algorithm": "sha256", "digest": "1c751e2684359a1ba25a90fb8acf2a1ddd4ae9829e9b7e8c8692bc12ee25a2e7" },
+    { "path": "docs/06-design/phase-1/full-coverage/成长社群商业后台原子功能补充设计.md", "algorithm": "sha256", "digest": "0d6cadda62fb2edc4c7a92406d26abb5807e180f05aa07ae0605ef2cf0e69ffa" },
+    { "path": "docs/06-design/v2-980plus/04-Phase1-成长社群商业后台功能设计.md", "algorithm": "sha256", "digest": "98818818db1699472a0265018dadd7527b5b47e6458be7c69d19feeeebbc48e5" },
+    { "path": "docs/06-design/v2-980plus/08-980plus-功能点设计登记册.md", "algorithm": "sha256", "digest": "27e921adf69cfa5ee4d41da18ae1dbbda4aeaf471caba6a3a7d706da8024b775" },
+    { "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md", "algorithm": "sha256", "digest": "a7090fe39eb7fdde741e0301b7dc593564f788a9f448438157f35fca7af9b816" },
+    { "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md", "algorithm": "sha256", "digest": "87f90549cbf799861642957696cc0f154301374c9c8afe7a213789bb965b9ebf" },
+    { "path": "package.json", "algorithm": "sha256", "digest": "dcd50129cbbc443e6d0b64b01518d592e9194d8d30e8862f59e2911de7635266" },
+    { "path": "packages/api-client/src/generated/index.ts", "algorithm": "sha256", "digest": "a55409cd77aa21d0dda6a859e5b7fcbb9a5a0d26bbcad272153c38ab10dbadae" },
+    { "path": "packages/contracts/events/v1/catalog.json", "algorithm": "sha256", "digest": "f3a66eea0bef909f652daf2a906dc4f09c47096dcc935e592020d0ffc3a97a30" },
+    { "path": "packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json", "algorithm": "sha256", "digest": "033a00f2b4e46696b3ff3a0ce32d21a5c16cce2de66ee35b052b0e317d13ab63" },
+    { "path": "packages/contracts/events/v1/reliability-policy.json", "algorithm": "sha256", "digest": "7d701810e3d640c866b0aa3fb79e744c09edf92de0696b1441ce6ccea7e81cd7" },
+    { "path": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json", "algorithm": "sha256", "digest": "483f8bde1c1063ecbaf54e316d9ceb515fb04379e3a6e6f8dc242fb3357efd96" },
+    { "path": "packages/contracts/generated/events.ts", "algorithm": "sha256", "digest": "1ae1087e4a45b596de969f6cbf96c35cca0a5eb626e2d8c6be5e67fc686139f2" },
+    { "path": "packages/contracts/generated/openapi.ts", "algorithm": "sha256", "digest": "2e4972645c69534829c01dbdfd8265c963613e361fe90b71e027d3bd37fd0114" },
+    { "path": "packages/contracts/openapi/v1/openapi.json", "algorithm": "sha256", "digest": "7e3f643aa1cb7f0c85094224385c35101eb4633788c74d0ac8c5f2c8af5b7a04" },
+    { "path": "requirements/feature-matrix.md", "algorithm": "sha256", "digest": "f723ab7971363ae55ed7622d6f34f8fc4936533b7c9f0819913c5bf18272ce32" },
+    { "path": "requirements/product-requirements.md", "algorithm": "sha256", "digest": "c38034e8728741991cd4fd5b86f38e30f13a11e5bf2a182d5f10de37b963b84d" },
+    { "path": "scripts/audit/p1r-content-lifecycle-check.mjs", "algorithm": "sha256", "digest": "9856b6b0551613a8971133cb8ab1732d3ee1b962e2b7e05ce20bfe51fbd2885b" },
+    { "path": "scripts/audit/p1r-event-governance-check.mjs", "algorithm": "sha256", "digest": "3942e17cd21fb4b18f519bb648e0dfda4344014dcb0623724041148c297007aa" },
+    { "path": "scripts/audit/p1r-event-reliability-check.mjs", "algorithm": "sha256", "digest": "71b374ae63df61654c1bccb9f7f1f62f2f6e36c205168def45afa6b03f759e60" },
+    { "path": "scripts/audit/p1r-gamification-social-contract-check.mjs", "algorithm": "sha256", "digest": "1e2080b28c12dc3092adf19d6f4436958af0b2fb1a8653a1a9a79c5b6edaf1ea" },
+    { "path": "scripts/audit/p1r-learning-loop-contract-check.mjs", "algorithm": "sha256", "digest": "3be26e9b7724284bc117576f187b20e54061abd1cd3511bcb0d41bd795832e73" },
+    { "path": "scripts/audit/p1r-placement-contract-check.mjs", "algorithm": "sha256", "digest": "a21c54ea76f7d51574da0b14b537aece2e5f79c7900d0bd5ee14a0fd4947e869" },
+    { "path": "scripts/contracts/compatibility-diff.mjs", "algorithm": "sha256", "digest": "afedb77bfe0864ad59765f768b7b579f02a06bbef4a96e22f41ab351bc568d54" },
+    { "path": "scripts/contracts/compatibility-git-baseline.mjs", "algorithm": "sha256", "digest": "3fb145903f0403761b067a9baf90abe7eaac4ae88a293b3d6e557fa06f61ec55" },
+    { "path": "scripts/contracts/event-catalog-policy.mjs", "algorithm": "sha256", "digest": "a14da8d4525b7fb827175dc271036321c64cadf188474a620f3d3b18134bab4a" },
+    { "path": "scripts/contracts/merge-b1-fragments.mjs", "algorithm": "sha256", "digest": "e40716fe73f1f194694e2daf4ad4b0eb90077c6e205059b53d4c4ac303d44e71" },
+    { "path": "scripts/runtime/validate-b26-event-runtime.mjs", "algorithm": "sha256", "digest": "effde806cefe7870a608e8f235165b6783d1ae291d83817b1c4bda32d23c54ee" },
+    { "path": "tests/b12/b12-contract-migration.test.mjs", "algorithm": "sha256", "digest": "098553ca7960d1f548b100a5ebd62affcfbf91f3a7cd5335cf77e2a0828a478e" },
+    { "path": "tests/b26/b26-event-runtime.test.mjs", "algorithm": "sha256", "digest": "41450f757831585eb16ac1ad614fcabe42eb1a32266a8333a8b206524ab19014" },
+    { "path": "tests/b4/b4-static.test.mjs", "algorithm": "sha256", "digest": "1089bde909eb9010d6afd53a66f35c80f17ac705744f4303c92c0da47d0e7cc0" },
+    { "path": "tests/p1r/p1r-content-lifecycle.test.mjs", "algorithm": "sha256", "digest": "95ac9e0ad891dd72d6c5516311be7a8d53bec406d233ee464115d1a136c1b4ff" },
+    { "path": "tests/p1r/p1r-contract-tooling.test.mjs", "algorithm": "sha256", "digest": "a7a11fe00a390a72c920f4e5937f230e4b56c99149c4532452d7176ef31b97fb" },
+    { "path": "tests/p1r/p1r-event-governance.test.mjs", "algorithm": "sha256", "digest": "f3b7f99c10094fa181d191c84e6886c12d874b852a7a2a320013cc34591f323c" },
+    { "path": "tests/p1r/p1r-event-reliability.test.mjs", "algorithm": "sha256", "digest": "39b34805f3d4ff24c14f900317a9c167b6d88974f8d7e3ad69cb1c3f3b60d175" },
+    { "path": "tests/p1r/p1r-gamification-social-contract.test.mjs", "algorithm": "sha256", "digest": "1023aa773175fe5c4e27c95c17eddab0cd9d935ebf115b3241d48631bca089e8" },
+    { "path": "tests/p1r/p1r-gamification-social-generated-types.test.mjs", "algorithm": "sha256", "digest": "636091c9b1e02d11f23ffeb080a17742f358ce6c3ff33741e54a20e86b59ea84" },
+    { "path": "tests/p1r/p1r-learning-loop-contract.test.mjs", "algorithm": "sha256", "digest": "4488f8a140601938d38b4749adb69817ba6980434be729bb632378d5c321537c" },
+    { "path": "tests/p1r/p1r-placement-contract.test.mjs", "algorithm": "sha256", "digest": "d2d04358bf0c3caf0cd5c18ca47f9ec78e111bedaf2ce1d89b797543ae6132e7" }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "e3514c359e6f6be5445cf46a7734325b2835b941",
+    "taskStartCommit": "435436b22fa9c0e8f4385867ed1328116311bc81",
+    "sourceRange": "435436b22fa9c0e8f4385867ed1328116311bc81..aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "sourceContractBaseline": "e3514c359e6f6be5445cf46a7734325b2835b941",
+    "previousPromotion": "P1R-M1-013",
+    "promotion": "M1-014_GAMIFICATION_SOCIAL_CONTRACT_PROMOTION",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "eventCatalogDecision": "GAMIFICATION_SOCIAL_CANONICAL_D2",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "m2RuntimeTasks": {
+      "P1R-M2-004": "NOT_COMPLETED",
+      "P1R-M2-005": "NOT_COMPLETED",
+      "P1R-M2-006": "NOT_COMPLETED"
+    },
+    "releaseBlocker": "P1R-M0-006 BLOCKED"
+  },
+  "startedAt": "2026-08-31T04:58:33+08:00",
+  "finishedAt": "2026-08-31T07:48:15+08:00",
+  "actors": [
+    "root-coordinator",
+    "m1_014_policy_model",
+    "m1_014_contract_event",
+    "m1_014_validation_compat"
+  ],
+  "sourceIds": [
+    "P1R-M1-014",
+    "GAM-0267…0334",
+    "SOC-0335…0358",
+    "JNY-P1-10",
+    "JNY-P1-11",
+    "INT-P1-008",
+    "INT-P1-009",
+    "CONTRACT-GAP-GAM-001",
+    "EVENT-GAP-BIND-GAM-001",
+    "EVENT-GAP-BIND-SOC-001"
+  ],
+  "journeys": ["JNY-P1-10", "JNY-P1-11"],
+  "pages": [],
+  "rules": ["P1_REWARD_POLICY_V1", "P1_GAME_CATALOG_V1", "P1_FOCUS_CREDIT_V1"],
+  "integrations": ["INT-P1-008", "INT-P1-009"],
+  "e2eScenarios": ["E2E-INT-P1-008", "E2E-INT-P1-009"],
+  "serviceOwners": ["gamification-service", "social-service", "learning-service", "assessment-service", "iam-service", "api-gateway"],
+  "dataOwners": ["gamification-service", "social-service"],
+  "statusTrajectory": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
+      "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "p1": 0,
+      "p2": 0,
+      "details": "Independent Luna Max final review accepted the source-bound trusted-completion whitelist, immutable reward ledger, Sentence Train P0 catalog, controlled social room/lease/focus, leaderboard and moderation D2 contract evidence. No runtime promotion was granted."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:gamification-social-contract:check -- --json",
+    "node --test tests/p1r/p1r-gamification-social-contract.test.mjs tests/p1r/p1r-gamification-social-generated-types.test.mjs",
+    "pnpm test:p1r",
+    "pnpm test:b26",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm contracts:compatibility:git -- --ref e3514c359e6f6be5445cf46a7734325b2835b941 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:content-lifecycle:check",
+    "pnpm p1r:event-governance:check",
+    "pnpm p1r:event-reliability:check",
+    "pnpm b26:static",
+    "pnpm typecheck",
+    "pnpm plan:p1r:check",
+    "pnpm p1r:gap:check",
+    "git diff --check"
+  ],
+  "results": [
+    {
+      "check": "gamification-social-contract-and-generated-types",
+      "status": "PASS",
+      "details": "Specialized checker passes 28/28 canonical routes and 10/10 canonical events with D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED. The targeted Node suite passes 161/161 fail-closed policy and generated-type assertions."
+    },
+    {
+      "check": "contract-and-event-static-governance",
+      "status": "PASS",
+      "details": "Contract merge/generation/validation pass at 23 OpenAPI fragments, 16 event fragments, 401 operations, 682 OpenAPI schemas, 166 events, 116 event payload schemas, 25 AsyncAPI channels and 93 AsyncAPI operations. Fixed Git compatibility reports zero OpenAPI/event/schema breaking changes; B4/B12 v1 stays historical adapter/candidate only."
+    },
+    {
+      "check": "p1r-regression-and-typecheck",
+      "status": "PASS",
+      "details": "The full P1R regression passes 721 subtests / 1002 tests and workspace typecheck passes 7/7. M1-008 content lifecycle, M1-012 placement, M1-013 learning-loop, event governance, event reliability and B26 static current-source checks remain green."
+    },
+    {
+      "check": "b26-static-boundary",
+      "status": "PASS",
+      "details": "B26 static validation passes without runtime promotion: mode=static-only, runtimeStatus=pending and defaultDecision=NO-GO."
+    },
+    {
+      "check": "final-independent-review",
+      "status": "PASS",
+      "details": "agent:m1_014_final_review:gpt-5.6-luna:max accepted aab1fa24bb7d46e3dd730fe3801ab2e986301e0d with P1/P2=0/0."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "No database, Kafka, Outbox, consumer, WebSocket, Gateway-to-owner, browser/device or E2E runtime evidence is asserted. M2, M5, M7, M8 and M0-006 ownership boundaries remain intact."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Revert aab1fa24bb7d46e3dd730fe3801ab2e986301e0d and then 435436b22fa9c0e8f4385867ed1328116311bc81 in reverse task order. Rerun the specialized checker, targeted tests, contract merge/generate/validate, fixed compatibility, static governance, B26, plan, gap, Evidence and diff gates. A source rollback is not a runtime-data, broker, lease or workflow rollback."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-004 remains responsible for owner schemas, grants, migrations, transactions and Outbox persistence evidence.",
+    "P1R-M2-005 remains responsible for Kafka broker/topic/ACL, delivery, consumers, dedupe, disorder, outage, DLQ and replay evidence.",
+    "P1R-M2-006 remains responsible for real Saga execution, compensation, scheduled/manual recovery and immutable closure receipts.",
+    "P1R-M5-013 retains real canonical producer and Outbox responsibility for trusted-completion facts.",
+    "P1R-M7-001..005/010/011 and P1R-M8-005 retain runtime, integration and release-gate ownership for rewards, rooms, social controls and their E2E evidence.",
+    "Database, Gateway/service processes, Kafka, Redis/WebSocket lease, browser/device and end-to-end runtime behavior are not verified by this D2 contract task.",
+    "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
+    "P1R-M1-010 current-source manifest binding is intentionally deferred to the post-C integration D stage because this C change closes its tracked registry artifact."
+  ],
+  "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}
