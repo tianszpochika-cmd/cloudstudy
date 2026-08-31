@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-010",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "b41af4af17cf082b038438c2ce3694f95804a5f1",
+  "sourceCommit": "cbf25c329dba70c29a793d30908f53724a05f371",
   "artifactDigests": [
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "358f8c5eeb92be6d920662d282308f6c36ea067094d016b2af51a48c8dcd1771"
+      "digest": "085d024e2baca3fdd03389eefa2768a63f979a01439d7234d4038fd397a96652"
     },
     {
       "path": "config/p1r-assessment-contract.v1.json",
@@ -17,12 +17,12 @@
     {
       "path": "config/p1r-gap-registry.v1.json",
       "algorithm": "sha256",
-      "digest": "4eccf16de4db178b2cae4b675e50c3f1aaaf7e3d860513044ef7d7a20958b0af"
+      "digest": "4edb5698c8698016e1eb62f9ce54a1978f3ce04396f26cac607ac54e131bbb22"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
       "algorithm": "sha256",
-      "digest": "ee8a7f49d42e78f5382c054860e6c2f7bf538d2dea594fff7759395a9ebaec71"
+      "digest": "28fee299ff0eb8eb17b5eccc83555395964e978481979931f29fe4b6dc32ab38"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/03-全端页面功能登记册.md",
@@ -37,12 +37,12 @@
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
       "algorithm": "sha256",
-      "digest": "41652ab95962706d1b64e606a123acb6a32f004238e1a350dabc8b2295870d95"
+      "digest": "9822cf05d0d618ca3d47eef62eca90a09eba9f2c7522c4a0f980170cb76a8043"
     },
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
       "algorithm": "sha256",
-      "digest": "808349720965cb76a6248ebba7a8d1559247612f7861b20785d778f684d25eb5"
+      "digest": "807022b67ad0c4d6a19b4130d3e4711a0a02415be0ae3b083c179591fb006fd7"
     },
     {
       "path": "docs/07-operations/b10-validation.md",
@@ -52,12 +52,12 @@
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "505afbc9c098ebfd02cd2e0a4617921945cd98fd8e08bf2d2543cc436329c442"
+      "digest": "be37d99f606b8ed0e84e031b7c8a197b584cd8ec7ce88f62dc3042273a889277"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "2dfbe7a67a18e32db747d07698c3d6dad2de9ccadaf7fd57861e684ac59b3ccc"
+      "digest": "d33e2b9bbb21d65bd64ad7d4fddd7be28cd49aed77ff840d621d20777aa9d4eb"
     },
     {
       "path": "packages/api-client/src/index.ts",
@@ -67,7 +67,7 @@
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "f0feafa92ed124cebeb12701e96c2525c6cb0423a5f7a9d68eab5ed0d60daa93"
+      "digest": "bf29b2036a38aed5d1be50dcdbb589d4520d8dabeddf618a3f07b78fc6181a92"
     },
     {
       "path": "packages/contracts/events/v1/fragments/b10-learning-assessment.events.json",
@@ -87,17 +87,17 @@
     {
       "path": "packages/contracts/generated/events.ts",
       "algorithm": "sha256",
-      "digest": "63bbb095a44d8a8f8630b3e06a3a3e489cd8da5680fe954144f233ddfa831cf9"
+      "digest": "6f0b9269ec7041cc5ca3a0c4ec42eda66c9dd1a77df00914a02a066f6b60cd62"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "2ee9a9dfb78eacf28db3ec2581fdaeed6364ceab71bdcca83ada30ec18f80663"
+      "digest": "bdaa8fa0ebfa811bca7c3e3ad400f7c426752a930e5e6e4edc4d05e1c8f4cc9f"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "4a5525701713338e99d51a43baded8e2c3aac9028a6641731d4d6eff0851acec"
+      "digest": "44006e80f8bbd5f2cb355ddf49686727f7b127c0d2ee376f93db3c3db8869402"
     },
     {
       "path": "scripts/audit/p1r-assessment-contract-check.mjs",
@@ -107,12 +107,12 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "af4b45b7da2978d5e48f13c0d61a074503cd9b2deeeac467eb7b282c9b709ddf"
+      "digest": "fdc70d55c9ec4e1372002ea9f97fc8d850c112b9ea37dd4d9731859a151b1c7f"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "a63a37b6dc56916d20cd96080982f63e6fa32494d63af5825ca6cf3179d63acc"
+      "digest": "71af70d403c4189cce3530d1c9efeee12286339a954955b9e51bba013d9083fe"
     },
     {
       "path": "scripts/contracts/generate-contracts.mjs",
@@ -127,7 +127,7 @@
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "e0d0e88811c65ae675b86e2336e4ee95f6e61a342edfd32439d5e940496fbc1a"
+      "digest": "f5d18961122b58565c199f23ff95fee5b6c9b76cfdb85f68f467ea3c74454653"
     },
     {
       "path": "tests/p1r/p1r-assessment-contract.test.mjs",
@@ -142,7 +142,7 @@
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "26688b495be12fd8884f5fa8e406f719e66551ff262664927499160cea5401a9"
+      "digest": "e1f39d456d291008298eda157f6173a606a25d21521731d2b1d5b7884becd88d"
     }
   ],
   "environment": {
@@ -169,7 +169,7 @@
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
   "startedAt": "2026-08-30T15:47:28+08:00",
-  "finishedAt": "2026-08-31T13:02:07+08:00",
+  "finishedAt": "2026-08-31T20:53:00+08:00",
   "actors": [
     "root-coordinator",
     "m1_010_scope_design",
@@ -330,6 +330,11 @@
       "check": "m1-015-current-source-revalidation",
       "status": "PASS",
       "details": "P1R-M1-010 artifact SHA-256 entries were recomputed against the M1-015 GAP/Evidence C checkpoint b41af4af17cf082b038438c2ce3694f95804a5f1. Independent M1-015 review and 1153/1153 P1R regression passed; original assessment provenance remains unchanged and runtimeStatus remains NOT_RUNTIME_VERIFIED."
+    },
+    {
+      "check": "M1-016-current-source-revalidation",
+      "status": "PASS",
+      "details": "Post-C artifact SHA-256 entries were recomputed against cbf25c329dba70c29a793d30908f53724a05f371. 9a38ff2185286bc8e279f785ff3fad5de30de569 remains the audited M1-016 implementation source. The four M1-016 GAP closures and Evidence integration are bound without changing the original M1-010 decision or runtimeStatus=NOT_RUNTIME_VERIFIED."
     }
   ],
   "requestIds": [],
@@ -353,7 +358,7 @@
     "The historical full G suite remains 39/41 because of G0/G3 stale markers, and the pre-existing B9 direct API envelope issue remains outside M1-010.",
     "M1-015 post-C binding is complete: sourceCommit and all artifactDigests are bound to b41af4af17cf082b038438c2ce3694f95804a5f1; f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 remains the audited M1-015 implementation source and d0cd4fc812bb2ee20c78375b99f6310e80992237 is the D binding commit. Runtime remains NOT_RUNTIME_VERIFIED."
   ],
-  "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED",
   "provenance": {
     "originalSourceCommit": "cd92378bd8ba0c57c920fc6e79db52de717b0b05",
@@ -408,18 +413,28 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-08-31T13:02:07+08:00",
         "details": "Post-C Evidence integration revalidation. f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 remains the audited M1-015 implementation source; this checkpoint records accepted CONTRACT-GAP-COM-001/Evidence integration and does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-016",
+        "sourceCommit": "cbf25c329dba70c29a793d30908f53724a05f371",
+        "auditedImplementationSource": "9a38ff2185286bc8e279f785ff3fad5de30de569",
+        "integrationCheckpoint": "cbf25c329dba70c29a793d30908f53724a05f371",
+        "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-08-31T20:53:00+08:00",
+        "details": "Post-C Evidence integration revalidation. 9a38ff2185286bc8e279f785ff3fad5de30de569 remains the audited M1-016 implementation source; this checkpoint records four accepted M1-016 GAP closures/Evidence integration and does not promote runtime evidence."
       }
     ],
-    "previousCurrentSourceCommit": "36a2103b0dc9497a6421bbbf99627e10c7a88c50",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-014",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "b41af4af17cf082b038438c2ce3694f95804a5f1",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-015",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T08:21:39+08:00",
-    "currentSourceRevalidationTask": "P1R-M1-015",
-    "currentSourceRevalidationReviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T13:02:07+08:00",
+    "currentSourceRevalidationTask": "P1R-M1-016",
+    "currentSourceRevalidationReviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-08-31T13:02:07+08:00",
-    "currentSourceRevalidationAuditedImplementationSource": "f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573",
-    "currentSourceRevalidationIntegrationCheckpoint": "b41af4af17cf082b038438c2ce3694f95804a5f1"
+    "currentSourceRevalidationFinishedAt": "2026-08-31T20:53:00+08:00",
+    "currentSourceRevalidationAuditedImplementationSource": "9a38ff2185286bc8e279f785ff3fad5de30de569",
+    "currentSourceRevalidationIntegrationCheckpoint": "cbf25c329dba70c29a793d30908f53724a05f371"
   }
 }
