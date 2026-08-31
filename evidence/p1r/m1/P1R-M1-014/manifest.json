@@ -177,7 +177,7 @@
     "P1R-M7-001..005/010/011 and P1R-M8-005 retain runtime, integration and release-gate ownership for rewards, rooms, social controls and their E2E evidence.",
     "Database, Gateway/service processes, Kafka, Redis/WebSocket lease, browser/device and end-to-end runtime behavior are not verified by this D2 contract task.",
     "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
-    "P1R-M1-010 current-source manifest binding is intentionally deferred to the post-C integration D stage because this C change closes its tracked registry artifact."
+    "M1-014 C/D Evidence integration is complete: P1R-M1-010 is bound to checkpoint 36a2103b0dc9497a6421bbbf99627e10c7a88c50 while aab1fa24bb7d46e3dd730fe3801ab2e986301e0d remains the audited implementation source. The global Evidence Gate still requires a clean committed worktree."
   ],
   "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"

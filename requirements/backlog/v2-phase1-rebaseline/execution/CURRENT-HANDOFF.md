@@ -16,7 +16,7 @@ M1-005 数据所有权与迁移政策 D2 已接受：原最终实现源 `21cdd3a
 
 M1-006 Kafka 事件目录与 AsyncAPI 治理 D2 已接受：原最终实现源 `3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a`，共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。其双不可变基线、155 条事件分类、AsyncAPI 投影和 B26 静态绑定只证明 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不代表 Kafka、Outbox、ACL 或 consumer runtime PASS。
 
-M1-013 接受前曾把共享 OpenAPI、生成类型、兼容工具、审计与测试制品绑定到 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`；该记录保留为历史 revalidation。当前 M1-014 C 阶段刷新范围和唯一 M1-010 D 阶段例外以本文件下方的当前交接摘要为准；各 manifest 的 `provenance` 继续保留原始实现源、完成时间、reviewer、兼容基线和历次复核链。
+M1-013 接受前曾把共享 OpenAPI、生成类型、兼容工具、审计与测试制品绑定到 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c`；该记录保留为历史 revalidation。M1-014 C/D 已在集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 完成唯一例外 M1-010 的摘要绑定；各 manifest 的 `provenance` 继续保留原始实现源、完成时间、reviewer、兼容基线和历次复核链。
 
 M1-007 事件可靠性与人工恢复 D2 契约已接受：原最终源码 `6ce98a95b75e7efca05cc511f5f773dbf2be08a4`，独立终验 `agent:m1_007_independent_review:gpt-5.6-luna:max` 与另一位 Luna Max 交叉复核均接受，canonical manifest 为 `evidence/p1r/m1/P1R-M1-007/manifest.json`；共享制品已在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。结论仍是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续是 `static-only` / `runtimeStatus=pending` / `defaultDecision=NO-GO`。
 
@@ -24,7 +24,7 @@ M1-008 内容后台 command、双审、排期发布与投影 D2 契约已接受�
 
 M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bcad22b41cdb373b6030033`，独立终验 `agent:m1_009_contract_audit:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2 为 `0/0`；共享制品最新在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation，canonical manifest 为 `evidence/p1r/m1/P1R-M1-009/manifest.json`。
 
-`P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，raw-answer 脱敏和终态时间 nullability 已在原最终源码闭合，复审 `ACCEPT`、P1/P2 为 `0/0`；共享制品已在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。
+`P1R-M1-010` 已接受：不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`；首轮 `3bfc63d` 经独立 Luna Max 评审返回 `REWORK`，raw-answer 脱敏和终态时间 nullability 已在原最终源码闭合，复审 `ACCEPT`、P1/P2 为 `0/0`；M1-014 D 阶段已在 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 完成 current-source 摘要绑定，审计实现源为 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`。
 
 `P1R-M1-011` 已接受：不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`；首轮 `5b6a3d5` 经独立 Luna Max 评审返回 `REWORK`，最终复审 `ACCEPT`、P1/P2 为 `0/0`；共享制品已在 `a7f92095323f2afc4e6d28eeaff977e2197fcd0c` 完成 current-source revalidation。
 
@@ -34,7 +34,7 @@ M1-009 媒体与录音 D2 契约已接受：原最终源码 `2e7304a12c297d4c7bc
 
 `P1R-M1-014` 已接受：不可变来源检查点 `e3514c359e6f6be5445cf46a7734325b2835b941`，最终实现源码 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，独立 reviewer `agent:m1_014_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。专项 checker 覆盖 28/28 canonical routes、10/10 canonical events，定点 contract/generated-types 测试 161/161 通过；`CONTRACT-GAP-GAM-001`、`EVENT-GAP-BIND-GAM-001`、`EVENT-GAP-BIND-SOC-001` 已以 D2 Evidence 关闭。当前台账计数为 `21 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 86 PLANNED`（共 108 项）。结论仅为 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B4/B12 v1 继续 historical-only，B26 继续 `static-only`/`pending`/`NO-GO`，不冒充真实 Kafka、数据库、WebSocket、浏览器或 E2E。
 
-M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/current-source 指针刷新到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，且保留各自原始 provenance/reviewHistory。`P1R-M1-010` 是唯一例外：它引用本次已关闭的 GAP registry 摘要，必须在 C 集成提交后的 D 阶段重新绑定；此前 `a7f920...` 记录只是历史来源。
+M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/current-source 指针刷新到 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`，且保留各自原始 provenance/reviewHistory。D 阶段已将唯一例外 `P1R-M1-010` 绑定至 GAP/Evidence 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50`；其审计实现源仍是 aab1，`a7f920...` 仅为历史来源。
 
 ## 1. 获取检查点
 
@@ -42,11 +42,11 @@ M1-014 C 阶段已把 `P1R-M1-001..009`、`P1R-M1-011..013` 的 artifactDigests/
 git switch dev
 git fetch origin dev
 git pull --ff-only origin dev
-git merge-base --is-ancestor aab1fa24bb7d46e3dd730fe3801ab2e986301e0d origin/dev
+git merge-base --is-ancestor 36a2103b0dc9497a6421bbbf99627e10c7a88c50 origin/dev
 git status --short
 ```
 
-预期：`aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 是 `origin/dev` 的祖先，M1-014 canonical manifest、M1-001..009/011..013 的 aab1 current-source revalidation、台账与状态轨迹均已同步，工作树干净；M1-010 会在随后 D 阶段绑定。任一条件不满足都先停止后续任务；实现源和任务状态只从 Evidence、台账和 Git 读取。
+预期：`36a2103b0dc9497a6421bbbf99627e10c7a88c50` 是 `origin/dev` 的祖先，M1-014 canonical manifest、M1-001..009/011..013 的 aab1 current-source revalidation 与 M1-010 的 post-C D-stage binding 均已同步，工作树干净。任一条件不满足都先停止后续任务；实现源和任务状态只从 Evidence、台账和 Git 读取。
 
 ## 2. 选择 Java 25（只影响当前终端）
 
@@ -117,8 +117,8 @@ pnpm --dir apps/mobile test:b12
 
 ## 5. 推荐接手顺序
 
-1. 先核对 M1-014 accepted source `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d` 及 C 集成提交，并确认 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs`、`pnpm p1r:gamification-social-contract:check -- --json` 与 `pnpm p1r:evidence:check`；Evidence Gate 在 C 提交前的唯一任务级残留应是 M1-010 的 D 阶段绑定。
-2. 完成 M1-010 的 post-C D-stage current-source digest binding，之后再开始下一推荐 `P1R-M1-015`；不要将 M1-010 的摘要延后误写成其原 D2 结论失效。
+1. 先核对 M1-014 审计实现源 `aab1fa24bb7d46e3dd730fe3801ab2e986301e0d`、C 集成检查点 `36a2103b0dc9497a6421bbbf99627e10c7a88c50` 及随后 D 提交，并确认 `pnpm plan:p1r:check`、`node scripts/audit/p1r-gap-registry-check.mjs`、`pnpm p1r:gamification-social-contract:check -- --json` 与 `pnpm p1r:evidence:check`；全局 Evidence Gate 需在干净已提交工作树验证。
+2. M1-010 的 post-C D-stage current-source digest binding 已完成；下一推荐为 `P1R-M1-015`，不要将该 Evidence 集成变更误写为 runtime 结论。
 3. 每次修改公共 API、事件、数据 owner 或迁移责任后，先从最近已接受 manifest 选择不可变 baseline；M1-006 的历史基线是 `463c4b2`，其首次引入的治理字段由固定 `868c217` 保护，不得回退到旧 B/DEV/G 快照或移动治理基线。
 4. 每个任务先改契约与政策，再更新生成物/测试，最后在当前源提交生成 canonical manifest；不要继承旧 B/DEV/G 的完成状态。
 5. DCloud 发布官方 Vite 6.4.3+ 兼容编译器族后，单独恢复 `P1R-M0-006` 并重跑 H5/App/mp-weixin 与完整供应链 Gate。
