@@ -299,8 +299,9 @@ function makeFixture() {
   };
   const gapRegistry = {
     gaps: [{
-      id: 'EVENT-GAP-BIND-ASM-001', status: 'OPEN',
-      closureTasks: ['P1R-M1-006', 'P1R-M1-010', 'P1R-M1-013'], closureEvidence: null,
+      id: 'EVENT-GAP-BIND-ASM-001', status: 'CLOSED',
+      closureTasks: ['P1R-M1-006', 'P1R-M1-010', 'P1R-M1-013'],
+      closureEvidence: 'evidence/p1r/m1/P1R-M1-010/manifest.json',
     }],
   };
   return {
@@ -455,7 +456,8 @@ rejectMutation('EVENT_RAW_RULE_LEAK', (fixture) => { fixture.catalog.payloadSche
 rejectMutation('EVENT_RECORDING_LEAK', (fixture) => { fixture.catalog.payloadSchemas.B10AssessmentAttemptAssessed.properties.recording = { type: 'string' }; });
 rejectMutation('EVENT_SUBJECTIVE_OUTCOME_LEAK', (fixture) => { fixture.catalog.payloadSchemas.B10AssessmentAttemptAssessed.properties.outcomeKind.enum = ['SELF_RATING']; });
 rejectMutation('EVENT_CANONICAL_PROMOTION', (fixture) => { fixture.catalog.events[0].status = 'CANONICAL_D2'; });
-rejectMutation('EVENT_GAP_CLOSURE', (fixture) => { fixture.gapRegistry.gaps[0].status = 'D2_CONTRACT_CLOSED'; });
+rejectMutation('EVENT_GAP_REOPEN', (fixture) => { fixture.gapRegistry.gaps[0].status = 'OPEN'; });
+rejectMutation('EVENT_GAP_EVIDENCE_DRIFT', (fixture) => { fixture.gapRegistry.gaps[0].closureEvidence = null; });
 rejectMutation('EVENT_MISSING_PIN', (fixture) => { fixture.catalog.payloadSchemas.B10AssessmentAttemptSubmitted.required = fixture.catalog.payloadSchemas.B10AssessmentAttemptSubmitted.required.filter((field) => field !== 'snapshotHash'); });
 rejectMutation('AI_AUTHORITY_CLAIM', (fixture) => { fixture.b10OpenApi.components.schemas.B10AssessmentReport.properties.aiScore = { type: 'number' }; });
 rejectMutation('ANTI_CHEAT_AUTHORITY_CLAIM', (fixture) => { fixture.b10OpenApi.components.schemas.B10AssessmentReport.properties.cheatingConclusion = { type: 'string' }; });

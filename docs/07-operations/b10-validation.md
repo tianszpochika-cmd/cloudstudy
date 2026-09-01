@@ -25,7 +25,7 @@ P1R 按编号任务重新验收：
 | Attempt | `submissionId/submissionDigest/attemptVersion`；同键同摘要返回原结果，同键异摘要 409 | 耐久幂等表、事务、自动提交与重试故障注入 |
 | 判分 | 服务端按固定规则确定性判分；事件/日志只带 learner-safe 摘要，不带原始作答、答案密钥或规则正文 | 真实规则引擎、性能、回放一致性和受保护数据访问 |
 | Assessment report | 绑定 session/attempt/submission、content/rule/assessment/report 版本、`asOf/assessmentFactWatermark`；不写 mastery/SRS | 真实报告任务、DLQ/replay、本人越权和延迟状态 |
-| 事件 | submitted/assessed 仅补安全 payload，仍为 historical candidate | AsyncAPI/Kafka/consumer binding 仍为 `EVENT-GAP-BIND-ASM-001`，由 M1-013/M2 后续闭合 |
+| 事件 | submitted/assessed 仅补安全 payload，仍为 historical candidate | `EVENT-GAP-BIND-ASM-001` 已完成 D2 registry 关闭；AsyncAPI/Kafka/consumer 真实运行证据仍由 M2 闭合 |
 
 Phase 1 不生成权威作弊结论，切屏/失焦历史字段不得驱动分数、奖励、封禁或报告事实。报告不得声称官方题库、官方认证、全国百分位或 AI/mastery 权威。
 

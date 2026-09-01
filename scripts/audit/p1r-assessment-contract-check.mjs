@@ -147,7 +147,7 @@ const EXPECTED_ADVERSARIAL_CASES = Object.freeze([
   'ANSWER_ONEOF_REMOVAL', 'ANSWER_NOT_GUARD_REMOVAL', 'ANSWER_NOT_GUARD_WEAKENED', 'ANSWER_UNKNOWN_TYPE', 'CLIENT_SCORE_INJECTION',
   'CLIENT_RULE_INJECTION', 'SUBMISSION_DIGEST_REMOVAL', 'OUTCOME_OBJECTIVE_NUMERATOR_REMOVAL', 'OUTCOME_REASON_TRACE_REMOVAL',
   'SUBJECTIVE_OBJECTIVE_IMPERSONATION', 'REPORT_VERSION_REMOVAL', 'REPORT_MASTERY_LEAK', 'LEGACY_ATTEMPT_ROUTE_NOT_DEPRECATED', 'LEGACY_DEPRECATION_DRIFT', 'B2_LEGACY_ROUTE_NOT_DEPRECATED',
-  'EVENT_RAW_RESPONSE_LEAK', 'EVENT_RAW_RULE_LEAK', 'EVENT_RECORDING_LEAK', 'EVENT_SUBJECTIVE_OUTCOME_LEAK', 'EVENT_CANONICAL_PROMOTION', 'EVENT_GAP_CLOSURE',
+  'EVENT_RAW_RESPONSE_LEAK', 'EVENT_RAW_RULE_LEAK', 'EVENT_RECORDING_LEAK', 'EVENT_SUBJECTIVE_OUTCOME_LEAK', 'EVENT_CANONICAL_PROMOTION', 'EVENT_GAP_REOPEN', 'EVENT_GAP_EVIDENCE_DRIFT',
   'AI_AUTHORITY_CLAIM', 'ANTI_CHEAT_AUTHORITY_CLAIM', 'OFFICIAL_CERTIFICATION_CLAIM', 'RUNTIME_STATUS_PROMOTION',
 ]);
 const CLIENT_AUTHORITY_FIELDS = Object.freeze([
@@ -591,14 +591,15 @@ function checkPolicyLegacy(policy, errors) {
 }
 
 function checkPolicyEvents(policy, errors) {
-  knownKeys(errors, policy.events, ['historicalEventNames', 'requiredSubmittedFields', 'requiredAssessedFields', 'forbiddenPayloadFields', 'objectiveOutcomeKind', 'gapId', 'gapStatus'], 'assessment events');
+  knownKeys(errors, policy.events, ['historicalEventNames', 'requiredSubmittedFields', 'requiredAssessedFields', 'forbiddenPayloadFields', 'objectiveOutcomeKind', 'gapId', 'gapStatus', 'gapClosureEvidence'], 'assessment events');
   exact(errors, policy.events && policy.events.historicalEventNames, ['assessment.attempt.submitted.v1', 'assessment.attempt.assessed.v1'], 'assessment historical event names');
   exact(errors, policy.events && policy.events.requiredSubmittedFields, SUBMITTED_EVENT_FIELDS, 'assessment submitted event fields');
   exact(errors, policy.events && policy.events.requiredAssessedFields, ASSESSED_EVENT_FIELDS, 'assessment assessed event fields');
   exact(errors, policy.events && policy.events.forbiddenPayloadFields, EVENT_FORBIDDEN_FIELDS, 'assessment event forbidden payload fields');
   add(errors, policy.events && policy.events.objectiveOutcomeKind === 'OBJECTIVE', 'assessment assessed event outcomeKind must be OBJECTIVE');
   add(errors, policy.events && policy.events.gapId === 'EVENT-GAP-BIND-ASM-001', 'assessment event gap id drifted');
-  add(errors, policy.events && policy.events.gapStatus === 'OPEN', 'assessment event gap must remain OPEN');
+  add(errors, policy.events && policy.events.gapStatus === 'CLOSED', 'assessment event gap must remain D2 registry CLOSED');
+  add(errors, policy.events && policy.events.gapClosureEvidence === 'evidence/p1r/m1/P1R-M1-010/manifest.json', 'assessment event gap closure Evidence drifted');
 }
 
 function checkPolicyScope(policy, errors) {
@@ -915,9 +916,9 @@ function checkEvents(eventFragment, catalog, gapRegistry, errors) {
   ], 'canonical assessment event allowlist');
   const gap = findGap(gapRegistry, 'EVENT-GAP-BIND-ASM-001');
   add(errors, isRecord(gap), 'EVENT-GAP-BIND-ASM-001 must remain registered');
-  add(errors, gap && gap.status === 'OPEN', 'EVENT-GAP-BIND-ASM-001 must remain OPEN');
+  add(errors, gap && gap.status === 'CLOSED', 'EVENT-GAP-BIND-ASM-001 must remain D2 registry CLOSED');
   add(errors, gap && Array.isArray(gap.closureTasks) && ['P1R-M1-006', 'P1R-M1-010', 'P1R-M1-013'].every((task) => gap.closureTasks.includes(task)), 'EVENT-GAP-BIND-ASM-001 must retain collective closure tasks');
-  add(errors, gap && (gap.closureEvidence === null || gap.closureEvidence === undefined), 'EVENT-GAP-BIND-ASM-001 must not have closure evidence at D2');
+  add(errors, gap && gap.closureEvidence === 'evidence/p1r/m1/P1R-M1-010/manifest.json', 'EVENT-GAP-BIND-ASM-001 must retain canonical D2 closure Evidence');
 }
 
 function checkPhaseBoundary(b10OpenApi, errors) {

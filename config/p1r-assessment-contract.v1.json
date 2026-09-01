@@ -534,7 +534,8 @@
     ],
     "objectiveOutcomeKind": "OBJECTIVE",
     "gapId": "EVENT-GAP-BIND-ASM-001",
-    "gapStatus": "OPEN"
+    "gapStatus": "CLOSED",
+    "gapClosureEvidence": "evidence/p1r/m1/P1R-M1-010/manifest.json"
   },
   "phase1Prohibitions": [
     "authoritative-cheating-conclusion",
@@ -719,7 +720,8 @@
     "EVENT_RECORDING_LEAK",
     "EVENT_SUBJECTIVE_OUTCOME_LEAK",
     "EVENT_CANONICAL_PROMOTION",
-    "EVENT_GAP_CLOSURE",
+    "EVENT_GAP_REOPEN",
+    "EVENT_GAP_EVIDENCE_DRIFT",
     "AI_AUTHORITY_CLAIM",
     "ANTI_CHEAT_AUTHORITY_CLAIM",
     "OFFICIAL_CERTIFICATION_CLAIM",

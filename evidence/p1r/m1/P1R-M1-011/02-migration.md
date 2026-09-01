@@ -4,4 +4,4 @@
 
 B1 onboarding options/profile/first-goal 保留为明确 deprecated adapter；未知或缺失 canonical 目标事实返回 422，不能默认或空成功。`learner.target.updated.v1` 具备 producer、data owner、两个 consumer group、topic、partition key 与 payload allow-list，晋升为 canonical D2；profile/first-day 事件继续 historical-only。
 
-`EVENT-GAP-ONB-001` 仅获得 D2 contract closure，registry 仍保持 OPEN，真实 Outbox、broker、ACL、投递和消费不能由该静态 promotion 关闭。
+`EVENT-GAP-ONB-001` 已由 M1-018 以 canonical Evidence 关闭 D2 registry 项；真实 Outbox、broker、ACL、投递和消费仍为 `NOT_RUNTIME_VERIFIED`，不能由该静态 promotion 冒充。

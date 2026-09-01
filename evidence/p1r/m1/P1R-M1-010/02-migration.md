@@ -4,4 +4,4 @@
 
 旧 attempt-scoped B10 checkpoint 和 B2 assessment/exam 写路径保持 `deprecated`、adapter-only 和明确 owner/next task；它们不再是 canonical 写入口。B2 anti-cheat 仅为 `HISTORICAL_NON_AUTHORITATIVE`，不能映射为 score、reward 或 ban。
 
-assessment submitted/assessed 事件仍为历史 payload 候选，禁止 raw response、answer rule、recording 和 canonical promotion。assessed 历史 payload 只允许 `OBJECTIVE` outcome；`EVENT-GAP-BIND-ASM-001` 未关闭。
+assessment submitted/assessed 事件仍为历史 payload 候选，禁止 raw response、answer rule、recording 和 canonical promotion。assessed 历史 payload 只允许 `OBJECTIVE` outcome；`EVENT-GAP-BIND-ASM-001` 已关闭 D2 注册表项，真实 Outbox/Kafka/消费运行证据仍待 M2。

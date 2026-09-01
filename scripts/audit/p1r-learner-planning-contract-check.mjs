@@ -19,7 +19,7 @@ export const DEFAULT_SAGA_RECOVERY = 'config/p1r-saga-recovery.v1.json';
 export const DEFAULT_EVENT_RELIABILITY = 'packages/contracts/events/v1/reliability-policy.json';
 export const DEFAULT_B26_RUNTIME = 'config/b26-event-runtime.json';
 
-const FROZEN_POLICY_SHA256 = '17ed061b6518b0598a511f7a07b19e7d1388da5ca6878052cc10843e787456ca';
+const FROZEN_POLICY_SHA256 = '6cc686492ffa6733eb8bcb0942c6c9d850a19c08031c2196d9afba7fe906f0d6';
 const FROZEN_M1_012_PLACEMENT_POLICY_SHA256 = '9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b';
 const POLICY_KEYS = [
   '$schema', 'schemaVersion', 'task', 'phase', 'maturity', 'runtimeStatus', 'canonicalSources',
@@ -333,7 +333,8 @@ function checkPolicy(policy, errors) {
   add(errors, Array.isArray(policy?.adversarialCases) && policy.adversarialCases.length >= 60, 'policy requires at least sixty adversarial cases');
   add(errors, new Set(policy?.adversarialCases ?? []).size === policy?.adversarialCases?.length, 'adversarial case ids must be unique');
   add(errors, policy?.events?.gap?.catalogStatus === 'D2_CONTRACT_CLOSED', 'ONB-001 catalog governance must remain D2_CONTRACT_CLOSED');
-  add(errors, policy?.events?.gap?.registryStatus === 'OPEN', 'ONB-001 registry status must remain OPEN until runtime/evidence closure');
+  add(errors, policy?.events?.gap?.registryStatus === 'CLOSED', 'ONB-001 registry status must remain D2 CLOSED');
+  add(errors, policy?.events?.gap?.closureEvidence === 'evidence/p1r/m1/P1R-M1-011/manifest.json', 'ONB-001 canonical closure Evidence drifted');
   add(errors, policy?.b26Static?.runtimeStatus === 'pending' && policy?.b26Static?.mode === 'static-only' && policy?.b26Static?.defaultDecision === 'NO-GO', 'B26 must remain static-only pending NO-GO');
 }
 

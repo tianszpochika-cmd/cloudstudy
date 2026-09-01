@@ -8,4 +8,4 @@
 
 本任务只冻结 assessment-service 的 session 创建/读取、session-scoped protected checkpoint、attempt 提交、确定性判分摘要和 assessment report 快照。它绑定内容/规则 pin、submission digest、状态互斥、幂等和版本事实，并把 B2 写接口保留为显式 deprecated adapter。
 
-不包含 placement→plan Saga、learning SRS/mastery/聚合报告、真实 owner schema、事务/Outbox、Kafka、Saga、浏览器/设备或 E2E 运行验证。`EVENT-GAP-BIND-ASM-001` 继续 `OPEN`，`P1R-M0-006` 继续 `BLOCKED`。
+不包含 placement→plan Saga、learning SRS/mastery/聚合报告、真实 owner schema、事务/Outbox、Kafka、Saga、浏览器/设备或 E2E 运行验证。`EVENT-GAP-BIND-ASM-001` 已由 M1-018 以 canonical Evidence 关闭 D2 注册表项，但不代表事件运行；`P1R-M0-006` 继续 `BLOCKED`。
