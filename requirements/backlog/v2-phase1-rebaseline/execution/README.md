@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`23 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 84 PLANNED`（共 108 项）。
+- 当前台账计数：`23 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 83 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -62,3 +62,4 @@
 | `P1R-M1-014` | `P1R-M1-014.md` | `ACCEPTED` |
 | `P1R-M1-015` | `P1R-M1-015.md` | `ACCEPTED` |
 | `P1R-M1-016` | `P1R-M1-016.md` | `ACCEPTED` |
+| `P1R-M1-017` | `P1R-M1-017.md` | `IN_PROGRESS` |

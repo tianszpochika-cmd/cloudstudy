@@ -4,7 +4,7 @@
 
 ## 当前任务
 
-- `P1R-M1-001` 至 `P1R-M1-016` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-016 最终源码为 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。C=`cbf25c329dba70c29a793d30908f53724a05f371`、D=`034a36973656721dbb1e7d2dce764aa5baddb8e2`，全局 Evidence Gate PASS；旧任务原始成果未被改写。
+- `P1R-M1-001` 至 `P1R-M1-016` 均为 `ACCEPTED`；各自原实现源、完成时间、reviewer 与兼容基线保存在 canonical manifest `provenance`。M1-016 最终源码为 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`。C=`cbf25c329dba70c29a793d30908f53724a05f371`、D=`034a36973656721dbb1e7d2dce764aa5baddb8e2`，全局 Evidence Gate PASS；旧任务原始成果未被改写。`P1R-M1-017` 已从 `dev@b1d79a09e266179988270e1832a1309a1cb4af4d` 启动为 `IN_PROGRESS`。
 - `P1R-M1-010`：`ACCEPTED`；不可变来源检查点 `760621e45b9adc95a6aa40fb1678a8d3ebc87797`，原最终源码 `cd92378bd8ba0c57c920fc6e79db52de717b0b05`，Evidence `evidence/p1r/m1/P1R-M1-010/manifest.json`；M1-016 post-C D 阶段已把其 current-source manifest 与全部 artifactDigests 绑定至 `cbf25c329dba70c29a793d30908f53724a05f371`，本轮审计实现源为 `9a38ff2185286bc8e279f785ff3fad5de30de569`；原复审 P1/P2 为 `0/0`。
 - `P1R-M1-011`：`ACCEPTED`；不可变来源检查点 `14da16c00add0c2cbcd0cb53ec141b1c4d2b0fe1`，最终源码 `daa543b369c0e369a8f70e2f79278eb934ff9a09`，Evidence `evidence/p1r/m1/P1R-M1-011/manifest.json`；独立 reviewer `agent:m1_011_independent_review:gpt-5.6-luna:max` 最终接受，P1/P2 为 `0/0`。
 - `P1R-M1-012`：`ACCEPTED`；不可变来源检查点 `270b0dfbf8dbec1329b8dc7036ee3e7490a8ffb3`，最终源码 `aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72`，Evidence `evidence/p1r/m1/P1R-M1-012/manifest.json`；独立 reviewer `agent:m1_012_independent_review:gpt-5.6-luna:max` 接受，P1/P2 为 `0/0`。
@@ -187,6 +187,16 @@
 - GAP：`CONTRACT-GAP-INF-001/002`、`CONTRACT-GAP-SUPPORT-ROUTING` 与 `EVENT-GAP-BIND-NOTIF-001` 已关闭为 D2 静态治理，不作为 provider、数据库、Kafka、workflow、PEP、浏览器或 E2E runtime 证据。
 - Evidence：C=`cbf25c329dba70c29a793d30908f53724a05f371`，D=`034a36973656721dbb1e7d2dce764aa5baddb8e2`；M1-010 GAP registry 摘要已重算，全局 Evidence Gate PASS（108 tasks、23 ACCEPTED、1 BLOCKED、84 PLANNED、0 errors）。
 - 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；M1-017、M2-004/005/006、M6、M8-006 与 M0-006 仍保留原 owner 和状态。下一推荐为 `P1R-M1-017`。
+
+## M1-017 执行轨道
+
+不可变来源检查点：`dev@b1d79a09e266179988270e1832a1309a1cb4af4d`。
+
+1. privacy-deletion：冻结 `learner-service.privacy` 的导出 request/status/download/expiry/owner receipt，以及 `iam-service` 的删除 request/cancel/execute/status、7 天冷静期、会话撤销、legal hold 和跨 owner recovery receipt。
+2. analytics-ingress：冻结 consent/delete suppression、脱敏字段 allow-list、UI telemetry 与 Kafka 领域事实隔离；analytics 不得反写领域事实。
+3. audit-export：冻结 auditor/tenant scope、异步导出、短时下载、过期、字段脱敏、不可变审计和失败恢复。
+
+三条实施轨道只修改互斥 source fragment/config/test/docs；canonical catalog/AsyncAPI、Gateway、B26、生成物、compatibility、GAP registry、状态、Evidence、提交与推送由统筹 Agent 独占。结果只能是 `D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`，不得提前关闭 M2/M6/M8 运行责任；M0-006 继续 `BLOCKED`。
 
 ## M1-011 执行轨道
 
