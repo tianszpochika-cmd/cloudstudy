@@ -93,7 +93,7 @@
 - 一轮 REWORK：初始 `3bfc63d` 的 submit/checkpoint 脱敏路径仍引用旧 `.response`，且 `ASSESSED.assessedAt` 可为 null；`cd92378` 用精确 raw 字段清单、旧路径禁止规则、非空终态时间与生成类型 null 负例闭合。独立 Luna Max reviewer 随后接受，P1/P2 `0/0`。
 - 终验结果：assessment `83/83`、CLI `77` cases、P1R `433/433`、tooling `35/35`、workspace typecheck `7/7`，contracts merge/generate/validate 与固定 compatibility 均 PASS；canonical 为 386 operations、601 schemas、154 events、104 payload schemas、12 AsyncAPI channels、45 operations、13 JSON Schemas。
 - 已知非本任务问题：完整历史 G 保持既知 G0/G3 两项 stale marker 失败；direct API audit 保持既存 B9 content-publish-task 200 envelope 缺口。两项均未由 M1-010 引入，也没有被伪装成全绿。
-- D2 边界：`EVENT-GAP-BIND-ASM-001` 仍开放；placement/Saga 归 M1-012，learning SRS/mastery/report watermark 归 M1-013，真实 owner schema/Outbox、Kafka、workflow runtime 分别归 M2-004/005/006；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
+- D2 边界：`EVENT-GAP-BIND-ASM-001` 已由 M1-018 以 canonical Evidence 关闭 registry 项；`assessment.attempt.submitted.v1` / `assessment.attempt.assessed.v1` 仍为 historical-only，真实 owner schema/Outbox、Kafka 投递消费与 workflow runtime 分别归 M2-004/005/006；B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 
 ## M1-012 执行轨道
 
@@ -206,6 +206,15 @@
 - 安全返工：预提交对抗审查发现并关闭 public audit-export、敏感 schema field 与 root runtime-promotion 同步绕过；最终 reviewer 复测无 P1/P2。
 - GAP：四个 Contract 与两个 Event GAP 只按 D2 Evidence 关闭；真实数据库、对象存储、IAM/JWT、Kafka/Outbox、workflow、浏览器/E2E 继续由 M2/M6/M8 负责。
 - 边界：`D2_CONTRACT_READY` / `NOT_RUNTIME_VERIFIED`；B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`。下一任务为 `P1R-M1-018` D2 总 Gate。
+
+## M1-018 执行与结果摘要
+
+- 最终验收：`c548b601caae41fecc417f44f2a3e8e2016332d0` 经 `agent:m1_018_final_review:gpt-5.6-luna:max` 独立终验 `ACCEPT`，P1/P2=`0/0`；Evidence 为 `evidence/p1r/m1/P1R-M1-018/manifest.json`。
+- 返工：`dea989a` 的契约与 P1R 回归通过，但总 Gate 的 180 秒硬超时会误报 REWORK；`c548b60` 冻结了显式有界超时、耗时/超时报告和失败关闭变异测试。
+- 结果：总 Gate、专项 `48/48`、IAM compatibility `7/7`、P1R `1403/1403`、G `41/41`、typecheck `7/7`、contracts、两组 fixed compatibility、event/Gateway/B26 static/plan/CI/diff 均 PASS。
+- 规模：OpenAPI `427/783`，events `191/141`，`50 canonical / 141 historical`，AsyncAPI `50 channels / 184 operations`；B26 `12 topics / 50 routes / 51 groups`。
+- GAP：40 个 Contract/Event 记录按 owner canonical Evidence 关闭；2 个 Implementation 和 3 个 Evidence GAP 保持 OPEN。
+- 边界：`D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`，M2 真实 Gateway/IAM/PEP/DB/Kafka/workflow 未验证。
 
 ## M1-011 执行轨道
 
