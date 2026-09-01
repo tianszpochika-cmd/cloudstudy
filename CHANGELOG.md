@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-018-START-20260901] 以全局 Evidence Gate 已通过的 `dev@97497afe1f31703601d1491c8d47d00121c90089` 启动 D2 总 Gate：精确核对 24 个 Contract、15 个原子 Event 与 1 个绑定族别名，先解决三项 IAM 条件事件的 canonical v2 设计决定，再关闭剩余 Contract/Event GAP；同时修复 G0/G3 stale source marker，但保持 G0/G3 runtime、M0-006、B26 和 M2–M8 的阻塞/待运行边界不变。
+
 - [P1R-M1-017-ACCEPT-20260901] 接受隐私导出、168 小时账号删除冷静期/owner receipt、Analytics ingress 与 internal-only 审计导出 D2 契约：最终实现源 `600438218b35c1b5a9931dd16fa0ad210050c68d` 经独立 Luna Max reviewer 判定 `ACCEPT`、P1/P2=`0/0`；专项 `79/79`、P1R `1347/1347`、typecheck `7/7`，contracts/compatibility/event/Gateway/B26 static 均 PASS。六个目标 GAP 仅按 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED` 关闭；真实 DB、对象存储、IAM/JWT、Kafka、workflow、浏览器/E2E 仍未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。
 
 - [P1R-M1-017-START-20260901] 启动 Phase 1 隐私导出、账号删除冷静期/owner receipt、analytics ingress 与审计导出 D2 契约：以已同步的 `dev@b1d79a09e266179988270e1832a1309a1cb4af4d` 为不可变来源检查点，冻结 `learner-service.privacy`、`iam-service`、`analytics-service`、`audit-service` 与 workflow 编排边界，以及本人二次确认、7 天冷静期、短时下载、过期、脱敏、同意/删除联动、合法保留和部分失败恢复。该条只记录 `IN_PROGRESS`；B1/B13 与 core-api 继续 historical-only，真实数据库、对象存储、Kafka、workflow、PEP、浏览器/E2E 均未验证，B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`。
