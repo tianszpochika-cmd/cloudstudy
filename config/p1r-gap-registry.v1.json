@@ -3,8 +3,20 @@
   "planVersion": "v1.0",
   "source": "requirements/backlog/v2-phase1-rebaseline/04-追溯覆盖矩阵.md#8-gap-关闭任务映射",
   "statusPolicy": {
-    "allowed": ["OPEN", "IN_PROGRESS", "CLOSED", "BLOCKED", "REWORK"],
-    "closedRequires": ["ownerTaskAccepted", "artifactDiff", "migrationOrCompatibilityDecision", "currentCommitTests", "canonicalEvidence"]
+    "allowed": [
+      "OPEN",
+      "IN_PROGRESS",
+      "CLOSED",
+      "BLOCKED",
+      "REWORK"
+    ],
+    "closedRequires": [
+      "ownerTaskAccepted",
+      "artifactDiff",
+      "migrationOrCompatibilityDecision",
+      "currentCommitTests",
+      "canonicalEvidence"
+    ]
   },
   "expectedCounts": {
     "CONTRACT": 24,
@@ -14,52 +26,509 @@
     "TOTAL": 45
   },
   "gaps": [
-    {"id":"CONTRACT-GAP-ADM-001","kind":"CONTRACT","closureTasks":["P1R-M1-008"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-ADMIN-CONTENT-BOUNDARY","kind":"CONTRACT","closureTasks":["P1R-M1-008"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-ANL-001","kind":"CONTRACT","closureTasks":["P1R-M1-017"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-017/manifest.json","closedAt":"2026-09-01T11:28:58+08:00","reviewer":"agent:m1_017_final_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-COM-001","kind":"CONTRACT","closureTasks":["P1R-M1-015"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-015/manifest.json","closedAt":"2026-08-31T12:49:28+08:00","reviewer":"agent:m1_015_requirements_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-CONTENT-SCHEDULE","kind":"CONTRACT","closureTasks":["P1R-M1-008"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-GAM-001","kind":"CONTRACT","closureTasks":["P1R-M1-014"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-014/manifest.json","closedAt":"2026-08-31T07:48:15+08:00","reviewer":"agent:m1_014_final_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-INF-001","kind":"CONTRACT","closureTasks":["P1R-M1-016"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-016/manifest.json","closedAt":"2026-08-31T20:28:21+08:00","reviewer":"agent:m1_016_independent_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-INF-002","kind":"CONTRACT","closureTasks":["P1R-M1-016"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-016/manifest.json","closedAt":"2026-08-31T20:28:21+08:00","reviewer":"agent:m1_016_independent_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-LRN-001","kind":"CONTRACT","closureTasks":["P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-MEDIA-PROCESSING","kind":"CONTRACT","closureTasks":["P1R-M1-009"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-ONB-001","kind":"CONTRACT","closureTasks":["P1R-M1-011"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-ONB-002","kind":"CONTRACT","closureTasks":["P1R-M1-012"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-PLACEMENT-MANIFEST","kind":"CONTRACT","closureTasks":["P1R-M1-012"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-PLAN-EXPLAIN","kind":"CONTRACT","closureTasks":["P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-PRIVACY-DELETION","kind":"CONTRACT","closureTasks":["P1R-M1-017"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-017/manifest.json","closedAt":"2026-09-01T11:28:58+08:00","reviewer":"agent:m1_017_final_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-PRIVACY-EXPORT","kind":"CONTRACT","closureTasks":["P1R-M1-017"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-017/manifest.json","closedAt":"2026-09-01T11:28:58+08:00","reviewer":"agent:m1_017_final_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-RBAC-ADMIN","kind":"CONTRACT","closureTasks":["P1R-M1-003"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-REP-001","kind":"CONTRACT","closureTasks":["P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-REPAIR-VARIANT","kind":"CONTRACT","closureTasks":["P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-REPORT-WATERMARK","kind":"CONTRACT","closureTasks":["P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-SPK-001","kind":"CONTRACT","closureTasks":["P1R-M1-009"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-SRS-OUTCOME","kind":"CONTRACT","closureTasks":["P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"CONTRACT-GAP-SUPPORT-ROUTING","kind":"CONTRACT","closureTasks":["P1R-M1-016"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-016/manifest.json","closedAt":"2026-08-31T20:28:21+08:00","reviewer":"agent:m1_016_independent_review:gpt-5.6-luna:max"},
-    {"id":"CONTRACT-GAP-USR-DEL-001","kind":"CONTRACT","closureTasks":["P1R-M1-017"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-017/manifest.json","closedAt":"2026-09-01T11:28:58+08:00","reviewer":"agent:m1_017_final_review:gpt-5.6-luna:max"},
-
-    {"id":"EVENT-GAP-IAM-001","kind":"EVENT","closureTasks":["P1R-M1-003","P1R-M1-006","P1R-M1-018"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-BIND-IAM-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-018"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-BIND-IAM-002","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-018"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-ONB-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-011"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-ONB-002","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-012"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-PLACEMENT-PLAN","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-012"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-CONTENT-DUPLICATE","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-008"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-BIND-CONT-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-008"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-BIND-ASM-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-010","P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-BIND-LRN-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-013"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVENT-GAP-BIND-GAM-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-014"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-014/manifest.json","closedAt":"2026-08-31T07:48:15+08:00","reviewer":"agent:m1_014_final_review:gpt-5.6-luna:max"},
-    {"id":"EVENT-GAP-BIND-SOC-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-014"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-014/manifest.json","closedAt":"2026-08-31T07:48:15+08:00","reviewer":"agent:m1_014_final_review:gpt-5.6-luna:max"},
-    {"id":"EVENT-GAP-BIND-NOTIF-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-016"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-016/manifest.json","closedAt":"2026-08-31T20:28:21+08:00","reviewer":"agent:m1_016_independent_review:gpt-5.6-luna:max"},
-    {"id":"EVENT-GAP-BIND-PRIV-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-017"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-017/manifest.json","closedAt":"2026-09-01T11:28:58+08:00","reviewer":"agent:m1_017_final_review:gpt-5.6-luna:max"},
-    {"id":"EVENT-GAP-USR-DEL-001","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-017"],"status":"CLOSED","closureEvidence":"evidence/p1r/m1/P1R-M1-017/manifest.json","closedAt":"2026-09-01T11:28:58+08:00","reviewer":"agent:m1_017_final_review:gpt-5.6-luna:max"},
-    {"id":"EVENT-GAP-BIND","kind":"EVENT","closureTasks":["P1R-M1-006","P1R-M1-018"],"status":"OPEN","closureEvidence":null},
-
-    {"id":"IMPLEMENTATION-GAP-PLAN-SCHEDULER","kind":"IMPLEMENTATION","closureTasks":["P1R-M4-007"],"status":"OPEN","closureEvidence":null},
-    {"id":"IMPLEMENTATION-GAP-MASTERY-D7","kind":"IMPLEMENTATION","closureTasks":["P1R-M5-010"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVIDENCE-GAP-LEARNING-LOOP","kind":"EVIDENCE","closureTasks":["P1R-M8-003","P1R-M8-004"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVIDENCE-GAP-ADMIN-PUBLISH","kind":"EVIDENCE","closureTasks":["P1R-M8-002"],"status":"OPEN","closureEvidence":null},
-    {"id":"EVIDENCE-GAP-SUPPORT-PRIVACY","kind":"EVIDENCE","closureTasks":["P1R-M8-006"],"status":"OPEN","closureEvidence":null}
+    {
+      "id": "CONTRACT-GAP-ADM-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-008"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-008/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-ADMIN-CONTENT-BOUNDARY",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-008"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-008/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-ANL-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-017"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-017/manifest.json",
+      "closedAt": "2026-09-01T11:28:58+08:00",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-COM-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-015"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-015/manifest.json",
+      "closedAt": "2026-08-31T12:49:28+08:00",
+      "reviewer": "agent:m1_015_requirements_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-CONTENT-SCHEDULE",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-008"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-008/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-GAM-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-014"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-014/manifest.json",
+      "closedAt": "2026-08-31T07:48:15+08:00",
+      "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-INF-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-016"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-016/manifest.json",
+      "closedAt": "2026-08-31T20:28:21+08:00",
+      "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-INF-002",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-016"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-016/manifest.json",
+      "closedAt": "2026-08-31T20:28:21+08:00",
+      "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-LRN-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-MEDIA-PROCESSING",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-009"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-009/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-ONB-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-011"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-011/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-ONB-002",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-012"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-012/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-PLACEMENT-MANIFEST",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-012"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-012/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-PLAN-EXPLAIN",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-PRIVACY-DELETION",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-017"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-017/manifest.json",
+      "closedAt": "2026-09-01T11:28:58+08:00",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-PRIVACY-EXPORT",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-017"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-017/manifest.json",
+      "closedAt": "2026-09-01T11:28:58+08:00",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-RBAC-ADMIN",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-003"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-003/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-REP-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-REPAIR-VARIANT",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-REPORT-WATERMARK",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-SPK-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-009"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-009/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-SRS-OUTCOME",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-SUPPORT-ROUTING",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-016"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-016/manifest.json",
+      "closedAt": "2026-08-31T20:28:21+08:00",
+      "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "CONTRACT-GAP-USR-DEL-001",
+      "kind": "CONTRACT",
+      "closureTasks": [
+        "P1R-M1-017"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-017/manifest.json",
+      "closedAt": "2026-09-01T11:28:58+08:00",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-IAM-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-003",
+        "P1R-M1-006",
+        "P1R-M1-018"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-018/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-IAM-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-018"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-018/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-IAM-002",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-018"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-018/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-ONB-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-011"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-011/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-ONB-002",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-012"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-012/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-PLACEMENT-PLAN",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-012"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-012/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-CONTENT-DUPLICATE",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-008"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-008/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-CONT-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-008"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-008/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-ASM-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-010",
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-010/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-LRN-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-013"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-013/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-GAM-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-014"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-014/manifest.json",
+      "closedAt": "2026-08-31T07:48:15+08:00",
+      "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-SOC-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-014"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-014/manifest.json",
+      "closedAt": "2026-08-31T07:48:15+08:00",
+      "reviewer": "agent:m1_014_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-NOTIF-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-016"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-016/manifest.json",
+      "closedAt": "2026-08-31T20:28:21+08:00",
+      "reviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND-PRIV-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-017"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-017/manifest.json",
+      "closedAt": "2026-09-01T11:28:58+08:00",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-USR-DEL-001",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-017"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-017/manifest.json",
+      "closedAt": "2026-09-01T11:28:58+08:00",
+      "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "EVENT-GAP-BIND",
+      "kind": "EVENT",
+      "closureTasks": [
+        "P1R-M1-006",
+        "P1R-M1-018"
+      ],
+      "status": "CLOSED",
+      "closureEvidence": "evidence/p1r/m1/P1R-M1-018/manifest.json",
+      "closedAt": "2026-09-01T15:39:29+08:00",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max"
+    },
+    {
+      "id": "IMPLEMENTATION-GAP-PLAN-SCHEDULER",
+      "kind": "IMPLEMENTATION",
+      "closureTasks": [
+        "P1R-M4-007"
+      ],
+      "status": "OPEN",
+      "closureEvidence": null
+    },
+    {
+      "id": "IMPLEMENTATION-GAP-MASTERY-D7",
+      "kind": "IMPLEMENTATION",
+      "closureTasks": [
+        "P1R-M5-010"
+      ],
+      "status": "OPEN",
+      "closureEvidence": null
+    },
+    {
+      "id": "EVIDENCE-GAP-LEARNING-LOOP",
+      "kind": "EVIDENCE",
+      "closureTasks": [
+        "P1R-M8-003",
+        "P1R-M8-004"
+      ],
+      "status": "OPEN",
+      "closureEvidence": null
+    },
+    {
+      "id": "EVIDENCE-GAP-ADMIN-PUBLISH",
+      "kind": "EVIDENCE",
+      "closureTasks": [
+        "P1R-M8-002"
+      ],
+      "status": "OPEN",
+      "closureEvidence": null
+    },
+    {
+      "id": "EVIDENCE-GAP-SUPPORT-PRIVACY",
+      "kind": "EVIDENCE",
+      "closureTasks": [
+        "P1R-M8-006"
+      ],
+      "status": "OPEN",
+      "closureEvidence": null
+    }
   ]
 }

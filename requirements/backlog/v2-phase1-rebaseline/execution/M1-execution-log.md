@@ -209,9 +209,9 @@
 
 ## M1-018 执行与结果摘要
 
-- 最终验收：`c548b601caae41fecc417f44f2a3e8e2016332d0` 经 `agent:m1_018_final_review:gpt-5.6-luna:max` 独立终验 `ACCEPT`，P1/P2=`0/0`；Evidence 为 `evidence/p1r/m1/P1R-M1-018/manifest.json`。
+- 当前集成候选：`2a747ba3917acd92664911c6b4be070ff469e302`；`c548b60` 原始源已独立 ACCEPT，`9820ff4` / `2a747ba` 分别因旧执行文档与未集成 canonical manifest 返回 REWORK，当前 Evidence C 等待 post-C 终验。
 - 返工：`dea989a` 的契约与 P1R 回归通过，但总 Gate 的 180 秒硬超时会误报 REWORK；`c548b60` 冻结了显式有界超时、耗时/超时报告和失败关闭变异测试。
-- 结果：总 Gate、专项 `48/48`、IAM compatibility `7/7`、P1R `1403/1403`、G `41/41`、typecheck `7/7`、contracts、两组 fixed compatibility、event/Gateway/B26 static/plan/CI/diff 均 PASS。
+- 结果：总 Gate 源码检查、专项 `48/48`、IAM compatibility `7/7`、P1R `1408/1408`、G `41/41`、typecheck `7/7`、contracts、两组 fixed compatibility、event/Gateway/B26 static/plan/CI/diff 均 PASS；final mode 待 C 提交后执行。
 - 规模：OpenAPI `427/783`，events `191/141`，`50 canonical / 141 historical`，AsyncAPI `50 channels / 184 operations`；B26 `12 topics / 50 routes / 51 groups`。
 - GAP：40 个 Contract/Event 记录按 owner canonical Evidence 关闭；2 个 Implementation 和 3 个 Evidence GAP 保持 OPEN。
 - 边界：`D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED`；B26 继续 `static-only/pending/NO-GO`，M0-006 继续 `BLOCKED`，M2 真实 Gateway/IAM/PEP/DB/Kafka/workflow 未验证。

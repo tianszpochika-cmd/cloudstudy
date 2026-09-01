@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-003",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "600438218b35c1b5a9931dd16fa0ad210050c68d",
+  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "93dbb28442c74f803b520b39e75f74c6da25f4f09665bebb251582982a4deb60"
+      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
     },
     {
       "path": "packages/contracts/fragments/b8/b8-auth-iam.openapi.json",
@@ -17,17 +17,17 @@
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "5affe3ab3f9a2a26375d9378ca38fa8c764725991658a6077be37532d12bd889"
+      "digest": "f3873e89f192fb7e4ab14c01d13003ead75cd711dd72e63e1af1db1b5442c1a5"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "be8ccc024e733eaaa7c0c9d7d0ad0992128bbb3829a2c0ee32e1a0a2dd5f9c17"
+      "digest": "63cc2b7d018016d6669d3ac1c55cc2ec9940e7a4cbf32f94ed802970d9b3fd33"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "f7232952798fab08303d4b6032e63c66e8499fbbbb9eb71ee107638ba4d327cf"
+      "digest": "e78a6bc0f751282845ac573df73bbe43be9de6f1714df0d9108c2f31e1e9b6e9"
     },
     {
       "path": "scripts/audit/p1r-iam-policy-contract-check.mjs",
@@ -77,12 +77,12 @@
     {
       "path": "config/g1-contract-data.json",
       "algorithm": "sha256",
-      "digest": "054e255b52aabedf6712e6ee1aa5a5d99219c377c1a8979447adccc484da2694"
+      "digest": "dfe93272da76f34b8d758fa4e21df17ffc8b521786160933d930171e3f15ffd6"
     },
     {
       "path": "tests/g/g1-contract-data.test.mjs",
       "algorithm": "sha256",
-      "digest": "27b9dd7db5abee68dd064d43515c36719e2d4758caee525182c62a40edcf854d"
+      "digest": "2a168fb23b92bb06ce0332d3585f3a0406f4d8bc5aceeea0872d690c1ee205bc"
     }
   ],
   "environment": {
@@ -180,22 +180,42 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-01T11:28:58+08:00",
         "details": "Current-source revalidation at the accepted M1-017 implementation source. Original P1R-M1-003 provenance and review history remain unchanged; the later GAP/Evidence integration does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "auditedImplementationSource": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "integrationCheckpoint": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "reviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-01T14:40:33+08:00",
+        "details": "Current-source revalidation at accepted M1-018 source c548b601caae41fecc417f44f2a3e8e2016332d0. Original P1R-M1-003 implementation provenance and review history remain unchanged; the D2 total gate does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "auditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "integrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-01T15:39:29+08:00",
+        "details": "Final current-source revalidation after M1-018 closure-audit reconciliation at 2a747ba3917acd92664911c6b4be070ff469e302. The prior c548b601caae41fecc417f44f2a3e8e2016332d0 acceptance record and all original task provenance remain unchanged; runtime evidence is not promoted."
       }
     ],
-    "previousCurrentSourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-016",
-    "currentSourceRevalidationTask": "P1R-M1-017",
-    "currentSourceRevalidationReviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-018",
+    "currentSourceRevalidationTask": "P1R-M1-018",
+    "currentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T20:28:21+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-01T11:28:58+08:00",
-    "currentSourceRevalidationAuditedImplementationSource": "600438218b35c1b5a9931dd16fa0ad210050c68d",
-    "currentSourceRevalidationIntegrationCheckpoint": "600438218b35c1b5a9931dd16fa0ad210050c68d"
+    "currentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
+    "currentSourceRevalidationAuditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
+    "currentSourceRevalidationIntegrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302"
   },
   "startedAt": "2026-08-29T22:19:13+08:00",
-  "finishedAt": "2026-09-01T11:28:58+08:00",
+  "finishedAt": "2026-09-01T15:39:29+08:00",
   "actors": [
     "m1_003_policy_contract",
     "root-coordinator"
@@ -207,7 +227,8 @@
     "INT-P1-002",
     "ADR-0010",
     "ADR-0012",
-    "ADR-0013"
+    "ADR-0013",
+    "CONTRACT-GAP-RBAC-ADMIN"
   ],
   "commands": [
     "pnpm p1r:assessment-contract:check",
@@ -319,6 +340,11 @@
       "check": "M1-017-current-source-revalidation",
       "status": "PASS",
       "details": "Artifact SHA-256 entries were recomputed against 600438218b35c1b5a9931dd16fa0ad210050c68d. Independent M1-017 review passed 1347/1347 P1R and 7/7 typecheck with P1/P2=0/0; original P1R-M1-003 provenance remains unchanged and runtimeStatus stays NOT_RUNTIME_VERIFIED."
+    },
+    {
+      "check": "M1-018-current-source-revalidation",
+      "status": "PASS",
+      "details": "All artifact SHA-256 entries were recomputed against 2a747ba3917acd92664911c6b4be070ff469e302. Independent M1-018 review accepted the 24 Contract / 15 atomic Event / one alias D2 total gate with P1/P2=0/0; original P1R-M1-003 provenance remains unchanged and runtimeStatus stays NOT_RUNTIME_VERIFIED."
     }
   ],
   "rollbackEvidence": [
@@ -333,8 +359,9 @@
     "Gateway route, browser credential, rate-limit, JWT precheck, audit and direct-connect D2 policy is accepted by P1R-M1-004; its real runtime enforcement remains owned by P1R-M2-001.",
     "The deprecated authorization decision route keeps its historical response shape for compatibility; runtime integrations must use the strict structured PDP context rather than omit server-authoritative facts.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the M1-003-relevant G1 slice passes 6/6 and these failures predate the task source.",
-    "M1-017 current-source binding is complete at 600438218b35c1b5a9931dd16fa0ad210050c68d; original P1R-M1-003 provenance remains authoritative for its historical implementation acceptance. Runtime remains NOT_RUNTIME_VERIFIED."
+    "M1-017 current-source binding is complete at 600438218b35c1b5a9931dd16fa0ad210050c68d; original P1R-M1-003 provenance remains authoritative for its historical implementation acceptance. Runtime remains NOT_RUNTIME_VERIFIED.",
+    "M1-018 current-source binding is complete at 2a747ba3917acd92664911c6b4be070ff469e302; original P1R-M1-003 implementation provenance remains authoritative and runtime stays NOT_RUNTIME_VERIFIED."
   ],
-  "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-005",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "600438218b35c1b5a9931dd16fa0ad210050c68d",
+  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
   "artifactDigests": [
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "93dbb28442c74f803b520b39e75f74c6da25f4f09665bebb251582982a4deb60"
+      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
     },
     {
       "path": "config/p1r-data-ownership.v1.json",
@@ -131,22 +131,42 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-01T11:28:58+08:00",
         "details": "Current-source revalidation at the accepted M1-017 implementation source. Original P1R-M1-005 provenance and review history remain unchanged; the later GAP/Evidence integration does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "auditedImplementationSource": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "integrationCheckpoint": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "reviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-01T14:40:33+08:00",
+        "details": "Current-source revalidation at accepted M1-018 source c548b601caae41fecc417f44f2a3e8e2016332d0. Original P1R-M1-005 implementation provenance and review history remain unchanged; the D2 total gate does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "auditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "integrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-01T15:39:29+08:00",
+        "details": "Final current-source revalidation after M1-018 closure-audit reconciliation at 2a747ba3917acd92664911c6b4be070ff469e302. The prior c548b601caae41fecc417f44f2a3e8e2016332d0 acceptance record and all original task provenance remain unchanged; runtime evidence is not promoted."
       }
     ],
-    "previousCurrentSourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-016",
-    "currentSourceRevalidationTask": "P1R-M1-017",
-    "currentSourceRevalidationReviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-018",
+    "currentSourceRevalidationTask": "P1R-M1-018",
+    "currentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T20:28:21+08:00",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-01T11:28:58+08:00",
-    "currentSourceRevalidationAuditedImplementationSource": "600438218b35c1b5a9931dd16fa0ad210050c68d",
-    "currentSourceRevalidationIntegrationCheckpoint": "600438218b35c1b5a9931dd16fa0ad210050c68d"
+    "currentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
+    "currentSourceRevalidationAuditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
+    "currentSourceRevalidationIntegrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302"
   },
   "startedAt": "2026-08-30T00:53:14+08:00",
-  "finishedAt": "2026-09-01T11:28:58+08:00",
+  "finishedAt": "2026-09-01T15:39:29+08:00",
   "actors": [
     "m1_004_evidence",
     "m1_004_evidence/data_owner_audit",
@@ -274,6 +294,11 @@
       "check": "M1-017-current-source-revalidation",
       "status": "PASS",
       "details": "Artifact SHA-256 entries were recomputed against 600438218b35c1b5a9931dd16fa0ad210050c68d. Independent M1-017 review passed 1347/1347 P1R and 7/7 typecheck with P1/P2=0/0; original P1R-M1-005 provenance remains unchanged and runtimeStatus stays NOT_RUNTIME_VERIFIED."
+    },
+    {
+      "check": "M1-018-current-source-revalidation",
+      "status": "PASS",
+      "details": "All artifact SHA-256 entries were recomputed against 2a747ba3917acd92664911c6b4be070ff469e302. Independent M1-018 review accepted the 24 Contract / 15 atomic Event / one alias D2 total gate with P1/P2=0/0; original P1R-M1-005 provenance remains unchanged and runtimeStatus stays NOT_RUNTIME_VERIFIED."
     }
   ],
   "rollbackEvidence": [
@@ -289,8 +314,9 @@
     "Architecture/security/Redis prose was manually cross-checked but is not content-fingerprinted by the data ownership validator; the machine-readable policy remains the D2 source of truth.",
     "P1R-M0-006 remains BLOCKED by the supported uni-app/Vite high vulnerability and still prevents M0-complete or release claims.",
     "The full historical G suite remains 39/41 because G0 and G3 reference one removed legacy source marker; the task-relevant G1 slice passes 6/6.",
-    "M1-017 current-source binding is complete at 600438218b35c1b5a9931dd16fa0ad210050c68d; original P1R-M1-005 provenance remains authoritative for its historical implementation acceptance. Runtime remains NOT_RUNTIME_VERIFIED."
+    "M1-017 current-source binding is complete at 600438218b35c1b5a9931dd16fa0ad210050c68d; original P1R-M1-005 provenance remains authoritative for its historical implementation acceptance. Runtime remains NOT_RUNTIME_VERIFIED.",
+    "M1-018 current-source binding is complete at 2a747ba3917acd92664911c6b4be070ff469e302; original P1R-M1-005 implementation provenance remains authoritative and runtime stays NOT_RUNTIME_VERIFIED."
   ],
-  "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED"
 }

@@ -6,7 +6,13 @@
   "records": [
     {
       "taskId": "P1R-M0-001",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -14,7 +20,13 @@
     },
     {
       "taskId": "P1R-M0-002",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -22,7 +34,13 @@
     },
     {
       "taskId": "P1R-M0-003",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -30,7 +48,13 @@
     },
     {
       "taskId": "P1R-M0-004",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -38,7 +62,13 @@
     },
     {
       "taskId": "P1R-M0-005",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -46,7 +76,12 @@
     },
     {
       "taskId": "P1R-M0-006",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "BLOCKED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "BLOCKED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record; the unresolved supported-toolchain vulnerability is a canonical blocker.",
@@ -54,7 +89,13 @@
     },
     {
       "taskId": "P1R-M0-007",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -62,7 +103,13 @@
     },
     {
       "taskId": "P1R-M0-008",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T10:30:00+08:00",
       "actor": "root-coordinator",
       "reason": "Reconstructed from the current-commit M0 execution record and canonical independent review decision.",
@@ -70,7 +117,13 @@
     },
     {
       "taskId": "P1R-M1-001",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T20:28:20+08:00",
       "actor": "root-coordinator",
       "reason": "The canonical API foundation, no-write tooling and failure-closed checks passed; independent Luna Max review accepted source commit 96e1b541cdda8e9e5ad02bc79ea0c5b9032064c4.",
@@ -78,7 +131,13 @@
     },
     {
       "taskId": "P1R-M1-002",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T22:09:32+08:00",
       "actor": "root-coordinator",
       "reason": "The Web/native IAM lifecycle contract, generated unions, failure-closed audit and design alignment passed; independent Terra Ultra reviewer m1_002_final_review accepted source commit 25705c4caab46449cfaa577db08bd13c8ad13fba.",
@@ -86,7 +145,13 @@
     },
     {
       "taskId": "P1R-M1-003",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-29T23:25:30+08:00",
       "actor": "root-coordinator",
       "reason": "The IAM authorization, adult Gate, consent, RBAC/ABAC, policy governance and strict PEP/PDP D2 contract passed compatibility and failure-closed checks; independent Luna Max reviewer m1_003_final_review accepted final source 82b27f4108cfb976a274c2ac0cc34b1c9460a7a7.",
@@ -94,7 +159,13 @@
     },
     {
       "taskId": "P1R-M1-004",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-30T00:42:00+08:00",
       "actor": "root-coordinator",
       "reason": "Gateway route ownership, browser credential, rate-limit, JWT precheck, audit and direct-connect D2 contracts passed failure-closed checks and compatibility; independent Luna Max reviewer m1_003_final_review accepted source e4618b324e5a93926da0750a8100fc9377ac97ec without promoting M2-001 runtime gaps.",
@@ -102,7 +173,13 @@
     },
     {
       "taskId": "P1R-M1-005",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-30T02:12:45+08:00",
       "actor": "root-coordinator",
       "reason": "The 15-service/14-owner D2 matrix, recursive migration and Gateway/source boundaries, strict candidate-document shapes, Redis/B25 disposition, tenant/lifecycle governance and failure-closed adversarial checks passed at 21cdd3a94d0c721c96f5257d26efbb0c1b9354fb; independent Luna Max review accepted with zero current-source P1/P2 blockers without promoting M2-004 runtime gaps.",
@@ -110,7 +187,16 @@
     },
     {
       "taskId": "P1R-M1-006",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-30T06:35:52+08:00",
       "actor": "root-coordinator",
       "reason": "The rework closed the governance compatibility, fragment/payload ownership, B26 exact-binding and generated schemaVersion gaps at 3e4ba856742f28ba9d3fc4a3264c4b24c1cafc5a. Independent reviewer agent:m1_005_independent_review:gpt-5.6-luna:max accepted the D2 contract result; Kafka, Outbox, ACL and consumer runtime remain NOT_RUNTIME_VERIFIED.",
@@ -164,7 +250,13 @@
     },
     {
       "taskId": "P1R-M1-009",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-30T15:10:39+08:00",
       "actor": "root-coordinator",
       "reason": "Final source 2e7304a12c297d4c7bcad22b41cdb373b6030033 was accepted by independent reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max with zero current-source P1/P2 blockers. The 14-route, 30-schema media contract, legacy compatibility, Gateway/IAM boundaries and fixed promotion chain pass while remaining D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; B26 stays static-only, pending and NO-GO, M1-017 and M2-004/005/006 retain runtime ownership, and M0-006 remains BLOCKED.",
@@ -172,7 +264,16 @@
     },
     {
       "taskId": "P1R-M1-010",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-30T18:26:59+08:00",
       "actor": "root-coordinator",
       "reason": "Initial source 3bfc63dd6303745187bfa62ef5ca3c5ca75c70b4 entered REWORK after independent Luna Max review found incomplete raw-answer audit redaction and nullable ASSESSED assessedAt. Source cd92378bd8ba0c57c920fc6e79db52de717b0b05 closed both findings and was accepted by reviewer agent:m1_009_contract_audit:gpt-5.6-luna:max with zero current-source P1/P2 blockers. The result remains D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; M1-012/M1-013 and M2-004/005/006 retain downstream and runtime ownership, while M0-006 remains BLOCKED.",
@@ -180,7 +281,16 @@
     },
     {
       "taskId": "P1R-M1-011",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-30T21:45:45+08:00",
       "actor": "root-coordinator",
       "reason": "Initial source 5b6a3d5ef3e8b1b5dfd95fa327d2aa246cde457e entered REWORK after independent Luna Max review found an eligibility authority gap and follow-up contract hardening needs. Final source daa543b369c0e369a8f70e2f79278eb934ff9a09 closed the findings and was accepted by reviewer agent:m1_011_independent_review:gpt-5.6-luna:max with zero current-source P1/P2 blockers. The result remains D2_CONTRACT_READY and NOT_RUNTIME_VERIFIED; M1-012/M1-013 and M2-004/005/006 retain downstream/runtime ownership, B26 stays pending/NO-GO and M0-006 remains BLOCKED.",
@@ -188,7 +298,13 @@
     },
     {
       "taskId": "P1R-M1-012",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-31T00:49:16+08:00",
       "actor": "root-coordinator",
       "reason": "Final source aac5c3462e01f3b3bec34bb13e7cd9f74ff34f72 froze P1_PLACEMENT_V1, immutable placement result/report, the canonical completion event, generated types and placement-to-plan Saga D2 boundaries. Independent reviewer agent:m1_012_independent_review:gpt-5.6-luna:max accepted the same SHA with zero current-source P1/P2 blockers. Runtime remains NOT_RUNTIME_VERIFIED; B26 stays pending/NO-GO, M2-004/005/006 remain incomplete and M0-006 remains BLOCKED.",
@@ -196,7 +312,13 @@
     },
     {
       "taskId": "P1R-M1-013",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-31T04:16:39+08:00",
       "actor": "root-coordinator",
       "reason": "Dependencies P1R-M1-007, P1R-M1-010, P1R-M1-011 and P1R-M1-012 were accepted. Source checkpoint a07a58a7d245295c54d39487a6669545d077c513 was used to freeze the P1_DAILY_PLAN_V1, SM2_Q03_V1, single SRS write path, repair/D1/D7, mastery, report watermark and offline-conflict D2 contract. Final source a7f92095323f2afc4e6d28eeaff977e2197fcd0c was independently accepted by agent:m1_013_evidence_plan:gpt-5.6-terra:max with P1/P2=0/0; database, Kafka, worker, browser and E2E runtime evidence remain unpromoted.",
@@ -204,7 +326,13 @@
     },
     {
       "taskId": "P1R-M1-014",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-31T07:48:15+08:00",
       "actor": "root-coordinator",
       "reason": "Final source aab1fa24bb7d46e3dd730fe3801ab2e986301e0d was independently accepted by agent:m1_014_final_review:gpt-5.6-luna:max with P1/P2=0/0. The trusted-completion whitelist, immutable reward ledger, Sentence Train P0 catalog and controlled room/lease/focus/leaderboard/moderation result remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B4/B12 historical candidates and database, Kafka, WebSocket, browser and E2E runtime evidence were not promoted.",
@@ -212,7 +340,13 @@
     },
     {
       "taskId": "P1R-M1-015",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-31T12:49:28+08:00",
       "actor": "root-coordinator",
       "reason": "Final source f7a2e76fcc206c26f296ae6f1c2a4296d0a8a573 was independently accepted by agent:m1_015_requirements_review:gpt-5.6-luna:max with P1/P2=0/0. The product, activation, SANDBOX_HMAC callback, entitlement fail-closed cache/grace, refund/revoke/reconciliation and production-payment-OFF result remains D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B5/B13 v1, B20/B21/B26 and database, Kafka, provider, cache, browser and E2E runtime evidence were not promoted.",
@@ -220,7 +354,13 @@
     },
     {
       "taskId": "P1R-M1-016",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-08-31T20:28:21+08:00",
       "actor": "root-coordinator",
       "reason": "Final source 9a38ff2185286bc8e279f785ff3fad5de30de569 was independently accepted by agent:m1_016_independent_review:gpt-5.6-luna:max with P1/P2=0/0. Notification subscription/template/retry, owner-specific ordered sync/conflict recovery and learner/admin shared admin-ops-service.support ticket/message/assignment/SLA/retention remain D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED; B11/B5/B13 v1, B26 static governance and database, Kafka, provider, PEP, browser and E2E runtime evidence were not promoted.",
@@ -228,7 +368,16 @@
     },
     {
       "taskId": "P1R-M1-017",
-      "path": ["PLANNED", "READY", "IN_PROGRESS", "REVIEW", "REWORK", "IN_PROGRESS", "REVIEW", "ACCEPTED"],
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
       "recordedAt": "2026-09-01T11:28:58+08:00",
       "actor": "root-coordinator",
       "reason": "The coordinator froze b1d79a09e266179988270e1832a1309a1cb4af4d, repaired the pre-commit audit export and runtime-promotion bypasses, and committed source 600438218b35c1b5a9931dd16fa0ad210050c68d. Independent reviewer agent:m1_017_final_review:gpt-5.6-luna:max accepted the D2 privacy export, 168-hour account deletion, analytics ingress and internal audit export contracts with P1/P2=0/0; runtime remains NOT_RUNTIME_VERIFIED and B26 remains pending/NO-GO.",
@@ -236,10 +385,19 @@
     },
     {
       "taskId": "P1R-M1-018",
-      "path": ["PLANNED", "READY", "IN_PROGRESS"],
-      "recordedAt": "2026-09-01T11:43:25+08:00",
+      "path": [
+        "PLANNED",
+        "READY",
+        "IN_PROGRESS",
+        "REVIEW",
+        "REWORK",
+        "IN_PROGRESS",
+        "REVIEW",
+        "ACCEPTED"
+      ],
+      "recordedAt": "2026-09-01T14:40:33+08:00",
       "actor": "root-coordinator",
-      "reason": "All dependencies P1R-M1-001..017 are accepted and the global Evidence Gate passes at 97497afe1f31703601d1491c8d47d00121c90089. The coordinator froze that commit and started the D2 total gate for 24 Contract GAPs, 15 atomic Event GAPs and one binding-family alias, including an explicit IAM event design decision and G0/G3 stale-marker repair without runtime or release promotion.",
+      "reason": "Source dea989ab48dcfa5190fac43ce0ba083ad9488f80 entered REWORK for the total gate timeout defect; c548b601caae41fecc417f44f2a3e8e2016332d0 fixed bounded execution and was accepted. Evidence integration then exposed stale OPEN descriptions, repaired in 9820ff4c4cf4723050471426df11a0bdd091be20 and 2a747ba3917acd92664911c6b4be070ff469e302. Post-C final review is pending; runtime remains NOT_RUNTIME_VERIFIED.",
       "evidencePath": "evidence/p1r/m1/P1R-M1-018/manifest.json"
     }
   ]

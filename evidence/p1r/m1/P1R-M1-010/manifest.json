@@ -352,7 +352,7 @@
     }
   ],
   "knownGaps": [
-    "EVENT-GAP-BIND-ASM-001 remains OPEN until M1-006, M1-010 and M1-013 producer/consumer/learning boundaries are collectively completed.",
+    "EVENT-GAP-BIND-ASM-001 is D2 registry CLOSED by M1-018 canonical Evidence; real Outbox, Kafka delivery and consumer runtime remain NOT_RUNTIME_VERIFIED.",
     "P1R-M1-012 owns placement manifest, placement result and placement-to-plan Saga/event boundaries.",
     "P1R-M1-013 owns learning plan, SRS, mastery, repair scheduling and aggregate report watermark projections.",
     "P1R-M2-004 remains responsible for real assessment owner schema, grants, transactions and Outbox evidence.",

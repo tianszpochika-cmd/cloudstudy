@@ -1,5 +1,7 @@
 # Changelog
 
+- [P1R-M1-018-EVIDENCE-C-CANDIDATE-20260901] D2 总 Gate 当前集成候选源为 `2a747ba3917acd92664911c6b4be070ff469e302`：在 `c548b60` 的有界超时修复上，进一步将 ASM/ONB 旧审计与文档统一为 D2 registry CLOSED + canonical Evidence，同时保留 v1 historical-only 和 `NOT_RUNTIME_VERIFIED`。专项 `48/48`、IAM compatibility `7/7`、P1R `1408/1408`、G `41/41`、typecheck `7/7` 通过；40 个 Contract/Event GAP 只按 D2 Evidence 关闭，2 个 Implementation 与 3 个 Evidence GAP 继续 OPEN。本条是 Evidence C 候选，post-C 独立终验与 M1-010 D 阶段绑定完成后才记录最终 ACCEPT。
+
 - [P1R-M1-018-START-20260901] 以全局 Evidence Gate 已通过的 `dev@97497afe1f31703601d1491c8d47d00121c90089` 启动 D2 总 Gate：精确核对 24 个 Contract、15 个原子 Event 与 1 个绑定族别名，先解决三项 IAM 条件事件的 canonical v2 设计决定，再关闭剩余 Contract/Event GAP；同时修复 G0/G3 stale source marker，但保持 G0/G3 runtime、M0-006、B26 和 M2–M8 的阻塞/待运行边界不变。
 
 - [P1R-M1-017-ACCEPT-20260901] 接受隐私导出、168 小时账号删除冷静期/owner receipt、Analytics ingress 与 internal-only 审计导出 D2 契约：最终实现源 `600438218b35c1b5a9931dd16fa0ad210050c68d` 经独立 Luna Max reviewer 判定 `ACCEPT`、P1/P2=`0/0`；专项 `79/79`、P1R `1347/1347`、typecheck `7/7`，contracts/compatibility/event/Gateway/B26 static 均 PASS。六个目标 GAP 仅按 `D2_CONTRACT_READY / NOT_RUNTIME_VERIFIED` 关闭；真实 DB、对象存储、IAM/JWT、Kafka、workflow、浏览器/E2E 仍未验证，B26 继续 pending/NO-GO，M0-006 继续 `BLOCKED`。

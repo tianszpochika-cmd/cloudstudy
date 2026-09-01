@@ -1,0 +1,515 @@
+{
+  "taskId": "P1R-M1-018",
+  "draftOnly": false,
+  "canonicalTaskStatus": "ACCEPTED",
+  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+  "artifactDigests": [
+    {
+      "path": "config/b26-event-runtime.json",
+      "algorithm": "sha256",
+      "digest": "837779ccf7085a6bb9d4df1843516afc9be20467da68f79f4e698ca95d0fbcd7"
+    },
+    {
+      "path": "config/g0-scope-governance.json",
+      "algorithm": "sha256",
+      "digest": "e1fbefb93e98feb30f7cf512c3c80be441b7f91261f9eafa6c4dda618b445b06"
+    },
+    {
+      "path": "config/g1-contract-data.json",
+      "algorithm": "sha256",
+      "digest": "dfe93272da76f34b8d758fa4e21df17ffc8b521786160933d930171e3f15ffd6"
+    },
+    {
+      "path": "config/g3-test-security-observability.json",
+      "algorithm": "sha256",
+      "digest": "cc4bfb51c368ad065098f10d4428efe800c32376b04e258bcc62444d41aa48d2"
+    },
+    {
+      "path": "config/p1r-iam-event-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "48187a67daeebe9968a7f9398a043b836e29ae470491a5f8be74076108b2827f"
+    },
+    {
+      "path": "config/p1r-m1-018-d2-total-gate.v1.json",
+      "algorithm": "sha256",
+      "digest": "f34a0fa63be2cecf72dbe9c17350261d96824d945f8f66b5c4b56c98259d7c22"
+    },
+    {
+      "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+      "algorithm": "sha256",
+      "digest": "36deaf9bf227d7565e69ec3dbd5f6655bcdc690789a949be194f48836365e3ba"
+    },
+    {
+      "path": "docs/07-operations/g-gate-validation.md",
+      "algorithm": "sha256",
+      "digest": "8e59ba7fec9ba8c72d6ede7bdf39af2be20de8658957a6c07af90db20eb76b82"
+    },
+    {
+      "path": "package.json",
+      "algorithm": "sha256",
+      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
+    },
+    {
+      "path": "packages/api-client/src/generated/index.ts",
+      "algorithm": "sha256",
+      "digest": "e78a6bc0f751282845ac573df73bbe43be9de6f1714df0d9108c2f31e1e9b6e9"
+    },
+    {
+      "path": "packages/contracts/events/v1/catalog.json",
+      "algorithm": "sha256",
+      "digest": "6368b60e701e373490ddf64571e88c8496858ac94af7798e0f1b25493f2f7093"
+    },
+    {
+      "path": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+      "algorithm": "sha256",
+      "digest": "323c1614f04301b74f568610add6ca922f34f43ece7340ba4a2922738164f989"
+    },
+    {
+      "path": "packages/contracts/events/v1/reliability-policy.json",
+      "algorithm": "sha256",
+      "digest": "c3509892525a5512a75e5c81972653d5d3c00596b23c9a7dd84700fe7efa102d"
+    },
+    {
+      "path": "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+      "algorithm": "sha256",
+      "digest": "a9465ee20d0815863f1fbe587614e17a85b61be23e81ca3cdc60d37a40f3e151"
+    },
+    {
+      "path": "packages/contracts/fragments/b10/b10-placement.openapi.json",
+      "algorithm": "sha256",
+      "digest": "6c8b561ed55588b7d09b90ba43020f4fef10760546deef47f2350a260c0db34a"
+    },
+    {
+      "path": "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json",
+      "algorithm": "sha256",
+      "digest": "6b6fa6303a06b8d7728a0057baa787f3783c3c51e30baf56e6a24c72d537157d"
+    },
+    {
+      "path": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+      "algorithm": "sha256",
+      "digest": "4c5a433bd8714b7280b99228266425e12e134a18c03d58f7f91820bf796604ff"
+    },
+    {
+      "path": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "algorithm": "sha256",
+      "digest": "c2902567b23beeb4fea901e2f3e170f6408dcfa818c9c0b067094786485339cb"
+    },
+    {
+      "path": "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+      "algorithm": "sha256",
+      "digest": "a39fa4b7898df342abf61cccb3a8d166833f1dfd1062905320a02aba113640b5"
+    },
+    {
+      "path": "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "algorithm": "sha256",
+      "digest": "5ffa834b8e5b499b127232569306206b4b3cde836d4e0691a31b616e632a1f1e"
+    },
+    {
+      "path": "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json",
+      "algorithm": "sha256",
+      "digest": "e87426c410ff48e0db9782d9b8df2a01638c7496efab29b430247b32ef6dc050"
+    },
+    {
+      "path": "packages/contracts/generated/events.ts",
+      "algorithm": "sha256",
+      "digest": "920911be0600f8f019fb664f7b5cca9f9fbfda06975653339daadc7468f4209c"
+    },
+    {
+      "path": "packages/contracts/generated/openapi.ts",
+      "algorithm": "sha256",
+      "digest": "63cc2b7d018016d6669d3ac1c55cc2ec9940e7a4cbf32f94ed802970d9b3fd33"
+    },
+    {
+      "path": "packages/contracts/openapi/v1/openapi.json",
+      "algorithm": "sha256",
+      "digest": "f3873e89f192fb7e4ab14c01d13003ead75cd711dd72e63e1af1db1b5442c1a5"
+    },
+    {
+      "path": "requirements/backlog/v2-phase1-rebaseline/04-追溯覆盖矩阵.md",
+      "algorithm": "sha256",
+      "digest": "9d73afb20f3a50c1de1821bbc84977a5ce8a296babdf29d6d10184daa21479b7"
+    },
+    {
+      "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
+      "algorithm": "sha256",
+      "digest": "b3b520a15d329821f4f5edff34322e1994b68dcf4fbdfe2f07c7b0240aeaa4ea"
+    },
+    {
+      "path": "scripts/audit/p1r-event-governance-check.mjs",
+      "algorithm": "sha256",
+      "digest": "e60680731b6c6f2ac9e80184aa7753a4ec85e55e07d947f15184c7c5d130a6e8"
+    },
+    {
+      "path": "scripts/audit/p1r-event-reliability-check.mjs",
+      "algorithm": "sha256",
+      "digest": "e273c0ecf30f0f61fe490a1b3d745d5a452fcfb72097d9e3136adc3900c0d6a3"
+    },
+    {
+      "path": "scripts/audit/p1r-m1-018-d2-total-gate.mjs",
+      "algorithm": "sha256",
+      "digest": "0998fffee66eb300f7d3d0f6cc40e31a0afb4d25ff4e05097ecec5231cfabe28"
+    },
+    {
+      "path": "scripts/audit/p1r-notification-sync-support-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "67ca5b6ea3b492ab9904a3a2df2905e736ded9744d2a87f3208983cac8a0a166"
+    },
+    {
+      "path": "scripts/audit/verify-v2-b7plus-task-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "78f586424c14f58c9b8745c5664dfa5b21886ebbc41f3ceea7f26b3237d08b98"
+    },
+    {
+      "path": "scripts/contracts/compatibility-diff.mjs",
+      "algorithm": "sha256",
+      "digest": "148888da985a2cd47fc5e12ea212b0a0b347a22649917ffd505e3351b2225f6a"
+    },
+    {
+      "path": "scripts/contracts/compatibility-git-baseline.mjs",
+      "algorithm": "sha256",
+      "digest": "6165ab1e51652b1b5a040ce0b1af5676ee2c14eb4946eafd10455d0b6ffdfcf2"
+    },
+    {
+      "path": "scripts/contracts/event-catalog-policy.mjs",
+      "algorithm": "sha256",
+      "digest": "721c02be49b116b0dd06ee699c4f43ba1f06cc82eee3faf532a81d8d65122d0a"
+    },
+    {
+      "path": "scripts/contracts/merge-b1-fragments.mjs",
+      "algorithm": "sha256",
+      "digest": "244fb9033ad22a9dc900fc87f3bb1c0b0dff875bb0ebc1241e0eff21742a14bd"
+    },
+    {
+      "path": "scripts/runtime/b18-bootstrap.mjs",
+      "algorithm": "sha256",
+      "digest": "2d42840ccead1f9ea2adaddcc7cc7873621e89759977994cd8e4e5f60213904d"
+    },
+    {
+      "path": "scripts/runtime/b19-bootstrap.mjs",
+      "algorithm": "sha256",
+      "digest": "d4f4391cc52c02eb6984191a8cd76a3cb63d541816f19e62be0d61dbf014482c"
+    },
+    {
+      "path": "scripts/runtime/b20-bootstrap.mjs",
+      "algorithm": "sha256",
+      "digest": "3ef5e690deb943f46fe635b8da1f65c80952e18ea67f567991de88352895d88f"
+    },
+    {
+      "path": "scripts/runtime/b21-bootstrap.mjs",
+      "algorithm": "sha256",
+      "digest": "6588762191b91174ca38319090a340c4a34ad9063beeaa8271d54e3889295980"
+    },
+    {
+      "path": "scripts/runtime/b22-bootstrap.mjs",
+      "algorithm": "sha256",
+      "digest": "42d2613af1dbc7416db220f9293cadb28a967e1f8c0aaa36ff3f0f1b900dc14b"
+    },
+    {
+      "path": "scripts/runtime/validate-b26-event-runtime.mjs",
+      "algorithm": "sha256",
+      "digest": "6e754f37eed4ff66f5fef96ddc3330726cb841e3961d4ad8bc7abefa3dae2454"
+    },
+    {
+      "path": "tests/b19/b19-api-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "42f3dbb1dc6d615d8dbddec2a4474942074cf194f883b1b1d720899a00846c85"
+    },
+    {
+      "path": "tests/b26/b26-event-runtime.test.mjs",
+      "algorithm": "sha256",
+      "digest": "4d43513acd72f485a490b20966a813700f6206e636d46698d78857a10848df51"
+    },
+    {
+      "path": "tests/g/g1-contract-data.test.mjs",
+      "algorithm": "sha256",
+      "digest": "2a168fb23b92bb06ce0332d3585f3a0406f4d8bc5aceeea0872d690c1ee205bc"
+    },
+    {
+      "path": "tests/p1r/m1-018/p1r-m1-018-d2-total-gate.test.mjs",
+      "algorithm": "sha256",
+      "digest": "5693133769fa09114cd8fc856f95acb82dcf9b377b4864a4aa7044d4cfa221c2"
+    },
+    {
+      "path": "tests/p1r/p1r-analytics-ingress-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "ea2795fc18facc82f1e2c971fd2d81b3115dcfc53f112401f5eb1aa00501d3cf"
+    },
+    {
+      "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
+      "algorithm": "sha256",
+      "digest": "01f1337a64b1f8ea13a7ce86c718ac14e69022d639cf2ff30f84cfc761f89626"
+    },
+    {
+      "path": "tests/p1r/p1r-contract-tooling.test.mjs",
+      "algorithm": "sha256",
+      "digest": "5d55d7303333405a3ba0441462e95bebe17c624e204db4415d8c2c738ea36b0a"
+    },
+    {
+      "path": "tests/p1r/p1r-event-governance.test.mjs",
+      "algorithm": "sha256",
+      "digest": "d1bc357c77a1910060d5cb76ed4839b086038eedfefb49608d4b94e58100fa23"
+    },
+    {
+      "path": "tests/p1r/p1r-event-reliability.test.mjs",
+      "algorithm": "sha256",
+      "digest": "10eca85b0dea0cf36d72d2efe028b7b96efc44de1089ca469958841900e910cd"
+    },
+    {
+      "path": "tests/p1r/p1r-m1-017-compatibility.test.mjs",
+      "algorithm": "sha256",
+      "digest": "37880ef4bd34303caedb9e7636b4bfd17b52b7fa73b6db8bf5d85994f5a515ba"
+    },
+    {
+      "path": "tests/p1r/p1r-m1-018-iam-compatibility.test.mjs",
+      "algorithm": "sha256",
+      "digest": "f09bb529809826cc566c1d425b742b4f31d24427b5910da420e6de6f8300cbab"
+    },
+    {
+      "path": "config/p1r-assessment-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "c562f8e0bed45af2241e16101446633b237d2fe92fa695025b29d4aa12293c70"
+    },
+    {
+      "path": "config/p1r-learner-planning-contract.v1.json",
+      "algorithm": "sha256",
+      "digest": "7661eae5b7dc9a13fef97ad064b350d88f3a083a6ec9a89be5689ddbbb93972a"
+    },
+    {
+      "path": "docs/07-operations/b10-validation.md",
+      "algorithm": "sha256",
+      "digest": "f419ae35340f4f2dd78dec3db5dc5d24f00235d4442f2a92f3b7d3a735c6614f"
+    },
+    {
+      "path": "evidence/p1r/m1/P1R-M1-010/00-scope.md",
+      "algorithm": "sha256",
+      "digest": "bb73dd96fb60725598be2fbc77165a9f534445b32a2943e10842295e7c9c557f"
+    },
+    {
+      "path": "evidence/p1r/m1/P1R-M1-010/02-migration.md",
+      "algorithm": "sha256",
+      "digest": "b3a8216cb60700895c997ceefac0a97fd83dbe43a09dde71c6a9c8978cb0d43a"
+    },
+    {
+      "path": "evidence/p1r/m1/P1R-M1-010/99-handoff.md",
+      "algorithm": "sha256",
+      "digest": "4ac9aeb5eaf3a7bea61056aecde55e68623b3da81efc5db3f5df838791361826"
+    },
+    {
+      "path": "evidence/p1r/m1/P1R-M1-011/02-migration.md",
+      "algorithm": "sha256",
+      "digest": "35a0f9700a486a9ea9276b82d56d4c7defd3e9f75bf7be4980301b22df5e86fd"
+    },
+    {
+      "path": "evidence/p1r/m1/P1R-M1-011/99-handoff.md",
+      "algorithm": "sha256",
+      "digest": "05e729bb07023e147c6f3bdb322355bc2bf126ad4b3be335f7a7a87235b3a123"
+    },
+    {
+      "path": "scripts/audit/p1r-assessment-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "2462def4a98017a10b5200b0c9f0e1c26a04523f6289c2aaed299bc78bc99369"
+    },
+    {
+      "path": "scripts/audit/p1r-learner-planning-contract-check.mjs",
+      "algorithm": "sha256",
+      "digest": "dfac9effda1b1edf29a68fac50eecc4c91a44b245a0760229feb89f047996cba"
+    },
+    {
+      "path": "tests/p1r/p1r-assessment-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "17b9e7fb0d0ee7cc6e42dc44557c5d0fbb397dff210957ff38c109cd9b150d1a"
+    },
+    {
+      "path": "tests/p1r/p1r-learner-planning-contract.test.mjs",
+      "algorithm": "sha256",
+      "digest": "54175ea97f9ebae6c45a8b7d5a57b213caef5a291c3157f66af6b793cf466840"
+    }
+  ],
+  "environment": {
+    "kind": "repository-contract-governance",
+    "branch": "dev",
+    "sourceCheckpoint": "97497afe1f31703601d1491c8d47d00121c90089",
+    "taskStartCommit": "0b6b80038dbbf43e8d218750fcb39f49970703bb",
+    "sourceRange": "0b6b80038dbbf43e8d218750fcb39f49970703bb..2a747ba3917acd92664911c6b4be070ff469e302",
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "sourceContractBaseline": "97497afe1f31703601d1491c8d47d00121c90089",
+    "promotion": "M1-018_D2_TOTAL_GATE",
+    "contractMaturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26RuntimeGate": "static-only",
+    "b26RuntimeStatus": "pending",
+    "b26DefaultDecision": "NO-GO",
+    "targetGapSummary": {
+      "contract": 24,
+      "atomicEvent": 15,
+      "eventAlias": 1,
+      "closed": 40,
+      "openImplementation": 2,
+      "openEvidence": 3
+    },
+    "m2RuntimeTasks": "NOT_COMPLETED",
+    "m8E2eTasks": "NOT_COMPLETED",
+    "releaseBlocker": "P1R-M0-006 BLOCKED"
+  },
+  "startedAt": "2026-09-01T11:43:25+08:00",
+  "finishedAt": "2026-09-01T15:39:29+08:00",
+  "actors": [
+    "root-coordinator",
+    "m1_018_gate_hardening"
+  ],
+  "sourceIds": [
+    "P1R-M1-018",
+    "EVENT-GAP-IAM-001",
+    "EVENT-GAP-BIND-IAM-001",
+    "EVENT-GAP-BIND-IAM-002",
+    "EVENT-GAP-BIND"
+  ],
+  "journeys": [],
+  "pages": [],
+  "rules": [
+    "P1R_M1_018_D2_TOTAL_GATE",
+    "M1_018_IAM_MINIMAL_CANONICAL_V2"
+  ],
+  "integrations": [
+    "INT-P1-001",
+    "INT-P1-002"
+  ],
+  "e2eScenarios": [],
+  "serviceOwners": [
+    "iam-service",
+    "api-gateway",
+    "workflow-service",
+    "contract-governance",
+    "data-governance"
+  ],
+  "dataOwners": [
+    "iam-service"
+  ],
+  "statusTrajectory": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED",
+    "REWORK",
+    "IN_PROGRESS",
+    "REVIEW",
+    "ACCEPTED"
+  ],
+  "reviewHistory": [
+    {
+      "round": 1,
+      "sourceCommit": "dea989ab48dcfa5190fac43ce0ba083ad9488f80",
+      "reviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "p1": 1,
+      "p2": 0,
+      "details": "The source semantics and 1403/1403 P1R regression passed, but the total gate itself imposed a fixed 180-second timeout on long-running checks and therefore returned REWORK."
+    },
+    {
+      "round": 2,
+      "sourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+      "reviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
+      "decision": "ACCEPTED",
+      "p1": 0,
+      "p2": 0,
+      "details": "Explicit per-check bounded timeouts, timeout reporting and failure-closed mutations were added. The complete total gate passed with both long-running checks inside the frozen 600000ms boundary."
+    },
+    {
+      "round": 3,
+      "sourceCommit": "9820ff4c4cf4723050471426df11a0bdd091be20",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "p1": 0,
+      "p2": 1,
+      "details": "The closure-audit source and 1408/1408 regression were sound, but three predecessor execution records and INT-P1-006 still described the affected D2 registry records as OPEN or unbound."
+    },
+    {
+      "round": 4,
+      "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+      "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+      "decision": "REWORK",
+      "p1": 0,
+      "p2": 1,
+      "details": "The final source corrected all predecessor execution documents, but canonical M1-010/M1-011 manifest text was still outside the commit. Evidence C must integrate those records before final acceptance."
+    }
+  ],
+  "commands": [
+    "pnpm p1r:m1-018:d2:check",
+    "node --test tests/p1r/m1-018/p1r-m1-018-d2-total-gate.test.mjs",
+    "node --test tests/p1r/p1r-m1-018-iam-compatibility.test.mjs",
+    "pnpm test:p1r",
+    "pnpm contracts:merge:check",
+    "pnpm contracts:generate:check",
+    "pnpm contracts:validate",
+    "pnpm contracts:compatibility:git -- --ref 463c4b238caceb1592bff6c61327c00ab9bac922 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm contracts:compatibility:git -- --ref 97497afe1f31703601d1491c8d47d00121c90089 --governance-ref 868c2177f62b6d2cf613bed702686dddcfe6943f --kind all --json",
+    "pnpm p1r:event-governance:check",
+    "pnpm p1r:event-reliability:check",
+    "node scripts/runtime/validate-b26-event-runtime.mjs --mode static",
+    "pnpm test:g",
+    "pnpm typecheck",
+    "pnpm plan:p1r:check",
+    "pnpm p1r:ci:check",
+    "pnpm p1r:evidence:check -- --json",
+    "git diff --check 0b6b80038dbbf43e8d218750fcb39f49970703bb 2a747ba3917acd92664911c6b4be070ff469e302"
+  ],
+  "results": [
+    {
+      "check": "d2-total-gate",
+      "status": "PASS",
+      "details": "The executed review gate covers 24 Contract GAPs, 15 atomic Event GAPs and one binding-family alias; all fixed static checks passed under explicit bounded timeouts."
+    },
+    {
+      "check": "iam-event-decision",
+      "status": "PASS",
+      "details": "Exactly three minimal IAM-owned v2 facts are canonical; B8 v1 events remain historical-only and dual publish/client production are forbidden."
+    },
+    {
+      "check": "contract-event-projection",
+      "status": "PASS",
+      "details": "OpenAPI 427 operations/783 schemas and event catalog 191 events/141 payload schemas validate; 50 canonical events project to 50 AsyncAPI channels/184 operations."
+    },
+    {
+      "check": "specialized-and-regression-tests",
+      "status": "PASS",
+      "details": "M1-018 total-gate tests pass 48/48, IAM compatibility passes 7/7, full P1R passes 1408/1408, G passes 41/41 and workspace typecheck passes 7/7."
+    },
+    {
+      "check": "fixed-compatibility",
+      "status": "PASS",
+      "details": "Both 463c4b238caceb1592bff6c61327c00ab9bac922 and 97497afe1f31703601d1491c8d47d00121c90089 comparisons report OpenAPI/events/schema compatible with immutable governance 868c2177f62b6d2cf613bed702686dddcfe6943f."
+    },
+    {
+      "check": "final-independent-review",
+      "status": "PASS",
+      "details": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max reviewed 2a747ba3917acd92664911c6b4be070ff469e302: source logic and documents passed, while final acceptance remained conditional on this Evidence C integration. The post-C review is recorded in the D-stage manifest update."
+    },
+    {
+      "check": "runtime-boundary",
+      "status": "PASS",
+      "details": "Database, Redis, Kafka, Outbox, consumers, workflow, IAM runtime, Gateway/PEP, browser/device, E2E and release evidence remain unverified."
+    }
+  ],
+  "requestIds": [],
+  "traceIds": [],
+  "eventIds": [],
+  "rollbackEvidence": [
+    {
+      "status": "PASS",
+      "details": "Revert the M1-018 Evidence/tracking commits, then 2a747ba3917acd92664911c6b4be070ff469e302, 9820ff4c4cf4723050471426df11a0bdd091be20, c548b601caae41fecc417f44f2a3e8e2016332d0 and dea989ab48dcfa5190fac43ce0ba083ad9488f80 in reverse order; rerun total, gap, Evidence, contracts, compatibility, P1R, G, typecheck, plan, CI and diff gates. Git rollback is not runtime data/infrastructure rollback."
+    }
+  ],
+  "knownGaps": [
+    "P1R-M2-001..010 retain Gateway, IAM, service PEP, owner data, Kafka/Outbox, workflow/audit, observability, local-stack, CI and D3 runtime ownership.",
+    "The two Implementation GAPs and three runtime Evidence GAPs remain OPEN.",
+    "Real MySQL, Redis, Kafka, Outbox, consumer, workflow, Gateway/IAM/PEP, browser/device, E2E and release behavior is not verified.",
+    "B26 remains static-only, pending and NO-GO; P1R-M0-006 remains BLOCKED."
+  ],
+  "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+  "decision": "ACCEPTED"
+}

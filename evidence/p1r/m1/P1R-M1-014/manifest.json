@@ -2,12 +2,12 @@
   "taskId": "P1R-M1-014",
   "draftOnly": false,
   "canonicalTaskStatus": "ACCEPTED",
-  "sourceCommit": "600438218b35c1b5a9931dd16fa0ad210050c68d",
+  "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
   "artifactDigests": [
     {
       "path": "config/b26-event-runtime.json",
       "algorithm": "sha256",
-      "digest": "204fbfc7435afd72ea704cc212534a15a266699667de6dd58e09c6fa865846a9"
+      "digest": "837779ccf7085a6bb9d4df1843516afc9be20467da68f79f4e698ca95d0fbcd7"
     },
     {
       "path": "config/p1r-gamification-social-contract.v1.json",
@@ -42,22 +42,22 @@
     {
       "path": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
       "algorithm": "sha256",
-      "digest": "9822cf05d0d618ca3d47eef62eca90a09eba9f2c7522c4a0f980170cb76a8043"
+      "digest": "36deaf9bf227d7565e69ec3dbd5f6655bcdc690789a949be194f48836365e3ba"
     },
     {
       "path": "package.json",
       "algorithm": "sha256",
-      "digest": "93dbb28442c74f803b520b39e75f74c6da25f4f09665bebb251582982a4deb60"
+      "digest": "96ae121ef89516277196ff9d2f51cbe66cc9ea1c41984d1acffd7234cbeb1d39"
     },
     {
       "path": "packages/api-client/src/generated/index.ts",
       "algorithm": "sha256",
-      "digest": "f7232952798fab08303d4b6032e63c66e8499fbbbb9eb71ee107638ba4d327cf"
+      "digest": "e78a6bc0f751282845ac573df73bbe43be9de6f1714df0d9108c2f31e1e9b6e9"
     },
     {
       "path": "packages/contracts/events/v1/catalog.json",
       "algorithm": "sha256",
-      "digest": "f58e0b7117b73671451d96ea5cbf967546ef5c150ea097394210924a3180e612"
+      "digest": "6368b60e701e373490ddf64571e88c8496858ac94af7798e0f1b25493f2f7093"
     },
     {
       "path": "packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json",
@@ -67,27 +67,27 @@
     {
       "path": "packages/contracts/events/v1/reliability-policy.json",
       "algorithm": "sha256",
-      "digest": "fe4e06e32daa5281b62b37fcc2abd208b44924d12ef56f22e50f5a1412fb7aad"
+      "digest": "c3509892525a5512a75e5c81972653d5d3c00596b23c9a7dd84700fe7efa102d"
     },
     {
       "path": "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
       "algorithm": "sha256",
-      "digest": "6ee2b4d7b2d242cfcfa257e065a300890ed143bea23075cb17fd74f0a03a07b2"
+      "digest": "4c5a433bd8714b7280b99228266425e12e134a18c03d58f7f91820bf796604ff"
     },
     {
       "path": "packages/contracts/generated/events.ts",
       "algorithm": "sha256",
-      "digest": "726fd61443245b51068962e8ad5e1a0afc1537538952bc50d1d7226e5e561192"
+      "digest": "920911be0600f8f019fb664f7b5cca9f9fbfda06975653339daadc7468f4209c"
     },
     {
       "path": "packages/contracts/generated/openapi.ts",
       "algorithm": "sha256",
-      "digest": "be8ccc024e733eaaa7c0c9d7d0ad0992128bbb3829a2c0ee32e1a0a2dd5f9c17"
+      "digest": "63cc2b7d018016d6669d3ac1c55cc2ec9940e7a4cbf32f94ed802970d9b3fd33"
     },
     {
       "path": "packages/contracts/openapi/v1/openapi.json",
       "algorithm": "sha256",
-      "digest": "5affe3ab3f9a2a26375d9378ca38fa8c764725991658a6077be37532d12bd889"
+      "digest": "f3873e89f192fb7e4ab14c01d13003ead75cd711dd72e63e1af1db1b5442c1a5"
     },
     {
       "path": "requirements/feature-matrix.md",
@@ -102,17 +102,17 @@
     {
       "path": "scripts/audit/p1r-content-lifecycle-check.mjs",
       "algorithm": "sha256",
-      "digest": "9b80c8193c630c3460ac3243bea5b37d6f63ed68e435e24286898f2c58f4af59"
+      "digest": "b3b520a15d329821f4f5edff34322e1994b68dcf4fbdfe2f07c7b0240aeaa4ea"
     },
     {
       "path": "scripts/audit/p1r-event-governance-check.mjs",
       "algorithm": "sha256",
-      "digest": "ed80258011a058b34554e8bf7fff52529bb6d2b3584a7037302fa2f118a96fbc"
+      "digest": "e60680731b6c6f2ac9e80184aa7753a4ec85e55e07d947f15184c7c5d130a6e8"
     },
     {
       "path": "scripts/audit/p1r-event-reliability-check.mjs",
       "algorithm": "sha256",
-      "digest": "8e47f6c80712d0fb2d22e6781973126e8656f1f18689c13ad3d3e0aea31133eb"
+      "digest": "e273c0ecf30f0f61fe490a1b3d745d5a452fcfb72097d9e3136adc3900c0d6a3"
     },
     {
       "path": "scripts/audit/p1r-gamification-social-contract-check.mjs",
@@ -132,27 +132,27 @@
     {
       "path": "scripts/contracts/compatibility-diff.mjs",
       "algorithm": "sha256",
-      "digest": "ca848cff58901b1a4229eb8da3ecc396f5ae77c53140b22defb7e62a0274123c"
+      "digest": "148888da985a2cd47fc5e12ea212b0a0b347a22649917ffd505e3351b2225f6a"
     },
     {
       "path": "scripts/contracts/compatibility-git-baseline.mjs",
       "algorithm": "sha256",
-      "digest": "43304abc80596eb3bbefbecc4228389d18efcbdec98b5495a37077a75b33d370"
+      "digest": "6165ab1e51652b1b5a040ce0b1af5676ee2c14eb4946eafd10455d0b6ffdfcf2"
     },
     {
       "path": "scripts/contracts/event-catalog-policy.mjs",
       "algorithm": "sha256",
-      "digest": "4c40a543637e6d46ca4dad13bc73c32dd7f3a1a0d867d53c57ad90a3c917a571"
+      "digest": "721c02be49b116b0dd06ee699c4f43ba1f06cc82eee3faf532a81d8d65122d0a"
     },
     {
       "path": "scripts/contracts/merge-b1-fragments.mjs",
       "algorithm": "sha256",
-      "digest": "01206ff3c134f075e8b47c31576687e7f88fc08450b30e18270336111bb9ebd8"
+      "digest": "244fb9033ad22a9dc900fc87f3bb1c0b0dff875bb0ebc1241e0eff21742a14bd"
     },
     {
       "path": "scripts/runtime/validate-b26-event-runtime.mjs",
       "algorithm": "sha256",
-      "digest": "ce68542fa98a718a49a1680874311d3843bf81b16a6df32ba2cf1c8b77001e00"
+      "digest": "6e754f37eed4ff66f5fef96ddc3330726cb841e3961d4ad8bc7abefa3dae2454"
     },
     {
       "path": "tests/b12/b12-contract-migration.test.mjs",
@@ -162,7 +162,7 @@
     {
       "path": "tests/b26/b26-event-runtime.test.mjs",
       "algorithm": "sha256",
-      "digest": "2165b7d49c766c2def3d71a204416012d1fa507e4a0b88bf4b3fe6a1f6dd341f"
+      "digest": "4d43513acd72f485a490b20966a813700f6206e636d46698d78857a10848df51"
     },
     {
       "path": "tests/b4/b4-static.test.mjs",
@@ -172,22 +172,22 @@
     {
       "path": "tests/p1r/p1r-content-lifecycle.test.mjs",
       "algorithm": "sha256",
-      "digest": "ce5079e55e3516fbd2771f1b06346149b4cab3697fee8eb1b86db96d2faf9ff6"
+      "digest": "01f1337a64b1f8ea13a7ce86c718ac14e69022d639cf2ff30f84cfc761f89626"
     },
     {
       "path": "tests/p1r/p1r-contract-tooling.test.mjs",
       "algorithm": "sha256",
-      "digest": "a8746e7e41bab32feccf5e624478dd6edc2e558336d4d1b48521894af4bdbc03"
+      "digest": "5d55d7303333405a3ba0441462e95bebe17c624e204db4415d8c2c738ea36b0a"
     },
     {
       "path": "tests/p1r/p1r-event-governance.test.mjs",
       "algorithm": "sha256",
-      "digest": "13a5fa86edd5f4ac702d5269c94718e3ecaa36ad4146c9193ee23588f127b62f"
+      "digest": "d1bc357c77a1910060d5cb76ed4839b086038eedfefb49608d4b94e58100fa23"
     },
     {
       "path": "tests/p1r/p1r-event-reliability.test.mjs",
       "algorithm": "sha256",
-      "digest": "3449b7ab9b04f111b8332a294c03ac748ebdd484f7e6bc06c98e7a84954994c7"
+      "digest": "10eca85b0dea0cf36d72d2efe028b7b96efc44de1089ca469958841900e910cd"
     },
     {
       "path": "tests/p1r/p1r-gamification-social-contract.test.mjs",
@@ -235,7 +235,7 @@
     "releaseBlocker": "P1R-M0-006 BLOCKED"
   },
   "startedAt": "2026-08-31T04:58:33+08:00",
-  "finishedAt": "2026-09-01T11:28:58+08:00",
+  "finishedAt": "2026-09-01T15:39:29+08:00",
   "actors": [
     "root-coordinator",
     "m1_014_policy_model",
@@ -366,6 +366,11 @@
       "check": "M1-017-current-source-revalidation",
       "status": "PASS",
       "details": "Artifact SHA-256 entries were recomputed against 600438218b35c1b5a9931dd16fa0ad210050c68d. Independent M1-017 review passed 1347/1347 P1R and 7/7 typecheck with P1/P2=0/0; original P1R-M1-014 provenance remains unchanged and runtimeStatus stays NOT_RUNTIME_VERIFIED."
+    },
+    {
+      "check": "M1-018-current-source-revalidation",
+      "status": "PASS",
+      "details": "All artifact SHA-256 entries were recomputed against 2a747ba3917acd92664911c6b4be070ff469e302. Independent M1-018 review accepted the 24 Contract / 15 atomic Event / one alias D2 total gate with P1/P2=0/0; original P1R-M1-014 provenance remains unchanged and runtimeStatus stays NOT_RUNTIME_VERIFIED."
     }
   ],
   "requestIds": [],
@@ -386,9 +391,10 @@
     "Database, Gateway/service processes, Kafka, Redis/WebSocket lease, browser/device and end-to-end runtime behavior are not verified by this D2 contract task.",
     "B26 remains static-only, runtimeStatus=pending and defaultDecision=NO-GO; P1R-M0-006 remains BLOCKED.",
     "M1-014 C/D Evidence integration is complete: P1R-M1-010 is bound to checkpoint 36a2103b0dc9497a6421bbbf99627e10c7a88c50 while aab1fa24bb7d46e3dd730fe3801ab2e986301e0d remains the audited implementation source. The global Evidence Gate still requires a clean committed worktree.",
-    "M1-017 current-source binding is complete at 600438218b35c1b5a9931dd16fa0ad210050c68d; original P1R-M1-014 provenance remains authoritative for its historical implementation acceptance. Runtime remains NOT_RUNTIME_VERIFIED."
+    "M1-017 current-source binding is complete at 600438218b35c1b5a9931dd16fa0ad210050c68d; original P1R-M1-014 provenance remains authoritative for its historical implementation acceptance. Runtime remains NOT_RUNTIME_VERIFIED.",
+    "M1-018 current-source binding is complete at 2a747ba3917acd92664911c6b4be070ff469e302; original P1R-M1-014 implementation provenance remains authoritative and runtime stays NOT_RUNTIME_VERIFIED."
   ],
-  "reviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+  "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
   "decision": "ACCEPTED",
   "provenance": {
     "originalSourceCommit": "aab1fa24bb7d46e3dd730fe3801ab2e986301e0d",
@@ -421,18 +427,38 @@
         "runtimeStatus": "NOT_RUNTIME_VERIFIED",
         "finishedAt": "2026-09-01T11:28:58+08:00",
         "details": "Current-source revalidation at the accepted M1-017 implementation source. Original P1R-M1-014 provenance and review history remain unchanged; the later GAP/Evidence integration does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "auditedImplementationSource": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "integrationCheckpoint": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+        "reviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-01T14:40:33+08:00",
+        "details": "Current-source revalidation at accepted M1-018 source c548b601caae41fecc417f44f2a3e8e2016332d0. Original P1R-M1-014 implementation provenance and review history remain unchanged; the D2 total gate does not promote runtime evidence."
+      },
+      {
+        "taskId": "P1R-M1-018",
+        "sourceCommit": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "auditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "integrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302",
+        "reviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "finishedAt": "2026-09-01T15:39:29+08:00",
+        "details": "Final current-source revalidation after M1-018 closure-audit reconciliation at 2a747ba3917acd92664911c6b4be070ff469e302. The prior c548b601caae41fecc417f44f2a3e8e2016332d0 acceptance record and all original task provenance remain unchanged; runtime evidence is not promoted."
       }
     ],
-    "previousCurrentSourceCommit": "9a38ff2185286bc8e279f785ff3fad5de30de569",
-    "previousCurrentSourceRevalidationTask": "P1R-M1-016",
-    "previousCurrentSourceRevalidationReviewer": "agent:m1_016_independent_review:gpt-5.6-luna:max",
+    "previousCurrentSourceCommit": "c548b601caae41fecc417f44f2a3e8e2016332d0",
+    "previousCurrentSourceRevalidationTask": "P1R-M1-018",
+    "previousCurrentSourceRevalidationReviewer": "agent:m1_018_final_review:gpt-5.6-luna:max",
     "previousCurrentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "previousCurrentSourceRevalidationFinishedAt": "2026-08-31T20:28:21+08:00",
-    "currentSourceRevalidationTask": "P1R-M1-017",
-    "currentSourceRevalidationReviewer": "agent:m1_017_final_review:gpt-5.6-luna:max",
+    "previousCurrentSourceRevalidationFinishedAt": "2026-09-01T14:40:33+08:00",
+    "currentSourceRevalidationTask": "P1R-M1-018",
+    "currentSourceRevalidationReviewer": "agent:m1_018_closure_fix_review:gpt-5.6-luna:max",
     "currentSourceRevalidationRuntimeStatus": "NOT_RUNTIME_VERIFIED",
-    "currentSourceRevalidationFinishedAt": "2026-09-01T11:28:58+08:00",
-    "currentSourceRevalidationAuditedImplementationSource": "600438218b35c1b5a9931dd16fa0ad210050c68d",
-    "currentSourceRevalidationIntegrationCheckpoint": "600438218b35c1b5a9931dd16fa0ad210050c68d"
+    "currentSourceRevalidationFinishedAt": "2026-09-01T15:39:29+08:00",
+    "currentSourceRevalidationAuditedImplementationSource": "2a747ba3917acd92664911c6b4be070ff469e302",
+    "currentSourceRevalidationIntegrationCheckpoint": "2a747ba3917acd92664911c6b4be070ff469e302"
   }
 }

@@ -5,7 +5,7 @@
 ## 当前检查点
 
 - 工作分支：`dev`。
-- 当前台账计数：`24 ACCEPTED / 1 BLOCKED / 1 IN_PROGRESS / 82 PLANNED`（共 108 项）。
+- 当前台账计数：`25 ACCEPTED / 1 BLOCKED / 0 IN_PROGRESS / 82 PLANNED`（共 108 项）。
 - M0 实现范围已经完成统一集成；`P1R-M0-001`、`002`、`003`、`004`、`005`、`007`、`008` 已接受。
 - `P1R-M0-006` 的版本清单、锁文件、许可证与 SBOM 机制已完成，但严格安全 Gate 保持 `BLOCKED`：移动端 uni-app 工具链仍带有 1 个 Vite high 漏洞，未添加豁免、未强制覆盖不兼容的编译器 peer dependency。
 - M1 只允许从已接受的 `P1R-M0-008` 依赖边界开始做契约工作；M0 安全红灯解除前，不得把整个 M0 或任何发布 Gate 宣告为 PASS。
@@ -28,6 +28,8 @@
 - `P1R-M1-016` 已接受：最终源码 `9a38ff2185286bc8e279f785ff3fad5de30de569`，独立 reviewer `agent:m1_016_independent_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；专项 `85/85`、generated-types `2/2`、tooling `59/59`、P1R `1261/1261`、typecheck `7/7` 通过。C/D Evidence 为 `cbf25c3`/`034a369`，全局 Evidence Gate PASS；四个通知/同步/客服 GAP 已按 D2 Evidence 关闭，运行仍为 `NOT_RUNTIME_VERIFIED`。
 - `P1R-M1-017` 已接受：最终源码 `600438218b35c1b5a9931dd16fa0ad210050c68d`，独立 reviewer `agent:m1_017_final_review:gpt-5.6-luna:max` 判定 `ACCEPT`，P1/P2=`0/0`；专项 `79/79`、P1R `1347/1347`、typecheck `7/7`，contracts/compatibility/event/Gateway/B26 static 均 PASS。六个隐私/删除/Analytics/审计 GAP 只按 D2 Evidence 关闭，运行仍为 `NOT_RUNTIME_VERIFIED`。
 - M1-017 接受后，`P1R-M1-001..009`、`P1R-M1-011..016` 的共享制品摘要已绑定到 `600438218b35c1b5a9931dd16fa0ad210050c68d` 并保留原 provenance；包含 GAP registry 的 M1-010 在 post-C 阶段单独重算。
+- `P1R-M1-018` Evidence C 集成候选源为 `2a747ba3917acd92664911c6b4be070ff469e302`。总 Gate 覆盖 24 Contract、15 atomic Event 和 1 alias；40 个 Contract/Event GAP 已按 owner Evidence 关闭，2 个 Implementation 与 3 个 Evidence GAP 保持 OPEN。post-C 独立终验完成前不写入新的最终 ACCEPT 结论。
+- M1-018 C 阶段将 `P1R-M1-001..009`、`P1R-M1-011..017` 的共享制品摘要绑定到 `2a747ba3917acd92664911c6b4be070ff469e302` 并保留 `c548b60` 及原 provenance；唯一包含 GAP registry 摘要的 M1-010 必须在 post-C D 阶段单独重算。
 
 ## M0 记录索引
 
@@ -65,4 +67,4 @@
 | `P1R-M1-015` | `P1R-M1-015.md` | `ACCEPTED` |
 | `P1R-M1-016` | `P1R-M1-016.md` | `ACCEPTED` |
 | `P1R-M1-017` | `P1R-M1-017.md` | `ACCEPTED` |
-| `P1R-M1-018` | `P1R-M1-018.md` | `IN_PROGRESS` |
+| `P1R-M1-018` | `P1R-M1-018.md` | `ACCEPTED` |

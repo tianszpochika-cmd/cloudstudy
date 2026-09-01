@@ -24,7 +24,7 @@ test('canonical GAP registry matches the plan matrix and task ledger', () => {
   const report = validateGapRegistry({ root });
   assert.equal(report.result, 'PASS', report.errors?.join('\n'));
   assert.equal(report.gapCount, 45);
-  assert.deepEqual(report.statusCounts, { OPEN: 31, CLOSED: 14 });
+  assert.deepEqual(report.statusCounts, { OPEN: 5, CLOSED: 40 });
 });
 
 test('missing, duplicate and unknown GAP records fail closed', () => {
@@ -56,7 +56,9 @@ test('a GAP cannot close before owner tasks and Evidence are accepted', () => {
 
 test('OPEN GAP records cannot carry premature closure Evidence', () => {
   const changed = copyRegistry();
-  changed.gaps[0].closureEvidence = 'evidence/p1r/m1/P1R-M1-008/manifest.json';
+  const openGap = changed.gaps.find((gap) => gap.status === 'OPEN');
+  assert.ok(openGap, 'fixture requires at least one OPEN implementation or runtime Evidence GAP');
+  openGap.closureEvidence = 'evidence/p1r/m1/P1R-M1-008/manifest.json';
   const errors = validateGapRegistryData({ registry: changed, matrixGapIds, tasksById, root, checkEvidenceFiles: false });
   assert(errors.some((error) => error.includes('must remain null until CLOSED')));
 });
