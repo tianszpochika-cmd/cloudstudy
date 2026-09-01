@@ -2,6 +2,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateEventGovernanceData } from '../audit/p1r-event-governance-check.mjs';
+import {
+  EXPECTED_EVENT_FRAGMENT_INVENTORY,
+  M1018_IAM_CANONICAL_EVENT_GOVERNANCE,
+  M1018_IAM_EVENT_FRAGMENT_PATH,
+  M1018_IAM_GAP_D2_CLOSURE_TASKS,
+  M1018_SOURCE_D2_CLOSED_EVENT_GAPS,
+} from './event-catalog-policy.mjs';
 import { projectCanonicalAsyncApi } from './event-governance-projection.mjs';
 
 export { projectCanonicalAsyncApi } from './event-governance-projection.mjs';
@@ -291,7 +298,8 @@ function mergeOpenApi(
     const isCanonicalB1AdapterRoute = canonicalB1AdapterRouteAllowlist
       .get(normalizedFilePath)?.has(route) === true;
     const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13)(?:[\\/]|-)/i.test(filePath)
-      || isCanonicalB1AdapterRoute;
+      || isCanonicalB1AdapterRoute
+      || normalizedFilePath === 'packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json';
     const isB1LegacyAuthRoute = /[\\/]b1(?:[\\/]|-)/i.test(filePath) && route.startsWith('/api/v1/auth/');
     const isCanonicalB1ContentRoute = normalizeRepoPath(filePath) === canonicalB1ContentFragment;
     if (base.paths[route] && stableJson(base.paths[route]) !== stableJson(pathItem) && !isOverrideFragment && !isB1LegacyAuthRoute && !isCanonicalB1ContentRoute) {
@@ -302,7 +310,8 @@ function mergeOpenApi(
 
   const normalizedFilePath = normalizeRepoPath(filePath);
   const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|25)(?:[\\/]|-)/i.test(filePath)
-    || normalizedFilePath === canonicalB1ContentFragment;
+    || normalizedFilePath === canonicalB1ContentFragment
+    || normalizedFilePath === 'packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json';
   for (const componentGroup of ['schemas', 'parameters', 'responses', 'headers', 'securitySchemes', 'requestBodies', 'examples']) {
     const allowOverrideNames = componentGroup === 'schemas'
       ? canonicalB1AdapterSchemaAllowlist.get(normalizedFilePath) ?? new Set()
@@ -349,14 +358,33 @@ export function mergeEvents(base, fragment, filePath) {
   const normalizedFragmentPath = normalizeRepoPath(filePath);
   const isOverrideFragment = /[\\/]b(?:2|3|4|5|6|8|9|10|11|12|13|26)-/i.test(filePath)
     || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json'
-    || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json';
+    || normalizedFragmentPath === 'packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json'
+    || normalizedFragmentPath === M1018_IAM_EVENT_FRAGMENT_PATH;
   for (const event of fragment.events ?? []) {
     if (event.status !== undefined || event['x-p1r-governance'] !== undefined) {
       throw new Error(`${filePath} must not define catalog-owned status or x-p1r-governance for ${event.eventName ?? '(missing eventName)'}`);
     }
     const existing = base.events.find((candidate) => candidate.eventName === event.eventName);
+    const m1018Source = normalizedFragmentPath === M1018_IAM_EVENT_FRAGMENT_PATH
+      ? M1018_IAM_CANONICAL_EVENT_GOVERNANCE[event.eventName]
+      : undefined;
     if (!existing) {
+      if (m1018Source) {
+        base.events.push({
+          ...event,
+          status: m1018Source.status,
+          'x-p1r-governance': structuredClone(m1018Source.governance),
+        });
+        continue;
+      }
       throw new Error(`${filePath} introduces ${event.eventName ?? '(missing eventName)'} without a catalog-owned governance record`);
+    }
+    if (normalizedFragmentPath === M1018_IAM_EVENT_FRAGMENT_PATH) {
+      if (!m1018Source) throw new Error(`${filePath} introduces an event outside the frozen M1-018 IAM source: ${event.eventName ?? '(missing eventName)'}`);
+      if (existing.status !== m1018Source.status
+        || stableJson(existing['x-p1r-governance']) !== stableJson(m1018Source.governance)) {
+        throw new Error(`${filePath} catalog-owned governance for ${event.eventName} must match the frozen M1-018 IAM source`);
+      }
     }
     const catalogOwned = {
       status: existing.status,
@@ -378,6 +406,25 @@ export function mergeEvents(base, fragment, filePath) {
     }
   }
   mergeNamedMap(base.payloadSchemas, fragment.payloadSchemas, 'event payload schema', { allowOverride: isOverrideFragment });
+}
+
+function applyM1018CatalogSource(catalog) {
+  const governance = catalog['x-p1r-event-governance'];
+  if (!governance || typeof governance !== 'object' || Array.isArray(governance)) {
+    throw new Error('event catalog must define x-p1r-event-governance before applying the M1-018 IAM source');
+  }
+  governance.fragmentInventory = structuredClone(EXPECTED_EVENT_FRAGMENT_INVENTORY);
+  governance.plannedClosures = (governance.plannedClosures ?? []).map((closure) => {
+    const d2ClosureTasks = M1018_IAM_GAP_D2_CLOSURE_TASKS[closure?.gapId];
+    const status = M1018_SOURCE_D2_CLOSED_EVENT_GAPS.includes(closure?.gapId)
+      ? 'D2_CONTRACT_CLOSED'
+      : closure.status;
+    return {
+      ...closure,
+      status,
+      ...(d2ClosureTasks === undefined ? {} : { d2ClosureTasks: [...d2ClosureTasks] }),
+    };
+  });
 }
 
 function eventPayloadSchemaName(event, label) {
@@ -449,6 +496,7 @@ export function merge({ write = false } = {}) {
     }
   }
   for (const schemaName of retiredAuthPayloadSchemas) delete catalog.payloadSchemas?.[schemaName];
+  applyM1018CatalogSource(catalog);
   const openApiFiles = [...listJsonFiles(openApiSharedFragmentDir), ...listJsonFiles(openApiFragmentDir), ...listJsonFiles(openApiB2FragmentDir), ...listJsonFiles(openApiB3FragmentDir), ...listJsonFiles(openApiB8FragmentDir), ...listJsonFiles(openApiB9FragmentDir), ...listJsonFiles(openApiB10FragmentDir), ...listJsonFiles(openApiB11FragmentDir), ...listJsonFiles(openApiB12FragmentDir), ...listJsonFiles(openApiB13FragmentDir), ...listJsonFiles(openApiB25FragmentDir)]
     .filter((filePath, index, files) => files.indexOf(filePath) === index)
     .filter((filePath) => readJson(filePath)['x-contract-status'] !== 'historical-compatibility');

@@ -49,16 +49,16 @@ test('canonical P1R event governance and generated AsyncAPI projection pass with
   const report = validateEventGovernance({ root });
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.summary, {
-    totalEvents: 188,
-    canonicalEvents: 47,
+    totalEvents: 191,
+    canonicalEvents: 50,
     historicalCandidates: 141,
     deprecatedEvents: 0,
-    canonicalConsumerBindings: 118,
-    plannedEventGaps: 4,
-    d2ContractClosedEventGaps: 12,
+    canonicalConsumerBindings: 134,
+    plannedEventGaps: 0,
+    d2ContractClosedEventGaps: 16,
     runtimeStatus: 'NOT_RUNTIME_VERIFIED',
-    asyncApiChannels: 47,
-    asyncApiOperations: 165,
+    asyncApiChannels: 50,
+    asyncApiOperations: 184,
   });
   assert.equal(baseline.b26Runtime.runtimeStatus, 'pending');
   assert.equal(baseline.b26Runtime.defaultDecision, 'NO-GO');
@@ -68,10 +68,10 @@ test('AsyncAPI is a deterministic catalog projection with one send and all gover
   const candidate = structuredClone(baseline.catalog);
   const projection = projectCanonicalAsyncApi(candidate);
   assert.deepEqual(projection, baseline.catalog.asyncapi);
-  assert.equal(Object.keys(projection.channels).length, 47);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 47);
-  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 118);
-  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 47, operationCount: 165 });
+  assert.equal(Object.keys(projection.channels).length, 50);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'send').length, 50);
+  assert.equal(Object.values(projection.operations).filter((operation) => operation.action === 'receive').length, 134);
+  assert.deepEqual(validateAsyncApiProjection(candidate), { channelCount: 50, operationCount: 184 });
 });
 
 test('M1-014 reward-source policy requires a complete approved profile and predicate beyond a Kafka consumer binding', () => {
@@ -147,9 +147,9 @@ test('M1-014 reward-source policy requires a complete approved profile and predi
   assert.equal(matchesApprovedRewardSource('ASSESSMENT_ITEM_CORRECT', { ...correctAssessment, eventName: 'learning.review.scheduled.v2' }), false);
 });
 
-test('M1-014/M1-015/M1-017 fragment inventory freezes the canonical source order', () => {
+test('M1-014/M1-015/M1-017/M1-018 fragment inventory freezes the canonical source order', () => {
   const inventory = baseline.catalog['x-p1r-event-governance'].fragmentInventory;
-  assert.equal(inventory.length, 19);
+  assert.equal(inventory.length, 20);
   assert.deepEqual(inventory.find((entry) => entry.path === 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json'), {
     path: 'packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json',
     eventNames: [
@@ -187,7 +187,61 @@ test('M1-014/M1-015/M1-017 fragment inventory freezes the canonical source order
       'account.deletion.completed.v2',
     ],
   });
+  assert.deepEqual(inventory.find((entry) => entry.path === 'packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json'), {
+    path: 'packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json',
+    eventNames: [
+      'iam.account.bootstrap.created.v2',
+      'iam.learning_eligibility.changed.v2',
+      'iam.policy.security_state_changed.v2',
+    ],
+  });
   assert.deepEqual(inventory.map((entry) => entry.path), [...inventory.map((entry) => entry.path)].sort());
+});
+
+test('M1-018 IAM facts are canonical D2 bindings without promoting B8 historical auth events', () => {
+  const routes = new Map(baseline.b26Runtime.eventRouting.map((route) => [route.eventName, route]));
+  const expected = {
+    'iam.account.bootstrap.created.v2': ['iam-service', 'platform.iam.v1', ['cg.learner-from-iam.v1']],
+    'iam.learning_eligibility.changed.v2': ['iam-service', 'platform.iam.v1', ['cg.learner-from-iam.v1', 'cg.learning-from-iam.v1']],
+    'iam.policy.security_state_changed.v2': [
+      'iam-service', 'platform.iam.v1', [
+        'cg.admin-ops-from-iam.v1', 'cg.analytics-from-iam.v1', 'cg.assessment-from-iam.v1', 'cg.audit-from-iam.v1',
+        'cg.commerce-from-iam.v1', 'cg.content-from-iam.v1', 'cg.gamification-from-iam.v1', 'cg.learner-from-iam.v1',
+        'cg.learning-from-iam.v1', 'cg.media-from-iam.v1', 'cg.notification-from-iam.v1', 'cg.social-from-iam.v1',
+        'cg.workflow-from-iam.v1',
+      ],
+    ],
+  };
+  for (const [eventName, [producer, topic, consumerGroups]] of Object.entries(expected)) {
+    const event = baseline.catalog.events.find((candidate) => candidate.eventName === eventName);
+    const governance = event['x-p1r-governance'];
+    assert.equal(event.status, 'CANONICAL_D2');
+    assert.equal(governance.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
+    assert.equal(governance.producer.service, producer);
+    assert.equal(governance.producer.dataOwner, producer);
+    assert.equal(governance.producer.outboxRequired, true);
+    assert.equal(governance.transport.topic, topic);
+    assert.equal(governance.transport.partitionKey, 'aggregateId');
+    assert.equal(governance.transport.delivery, 'at-least-once');
+    assert.deepEqual(governance.consumers.map((consumer) => consumer.consumerGroup), consumerGroups);
+    assert.ok(governance.consumers.every((consumer) => consumer.service.endsWith('-service') && consumer.service !== 'api-gateway'));
+  }
+  const eligibility = baseline.catalog.payloadSchemas.M1018IamLearningEligibilityChanged;
+  const security = baseline.catalog.payloadSchemas.M1018IamPolicySecurityStateChanged;
+  assert.equal(eligibility.additionalProperties, false);
+  assert.equal(eligibility.properties.eligibilityScope.const, 'P1_ADULT_LEARNING');
+  assert.equal(security.additionalProperties, false);
+  assert.equal(security.properties.denyUntilCurrentVersionProven.const, true);
+  for (const eventName of ['auth.account.registered.v1', 'auth.consent.updated.v1', 'auth.session.rotated.v1', 'iam.session.revoked.v1']) {
+    const event = baseline.catalog.events.find((candidate) => candidate.eventName === eventName);
+    assert.equal(event.status, 'HISTORICAL_CANDIDATE');
+    assert.equal(event['x-p1r-governance'], undefined);
+  }
+  for (const gapId of ['EVENT-GAP-IAM-001', 'EVENT-GAP-BIND-IAM-001', 'EVENT-GAP-BIND-IAM-002']) {
+    const closure = baseline.catalog['x-p1r-event-governance'].plannedClosures.find((candidate) => candidate.gapId === gapId);
+    assert.equal(closure.status, 'D2_CONTRACT_CLOSED');
+    assert.ok(closure.d2ClosureTasks.includes('P1R-M1-018'));
+  }
 });
 
 test('event payload schema policy supports bounded cross-field keywords recursively', () => {
@@ -459,16 +513,16 @@ test('event governance fails closed on owner, routing, status, shape, projection
     }, /frozen M1-006 event-to-payload mapping/],
     ['missing correlation field', (input) => { canonical(input)['x-p1r-governance'].correlation.pop(); }, /correlation fields must be exact/],
     ['historical Kafka promotion', (input) => { historical(input)['x-kafka'] = { topic: 'platform.fake.v1' }; }, /historical candidate cannot carry active Kafka metadata/],
-    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact forty-seven/],
+    ['UI telemetry masquerades as canonical fact', (input) => { canonical(input).eventName = 'ui.page.clicked.v1'; }, /CANONICAL_D2 set must be the exact fifty/],
     ['wrong planned closure family', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].family = 'WRONG'; }, /family must match the frozen gap registry/],
     ['closed content gap regresses to planned', (input) => {
       input.catalog['x-p1r-event-governance'].plannedClosures
         .find((closure) => closure.gapId === 'EVENT-GAP-CONTENT-DUPLICATE').status = 'PLANNED';
     }, /status must remain D2_CONTRACT_CLOSED/],
-    ['planned gap is falsely reported closed', (input) => {
+    ['closed IAM gap regresses to planned', (input) => {
       input.catalog['x-p1r-event-governance'].plannedClosures
-        .find((closure) => closure.gapId === 'EVENT-GAP-IAM-001').status = 'D2_CONTRACT_CLOSED';
-    }, /status must remain PLANNED/],
+        .find((closure) => closure.gapId === 'EVENT-GAP-IAM-001').status = 'PLANNED';
+    }, /status must remain D2_CONTRACT_CLOSED/],
     ['incomplete planned closure task mapping', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures[0].d2ClosureTasks.shift(); }, /D2 closure tasks must match the frozen task mapping/],
     ['planned closure order drift', (input) => { input.catalog['x-p1r-event-governance'].plannedClosures.reverse(); }, /canonical gap registry order/],
     ['duplicate event name', (input) => { input.catalog.events.push(structuredClone(input.catalog.events[0])); }, /duplicates event names/],

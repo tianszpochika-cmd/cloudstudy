@@ -623,7 +623,7 @@
           "assertions": [
             {"contains": "Phase 1 不启用生成式 AI"},
             {"contains": "没有 Gate 不得进入默认路由"},
-            {"contains": "Phase 2/3 已移出当前批次"}
+            {"contains": "Phase 2/3 的 `G-P2`、`G-P3` 不属于 Phase 1 上线 Gate"}
           ],
           "policyAssertions": ["ai-disabled", "phase-gate", "no-default-route", "adult-only"]
         }

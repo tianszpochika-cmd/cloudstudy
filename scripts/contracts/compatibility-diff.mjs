@@ -4034,6 +4034,278 @@ function compareM1017B26Promotion(previous, current, allowance) {
   });
 }
 
+// M1-018 starts from the accepted M1-017 evidence checkpoint.  It is a
+// deliberately finite static promotion: exactly three new IAM-owned v2 facts
+// plus their B26 routing are permitted.  B8 v1 credential/session facts stay
+// historical and this allowance never establishes a runtime Kafka claim.
+export const M1018_IAM_EVENT_PROMOTION_ID = 'P1R-M1-018';
+export const M1018_SOURCE_CONTRACT_BASELINE_REF = '97497afe1f31703601d1491c8d47d00121c90089';
+export const M1018_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1018_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'd40fff55a7a138d533fc536875396d34f05691ec08a63e6a86ff4f9cfff68a01';
+export const M1018_EVENT_SOURCE_SEMANTIC_SHA256 = '4a1357e308271533e66e25bceba4ccb164ee5c2d58652b642b252895028a8ac2';
+export const M1018_B26_SOURCE_SEMANTIC_SHA256 = 'b04c19851d17e02a0f5c2ca2221bfbc2d977d6f49cd92d0be7926398fe2a90a5';
+export const M1018_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'a154f2004f06e5da096abea630855152fac9e87224ad48565a38e6010ab9416b';
+export const M1018_EVENT_EXPECTED_SEMANTIC_SHA256 = '5dd1edfae663dd4fcc2975e6ec44e4272efae19ac049c4098bb1be8033ce1548';
+export const M1018_B26_EXPECTED_SEMANTIC_SHA256 = 'fac58e090abb889fe9d9b5660b2727189c97987d2d7ae4ec9fdf82357b8ba5f0';
+export const M1018_OPENAPI_DESCRIPTOR_SET_SHA256 = '2543b279c202ca73634a23a3ac3c359972896f54d0b36dba46674e9c08b26172';
+export const M1018_EVENT_DESCRIPTOR_SET_SHA256 = 'c3fa4291254d7c83ec0b690c648fb86437fa72dac84f65744284caac7dd51767';
+export const M1018_B26_DESCRIPTOR_SET_SHA256 = 'e72f5be7f21ef1c166dee360c582a8bd4dc92a66f809242fd0e4dcd95660d37b';
+export const M1018_POLICY_SEMANTIC_SHA256 = '561946c69898a2a32c56c23d339581934c67e8f1f63f5412f81d8b14586184c0';
+export const M1018_APPROVED_SOURCE_FILES_SEMANTIC_SHA256 = '54712fb28182adf2a04607d4df24b1aa24174acb3d7003c2ee0481bfbf43a607';
+export const M1018_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256 = 'a9fcf98a1aa3f4f53f33b1bab7386bf072881480c72002703ee5422e37df3315';
+export const M1018_B26_STATIC_POLICY_SEMANTIC_SHA256 = '607860dedc229e019e9dc6bf5c7e88511776b5e3c309fbb467318bd653b4e3bd';
+
+// M1-018 also closes the shared API response contract on the already accepted
+// 97497af OpenAPI checkpoint.  Keep this list at response/status granularity:
+// copying an entire route or path would make an unrelated response change an
+// implicit allowance.  The generated OpenAPI is still checked against the
+// frozen semantic digest below, so changing any copied node fails closed.
+export const M1018_OPENAPI_RESPONSE_PROJECTIONS = Object.freeze([
+  ['GET', '/api/v1/games/catalog', '200'],
+  ['POST', '/api/v1/games/sessions', '201'],
+  ['GET', '/api/v1/games/sessions/{sessionId}', '200'],
+  ['POST', '/api/v1/games/sessions/{sessionId}/events', '200'],
+  ['POST', '/api/v1/games/sessions/{sessionId}/pause', '200'],
+  ['POST', '/api/v1/games/sessions/{sessionId}/resume', '200'],
+  ['POST', '/api/v1/games/sessions/{sessionId}/finish', '200'],
+  ['GET', '/api/v1/social/rooms', '200'],
+  ['GET', '/api/v1/social/rooms/{roomId}', '200'],
+  ['POST', '/api/v1/social/rooms/{roomId}/join', '200'],
+  ['POST', '/api/v1/social/rooms/{roomId}/leave', '200'],
+  ['GET', '/api/v1/support/tickets', '200'],
+  ['POST', '/api/v1/support/tickets', '201'],
+  ['GET', '/api/v1/support/tickets/{ticketId}', '200'],
+  ['POST', '/api/v1/support/tickets/{ticketId}/messages', '201'],
+  ['POST', '/api/v1/assessment/placement/sessions', '201'],
+  ['GET', '/api/v1/assessment/placement/sessions/{sessionId}', '200'],
+  ['POST', '/api/v1/assessment/placement/sessions/{sessionId}/responses', '200'],
+  ['POST', '/api/v1/assessment/placement/baselines/skip', '201'],
+  ['GET', '/api/v1/assessment/placement/reports/{reportId}', '200'],
+  ['GET', '/api/v1/learning/plans/current', '200'],
+  ['GET', '/api/v1/learning/plans/current', '401'],
+  ['GET', '/api/v1/learning/plans/current', '403'],
+  ['GET', '/api/v1/learning/today', '200'],
+  ['GET', '/api/v1/learning/today', '401'],
+  ['GET', '/api/v1/learning/today', '403'],
+  ['POST', '/api/v1/learning/plans/reorder', '200'],
+  ['POST', '/api/v1/learning/plans/reorder', '400'],
+  ['POST', '/api/v1/learning/plans/reorder', '401'],
+  ['POST', '/api/v1/learning/plans/reorder', '403'],
+  ['POST', '/api/v1/learning/plans/reorder', '409'],
+  ['POST', '/api/v1/learning/tasks/{taskId}/complete', '200'],
+  ['POST', '/api/v1/learning/tasks/{taskId}/complete', '400'],
+  ['POST', '/api/v1/learning/tasks/{taskId}/complete', '401'],
+  ['POST', '/api/v1/learning/tasks/{taskId}/complete', '403'],
+  ['POST', '/api/v1/learning/tasks/{taskId}/complete', '404'],
+  ['POST', '/api/v1/learning/tasks/{taskId}/complete', '409'],
+  ['GET', '/api/v1/learning/repairs', '200'],
+  ['GET', '/api/v1/learning/repairs', '401'],
+  ['GET', '/api/v1/learning/repairs', '403'],
+  ['GET', '/api/v1/learning/repairs/{repairId}', '200'],
+  ['GET', '/api/v1/learning/repairs/{repairId}', '401'],
+  ['GET', '/api/v1/learning/repairs/{repairId}', '403'],
+  ['GET', '/api/v1/learning/repairs/{repairId}', '404'],
+  ['GET', '/api/v1/learning/mastery', '200'],
+  ['GET', '/api/v1/learning/mastery', '401'],
+  ['GET', '/api/v1/learning/mastery', '403'],
+  ['GET', '/api/v1/learning/reports/{reportType}', '200'],
+  ['GET', '/api/v1/learning/reports/{reportType}', '401'],
+  ['GET', '/api/v1/learning/reports/{reportType}', '403'],
+  ['GET', '/api/v1/learning/reports/{reportType}', '404'],
+  ['GET', '/api/v1/learning/sync/receipts', '401'],
+  ['GET', '/api/v1/learning/sync/receipts', '403'],
+  ['GET', '/api/v1/learning/sync/cursor', '401'],
+  ['GET', '/api/v1/learning/sync/cursor', '403'],
+  ['GET', '/api/v1/learning/sync/conflicts', '401'],
+  ['GET', '/api/v1/learning/sync/conflicts', '403'],
+  ['POST', '/api/v1/learning/sync/conflicts/{conflictId}/recovery', '401'],
+  ['POST', '/api/v1/learning/sync/conflicts/{conflictId}/recovery', '403'],
+  ['POST', '/api/v1/learning/sync/conflicts/{conflictId}/recovery', '409'],
+  ['GET', '/api/v1/admin/ops/tickets/{ticketId}', '200'],
+  ['POST', '/api/v1/admin/ops/tickets/{ticketId}/messages', '201'],
+  ['POST', '/api/v1/admin/ops/tickets/{ticketId}/commands', '202'],
+  ['POST', '/api/v1/privacy/exports', '202'],
+  ['GET', '/api/v1/privacy/exports/{exportId}', '200'],
+  ['POST', '/api/v1/privacy/exports/{exportId}/download', '200'],
+  ['GET', '/api/v1/privacy/exports/{exportId}/receipt', '200'],
+  ['POST', '/api/v1/iam/account-deletions', '202'],
+  ['GET', '/api/v1/iam/account-deletions/{deletionRequestId}', '200'],
+  ['POST', '/api/v1/iam/account-deletions/{deletionRequestId}/cancel', '200'],
+  ['POST', '/api/v1/analytics/telemetry', '202'],
+  ['POST', '/api/v1/analytics/telemetry', '400'],
+  ['POST', '/api/v1/analytics/telemetry', '401'],
+  ['POST', '/api/v1/analytics/telemetry', '403'],
+  ['POST', '/api/v1/analytics/telemetry', '409'],
+  ['POST', '/api/v1/analytics/telemetry', '429'],
+]);
+export const M1018_OPENAPI_SCHEMA_PROJECTIONS = Object.freeze([
+  'B9ScheduledPublishTaskResponse',
+]);
+export const M1018_OPENAPI_EXPECTED_CHANGE_DESCRIPTORS = Object.freeze([
+  ...M1018_OPENAPI_RESPONSE_PROJECTIONS.map(([method, route, status]) => [
+    `${method} ${route}.responses.${status}`,
+    'approved M1-018 API response projection changed',
+  ]),
+  ...M1018_OPENAPI_SCHEMA_PROJECTIONS.map((name) => [
+    `components.schemas.${name}`,
+    'approved M1-018 API response schema projection changed',
+  ]),
+]);
+export const M1018_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id', 'sourceContractBaseline', 'previousPromotion', 'previousPromotionContract',
+  'immutableGovernanceBaseline', 'runtimeStatus', 'scope', 'promotionMode',
+  'allowsHistoricalV1Promotion', 'allowsDualPublish', 'approvedSourceFiles',
+  'requiredCompatibilityChecks', 'b26StaticPolicy',
+]);
+
+export function isValidM1018PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1018_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1018_IAM_EVENT_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1018_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID
+    && allowance.previousPromotionContract === 'config/p1r-privacy-analytics-audit-contract.v1.json'
+    && allowance.immutableGovernanceBaseline === M1018_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'M1018_IAM_EVENT_GOVERNANCE_API_REPAIR_B26_STATIC_WITH_B8_V1_HISTORICAL'
+    && allowance.promotionMode === 'FUTURE_M1018_V2_ONLY'
+    && allowance.allowsHistoricalV1Promotion === false
+    && allowance.allowsDualPublish === false
+    && stableGovernanceSha256(allowance.approvedSourceFiles) === M1018_APPROVED_SOURCE_FILES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.requiredCompatibilityChecks) === M1018_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.b26StaticPolicy) === M1018_B26_STATIC_POLICY_SEMANTIC_SHA256;
+}
+
+function m1018OpenApiResponse(previous, route, method, status) {
+  return previous?.paths?.[route]?.[method.toLowerCase()]?.responses?.[status];
+}
+
+function copyM1018OpenApiResponse(expected, approved, [method, route, status]) {
+  const previousResponse = m1018OpenApiResponse(expected, route, method, status);
+  const approvedResponse = m1018OpenApiResponse(approved, route, method, status);
+  if (!isRecord(previousResponse) || !isRecord(approvedResponse)) return false;
+  expected.paths[route][method.toLowerCase()].responses[status] = structuredClone(approvedResponse);
+  return true;
+}
+
+/**
+ * Rebuild the one approved M1-018 OpenAPI projection from the immutable
+ * 97497af checkpoint.  API repair is intentionally expressed as exact
+ * response/status and schema nodes; no route, path or whole component is
+ * implicitly promoted.  The fixed semantic digest below also binds every
+ * nested header, response reference and envelope detail.
+ */
+export function buildM1018OpenApiExpectedProjection(previous, approved, allowance) {
+  if (!isRecord(previous) || !isRecord(approved) || !isValidM1018PromotionAllowance(allowance)
+    || stableGovernanceSha256(previous) !== M1018_OPENAPI_SOURCE_SEMANTIC_SHA256
+    || !isRecord(previous.paths) || !isRecord(approved.paths)
+    || !isRecord(previous.components?.schemas) || !isRecord(approved.components?.schemas)) return undefined;
+  const expected = structuredClone(previous);
+  if (!M1018_OPENAPI_RESPONSE_PROJECTIONS.every((projection) => copyM1018OpenApiResponse(expected, approved, projection))) return undefined;
+  for (const name of M1018_OPENAPI_SCHEMA_PROJECTIONS) {
+    if (!isRecord(approved.components.schemas[name])) return undefined;
+    expected.components.schemas[name] = structuredClone(approved.components.schemas[name]);
+  }
+  return expected;
+}
+
+export function compareM1018OpenApiDescriptors(previous, current) {
+  const changes = [];
+  for (const [method, route, status] of M1018_OPENAPI_RESPONSE_PROJECTIONS) {
+    if (stableGovernanceValue(m1018OpenApiResponse(previous, route, method, status))
+      !== stableGovernanceValue(m1018OpenApiResponse(current, route, method, status))) {
+      changes.push(describeChange(
+        'openapi',
+        `${method} ${route}.responses.${status}`,
+        'approved M1-018 API response projection changed',
+      ));
+    }
+  }
+  for (const name of M1018_OPENAPI_SCHEMA_PROJECTIONS) {
+    if (stableGovernanceValue(previous?.components?.schemas?.[name])
+      !== stableGovernanceValue(current?.components?.schemas?.[name])) {
+      changes.push(describeChange(
+        'openapi',
+        `components.schemas.${name}`,
+        'approved M1-018 API response schema projection changed',
+      ));
+    }
+  }
+  return changes;
+}
+
+export function compareM1018EventDescriptors(previous, current) {
+  return compareEvents(previous, current);
+}
+
+export function compareM1018B26Descriptors(previous, current) {
+  return compareB26WorkflowGovernance(previous, current);
+}
+
+function compareM1018FrozenProjection({ kind, previous, current, allowance, sourceDigest, expectedDigest, descriptorDigest, descriptors }) {
+  if (!isValidM1018PromotionAllowance(allowance)) {
+    return [describeChange(kind, 'm1-018.compatibilityPromotion', 'M1-018 allowance is not the frozen IAM v2 static-governance policy')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== sourceDigest) {
+    changes.push(describeChange(kind, 'm1-018.source', 'M1-018 source is not the accepted 97497af M1-017 evidence handoff'));
+  }
+  const actualDescriptors = descriptors(previous, current);
+  if (stableGovernanceSha256(actualDescriptors) !== descriptorDigest) {
+    changes.push(describeChange(kind, 'm1-018.change-descriptors', 'current changes do not exactly match the frozen M1-018 descriptor set'));
+  }
+  if (stableGovernanceSha256(current) !== expectedDigest) {
+    changes.push(describeChange(kind, 'm1-018.projection', 'current artifact is not the exact frozen M1-018 IAM v2 static projection'));
+  }
+  return changes;
+}
+
+function compareM1018OpenApiPromotion(previous, current, allowance) {
+  if (!isValidM1018PromotionAllowance(allowance)) {
+    return [describeChange('openapi', 'm1-018.openapiPromotion', 'M1-018 allowance is not the frozen IAM/API static-governance policy')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== M1018_OPENAPI_SOURCE_SEMANTIC_SHA256) {
+    changes.push(describeChange('openapi', 'm1-018.source', 'M1-018 OpenAPI source is not the frozen 97497af checkpoint'));
+  }
+  const actualDescriptors = compareM1018OpenApiDescriptors(previous, current);
+  if (stableGovernanceSha256(actualDescriptors) !== M1018_OPENAPI_DESCRIPTOR_SET_SHA256) {
+    changes.push(describeChange('openapi', 'm1-018.change-descriptors', 'current OpenAPI changes do not exactly match the frozen M1-018 API descriptor set'));
+  }
+  const expectedProjection = buildM1018OpenApiExpectedProjection(previous, current, allowance);
+  if (expectedProjection === undefined) {
+    changes.push(describeChange('openapi', 'm1-018.projection', 'the approved M1-018 API projection cannot be constructed from the frozen source'));
+  } else {
+    if (stableGovernanceSha256(expectedProjection) !== M1018_OPENAPI_EXPECTED_SEMANTIC_SHA256) {
+      changes.push(describeChange('openapi', 'm1-018.expected-projection', 'the allowlisted M1-018 API projection does not match its frozen semantic digest'));
+    }
+    if (stableGovernanceValue(expectedProjection) !== stableGovernanceValue(current)) {
+      changes.push(describeChange('openapi', 'm1-018.projection', 'current OpenAPI is not the unique frozen-source M1-018 API projection'));
+    }
+  }
+  return changes;
+}
+
+function compareM1018EventPromotion(previous, current, allowance) {
+  return compareM1018FrozenProjection({
+    kind: 'events', previous, current, allowance,
+    sourceDigest: M1018_EVENT_SOURCE_SEMANTIC_SHA256,
+    expectedDigest: M1018_EVENT_EXPECTED_SEMANTIC_SHA256,
+    descriptorDigest: M1018_EVENT_DESCRIPTOR_SET_SHA256,
+    descriptors: compareM1018EventDescriptors,
+  });
+}
+
+function compareM1018B26Promotion(previous, current, allowance) {
+  return compareM1018FrozenProjection({
+    kind: 'events', previous, current, allowance,
+    sourceDigest: M1018_B26_SOURCE_SEMANTIC_SHA256,
+    expectedDigest: M1018_B26_EXPECTED_SEMANTIC_SHA256,
+    descriptorDigest: M1018_B26_DESCRIPTOR_SET_SHA256,
+    descriptors: compareM1018B26Descriptors,
+  });
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -4135,6 +4407,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1018_IAM_EVENT_PROMOTION_ID) {
+    return compareM1018B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID) {
     return compareM1017B26Promotion(governanceBaseline, current, allowance);
   }
@@ -4308,6 +4583,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1018_IAM_EVENT_PROMOTION_ID) {
+    return compareM1018EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID) {
     return compareM1017EventPromotion(previous, current, allowance);
   }
@@ -4449,6 +4727,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1018_IAM_EVENT_PROMOTION_ID) {
+      return compareM1018OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID) {
       return compareM1017OpenApiPromotion(previous, current, allowance);
     }

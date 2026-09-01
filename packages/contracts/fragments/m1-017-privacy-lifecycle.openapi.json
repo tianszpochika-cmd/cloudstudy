@@ -47,7 +47,7 @@
           }
         },
         "responses": {
-          "202": {"description": "Privacy export request accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyExportEnvelope"}}}},
+          "202": {"description": "Privacy export request accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyExportEnvelope"}}}, "headers": { "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" } }},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "409": {"$ref": "#/components/responses/ApiConflict"},
@@ -66,7 +66,7 @@
         "x-authorization": {"requiredPermission": "privacy.export.self.read", "defaultDecision": "DENY", "trustedFacts": ["verifiedPrincipal", "serverDerivedTenant", "resourceOwner", "policyVersion"], "resourceOwner": "server-derived export subject", "serviceSidePepRequired": true, "clientAuthority": "NONE"},
         "parameters": [{"$ref": "#/components/parameters/M1017ExportId"}],
         "responses": {
-          "200": {"description": "Current export status", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyExportEnvelope"}}}},
+          "200": {"description": "Current export status", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyExportEnvelope"}}}, "headers": { "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" } }},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "404": {"$ref": "#/components/responses/ApiNotFound"}
@@ -85,7 +85,7 @@
         "x-idempotency": {"required": true, "keyHeader": "Idempotency-Key", "strategy": "privacy-export-download-grant", "replayBehavior": "same subject and ready export return the active one-time grant only while it remains valid"},
         "parameters": [{"$ref": "#/components/parameters/M1017ExportId"}, {"$ref": "#/components/parameters/B1IdempotencyKey"}],
         "responses": {
-          "200": {"description": "One-time download grant", "headers": {"Cache-Control": {"schema": {"const": "no-store"}}}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyDownloadGrantEnvelope"}}}},
+          "200": {"description": "One-time download grant", "headers": {"Cache-Control": {"schema": {"const": "no-store"}}, "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" }}, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyDownloadGrantEnvelope"}}}},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "409": {"$ref": "#/components/responses/ApiConflict"},
@@ -104,7 +104,7 @@
         "x-authorization": {"requiredPermission": "privacy.export.self.receipt.read", "defaultDecision": "DENY", "trustedFacts": ["verifiedPrincipal", "serverDerivedTenant", "resourceOwner", "policyVersion"], "resourceOwner": "server-derived export subject", "serviceSidePepRequired": true, "clientAuthority": "NONE"},
         "parameters": [{"$ref": "#/components/parameters/M1017ExportId"}],
         "responses": {
-          "200": {"description": "Redacted export receipt", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyReceiptEnvelope"}}}},
+          "200": {"description": "Redacted export receipt", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017PrivacyReceiptEnvelope"}}}, "headers": { "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" } }},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "404": {"$ref": "#/components/responses/ApiNotFound"}
@@ -166,7 +166,7 @@
         "parameters": [{"$ref": "#/components/parameters/B1IdempotencyKey"}],
         "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionRequest"}}}},
         "responses": {
-          "202": {"description": "Deletion request accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionEnvelope"}}}},
+          "202": {"description": "Deletion request accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionEnvelope"}}}, "headers": { "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" } }},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "409": {"$ref": "#/components/responses/ApiConflict"},
@@ -185,7 +185,7 @@
         "x-authorization": {"requiredPermission": "iam.account.deletion.self.read", "defaultDecision": "DENY", "trustedFacts": ["verifiedPrincipal", "serverDerivedTenant", "resourceOwner", "policyVersion"], "resourceOwner": "server-derived deletion request subject", "serviceSidePepRequired": true, "clientAuthority": "NONE"},
         "parameters": [{"$ref": "#/components/parameters/M1017DeletionRequestId"}],
         "responses": {
-          "200": {"description": "Current deletion status", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionEnvelope"}}}},
+          "200": {"description": "Current deletion status", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionEnvelope"}}}, "headers": { "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" } }},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "404": {"$ref": "#/components/responses/ApiNotFound"}
@@ -205,7 +205,7 @@
         "parameters": [{"$ref": "#/components/parameters/M1017DeletionRequestId"}, {"$ref": "#/components/parameters/B1IdempotencyKey"}],
         "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionCancelRequest"}}}},
         "responses": {
-          "200": {"description": "Deletion request cancelled", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionEnvelope"}}}},
+          "200": {"description": "Deletion request cancelled", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/M1017AccountDeletionEnvelope"}}}, "headers": { "X-Request-Id": { "$ref": "#/components/headers/XRequestId" }, "X-Trace-Id": { "$ref": "#/components/headers/XTraceId" }, "X-API-Version": { "$ref": "#/components/headers/XApiVersion" } }},
           "401": {"$ref": "#/components/responses/ApiUnauthorized"},
           "403": {"$ref": "#/components/responses/ApiForbidden"},
           "409": {"$ref": "#/components/responses/ApiConflict"},

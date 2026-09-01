@@ -1357,13 +1357,24 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
@@ -1435,13 +1446,24 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
@@ -1542,19 +1564,30 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "400": {
-            "$ref": "#/components/responses/B10BadRequest"
+            "$ref": "#/components/responses/ApiBadRequest"
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
-            "$ref": "#/components/responses/B10Conflict"
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
@@ -1658,22 +1691,33 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "400": {
-            "$ref": "#/components/responses/B10BadRequest"
+            "$ref": "#/components/responses/ApiBadRequest"
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "404": {
-            "$ref": "#/components/responses/B10NotFound"
+            "$ref": "#/components/responses/ApiNotFound"
           },
           "409": {
-            "$ref": "#/components/responses/B10Conflict"
+            "$ref": "#/components/responses/ApiConflict"
           }
         }
       }
@@ -1751,13 +1795,24 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           }
         },
         "x-pagination": {
@@ -1834,16 +1889,27 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "404": {
-            "$ref": "#/components/responses/B10NotFound"
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }
@@ -1910,13 +1976,24 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           }
         }
       }
@@ -1991,16 +2068,27 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
-            "$ref": "#/components/responses/B10Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B10Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "404": {
-            "$ref": "#/components/responses/B10NotFound"
+            "$ref": "#/components/responses/ApiNotFound"
           }
         }
       }

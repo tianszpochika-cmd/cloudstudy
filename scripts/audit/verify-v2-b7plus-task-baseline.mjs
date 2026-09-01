@@ -54,7 +54,8 @@ const architectureRefs = [
   'ARCH-SVC-001', 'ARCH-LCM-001',
 ];
 const architectureRefsPresent = architectureRefs.every((ref) => baseline.includes(ref));
-const scopeBoundary = (/B15–B22 为 Phase 1 运行态、测试、发布与上线任务/.test(baseline)
+const scopeBoundary = (/B15–B18 是 Phase 1 运行态主链；B19–B21 以测试和发布 Gate 为主，B22 只有在 RC Gate 通过后才能执行生产切换/.test(baseline)
+  || /B15–B22 为 Phase 1 运行态、测试、发布与上线任务/.test(baseline)
   || /B15 已进入执行并完成代码\/静态预检，B16–B22 仍待认领/.test(baseline)
   || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17–B22 尚未开发/.test(baseline)
   || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19–B22 尚未开发/.test(baseline)
@@ -62,7 +63,8 @@ const scopeBoundary = (/B15–B22 为 Phase 1 运行态、测试、发布与上�
   || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20 已完成代码\/静态 Gate 基础但真实安全\/隐私\/内容\/支付\/灾备运行态被环境、资质或证据阻塞，B21–B22 尚未开发/.test(baseline)
   || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20 已完成代码\/静态 Gate 基础但真实安全\/隐私\/内容\/支付\/灾备运行态被环境、资质或证据阻塞，B21 已完成代码\/静态发布 Gate 基础但真实 staging\/RC\/观测\/回滚\/Go-No-Go 运行态被环境或证据阻塞，B22 尚未开发/.test(baseline)
   || /B15 已完成代码\/静态预检，B16 已完成代码与静态回归但真实运行态被环境阻塞，B17 已完成代码、静态门禁与合成旅程回归但真实跨进程运行态被环境阻塞，B18 已完成代码\/静态联调骨架与四端构建但真实 API\/浏览器\/设备运行态被环境阻塞，B19 已完成代码\/静态系统测试基础但真实 API\/E2E\/浏览器\/设备\/专项 QA 运行态被环境阻塞，B20 已完成代码\/静态 Gate 基础但真实安全\/隐私\/内容\/支付\/灾备运行态被环境、资质或证据阻塞，B21 已完成代码\/静态发布 Gate 基础但真实 staging\/RC\/观测\/回滚\/Go-No-Go 运行态被环境或证据阻塞，B22 已完成代码\/静态上线 Gate 基础但真实生产切换、迁移、观察期和 Phase 1 验收运行态被环境或证据阻塞/.test(baseline))
-  && /不启用 Phase 2 AI、Phase 3 K12/.test(baseline)
+  && (/不启用 Phase 2 AI、Phase 3 K12/.test(baseline)
+    || /Phase 2\/3 的 `G-P2`、`G-P3` 不属于 Phase 1 上线 Gate/.test(baseline))
   && /代码层完成/.test(baseline)
   && /生产上线/.test(baseline);
 const officialSiteCoverage = [...baseline.matchAll(/V2-B\d+-OFS-\d{3}/g)].length >= 3

@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "p1r.m1-018.d2-total-gate.v1",
+  "taskId": "P1R-M1-018",
+  "phase": "P1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "sourceCheckpoint": "97497afe1f31703601d1491c8d47d00121c90089",
+  "taskStartCommit": "0b6b80038dbbf43e8d218750fcb39f49970703bb",
+  "fixedCompatibility": {
+    "acceptedContractBaseline": "463c4b238caceb1592bff6c61327c00ab9bac922",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f"
+  },
+  "expectedCounts": {
+    "contractGaps": 24,
+    "atomicEventGaps": 15,
+    "eventGapAlias": 1,
+    "eventGapRecords": 16,
+    "implementationGaps": 2,
+    "evidenceGaps": 3
+  },
+  "contractGapIds": [
+    "CONTRACT-GAP-ADM-001",
+    "CONTRACT-GAP-ADMIN-CONTENT-BOUNDARY",
+    "CONTRACT-GAP-ANL-001",
+    "CONTRACT-GAP-COM-001",
+    "CONTRACT-GAP-CONTENT-SCHEDULE",
+    "CONTRACT-GAP-GAM-001",
+    "CONTRACT-GAP-INF-001",
+    "CONTRACT-GAP-INF-002",
+    "CONTRACT-GAP-LRN-001",
+    "CONTRACT-GAP-MEDIA-PROCESSING",
+    "CONTRACT-GAP-ONB-001",
+    "CONTRACT-GAP-ONB-002",
+    "CONTRACT-GAP-PLACEMENT-MANIFEST",
+    "CONTRACT-GAP-PLAN-EXPLAIN",
+    "CONTRACT-GAP-PRIVACY-DELETION",
+    "CONTRACT-GAP-PRIVACY-EXPORT",
+    "CONTRACT-GAP-RBAC-ADMIN",
+    "CONTRACT-GAP-REP-001",
+    "CONTRACT-GAP-REPAIR-VARIANT",
+    "CONTRACT-GAP-REPORT-WATERMARK",
+    "CONTRACT-GAP-SPK-001",
+    "CONTRACT-GAP-SRS-OUTCOME",
+    "CONTRACT-GAP-SUPPORT-ROUTING",
+    "CONTRACT-GAP-USR-DEL-001"
+  ],
+  "atomicEventGapIds": [
+    "EVENT-GAP-IAM-001",
+    "EVENT-GAP-BIND-IAM-001",
+    "EVENT-GAP-BIND-IAM-002",
+    "EVENT-GAP-ONB-001",
+    "EVENT-GAP-ONB-002",
+    "EVENT-GAP-PLACEMENT-PLAN",
+    "EVENT-GAP-CONTENT-DUPLICATE",
+    "EVENT-GAP-BIND-CONT-001",
+    "EVENT-GAP-BIND-ASM-001",
+    "EVENT-GAP-BIND-LRN-001",
+    "EVENT-GAP-BIND-GAM-001",
+    "EVENT-GAP-BIND-SOC-001",
+    "EVENT-GAP-BIND-NOTIF-001",
+    "EVENT-GAP-BIND-PRIV-001",
+    "EVENT-GAP-USR-DEL-001"
+  ],
+  "eventGapAlias": "EVENT-GAP-BIND",
+  "canonicalInputs": {
+    "traceabilityMatrix": "requirements/backlog/v2-phase1-rebaseline/04-追溯覆盖矩阵.md",
+    "gapRegistry": "config/p1r-gap-registry.v1.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "dataOwnershipPolicy": "config/p1r-data-ownership.v1.json",
+    "apiContract": "packages/contracts/openapi/v1/openapi.json",
+    "schemaRegistry": "packages/contracts/schemas/v1/registry.json",
+    "generatedOpenApi": "packages/contracts/generated/openapi.ts",
+    "generatedEvents": "packages/contracts/generated/events.ts",
+    "reliabilityPolicy": "packages/contracts/events/v1/reliability-policy.json",
+    "iamEventFragment": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+    "b26Runtime": "config/b26-event-runtime.json",
+    "g0Scope": "config/g0-scope-governance.json",
+    "g3Security": "config/g3-test-security-observability.json",
+    "taskLedger": "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md",
+    "m0_006": "evidence/p1r/m0/P1R-M0-006/manifest.json"
+  },
+  "modes": {
+    "review": {
+      "resultWhenBlocked": "REWORK",
+      "allowTargetRegistryStatus": "OPEN",
+      "allowTargetClosureEvidence": null,
+      "requireOwnerTasksAccepted": true,
+      "allowInProgressTask": "P1R-M1-018",
+      "allowAliasRegistryStatus": "OPEN",
+      "allowAliasCatalogStatus": "D2_CONTRACT_CLOSED"
+    },
+    "final": {
+      "resultWhenBlocked": "FAIL",
+      "requireTaskAccepted": "P1R-M1-018",
+      "allowInProgressTask": null,
+      "requireTargetRegistryStatus": "CLOSED",
+      "requireTargetCanonicalEvidence": true,
+      "requireAliasRegistryStatus": "CLOSED",
+      "requireAliasCatalogStatus": "D2_CONTRACT_CLOSED"
+    }
+  },
+  "iamEventDecision": {
+    "required": true,
+    "decision": "MINIMAL_CANONICAL_V2",
+    "canonicalEventNames": [
+      "iam.account.bootstrap.created.v2",
+      "iam.learning_eligibility.changed.v2",
+      "iam.policy.security_state_changed.v2"
+    ],
+    "source": "scripts/contracts/event-catalog-policy.mjs#M1018_IAM_CANONICAL_EVENT_GOVERNANCE",
+    "historicalV1MustRemainCandidate": true,
+    "sourceMustNameDecision": true,
+    "crossServiceFactRequires": ["canonicalEvent", "producer", "consumer", "topic", "partitionKey", "payloadSchema"]
+  },
+  "runtimeBoundary": {
+    "catalogMaturity": "D2_CONTRACT_READY",
+    "catalogRuntimeStatus": "NOT_RUNTIME_VERIFIED",
+    "b26": {"mode": "static-only", "runtimeStatus": "pending", "defaultDecision": "NO-GO"},
+    "g0": {"defaultDecision": "BLOCKED"},
+    "g3": {"runtimeDecision": "BLOCKED", "defaultDecision": "NO-GO"},
+    "m0_006": {"taskId": "P1R-M0-006", "status": "BLOCKED", "decision": "BLOCKED"},
+    "forbiddenPromotion": ["GO", "PASS", "ACCEPTED", "RUNTIME_VERIFIED", "PRODUCTION_READY"]
+  },
+  "requiredStaticChecks": [
+    {"id": "api-contract", "owner": "contract-governance", "argv": ["scripts/audit/p1r-api-contract-check.mjs"]},
+    {"id": "auth-contract", "owner": "iam-service", "argv": ["scripts/audit/p1r-auth-contract-check.mjs"]},
+    {"id": "iam-policy", "owner": "iam-service", "argv": ["scripts/audit/p1r-iam-policy-contract-check.mjs"]},
+    {"id": "gateway-contract", "owner": "api-gateway", "argv": ["scripts/audit/p1r-gateway-contract-check.mjs"]},
+    {"id": "data-ownership", "owner": "data-governance", "argv": ["scripts/audit/p1r-data-ownership-check.mjs", "--json"]},
+    {"id": "event-governance", "owner": "event-governance", "argv": ["scripts/audit/p1r-event-governance-check.mjs", "--json"]},
+    {"id": "event-reliability", "owner": "workflow-service", "argv": ["scripts/audit/p1r-event-reliability-check.mjs", "--json"]},
+    {"id": "saga-recovery", "owner": "workflow-service", "argv": ["scripts/audit/p1r-saga-recovery-check.mjs", "--json"]},
+    {"id": "domain-contracts", "owner": "domain-owners", "argv": ["scripts/dev/run-node-tests.mjs", "tests/p1r"]},
+    {"id": "contract-tooling", "owner": "contract-governance", "argv": ["scripts/dev/run-node-tests.mjs", "tests/p1r/p1r-contract-tooling.test.mjs"]},
+    {"id": "compatibility", "owner": "contract-governance", "argv": ["scripts/contracts/compatibility-git-baseline.mjs", "--ref", "463c4b238caceb1592bff6c61327c00ab9bac922", "--governance-ref", "868c2177f62b6d2cf613bed702686dddcfe6943f", "--kind", "all", "--json"]},
+    {"id": "generated-types", "owner": "contract-governance", "argv": ["scripts/contracts/generate-contracts.mjs", "--check"]},
+    {"id": "migration-policy", "owner": "data-governance", "argv": ["scripts/database/validate-migrations.mjs"]},
+    {"id": "plan-and-evidence", "owner": "qa-governance", "argv": ["scripts/audit/verify-phase1-rebaseline-plan.mjs"]}
+  ],
+  "prohibitions": [
+    "historical-v1-event-promotion",
+    "dual-publish-v1-and-v2",
+    "client-event-producer",
+    "runtime-status-promotion",
+    "b26-go",
+    "m0-006-blocker-wash",
+    "alias-counted-as-atomic-event",
+    "closure-without-owner",
+    "closure-without-canonical-evidence",
+    "no-static-check-bypass"
+  ]
+}

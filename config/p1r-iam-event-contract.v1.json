@@ -1,0 +1,92 @@
+{
+  "$schema": "p1r.iam-event-contract.v1",
+  "schemaVersion": "p1r.iam-event-contract.v1",
+  "task": "P1R-M1-018",
+  "phase": "P1",
+  "startCommit": "0b6b80038dbbf43e8d218750fcb39f49970703bb",
+  "sourceBaseline": "97497afe1f31703601d1491c8d47d00121c90089",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "canonicalSources": {
+    "eventFragment": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+    "eventCatalogPolicy": "scripts/contracts/event-catalog-policy.mjs",
+    "eventCatalogMerge": "scripts/contracts/merge-b1-fragments.mjs",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "b26StaticPolicy": "config/b26-event-runtime.json"
+  },
+  "canonicalEvents": [
+    "iam.account.bootstrap.created.v2",
+    "iam.learning_eligibility.changed.v2",
+    "iam.policy.security_state_changed.v2"
+  ],
+  "gapBindings": [
+    "EVENT-GAP-IAM-001",
+    "EVENT-GAP-BIND-IAM-001",
+    "EVENT-GAP-BIND-IAM-002"
+  ],
+  "closureSemantics": {
+    "catalogStatus": "D2_CONTRACT_CLOSED_AT_SOURCE_REVIEW",
+    "d2ClosureTasks": [
+      "P1R-M1-003",
+      "P1R-M1-006",
+      "P1R-M1-018"
+    ],
+    "registryAndEvidence": "COORDINATOR_FINAL_INTEGRATION_REQUIRED"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-018",
+    "sourceContractBaseline": "97497afe1f31703601d1491c8d47d00121c90089",
+    "previousPromotion": "P1R-M1-017",
+    "previousPromotionContract": "config/p1r-privacy-analytics-audit-contract.v1.json",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "M1018_IAM_EVENT_GOVERNANCE_API_REPAIR_B26_STATIC_WITH_B8_V1_HISTORICAL",
+    "promotionMode": "FUTURE_M1018_V2_ONLY",
+    "allowsHistoricalV1Promotion": false,
+    "allowsDualPublish": false,
+    "approvedSourceFiles": [
+      "config/p1r-iam-event-contract.v1.json",
+      "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+      "scripts/contracts/event-catalog-policy.mjs",
+      "scripts/contracts/merge-b1-fragments.mjs",
+      "scripts/contracts/compatibility-diff.mjs",
+      "scripts/contracts/compatibility-git-baseline.mjs",
+      "config/b26-event-runtime.json",
+      "packages/contracts/fragments/b10/b10-learning-assessment-content.openapi.json",
+      "packages/contracts/fragments/b10/b10-placement.openapi.json",
+      "packages/contracts/fragments/b11/b11-media-notification-offline.openapi.json",
+      "packages/contracts/fragments/b12/b12-gamification-social-notification.openapi.json",
+      "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "packages/contracts/fragments/b5-commerce-admin.openapi.json",
+      "packages/contracts/fragments/b9/b9-content.openapi.json",
+      "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json"
+    ],
+    "requiredCompatibilityChecks": [
+      "M1018_POLICY_SCHEMA_STRICT_AND_FAIL_CLOSED",
+      "IAM_CANONICAL_V2_FACTS_ONLY",
+      "IAM_PRODUCER_CONSUMER_TOPIC_PARTITION_EXACT",
+      "SERVER_ONLY_PEP_CONSUMERS_NO_GATEWAY_OR_CLIENT",
+      "B8_V1_HISTORICAL_ONLY_NO_PROMOTION",
+      "NO_DUAL_PUBLISH",
+      "SOURCE_CATALOG_CLOSED_REGISTRY_REQUIRES_FINAL_EVIDENCE_INTEGRATION",
+      "NO_RUNTIME_STATUS_PROMOTION"
+    ],
+    "b26StaticPolicy": {
+      "classification": "STATIC_GOVERNANCE_ONLY",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "allowsRuntimePromotion": false,
+      "requiresSeparateRuntimeEvidence": true
+    }
+  },
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "prohibitedClaims": [
+      "realKafkaDelivery",
+      "realOutboxPublication",
+      "realConsumerExecution",
+      "realPepCacheInvalidation",
+      "browserE2E"
+    ]
+  }
+}

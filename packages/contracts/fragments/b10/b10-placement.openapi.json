@@ -40,7 +40,18 @@
             "content": { "application/json": { "schema": { "allOf": [
               { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
               { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementSession" } } }
-            ] } } }
+            ] } } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
           },
           "401": { "$ref": "#/components/responses/ApiUnauthorized" },
           "403": { "$ref": "#/components/responses/ApiForbidden" },
@@ -76,7 +87,18 @@
             "content": { "application/json": { "schema": { "allOf": [
               { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
               { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementSession" } } }
-            ] } } }
+            ] } } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
           },
           "401": { "$ref": "#/components/responses/ApiUnauthorized" },
           "403": { "$ref": "#/components/responses/ApiForbidden" },
@@ -133,7 +155,18 @@
             "content": { "application/json": { "schema": { "allOf": [
               { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
               { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementResponseReceipt" } } }
-            ] } } }
+            ] } } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
           },
           "401": { "$ref": "#/components/responses/ApiUnauthorized" },
           "403": { "$ref": "#/components/responses/ApiForbidden" },
@@ -181,7 +214,18 @@
             "content": { "application/json": { "schema": { "allOf": [
               { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
               { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementResult" } } }
-            ] } } }
+            ] } } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
           },
           "401": { "$ref": "#/components/responses/ApiUnauthorized" },
           "403": { "$ref": "#/components/responses/ApiForbidden" },
@@ -217,7 +261,18 @@
             "content": { "application/json": { "schema": { "allOf": [
               { "$ref": "#/components/schemas/ApiSuccessEnvelope" },
               { "type": "object", "required": ["data"], "properties": { "data": { "$ref": "#/components/schemas/B10PlacementReport" } } }
-            ] } } }
+            ] } } },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
           },
           "401": { "$ref": "#/components/responses/ApiUnauthorized" },
           "403": { "$ref": "#/components/responses/ApiForbidden" },

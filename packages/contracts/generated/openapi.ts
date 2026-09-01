@@ -2705,7 +2705,7 @@ export type B9SessionContentPin = ({ contentVersionId: B9ContentVersionId; versi
 /**
  * Generated from the contract source.
  */
-export type B9ScheduledPublishTaskResponse = { data: B9ScheduledPublishTask; };
+export type B9ScheduledPublishTaskResponse = ApiSuccessEnvelope & { data: B9ScheduledPublishTask; };
 
 /**
  * RFC3339 绝对时间；必须带 Z 或显式 UTC offset，禁止无时区的本地时间。
@@ -4362,7 +4362,7 @@ export interface ApiOperationRegistry {
   executeM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/execute"; request: never; response: M1017AccountDeletionEnvelope; idempotent: true };
   recordM1017AccountDeletionOwnerReceipt: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts"; request: M1017OwnerReceiptSubmission; response: M1017AccountDeletionEnvelope; idempotent: true };
   recoverM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/recovery"; request: M1017DeletionRecoveryCommand; response: M1017AccountDeletionEnvelope; idempotent: true };
-  ingestM1017AnalyticsTelemetry: { method: "POST"; path: "/api/v1/analytics/telemetry"; request: M1017AnalyticsTelemetryRequest; response: M1017AnalyticsTelemetryReceipt; idempotent: true };
+  ingestM1017AnalyticsTelemetry: { method: "POST"; path: "/api/v1/analytics/telemetry"; request: M1017AnalyticsTelemetryRequest; response: ApiSuccessEnvelope & { data: M1017AnalyticsTelemetryReceipt; }; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

@@ -343,11 +343,13 @@ function assertAnalyticsIngressContract(document, policy, resolutionDocument) {
   assert.equal(operation.requestBody.required, true);
   assert.equal(operation.requestBody.content['application/json'].schema.$ref, '#/components/schemas/M1017AnalyticsTelemetryRequest');
   assert.equal(operation.parameters?.[0]?.$ref, '#/components/parameters/M1017TelemetryIdempotencyKey');
-  assert.equal(operation.responses['202'].content['application/json'].schema.$ref, '#/components/schemas/M1017AnalyticsTelemetryReceipt');
-  assert.equal(operation.responses['429'].$ref, '#/components/responses/B13RateLimited');
-  const rateLimited = resolve(document, '#/components/responses/B13RateLimited');
-  assert.equal(rateLimited.headers['Retry-After'].schema.type, 'integer');
-  assert.equal(rateLimited.content['application/json'].schema.$ref, '#/components/schemas/B13Problem');
+  const acceptedEnvelope = operation.responses['202'].content['application/json'].schema;
+  assert.equal(acceptedEnvelope.allOf?.[0]?.$ref, '#/components/schemas/ApiSuccessEnvelope');
+  assert.equal(acceptedEnvelope.allOf?.[1]?.properties?.data?.$ref, '#/components/schemas/M1017AnalyticsTelemetryReceipt');
+  assert.equal(operation.responses['429'].$ref, '#/components/responses/ApiRateLimited');
+  const rateLimited = resolve(resolutionDocument ?? document, '#/components/responses/ApiRateLimited');
+  assert.equal(rateLimited.headers['Retry-After'].$ref, '#/components/headers/RetryAfter');
+  assert.equal(rateLimited.content['application/json'].schema.$ref, '#/components/schemas/ApiErrorEnvelope');
 
   const requestSchema = resolve(document, '#/components/schemas/M1017AnalyticsTelemetryRequest');
   assert.deepEqual(requestSchema.required, ['clientEventId', 'eventName', 'eventVersion', 'occurredAt', 'payload']);

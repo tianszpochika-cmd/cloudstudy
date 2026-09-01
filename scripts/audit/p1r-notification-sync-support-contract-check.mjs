@@ -714,6 +714,22 @@ const EXACT_B26_SOURCE_REFS = Object.freeze([
   'requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md',
 ]);
 
+// M1-016 remains the historical base contract.  A later task may add a
+// specifically declared successor fragment, but that addition must be an
+// exact, ordered projection rather than a blanket sourceRefs allowlist.
+const EXACT_B26_SUCCESSOR_SOURCE_REF = 'packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json';
+const EXACT_B26_SOURCE_REF_SUCCESSOR_INDEX = EXACT_B26_SOURCE_REFS.indexOf(
+  'packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json',
+) + 1;
+const EXACT_B26_SOURCE_REF_VARIANTS = Object.freeze([
+  Object.freeze([...EXACT_B26_SOURCE_REFS]),
+  Object.freeze([
+    ...EXACT_B26_SOURCE_REFS.slice(0, EXACT_B26_SOURCE_REF_SUCCESSOR_INDEX),
+    EXACT_B26_SUCCESSOR_SOURCE_REF,
+    ...EXACT_B26_SOURCE_REFS.slice(EXACT_B26_SOURCE_REF_SUCCESSOR_INDEX),
+  ]),
+]);
+
 const EXACT_B26_M1016_TOPIC_ACCESS = Object.freeze({
   'platform.learning.v1': Object.freeze({
     ownerService: 'learning-service',
@@ -836,6 +852,14 @@ function list(errors, value, label, { min = 1, exactLength, unique = true } = {}
 
 function exactArray(errors, actual, expected, label) {
   exact(errors, actual, expected, label);
+}
+
+function exactB26SourceRefs(errors, actual) {
+  add(
+    errors,
+    EXACT_B26_SOURCE_REF_VARIANTS.some((expected) => same(actual, expected)),
+    'B26 sourceRefs must equal the frozen M1-016 base or its explicitly approved M1-018 successor projection',
+  );
 }
 
 function exactSet(errors, actual, expected, label) {
@@ -2512,7 +2536,7 @@ function validateB26(policy, b26, errors) {
   exact(errors, b26.consumerReliability?.deduplication?.offsetCommitAfterEffect, true, 'B26 offset-after-effect');
   exact(errors, b26.consumerReliability?.retry?.maxAttempts, 5, 'B26 retry max attempts');
   exact(errors, b26.consumerReliability?.retry?.exhaustedAction, 'route-to-dlq', 'B26 exhausted retry action');
-  exactArray(errors, b26.sourceRefs, EXACT_B26_SOURCE_REFS, 'B26 sourceRefs');
+  exactB26SourceRefs(errors, b26.sourceRefs);
   for (const [topicName, expected] of Object.entries(EXACT_B26_M1016_TOPIC_ACCESS)) {
     const matches = Array.isArray(b26.topics) ? b26.topics.filter((topic) => topic?.name === topicName) : [];
     add(errors, matches.length === 1, `B26 ${topicName} must be declared exactly once`);

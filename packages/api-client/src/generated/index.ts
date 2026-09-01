@@ -430,7 +430,7 @@ export interface GeneratedApiOperationRegistry {
   executeM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/execute"; request: never; requestBodyRequired: false; response: M1017AccountDeletionEnvelope; };
   recordM1017AccountDeletionOwnerReceipt: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts"; request: M1017OwnerReceiptSubmission; requestBodyRequired: true; response: M1017AccountDeletionEnvelope; };
   recoverM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/recovery"; request: M1017DeletionRecoveryCommand; requestBodyRequired: true; response: M1017AccountDeletionEnvelope; };
-  ingestM1017AnalyticsTelemetry: { method: "POST"; path: "/api/v1/analytics/telemetry"; request: M1017AnalyticsTelemetryRequest; requestBodyRequired: true; response: M1017AnalyticsTelemetryReceipt; };
+  ingestM1017AnalyticsTelemetry: { method: "POST"; path: "/api/v1/analytics/telemetry"; request: M1017AnalyticsTelemetryRequest; requestBodyRequired: true; response: ApiSuccessEnvelope & { data: M1017AnalyticsTelemetryReceipt; }; };
 }
 
 export type GeneratedApiOperationId = keyof GeneratedApiOperationRegistry;

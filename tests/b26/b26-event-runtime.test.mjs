@@ -7,14 +7,14 @@ import { projectCanonicalAsyncApi } from '../../scripts/contracts/event-governan
 import { readB26Inputs, validateB26EventRuntime } from '../../scripts/runtime/validate-b26-event-runtime.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
-const { manifest, fragment, m1016Fragment, m1017Fragment, catalog } = readB26Inputs()
+const { manifest, fragment, m1016Fragment, m1017Fragment, m1018Fragment, catalog } = readB26Inputs()
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
 }
 
 test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pending', () => {
-  const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment, m1017Fragment })
+  const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment, m1017Fragment, m1018Fragment })
   assert.equal(result.result, 'PASS', result.errors.join('\n'))
   assert.equal(result.gate, 'B26')
   assert.deepEqual(result.taskIds, ['V2-B26-EVT-001', 'V2-B26-EVT-002'])
@@ -25,16 +25,18 @@ test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pen
   assert.equal(result.fragmentEventCount, 7)
   assert.equal(result.m1016EventCount, 8)
   assert.equal(result.m1017EventCount, 5)
-  assert.equal(result.routedCanonicalEventCount, 47)
+  assert.equal(result.m1018EventCount, 3)
+  assert.equal(result.routedCanonicalEventCount, 50)
   assert.equal(result.fragmentPayloadSchemaCount, 7)
   assert.equal(result.m1016PayloadSchemaCount, 8)
   assert.equal(result.m1017PayloadSchemaCount, 5)
-  assert.equal(result.totalFragmentEventCount, 20)
-  assert.equal(result.totalFragmentPayloadSchemaCount, 20)
+  assert.equal(result.m1018PayloadSchemaCount, 3)
+  assert.equal(result.totalFragmentEventCount, 23)
+  assert.equal(result.totalFragmentPayloadSchemaCount, 23)
   assert.equal(result.eventCount, 7)
-  assert.equal(result.routeCount, 47)
+  assert.equal(result.routeCount, 50)
   assert.equal(result.payloadSchemaCount, 7)
-  assert.equal(result.consumerGroupCount, 42)
+  assert.equal(result.consumerGroupCount, 51)
   assert.equal(result.runtimeEvidencePending, true)
 })
 
@@ -216,7 +218,9 @@ test('B26 freezes the five M1-017 privacy and account-deletion routes without se
   assert.equal(privacyCompleted.consumerGroups.includes('cg.workflow-from-learner.v1'), false)
   const iamTopic = manifest.topics.find((topic) => topic.name === 'platform.iam.v1')
   assert.equal(iamTopic.ownerService, 'iam-service')
-  assert.deepEqual(iamTopic.consumerGroups.map((group) => [group.service, group.name]), [
+  assert.deepEqual(iamTopic.consumerGroups
+    .filter((group) => ['cg.analytics-from-iam.v1', 'cg.audit-from-iam.v1', 'cg.notification-from-iam.v1', 'cg.workflow-from-iam.v1'].includes(group.name))
+    .map((group) => [group.service, group.name]), [
     ['analytics-service', 'cg.analytics-from-iam.v1'],
     ['audit-service', 'cg.audit-from-iam.v1'],
     ['notification-service', 'cg.notification-from-iam.v1'],
@@ -262,6 +266,98 @@ test('B26 M1-017 integration fails closed for privacy shape, consumer widening, 
     const result = validateB26EventRuntime(candidate, fragment, { m1016Fragment, m1017Fragment })
     assert.equal(result.result, 'FAIL')
     assert.ok(result.errors.some((error) => /frozen M1-006|privacy\.export\.completed|account\.deletion\.requested|routing/.test(error)), result.errors.join('\n'))
+  }
+})
+
+test('B26 freezes the three M1-018 IAM facts as server-only, aggregate-partitioned D2 bindings', () => {
+  const securityConsumers = [
+    'cg.admin-ops-from-iam.v1', 'cg.analytics-from-iam.v1', 'cg.assessment-from-iam.v1', 'cg.audit-from-iam.v1',
+    'cg.commerce-from-iam.v1', 'cg.content-from-iam.v1', 'cg.gamification-from-iam.v1', 'cg.learner-from-iam.v1',
+    'cg.learning-from-iam.v1', 'cg.media-from-iam.v1', 'cg.notification-from-iam.v1', 'cg.social-from-iam.v1',
+    'cg.workflow-from-iam.v1',
+  ]
+  const expectedRoutes = {
+    'iam.account.bootstrap.created.v2': ['platform.iam.v1', ['cg.learner-from-iam.v1']],
+    'iam.learning_eligibility.changed.v2': ['platform.iam.v1', ['cg.learner-from-iam.v1', 'cg.learning-from-iam.v1']],
+    'iam.policy.security_state_changed.v2': ['platform.iam.v1', securityConsumers],
+  }
+  assert.deepEqual(m1018Fragment.events.map((event) => event.eventName), Object.keys(expectedRoutes))
+  for (const [eventName, [topic, consumerGroups]] of Object.entries(expectedRoutes)) {
+    assert.deepEqual(manifest.eventRouting.find((route) => route.eventName === eventName), {
+      eventName,
+      topic,
+      partitionKey: 'aggregateId',
+      consumerGroups,
+    })
+    const event = catalog.events.find((candidate) => candidate.eventName === eventName)
+    assert.equal(event.status, 'CANONICAL_D2')
+    assert.equal(event['x-p1r-governance'].runtimeStatus, 'NOT_RUNTIME_VERIFIED')
+    assert.equal(event['x-p1r-governance'].producer.service, 'iam-service')
+    assert.equal(event['x-p1r-governance'].transport.topic, topic)
+    assert.equal(event['x-p1r-governance'].transport.partitionKey, 'aggregateId')
+    assert.deepEqual(event['x-p1r-governance'].consumers.map((consumer) => consumer.consumerGroup), consumerGroups)
+    assert.ok(event['x-p1r-governance'].consumers.every((consumer) => consumer.service.endsWith('-service') && consumer.service !== 'api-gateway'))
+  }
+
+  const bootstrap = m1018Fragment.payloadSchemas.M1018IamAccountBootstrapCreated
+  const eligibility = m1018Fragment.payloadSchemas.M1018IamLearningEligibilityChanged
+  const security = m1018Fragment.payloadSchemas.M1018IamPolicySecurityStateChanged
+  assert.equal(bootstrap.additionalProperties, false)
+  assert.equal(bootstrap.properties.bootstrapState.const, 'PENDING_ELIGIBILITY')
+  assert.equal(bootstrap.properties.bootstrapReason.const, 'SELF_REGISTERED_ADULT_CANDIDATE')
+  assert.equal(eligibility.additionalProperties, false)
+  assert.equal(eligibility.properties.eligibilityScope.const, 'P1_ADULT_LEARNING')
+  assert.deepEqual(eligibility.properties.eligibilityState.enum, ['ELIGIBLE', 'RESTRICTED'])
+  assert.equal(security.additionalProperties, false)
+  assert.equal(security.properties.denyUntilCurrentVersionProven.const, true)
+  assert.deepEqual(security.properties.securityState.enum, ['ACTIVE', 'REVOKED'])
+
+  const iamTopic = manifest.topics.find((topic) => topic.name === 'platform.iam.v1')
+  assert.deepEqual(iamTopic.consumerGroups.map((group) => group.name), securityConsumers)
+  assert.equal(iamTopic.acl.some((entry) => /api-gateway|client|browser|frontend/i.test(entry.principal)), false)
+  for (const eventName of ['auth.account.registered.v1', 'auth.consent.updated.v1', 'auth.session.rotated.v1', 'iam.session.revoked.v1']) {
+    const historical = catalog.events.find((event) => event.eventName === eventName)
+    assert.equal(historical.status, 'HISTORICAL_CANDIDATE')
+    assert.equal(historical['x-p1r-governance'], undefined)
+    assert.equal(historical['x-kafka'], undefined)
+  }
+})
+
+test('B26 M1-018 IAM source fails closed for payload, historical promotion, consumer and routing drift', () => {
+  const fragmentCases = [
+    (candidate) => { candidate.payloadSchemas.M1018IamAccountBootstrapCreated.properties.bootstrapState.const = 'ELIGIBLE' },
+    (candidate) => { candidate.payloadSchemas.M1018IamLearningEligibilityChanged.additionalProperties = true },
+    (candidate) => { candidate.payloadSchemas.M1018IamPolicySecurityStateChanged.properties.denyUntilCurrentVersionProven.const = false },
+    (candidate) => { candidate.events[1].eventName = 'auth.consent.updated.v1' },
+    (candidate) => { candidate.events[2]['x-kafka'] = { topic: 'platform.iam.v1' } },
+  ]
+  for (const mutate of fragmentCases) {
+    const candidate = clone(m1018Fragment)
+    mutate(candidate)
+    const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment, m1017Fragment, m1018Fragment: candidate })
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => /M1-018|bootstrapState|closed object|denyUntilCurrentVersionProven|allowed M1-018|Kafka governance/.test(error)), result.errors.join('\n'))
+  }
+
+  const routeCases = [
+    (candidate) => {
+      candidate.eventRouting.find((route) => route.eventName === 'iam.learning_eligibility.changed.v2').consumerGroups.push('cg.assessment-from-iam.v1')
+    },
+    (candidate) => {
+      candidate.eventRouting.find((route) => route.eventName === 'iam.policy.security_state_changed.v2').topic = 'platform.learner.v1'
+    },
+    (candidate) => {
+      candidate.topics.find((topic) => topic.name === 'platform.iam.v1').consumerGroups.push({
+        name: 'cg.api-gateway-from-iam.v1', service: 'api-gateway', principal: 'cg.api-gateway-from-iam.v1', replayEnabled: true,
+      })
+    },
+  ]
+  for (const mutate of routeCases) {
+    const candidate = clone(manifest)
+    mutate(candidate)
+    const result = validateB26EventRuntime(candidate, fragment, { m1016Fragment, m1017Fragment, m1018Fragment })
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => /frozen M1-006|M1-018|iam\.(?:learning_eligibility|policy)|routing|consumer/.test(error)), result.errors.join('\n'))
   }
 })
 

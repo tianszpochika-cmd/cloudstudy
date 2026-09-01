@@ -33,7 +33,7 @@ function dereference(document, schema) {
 function parseGeneratedOperationMap(source, includeIdempotency) {
   const pattern = includeIdempotency
     ? /^\s{2}([A-Za-z_$][\w$]*): \{ method: "([A-Z]+)"; path: "([^"]+)"; request: .*?; response: .*?; idempotent: (true|false) \};$/gm
-    : /^\s{2}([A-Za-z_$][\w$]*): \{ method: "([A-Z]+)"; path: "([^"]+)"; response: .*?; \};$/gm;
+    : /^\s{2}([A-Za-z_$][\w$]*): \{ method: "([A-Z]+)"; path: "([^"]+)"; request: .*?; requestBodyRequired: (true|false); response: .*?; \};$/gm;
   return [...source.matchAll(pattern)].map((match) => ({ id: match[1], method: match[2], route: match[3], idempotent: includeIdempotency ? match[4] === 'true' : undefined }));
 }
 

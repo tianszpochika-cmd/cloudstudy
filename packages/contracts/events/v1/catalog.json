@@ -309,32 +309,43 @@
           "account.deletion.cancelled.v2",
           "account.deletion.completed.v2"
         ]
+      },
+      {
+        "path": "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
+        "eventNames": [
+          "iam.account.bootstrap.created.v2",
+          "iam.learning_eligibility.changed.v2",
+          "iam.policy.security_state_changed.v2"
+        ]
       }
     ],
     "plannedClosures": [
       {
         "gapId": "EVENT-GAP-IAM-001",
         "family": "EVENT-GAP-IAM",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-003",
-          "P1R-M1-006"
+          "P1R-M1-006",
+          "P1R-M1-018"
         ]
       },
       {
         "gapId": "EVENT-GAP-BIND-IAM-001",
         "family": "EVENT-GAP-BIND",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
-          "P1R-M1-006"
+          "P1R-M1-006",
+          "P1R-M1-018"
         ]
       },
       {
         "gapId": "EVENT-GAP-BIND-IAM-002",
         "family": "EVENT-GAP-BIND",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
-          "P1R-M1-006"
+          "P1R-M1-006",
+          "P1R-M1-018"
         ]
       },
       {
@@ -449,7 +460,7 @@
       {
         "gapId": "EVENT-GAP-BIND",
         "family": "EVENT-GAP-BIND",
-        "status": "PLANNED",
+        "status": "D2_CONTRACT_CLOSED",
         "d2ClosureTasks": [
           "P1R-M1-006",
           "P1R-M1-018"
@@ -10066,6 +10077,193 @@
         "COMPLETED requires every planned owner receipt to be terminal and reconciled",
         "retained owners require a non-UNKNOWN legal-hold or approved retention basis in the owner receipt"
       ]
+    },
+    "M1018IamAccountBootstrapCreated": {
+      "$id": "platform.events.iam.account.bootstrap.created.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId",
+        "aggregateVersion",
+        "bootstrapState",
+        "bootstrapReason",
+        "createdAt",
+        "auditId"
+      ],
+      "properties": {
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bootstrapState": {
+          "type": "string",
+          "const": "PENDING_ELIGIBILITY"
+        },
+        "bootstrapReason": {
+          "type": "string",
+          "const": "SELF_REGISTERED_ADULT_CANDIDATE"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auditId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        }
+      }
+    },
+    "M1018IamLearningEligibilityChanged": {
+      "$id": "platform.events.iam.learning_eligibility.changed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId",
+        "aggregateVersion",
+        "eligibilityScope",
+        "eligibilitySnapshotVersion",
+        "eligibilitySnapshotDigest",
+        "eligibilityState",
+        "reasonCode",
+        "policyVersion",
+        "revalidationRequired",
+        "effectiveAt",
+        "auditId"
+      ],
+      "properties": {
+        "principalId": {
+          "type": "string",
+          "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$"
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "eligibilityScope": {
+          "type": "string",
+          "const": "P1_ADULT_LEARNING"
+        },
+        "eligibilitySnapshotVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "eligibilitySnapshotDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "eligibilityState": {
+          "type": "string",
+          "enum": [
+            "ELIGIBLE",
+            "RESTRICTED"
+          ]
+        },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "ELIGIBILITY_CONFIRMED",
+            "ADULT_GATE_RESTRICTED",
+            "REQUIRED_CONSENT_MISSING",
+            "REQUIRED_CONSENT_WITHDRAWN",
+            "REVALIDATION_REQUIRED",
+            "POLICY_REVOKED"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "revalidationRequired": {
+          "type": "boolean"
+        },
+        "effectiveAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auditId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        }
+      },
+      "x-p1r-cross-field-invariants": [
+        "ELIGIBLE requires reasonCode ELIGIBILITY_CONFIRMED and revalidationRequired false",
+        "RESTRICTED requires a non-ELIGIBILITY_CONFIRMED reasonCode and revalidationRequired true"
+      ]
+    },
+    "M1018IamPolicySecurityStateChanged": {
+      "$id": "platform.events.iam.policy.security_state_changed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyVersionId",
+        "aggregateVersion",
+        "policyVersion",
+        "policyArtifactDigest",
+        "securityState",
+        "invalidationId",
+        "invalidationScope",
+        "denyUntilCurrentVersionProven",
+        "issuedAt",
+        "auditId"
+      ],
+      "properties": {
+        "policyVersionId": {
+          "type": "string",
+          "pattern": "^pol_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "aggregateVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "policyArtifactDigest": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "securityState": {
+          "type": "string",
+          "enum": [
+            "ACTIVE",
+            "REVOKED"
+          ]
+        },
+        "invalidationId": {
+          "type": "string",
+          "pattern": "^inv_[A-Za-z0-9._:-]{8,127}$"
+        },
+        "invalidationScope": {
+          "type": "string",
+          "enum": [
+            "AFFECTED_PEP_SECURITY_CACHES",
+            "REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"
+          ]
+        },
+        "denyUntilCurrentVersionProven": {
+          "type": "boolean",
+          "const": true
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "auditId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        }
+      },
+      "x-p1r-cross-field-invariants": [
+        "ACTIVE requires invalidationScope AFFECTED_PEP_SECURITY_CACHES",
+        "REVOKED requires invalidationScope REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"
+      ]
     }
   },
   "events": [
@@ -16840,6 +17038,297 @@
           "INT-P1-016"
         ]
       }
+    },
+    {
+      "eventName": "iam.account.bootstrap.created.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "iam_principal",
+      "aggregateIdField": "principalId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1018IamAccountBootstrapCreated"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish iam.account.bootstrap.created.v3",
+        "consumerRule": "按 principalId、aggregateVersion 与 dedupeKey 幂等；learner 只建立 owner-bound bootstrap 投影，不能据此开放学习能力，仍须重验当前资格快照与服务侧 PEP。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "iam-service",
+          "dataOwner": "iam-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_iam_account_bootstrap_created_v2"
+        },
+        "consumers": [
+          {
+            "service": "learner-service",
+            "consumerGroup": "cg.learner-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_account_bootstrap_created_v2_cg_learner_from_iam_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.iam.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.principalId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "iam_account_bootstrap_created_v2"
+        },
+        "schema": {
+          "schemaVersion": "iam.event.v2",
+          "payloadRef": "#/payloadSchemas/M1018IamAccountBootstrapCreated",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-001"
+        ]
+      }
+    },
+    {
+      "eventName": "iam.learning_eligibility.changed.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "iam_principal",
+      "aggregateIdField": "principalId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1018IamLearningEligibilityChanged"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish iam.learning_eligibility.changed.v3",
+        "consumerRule": "按 principalId、aggregateVersion、eligibilitySnapshotVersion 与 dedupeKey 幂等；只消费服务端组合出的成人/必要同意资格快照，RESTRICTED 立即收紧本地投影，ELIGIBLE 也不能替代当前 PEP 或 PDP 重验。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "iam-service",
+          "dataOwner": "iam-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_iam_learning_eligibility_changed_v2"
+        },
+        "consumers": [
+          {
+            "service": "learner-service",
+            "consumerGroup": "cg.learner-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_learning_eligibility_changed_v2_cg_learner_from_iam_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_learning_eligibility_changed_v2_cg_learning_from_iam_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.iam.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.principalId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "iam_learning_eligibility_changed_v2"
+        },
+        "schema": {
+          "schemaVersion": "iam.event.v2",
+          "payloadRef": "#/payloadSchemas/M1018IamLearningEligibilityChanged",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-002"
+        ]
+      }
+    },
+    {
+      "eventName": "iam.policy.security_state_changed.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "iam_policy",
+      "aggregateIdField": "policyVersionId",
+      "x-envelope-required": [
+        "eventId",
+        "eventName",
+        "schema",
+        "version",
+        "occurredAt",
+        "aggregateType",
+        "aggregateId",
+        "actorId",
+        "traceId",
+        "requestId",
+        "schemaVersion",
+        "dedupeKey",
+        "payload"
+      ],
+      "payloadSchema": {
+        "$ref": "#/payloadSchemas/M1018IamPolicySecurityStateChanged"
+      },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish iam.policy.security_state_changed.v3",
+        "consumerRule": "按 policyVersionId、aggregateVersion、invalidationId 与 dedupeKey 幂等；各服务侧 PEP 清除受影响的安全缓存并在证明当前 policy 未撤销前拒绝，不携带或推导 Token、会话、设备或授权结论。"
+      },
+      "status": "CANONICAL_D2",
+      "x-p1r-governance": {
+        "status": "CANONICAL_D2",
+        "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+        "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+        "producer": {
+          "service": "iam-service",
+          "dataOwner": "iam-service",
+          "outboxRequired": true,
+          "publishOperationId": "publish_iam_policy_security_state_changed_v2"
+        },
+        "consumers": [
+          {
+            "service": "admin-ops-service",
+            "consumerGroup": "cg.admin-ops-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_admin_ops_from_iam_v1"
+          },
+          {
+            "service": "analytics-service",
+            "consumerGroup": "cg.analytics-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_analytics_from_iam_v1"
+          },
+          {
+            "service": "assessment-service",
+            "consumerGroup": "cg.assessment-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_assessment_from_iam_v1"
+          },
+          {
+            "service": "audit-service",
+            "consumerGroup": "cg.audit-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_audit_from_iam_v1"
+          },
+          {
+            "service": "commerce-service",
+            "consumerGroup": "cg.commerce-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_commerce_from_iam_v1"
+          },
+          {
+            "service": "content-service",
+            "consumerGroup": "cg.content-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_content_from_iam_v1"
+          },
+          {
+            "service": "gamification-service",
+            "consumerGroup": "cg.gamification-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_gamification_from_iam_v1"
+          },
+          {
+            "service": "learner-service",
+            "consumerGroup": "cg.learner-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_learner_from_iam_v1"
+          },
+          {
+            "service": "learning-service",
+            "consumerGroup": "cg.learning-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_learning_from_iam_v1"
+          },
+          {
+            "service": "media-service",
+            "consumerGroup": "cg.media-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_media_from_iam_v1"
+          },
+          {
+            "service": "notification-service",
+            "consumerGroup": "cg.notification-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_notification_from_iam_v1"
+          },
+          {
+            "service": "social-service",
+            "consumerGroup": "cg.social-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_social_from_iam_v1"
+          },
+          {
+            "service": "workflow-service",
+            "consumerGroup": "cg.workflow-from-iam.v1",
+            "subscriptionOperationId": "subscribe_iam_policy_security_state_changed_v2_cg_workflow_from_iam_v1"
+          }
+        ],
+        "transport": {
+          "protocol": "kafka",
+          "topic": "platform.iam.v1",
+          "partitionKey": "aggregateId",
+          "aggregateIdSource": "payload.policyVersionId",
+          "delivery": "at-least-once",
+          "bindingVersion": "0.5.0",
+          "channelId": "iam_policy_security_state_changed_v2"
+        },
+        "schema": {
+          "schemaVersion": "iam.event.v2",
+          "payloadRef": "#/payloadSchemas/M1018IamPolicySecurityStateChanged",
+          "compatibility": "additive"
+        },
+        "correlation": [
+          "eventId",
+          "aggregateId",
+          "requestId",
+          "traceId",
+          "dedupeKey"
+        ],
+        "traceability": [
+          "ARCH-EVT-001",
+          "INT-P1-001",
+          "INT-P1-002"
+        ]
+      }
     }
   ],
   "asyncapi": {
@@ -18107,6 +18596,87 @@
             "x-event-name": "account.deletion.completed.v2",
             "payload": {
               "$ref": "#/payloadSchemas/M1017AccountDeletionCompleted"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "iam_account_bootstrap_created_v2": {
+        "address": "platform.iam.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.iam.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "iam.account.bootstrap.created.v2",
+            "x-event-name": "iam.account.bootstrap.created.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1018IamAccountBootstrapCreated"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "iam_learning_eligibility_changed_v2": {
+        "address": "platform.iam.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.iam.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "iam.learning_eligibility.changed.v2",
+            "x-event-name": "iam.learning_eligibility.changed.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1018IamLearningEligibilityChanged"
+            },
+            "bindings": {
+              "kafka": {
+                "key": {
+                  "type": "string",
+                  "description": "Canonical partition key from envelope.aggregateId."
+                },
+                "bindingVersion": "0.5.0"
+              }
+            }
+          }
+        }
+      },
+      "iam_policy_security_state_changed_v2": {
+        "address": "platform.iam.v1",
+        "bindings": {
+          "kafka": {
+            "topic": "platform.iam.v1",
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "messages": {
+          "event": {
+            "name": "iam.policy.security_state_changed.v2",
+            "x-event-name": "iam.policy.security_state_changed.v2",
+            "payload": {
+              "$ref": "#/payloadSchemas/M1018IamPolicySecurityStateChanged"
             },
             "bindings": {
               "kafka": {
@@ -21681,6 +22251,428 @@
           }
         },
         "x-consumer-service": "notification-service"
+      },
+      "publish_iam_account_bootstrap_created_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_account_bootstrap_created_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_account_bootstrap_created_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "iam-service",
+        "x-data-owner": "iam-service"
+      },
+      "subscribe_iam_account_bootstrap_created_v2_cg_learner_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_account_bootstrap_created_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_account_bootstrap_created_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learner-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learner-service"
+      },
+      "publish_iam_learning_eligibility_changed_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_learning_eligibility_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_learning_eligibility_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "iam-service",
+        "x-data-owner": "iam-service"
+      },
+      "subscribe_iam_learning_eligibility_changed_v2_cg_learner_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_learning_eligibility_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_learning_eligibility_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learner-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learner-service"
+      },
+      "subscribe_iam_learning_eligibility_changed_v2_cg_learning_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_learning_eligibility_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_learning_eligibility_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "publish_iam_policy_security_state_changed_v2": {
+        "action": "send",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-producer-service": "iam-service",
+        "x-data-owner": "iam-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_admin_ops_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.admin-ops-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "admin-ops-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_analytics_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.analytics-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "analytics-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_assessment_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.assessment-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "assessment-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_audit_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.audit-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "audit-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_commerce_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.commerce-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "commerce-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_content_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.content-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "content-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_gamification_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.gamification-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "gamification-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_learner_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learner-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learner-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_learning_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.learning-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "learning-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_media_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.media-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "media-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_notification_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.notification-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "notification-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_social_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.social-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "social-service"
+      },
+      "subscribe_iam_policy_security_state_changed_v2_cg_workflow_from_iam_v1": {
+        "action": "receive",
+        "channel": {
+          "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2"
+        },
+        "messages": [
+          {
+            "$ref": "#/asyncapi/channels/iam_policy_security_state_changed_v2/messages/event"
+          }
+        ],
+        "bindings": {
+          "kafka": {
+            "groupId": {
+              "type": "string",
+              "enum": [
+                "cg.workflow-from-iam.v1"
+              ]
+            },
+            "bindingVersion": "0.5.0"
+          }
+        },
+        "x-consumer-service": "workflow-service"
       }
     }
   }

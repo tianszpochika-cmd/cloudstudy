@@ -97,6 +97,122 @@ export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json', 'commerce.order.created.v2 commerce.payment.requested.v2 commerce.payment.callback_received.v2 commerce.payment.verified.v2 commerce.entitlement.activated.v2 commerce.entitlement.revoked.v2 commerce.refund.settled.v2 commerce.reconciliation.discrepancy_recorded.v2 commerce.reconciliation.recovery_receipted.v2'),
   fragmentInventory('packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json', 'notification.requested.v2 notification.retry_scheduled.v2 notification.recovery.completed.v2 sync.command_receipted.v2 sync.conflict_detected.v2 sync.recovered.v2 support.ticket.created.v2 support.ticket.resolved.v2'),
   fragmentInventory('packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json', 'privacy.export.requested.v2 privacy.export.completed.v2 account.deletion.requested.v2 account.deletion.cancelled.v2 account.deletion.completed.v2'),
+  fragmentInventory('packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json', 'iam.account.bootstrap.created.v2 iam.learning_eligibility.changed.v2 iam.policy.security_state_changed.v2'),
+]);
+
+// M1-018 adds the smallest set of IAM-owned, cross-service facts needed for
+// the adult onboarding boundary.  The B8 auth.*.v1 / iam.*.v1 entries remain
+// historical compatibility candidates and are deliberately not dual-published
+// or used as this source's canonical inputs.
+export const M1018_IAM_EVENT_FRAGMENT_PATH = 'packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json';
+
+const m1018Consumer = (service, consumerGroup) => Object.freeze({
+  service,
+  consumerGroup,
+  subscriptionOperationId: `subscribe_${consumerGroup}`,
+});
+
+const m1018Governance = ({ eventName, aggregateIdField, payloadRef, consumers, traceability }) => {
+  const normalizedEventName = eventName.replaceAll('.', '_');
+  return Object.freeze({
+    status: 'CANONICAL_D2',
+    runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+    scope: 'CROSS_SERVICE_INTEGRATION_FACT',
+    producer: Object.freeze({
+      service: 'iam-service',
+      dataOwner: 'iam-service',
+      outboxRequired: true,
+      publishOperationId: `publish_${normalizedEventName}`,
+    }),
+    consumers: Object.freeze(consumers.map((consumer) => Object.freeze({
+      ...consumer,
+      subscriptionOperationId: `subscribe_${normalizedEventName}_${consumer.consumerGroup.replaceAll('.', '_').replaceAll('-', '_')}`,
+    }))),
+    transport: Object.freeze({
+      protocol: 'kafka',
+      topic: 'platform.iam.v1',
+      partitionKey: 'aggregateId',
+      aggregateIdSource: `payload.${aggregateIdField}`,
+      delivery: 'at-least-once',
+      bindingVersion: '0.5.0',
+      channelId: normalizedEventName,
+    }),
+    schema: Object.freeze({
+      schemaVersion: 'iam.event.v2',
+      payloadRef,
+      compatibility: 'additive',
+    }),
+    correlation: Object.freeze(['eventId', 'aggregateId', 'requestId', 'traceId', 'dedupeKey']),
+    traceability: Object.freeze(traceability),
+  });
+};
+
+const M1018_IAM_PEP_CONSUMERS = Object.freeze([
+  m1018Consumer('admin-ops-service', 'cg.admin-ops-from-iam.v1'),
+  m1018Consumer('analytics-service', 'cg.analytics-from-iam.v1'),
+  m1018Consumer('assessment-service', 'cg.assessment-from-iam.v1'),
+  m1018Consumer('audit-service', 'cg.audit-from-iam.v1'),
+  m1018Consumer('commerce-service', 'cg.commerce-from-iam.v1'),
+  m1018Consumer('content-service', 'cg.content-from-iam.v1'),
+  m1018Consumer('gamification-service', 'cg.gamification-from-iam.v1'),
+  m1018Consumer('learner-service', 'cg.learner-from-iam.v1'),
+  m1018Consumer('learning-service', 'cg.learning-from-iam.v1'),
+  m1018Consumer('media-service', 'cg.media-from-iam.v1'),
+  m1018Consumer('notification-service', 'cg.notification-from-iam.v1'),
+  m1018Consumer('social-service', 'cg.social-from-iam.v1'),
+  m1018Consumer('workflow-service', 'cg.workflow-from-iam.v1'),
+]);
+
+export const M1018_IAM_CANONICAL_EVENT_GOVERNANCE = Object.freeze({
+  'iam.account.bootstrap.created.v2': Object.freeze({
+    status: 'CANONICAL_D2',
+    governance: m1018Governance({
+      eventName: 'iam.account.bootstrap.created.v2',
+      aggregateIdField: 'principalId',
+      payloadRef: '#/payloadSchemas/M1018IamAccountBootstrapCreated',
+      consumers: [m1018Consumer('learner-service', 'cg.learner-from-iam.v1')],
+      traceability: ['ARCH-EVT-001', 'INT-P1-001'],
+    }),
+  }),
+  'iam.learning_eligibility.changed.v2': Object.freeze({
+    status: 'CANONICAL_D2',
+    governance: m1018Governance({
+      eventName: 'iam.learning_eligibility.changed.v2',
+      aggregateIdField: 'principalId',
+      payloadRef: '#/payloadSchemas/M1018IamLearningEligibilityChanged',
+      consumers: [
+        m1018Consumer('learner-service', 'cg.learner-from-iam.v1'),
+        m1018Consumer('learning-service', 'cg.learning-from-iam.v1'),
+      ],
+      traceability: ['ARCH-EVT-001', 'INT-P1-002'],
+    }),
+  }),
+  'iam.policy.security_state_changed.v2': Object.freeze({
+    status: 'CANONICAL_D2',
+    governance: m1018Governance({
+      eventName: 'iam.policy.security_state_changed.v2',
+      aggregateIdField: 'policyVersionId',
+      payloadRef: '#/payloadSchemas/M1018IamPolicySecurityStateChanged',
+      consumers: M1018_IAM_PEP_CONSUMERS,
+      traceability: ['ARCH-EVT-001', 'INT-P1-001', 'INT-P1-002'],
+    }),
+  }),
+});
+
+// Registry/Evidence closeout remains the coordinator's final-integration work.
+// The source catalog can nevertheless freeze the completed D2 contract
+// projection before review; registry closure still waits for accepted Evidence.
+export const M1018_IAM_GAP_D2_CLOSURE_TASKS = Object.freeze({
+  'EVENT-GAP-IAM-001': Object.freeze(['P1R-M1-003', 'P1R-M1-006', 'P1R-M1-018']),
+  'EVENT-GAP-BIND-IAM-001': Object.freeze(['P1R-M1-006', 'P1R-M1-018']),
+  'EVENT-GAP-BIND-IAM-002': Object.freeze(['P1R-M1-006', 'P1R-M1-018']),
+});
+
+export const M1018_SOURCE_D2_CLOSED_EVENT_GAPS = Object.freeze([
+  'EVENT-GAP-IAM-001',
+  'EVENT-GAP-BIND-IAM-001',
+  'EVENT-GAP-BIND-IAM-002',
+  'EVENT-GAP-BIND',
 ]);
 
 export const EXPECTED_FORBIDDEN_PAYLOAD_FIELD_PATTERNS = [

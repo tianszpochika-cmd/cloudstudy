@@ -86,7 +86,13 @@ nodeScript('b20-privacy-content-gates', 'scripts/runtime/validate-b20-privacy-co
 nodeScript('b20-commerce-dr-evidence', 'scripts/runtime/validate-b20-commerce-dr-evidence.mjs')
 nodeScript('contracts', 'scripts/contracts/validate-contracts.mjs')
 nodeScript('contract-generation', 'scripts/contracts/generate-contracts.mjs')
-nodeScript('contract-compatibility', 'scripts/contracts/compatibility-diff.mjs')
+nodeScript(
+  'contract-compatibility',
+  'scripts/contracts/compatibility-git-baseline.mjs',
+  '--ref', '463c4b238caceb1592bff6c61327c00ab9bac922',
+  '--governance-ref', '868c2177f62b6d2cf613bed702686dddcfe6943f',
+  '--kind', 'all',
+)
 nodeScript('fixed-port-registry', 'scripts/check-fixed-ports.mjs', '--registry-only')
 nodeScript('runtime-config', 'scripts/check-runtime-config.mjs')
 nodeScript('task-baseline', 'scripts/audit/verify-v2-b7plus-task-baseline.mjs')

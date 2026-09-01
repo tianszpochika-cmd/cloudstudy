@@ -112,6 +112,9 @@ const M1017_ACCOUNT_DELETION_CLOSURE = {
   d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-017'],
 };
 const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
+  'EVENT-GAP-IAM-001',
+  'EVENT-GAP-BIND-IAM-001',
+  'EVENT-GAP-BIND-IAM-002',
   'EVENT-GAP-ONB-001',
   'EVENT-GAP-ONB-002',
   'EVENT-GAP-PLACEMENT-PLAN',
@@ -124,13 +127,9 @@ const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   M1016_NOTIFICATION_BINDING_CLOSURE.gapId,
   M1017_PRIVACY_BINDING_CLOSURE.gapId,
   M1017_ACCOUNT_DELETION_CLOSURE.gapId,
-];
-const EXPECTED_GLOBAL_PLANNED_EVENT_GAPS = [
-  'EVENT-GAP-IAM-001',
-  'EVENT-GAP-BIND-IAM-001',
-  'EVENT-GAP-BIND-IAM-002',
   'EVENT-GAP-BIND',
 ];
+const EXPECTED_GLOBAL_PLANNED_EVENT_GAPS = [];
 const HISTORICAL_CONTENT_EVENTS = [
   'content.public_projection.invalidated.v1',
   'cms.content.submitted.v1',
@@ -1055,6 +1054,9 @@ function checkLinkedAudits(input, errors) {
     policy: input.reliabilityPolicy, catalog: input.catalog, b26Runtime: input.b26Runtime,
     b26Fragment: input.b26Fragment, registry: input.registry, sagaPolicy: input.sagaPolicy,
     ownerPolicy: input.ownerPolicy, eventFragments: input.eventFragments,
+    m1018Fragment: (input.eventFragments || []).find(function (fragment) {
+      return fragment.path === 'packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json';
+    })?.data,
   });
   for (const error of reliability.errors || []) errors.push('event reliability: ' + error);
 }

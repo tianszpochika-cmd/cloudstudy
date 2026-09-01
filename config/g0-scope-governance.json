@@ -292,7 +292,7 @@
         {"contains": "冲突"},
         {"contains": "services/core-api"},
         {"contains": "不能继续被描述为 v2 的最终后端架构"},
-        {"contains": "Phase 2/3 已移出当前批次"}
+        {"contains": "Phase 2/3 的 `G-P2`、`G-P3` 不属于 Phase 1 上线 Gate"}
       ]
     }
   ],

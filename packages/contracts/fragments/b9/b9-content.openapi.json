@@ -2893,16 +2893,22 @@
         }
       },
       "B9ScheduledPublishTaskResponse": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/B9ScheduledPublishTask"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/B9ScheduledPublishTask"
+              }
+            }
           }
-        }
+        ]
       },
       "B9AdminContentStateResponse": {
         "type": "object",

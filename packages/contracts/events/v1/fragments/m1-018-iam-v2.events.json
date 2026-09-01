@@ -1,0 +1,137 @@
+{
+  "version": "1.0.0",
+  "events": [
+    {
+      "eventName": "iam.account.bootstrap.created.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "iam_principal",
+      "aggregateIdField": "principalId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1018IamAccountBootstrapCreated" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish iam.account.bootstrap.created.v3",
+        "consumerRule": "按 principalId、aggregateVersion 与 dedupeKey 幂等；learner 只建立 owner-bound bootstrap 投影，不能据此开放学习能力，仍须重验当前资格快照与服务侧 PEP。"
+      }
+    },
+    {
+      "eventName": "iam.learning_eligibility.changed.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "iam_principal",
+      "aggregateIdField": "principalId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1018IamLearningEligibilityChanged" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish iam.learning_eligibility.changed.v3",
+        "consumerRule": "按 principalId、aggregateVersion、eligibilitySnapshotVersion 与 dedupeKey 幂等；只消费服务端组合出的成人/必要同意资格快照，RESTRICTED 立即收紧本地投影，ELIGIBLE 也不能替代当前 PEP 或 PDP 重验。"
+      }
+    },
+    {
+      "eventName": "iam.policy.security_state_changed.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "iam_policy",
+      "aggregateIdField": "policyVersionId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1018IamPolicySecurityStateChanged" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish iam.policy.security_state_changed.v3",
+        "consumerRule": "按 policyVersionId、aggregateVersion、invalidationId 与 dedupeKey 幂等；各服务侧 PEP 清除受影响的安全缓存并在证明当前 policy 未撤销前拒绝，不携带或推导 Token、会话、设备或授权结论。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "M1018IamAccountBootstrapCreated": {
+      "$id": "platform.events.iam.account.bootstrap.created.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId", "aggregateVersion", "bootstrapState", "bootstrapReason", "createdAt", "auditId"
+      ],
+      "properties": {
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "aggregateVersion": { "type": "integer", "minimum": 1 },
+        "bootstrapState": { "type": "string", "const": "PENDING_ELIGIBILITY" },
+        "bootstrapReason": { "type": "string", "const": "SELF_REGISTERED_ADULT_CANDIDATE" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      }
+    },
+    "M1018IamLearningEligibilityChanged": {
+      "$id": "platform.events.iam.learning_eligibility.changed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principalId", "aggregateVersion", "eligibilityScope", "eligibilitySnapshotVersion", "eligibilitySnapshotDigest",
+        "eligibilityState", "reasonCode", "policyVersion", "revalidationRequired", "effectiveAt", "auditId"
+      ],
+      "properties": {
+        "principalId": { "type": "string", "pattern": "^prn_[A-Za-z0-9._:-]{15,127}$" },
+        "aggregateVersion": { "type": "integer", "minimum": 1 },
+        "eligibilityScope": { "type": "string", "const": "P1_ADULT_LEARNING" },
+        "eligibilitySnapshotVersion": { "type": "integer", "minimum": 1 },
+        "eligibilitySnapshotDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "eligibilityState": { "type": "string", "enum": ["ELIGIBLE", "RESTRICTED"] },
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "ELIGIBILITY_CONFIRMED", "ADULT_GATE_RESTRICTED", "REQUIRED_CONSENT_MISSING",
+            "REQUIRED_CONSENT_WITHDRAWN", "REVALIDATION_REQUIRED", "POLICY_REVOKED"
+          ]
+        },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "revalidationRequired": { "type": "boolean" },
+        "effectiveAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      },
+      "x-p1r-cross-field-invariants": [
+        "ELIGIBLE requires reasonCode ELIGIBILITY_CONFIRMED and revalidationRequired false",
+        "RESTRICTED requires a non-ELIGIBILITY_CONFIRMED reasonCode and revalidationRequired true"
+      ]
+    },
+    "M1018IamPolicySecurityStateChanged": {
+      "$id": "platform.events.iam.policy.security_state_changed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyVersionId", "aggregateVersion", "policyVersion", "policyArtifactDigest", "securityState",
+        "invalidationId", "invalidationScope", "denyUntilCurrentVersionProven", "issuedAt", "auditId"
+      ],
+      "properties": {
+        "policyVersionId": { "type": "string", "pattern": "^pol_[A-Za-z0-9._:-]{8,127}$" },
+        "aggregateVersion": { "type": "integer", "minimum": 1 },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "policyArtifactDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "securityState": { "type": "string", "enum": ["ACTIVE", "REVOKED"] },
+        "invalidationId": { "type": "string", "pattern": "^inv_[A-Za-z0-9._:-]{8,127}$" },
+        "invalidationScope": {
+          "type": "string",
+          "enum": ["AFFECTED_PEP_SECURITY_CACHES", "REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"]
+        },
+        "denyUntilCurrentVersionProven": { "type": "boolean", "const": true },
+        "issuedAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      },
+      "x-p1r-cross-field-invariants": [
+        "ACTIVE requires invalidationScope AFFECTED_PEP_SECURITY_CACHES",
+        "REVOKED requires invalidationScope REVOCATION_AND_AFFECTED_PEP_SECURITY_CACHES"
+      ]
+    }
+  }
+}

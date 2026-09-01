@@ -13,6 +13,7 @@ import {
   M1017_OPENAPI_DESCRIPTOR_SET_SHA256,
   M1017_OPENAPI_EXPECTED_SEMANTIC_SHA256,
   M1017_SOURCE_CONTRACT_BASELINE_REF,
+  M1018_SOURCE_CONTRACT_BASELINE_REF,
   compareB26WorkflowGovernance,
   compareContracts,
   isValidM1017PromotionAllowance,
@@ -31,9 +32,13 @@ function readJson(relativePath) {
 }
 
 function readBaselineJson(relativePath) {
+  return readCommitJson(M1017_SOURCE_CONTRACT_BASELINE_REF, relativePath);
+}
+
+function readCommitJson(ref, relativePath) {
   const output = execFileSync(
     'git',
-    ['show', `${M1017_SOURCE_CONTRACT_BASELINE_REF}:${relativePath}`],
+    ['show', `${ref}:${relativePath}`],
     { cwd: repoRoot, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, windowsHide: true },
   );
   return JSON.parse(output);
@@ -49,9 +54,12 @@ const baseline = Object.freeze({
   b26: readBaselineJson(currentArtifactPaths.b26),
 });
 const current = Object.freeze({
-  openapi: readJson(currentArtifactPaths.openapi),
-  events: readJson(currentArtifactPaths.events),
-  b26: readJson(currentArtifactPaths.b26),
+  // 97497af is the immutable M1-017 accepted projection and the source
+  // checkpoint for M1-018.  Never feed the mutable M1-018 worktree into an
+  // M1-017 acceptance test.
+  openapi: readCommitJson(M1018_SOURCE_CONTRACT_BASELINE_REF, currentArtifactPaths.openapi),
+  events: readCommitJson(M1018_SOURCE_CONTRACT_BASELINE_REF, currentArtifactPaths.events),
+  b26: readCommitJson(M1018_SOURCE_CONTRACT_BASELINE_REF, currentArtifactPaths.b26),
 });
 const policy = readJson(policyPath);
 const allowance = policy.compatibilityPromotion;

@@ -1829,6 +1829,17 @@
                   ]
                 }
               }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
             }
           },
           "401": {
@@ -1931,6 +1942,17 @@
                     }
                   ]
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
@@ -2053,6 +2075,17 @@
                     }
                   ]
                 }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
               }
             }
           },
@@ -2490,7 +2523,22 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/M1017AnalyticsTelemetryReceipt"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1017AnalyticsTelemetryReceipt"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             },
@@ -2507,19 +2555,19 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/B13Invalid"
+            "$ref": "#/components/responses/ApiBadRequest"
           },
           "401": {
-            "$ref": "#/components/responses/B13Unauthorized"
+            "$ref": "#/components/responses/ApiUnauthorized"
           },
           "403": {
-            "$ref": "#/components/responses/B13Forbidden"
+            "$ref": "#/components/responses/ApiForbidden"
           },
           "409": {
-            "$ref": "#/components/responses/B13Conflict"
+            "$ref": "#/components/responses/ApiConflict"
           },
           "429": {
-            "$ref": "#/components/responses/B13RateLimited"
+            "$ref": "#/components/responses/ApiRateLimited"
           }
         }
       }

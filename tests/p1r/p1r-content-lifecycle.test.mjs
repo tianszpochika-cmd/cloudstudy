@@ -369,9 +369,9 @@ test('content lifecycle rejects canonical owner, topic, group, binding, fragment
       const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-CONTENT-DUPLICATE');
       closure.status = 'PASS';
     }, /must be D2_CONTRACT_CLOSED|D2 closed gap set|planned closure/],
-    ['unrelated event gap is falsely marked D2 closed', (input) => {
+    ['M1-018 IAM event closure is falsely reopened', (input) => {
       const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-IAM-001');
-      closure.status = 'D2_CONTRACT_CLOSED';
+      closure.status = 'PLANNED';
     }, /catalog D2 closed gap set|catalog planned gap set/],
     ['assessment binding D2 closure is falsely reopened', (input) => {
       const closure = input.catalog['x-p1r-event-governance'].plannedClosures.find((item) => item.gapId === 'EVENT-GAP-BIND-ASM-001');

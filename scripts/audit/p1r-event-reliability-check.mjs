@@ -39,6 +39,9 @@ const CANONICAL_EVENTS = [
   "content.version.unpublished.v1",
   "gamification.reward.granted.v2",
   "gamification.xp.ledger_posted.v2",
+  "iam.account.bootstrap.created.v2",
+  "iam.learning_eligibility.changed.v2",
+  "iam.policy.security_state_changed.v2",
   "leaderboard.snapshot_published.v2",
   "learner.target.updated.v1",
   "learning.mastery.projected.v2",
@@ -1206,9 +1209,10 @@ function checkCatalog(policy, catalog, errors) {
   }
 }
 
-function checkB26(policy, b26Runtime, b26Fragment, catalog, errors) {
+function checkB26(policy, b26Runtime, b26Fragment, m1018Fragment, catalog, errors) {
   const report = validateB26EventRuntime(b26Runtime, b26Fragment, {
     catalog: catalog,
+    m1018Fragment: m1018Fragment,
   });
   for (const error of report.errors ?? [])
     errors.push("B26 static candidate: " + error);
@@ -1460,6 +1464,11 @@ export function validateEventReliabilityData(input = {}) {
     isRecord(input.b26Fragment),
     "B26 event fragment must be an object",
   );
+  add(
+    errors,
+    isRecord(input.m1018Fragment),
+    "M1-018 IAM event fragment must be an object",
+  );
   add(errors, isRecord(input.registry), "schema registry must be an object");
   add(
     errors,
@@ -1499,6 +1508,7 @@ export function validateEventReliabilityData(input = {}) {
       policy,
       input.b26Runtime,
       input.b26Fragment,
+      input.m1018Fragment,
       input.catalog,
       errors,
     );
@@ -1546,6 +1556,10 @@ export function readEventReliabilityInputs(options = {}) {
     b26Fragment: readJson(
       root,
       "packages/contracts/events/v1/fragments/b26-reliability.events.json",
+    ),
+    m1018Fragment: readJson(
+      root,
+      "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
     ),
     registry: readJson(root, "packages/contracts/schemas/v1/registry.json"),
     sagaPolicy: readJson(root, DEFAULT_SAGA_POLICY),

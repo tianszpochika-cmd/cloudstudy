@@ -26,6 +26,7 @@
     "packages/contracts/events/v1/catalog.json",
     "packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json",
     "packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json",
+    "packages/contracts/events/v1/fragments/m1-018-iam-v2.events.json",
     "packages/telemetry/schemas/telemetry-event.schema.json",
     "packages/telemetry/policies/telemetry-events.json",
     "requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md"
@@ -190,7 +191,7 @@
     {
       "name": "platform.iam.v1",
       "ownerService": "iam-service",
-      "purpose": "account deletion lifecycle and session-revocation integration facts",
+      "purpose": "account deletion, IAM bootstrap, adult-learning eligibility and policy-security invalidation integration facts",
       "partitions": 6,
       "partitionKey": "aggregateId",
       "retentionMs": 2592000000,
@@ -200,16 +201,34 @@
       "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
       "producerPrincipal": "svc.iam-service",
       "consumerGroups": [
+        { "name": "cg.admin-ops-from-iam.v1", "service": "admin-ops-service", "principal": "cg.admin-ops-from-iam.v1", "replayEnabled": true },
         { "name": "cg.analytics-from-iam.v1", "service": "analytics-service", "principal": "cg.analytics-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.assessment-from-iam.v1", "service": "assessment-service", "principal": "cg.assessment-from-iam.v1", "replayEnabled": true },
         { "name": "cg.audit-from-iam.v1", "service": "audit-service", "principal": "cg.audit-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.commerce-from-iam.v1", "service": "commerce-service", "principal": "cg.commerce-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.content-from-iam.v1", "service": "content-service", "principal": "cg.content-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.gamification-from-iam.v1", "service": "gamification-service", "principal": "cg.gamification-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.learner-from-iam.v1", "service": "learner-service", "principal": "cg.learner-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.learning-from-iam.v1", "service": "learning-service", "principal": "cg.learning-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.media-from-iam.v1", "service": "media-service", "principal": "cg.media-from-iam.v1", "replayEnabled": true },
         { "name": "cg.notification-from-iam.v1", "service": "notification-service", "principal": "cg.notification-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.social-from-iam.v1", "service": "social-service", "principal": "cg.social-from-iam.v1", "replayEnabled": true },
         { "name": "cg.workflow-from-iam.v1", "service": "workflow-service", "principal": "cg.workflow-from-iam.v1", "replayEnabled": true }
       ],
       "acl": [
         { "principal": "svc.iam-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.admin-ops-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.analytics-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.assessment-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.audit-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.commerce-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.content-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.gamification-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.learner-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.learning-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.media-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.notification-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.social-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.workflow-from-iam.v1", "operation": "READ", "effect": "ALLOW" }
       ]
     },
@@ -605,6 +624,9 @@
     { "eventName": "support.ticket.resolved.v2", "topic": "platform.admin-ops.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.notification-from-admin-ops.v1", "cg.workflow-from-admin-ops.v1", "cg.audit-from-admin-ops.v1"] },
     { "eventName": "privacy.export.requested.v2", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.audit-from-learner.v1", "cg.workflow-from-learner.v1"] },
     { "eventName": "privacy.export.completed.v2", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.audit-from-learner.v1", "cg.notification-from-learner.v1"] },
+    { "eventName": "iam.account.bootstrap.created.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learner-from-iam.v1"] },
+    { "eventName": "iam.learning_eligibility.changed.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.learner-from-iam.v1", "cg.learning-from-iam.v1"] },
+    { "eventName": "iam.policy.security_state_changed.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.admin-ops-from-iam.v1", "cg.analytics-from-iam.v1", "cg.assessment-from-iam.v1", "cg.audit-from-iam.v1", "cg.commerce-from-iam.v1", "cg.content-from-iam.v1", "cg.gamification-from-iam.v1", "cg.learner-from-iam.v1", "cg.learning-from-iam.v1", "cg.media-from-iam.v1", "cg.notification-from-iam.v1", "cg.social-from-iam.v1", "cg.workflow-from-iam.v1"] },
     { "eventName": "account.deletion.requested.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-iam.v1", "cg.audit-from-iam.v1", "cg.workflow-from-iam.v1"] },
     { "eventName": "account.deletion.cancelled.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-iam.v1", "cg.audit-from-iam.v1", "cg.workflow-from-iam.v1"] },
     { "eventName": "account.deletion.completed.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-iam.v1", "cg.audit-from-iam.v1", "cg.notification-from-iam.v1"] }

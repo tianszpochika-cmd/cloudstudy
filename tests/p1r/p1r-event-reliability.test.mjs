@@ -23,13 +23,35 @@ test("canonical M1-007 reliability policy passes without runtime promotion", fun
   assert.equal(report.summary.taskId, "P1R-M1-007");
   assert.equal(report.summary.maturity, "D2_CONTRACT_READY");
   assert.equal(report.summary.runtimeStatus, "NOT_RUNTIME_VERIFIED");
-  assert.equal(report.summary.canonicalEvents, 47);
+  assert.equal(report.summary.canonicalEvents, 50);
   assert.equal(report.summary.reliabilitySchemas, 8);
   assert.equal(report.summary.retryMaxAttempts, 5);
   assert.equal(report.summary.b26Mode, "static-only");
   assert.equal(report.summary.b26RuntimeStatus, "pending");
   assert.equal(report.summary.b26Decision, "NO-GO");
   assert.equal(report.summary.sagaRuntimeStatus, "NOT_RUNTIME_VERIFIED");
+});
+
+test("M1-018 IAM canonical facts inherit the static Outbox, aggregate ordering and no-runtime boundary", function () {
+  const expected = [
+    "iam.account.bootstrap.created.v2",
+    "iam.learning_eligibility.changed.v2",
+    "iam.policy.security_state_changed.v2",
+  ];
+  for (const eventName of expected) {
+    assert.ok(baseline.policy.catalog.currentCanonicalEvents.includes(eventName));
+    const event = baseline.catalog.events.find(function (candidate) {
+      return candidate.eventName === eventName;
+    });
+    assert.equal(event.status, "CANONICAL_D2");
+    assert.equal(event["x-p1r-governance"].runtimeStatus, "NOT_RUNTIME_VERIFIED");
+    assert.equal(event["x-p1r-governance"].producer.outboxRequired, true);
+    assert.equal(event["x-p1r-governance"].transport.partitionKey, "aggregateId");
+    assert.equal(event["x-p1r-governance"].transport.delivery, "at-least-once");
+  }
+  assert.equal(baseline.b26Runtime.mode, "static-only");
+  assert.equal(baseline.b26Runtime.runtimeStatus, "pending");
+  assert.equal(baseline.b26Runtime.defaultDecision, "NO-GO");
 });
 
 const mutations = [

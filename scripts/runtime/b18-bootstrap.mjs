@@ -29,7 +29,13 @@ function pnpmScript(label, ...commandArgs) {
 nodeScript('b18-cross-app-tests', 'tests/b18/b18-cross-app.test.mjs')
 nodeScript('b18-frontend-matrix-tests', 'tests/b18/b18-frontend-matrix.test.mjs')
 nodeScript('contracts', 'scripts/contracts/validate-contracts.mjs')
-nodeScript('contract-compatibility', 'scripts/contracts/compatibility-diff.mjs')
+nodeScript(
+  'contract-compatibility',
+  'scripts/contracts/compatibility-git-baseline.mjs',
+  '--ref', '463c4b238caceb1592bff6c61327c00ab9bac922',
+  '--governance-ref', '868c2177f62b6d2cf613bed702686dddcfe6943f',
+  '--kind', 'all',
+)
 nodeScript('fixed-port-registry', 'scripts/check-fixed-ports.mjs', '--registry-only')
 nodeScript('runtime-config', 'scripts/check-runtime-config.mjs')
 nodeScript('frontend-test-matrix', 'scripts/runtime/validate-b18-frontend-matrix.mjs')

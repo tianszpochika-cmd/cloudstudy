@@ -6,6 +6,9 @@ import { projectCanonicalAsyncApi } from '../contracts/event-governance-projecti
 import {
   EXPECTED_EVENT_CATALOG_KEYS,
   EXPECTED_EVENT_FRAGMENT_INVENTORY,
+  M1018_IAM_CANONICAL_EVENT_GOVERNANCE,
+  M1018_IAM_GAP_D2_CLOSURE_TASKS,
+  M1018_SOURCE_D2_CLOSED_EVENT_GAPS,
   eventPayloadSchemaName,
   validateEventPayloadSchemas,
   validateExactEventPayloadReference,
@@ -44,6 +47,9 @@ const EXPECTED_CANONICAL_EVENTS = [
   'content.version.rolled_back.v1',
   'content.version.submitted.v1',
   'content.version.unpublished.v1',
+  'iam.account.bootstrap.created.v2',
+  'iam.learning_eligibility.changed.v2',
+  'iam.policy.security_state_changed.v2',
   'gamification.reward.granted.v2',
   'gamification.xp.ledger_posted.v2',
   'leaderboard.snapshot_published.v2',
@@ -108,6 +114,8 @@ const M1017_EVENT_TRACEABILITY = new Map([
   ['account.deletion.cancelled.v2', ['ARCH-EVT-001', 'INT-P1-016']],
   ['account.deletion.completed.v2', ['ARCH-EVT-001', 'INT-P1-016']],
 ]);
+const M1018_EVENT_TRACEABILITY = new Map(Object.entries(M1018_IAM_CANONICAL_EVENT_GOVERNANCE)
+  .map(([eventName, source]) => [eventName, source.governance.traceability]));
 const EXPECTED_GAP_CLOSURES = [...EXPECTED_GAP_CLOSURE_ORDER].sort();
 const D2_CONTRACT_CLOSED_GAPS = new Set([
   'EVENT-GAP-ONB-001',
@@ -122,11 +130,12 @@ const D2_CONTRACT_CLOSED_GAPS = new Set([
   'EVENT-GAP-BIND-NOTIF-001',
   'EVENT-GAP-BIND-PRIV-001',
   'EVENT-GAP-USR-DEL-001',
+  ...M1018_SOURCE_D2_CLOSED_EVENT_GAPS,
 ]);
 const EXPECTED_GAP_CLOSURE_DETAILS = {
-  'EVENT-GAP-IAM-001': { family: 'EVENT-GAP-IAM', d2ClosureTasks: ['P1R-M1-003', 'P1R-M1-006'] },
-  'EVENT-GAP-BIND-IAM-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006'] },
-  'EVENT-GAP-BIND-IAM-002': { family: 'EVENT-GAP-BIND', d2ClosureTasks: ['P1R-M1-006'] },
+  'EVENT-GAP-IAM-001': { family: 'EVENT-GAP-IAM', d2ClosureTasks: M1018_IAM_GAP_D2_CLOSURE_TASKS['EVENT-GAP-IAM-001'] },
+  'EVENT-GAP-BIND-IAM-001': { family: 'EVENT-GAP-BIND', d2ClosureTasks: M1018_IAM_GAP_D2_CLOSURE_TASKS['EVENT-GAP-BIND-IAM-001'] },
+  'EVENT-GAP-BIND-IAM-002': { family: 'EVENT-GAP-BIND', d2ClosureTasks: M1018_IAM_GAP_D2_CLOSURE_TASKS['EVENT-GAP-BIND-IAM-002'] },
   'EVENT-GAP-ONB-001': { family: 'EVENT-GAP-ONB', d2ClosureTasks: ['P1R-M1-011', 'P1R-M1-006'] },
   'EVENT-GAP-ONB-002': { family: 'EVENT-GAP-ONB', d2ClosureTasks: ['P1R-M1-012', 'P1R-M1-006'] },
   'EVENT-GAP-PLACEMENT-PLAN': { family: 'EVENT-GAP-PLACEMENT', d2ClosureTasks: ['P1R-M1-012', 'P1R-M1-006'] },
@@ -482,7 +491,7 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, governance.traceability?.sourceRefs?.includes('INT-P1-017'), 'event governance must trace to INT-P1-017');
 
   add(errors, stableJson(governance.fragmentInventory) === stableJson(EXPECTED_EVENT_FRAGMENT_INVENTORY), 'fragmentInventory must exactly match the frozen M1-006 source inventory');
-  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 19, 'fragmentInventory must contain the exact 19 governed fragment records');
+  add(errors, Array.isArray(governance.fragmentInventory) && governance.fragmentInventory.length === 20, 'fragmentInventory must contain the exact 20 governed fragment records');
   const inventoryPaths = [];
   for (const [index, fragment] of (governance.fragmentInventory ?? []).entries()) {
     exactKeys(errors, fragment, ['path', 'eventNames'], `fragmentInventory[${index}]`);
@@ -514,8 +523,8 @@ function checkPlatformGovernance(catalog, errors) {
   add(errors, JSON.stringify([...gapIds].sort()) === JSON.stringify(EXPECTED_GAP_CLOSURES), 'plannedClosures must cover the exact M1-006 event gap registry');
   add(errors, JSON.stringify(gapIds) === JSON.stringify(EXPECTED_GAP_CLOSURE_ORDER), 'plannedClosures must preserve the canonical gap registry order');
   const closureCounts = countEventGapClosures(governance.plannedClosures);
-  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly four PLANNED event gaps');
-  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain exactly twelve D2_CONTRACT_CLOSED event gaps');
+  add(errors, closureCounts.plannedEventGaps === EXPECTED_GAP_CLOSURE_ORDER.length - D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain the exact remaining PLANNED event gap count');
+  add(errors, closureCounts.d2ContractClosedEventGaps === D2_CONTRACT_CLOSED_GAPS.size, 'plannedClosures must retain the exact D2_CONTRACT_CLOSED event gap count');
 }
 
 function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEvent, topicByName, usedIds, groupService }, errors) {
@@ -592,8 +601,14 @@ function checkCanonicalEvent({ event, catalog, services, dataOwners, routeByEven
   add(errors, JSON.stringify(event['x-envelope-required']) === JSON.stringify(REQUIRED_ENVELOPE), `${label} must require the complete canonical envelope`);
   const expectedTraceability = M1016_EVENT_TRACEABILITY.get(label)
     ?? M1017_EVENT_TRACEABILITY.get(label)
+    ?? M1018_EVENT_TRACEABILITY.get(label)
     ?? ['ARCH-EVT-001', 'INT-P1-017'];
   add(errors, JSON.stringify(governance.traceability) === JSON.stringify(expectedTraceability), `${label} traceability must match its frozen integration journey`);
+  const m1018Source = M1018_IAM_CANONICAL_EVENT_GOVERNANCE[label];
+  if (m1018Source) {
+    add(errors, event.status === m1018Source.status
+      && stableJson(governance) === stableJson(m1018Source.governance), `${label} governance must exactly match the frozen M1-018 IAM source`);
+  }
   add(errors, event['x-kafka'] === undefined, `${label} must not retain duplicate x-kafka metadata`);
 }
 
@@ -754,7 +769,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
 
   checkPlatformGovernance(catalog, errors);
   add(errors, b26Runtime.mode === 'static-only' && b26Runtime.runtimeStatus === 'pending' && b26Runtime.defaultDecision === 'NO-GO', 'B26 input must remain static-only, pending and NO-GO');
-  add(errors, Array.isArray(catalog.events) && catalog.events.length === 188, 'event catalog must contain exactly 188 current candidates');
+  add(errors, Array.isArray(catalog.events) && catalog.events.length === 191, 'event catalog must contain exactly 191 current candidates');
 
   const services = new Set((ownerPolicy.serviceOwners ?? []).map((owner) => owner.service));
   const dataOwners = new Set((ownerPolicy.serviceOwners ?? []).filter((owner) => owner.dataOwner === true).map((owner) => owner.service));
@@ -765,7 +780,7 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
   add(errors, duplicates(groupNames).length === 0, `B26 duplicates consumer group names: ${duplicates(groupNames).join(', ')}`);
   const routeNames = (b26Runtime.eventRouting ?? []).map((route) => route?.eventName);
   add(errors, duplicates(routeNames).length === 0, `B26 duplicates event routes: ${duplicates(routeNames).join(', ')}`);
-  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact forty-seven canonical governance events');
+  add(errors, JSON.stringify([...routeNames].sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'B26 event routing must cover the exact fifty canonical governance events');
   const routeByEvent = new Map((b26Runtime.eventRouting ?? []).map((route) => [route.eventName, route]));
   if (gamificationSocialPolicy !== undefined) checkTrustedCompletionPolicy(gamificationSocialPolicy, catalog, routeByEvent, errors);
   const eventNames = (catalog.events ?? []).map((event) => event?.eventName);
@@ -800,8 +815,8 @@ export function validateEventGovernanceData({ catalog, ownerPolicy, b26Runtime, 
       add(errors, isRecord(event['x-p1r-deprecation']), `${event.eventName} deprecated event requires migration metadata`);
     }
   }
-  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact forty-seven governed events');
-  add(errors, counts.canonical === 47 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 47 canonical / 141 historical / 0 deprecated');
+  add(errors, JSON.stringify(canonicalNames.sort()) === JSON.stringify(EXPECTED_CANONICAL_EVENTS), 'CANONICAL_D2 set must be the exact fifty governed events');
+  add(errors, counts.canonical === 50 && counts.historical === 141 && counts.deprecated === 0, 'event status counts must be 50 canonical / 141 historical / 0 deprecated');
 
   const fragmentInventory = catalog['x-p1r-event-governance']?.fragmentInventory ?? [];
   const inventoryPaths = fragmentInventory.map((fragment) => fragment?.path);
