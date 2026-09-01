@@ -1,0 +1,149 @@
+{
+  "$schema": "p1r.privacy-analytics-audit-contract.v1",
+  "schemaVersion": "p1r.privacy-analytics-audit-contract.v1",
+  "task": "P1R-M1-017",
+  "phase": "P1",
+  "startCommit": "6245ca42ef254ecc4a45e86e57a5c65922c69c22",
+  "sourceBaseline": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "collectionPolicy": {
+    "unknownFieldDecision": "DENY",
+    "unknownEnumDecision": "DENY",
+    "additionalProperties": "DENY",
+    "clientAuthorityExpansion": "PROHIBITED",
+    "unverifiedRuntimeClaim": "DENY",
+    "implicitDefault": "DENY"
+  },
+  "sourcePolicies": {
+    "privacyLifecycle": "config/p1r-privacy-lifecycle-contract.v1.json",
+    "analyticsIngress": "config/p1r-analytics-ingress.v1.json",
+    "auditExport": "config/p1r-m1-017-audit-export.v1.json"
+  },
+  "canonicalSources": {
+    "privacyOpenApi": "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json",
+    "analyticsOpenApi": "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+    "auditOpenApi": "packages/contracts/fragments/m1-017-audit-export.openapi.json",
+    "legacyPrivacyOpenApi": "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+    "eventFragment": "packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json",
+    "eventCatalog": "packages/contracts/events/v1/catalog.json",
+    "gatewayBoundary": "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+    "b26StaticPolicy": "config/b26-event-runtime.json"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-017",
+    "sourceContractBaseline": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+    "previousPromotion": "P1R-M1-016",
+    "previousPromotionContract": "config/p1r-notification-sync-support-contract.v1.json",
+    "immutableGovernanceBaseline": "868c2177f62b6d2cf613bed702686dddcfe6943f",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "M1017_OPENAPI_EVENT_GOVERNANCE_B26_STATIC_WITH_B1_B13_V1_HISTORICAL",
+    "promotionMode": "FUTURE_M1017_V2_ONLY",
+    "allowsHistoricalV1Promotion": false,
+    "allowsDualPublish": false,
+    "approvedSourceFiles": [
+      "config/p1r-privacy-analytics-audit-contract.v1.json",
+      "config/p1r-privacy-lifecycle-contract.v1.json",
+      "config/p1r-analytics-ingress.v1.json",
+      "config/p1r-m1-017-audit-export.v1.json",
+      "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+      "packages/contracts/fragments/b13/b13-commerce-admin-analytics.openapi.json",
+      "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json",
+      "packages/contracts/fragments/m1-017-audit-export.openapi.json",
+      "packages/contracts/fragments/p1r-gateway-boundary.openapi.json",
+      "packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json",
+      "packages/contracts/events/v1/catalog.json",
+      "config/b26-event-runtime.json"
+    ],
+    "requiredCompatibilityChecks": [
+      "M1017_POLICY_SCHEMA_STRICT_AND_FAIL_CLOSED",
+      "PRIVACY_EXPORT_SELF_SCOPE_RECEIPT_DOWNLOAD_EXPIRY",
+      "ACCOUNT_DELETION_COOLING_OFF_CANCEL_EXECUTE_RECEIPT",
+      "ANALYTICS_CONSENT_AND_DELETION_SUPPRESSION",
+      "UI_TELEMETRY_NOT_KAFKA_DOMAIN_FACT",
+      "AUDIT_EXPORT_INTERNAL_REDACTED_APPEND_ONLY",
+      "EVENT_PRODUCER_CONSUMER_TOPIC_PARTITION_EXACT",
+      "GATEWAY_PUBLIC_OWNER_AND_INTERNAL_DENY_EXACT",
+      "NO_HISTORICAL_V1_PROMOTION",
+      "NO_DUAL_PUBLISH",
+      "NO_RUNTIME_STATUS_PROMOTION"
+    ],
+    "b26StaticPolicy": {
+      "classification": "STATIC_GOVERNANCE_ONLY",
+      "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+      "allowsRuntimePromotion": false,
+      "requiresSeparateRuntimeEvidence": true
+    }
+  },
+  "canonicalOperations": {
+    "privacy": [
+      "createM1017PrivacyExport",
+      "getM1017PrivacyExportStatus",
+      "createM1017PrivacyExportDownloadGrant",
+      "getM1017PrivacyExportReceipt",
+      "recordM1017PrivacyExportOwnerReceipt",
+      "recoverM1017PrivacyExport"
+    ],
+    "accountDeletion": [
+      "createM1017AccountDeletionRequest",
+      "getM1017AccountDeletionStatus",
+      "cancelM1017AccountDeletionRequest",
+      "executeM1017AccountDeletion",
+      "recordM1017AccountDeletionOwnerReceipt",
+      "recoverM1017AccountDeletion"
+    ],
+    "analytics": [
+      "ingestM1017AnalyticsTelemetry"
+    ],
+    "audit": [
+      "createM1017AuditExport",
+      "getM1017AuditExport",
+      "requestM1017AuditExportDownload",
+      "recoverM1017AuditExport"
+    ]
+  },
+  "canonicalEvents": [
+    "privacy.export.requested.v2",
+    "privacy.export.completed.v2",
+    "account.deletion.requested.v2",
+    "account.deletion.cancelled.v2",
+    "account.deletion.completed.v2"
+  ],
+  "telemetryBoundary": {
+    "transport": "HTTP_TELEMETRY_ONLY",
+    "kafkaEventNames": [],
+    "domainFactWrite": false,
+    "failureEffect": "NON_BLOCKING"
+  },
+  "gapBindings": [
+    "CONTRACT-GAP-ANL-001",
+    "CONTRACT-GAP-PRIVACY-DELETION",
+    "CONTRACT-GAP-PRIVACY-EXPORT",
+    "CONTRACT-GAP-USR-DEL-001",
+    "EVENT-GAP-BIND-PRIV-001",
+    "EVENT-GAP-USR-DEL-001"
+  ],
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "runtimeOwners": [
+      "P1R-M2-001",
+      "P1R-M2-004",
+      "P1R-M2-005",
+      "P1R-M2-006",
+      "P1R-M6-007",
+      "P1R-M6-008",
+      "P1R-M6-010",
+      "P1R-M8-006"
+    ],
+    "prohibitedClaims": [
+      "realDatabase",
+      "realObjectStorage",
+      "realKafkaDelivery",
+      "realWorkflowExecution",
+      "realGatewayPep",
+      "browserE2E",
+      "productionRetention"
+    ]
+  }
+}

@@ -19,6 +19,9 @@
     "governanceSchemaVersion": "p1r.event-governance.v1",
     "applicationScope": "ALL_CURRENT_AND_FUTURE_CANONICAL_D2_EVENTS",
     "currentCanonicalEvents": [
+      "account.deletion.cancelled.v2",
+      "account.deletion.completed.v2",
+      "account.deletion.requested.v2",
       "assessment.item.assessed.v2",
       "assessment.placement.completed.v1",
       "commerce.entitlement.activated.v2",
@@ -45,6 +48,8 @@
       "notification.recovery.completed.v2",
       "notification.requested.v2",
       "notification.retry_scheduled.v2",
+      "privacy.export.completed.v2",
+      "privacy.export.requested.v2",
       "social.report.created.v2",
       "study_room.focus_started.v2",
       "study_room.seat_joined.v2",

@@ -1,0 +1,282 @@
+{
+  "$schema": "p1r.privacy-lifecycle-contract.v1",
+  "schemaVersion": "p1r.privacy-lifecycle-contract.v1",
+  "task": "P1R-M1-017",
+  "phase": "P1",
+  "startCommit": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+  "sourceBaseline": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "collectionPolicy": {
+    "unknownFieldDecision": "DENY",
+    "unknownEnumDecision": "DENY",
+    "additionalProperties": "DENY",
+    "clientAuthorityExpansion": "PROHIBITED",
+    "unverifiedRuntimeClaim": "DENY"
+  },
+  "canonicalSources": {
+    "productRequirements": "requirements/product-requirements.md",
+    "featureMatrix": "requirements/feature-matrix.md",
+    "phase1BusinessJourney": "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md",
+    "phase1BusinessOperations": "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md",
+    "phase1IntegrationMatrix": "docs/06-design/v2-980plus/phase1-business-operation/06-业务联调矩阵.md",
+    "phase1StateAndRecovery": "docs/06-design/v2-980plus/phase1-business-operation/07-状态权限异常恢复矩阵.md",
+    "ownershipDecision": "docs/10-decisions/0014-phase1-support-privacy-ownership.md",
+    "architectureRules": "AGENTS.md",
+    "dataOwnership": "config/p1r-data-ownership.v1.json",
+    "legacyB1PrivacyOpenApi": "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+    "canonicalM1017OpenApi": "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json",
+    "sourceBaseline": "b1d79a09e266179988270e1832a1309a1cb4af4d"
+  },
+  "compatibilityPromotion": {
+    "id": "P1R-M1-017",
+    "sourceContractBaseline": "b1d79a09e266179988270e1832a1309a1cb4af4d",
+    "promotionMode": "FUTURE_M1017_OPENAPI_ONLY",
+    "allowsHistoricalV1Promotion": false,
+    "allowsDualPublish": false,
+    "legacyB1ExportRoute": {
+      "route": "/api/v1/privacy/export",
+      "operationId": "createPrivacyExport",
+      "classification": "HISTORICAL_B1_ADAPTER_ONLY",
+      "canonicalSuccessor": "createM1017PrivacyExport",
+      "canonicalRoute": "/api/v1/privacy/exports"
+    },
+    "approvedSourceFiles": [
+      "config/p1r-privacy-lifecycle-contract.v1.json",
+      "packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json",
+      "packages/contracts/fragments/m1-017-privacy-lifecycle.openapi.json",
+      "docs/06-design/v2-980plus/phase1-business-operation/m1-017-privacy-lifecycle-contract.md"
+    ],
+    "requiredChecks": [
+      "M1017_OPENAPI_SCHEMA_STRICT_AND_FAIL_CLOSED",
+      "PRIVACY_EXPORT_SELF_SCOPE_AND_ONE_TIME_DOWNLOAD",
+      "ACCOUNT_DELETION_SEVEN_DAY_COOLING_OFF",
+      "SESSION_REVOCATION_BEFORE_ANONYMIZED",
+      "LEGAL_HOLD_UNKNOWN_DENY",
+      "OWNER_RECEIPT_AND_RECOVERY_REQUIRED",
+      "NO_CLIENT_OWNER_TENANT_OR_STATUS_AUTHORITY",
+      "LEGACY_B1_ADAPTER_NEVER_CANONICAL",
+      "NO_EVENT_FRAGMENT_OR_CATALOG_MUTATION_BY_E1",
+      "NO_RUNTIME_STATUS_PROMOTION"
+    ]
+  },
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeEvidence": "NOT_RUNTIME_VERIFIED",
+    "currentD2MayNotClaim": [
+      "LIVE_PRIVACY_EXPORT_ASSEMBLY",
+      "REAL_ONE_TIME_DOWNLOAD",
+      "REAL_ACCOUNT_ANONYMIZATION",
+      "REAL_SESSION_REVOCATION",
+      "REAL_LEGAL_HOLD_LOOKUP",
+      "REAL_OWNER_RECEIPT_RECONCILIATION",
+      "REAL_WORKFLOW_RECOVERY",
+      "REAL_KAFKA_OR_OUTBOX_DELIVERY",
+      "BROWSER_OR_E2E_PRIVACY_EVIDENCE"
+    ],
+    "deferredTasks": [
+      "P1R-M2-002",
+      "P1R-M2-003",
+      "P1R-M2-004",
+      "P1R-M2-005",
+      "P1R-M2-006",
+      "P1R-M6-007",
+      "P1R-M6-008",
+      "P1R-M6-010",
+      "P1R-M6-011",
+      "P1R-M8-006"
+    ]
+  },
+  "ownership": {
+    "learner-service.privacy": [
+      "privacy-export-request",
+      "privacy-export-status",
+      "privacy-export-expiry",
+      "privacy-export-download-grant",
+      "privacy-export-receipt"
+    ],
+    "iam-service": [
+      "account-deletion-request",
+      "account-deletion-cooling-off",
+      "account-deletion-cancel",
+      "account-deletion-execute",
+      "subject-final-status",
+      "session-and-device-revocation"
+    ],
+    "workflow-service": [
+      "owner-command-orchestration",
+      "retry-dlq-replay-and-manual-recovery-task"
+    ],
+    "audit-service": [
+      "immutable-privacy-and-deletion-audit-reference"
+    ],
+    "domain-owner": [
+      "owner-local-delete-or-anonymize",
+      "legal-hold-check",
+      "versioned-owner-receipt"
+    ]
+  },
+  "authority": {
+    "principalAndTenant": "SERVER_DERIVED_FROM_VERIFIED_TOKEN_OR_WORKLOAD_IDENTITY",
+    "publicOperationsRequireReauthentication": true,
+    "gatewayIsNotDomainWriter": true,
+    "workflowMayWriteDomainFact": false,
+    "clientMaySet": [],
+    "serverDerivedFields": [
+      "principalId",
+      "subjectId",
+      "tenantId",
+      "ownerService",
+      "exportId",
+      "deletionRequestId",
+      "status",
+      "executeAt",
+      "coolingOffHours",
+      "sessionRevocationState",
+      "legalHoldDecision",
+      "receiptSummary",
+      "recoveryTaskRef",
+      "policyVersion",
+      "auditRef"
+    ],
+    "forbiddenClientAuthorityFields": [
+      "principalId",
+      "subjectId",
+      "tenantId",
+      "owner",
+      "ownerId",
+      "ownerService",
+      "status",
+      "state",
+      "executeAt",
+      "coolingOffHours",
+      "sessionRevocationState",
+      "legalHoldDecision",
+      "receiptId",
+      "receiptSummary",
+      "recoveryTaskRef",
+      "policyVersion",
+      "auditRef",
+      "deletedAt",
+      "anonymizedAt"
+    ]
+  },
+  "export": {
+    "owner": "learner-service.privacy",
+    "canonicalOperations": [
+      "createM1017PrivacyExport",
+      "getM1017PrivacyExportStatus",
+      "createM1017PrivacyExportDownloadGrant",
+      "getM1017PrivacyExportReceipt",
+      "recordM1017PrivacyExportOwnerReceipt",
+      "recoverM1017PrivacyExport"
+    ],
+    "states": [
+      "REQUESTED",
+      "COLLECTING",
+      "ASSEMBLING",
+      "READY",
+      "DOWNLOAD_ISSUED",
+      "EXPIRED",
+      "FAILED",
+      "RECOVERY_REQUIRED"
+    ],
+    "transitions": {
+      "REQUESTED": ["COLLECTING", "FAILED", "RECOVERY_REQUIRED"],
+      "COLLECTING": ["ASSEMBLING", "FAILED", "RECOVERY_REQUIRED"],
+      "ASSEMBLING": ["READY", "FAILED", "RECOVERY_REQUIRED"],
+      "READY": ["DOWNLOAD_ISSUED", "EXPIRED"],
+      "DOWNLOAD_ISSUED": ["EXPIRED"],
+      "FAILED": ["RECOVERY_REQUIRED"],
+      "RECOVERY_REQUIRED": ["COLLECTING", "EXPIRED"],
+      "EXPIRED": []
+    },
+    "download": {
+      "oneTime": true,
+      "cacheControl": "no-store",
+      "expiryServerDerived": true,
+      "rawExportInEventOrOrdinaryAudit": "PROHIBITED"
+    },
+    "receipt": {
+      "ownerReceiptRequired": true,
+      "ownerServiceDerivedFromTrustedWorkload": true,
+      "minimumOutcome": ["COLLECTED", "NO_DATA", "RETAINED_LEGAL_HOLD", "FAILED"],
+      "aggregateDigestRequired": true
+    },
+    "recovery": {
+      "owner": "workflow-service",
+      "failureState": "RECOVERY_REQUIRED",
+      "completedReceiptMayNotBeRepeated": true,
+      "manualRecoveryRequiresAudit": true
+    }
+  },
+  "deletion": {
+    "owner": "iam-service",
+    "canonicalOperations": [
+      "createM1017AccountDeletionRequest",
+      "getM1017AccountDeletionStatus",
+      "cancelM1017AccountDeletionRequest",
+      "executeM1017AccountDeletion",
+      "recordM1017AccountDeletionOwnerReceipt",
+      "recoverM1017AccountDeletion"
+    ],
+    "states": [
+      "PENDING_COOLING_OFF",
+      "CANCELLED",
+      "EXECUTING",
+      "RECOVERY_REQUIRED",
+      "ANONYMIZED"
+    ],
+    "transitions": {
+      "PENDING_COOLING_OFF": ["CANCELLED", "EXECUTING"],
+      "CANCELLED": [],
+      "EXECUTING": ["RECOVERY_REQUIRED", "ANONYMIZED"],
+      "RECOVERY_REQUIRED": ["EXECUTING"],
+      "ANONYMIZED": []
+    },
+    "coolingOffHours": 168,
+    "cancelAllowedOnlyIn": ["PENDING_COOLING_OFF"],
+    "sessionRevocation": {
+      "requiredBeforeFinalState": true,
+      "scope": "ALL_SESSIONS_REFRESH_FAMILIES_DEVICES_AND_ACCESS_JTIS",
+      "state": "REVOKED"
+    },
+    "legalHold": {
+      "mustCheckBeforeOwnerDeleteOrAnonymize": true,
+      "unknownDecision": "DENY",
+      "activeDecision": "RETAIN_ANONYMIZED_MINIMUM",
+      "ttlIsNotRetention": true
+    },
+    "receipt": {
+      "ownerReceiptRequired": true,
+      "allowedOutcomes": ["DELETED", "ANONYMIZED", "NO_DATA", "RETAINED_LEGAL_HOLD", "FAILED"],
+      "allExpectedOwnersMustReconcileBeforeAnonymized": true
+    },
+    "recovery": {
+      "failureState": "RECOVERY_REQUIRED",
+      "partialSuccessDoesNotClaimAnonymized": true,
+      "retryOnlyFailedOwnerOrReconcile": true,
+      "manualRecoveryRequiresAudit": true
+    }
+  },
+  "eventIntegration": {
+    "coordinatorOwned": true,
+    "e1MayCreateOrModifyEventFragment": false,
+    "e1MayCreateOrModifyCatalogAsyncApiOrB26": false,
+    "requiredGapBindings": ["EVENT-GAP-BIND-PRIV-001", "EVENT-GAP-USR-DEL-001"],
+    "existingSessionRevocationFact": "auth.session.revoked.v1",
+    "payloadMustExclude": ["rawExport", "downloadUrl", "token", "password", "tenantId", "subjectId", "ownerReceiptPayload"]
+  },
+  "adversarialCases": [
+    "public export request supplies subjectId or tenantId",
+    "public deletion request supplies ownerService or status",
+    "client attempts to set executeAt, legalHoldDecision or sessionRevocationState",
+    "unknown legal hold is treated as cleared",
+    "cancel occurs after execution starts",
+    "execute occurs before 168-hour cooling-off completes",
+    "download grant is reusable, cacheable or issued after export expiry",
+    "partial owner receipt is reported as anonymized",
+    "recovery repeats a completed owner receipt",
+    "D2 source is presented as live privacy, IAM, workflow or Kafka evidence"
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "version": "1.0.0",
+  "events": [
+    {
+      "eventName": "privacy.export.requested.v2",
+      "domain": "privacy",
+      "version": 2,
+      "schema": "privacy.event.v2",
+      "aggregateType": "privacy_export",
+      "aggregateIdField": "exportId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1017PrivacyExportRequested" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish privacy.export.requested.v3",
+        "consumerRule": "按 exportId、exportVersion 与 dedupeKey 幂等；事件仅携带范围、政策、验证和审计引用，不携带导出内容或主体明文。"
+      }
+    },
+    {
+      "eventName": "privacy.export.completed.v2",
+      "domain": "privacy",
+      "version": 2,
+      "schema": "privacy.event.v2",
+      "aggregateType": "privacy_export",
+      "aggregateIdField": "exportId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1017PrivacyExportCompleted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish privacy.export.completed.v3",
+        "consumerRule": "按 exportId、exportVersion 与 receiptSetDigest 幂等；下载授权和导出内容不进入事件。"
+      }
+    },
+    {
+      "eventName": "account.deletion.requested.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "account_deletion",
+      "aggregateIdField": "deletionRequestId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1017AccountDeletionRequested" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish account.deletion.requested.v3",
+        "consumerRule": "按 deletionRequestId、deletionVersion 与 dedupeKey 幂等；收到请求立即抑制非必要 analytics，workflow 只编排 owner 任务。"
+      }
+    },
+    {
+      "eventName": "account.deletion.cancelled.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "account_deletion",
+      "aggregateIdField": "deletionRequestId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1017AccountDeletionCancelled" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish account.deletion.cancelled.v3",
+        "consumerRule": "按 deletionRequestId 与 deletionVersion 幂等；取消只终止尚未执行的计划，analytics 必须重新核验有效 consent 后才可恢复。"
+      }
+    },
+    {
+      "eventName": "account.deletion.completed.v2",
+      "domain": "iam",
+      "version": 2,
+      "schema": "iam.event.v2",
+      "aggregateType": "account_deletion",
+      "aggregateIdField": "deletionRequestId",
+      "x-envelope-required": [
+        "eventId", "eventName", "schema", "version", "occurredAt", "aggregateType", "aggregateId",
+        "actorId", "traceId", "requestId", "schemaVersion", "dedupeKey", "payload"
+      ],
+      "payloadSchema": { "$ref": "#/payloadSchemas/M1017AccountDeletionCompleted" },
+      "compatibility": {
+        "strategy": "additive",
+        "breakingChange": "publish account.deletion.completed.v3",
+        "consumerRule": "按 deletionRequestId、deletionVersion 与 receiptSetDigest 幂等；完成必须代表会话已撤销且所有 owner 已删除、匿名化或依法保留。"
+      }
+    }
+  ],
+  "payloadSchemas": {
+    "M1017PrivacyExportRequested": {
+      "$id": "platform.events.privacy.export.requested.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exportId", "exportVersion", "purposeCode", "scope", "policyRef", "policyVersion",
+        "verificationRef", "requestedAt", "auditId"
+      ],
+      "properties": {
+        "exportId": { "type": "string", "pattern": "^pex_[A-Za-z0-9._:-]{8,127}$" },
+        "exportVersion": { "type": "integer", "minimum": 1 },
+        "purposeCode": { "type": "string", "const": "DATA_EXPORT" },
+        "scope": { "type": "string", "const": "ACCOUNT_AND_LEARNER_DATA" },
+        "policyRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "policyVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "verificationRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "requestedAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      }
+    },
+    "M1017PrivacyExportCompleted": {
+      "$id": "platform.events.privacy.export.completed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exportId", "exportVersion", "status", "ownerReceiptSetDigest", "ownerReceiptCount",
+        "redactionPolicyRef", "expiresAt", "completedAt", "auditId"
+      ],
+      "properties": {
+        "exportId": { "type": "string", "pattern": "^pex_[A-Za-z0-9._:-]{8,127}$" },
+        "exportVersion": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "const": "READY" },
+        "ownerReceiptSetDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "ownerReceiptCount": { "type": "integer", "minimum": 1, "maximum": 14 },
+        "redactionPolicyRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      }
+    },
+    "M1017AccountDeletionRequested": {
+      "$id": "platform.events.account.deletion.requested.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deletionRequestId", "deletionVersion", "status", "coolingOffHours", "coolingOffEndsAt", "policyRef", "policyVersion",
+        "ownerPlanDigest", "verificationRef", "requestedAt", "auditId"
+      ],
+      "properties": {
+        "deletionRequestId": { "type": "string", "pattern": "^del_[A-Za-z0-9._:-]{8,127}$" },
+        "deletionVersion": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "const": "PENDING_COOLING_OFF" },
+        "coolingOffHours": { "type": "integer", "const": 168 },
+        "coolingOffEndsAt": { "type": "string", "format": "date-time" },
+        "policyRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "policyVersion": { "type": "integer", "minimum": 1 },
+        "ownerPlanDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "verificationRef": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" },
+        "requestedAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      }
+    },
+    "M1017AccountDeletionCancelled": {
+      "$id": "platform.events.account.deletion.cancelled.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deletionRequestId", "deletionVersion", "status", "reasonCode", "cancelledAt", "auditId"],
+      "properties": {
+        "deletionRequestId": { "type": "string", "pattern": "^del_[A-Za-z0-9._:-]{8,127}$" },
+        "deletionVersion": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "const": "CANCELLED" },
+        "reasonCode": { "type": "string", "enum": ["USER_CANCELLED", "AUTHORITY_REVOKED", "POLICY_REJECTED"] },
+        "cancelledAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      }
+    },
+    "M1017AccountDeletionCompleted": {
+      "$id": "platform.events.account.deletion.completed.v2.payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deletionRequestId", "deletionVersion", "status", "receiptSetDigest", "deletedOwnerCount",
+        "anonymizedOwnerCount", "retainedOwnerCount", "sessionsRevokedAt", "completedAt", "auditId"
+      ],
+      "properties": {
+        "deletionRequestId": { "type": "string", "pattern": "^del_[A-Za-z0-9._:-]{8,127}$" },
+        "deletionVersion": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string", "const": "ANONYMIZED" },
+        "receiptSetDigest": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "deletedOwnerCount": { "type": "integer", "minimum": 0, "maximum": 14 },
+        "anonymizedOwnerCount": { "type": "integer", "minimum": 0, "maximum": 14 },
+        "retainedOwnerCount": { "type": "integer", "minimum": 0, "maximum": 14 },
+        "sessionsRevokedAt": { "type": "string", "format": "date-time" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "auditId": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$" }
+      },
+      "x-p1r-cross-field-invariants": [
+        "deletedOwnerCount + anonymizedOwnerCount + retainedOwnerCount must equal the exact owner receipt set count",
+        "COMPLETED requires every planned owner receipt to be terminal and reconciled",
+        "retained owners require a non-UNKNOWN legal-hold or approved retention basis in the owner receipt"
+      ]
+    }
+  }
+}

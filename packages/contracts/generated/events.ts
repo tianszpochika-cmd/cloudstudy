@@ -688,6 +688,31 @@ export type M1016SupportTicketCreated = { eventId: string; traceId: string; requ
  */
 export type M1016SupportTicketResolved = { eventId: string; traceId: string; requestId: string; schemaVersion: number; ticketId: string; ticketVersion: number; state: "RESOLVED" | "CLOSED"; categoryCode: "ACCOUNT_SECURITY" | "CONTENT_CORRECTION" | "LEARNING_SYNC" | "MEDIA_DEVICE" | "ENTITLEMENT_ORDER" | "PRIVACY" | "OTHER"; slaPolicyRef: string; resolutionCode: string; ownerResultRef: string; redactionVersion: number; auditId: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyExportRequested = { exportId: string; exportVersion: number; purposeCode: "DATA_EXPORT"; scope: "ACCOUNT_AND_LEARNER_DATA"; policyRef: string; policyVersion: string; verificationRef: string; requestedAt: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyExportCompleted = { exportId: string; exportVersion: number; status: "READY"; ownerReceiptSetDigest: string; ownerReceiptCount: number; redactionPolicyRef: string; expiresAt: string; completedAt: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionRequested = { deletionRequestId: string; deletionVersion: number; status: "PENDING_COOLING_OFF"; coolingOffHours: 168; coolingOffEndsAt: string; policyRef: string; policyVersion: number; ownerPlanDigest: string; verificationRef: string; requestedAt: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionCancelled = { deletionRequestId: string; deletionVersion: number; status: "CANCELLED"; reasonCode: "USER_CANCELLED" | "AUTHORITY_REVOKED" | "POLICY_REJECTED"; cancelledAt: string; auditId: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionCompleted = { deletionRequestId: string; deletionVersion: number; status: "ANONYMIZED"; receiptSetDigest: string; deletedOwnerCount: number; anonymizedOwnerCount: number; retainedOwnerCount: number; sessionsRevokedAt: string; completedAt: string; auditId: string; };
+
 export interface LearningSrsBatchCreatedEvent extends PlatformEventEnvelope<LearningSrsBatchCreated, "learning.event.v1"> {
   eventName: "learning.srs.batch_created.v1";
   version: 1;
@@ -1875,8 +1900,43 @@ export interface SupportTicketResolvedM1016SupportTicketResolvedEvent extends Pl
   dedupeKey: string;
 }
 
+export interface PrivacyExportRequestedM1017PrivacyExportRequestedEvent extends PlatformEventEnvelope<M1017PrivacyExportRequested, "privacy.event.v2"> {
+  eventName: "privacy.export.requested.v2";
+  version: 2;
+  schemaVersion: "privacy.event.v2";
+  dedupeKey: string;
+}
+
+export interface PrivacyExportCompletedM1017PrivacyExportCompletedEvent extends PlatformEventEnvelope<M1017PrivacyExportCompleted, "privacy.event.v2"> {
+  eventName: "privacy.export.completed.v2";
+  version: 2;
+  schemaVersion: "privacy.event.v2";
+  dedupeKey: string;
+}
+
+export interface AccountDeletionRequestedEvent extends PlatformEventEnvelope<M1017AccountDeletionRequested, "iam.event.v2"> {
+  eventName: "account.deletion.requested.v2";
+  version: 2;
+  schemaVersion: "iam.event.v2";
+  dedupeKey: string;
+}
+
+export interface AccountDeletionCancelledEvent extends PlatformEventEnvelope<M1017AccountDeletionCancelled, "iam.event.v2"> {
+  eventName: "account.deletion.cancelled.v2";
+  version: 2;
+  schemaVersion: "iam.event.v2";
+  dedupeKey: string;
+}
+
+export interface AccountDeletionCompletedEvent extends PlatformEventEnvelope<M1017AccountDeletionCompleted, "iam.event.v2"> {
+  eventName: "account.deletion.completed.v2";
+  version: 2;
+  schemaVersion: "iam.event.v2";
+  dedupeKey: string;
+}
+
 /** All catalog entries, including HISTORICAL_CANDIDATE records. New v2 publishers must use CanonicalPlatformEvent. */
-export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event | LearningTaskCompletedM1014LearningTaskCompletedEvent | GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent | GamificationRewardGrantedM1014GamificationRewardGrantedEvent | StudyRoomSeatJoinedEvent | StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent | StudyRoomSeatLeftEvent | LeaderboardSnapshotPublishedEvent | SocialReportCreatedM1014SocialReportCreatedEvent | CommerceOrderCreatedM1015CommerceOrderCreatedEvent | CommercePaymentRequestedM1015CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedM1015CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedM1015CommercePaymentVerifiedEvent | CommerceEntitlementActivatedM1015CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedM1015CommerceEntitlementRevokedEvent | CommerceRefundSettledEvent | CommerceReconciliationDiscrepancyRecordedEvent | CommerceReconciliationRecoveryReceiptedEvent | NotificationRequestedM1016NotificationRequestedEvent | NotificationRetryScheduledM1016NotificationRetryScheduledEvent | NotificationRecoveryCompletedM1016NotificationRecoveryCompletedEvent | SyncCommandReceiptedEvent | SyncConflictDetectedM1016SyncConflictDetectedEvent | SyncRecoveredM1016SyncRecoveredEvent | SupportTicketCreatedM1016SupportTicketCreatedEvent | SupportTicketResolvedM1016SupportTicketResolvedEvent;
+export type EventCatalogCandidate = LearningSrsBatchCreatedEvent | VocabularyReviewAcceptedEvent | VocabularySrsStateChangedEvent | AssessmentAnswerScoredEvent | MasteryStateChangedEvent | LearningTaskCompletedEvent | CmsContentSubmittedEvent | CmsReviewDecidedEvent | CmsContentPublishedEvent | CmsContentRolledBackEvent | CommerceOrderPaidEvent | CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedEvent | CommerceSubscriptionChangedEvent | NotificationCreatedEvent | NotificationDeliveredEvent | NotificationReadEvent | SyncLearningCheckpointSavedEvent | SyncConflictDetectedEvent | SyncCursorAdvancedEvent | AuthSessionRevokedEvent | AssessmentItemSubmittedEvent | AuthDeviceKickedEvent | PrivacyExportRequestedEvent | PrivacyExportCompletedEvent | AssessmentStreamBuiltEvent | AssessmentAnswerSubmittedEvent | MasteryVerificationStateChangedEvent | ExamSessionStateChangedEvent | ExamAntiCheatRecordedEvent | ReportGeneratedEvent | VocabularyReviewFilteredEvent | VocabularyExpressionCreatedEvent | GrammarPracticeCompletedEvent | WritingEvaluationCompletedEvent | ListeningDictationSubmittedEvent | ReadingProgressUpdatedEvent | SpeakingSelfRatingSubmittedEvent | OfflineSyncAppliedEvent | GrammarMasteryUpdatedEvent | ListeningProgressSavedEvent | SpeakingShadowingProgressedEvent | MediaOfflinePackageSyncedEvent | GamificationProfileUpdatedEvent | GamificationXpLedgerAppendedEvent | GamificationCurrencyLedgerAppendedEvent | GamificationStreakDayValidatedEvent | GamificationStreakRescueCompletedEvent | GamificationQuestProgressedEvent | GamificationQuestClaimedEvent | GamificationAchievementUnlockedEvent | GamificationChestGrantedEvent | GamificationChestOpenedEvent | GamificationAvatarLoadoutEquippedEvent | GamificationSeasonPointsUpdatedEvent | GamesSessionCreatedEvent | GamesSessionEventAcceptedEvent | GamesSessionCompletedEvent | SocialRoomJoinedEvent | SocialFocusStartedEvent | SocialFocusCompletedEvent | SocialInteractionSentEvent | OfflinePackageAuthorizedEvent | OfflineB4SyncAppliedEvent | SocialRoomLeftEvent | SocialFocusUpdatedEvent | SocialModerationReportedEvent | SocialModerationBlockedEvent | SocialModerationMutedEvent | NotificationsMessageReadEvent | NotificationsPreferencesUpdatedEvent | OfflinePackageDownloadStateUpdatedEvent | OfflineSyncConflictRecordedEvent | CommerceOrderCreatedEvent | CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedEvent | CommerceRefundCompletedEvent | CommerceHouseholdChangedEvent | CmsContentVersionSavedEvent | CmsImportCompletedEvent | SafetyPrecheckBlockedEvent | RiskDecisionCreatedEvent | FinanceReconciliationDiscrepancyEvent | OpsFlagUpdatedEvent | SupportTicketCreatedEvent | SupportTicketResolvedEvent | PlatformBuildRegisteredEvent | PlatformCompatibilityCheckedEvent | PlatformPerformanceDegradedEvent | QualityE2eCompletedEvent | QualitySecurityScanCompletedEvent | QualityReliabilityCompletedEvent | ObservabilityAlertRaisedEvent | DataBackupDrillCompletedEvent | ReleaseGateEvaluatedEvent | AuthPrincipalMappedEvent | AuthSessionRotatedEvent | AuthSessionReplayDetectedEvent | AuthDeviceRevokedEvent | AuthConsentUpdatedEvent | AuthAdultGateRejectedEvent | IamPolicyVersionChangedEvent | LearnerProfileUpdatedEvent | LearnerTargetUpdatedEvent | LearnerFirstDayProjectedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | ContentPublicProjectionInvalidatedEvent | AssessmentAttemptSubmittedEvent | AssessmentAttemptAssessedEvent | AssessmentPlacementCompletedEvent | LearningMasteryProjectedEvent | LearningReviewScheduledEvent | WorkflowAssessmentLearningSagaStartedEvent | WorkflowAssessmentLearningSagaCompensatedEvent | WorkflowEventReplayedEvent | MediaStartedEvent | MediaSegmentCompletedEvent | MediaDownloadedEvent | MediaRevokedEvent | SyncEnqueuedEvent | SyncConflictDetectedB11Event | SyncRecoveredEvent | RecordingSavedEvent | SpeakingPermissionRequestedEvent | ShadowingCompletedEvent | GamificationSessionStartedEvent | GamificationXpLedgerPostedEvent | GamificationRewardGrantedEvent | GamificationAvatarEquippedEvent | StudyRoomJoinedEvent | StudyRoomFocusStartedEvent | StudyRoomLeftEvent | LeaderboardRefreshedEvent | SocialReportCreatedEvent | NotificationRequestedEvent | NotificationRetryScheduledEvent | NotificationRecoveryCompletedEvent | CommerceOrderReconciledEvent | AnalyticsMetricProjectedEvent | AnalyticsRecomputeRequestedEvent | IamSessionRevokedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AuthAccountRegisteredEvent | AuthLoginSucceededEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event | LearningTaskCompletedM1014LearningTaskCompletedEvent | GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent | GamificationRewardGrantedM1014GamificationRewardGrantedEvent | StudyRoomSeatJoinedEvent | StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent | StudyRoomSeatLeftEvent | LeaderboardSnapshotPublishedEvent | SocialReportCreatedM1014SocialReportCreatedEvent | CommerceOrderCreatedM1015CommerceOrderCreatedEvent | CommercePaymentRequestedM1015CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedM1015CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedM1015CommercePaymentVerifiedEvent | CommerceEntitlementActivatedM1015CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedM1015CommerceEntitlementRevokedEvent | CommerceRefundSettledEvent | CommerceReconciliationDiscrepancyRecordedEvent | CommerceReconciliationRecoveryReceiptedEvent | NotificationRequestedM1016NotificationRequestedEvent | NotificationRetryScheduledM1016NotificationRetryScheduledEvent | NotificationRecoveryCompletedM1016NotificationRecoveryCompletedEvent | SyncCommandReceiptedEvent | SyncConflictDetectedM1016SyncConflictDetectedEvent | SyncRecoveredM1016SyncRecoveredEvent | SupportTicketCreatedM1016SupportTicketCreatedEvent | SupportTicketResolvedM1016SupportTicketResolvedEvent | PrivacyExportRequestedM1017PrivacyExportRequestedEvent | PrivacyExportCompletedM1017PrivacyExportCompletedEvent | AccountDeletionRequestedEvent | AccountDeletionCancelledEvent | AccountDeletionCompletedEvent;
 
 /** @deprecated Use CanonicalPlatformEvent for new v2 event publication. */
 export type PlatformEvent = EventCatalogCandidate;
@@ -4002,8 +4062,263 @@ export const canonicalEventGovernance = {
       "ARCH-EVT-001",
       "INT-P1-012"
     ]
+  },
+  "privacy.export.requested.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "learner-service",
+      "dataOwner": "learner-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_privacy_export_requested_v2"
+    },
+    "consumers": [
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-learner.v1",
+        "subscriptionOperationId": "subscribe_privacy_export_requested_v2_cg_audit_from_learner_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-learner.v1",
+        "subscriptionOperationId": "subscribe_privacy_export_requested_v2_cg_workflow_from_learner_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.learner.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.exportId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "privacy_export_requested_v2"
+    },
+    "schema": {
+      "schemaVersion": "privacy.event.v2",
+      "payloadRef": "#/payloadSchemas/M1017PrivacyExportRequested",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-015"
+    ]
+  },
+  "privacy.export.completed.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "learner-service",
+      "dataOwner": "learner-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_privacy_export_completed_v2"
+    },
+    "consumers": [
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-learner.v1",
+        "subscriptionOperationId": "subscribe_privacy_export_completed_v2_cg_audit_from_learner_v1"
+      },
+      {
+        "service": "notification-service",
+        "consumerGroup": "cg.notification-from-learner.v1",
+        "subscriptionOperationId": "subscribe_privacy_export_completed_v2_cg_notification_from_learner_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.learner.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.exportId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "privacy_export_completed_v2"
+    },
+    "schema": {
+      "schemaVersion": "privacy.event.v2",
+      "payloadRef": "#/payloadSchemas/M1017PrivacyExportCompleted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-015"
+    ]
+  },
+  "account.deletion.requested.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "iam-service",
+      "dataOwner": "iam-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_account_deletion_requested_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_requested_v2_cg_analytics_from_iam_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_requested_v2_cg_audit_from_iam_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_requested_v2_cg_workflow_from_iam_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.iam.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.deletionRequestId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "account_deletion_requested_v2"
+    },
+    "schema": {
+      "schemaVersion": "iam.event.v2",
+      "payloadRef": "#/payloadSchemas/M1017AccountDeletionRequested",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-016"
+    ]
+  },
+  "account.deletion.cancelled.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "iam-service",
+      "dataOwner": "iam-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_account_deletion_cancelled_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_cancelled_v2_cg_analytics_from_iam_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_cancelled_v2_cg_audit_from_iam_v1"
+      },
+      {
+        "service": "workflow-service",
+        "consumerGroup": "cg.workflow-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_cancelled_v2_cg_workflow_from_iam_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.iam.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.deletionRequestId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "account_deletion_cancelled_v2"
+    },
+    "schema": {
+      "schemaVersion": "iam.event.v2",
+      "payloadRef": "#/payloadSchemas/M1017AccountDeletionCancelled",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-016"
+    ]
+  },
+  "account.deletion.completed.v2": {
+    "status": "CANONICAL_D2",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "scope": "CROSS_SERVICE_INTEGRATION_FACT",
+    "producer": {
+      "service": "iam-service",
+      "dataOwner": "iam-service",
+      "outboxRequired": true,
+      "publishOperationId": "publish_account_deletion_completed_v2"
+    },
+    "consumers": [
+      {
+        "service": "analytics-service",
+        "consumerGroup": "cg.analytics-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_completed_v2_cg_analytics_from_iam_v1"
+      },
+      {
+        "service": "audit-service",
+        "consumerGroup": "cg.audit-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_completed_v2_cg_audit_from_iam_v1"
+      },
+      {
+        "service": "notification-service",
+        "consumerGroup": "cg.notification-from-iam.v1",
+        "subscriptionOperationId": "subscribe_account_deletion_completed_v2_cg_notification_from_iam_v1"
+      }
+    ],
+    "transport": {
+      "protocol": "kafka",
+      "topic": "platform.iam.v1",
+      "partitionKey": "aggregateId",
+      "aggregateIdSource": "payload.deletionRequestId",
+      "delivery": "at-least-once",
+      "bindingVersion": "0.5.0",
+      "channelId": "account_deletion_completed_v2"
+    },
+    "schema": {
+      "schemaVersion": "iam.event.v2",
+      "payloadRef": "#/payloadSchemas/M1017AccountDeletionCompleted",
+      "compatibility": "additive"
+    },
+    "correlation": [
+      "eventId",
+      "aggregateId",
+      "requestId",
+      "traceId",
+      "dedupeKey"
+    ],
+    "traceability": [
+      "ARCH-EVT-001",
+      "INT-P1-016"
+    ]
   }
 } as const;
 
 export type CanonicalEventName = keyof typeof canonicalEventGovernance;
-export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event | LearningTaskCompletedM1014LearningTaskCompletedEvent | GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent | GamificationRewardGrantedM1014GamificationRewardGrantedEvent | StudyRoomSeatJoinedEvent | StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent | StudyRoomSeatLeftEvent | LeaderboardSnapshotPublishedEvent | SocialReportCreatedM1014SocialReportCreatedEvent | CommerceOrderCreatedM1015CommerceOrderCreatedEvent | CommercePaymentRequestedM1015CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedM1015CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedM1015CommercePaymentVerifiedEvent | CommerceEntitlementActivatedM1015CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedM1015CommerceEntitlementRevokedEvent | CommerceRefundSettledEvent | CommerceReconciliationDiscrepancyRecordedEvent | CommerceReconciliationRecoveryReceiptedEvent | NotificationRequestedM1016NotificationRequestedEvent | NotificationRetryScheduledM1016NotificationRetryScheduledEvent | NotificationRecoveryCompletedM1016NotificationRecoveryCompletedEvent | SyncCommandReceiptedEvent | SyncConflictDetectedM1016SyncConflictDetectedEvent | SyncRecoveredM1016SyncRecoveredEvent | SupportTicketCreatedM1016SupportTicketCreatedEvent | SupportTicketResolvedM1016SupportTicketResolvedEvent;
+export type CanonicalPlatformEvent = LearnerTargetUpdatedEvent | ContentVersionSubmittedEvent | ContentVersionReviewedEvent | ContentVersionPublishedEvent | ContentVersionUnpublishedEvent | ContentVersionRolledBackEvent | AssessmentPlacementCompletedEvent | WorkflowOutboxPublishedEvent | WorkflowEventDeliveryFailedEvent | WorkflowEventDeadLetteredEvent | WorkflowEventReplayRequestedEvent | WorkflowEventOrderingDeferredEvent | WorkflowSagaCompensationRequestedEvent | WorkflowSagaManualRecoveryRequestedEvent | AssessmentItemAssessedEvent | LearningMasteryProjectedB10Event | LearningReviewScheduledB10Event | LearningTaskCompletedM1014LearningTaskCompletedEvent | GamificationXpLedgerPostedM1014GamificationXpLedgerPostedEvent | GamificationRewardGrantedM1014GamificationRewardGrantedEvent | StudyRoomSeatJoinedEvent | StudyRoomFocusStartedM1014StudyRoomFocusStartedEvent | StudyRoomSeatLeftEvent | LeaderboardSnapshotPublishedEvent | SocialReportCreatedM1014SocialReportCreatedEvent | CommerceOrderCreatedM1015CommerceOrderCreatedEvent | CommercePaymentRequestedM1015CommercePaymentRequestedEvent | CommercePaymentCallbackReceivedM1015CommercePaymentCallbackReceivedEvent | CommercePaymentVerifiedM1015CommercePaymentVerifiedEvent | CommerceEntitlementActivatedM1015CommerceEntitlementActivatedEvent | CommerceEntitlementRevokedM1015CommerceEntitlementRevokedEvent | CommerceRefundSettledEvent | CommerceReconciliationDiscrepancyRecordedEvent | CommerceReconciliationRecoveryReceiptedEvent | NotificationRequestedM1016NotificationRequestedEvent | NotificationRetryScheduledM1016NotificationRetryScheduledEvent | NotificationRecoveryCompletedM1016NotificationRecoveryCompletedEvent | SyncCommandReceiptedEvent | SyncConflictDetectedM1016SyncConflictDetectedEvent | SyncRecoveredM1016SyncRecoveredEvent | SupportTicketCreatedM1016SupportTicketCreatedEvent | SupportTicketResolvedM1016SupportTicketResolvedEvent | PrivacyExportRequestedM1017PrivacyExportRequestedEvent | PrivacyExportCompletedM1017PrivacyExportCompletedEvent | AccountDeletionRequestedEvent | AccountDeletionCancelledEvent | AccountDeletionCompletedEvent;

@@ -25,6 +25,7 @@
     "config/g3-test-security-observability.json",
     "packages/contracts/events/v1/catalog.json",
     "packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json",
+    "packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json",
     "packages/telemetry/schemas/telemetry-event.schema.json",
     "packages/telemetry/policies/telemetry-events.json",
     "requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md"
@@ -163,7 +164,7 @@
     {
       "name": "platform.learner.v1",
       "ownerService": "learner-service",
-      "purpose": "learner target and planning-input integration facts",
+      "purpose": "learner target, planning-input and privacy-export integration facts",
       "partitions": 12,
       "partitionKey": "aggregateId",
       "retentionMs": 604800000,
@@ -173,13 +174,43 @@
       "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
       "producerPrincipal": "svc.learner-service",
       "consumerGroups": [
+        { "name": "cg.audit-from-learner.v1", "service": "audit-service", "principal": "cg.audit-from-learner.v1", "replayEnabled": true },
         { "name": "cg.learning-from-learner.v1", "service": "learning-service", "principal": "cg.learning-from-learner.v1", "replayEnabled": true },
+        { "name": "cg.notification-from-learner.v1", "service": "notification-service", "principal": "cg.notification-from-learner.v1", "replayEnabled": true },
         { "name": "cg.workflow-from-learner.v1", "service": "workflow-service", "principal": "cg.workflow-from-learner.v1", "replayEnabled": true }
       ],
       "acl": [
         { "principal": "svc.learner-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-learner.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.learning-from-learner.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.notification-from-learner.v1", "operation": "READ", "effect": "ALLOW" },
         { "principal": "cg.workflow-from-learner.v1", "operation": "READ", "effect": "ALLOW" }
+      ]
+    },
+    {
+      "name": "platform.iam.v1",
+      "ownerService": "iam-service",
+      "purpose": "account deletion lifecycle and session-revocation integration facts",
+      "partitions": 6,
+      "partitionKey": "aggregateId",
+      "retentionMs": 2592000000,
+      "cleanupPolicy": "delete",
+      "replicationFactor": 3,
+      "minInSyncReplicas": 2,
+      "localRuntimeOverride": { "replicationFactor": 1, "minInSyncReplicas": 1 },
+      "producerPrincipal": "svc.iam-service",
+      "consumerGroups": [
+        { "name": "cg.analytics-from-iam.v1", "service": "analytics-service", "principal": "cg.analytics-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.audit-from-iam.v1", "service": "audit-service", "principal": "cg.audit-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.notification-from-iam.v1", "service": "notification-service", "principal": "cg.notification-from-iam.v1", "replayEnabled": true },
+        { "name": "cg.workflow-from-iam.v1", "service": "workflow-service", "principal": "cg.workflow-from-iam.v1", "replayEnabled": true }
+      ],
+      "acl": [
+        { "principal": "svc.iam-service", "operation": "WRITE", "effect": "ALLOW" },
+        { "principal": "cg.analytics-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.audit-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.notification-from-iam.v1", "operation": "READ", "effect": "ALLOW" },
+        { "principal": "cg.workflow-from-iam.v1", "operation": "READ", "effect": "ALLOW" }
       ]
     },
     {
@@ -571,7 +602,12 @@
     { "eventName": "sync.conflict_detected.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-learning.v1"] },
     { "eventName": "sync.recovered.v2", "topic": "platform.learning.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.workflow-from-learning.v1"] },
     { "eventName": "support.ticket.created.v2", "topic": "platform.admin-ops.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.notification-from-admin-ops.v1", "cg.workflow-from-admin-ops.v1", "cg.audit-from-admin-ops.v1"] },
-    { "eventName": "support.ticket.resolved.v2", "topic": "platform.admin-ops.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.notification-from-admin-ops.v1", "cg.workflow-from-admin-ops.v1", "cg.audit-from-admin-ops.v1"] }
+    { "eventName": "support.ticket.resolved.v2", "topic": "platform.admin-ops.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.notification-from-admin-ops.v1", "cg.workflow-from-admin-ops.v1", "cg.audit-from-admin-ops.v1"] },
+    { "eventName": "privacy.export.requested.v2", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.audit-from-learner.v1", "cg.workflow-from-learner.v1"] },
+    { "eventName": "privacy.export.completed.v2", "topic": "platform.learner.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.audit-from-learner.v1", "cg.notification-from-learner.v1"] },
+    { "eventName": "account.deletion.requested.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-iam.v1", "cg.audit-from-iam.v1", "cg.workflow-from-iam.v1"] },
+    { "eventName": "account.deletion.cancelled.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-iam.v1", "cg.audit-from-iam.v1", "cg.workflow-from-iam.v1"] },
+    { "eventName": "account.deletion.completed.v2", "topic": "platform.iam.v1", "partitionKey": "aggregateId", "consumerGroups": ["cg.analytics-from-iam.v1", "cg.audit-from-iam.v1", "cg.notification-from-iam.v1"] }
   ],
   "telemetryBridge": {
     "eventContractIsSeparateFromTelemetryEnvelope": true,

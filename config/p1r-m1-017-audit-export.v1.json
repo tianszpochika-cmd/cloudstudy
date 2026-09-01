@@ -1,0 +1,134 @@
+{
+  "$schema": "p1r.m1-017.audit-export.v1",
+  "schemaVersion": "p1r.m1-017.audit-export.v1",
+  "taskId": "P1R-M1-017",
+  "phase": "PHASE_1",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "sourceOfTruth": "packages/contracts/fragments/m1-017-audit-export.openapi.json",
+  "sourceRefs": [
+    "requirements/backlog/v2-phase1-rebaseline/02-编号任务台账.md#P1R-M1-017",
+    "docs/06-design/v2-980plus/phase1-business-operation/02-端到端业务旅程台账.md#JNY-P1-15",
+    "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md#8",
+    "docs/06-design/v2-980plus/phase1-business-operation/05-后台内容运营与客服业务流程.md#9"
+  ],
+  "ownership": {
+    "dataOwner": "audit-service",
+    "publicRouteEligible": false,
+    "externalBoundaryOwner": "admin-ops-service",
+    "workflowRole": "orchestrate-retry-and-recovery-only",
+    "domainWrites": "PROHIBITED",
+    "sourceRecords": "append-only",
+    "auditHistoryDeletion": "PROHIBITED"
+  },
+  "patch": {
+    "sourceFile": "packages/contracts/fragments/m1-017-audit-export.openapi.json",
+    "applyMode": "DIRECT_CANONICAL_SOURCE",
+    "canonicalOperations": [
+      "createM1017AuditExport",
+      "getM1017AuditExport",
+      "requestM1017AuditExportDownload",
+      "recoverM1017AuditExport"
+    ],
+    "routes": [
+      "/internal/v1/audit/exports",
+      "/internal/v1/audit/exports/{exportId}",
+      "/internal/v1/audit/exports/{exportId}/download",
+      "/internal/v1/audit/exports/{exportId}/recovery"
+    ],
+    "externalExposure": "DENY"
+  },
+  "authorization": {
+    "defaultDecision": "DENY",
+    "securityScheme": "B8WorkloadIdentity",
+    "pep": "audit-service-local",
+    "serverDerivedFacts": ["workloadIdentity", "subject", "tenant", "roles", "permissions", "policyVersion", "resourceOwner"],
+    "forbiddenClientAuthorityFields": ["workloadIdentity", "subject", "subjectId", "tenant", "tenantId", "owner", "ownerId", "ownerService", "resourceOwner", "actorId", "role", "roles", "permission", "permissions", "policyVersion", "state", "status", "priority", "assignment", "sla", "auditId", "decisionId", "receiptId", "recoveryReceiptRef"],
+    "allowedWorkloads": {
+      "create": ["ADMIN_OPS_SERVICE", "WORKFLOW_SERVICE"],
+      "read": ["ADMIN_OPS_SERVICE", "WORKFLOW_SERVICE"],
+      "download": ["ADMIN_OPS_SERVICE", "WORKFLOW_SERVICE"],
+      "recover": ["WORKFLOW_SERVICE"]
+    }
+  },
+  "export": {
+    "asynchronous": true,
+    "states": ["REQUESTED", "PROCESSING", "READY", "RETRY_SCHEDULED", "FAILED_RETRYABLE", "FAILED_FINAL", "EXPIRED", "REVOKED"],
+    "statusIsServerDerived": true,
+    "tenantScopeIsServerDerived": true,
+    "download": {
+      "oneTime": true,
+      "grantRefOnly": true,
+      "permanentUrl": false,
+      "credentialInResponse": false,
+      "expiryServerDerived": true,
+      "expiredDecision": "DENY",
+      "issueAuditRequired": true
+    },
+    "copyExpiry": {
+      "serverEnforced": true,
+      "deleteExportCopy": true,
+      "downloadAfterExpiry": "DENY"
+    }
+  },
+  "redaction": {
+    "required": true,
+    "outputOnlyDigestsAndReferences": true,
+    "forbiddenPropertyNames": ["password", "accessToken", "refreshToken", "paymentCredential", "rawAudio", "rawText", "rawBody", "description", "body", "freeText", "downloadUrl", "token", "secret"],
+    "rawIdentityStored": false,
+    "subjectAndTenantRepresentation": "sha256-digest-only",
+    "sourcePayloadInAudit": false
+  },
+  "audit": {
+    "appendOnly": true,
+    "immutable": true,
+    "hashChained": true,
+    "downloadAuditRequired": true,
+    "failureAuditRequired": true,
+    "allowedFields": ["auditId", "actorSubjectHash", "tenantHash", "action", "resourceRef", "decision", "reasonCode", "decisionId", "requestId", "traceId", "commandId", "eventId", "occurredAt", "beforeDigest", "afterDigest", "previousHash", "recordHash", "redacted", "appendOnly"],
+    "forbiddenFields": ["subjectId", "tenantId", "ownerId", "password", "accessToken", "refreshToken", "paymentCredential", "rawAudio", "rawText", "rawBody", "description", "body", "freeText", "downloadUrl", "token", "secret"]
+  },
+  "reliability": {
+    "retryOwner": "workflow-service",
+    "maxAttemptsIncludingInitial": 5,
+    "retryableFailureCodes": ["OWNER_TIMEOUT", "SOURCE_UNAVAILABLE", "REDACTION_FAILURE"],
+    "finalFailureCodes": ["LEGAL_HOLD", "POLICY_DENIED", "RETRY_BUDGET_EXHAUSTED"],
+    "recoveryMustReturnReceipt": true,
+    "domainFactsUntouched": true,
+    "noCrossServiceWrite": true,
+    "replayUsesSameOwnerPath": true
+  },
+  "legacyCompatibility": {
+    "historicalRoute": "/api/v1/admin/audit-logs/export",
+    "deprecated": true,
+    "defaultDecision": "DENY",
+    "owner": "admin-ops-service",
+    "canonicalReplacement": "admin-ops projection to audit-service internal export",
+    "newFactsFromLegacy": false,
+    "directAuditServiceExposure": "DENY"
+  },
+  "runtimeBoundary": {
+    "contractOnly": true,
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "notEvidence": ["directory", "fixture", "static-check", "mock", "in-memory-adapter"],
+    "runtimeOwners": ["P1R-M2-001", "P1R-M2-004", "P1R-M2-005", "P1R-M2-006", "M6", "M8"],
+    "prohibitedClaims": ["durableAuditDatabase", "realShortLivedDownload", "crossOwnerExportRuntime", "KafkaDelivery", "WorkflowRuntime", "BrowserE2E", "legalHoldRuntime"]
+  },
+  "adversarialCases": [
+    "external-ref",
+    "forged-client-authority",
+    "nested-allOf-authority",
+    "client-authority-prefix",
+    "raw-body-property",
+    "raw-secret-property",
+    "tenant-scope-widening",
+    "public-audit-service-route",
+    "download-after-expiry",
+    "grant-reuse",
+    "retry-budget-overflow",
+    "recovery-domain-write",
+    "mutable-audit-record",
+    "legacy-route-promotion",
+    "unredacted-identity"
+  ]
+}

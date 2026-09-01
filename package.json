@@ -45,6 +45,7 @@
     "p1r:gamification-social-contract:check": "node scripts/audit/p1r-gamification-social-contract-check.mjs",
     "p1r:commerce-contract:check": "node scripts/audit/p1r-commerce-contract-check.mjs",
     "p1r:notification-sync-support-contract:check": "node scripts/audit/p1r-notification-sync-support-contract-check.mjs",
+    "p1r:privacy-analytics-audit-contract:check": "node scripts/audit/p1r-privacy-analytics-audit-contract-check.mjs",
     "test:p1r": "node scripts/dev/run-node-tests.mjs tests/p1r",
     "services:build": "node scripts/runtime/build-v2-services.mjs",
     "services:run": "node scripts/runtime/run-v2-services.mjs",

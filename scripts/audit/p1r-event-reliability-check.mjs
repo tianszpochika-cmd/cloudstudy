@@ -18,6 +18,9 @@ export const DEFAULT_RELIABILITY_POLICY =
 export const DEFAULT_SAGA_POLICY = "config/p1r-saga-recovery.v1.json";
 
 const CANONICAL_EVENTS = [
+  "account.deletion.cancelled.v2",
+  "account.deletion.completed.v2",
+  "account.deletion.requested.v2",
   "assessment.item.assessed.v2",
   "assessment.placement.completed.v1",
   "commerce.entitlement.activated.v2",
@@ -44,6 +47,8 @@ const CANONICAL_EVENTS = [
   "notification.recovery.completed.v2",
   "notification.requested.v2",
   "notification.retry_scheduled.v2",
+  "privacy.export.completed.v2",
+  "privacy.export.requested.v2",
   "social.report.created.v2",
   "study_room.focus_started.v2",
   "study_room.seat_joined.v2",

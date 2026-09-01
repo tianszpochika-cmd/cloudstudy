@@ -3928,6 +3928,112 @@ function compareM1016B26Promotion(previous, current, allowance) {
   return changes;
 }
 
+// M1-017 is deliberately bound to the accepted M1-016 handoff. The full
+// semantic artifact digests and the generic descriptor-set digests are both
+// frozen: the former rejects any unapproved nested addition, while the latter
+// preserves a source-to-current explanation instead of granting a path-wide
+// blanket allowance.
+export const M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID = 'P1R-M1-017';
+export const M1017_SOURCE_CONTRACT_BASELINE_REF = 'b1d79a09e266179988270e1832a1309a1cb4af4d';
+export const M1017_IMMUTABLE_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
+export const M1017_OPENAPI_SOURCE_SEMANTIC_SHA256 = 'd9e9f93e27e5e5249254d0433da7dd953d0cc9e6697da63def3ee037cb70255a';
+export const M1017_EVENT_SOURCE_SEMANTIC_SHA256 = '6517444993e9e26fa09f2558fd9fb0bf4f24a12d78071ddf3e40a3f30db919b8';
+export const M1017_B26_SOURCE_SEMANTIC_SHA256 = '6fa1b473ec91ab569d9be33f465e21651f20d372dd22d4ac25bae6fb10971120';
+export const M1017_OPENAPI_EXPECTED_SEMANTIC_SHA256 = 'd40fff55a7a138d533fc536875396d34f05691ec08a63e6a86ff4f9cfff68a01';
+export const M1017_EVENT_EXPECTED_SEMANTIC_SHA256 = '4a1357e308271533e66e25bceba4ccb164ee5c2d58652b642b252895028a8ac2';
+export const M1017_B26_EXPECTED_SEMANTIC_SHA256 = 'b04c19851d17e02a0f5c2ca2221bfbc2d977d6f49cd92d0be7926398fe2a90a5';
+export const M1017_OPENAPI_DESCRIPTOR_SET_SHA256 = '0e575628e9e1828c37d461c121c98d88ac63a138138d08a1538bbc4582913092';
+export const M1017_EVENT_DESCRIPTOR_SET_SHA256 = 'c3fa4291254d7c83ec0b690c648fb86437fa72dac84f65744284caac7dd51767';
+export const M1017_B26_DESCRIPTOR_SET_SHA256 = 'e72f5be7f21ef1c166dee360c582a8bd4dc92a66f809242fd0e4dcd95660d37b';
+export const M1017_POLICY_SEMANTIC_SHA256 = '05c0eafc6577fdfd64b3313a4746eb380bfad554f2f61ca32e47b55c2ee41e53';
+export const M1017_APPROVED_SOURCE_FILES_SEMANTIC_SHA256 = 'a0bd97212685c369bc42bea3b68387f17d1e6ac6d347458e7fba8be7445f4953';
+export const M1017_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256 = '4cf0e4f0ad2b83c36843435b6eb67efdfd54d708b0da9d79e358f1995faa32b6';
+export const M1017_B26_STATIC_POLICY_SEMANTIC_SHA256 = '607860dedc229e019e9dc6bf5c7e88511776b5e3c309fbb467318bd653b4e3bd';
+export const M1017_PROMOTION_ALLOWANCE_KEYS = Object.freeze([
+  'id', 'sourceContractBaseline', 'previousPromotion', 'previousPromotionContract',
+  'immutableGovernanceBaseline', 'runtimeStatus', 'scope', 'promotionMode',
+  'allowsHistoricalV1Promotion', 'allowsDualPublish', 'approvedSourceFiles',
+  'requiredCompatibilityChecks', 'b26StaticPolicy',
+]);
+
+export function isValidM1017PromotionAllowance(allowance) {
+  return isRecord(allowance)
+    && stableGovernanceValue(Object.keys(allowance).sort()) === stableGovernanceValue([...M1017_PROMOTION_ALLOWANCE_KEYS].sort())
+    && allowance.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID
+    && allowance.sourceContractBaseline === M1017_SOURCE_CONTRACT_BASELINE_REF
+    && allowance.previousPromotion === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID
+    && allowance.previousPromotionContract === 'config/p1r-notification-sync-support-contract.v1.json'
+    && allowance.immutableGovernanceBaseline === M1017_IMMUTABLE_GOVERNANCE_BASELINE_REF
+    && allowance.runtimeStatus === 'NOT_RUNTIME_VERIFIED'
+    && allowance.scope === 'M1017_OPENAPI_EVENT_GOVERNANCE_B26_STATIC_WITH_B1_B13_V1_HISTORICAL'
+    && allowance.promotionMode === 'FUTURE_M1017_V2_ONLY'
+    && allowance.allowsHistoricalV1Promotion === false
+    && allowance.allowsDualPublish === false
+    && stableGovernanceSha256(allowance.approvedSourceFiles) === M1017_APPROVED_SOURCE_FILES_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.requiredCompatibilityChecks) === M1017_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256
+    && stableGovernanceSha256(allowance.b26StaticPolicy) === M1017_B26_STATIC_POLICY_SEMANTIC_SHA256;
+}
+
+export function compareM1017OpenApiDescriptors(previous, current) {
+  return compareOpenApi(previous, current);
+}
+
+export function compareM1017EventDescriptors(previous, current) {
+  return compareEvents(previous, current);
+}
+
+export function compareM1017B26Descriptors(previous, current) {
+  return compareB26WorkflowGovernance(previous, current);
+}
+
+function compareM1017FrozenProjection({ kind, previous, current, allowance, sourceDigest, expectedDigest, descriptorDigest, descriptors }) {
+  if (!isValidM1017PromotionAllowance(allowance)) {
+    return [describeChange(kind, 'm1-017.compatibilityPromotion', 'M1-017 allowance is not the frozen privacy/analytics/audit policy')];
+  }
+  const changes = [];
+  if (stableGovernanceSha256(previous) !== sourceDigest) {
+    changes.push(describeChange(kind, 'm1-017.source', 'M1-017 source is not the accepted b1d79a0 M1-016 handoff'));
+  }
+  const actualDescriptors = descriptors(previous, current);
+  if (stableGovernanceSha256(actualDescriptors) !== descriptorDigest) {
+    changes.push(describeChange(kind, 'm1-017.change-descriptors', 'current changes do not exactly match the frozen M1-017 descriptor set'));
+  }
+  if (stableGovernanceSha256(current) !== expectedDigest) {
+    changes.push(describeChange(kind, 'm1-017.projection', 'current artifact is not the exact frozen M1-017 semantic projection'));
+  }
+  return changes;
+}
+
+function compareM1017OpenApiPromotion(previous, current, allowance) {
+  return compareM1017FrozenProjection({
+    kind: 'openapi', previous, current, allowance,
+    sourceDigest: M1017_OPENAPI_SOURCE_SEMANTIC_SHA256,
+    expectedDigest: M1017_OPENAPI_EXPECTED_SEMANTIC_SHA256,
+    descriptorDigest: M1017_OPENAPI_DESCRIPTOR_SET_SHA256,
+    descriptors: compareM1017OpenApiDescriptors,
+  });
+}
+
+function compareM1017EventPromotion(previous, current, allowance) {
+  return compareM1017FrozenProjection({
+    kind: 'events', previous, current, allowance,
+    sourceDigest: M1017_EVENT_SOURCE_SEMANTIC_SHA256,
+    expectedDigest: M1017_EVENT_EXPECTED_SEMANTIC_SHA256,
+    descriptorDigest: M1017_EVENT_DESCRIPTOR_SET_SHA256,
+    descriptors: compareM1017EventDescriptors,
+  });
+}
+
+function compareM1017B26Promotion(previous, current, allowance) {
+  return compareM1017FrozenProjection({
+    kind: 'events', previous, current, allowance,
+    sourceDigest: M1017_B26_SOURCE_SEMANTIC_SHA256,
+    expectedDigest: M1017_B26_EXPECTED_SEMANTIC_SHA256,
+    descriptorDigest: M1017_B26_DESCRIPTOR_SET_SHA256,
+    descriptors: compareM1017B26Descriptors,
+  });
+}
+
 function duplicateEventNames(events) {
   const seen = new Set();
   const duplicates = new Set();
@@ -4029,6 +4135,9 @@ function compareImmutableEventGovernance(governanceBaseline, current, changes, a
 
 export function compareB26WorkflowGovernance(governanceBaseline, current, { allowance } = {}) {
   const changes = [];
+  if (allowance?.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID) {
+    return compareM1017B26Promotion(governanceBaseline, current, allowance);
+  }
   if (allowance?.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID) {
     return compareM1016B26Promotion(governanceBaseline, current, allowance);
   }
@@ -4199,6 +4308,9 @@ export function compareOpenApi(previous, current) {
 }
 
 function compareEvents(previous, current, { governanceBaseline, allowance } = {}) {
+  if (allowance?.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID) {
+    return compareM1017EventPromotion(previous, current, allowance);
+  }
   if (allowance?.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID) {
     return compareM1016EventPromotion(previous, current, allowance);
   }
@@ -4337,6 +4449,9 @@ function compareSchemaRegistry(previous, current) {
 
 export function compareContracts(kind, previous, current, { governanceBaseline, allowance } = {}) {
   if (kind === 'openapi') {
+    if (allowance?.id === M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID) {
+      return compareM1017OpenApiPromotion(previous, current, allowance);
+    }
     if (allowance?.id === M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID) {
       return compareM1016OpenApiPromotion(previous, current, allowance);
     }

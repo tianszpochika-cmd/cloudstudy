@@ -84,6 +84,14 @@ import {
   compareM1016OpenApiDescriptors,
   compareM1016EventDescriptors,
   compareM1016B26Descriptors,
+  M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID,
+  M1017_SOURCE_CONTRACT_BASELINE_REF,
+  M1017_IMMUTABLE_GOVERNANCE_BASELINE_REF,
+  M1017_PROMOTION_ALLOWANCE_KEYS,
+  M1017_POLICY_SEMANTIC_SHA256,
+  M1017_APPROVED_SOURCE_FILES_SEMANTIC_SHA256,
+  M1017_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256,
+  M1017_B26_STATIC_POLICY_SEMANTIC_SHA256,
   buildM1008PromotionExpectedCatalog,
   compareB26WorkflowGovernance,
   compareContracts,
@@ -109,6 +117,7 @@ const learningLoopContractPolicyPath = 'config/p1r-learning-loop-contract.v1.jso
 const gamificationSocialContractPolicyPath = 'config/p1r-gamification-social-contract.v1.json';
 const commerceContractPolicyPath = 'config/p1r-commerce-contract.v1.json';
 const notificationSyncSupportContractPolicyPath = 'config/p1r-notification-sync-support-contract.v1.json';
+const privacyAnalyticsAuditContractPolicyPath = 'config/p1r-privacy-analytics-audit-contract.v1.json';
 
 export const REQUIRED_CI_CONTRACT_BASELINE_REF = '463c4b238caceb1592bff6c61327c00ab9bac922';
 export const REQUIRED_EVENT_GOVERNANCE_BASELINE_REF = '868c2177f62b6d2cf613bed702686dddcfe6943f';
@@ -121,6 +130,7 @@ export const REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF = M1013_SOURCE_CONTRACT
 export const REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF = M1014_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF = M1015_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF = M1016_SOURCE_CONTRACT_BASELINE_REF;
+export const REQUIRED_M1017_SOURCE_CONTRACT_BASELINE_REF = M1017_SOURCE_CONTRACT_BASELINE_REF;
 export const REQUIRED_CI_CONTRACT_COMPATIBILITY_COMMAND =
   `pnpm contracts:compatibility:git -- --ref ${REQUIRED_CI_CONTRACT_BASELINE_REF} --governance-ref ${REQUIRED_EVENT_GOVERNANCE_BASELINE_REF} --kind all --json`;
 export const REQUIRED_CI_CONTRACT_COMMANDS = Object.freeze([
@@ -1243,6 +1253,63 @@ function loadM1016CompatibilityPolicy(readFile) {
   return Object.freeze({ ...policy.compatibilityPromotion });
 }
 
+const M1017_POLICY_TOP_LEVEL_KEYS = Object.freeze([
+  '$schema', 'schemaVersion', 'task', 'phase', 'startCommit', 'sourceBaseline', 'maturity', 'runtimeStatus',
+  'collectionPolicy', 'sourcePolicies', 'canonicalSources', 'compatibilityPromotion', 'canonicalOperations',
+  'canonicalEvents', 'telemetryBoundary', 'gapBindings', 'runtimeBoundary',
+]);
+
+export function validateM1017CompatibilityPolicy(policy) {
+  const errors = [];
+  exactPolicyKeys(policy, M1017_POLICY_TOP_LEVEL_KEYS, 'privacy/analytics/audit contract policy', errors);
+  exactPolicyValue(policy?.$schema, 'p1r.privacy-analytics-audit-contract.v1', 'M1-017 policy $schema', errors);
+  exactPolicyValue(policy?.schemaVersion, 'p1r.privacy-analytics-audit-contract.v1', 'M1-017 policy schemaVersion', errors);
+  exactPolicyValue(policy?.task, 'P1R-M1-017', 'M1-017 policy task', errors);
+  exactPolicyValue(policy?.phase, 'P1', 'M1-017 policy phase', errors);
+  exactPolicyValue(policy?.startCommit, '6245ca42ef254ecc4a45e86e57a5c65922c69c22', 'M1-017 policy startCommit', errors);
+  exactPolicyValue(policy?.sourceBaseline, M1017_SOURCE_CONTRACT_BASELINE_REF, 'M1-017 source baseline', errors);
+  exactPolicyValue(policy?.maturity, 'D2_CONTRACT_READY', 'M1-017 policy maturity', errors);
+  exactPolicyValue(policy?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'M1-017 policy runtimeStatus', errors);
+  if (stableGovernanceSha256(policy) !== M1017_POLICY_SEMANTIC_SHA256) {
+    errors.push('privacy/analytics/audit contract policy is not the frozen M1-017 semantic policy value');
+  }
+
+  const promotion = policy?.compatibilityPromotion;
+  exactPolicyKeys(promotion, M1017_PROMOTION_ALLOWANCE_KEYS, 'M1-017 compatibility promotion', errors);
+  exactPolicyValue(promotion?.id, M1017_PRIVACY_ANALYTICS_AUDIT_PROMOTION_ID, 'M1-017 promotion id', errors);
+  exactPolicyValue(promotion?.sourceContractBaseline, M1017_SOURCE_CONTRACT_BASELINE_REF, 'M1-017 promotion source baseline', errors);
+  exactPolicyValue(promotion?.previousPromotion, M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID, 'M1-017 previous promotion', errors);
+  exactPolicyValue(promotion?.previousPromotionContract, 'config/p1r-notification-sync-support-contract.v1.json', 'M1-017 previous promotion contract', errors);
+  exactPolicyValue(promotion?.immutableGovernanceBaseline, M1017_IMMUTABLE_GOVERNANCE_BASELINE_REF, 'M1-017 immutable governance baseline', errors);
+  exactPolicyValue(promotion?.runtimeStatus, 'NOT_RUNTIME_VERIFIED', 'M1-017 promotion runtimeStatus', errors);
+  exactPolicyValue(promotion?.scope, 'M1017_OPENAPI_EVENT_GOVERNANCE_B26_STATIC_WITH_B1_B13_V1_HISTORICAL', 'M1-017 promotion scope', errors);
+  exactPolicyValue(promotion?.promotionMode, 'FUTURE_M1017_V2_ONLY', 'M1-017 promotion mode', errors);
+  exactPolicyValue(promotion?.allowsHistoricalV1Promotion, false, 'M1-017 historical v1 promotion allowance', errors);
+  exactPolicyValue(promotion?.allowsDualPublish, false, 'M1-017 dual-publish allowance', errors);
+  for (const [field, digest, label] of [
+    ['approvedSourceFiles', M1017_APPROVED_SOURCE_FILES_SEMANTIC_SHA256, 'M1-017 approved source files'],
+    ['requiredCompatibilityChecks', M1017_REQUIRED_COMPATIBILITY_CHECKS_SEMANTIC_SHA256, 'M1-017 required compatibility checks'],
+    ['b26StaticPolicy', M1017_B26_STATIC_POLICY_SEMANTIC_SHA256, 'M1-017 B26 static policy'],
+  ]) {
+    if (stableGovernanceSha256(promotion?.[field]) !== digest) errors.push(`${label} is not the frozen M1-017 value`);
+  }
+  return errors;
+}
+
+function loadM1017CompatibilityPolicy(readFile) {
+  let policy;
+  try {
+    policy = JSON.parse(readFile(path.join(repoRoot, ...privacyAnalyticsAuditContractPolicyPath.split('/'))));
+  } catch (error) {
+    throw new Error(`M1-017 compatibility policy could not be loaded: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const errors = validateM1017CompatibilityPolicy(policy);
+  if (errors.length > 0) {
+    throw new Error(`M1-017 compatibility policy is invalid (fail closed):\n${errors.map((error) => `- ${error}`).join('\n')}`);
+  }
+  return Object.freeze({ ...policy.compatibilityPromotion });
+}
+
 function loadM1015CompatibilityPolicy(readFile) {
   let policy;
   try {
@@ -1317,6 +1384,24 @@ function loadM1016SourceContractBaseline(promotion, git) {
   if (commit !== REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF) {
     throw new Error(
       `M1-016 source contract ref ${REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
+    );
+  }
+  return {
+    ref,
+    commit,
+    openapi: JSON.parse(git(['show', `${commit}:${contractPaths.openapi}`])),
+    catalog: JSON.parse(git(['show', `${commit}:${contractPaths.events}`])),
+    b26Runtime: JSON.parse(git(['show', `${commit}:${b26RuntimePath}`])),
+    source: `git:${commit}:packages/contracts/{openapi/v1/openapi.json,events/v1/catalog.json,../config/b26-event-runtime.json}`,
+  };
+}
+
+function loadM1017SourceContractBaseline(promotion, git) {
+  const ref = promotion.sourceContractBaseline;
+  const commit = git(['rev-parse', '--verify', `${ref}^{commit}`]).trim();
+  if (commit !== REQUIRED_M1017_SOURCE_CONTRACT_BASELINE_REF) {
+    throw new Error(
+      `M1-017 source contract ref ${REQUIRED_M1017_SOURCE_CONTRACT_BASELINE_REF} resolved to ${commit || '<empty>'}; it must resolve to the frozen full commit.`,
     );
   }
   return {
@@ -1478,6 +1563,21 @@ export function runGitBaselineCompatibility({
   const needsM1014Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1015Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
   const needsM1016Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const needsM1017Promotion = selectedKinds.some((contractKind) => contractKind === 'events' || contractKind === 'openapi');
+  const m1017BaselineRefs = new Set([
+    REQUIRED_CI_CONTRACT_BASELINE_REF,
+    REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1009_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1010_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1011_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1012_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1013_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1014_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1015_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1016_SOURCE_CONTRACT_BASELINE_REF,
+    REQUIRED_M1017_SOURCE_CONTRACT_BASELINE_REF,
+  ]);
+  const useM1017Promotion = needsM1017Promotion && m1017BaselineRefs.has(baselineCommit);
   const m1016BaselineRefs = new Set([
     REQUIRED_CI_CONTRACT_BASELINE_REF,
     REQUIRED_M1008_SOURCE_CONTRACT_BASELINE_REF,
@@ -1589,6 +1689,12 @@ export function runGitBaselineCompatibility({
     : undefined;
   const notificationSyncSupportSourceContractBaseline = useM1016Promotion
     ? loadM1016SourceContractBaseline(notificationSyncSupportPromotion, git)
+    : undefined;
+  const privacyAnalyticsAuditPromotion = useM1017Promotion
+    ? loadM1017CompatibilityPolicy(readFile)
+    : undefined;
+  const privacyAnalyticsAuditSourceContractBaseline = useM1017Promotion
+    ? loadM1017SourceContractBaseline(privacyAnalyticsAuditPromotion, git)
     : undefined;
   const immutableBaselineIntegrityChanges = needsEventGovernance
     ? [
@@ -1735,6 +1841,22 @@ export function runGitBaselineCompatibility({
       { allowance: gamificationSocialPromotion },
     )
     : [];
+  const m1015ToM1016OpenApiIntegrityChanges = useM1017Promotion && useM1016Promotion
+    ? compareContracts(
+      'openapi',
+      notificationSyncSupportSourceContractBaseline.openapi,
+      privacyAnalyticsAuditSourceContractBaseline.openapi,
+      { allowance: notificationSyncSupportPromotion },
+    )
+    : [];
+  const m1015ToM1016EventIntegrityChanges = useM1017Promotion && useM1016Promotion && needsEventGovernance
+    ? compareContracts(
+      'events',
+      notificationSyncSupportSourceContractBaseline.catalog,
+      privacyAnalyticsAuditSourceContractBaseline.catalog,
+      { allowance: notificationSyncSupportPromotion },
+    )
+    : [];
   const m1011SourceB26IntegrityChanges = needsEventGovernance
     ? compareB26WorkflowGovernance(
       immutableGovernanceBaseline.b26Runtime,
@@ -1770,6 +1892,13 @@ export function runGitBaselineCompatibility({
       { allowance: gamificationSocialPromotion },
     )
     : [];
+  const m1015ToM1016B26IntegrityChanges = useM1017Promotion && useM1016Promotion && needsEventGovernance
+    ? compareB26WorkflowGovernance(
+      notificationSyncSupportSourceContractBaseline.b26Runtime,
+      privacyAnalyticsAuditSourceContractBaseline.b26Runtime,
+      { allowance: notificationSyncSupportPromotion },
+    )
+    : [];
 
   const governanceSummary = immutableGovernanceBaseline === undefined
     ? undefined
@@ -1792,7 +1921,80 @@ export function runGitBaselineCompatibility({
     let breakingChanges;
     let resultGovernanceBaseline;
     let promotionResult;
-    if (contractKind === 'openapi' && useM1016Promotion) {
+    if (contractKind === 'openapi' && useM1017Promotion) {
+      breakingChanges = [
+        ...m1008ToM1009IntegrityChanges,
+        ...m1009ToM1010OpenApiIntegrityChanges,
+        ...m1010ToM1011OpenApiIntegrityChanges,
+        ...m1011ToM1012OpenApiIntegrityChanges,
+        ...m1012ToM1013OpenApiIntegrityChanges,
+        ...m1013ToM1014OpenApiIntegrityChanges,
+        ...m1014ToM1015OpenApiIntegrityChanges,
+        ...m1015ToM1016OpenApiIntegrityChanges,
+        ...compareContracts(
+          'openapi',
+          privacyAnalyticsAuditSourceContractBaseline.openapi,
+          current,
+          { allowance: privacyAnalyticsAuditPromotion },
+        ),
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      promotionResult = {
+        id: privacyAnalyticsAuditPromotion.id,
+        sourceContractBaseline: privacyAnalyticsAuditSourceContractBaseline.commit,
+        previousPromotion: M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID,
+        previousPromotionSource: M1016_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: privacyAnalyticsAuditPromotion.immutableGovernanceBaseline,
+        runtimeStatus: privacyAnalyticsAuditPromotion.runtimeStatus,
+        scope: privacyAnalyticsAuditPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'events' && useM1017Promotion) {
+      const currentB26 = JSON.parse(readFile(path.join(repoRoot, ...b26RuntimePath.split('/'))));
+      breakingChanges = [
+        ...m1008ToM1010EventIntegrityChanges,
+        ...m1010ToM1011EventIntegrityChanges,
+        ...m1011ToM1012EventIntegrityChanges,
+        ...m1012ToM1013EventIntegrityChanges,
+        ...m1013ToM1014EventIntegrityChanges,
+        ...m1014ToM1015EventIntegrityChanges,
+        ...m1015ToM1016EventIntegrityChanges,
+        ...compareContracts(
+          'events',
+          privacyAnalyticsAuditSourceContractBaseline.catalog,
+          current,
+          { allowance: privacyAnalyticsAuditPromotion },
+        ),
+        ...m1011SourceB26IntegrityChanges,
+        ...m1011ToM1012B26IntegrityChanges,
+        ...m1012ToM1013B26IntegrityChanges,
+        ...m1013ToM1014B26IntegrityChanges,
+        ...m1014ToM1015B26IntegrityChanges,
+        ...m1015ToM1016B26IntegrityChanges,
+        ...compareB26WorkflowGovernance(
+          privacyAnalyticsAuditSourceContractBaseline.b26Runtime,
+          currentB26,
+          { allowance: privacyAnalyticsAuditPromotion },
+        ),
+        ...immutableBaselineIntegrityChanges,
+      ];
+      const uniqueChanges = new Map();
+      for (const change of breakingChanges) uniqueChanges.set(stableGovernanceValue(change), change);
+      breakingChanges = [...uniqueChanges.values()];
+      resultGovernanceBaseline = governanceSummary;
+      promotionResult = {
+        id: privacyAnalyticsAuditPromotion.id,
+        sourceContractBaseline: privacyAnalyticsAuditSourceContractBaseline.commit,
+        previousPromotion: M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID,
+        previousPromotionSource: M1016_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: immutableGovernanceBaseline.commit,
+        runtimeStatus: privacyAnalyticsAuditPromotion.runtimeStatus,
+        scope: privacyAnalyticsAuditPromotion.scope,
+        accepted: breakingChanges.length === 0,
+      };
+    } else if (contractKind === 'openapi' && useM1016Promotion) {
       breakingChanges = [
         ...m1008ToM1009IntegrityChanges,
         ...m1009ToM1010OpenApiIntegrityChanges,
@@ -2336,7 +2538,17 @@ export function runGitBaselineCompatibility({
     baselineCommit,
     currentCommit,
     governanceBaseline: governanceSummary,
-    promotion: useM1016Promotion
+    promotion: useM1017Promotion
+      ? {
+        id: privacyAnalyticsAuditPromotion.id,
+        sourceContractBaseline: privacyAnalyticsAuditSourceContractBaseline.commit,
+        previousPromotion: M1016_NOTIFICATION_SYNC_SUPPORT_PROMOTION_ID,
+        previousPromotionSource: M1016_SOURCE_CONTRACT_BASELINE_REF,
+        immutableGovernanceBaseline: privacyAnalyticsAuditPromotion.immutableGovernanceBaseline,
+        runtimeStatus: privacyAnalyticsAuditPromotion.runtimeStatus,
+        scope: privacyAnalyticsAuditPromotion.scope,
+      }
+      : useM1016Promotion
       ? {
         id: notificationSyncSupportPromotion.id,
         sourceContractBaseline: notificationSyncSupportSourceContractBaseline.commit,

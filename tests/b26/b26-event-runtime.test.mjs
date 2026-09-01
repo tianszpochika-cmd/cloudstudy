@@ -7,32 +7,34 @@ import { projectCanonicalAsyncApi } from '../../scripts/contracts/event-governan
 import { readB26Inputs, validateB26EventRuntime } from '../../scripts/runtime/validate-b26-event-runtime.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
-const { manifest, fragment, m1016Fragment, catalog } = readB26Inputs()
+const { manifest, fragment, m1016Fragment, m1017Fragment, catalog } = readB26Inputs()
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
 }
 
 test('B26 static Kafka/Outbox baseline passes while runtime evidence remains pending', () => {
-  const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment })
+  const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment, m1017Fragment })
   assert.equal(result.result, 'PASS', result.errors.join('\n'))
   assert.equal(result.gate, 'B26')
   assert.deepEqual(result.taskIds, ['V2-B26-EVT-001', 'V2-B26-EVT-002'])
   assert.equal(result.staticStatus, 'PASS')
   assert.equal(result.runtimeStatus, 'pending')
   assert.equal(result.runtimeGate, 'static-only')
-  assert.equal(result.topicCount, 11)
+  assert.equal(result.topicCount, 12)
   assert.equal(result.fragmentEventCount, 7)
   assert.equal(result.m1016EventCount, 8)
-  assert.equal(result.routedCanonicalEventCount, 42)
+  assert.equal(result.m1017EventCount, 5)
+  assert.equal(result.routedCanonicalEventCount, 47)
   assert.equal(result.fragmentPayloadSchemaCount, 7)
   assert.equal(result.m1016PayloadSchemaCount, 8)
-  assert.equal(result.totalFragmentEventCount, 15)
-  assert.equal(result.totalFragmentPayloadSchemaCount, 15)
+  assert.equal(result.m1017PayloadSchemaCount, 5)
+  assert.equal(result.totalFragmentEventCount, 20)
+  assert.equal(result.totalFragmentPayloadSchemaCount, 20)
   assert.equal(result.eventCount, 7)
-  assert.equal(result.routeCount, 42)
+  assert.equal(result.routeCount, 47)
   assert.equal(result.payloadSchemaCount, 7)
-  assert.equal(result.consumerGroupCount, 36)
+  assert.equal(result.consumerGroupCount, 42)
   assert.equal(result.runtimeEvidencePending, true)
 })
 
@@ -176,6 +178,90 @@ test('B26 freezes the eight M1-016 notification, sync and support routes and fiv
     const route = manifest.eventRouting.find((candidate) => candidate.eventName === eventName)
     assert.equal(route.topic, topic)
     assert.ok(route.consumerGroups.includes(consumerGroup), `${eventName} must route to ${consumerGroup}`)
+  }
+})
+
+test('B26 freezes the five M1-017 privacy and account-deletion routes without sending UI telemetry to Kafka', () => {
+  const expectedRoutes = {
+    'privacy.export.requested.v2': ['platform.learner.v1', ['cg.audit-from-learner.v1', 'cg.workflow-from-learner.v1']],
+    'privacy.export.completed.v2': ['platform.learner.v1', ['cg.audit-from-learner.v1', 'cg.notification-from-learner.v1']],
+    'account.deletion.requested.v2': ['platform.iam.v1', ['cg.analytics-from-iam.v1', 'cg.audit-from-iam.v1', 'cg.workflow-from-iam.v1']],
+    'account.deletion.cancelled.v2': ['platform.iam.v1', ['cg.analytics-from-iam.v1', 'cg.audit-from-iam.v1', 'cg.workflow-from-iam.v1']],
+    'account.deletion.completed.v2': ['platform.iam.v1', ['cg.analytics-from-iam.v1', 'cg.audit-from-iam.v1', 'cg.notification-from-iam.v1']],
+  }
+  assert.deepEqual(m1017Fragment.events.map((event) => event.eventName), Object.keys(expectedRoutes))
+  for (const [eventName, [topic, consumerGroups]] of Object.entries(expectedRoutes)) {
+    assert.deepEqual(manifest.eventRouting.find((route) => route.eventName === eventName), {
+      eventName,
+      topic,
+      partitionKey: 'aggregateId',
+      consumerGroups,
+    })
+    const event = catalog.events.find((candidate) => candidate.eventName === eventName)
+    assert.equal(event.status, 'CANONICAL_D2')
+    assert.equal(event['x-p1r-governance'].runtimeStatus, 'NOT_RUNTIME_VERIFIED')
+    assert.equal(event['x-p1r-governance'].producer.service, topic === 'platform.iam.v1' ? 'iam-service' : 'learner-service')
+    assert.equal(event['x-p1r-governance'].transport.topic, topic)
+    assert.deepEqual(event['x-p1r-governance'].consumers.map((consumer) => consumer.consumerGroup), consumerGroups)
+  }
+
+  const requestedPayload = m1017Fragment.payloadSchemas.M1017PrivacyExportRequested
+  assert.equal(requestedPayload.properties.purposeCode.const, 'DATA_EXPORT')
+  assert.equal(requestedPayload.properties.scope.const, 'ACCOUNT_AND_LEARNER_DATA')
+  assert.equal(requestedPayload.properties.policyVersion.type, 'string')
+  assert.equal(m1017Fragment.payloadSchemas.M1017AccountDeletionRequested.properties.coolingOffHours.const, 168)
+  assert.equal(m1017Fragment.payloadSchemas.M1017AccountDeletionCompleted.properties.status.const, 'ANONYMIZED')
+
+  const privacyCompleted = manifest.eventRouting.find((route) => route.eventName === 'privacy.export.completed.v2')
+  assert.equal(privacyCompleted.consumerGroups.includes('cg.workflow-from-learner.v1'), false)
+  const iamTopic = manifest.topics.find((topic) => topic.name === 'platform.iam.v1')
+  assert.equal(iamTopic.ownerService, 'iam-service')
+  assert.deepEqual(iamTopic.consumerGroups.map((group) => [group.service, group.name]), [
+    ['analytics-service', 'cg.analytics-from-iam.v1'],
+    ['audit-service', 'cg.audit-from-iam.v1'],
+    ['notification-service', 'cg.notification-from-iam.v1'],
+    ['workflow-service', 'cg.workflow-from-iam.v1'],
+  ])
+  assert.equal(catalog.events.filter((event) => event.status === 'CANONICAL_D2').some((event) => /^(?:ui|telemetry)\./.test(event.eventName)), false)
+})
+
+test('B26 M1-017 integration fails closed for privacy shape, consumer widening, route drift and UI telemetry injection', () => {
+  const fragmentCases = [
+    (candidate) => { candidate.payloadSchemas.M1017PrivacyExportRequested.properties.scope.const = 'OWNER_ONLY' },
+    (candidate) => { candidate.payloadSchemas.M1017PrivacyExportRequested.properties.policyVersion.type = 'integer' },
+    (candidate) => { candidate.events[1]['x-kafka'] = { topic: 'platform.learner.v1' } },
+    (candidate) => { candidate.events.push(clone(candidate.events[0])) },
+  ]
+  for (const mutate of fragmentCases) {
+    const candidate = clone(m1017Fragment)
+    mutate(candidate)
+    const result = validateB26EventRuntime(manifest, fragment, { m1016Fragment, m1017Fragment: candidate })
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => /M1-017|scope|policyVersion|Kafka governance|exactly five/.test(error)), result.errors.join('\n'))
+  }
+
+  const routeCases = [
+    (candidate) => {
+      candidate.eventRouting.find((route) => route.eventName === 'privacy.export.completed.v2').consumerGroups.push('cg.workflow-from-learner.v1')
+    },
+    (candidate) => {
+      candidate.eventRouting.find((route) => route.eventName === 'account.deletion.requested.v2').topic = 'platform.learner.v1'
+    },
+    (candidate) => {
+      candidate.eventRouting.push({
+        eventName: 'ui.page.viewed.v1',
+        topic: 'platform.iam.v1',
+        partitionKey: 'aggregateId',
+        consumerGroups: ['cg.analytics-from-iam.v1'],
+      })
+    },
+  ]
+  for (const mutate of routeCases) {
+    const candidate = clone(manifest)
+    mutate(candidate)
+    const result = validateB26EventRuntime(candidate, fragment, { m1016Fragment, m1017Fragment })
+    assert.equal(result.result, 'FAIL')
+    assert.ok(result.errors.some((error) => /frozen M1-006|privacy\.export\.completed|account\.deletion\.requested|routing/.test(error)), result.errors.join('\n'))
   }
 })
 

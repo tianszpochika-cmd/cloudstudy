@@ -99,6 +99,18 @@ const M1016_NOTIFICATION_BINDING_CLOSURE = {
   status: 'D2_CONTRACT_CLOSED',
   d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-016'],
 };
+const M1017_PRIVACY_BINDING_CLOSURE = {
+  gapId: 'EVENT-GAP-BIND-PRIV-001',
+  family: 'EVENT-GAP-BIND',
+  status: 'D2_CONTRACT_CLOSED',
+  d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-017'],
+};
+const M1017_ACCOUNT_DELETION_CLOSURE = {
+  gapId: 'EVENT-GAP-USR-DEL-001',
+  family: 'EVENT-GAP-USR-DEL',
+  status: 'D2_CONTRACT_CLOSED',
+  d2ClosureTasks: ['P1R-M1-006', 'P1R-M1-017'],
+};
 const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-ONB-001',
   'EVENT-GAP-ONB-002',
@@ -110,13 +122,13 @@ const EXPECTED_GLOBAL_D2_CLOSED_EVENT_GAPS = [
   'EVENT-GAP-BIND-GAM-001',
   'EVENT-GAP-BIND-SOC-001',
   M1016_NOTIFICATION_BINDING_CLOSURE.gapId,
+  M1017_PRIVACY_BINDING_CLOSURE.gapId,
+  M1017_ACCOUNT_DELETION_CLOSURE.gapId,
 ];
 const EXPECTED_GLOBAL_PLANNED_EVENT_GAPS = [
   'EVENT-GAP-IAM-001',
   'EVENT-GAP-BIND-IAM-001',
   'EVENT-GAP-BIND-IAM-002',
-  'EVENT-GAP-BIND-PRIV-001',
-  'EVENT-GAP-USR-DEL-001',
   'EVENT-GAP-BIND',
 ];
 const HISTORICAL_CONTENT_EVENTS = [
@@ -958,6 +970,15 @@ function checkEventGovernance(input, errors) {
     status: notificationBindingClosure.status,
     d2ClosureTasks: notificationBindingClosure.d2ClosureTasks,
   }, M1016_NOTIFICATION_BINDING_CLOSURE, 'P1R-M1-016 notification binding closure');
+  for (const expectedClosure of [M1017_PRIVACY_BINDING_CLOSURE, M1017_ACCOUNT_DELETION_CLOSURE]) {
+    const closure = closureById.get(expectedClosure.gapId);
+    exact(errors, closure && {
+      gapId: closure.gapId,
+      family: closure.family,
+      status: closure.status,
+      d2ClosureTasks: closure.d2ClosureTasks,
+    }, expectedClosure, `P1R-M1-017 ${expectedClosure.gapId} closure`);
+  }
   const actualClosed = (((catalog['x-p1r-event-governance'] || {}).plannedClosures) || [])
     .filter(function (closure) { return closure.status === 'D2_CONTRACT_CLOSED'; })
     .map(function (closure) { return closure.gapId; });

@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "policyId": "p1r-m1-017-analytics-ingress",
+  "version": "1.0.0",
+  "defaultEffect": "deny",
+  "task": "P1R-M1-017",
+  "owner": "analytics-service",
+  "dataOwner": "analytics-service",
+  "route": "/api/v1/analytics/telemetry",
+  "operationId": "ingestM1017AnalyticsTelemetry",
+  "maturity": "D2_CONTRACT_READY",
+  "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+  "clientAuthority": "NONE",
+  "transport": {
+    "mode": "HTTP_TELEMETRY_ONLY",
+    "kafkaTopic": null,
+    "publishesDomainFacts": false,
+    "writesDomainFacts": false,
+    "clientIsKafkaProducer": false
+  },
+  "trustedContext": {
+    "required": [
+      "subject",
+      "tenant",
+      "consent",
+      "deletionStatus",
+      "policyVersion"
+    ],
+    "source": "verified-server-context",
+    "missingEffect": "SUPPRESS",
+    "clientSuppliedForbidden": [
+      "tenant",
+      "tenantId",
+      "subject",
+      "ownerId",
+      "owner",
+      "ownerService",
+      "principal",
+      "principalId",
+      "subjectId",
+      "actor",
+      "actorId",
+      "user",
+      "userId",
+      "role",
+      "roles",
+      "permission",
+      "permissions",
+      "assignment",
+      "assignee",
+      "queueId",
+      "priority",
+      "sla",
+      "slaDueAt",
+      "state",
+      "stateVersion",
+      "status",
+      "deliveryStatus",
+      "readAt",
+      "legalHold",
+      "retention",
+      "retentionPolicyRef",
+      "auditId"
+    ]
+  },
+  "consent": {
+    "source": "server-derived",
+    "required": true,
+    "acceptedValues": ["GRANTED"],
+    "missingEffect": "SUPPRESS",
+    "revokedEffect": "SUPPRESS",
+    "unknownEffect": "SUPPRESS"
+  },
+  "deletion": {
+    "source": "iam-service-server-derived",
+    "allowedStatus": ["ACTIVE"],
+    "suppressedStatuses": ["PENDING_COOLING_OFF", "EXECUTING", "RECOVERY_REQUIRED", "ANONYMIZED"],
+    "cancelledEffect": "SUPPRESS",
+    "missingEffect": "SUPPRESS",
+    "unknownEffect": "SUPPRESS"
+  },
+  "retry": {
+    "domainFactRetry": false,
+    "telemetryRetryMayChangeDomainFact": false,
+    "failureEffect": "NON_BLOCKING",
+    "replay": "same-key-same-payload-return-original-receipt"
+  },
+  "sampling": {
+    "mode": "SERVER_CONTROLLED",
+    "clientMaySelect": false,
+    "clientHintAuthority": "NONE"
+  },
+  "retention": {
+    "policyRef": "ANALYTICS-RETENTION-V1",
+    "clientMayOverride": false,
+    "rawPayloadPersistence": false
+  },
+  "redaction": {
+    "version": "analytics-redaction-v1",
+    "unknownFieldEffect": "REJECT",
+    "nestedObjectEffect": "EXPLICIT_SCHEMA_ONLY",
+    "forbiddenFieldNames": [
+      "rawText",
+      "rawBody",
+      "rawContent",
+      "rawDescription",
+      "rawPayload",
+      "rawTranscript",
+      "description",
+      "body",
+      "freeText",
+      "plainText",
+      "unredactedFreeText",
+      "unredactedDescription",
+      "password",
+      "secret",
+      "token",
+      "accessToken",
+      "refreshToken",
+      "authorization",
+      "cookie",
+      "rawAudio",
+      "audioBytes",
+      "recordingBytes",
+      "rawAttachmentBytes",
+      "transcript",
+      "answerKey",
+      "rawAnswer",
+      "paymentCredential",
+      "paymentToken",
+      "cardNumber",
+      "cvv",
+      "cvc",
+      "jws",
+      "signature",
+      "objectKey",
+      "url",
+      "signedUrl",
+      "downloadUrl",
+      "uploadUrl"
+    ]
+  },
+  "allowlistedEvents": {
+    "ui.page.viewed.v1": {
+      "schema": "ui.page.viewed",
+      "payloadSchema": "M1017UiPageViewedPayload",
+      "kind": "UI_TELEMETRY"
+    },
+    "ui.element.clicked.v1": {
+      "schema": "ui.element.clicked",
+      "payloadSchema": "M1017UiElementClickedPayload",
+      "kind": "UI_TELEMETRY"
+    },
+    "ui.media.playback.started.v1": {
+      "schema": "ui.media.playback.started",
+      "payloadSchema": "M1017UiMediaPlaybackStartedPayload",
+      "kind": "UI_TELEMETRY"
+    },
+    "telemetry.error.v1": {
+      "schema": "telemetry.error",
+      "payloadSchema": "M1017TelemetryErrorPayload",
+      "kind": "UI_TELEMETRY"
+    }
+  }
+}

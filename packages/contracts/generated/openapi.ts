@@ -410,7 +410,7 @@ export type B1KickoutRequest = { deviceId: string; reasonCode: "KICKED" | "RISK_
 /**
  * Generated from the contract source.
  */
-export type B1PrivacyExportRequest = { subjectId: number; policyName: "learner-self"; };
+export type B1PrivacyExportRequest = { policyName: "learner-self"; reauthenticationRef: string; };
 
 /**
  * Generated from the contract source.
@@ -3707,6 +3707,216 @@ export type M1016SupportAdminCommandRequest = { command: M1016SupportAssignComma
  */
 export type M1016SupportCommandResult = { commandId: string; ticketId: string; commandType: "ASSIGN" | "TRANSITION" | "RESOLVE"; state: "OPEN" | "ASSIGNED" | "WAITING_USER" | "WAITING_INTERNAL" | "RESOLVED" | "CLOSED" | "REOPENED"; accepted: boolean; receiptId: string; auditId: string; };
 
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportCreateRequest = { windowStart: string; windowEnd: string; scope: M1017AuditExportScope; eventFamilies: readonly [M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily] | readonly [M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily, M1017AuditEventFamily]; format: M1017AuditExportFormat; approvalRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportDownloadRequest = { expectedStateVersion: number; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportRecoveryRequest = { action: "RETRY" | "REBUILD_REDACTED_COPY" | "REVOKE_DOWNLOAD_GRANT"; expectedStateVersion: number; reasonCode: "OWNER_TIMEOUT" | "SOURCE_UNAVAILABLE" | "REDACTION_FAILURE" | "OPERATOR_REQUEST" | "POLICY_RECHECK"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportScope = "TENANT" | "SUBJECT" | "PRIVACY_OPERATIONS" | "SECURITY_OPERATIONS";
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditEventFamily = "AUTH" | "ACCESS" | "ADMIN" | "PRIVACY" | "RECOVERY" | "DATA";
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportFormat = "JSONL" | "CSV";
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportState = "REQUESTED" | "PROCESSING" | "READY" | "RETRY_SCHEDULED" | "FAILED_RETRYABLE" | "FAILED_FINAL" | "EXPIRED" | "REVOKED";
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditFailureCode = "NONE" | "OWNER_TIMEOUT" | "SOURCE_UNAVAILABLE" | "REDACTION_FAILURE" | "LEGAL_HOLD" | "POLICY_DENIED" | "RETRY_BUDGET_EXHAUSTED";
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportCreateResponse = { exportId: M1017AuditExportIdValue; state: M1017AuditExportState; stateVersion: number; requestDigest: M1017Sha256Digest; auditId: M1017AuditId; createdAt: string; expiresAt: string; redacted: true; owner: "audit-service"; tenantScope: "server-derived"; runtimeStatus: "NOT_RUNTIME_VERIFIED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportStatusResponse = { exportId: M1017AuditExportIdValue; state: M1017AuditExportState; stateVersion: number; requestDigest: M1017Sha256Digest; auditId: M1017AuditId; createdAt: string; expiresAt: string; redacted: true; owner: "audit-service"; tenantScope: "server-derived"; attempt: number; retryable: boolean; lastFailureCode: M1017AuditFailureCode; recoveryReceiptRef: string; downloadAvailable: boolean; domainFactsUntouched: true; runtimeStatus: "NOT_RUNTIME_VERIFIED"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportDownloadGrant = { exportId: M1017AuditExportIdValue; grantRef: string; contentDigest: M1017Sha256Digest; expiresAt: string; oneTime: true; redacted: true; auditId: M1017AuditId; downloadAuditId: M1017AuditId; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportRecoveryReceipt = { exportId: M1017AuditExportIdValue; action: "RETRY" | "REBUILD_REDACTED_COPY" | "REVOKE_DOWNLOAD_GRANT"; state: M1017AuditExportState; attempt: number; retryable: boolean; recoveryReceiptRef: string; auditId: M1017AuditId; occurredAt: string; redacted: true; domainFactsUntouched: true; owner: "audit-service"; workflowOwner: "workflow-service"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditRecordSummary = { auditId: M1017AuditId; actorSubjectHash: M1017Sha256Digest; tenantHash: M1017Sha256Digest; action: "EXPORT_REQUEST" | "EXPORT_STATUS_READ" | "DOWNLOAD_ISSUED" | "RECOVERY_RECORDED"; resourceRef: string; decision: "ALLOW" | "DENY"; reasonCode: M1017AuditFailureCode; decisionId: string; requestId: string; traceId: string; commandId: string; eventId: string; occurredAt: string; beforeDigest: M1017Sha256Digest; afterDigest: M1017Sha256Digest; previousHash: M1017Sha256Digest; recordHash: M1017Sha256Digest; redacted: true; appendOnly: true; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditId = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AuditExportIdValue = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017Sha256Digest = string;
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyExportRequest = { reauthenticationRef: string; scope: "ACCOUNT_AND_LEARNER_DATA"; purposeCode: "DATA_EXPORT"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyExport = { exportId: string; status: "REQUESTED" | "COLLECTING" | "ASSEMBLING" | "READY" | "DOWNLOAD_ISSUED" | "EXPIRED" | "FAILED" | "RECOVERY_REQUIRED"; scope: "ACCOUNT_AND_LEARNER_DATA"; requestedAt: string; expiresAt: string; policyVersion: string; receiptSummary: M1017ReceiptSummary; download: M1017DownloadAvailability; recovery: M1017RecoveryStatus; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyDownloadGrant = { exportId: string; downloadUrl: string; expiresAt: string; oneTime: true; cacheControl: "no-store"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyExportReceipt = { exportId: string; status: "READY" | "EXPIRED" | "FAILED" | "RECOVERY_REQUIRED"; aggregateDigest: string; ownerReceipts: readonly [M1017OwnerReceiptSummary, ...Array<M1017OwnerReceiptSummary>]; issuedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017OwnerReceiptSubmission = { receiptId: string; taskVersion: number; outcome: "COLLECTED" | "NO_DATA" | "DELETED" | "ANONYMIZED" | "RETAINED_LEGAL_HOLD" | "FAILED"; artifactDigest: string; legalHoldDecision: "CLEARED" | "ACTIVE_RETAINED"; completedAt: string; failureCode?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017OwnerReceiptSummary = { ownerService: string; receiptId: string; taskVersion: number; outcome: "COLLECTED" | "NO_DATA" | "DELETED" | "ANONYMIZED" | "RETAINED_LEGAL_HOLD" | "FAILED"; artifactDigest: string; legalHoldDecision: "CLEARED" | "ACTIVE_RETAINED"; completedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017ReceiptSummary = { expectedOwnerCount: number; receivedOwnerCount: number; hasFailure: boolean; legalHoldDecision: "CLEARED" | "ACTIVE_RETAINED" | "NOT_APPLICABLE"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017DownloadAvailability = { availability: "NOT_READY" | "AVAILABLE" | "EXPIRED"; oneTime: true; cacheControl: "no-store"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017RecoveryStatus = { state: "NONE" | "REQUIRED"; recoveryTaskRef?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyRecoveryCommand = { action: "RETRY_FAILED_OWNER" | "RECONCILE_RECEIPTS" | "EXPIRE_INCOMPLETE_EXPORT"; recoveryReason: "OWNER_FAILURE" | "DELIVERY_TIMEOUT" | "RECONCILIATION_MISMATCH"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionRequest = { reauthenticationRef: string; confirmation: "DELETE_ACCOUNT"; reasonCode: "USER_REQUEST"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionCancelRequest = { reauthenticationRef: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletion = { deletionRequestId: string; status: "PENDING_COOLING_OFF" | "CANCELLED" | "EXECUTING" | "RECOVERY_REQUIRED" | "ANONYMIZED"; requestedAt: string; executeAt: string; coolingOffHours: 168; sessionRevocationState: "NOT_STARTED" | "REVOKED"; receiptSummary: M1017ReceiptSummary; legalHoldSummary: "CLEARED" | "ACTIVE_RETAINED" | "NOT_APPLICABLE"; recovery: M1017RecoveryStatus; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionReceipt = { deletionRequestId: string; status: "RECOVERY_REQUIRED" | "ANONYMIZED"; sessionRevocationState: "REVOKED"; ownerReceipts: readonly [M1017OwnerReceiptSummary, ...Array<M1017OwnerReceiptSummary>]; issuedAt: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017DeletionRecoveryCommand = { action: "RETRY_FAILED_OWNER" | "RECONCILE_RECEIPTS" | "ESCALATE_MANUAL_REVIEW"; recoveryReason: "OWNER_FAILURE" | "RECONCILIATION_MISMATCH" | "LEGAL_HOLD_REVIEW"; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyExportEnvelope = ApiSuccessEnvelope & { data: M1017PrivacyExport; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyDownloadGrantEnvelope = ApiSuccessEnvelope & { data: M1017PrivacyDownloadGrant; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017PrivacyReceiptEnvelope = ApiSuccessEnvelope & { data: M1017PrivacyExportReceipt; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionEnvelope = ApiSuccessEnvelope & { data: M1017AccountDeletion; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AccountDeletionReceiptEnvelope = ApiSuccessEnvelope & { data: M1017AccountDeletionReceipt; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AnalyticsTelemetryRequest = ({ clientEventId: string; eventName: "ui.page.viewed.v1" | "ui.element.clicked.v1" | "ui.media.playback.started.v1" | "telemetry.error.v1"; eventVersion: "1.0.0"; occurredAt: string; payload: M1017UiPageViewedPayload | M1017UiElementClickedPayload | M1017UiMediaPlaybackStartedPayload | M1017TelemetryErrorPayload; }) & ({ eventName: "ui.page.viewed.v1"; payload: M1017UiPageViewedPayload; } | { eventName: "ui.element.clicked.v1"; payload: M1017UiElementClickedPayload; } | { eventName: "ui.media.playback.started.v1"; payload: M1017UiMediaPlaybackStartedPayload; } | { eventName: "telemetry.error.v1"; payload: M1017TelemetryErrorPayload; });
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017UiPageViewedPayload = { schema: "ui.page.viewed"; pageCode: string; surfaceCode?: string; locale?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017UiElementClickedPayload = { schema: "ui.element.clicked"; pageCode: string; elementCode: string; interactionCode: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017UiMediaPlaybackStartedPayload = { schema: "ui.media.playback.started"; mediaKind: "LESSON_AUDIO" | "LESSON_VIDEO" | "PRONUNCIATION"; durationBucket: "LT_10S" | "10S_60S" | "GT_60S"; contentRef?: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017TelemetryErrorPayload = { schema: "telemetry.error"; errorCode: string; category: string; };
+
+/**
+ * Generated from the contract source.
+ */
+export type M1017AnalyticsTelemetryReceipt = { receiptId: string; clientEventId: string; state: "ACCEPTED" | "SUPPRESSED" | "REPLAYED" | "REJECTED"; replayed: boolean; suppressionReason?: "CONSENT_MISSING" | "CONSENT_REVOKED" | "DELETION_PENDING" | "DELETION_EXECUTED" | "TRUSTED_CONTEXT_UNAVAILABLE"; redactionVersion: "analytics-redaction-v1"; policyVersion: "1.0.0"; domainFactsUntouched: true; };
+
 export interface CanonicalIdRegistry {
   userId: CanonicalInt64Id;
   contentVersionId: CanonicalInt64Id;
@@ -4136,6 +4346,23 @@ export interface ApiOperationRegistry {
   getM1016AdminSupportTicket: { method: "GET"; path: "/api/v1/admin/ops/tickets/{ticketId}"; request: never; response: ApiSuccessEnvelope & { data: M1016SupportTicket; }; idempotent: false };
   addM1016AdminSupportTicketMessage: { method: "POST"; path: "/api/v1/admin/ops/tickets/{ticketId}/messages"; request: M1016SupportMessageCreateRequest; response: ApiSuccessEnvelope & { data: M1016SupportMessage; }; idempotent: true };
   submitM1016SupportTicketCommand: { method: "POST"; path: "/api/v1/admin/ops/tickets/{ticketId}/commands"; request: M1016SupportAdminCommandRequest; response: ApiSuccessEnvelope & { data: M1016SupportCommandResult; }; idempotent: true };
+  createM1017AuditExport: { method: "POST"; path: "/internal/v1/audit/exports"; request: M1017AuditExportCreateRequest; response: ApiSuccessEnvelope & { data: M1017AuditExportCreateResponse; }; idempotent: true };
+  getM1017AuditExport: { method: "GET"; path: "/internal/v1/audit/exports/{exportId}"; request: never; response: ApiSuccessEnvelope & { data: M1017AuditExportStatusResponse; }; idempotent: false };
+  requestM1017AuditExportDownload: { method: "POST"; path: "/internal/v1/audit/exports/{exportId}/download"; request: M1017AuditExportDownloadRequest; response: ApiSuccessEnvelope & { data: M1017AuditExportDownloadGrant; }; idempotent: true };
+  recoverM1017AuditExport: { method: "POST"; path: "/internal/v1/audit/exports/{exportId}/recovery"; request: M1017AuditExportRecoveryRequest; response: ApiSuccessEnvelope & { data: M1017AuditExportRecoveryReceipt; }; idempotent: true };
+  createM1017PrivacyExport: { method: "POST"; path: "/api/v1/privacy/exports"; request: M1017PrivacyExportRequest; response: M1017PrivacyExportEnvelope; idempotent: true };
+  getM1017PrivacyExportStatus: { method: "GET"; path: "/api/v1/privacy/exports/{exportId}"; request: never; response: M1017PrivacyExportEnvelope; idempotent: false };
+  createM1017PrivacyExportDownloadGrant: { method: "POST"; path: "/api/v1/privacy/exports/{exportId}/download"; request: never; response: M1017PrivacyDownloadGrantEnvelope; idempotent: true };
+  getM1017PrivacyExportReceipt: { method: "GET"; path: "/api/v1/privacy/exports/{exportId}/receipt"; request: never; response: M1017PrivacyReceiptEnvelope; idempotent: false };
+  recordM1017PrivacyExportOwnerReceipt: { method: "POST"; path: "/internal/v1/privacy/exports/{exportId}/owner-receipts"; request: M1017OwnerReceiptSubmission; response: M1017PrivacyExportEnvelope; idempotent: true };
+  recoverM1017PrivacyExport: { method: "POST"; path: "/internal/v1/privacy/exports/{exportId}/recovery"; request: M1017PrivacyRecoveryCommand; response: M1017PrivacyExportEnvelope; idempotent: true };
+  createM1017AccountDeletionRequest: { method: "POST"; path: "/api/v1/iam/account-deletions"; request: M1017AccountDeletionRequest; response: M1017AccountDeletionEnvelope; idempotent: true };
+  getM1017AccountDeletionStatus: { method: "GET"; path: "/api/v1/iam/account-deletions/{deletionRequestId}"; request: never; response: M1017AccountDeletionEnvelope; idempotent: false };
+  cancelM1017AccountDeletionRequest: { method: "POST"; path: "/api/v1/iam/account-deletions/{deletionRequestId}/cancel"; request: M1017AccountDeletionCancelRequest; response: M1017AccountDeletionEnvelope; idempotent: true };
+  executeM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/execute"; request: never; response: M1017AccountDeletionEnvelope; idempotent: true };
+  recordM1017AccountDeletionOwnerReceipt: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts"; request: M1017OwnerReceiptSubmission; response: M1017AccountDeletionEnvelope; idempotent: true };
+  recoverM1017AccountDeletion: { method: "POST"; path: "/internal/v1/iam/account-deletions/{deletionRequestId}/recovery"; request: M1017DeletionRecoveryCommand; response: M1017AccountDeletionEnvelope; idempotent: true };
+  ingestM1017AnalyticsTelemetry: { method: "POST"; path: "/api/v1/analytics/telemetry"; request: M1017AnalyticsTelemetryRequest; response: M1017AnalyticsTelemetryReceipt; idempotent: true };
 }
 
 export type ApiOperationId = keyof ApiOperationRegistry;

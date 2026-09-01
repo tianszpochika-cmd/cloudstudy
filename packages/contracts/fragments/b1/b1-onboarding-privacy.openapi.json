@@ -328,9 +328,44 @@
         ],
         "summary": "Create a self-scoped, masked privacy export",
         "operationId": "createPrivacyExport",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-09-01T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/privacy/exports"
+        },
+        "x-migration": {
+          "canonicalOperationId": "createM1017PrivacyExport",
+          "canonicalRoute": "/api/v1/privacy/exports",
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-contract": {
+          "canonical": false,
+          "classification": "HISTORICAL_B1_ADAPTER_ONLY",
+          "successorTask": "P1R-M1-017",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.self",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "consent",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived authenticated subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
-            "B1ContentBearerAuth": []
+            "bearerAuth": []
           }
         ],
         "x-b1-acceptance": [
@@ -717,20 +752,19 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "subjectId",
-          "policyName"
+          "policyName",
+          "reauthenticationRef"
         ],
         "properties": {
-          "subjectId": {
-            "type": "integer",
-            "format": "int64",
-            "minimum": 1
-          },
           "policyName": {
             "type": "string",
             "enum": [
               "learner-self"
             ]
+          },
+          "reauthenticationRef": {
+            "type": "string",
+            "pattern": "^reauth_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
           }
         }
       },

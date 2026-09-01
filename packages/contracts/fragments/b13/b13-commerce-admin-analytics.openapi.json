@@ -37,6 +37,34 @@
     "runtimeStatus": "NOT_RUNTIME_VERIFIED",
     "clientAuthority": "NONE"
   },
+  "x-m1017-contract": {
+    "task": "P1R-M1-017",
+    "owner": "analytics-service",
+    "dataOwner": "analytics-service",
+    "canonicalOperations": [
+      "ingestM1017AnalyticsTelemetry"
+    ],
+    "historicalOperations": [],
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "clientAuthority": "NONE",
+    "transport": "HTTP_TELEMETRY_ONLY",
+    "kafkaEventEmission": false,
+    "domainFactsWrite": false,
+    "consentSource": "server-derived",
+    "deletionSource": "iam-service-server-derived",
+    "deletionAllowedStatus": [
+      "ACTIVE"
+    ],
+    "deletionSuppressedStatuses": [
+      "PENDING_COOLING_OFF",
+      "EXECUTING",
+      "RECOVERY_REQUIRED",
+      "ANONYMIZED"
+    ],
+    "deletionCancelledEffect": "SUPPRESS",
+    "retentionPolicyRef": "ANALYTICS-RETENTION-V1"
+  },
   "tags": [
     {
       "name": "B13-Commerce",
@@ -61,6 +89,10 @@
     {
       "name": "M1-016-Support",
       "description": "P1R-M1-016 admin support projections and owner commands"
+    },
+    {
+      "name": "M1-017-Analytics",
+      "description": "P1R-M1-017 consent/delete-gated HTTP telemetry ingress; not a Kafka domain-event producer"
     }
   ],
   "paths": {
@@ -2371,6 +2403,127 @@
         }
       }
     },
+    "/api/v1/analytics/telemetry": {
+      "post": {
+        "tags": [
+          "M1-017-Analytics"
+        ],
+        "summary": "Accept a consent- and deletion-gated UI telemetry event",
+        "operationId": "ingestM1017AnalyticsTelemetry",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "analytics-service",
+        "x-data-owner": "analytics-service",
+        "x-permission": "analytics.telemetry.ingest",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "analytics.telemetry.ingest",
+          "pep": "analytics-service-local",
+          "allowedActors": [
+            "AUTHENTICATED_LEARNER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "consent",
+            "deletionStatus",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-telemetry": {
+          "transport": "HTTP_TELEMETRY_ONLY",
+          "kafkaTopic": null,
+          "publishesDomainFacts": false,
+          "writesDomainFacts": false,
+          "clientIsKafkaProducer": false,
+          "consentMissingEffect": "SUPPRESS",
+          "consentRevokedEffect": "SUPPRESS",
+          "deletionRequestedEffect": "SUPPRESS",
+          "deletionAllowedStatus": [
+            "ACTIVE"
+          ],
+          "deletionSuppressedStatuses": [
+            "PENDING_COOLING_OFF",
+            "EXECUTING",
+            "RECOVERY_REQUIRED",
+            "ANONYMIZED"
+          ],
+          "deletionCancelledEffect": "SUPPRESS",
+          "failureEffect": "NON_BLOCKING",
+          "retentionPolicyRef": "ANALYTICS-RETENTION-V1",
+          "redactionVersion": "analytics-redaction-v1"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017TelemetryIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AnalyticsTelemetryRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "tenant-subject-client-event-payload-hash",
+          "replayBehavior": "return-original-receipt"
+        },
+        "responses": {
+          "202": {
+            "description": "Telemetry accepted or suppressed without changing domain facts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AnalyticsTelemetryReceipt"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B13Invalid"
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/B13RateLimited"
+          }
+        }
+      }
+    },
     "/internal/v1/analytics/events": {
       "post": {
         "tags": [
@@ -2601,6 +2754,19 @@
           "maxLength": 200
         }
       },
+      "M1017TelemetryIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "同一认证主体和同一客户端事件摘要重放原回执；同 key 不同摘要必须拒绝。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+        },
+        "x-client-authority": "NONE"
+      },
       "M1016SupportTicketId": {
         "name": "ticketId",
         "in": "path",
@@ -2691,6 +2857,25 @@
       },
       "B13Conflict": {
         "description": "幂等冲突或状态冲突",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
+      },
+      "B13RateLimited": {
+        "description": "Telemetry ingress 被限流；不得阻塞领域事实写入",
+        "headers": {
+          "Retry-After": {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            }
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -6484,6 +6669,419 @@
             }
           }
         }
+      },
+      "M1017AnalyticsTelemetryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientEventId",
+          "eventName",
+          "eventVersion",
+          "occurredAt",
+          "payload"
+        ],
+        "properties": {
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "eventName": {
+            "type": "string",
+            "enum": [
+              "ui.page.viewed.v1",
+              "ui.element.clicked.v1",
+              "ui.media.playback.started.v1",
+              "telemetry.error.v1"
+            ]
+          },
+          "eventVersion": {
+            "type": "string",
+            "enum": [
+              "1.0.0"
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/M1017UiPageViewedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/M1017UiElementClickedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/M1017UiMediaPlaybackStartedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/M1017TelemetryErrorPayload"
+              }
+            ],
+            "x-discriminator": "payload.schema"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "ui.page.viewed.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017UiPageViewedPayload"
+              }
+            },
+            "x-event-name": "ui.page.viewed.v1"
+          },
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "ui.element.clicked.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017UiElementClickedPayload"
+              }
+            },
+            "x-event-name": "ui.element.clicked.v1"
+          },
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "ui.media.playback.started.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017UiMediaPlaybackStartedPayload"
+              }
+            },
+            "x-event-name": "ui.media.playback.started.v1"
+          },
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "telemetry.error.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017TelemetryErrorPayload"
+              }
+            },
+            "x-event-name": "telemetry.error.v1"
+          }
+        ],
+        "x-client-authority": "NONE",
+        "x-forbidden-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "ownerId",
+          "owner",
+          "ownerService",
+          "principal",
+          "principalId",
+          "subjectId",
+          "actor",
+          "actorId",
+          "user",
+          "userId",
+          "role",
+          "roles",
+          "permission",
+          "permissions",
+          "assignment",
+          "assignee",
+          "queueId",
+          "priority",
+          "sla",
+          "slaDueAt",
+          "state",
+          "stateVersion",
+          "status",
+          "deliveryStatus",
+          "readAt",
+          "legalHold",
+          "retention",
+          "retentionPolicyRef",
+          "auditId",
+          "rawText",
+          "rawBody",
+          "rawContent",
+          "rawDescription",
+          "rawPayload",
+          "rawTranscript",
+          "description",
+          "body",
+          "freeText",
+          "plainText",
+          "unredactedFreeText",
+          "unredactedDescription",
+          "password",
+          "secret",
+          "token",
+          "accessToken",
+          "refreshToken",
+          "authorization",
+          "cookie",
+          "rawAudio",
+          "audioBytes",
+          "recordingBytes",
+          "rawAttachmentBytes",
+          "transcript",
+          "answerKey",
+          "rawAnswer",
+          "paymentCredential",
+          "paymentToken",
+          "cardNumber",
+          "cvv",
+          "cvc",
+          "jws",
+          "signature",
+          "objectKey",
+          "url",
+          "signedUrl",
+          "downloadUrl",
+          "uploadUrl"
+        ],
+        "x-telemetry-only": true,
+        "x-domain-facts-write": false,
+        "x-consent-source": "server-derived",
+        "x-deletion-source": "iam-service-server-derived",
+        "x-retention-policy-ref": "ANALYTICS-RETENTION-V1"
+      },
+      "M1017UiPageViewedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "pageCode"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ui.page.viewed"
+            ]
+          },
+          "pageCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "surfaceCode": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "locale": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{2,8})?$"
+          }
+        },
+        "x-event-name": "ui.page.viewed.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017UiElementClickedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "pageCode",
+          "elementCode",
+          "interactionCode"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ui.element.clicked"
+            ]
+          },
+          "pageCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "elementCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "interactionCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,31}$"
+          }
+        },
+        "x-event-name": "ui.element.clicked.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017UiMediaPlaybackStartedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "mediaKind",
+          "durationBucket"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ui.media.playback.started"
+            ]
+          },
+          "mediaKind": {
+            "type": "string",
+            "enum": [
+              "LESSON_AUDIO",
+              "LESSON_VIDEO",
+              "PRONUNCIATION"
+            ]
+          },
+          "durationBucket": {
+            "type": "string",
+            "enum": [
+              "LT_10S",
+              "10S_60S",
+              "GT_60S"
+            ]
+          },
+          "contentRef": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          }
+        },
+        "x-event-name": "ui.media.playback.started.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017TelemetryErrorPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "errorCode",
+          "category"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "telemetry.error"
+            ]
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          }
+        },
+        "x-event-name": "telemetry.error.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017AnalyticsTelemetryReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "receiptId",
+          "clientEventId",
+          "state",
+          "replayed",
+          "redactionVersion",
+          "policyVersion",
+          "domainFactsUntouched"
+        ],
+        "properties": {
+          "receiptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^telemetry-receipt_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "SUPPRESSED",
+              "REPLAYED",
+              "REJECTED"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "suppressionReason": {
+            "type": "string",
+            "enum": [
+              "CONSENT_MISSING",
+              "CONSENT_REVOKED",
+              "DELETION_PENDING",
+              "DELETION_EXECUTED",
+              "TRUSTED_CONTEXT_UNAVAILABLE"
+            ]
+          },
+          "redactionVersion": {
+            "type": "string",
+            "enum": [
+              "analytics-redaction-v1"
+            ]
+          },
+          "policyVersion": {
+            "type": "string",
+            "enum": [
+              "1.0.0"
+            ]
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "x-client-authority": "NONE",
+        "x-telemetry-only": true
       },
       "B13MetricDimension": {
         "type": "object",

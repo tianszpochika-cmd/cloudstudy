@@ -708,6 +708,7 @@ const EXACT_B26_SOURCE_REFS = Object.freeze([
   'config/g3-test-security-observability.json',
   'packages/contracts/events/v1/catalog.json',
   'packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json',
+  'packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json',
   'packages/telemetry/schemas/telemetry-event.schema.json',
   'packages/telemetry/policies/telemetry-events.json',
   'requirements/backlog/v2-B23plus-Phase1-真实运行与实机测试任务基线.md',

@@ -40,10 +40,12 @@ const canonicalB1AdapterRouteAllowlist = new Map([
   ['packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json', new Set([
     '/api/v1/assessment/placement/start',
     '/api/v1/assessment/placement/submit-step',
+    '/api/v1/privacy/export',
   ])],
 ]);
 const canonicalB1AdapterSchemaAllowlist = new Map([
   ['packages/contracts/fragments/b1/b1-auth-user-onboarding.openapi.json', new Set(['B1OnboardingProfileRequest'])],
+  ['packages/contracts/fragments/b1/b1-onboarding-privacy.openapi.json', new Set(['B1PrivacyExportRequest'])],
 ]);
 const requiredCanonicalB8Metadata = ['x-b8-authentication', 'x-b8-compatibility', 'x-b8-iam-policy-governance'];
 const canonicalGatewayFragment = 'packages/contracts/fragments/p1r-gateway-boundary.openapi.json';

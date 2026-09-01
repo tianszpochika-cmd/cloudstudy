@@ -6,8 +6,9 @@ import { isDeepStrictEqual } from 'node:util';
 const DEFAULT_INPUT = path.join('packages', 'contracts', 'fragments', 'p1r-gateway-boundary.openapi.json');
 const DEFAULT_CANONICAL = path.join('packages', 'contracts', 'openapi', 'v1', 'openapi.json');
 const ROOT_EXTENSION = 'x-p1r-gateway-boundary';
-const EXPECTED_PUBLIC_OPERATION_COUNT = 357;
-const EXPECTED_INTERNAL_OPERATION_COUNT = 53;
+const EXPECTED_PUBLIC_OPERATION_COUNT = 365;
+const EXPECTED_INTERNAL_OPERATION_COUNT = 62;
+const EXPECTED_ROUTE_RULE_COUNT = 56;
 const EXPECTED_M1015_INTERNAL_OPERATIONS = [
   {
     route: '/internal/v1/commerce/entitlements/{entitlementId}/snapshot',
@@ -82,6 +83,433 @@ const EXPECTED_M1016_INTERNAL_OPERATIONS = [
       trustedFacts: ['workloadIdentity', 'sourceService', 'notificationId', 'workflowTaskId', 'policyVersion'],
       clientAuthority: 'NONE for subject, tenant, owner, delivery state or recovery receipt',
     },
+  },
+];
+const EXPECTED_M1017_PUBLIC_OPERATIONS = [
+  {
+    route: '/api/v1/analytics/telemetry',
+    method: 'POST',
+    operationId: 'ingestM1017AnalyticsTelemetry',
+    owner: 'analytics-service',
+    dataOwner: 'analytics-service',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'analytics.telemetry.ingest',
+      pep: 'analytics-service-local',
+      allowedActors: ['AUTHENTICATED_LEARNER'],
+      trustedFacts: ['subject', 'tenant', 'consent', 'deletionStatus', 'policyVersion'],
+      clientAuthority: 'NONE',
+    },
+    permission: 'analytics.telemetry.ingest',
+  },
+  {
+    route: '/api/v1/privacy/exports',
+    method: 'POST',
+    operationId: 'createM1017PrivacyExport',
+    owner: 'learner-service.privacy',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'privacy.export.self',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'reauthentication', 'consent', 'resourceOwner', 'policyVersion'],
+      resourceOwner: 'server-derived authenticated subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/api/v1/privacy/exports/{exportId}',
+    method: 'GET',
+    operationId: 'getM1017PrivacyExportStatus',
+    owner: 'learner-service.privacy',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'privacy.export.self.read',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'resourceOwner', 'policyVersion'],
+      resourceOwner: 'server-derived export subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/api/v1/privacy/exports/{exportId}/download',
+    method: 'POST',
+    operationId: 'createM1017PrivacyExportDownloadGrant',
+    owner: 'learner-service.privacy',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'privacy.export.self.download',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'reauthentication', 'resourceOwner', 'exportExpiry', 'policyVersion'],
+      resourceOwner: 'server-derived export subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/api/v1/privacy/exports/{exportId}/receipt',
+    method: 'GET',
+    operationId: 'getM1017PrivacyExportReceipt',
+    owner: 'learner-service.privacy',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'privacy.export.self.receipt.read',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'resourceOwner', 'policyVersion'],
+      resourceOwner: 'server-derived export subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/api/v1/iam/account-deletions',
+    method: 'POST',
+    operationId: 'createM1017AccountDeletionRequest',
+    owner: 'iam-service',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'iam.account.deletion.self',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'reauthentication', 'consent', 'resourceOwner', 'policyVersion'],
+      resourceOwner: 'server-derived authenticated subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/api/v1/iam/account-deletions/{deletionRequestId}',
+    method: 'GET',
+    operationId: 'getM1017AccountDeletionStatus',
+    owner: 'iam-service',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'iam.account.deletion.self.read',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'resourceOwner', 'policyVersion'],
+      resourceOwner: 'server-derived deletion request subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/api/v1/iam/account-deletions/{deletionRequestId}/cancel',
+    method: 'POST',
+    operationId: 'cancelM1017AccountDeletionRequest',
+    owner: 'iam-service',
+    security: [{ bearerAuth: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'iam.account.deletion.self.cancel',
+      defaultDecision: 'DENY',
+      trustedFacts: ['verifiedPrincipal', 'serverDerivedTenant', 'reauthentication', 'resourceOwner', 'coolingOffWindow', 'policyVersion'],
+      resourceOwner: 'server-derived deletion request subject',
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+];
+const EXPECTED_M1017_INTERNAL_OPERATIONS = [
+  {
+    route: '/internal/v1/privacy/exports/{exportId}/owner-receipts',
+    method: 'POST',
+    operationId: 'recordM1017PrivacyExportOwnerReceipt',
+    owner: 'learner-service.privacy',
+    security: [{ B8ServiceIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'privacy.export.owner-receipt.write',
+      defaultDecision: 'DENY',
+      trustedFacts: ['trustedWorkloadIdentity', 'serverDerivedOwnerService', 'serverDerivedTenant', 'pathExportId', 'policyVersion'],
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/privacy/exports/{exportId}/recovery',
+    method: 'POST',
+    operationId: 'recoverM1017PrivacyExport',
+    owner: 'learner-service.privacy',
+    security: [{ B8ServiceIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'privacy.export.recovery.execute',
+      defaultDecision: 'DENY',
+      trustedFacts: ['trustedWorkloadIdentity', 'serverDerivedTenant', 'pathExportId', 'recoveryTask', 'policyVersion'],
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/iam/account-deletions/{deletionRequestId}/execute',
+    method: 'POST',
+    operationId: 'executeM1017AccountDeletion',
+    owner: 'iam-service',
+    security: [{ B8ServiceIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'iam.account.deletion.execute',
+      defaultDecision: 'DENY',
+      trustedFacts: ['trustedWorkloadIdentity', 'serverDerivedTenant', 'pathDeletionRequestId', 'dueCoolingOffWindow', 'legalHoldDecision', 'policyVersion'],
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts',
+    method: 'POST',
+    operationId: 'recordM1017AccountDeletionOwnerReceipt',
+    owner: 'iam-service',
+    security: [{ B8ServiceIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'iam.account.deletion.owner-receipt.write',
+      defaultDecision: 'DENY',
+      trustedFacts: ['trustedWorkloadIdentity', 'serverDerivedOwnerService', 'serverDerivedTenant', 'pathDeletionRequestId', 'legalHoldDecision', 'policyVersion'],
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/iam/account-deletions/{deletionRequestId}/recovery',
+    method: 'POST',
+    operationId: 'recoverM1017AccountDeletion',
+    owner: 'iam-service',
+    security: [{ B8ServiceIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      requiredPermission: 'iam.account.deletion.recovery.execute',
+      defaultDecision: 'DENY',
+      trustedFacts: ['trustedWorkloadIdentity', 'serverDerivedTenant', 'pathDeletionRequestId', 'recoveryTask', 'legalHoldDecision', 'policyVersion'],
+      serviceSidePepRequired: true,
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/audit/exports',
+    method: 'POST',
+    operationId: 'createM1017AuditExport',
+    owner: 'audit-service',
+    dataOwner: 'audit-service',
+    permission: 'audit.export.create',
+    security: [{ B8WorkloadIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'audit.export.create',
+      pep: 'audit-service-local',
+      allowedActors: ['ADMIN_OPS_SERVICE', 'WORKFLOW_SERVICE'],
+      trustedFacts: ['workloadIdentity', 'subject', 'tenant', 'roles', 'permissions', 'policyVersion', 'resourceOwner'],
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/audit/exports/{exportId}',
+    method: 'GET',
+    operationId: 'getM1017AuditExport',
+    owner: 'audit-service',
+    dataOwner: 'audit-service',
+    permission: 'audit.export.read',
+    security: [{ B8WorkloadIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'audit.export.read',
+      pep: 'audit-service-local',
+      allowedActors: ['ADMIN_OPS_SERVICE', 'WORKFLOW_SERVICE'],
+      trustedFacts: ['workloadIdentity', 'subject', 'tenant', 'roles', 'permissions', 'policyVersion', 'resourceOwner'],
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/audit/exports/{exportId}/download',
+    method: 'POST',
+    operationId: 'requestM1017AuditExportDownload',
+    owner: 'audit-service',
+    dataOwner: 'audit-service',
+    permission: 'audit.export.download',
+    security: [{ B8WorkloadIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'audit.export.download',
+      pep: 'audit-service-local',
+      allowedActors: ['ADMIN_OPS_SERVICE', 'WORKFLOW_SERVICE'],
+      trustedFacts: ['workloadIdentity', 'subject', 'tenant', 'roles', 'permissions', 'policyVersion', 'resourceOwner'],
+      clientAuthority: 'NONE',
+    },
+  },
+  {
+    route: '/internal/v1/audit/exports/{exportId}/recovery',
+    method: 'POST',
+    operationId: 'recoverM1017AuditExport',
+    owner: 'audit-service',
+    dataOwner: 'audit-service',
+    permission: 'audit.export.recover',
+    security: [{ B8WorkloadIdentity: [] }],
+    contract: {
+      task: 'P1R-M1-017',
+      canonical: true,
+      maturity: 'D2_CONTRACT_READY',
+      runtimeStatus: 'NOT_RUNTIME_VERIFIED',
+      clientAuthority: 'NONE',
+    },
+    authorization: {
+      defaultDecision: 'DENY',
+      requiredPermission: 'audit.export.recover',
+      pep: 'audit-service-local',
+      allowedActors: ['WORKFLOW_SERVICE'],
+      trustedFacts: ['workloadIdentity', 'subject', 'tenant', 'roles', 'permissions', 'policyVersion', 'resourceOwner'],
+      clientAuthority: 'NONE',
+    },
+  },
+];
+const EXPECTED_M1017_ROUTE_RULES = [
+  {
+    ruleId: 'analytics-telemetry',
+    priority: 800,
+    match: {
+      type: 'EXACT',
+      path: '/api/v1/analytics/telemetry',
+      methods: ['POST'],
+    },
+    upstreamOwner: 'analytics-service',
+    internalTargetClass: 'INTERNAL_V1',
+    visibility: 'AUTHENTICATED',
+    authClass: 'AUTHENTICATED_WRITE',
+    compatibilityMode: 'NONE',
+  },
+  {
+    ruleId: 'iam-account-deletions',
+    priority: 800,
+    match: {
+      type: 'PREFIX',
+      path: '/api/v1/iam/account-deletions',
+      methods: ['GET', 'POST'],
+    },
+    upstreamOwner: 'iam-service',
+    internalTargetClass: 'INTERNAL_V1',
+    visibility: 'AUTHENTICATED',
+    authClass: 'AUTHENTICATED_WRITE',
+    compatibilityMode: 'NONE',
+  },
+  {
+    ruleId: 'privacy-exports',
+    priority: 800,
+    match: {
+      type: 'PREFIX',
+      path: '/api/v1/privacy/exports',
+      methods: ['GET', 'POST'],
+    },
+    upstreamOwner: 'learner-service',
+    internalTargetClass: 'INTERNAL_V1',
+    visibility: 'AUTHENTICATED',
+    authClass: 'AUTHENTICATED_WRITE',
+    compatibilityMode: 'NONE',
   },
 ];
 const EXPECTED_CONTENT_TASK_RULE = {
@@ -166,6 +594,18 @@ function operations(openApi, prefix) {
   return result;
 }
 
+function allOperations(openApi) {
+  if (!isRecord(openApi?.paths)) return [];
+  const result = [];
+  for (const [route, pathItem] of Object.entries(openApi.paths)) {
+    for (const [method, operation] of Object.entries(pathItem ?? {})) {
+      if (!HTTP_METHODS.has(method) || !isRecord(operation)) continue;
+      result.push({ route, method: method.toUpperCase(), operation });
+    }
+  }
+  return result;
+}
+
 function routeMatches(rule, route, method) {
   const match = rule?.match;
   if (!isRecord(match) || !Array.isArray(match.methods) || !match.methods.includes(method)) return false;
@@ -238,6 +678,7 @@ function checkServiceOwners(policy, errors) {
 function checkRouteRules(policy, canonicalOpenApi, ownerById, errors) {
   const rules = policy.routeRules;
   add(errors, Array.isArray(rules) && rules.length > 0, 'Gateway routeRules are required');
+  add(errors, rules?.length === EXPECTED_ROUTE_RULE_COUNT, `Gateway routeRule count must be ${EXPECTED_ROUTE_RULE_COUNT}`);
   const ids = new Set();
   for (const rule of rules ?? []) {
     for (const field of REQUIRED_RULE_FIELDS) add(errors, Object.hasOwn(rule ?? {}, field), `Gateway route rule lacks ${field}`);
@@ -267,6 +708,16 @@ function checkRouteRules(policy, canonicalOpenApi, ownerById, errors) {
     isDeepStrictEqual((rules ?? []).find((rule) => rule?.ruleId === EXPECTED_CONTENT_TASK_RULE.ruleId), EXPECTED_CONTENT_TASK_RULE),
     'content publish task reads must remain an authenticated high-risk admin route owned by content-service',
   );
+  for (const expectedRule of EXPECTED_M1017_ROUTE_RULES) {
+    add(
+      errors,
+      isDeepStrictEqual(
+        (rules ?? []).find((rule) => rule?.ruleId === expectedRule.ruleId),
+        expectedRule,
+      ),
+      `M1-017 Gateway route rule is missing or not exact: ${expectedRule.ruleId}`,
+    );
+  }
 
   const publicOperations = operations(canonicalOpenApi, policy.d2Boundary?.publicPrefix ?? '/api/v1');
   add(errors, publicOperations.length === EXPECTED_PUBLIC_OPERATION_COUNT, `public operation baseline drift: expected ${EXPECTED_PUBLIC_OPERATION_COUNT}, got ${publicOperations.length}`);
@@ -289,6 +740,22 @@ function checkRouteRules(policy, canonicalOpenApi, ownerById, errors) {
     }
   }
   return { publicOperations, covered, conflicts, coverageErrors, ruleCount: rules?.length ?? 0 };
+}
+
+function checkM1017OperationSet(actualOperations, expectedOperations, scope, errors) {
+  const expectedKeys = new Set(expectedOperations.map((expected) => `${expected.method} ${expected.route}`));
+  const m1017Operations = actualOperations.filter((item) => item.operation?.['x-contract']?.task === 'P1R-M1-017');
+  const actualKeys = new Set(m1017Operations.map((item) => `${item.method} ${item.route}`));
+  add(errors, m1017Operations.length === expectedOperations.length && actualKeys.size === expectedKeys.size && [...expectedKeys].every((key) => actualKeys.has(key)), `M1-017 ${scope} operation set must exactly contain ${expectedOperations.length} canonical operations`);
+  for (const expected of expectedOperations) {
+    const operation = actualOperations.find((item) => item.route === expected.route && item.method === expected.method);
+    const operationDocument = operation?.operation;
+    add(errors, operationDocument?.operationId === expected.operationId && operationDocument?.['x-owner'] === expected.owner && operationDocument?.['x-data-owner'] === expected.dataOwner && isDeepStrictEqual(operationDocument?.['x-contract'], expected.contract), `expected M1-017 ${scope} operation is missing or has an invalid identity/owner: ${expected.method} ${expected.route}`);
+    add(errors, isDeepStrictEqual(operationDocument?.security, expected.security), `M1-017 ${scope} operation security is invalid: ${expected.operationId}`);
+    add(errors, operationDocument?.['x-permission'] === expected.permission, `M1-017 ${scope} operation permission is invalid: ${expected.operationId}`);
+    add(errors, isDeepStrictEqual(operationDocument?.['x-authorization'], expected.authorization), `M1-017 ${scope} operation authorization is invalid or not fail-closed: ${expected.operationId}`);
+  }
+  return { m1017Operations };
 }
 
 function checkInternalPolicy(policy, canonicalOpenApi, errors) {
@@ -358,6 +825,13 @@ function checkInternalPolicy(policy, canonicalOpenApi, errors) {
     add(errors, isDeepStrictEqual(operation?.operation?.security, expected.security), `M1-016 internal operation must use B8WorkloadIdentity: ${expected.operationId}`);
     add(errors, isDeepStrictEqual(operation?.operation?.['x-authorization'], expected.authorization), `M1-016 internal operation authorization is invalid or not fail-closed: ${expected.operationId}`);
     add(errors, !publicOperations.some((item) => item.operation?.operationId === expected.operationId), `M1-016 internal operation must not be exposed under the public prefix: ${expected.operationId}`);
+  }
+  checkM1017OperationSet(publicOperations, EXPECTED_M1017_PUBLIC_OPERATIONS, 'public', errors);
+  checkM1017OperationSet(internalOperations, EXPECTED_M1017_INTERNAL_OPERATIONS, 'internal', errors);
+  for (const expected of EXPECTED_M1017_INTERNAL_OPERATIONS) {
+    add(errors, !publicOperations.some((item) => item.operation?.operationId === expected.operationId), `M1-017 internal operation must not be exposed under the public prefix: ${expected.operationId}`);
+    const publicEquivalentRoute = expected.route.replace(/^\/internal\/v1\//, '/api/v1/');
+    add(errors, !publicOperations.some((item) => item.route === publicEquivalentRoute && item.method === expected.method), `M1-017 internal operation route must not be exposed publicly: ${expected.method} ${expected.route}`);
   }
   return { internalOperations, denied: internal?.externalExposure === 'DENY' ? internalOperations.length : 0 };
 }
@@ -443,6 +917,12 @@ export function validateGatewayContractData({ document, canonicalOpenApi } = {})
   const projectionMatches = checkProjection(document, canonicalOpenApi, errors);
   const policy = document[ROOT_EXTENSION];
   checkBoundary(policy, errors);
+  for (const item of allOperations(canonicalOpenApi)) {
+    const publicPrefix = policy.d2Boundary?.publicPrefix ?? '/api/v1';
+    const internalPrefix = policy.d2Boundary?.internalPrefix ?? '/internal/v1';
+    const governed = item.route.startsWith(`${publicPrefix}/`) || item.route.startsWith(`${internalPrefix}/`);
+    add(errors, governed, `canonical operation uses an ungoverned API prefix: ${item.method} ${item.route}`);
+  }
   const owners = checkServiceOwners(policy, errors);
   const routeSummary = checkRouteRules(policy, canonicalOpenApi, owners, errors);
   const internalSummary = checkInternalPolicy(policy, canonicalOpenApi, errors);

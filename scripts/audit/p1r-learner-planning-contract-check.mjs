@@ -19,7 +19,7 @@ export const DEFAULT_SAGA_RECOVERY = 'config/p1r-saga-recovery.v1.json';
 export const DEFAULT_EVENT_RELIABILITY = 'packages/contracts/events/v1/reliability-policy.json';
 export const DEFAULT_B26_RUNTIME = 'config/b26-event-runtime.json';
 
-const FROZEN_POLICY_SHA256 = '184b85687a8a3916cf2746d425fb49a99f348e24062359e498368ccdd3dbd310';
+const FROZEN_POLICY_SHA256 = '17ed061b6518b0598a511f7a07b19e7d1388da5ca6878052cc10843e787456ca';
 const FROZEN_M1_012_PLACEMENT_POLICY_SHA256 = '9eb39bdaa5f4965d3940b3718dbaf519832948912acaaf5a3d78954dcc4f303b';
 const POLICY_KEYS = [
   '$schema', 'schemaVersion', 'task', 'phase', 'maturity', 'runtimeStatus', 'canonicalSources',

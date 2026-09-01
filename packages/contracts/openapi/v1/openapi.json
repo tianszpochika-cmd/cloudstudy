@@ -447,6 +447,18 @@
     {
       "name": "M1-016-Support",
       "description": "P1R-M1-016 admin support projections and owner commands"
+    },
+    {
+      "name": "M1-017-Audit",
+      "description": "audit-service owned, redacted, append-only audit export jobs"
+    },
+    {
+      "name": "m1-017-privacy-lifecycle",
+      "description": "P1R-M1-017 self-scoped privacy export and IAM account deletion lifecycle"
+    },
+    {
+      "name": "M1-017-Analytics",
+      "description": "P1R-M1-017 consent/delete-gated HTTP telemetry ingress; not a Kafka domain-event producer"
     }
   ],
   "paths": {
@@ -2285,9 +2297,44 @@
         ],
         "summary": "Create a self-scoped, masked privacy export",
         "operationId": "createPrivacyExport",
+        "deprecated": true,
+        "x-p1r-deprecation": {
+          "deprecationAt": "2026-09-01T00:00:00Z",
+          "sunsetAt": "UNSCHEDULED_UNTIL_DECLARED_REPLACEMENT_RUNTIME_GATE_ACCEPTED",
+          "migrationLink": "/api/v1/privacy/exports"
+        },
+        "x-migration": {
+          "canonicalOperationId": "createM1017PrivacyExport",
+          "canonicalRoute": "/api/v1/privacy/exports",
+          "adapterOnly": true,
+          "legacyWirePreserved": true,
+          "newCanonicalFactsFromLegacyPayload": "PROHIBITED",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED"
+        },
+        "x-contract": {
+          "canonical": false,
+          "classification": "HISTORICAL_B1_ADAPTER_ONLY",
+          "successorTask": "P1R-M1-017",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.self",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "consent",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived authenticated subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
         "security": [
           {
-            "B1ContentBearerAuth": []
+            "bearerAuth": []
           }
         ],
         "x-b1-acceptance": [
@@ -33666,6 +33713,1677 @@
           }
         }
       }
+    },
+    "/internal/v1/audit/exports": {
+      "post": {
+        "tags": [
+          "M1-017-Audit"
+        ],
+        "summary": "Create an asynchronous redacted audit export job",
+        "operationId": "createM1017AuditExport",
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.create",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.create",
+          "pep": "audit-service-local",
+          "allowedActors": [
+            "ADMIN_OPS_SERVICE",
+            "WORKFLOW_SERVICE"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "resourceOwner"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "audit-export-request-digest",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same canonical request digest returns the original export job",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_REQUEST",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": [
+            "auditId",
+            "exportId",
+            "requestDigest",
+            "scope",
+            "eventFamilies",
+            "format",
+            "decision",
+            "decisionId",
+            "requestId",
+            "traceId",
+            "occurredAt"
+          ],
+          "forbiddenFields": [
+            "password",
+            "accessToken",
+            "refreshToken",
+            "paymentCredential",
+            "rawAudio",
+            "rawText",
+            "rawBody",
+            "description",
+            "body",
+            "freeText",
+            "downloadUrl",
+            "token",
+            "secret"
+          ]
+        },
+        "x-reliability": {
+          "retryOwner": "workflow-service",
+          "maxAttemptsIncludingInitial": 5,
+          "retryableFailureCodes": [
+            "OWNER_TIMEOUT",
+            "SOURCE_UNAVAILABLE",
+            "REDACTION_FAILURE"
+          ],
+          "finalFailureCodes": [
+            "LEGAL_HOLD",
+            "POLICY_DENIED",
+            "RETRY_BUDGET_EXHAUSTED"
+          ],
+          "recoveryReceipt": "#/components/schemas/M1017AuditExportRecoveryReceipt",
+          "domainFactsUntouched": true
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017AuditIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AuditExportCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Audit export job accepted; source records remain append-only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1017AuditExportCreateResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ApiBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          },
+          "500": {
+            "$ref": "#/components/responses/ApiInternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/ApiServiceUnavailable"
+          }
+        }
+      }
+    },
+    "/internal/v1/audit/exports/{exportId}": {
+      "get": {
+        "tags": [
+          "M1-017-Audit"
+        ],
+        "summary": "Read an audit export job status",
+        "operationId": "getM1017AuditExport",
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.read",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.read",
+          "pep": "audit-service-local",
+          "allowedActors": [
+            "ADMIN_OPS_SERVICE",
+            "WORKFLOW_SERVICE"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "resourceOwner"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_STATUS_READ",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": [
+            "auditId",
+            "exportId",
+            "state",
+            "attempt",
+            "retryable",
+            "requestId",
+            "traceId",
+            "occurredAt"
+          ],
+          "forbiddenFields": [
+            "password",
+            "accessToken",
+            "refreshToken",
+            "paymentCredential",
+            "rawAudio",
+            "rawText",
+            "rawBody",
+            "description",
+            "body",
+            "freeText",
+            "downloadUrl",
+            "token",
+            "secret"
+          ]
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017AuditExportId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Server-derived export state and redacted recovery receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1017AuditExportStatusResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/audit/exports/{exportId}/download": {
+      "post": {
+        "tags": [
+          "M1-017-Audit"
+        ],
+        "summary": "Issue a one-time short-lived redacted export grant",
+        "operationId": "requestM1017AuditExportDownload",
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.download",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.download",
+          "pep": "audit-service-local",
+          "allowedActors": [
+            "ADMIN_OPS_SERVICE",
+            "WORKFLOW_SERVICE"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "resourceOwner"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "audit-export-download-grant",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same request returns the same unexpired one-time grant",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_DOWNLOAD_ISSUED",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": [
+            "auditId",
+            "exportId",
+            "grantRef",
+            "expiresAt",
+            "oneTime",
+            "requestId",
+            "traceId",
+            "occurredAt"
+          ],
+          "forbiddenFields": [
+            "password",
+            "accessToken",
+            "refreshToken",
+            "paymentCredential",
+            "rawAudio",
+            "rawText",
+            "rawBody",
+            "description",
+            "body",
+            "freeText",
+            "downloadUrl",
+            "token",
+            "secret"
+          ]
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017AuditExportId"
+          },
+          {
+            "$ref": "#/components/parameters/M1017AuditIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AuditExportDownloadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "One-time grant reference; no credential or permanent URL is returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1017AuditExportDownloadGrant"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "$ref": "#/components/responses/ApiConflict"
+          }
+        }
+      }
+    },
+    "/internal/v1/audit/exports/{exportId}/recovery": {
+      "post": {
+        "tags": [
+          "M1-017-Audit"
+        ],
+        "summary": "Record a workflow-owned export retry or recovery receipt",
+        "operationId": "recoverM1017AuditExport",
+        "security": [
+          {
+            "B8WorkloadIdentity": []
+          }
+        ],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.recover",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.recover",
+          "pep": "audit-service-local",
+          "allowedActors": [
+            "WORKFLOW_SERVICE"
+          ],
+          "trustedFacts": [
+            "workloadIdentity",
+            "subject",
+            "tenant",
+            "roles",
+            "permissions",
+            "policyVersion",
+            "resourceOwner"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "audit-export-recovery",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same action and expected state version returns the original recovery receipt",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_RECOVERY",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": [
+            "auditId",
+            "exportId",
+            "action",
+            "attempt",
+            "state",
+            "recoveryReceiptRef",
+            "requestId",
+            "traceId",
+            "occurredAt"
+          ],
+          "forbiddenFields": [
+            "password",
+            "accessToken",
+            "refreshToken",
+            "paymentCredential",
+            "rawAudio",
+            "rawText",
+            "rawBody",
+            "description",
+            "body",
+            "freeText",
+            "downloadUrl",
+            "token",
+            "secret"
+          ]
+        },
+        "x-reliability": {
+          "retryOwner": "workflow-service",
+          "maxAttemptsIncludingInitial": 5,
+          "recoveryReceipt": "#/components/schemas/M1017AuditExportRecoveryReceipt",
+          "domainFactsUntouched": true
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017AuditExportId"
+          },
+          {
+            "$ref": "#/components/parameters/M1017AuditIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AuditExportRecoveryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Recovery action accepted with a redacted receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ApiSuccessEnvelope"
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "data"
+                      ],
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/M1017AuditExportRecoveryReceipt"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/exports": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Create a self-scoped privacy export request",
+        "operationId": "createM1017PrivacyExport",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learner-service.privacy",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.self",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "consent",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived authenticated subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "privacy-export-request",
+          "replayBehavior": "same authenticated subject and request digest return the original export request; a different digest is a conflict"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017PrivacyExportRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Privacy export request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017PrivacyExportEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/exports/{exportId}": {
+      "get": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Read the authenticated subject's privacy export status",
+        "operationId": "getM1017PrivacyExportStatus",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learner-service.privacy",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.self.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived export subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017ExportId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current export status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017PrivacyExportEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/exports/{exportId}/download": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Issue a one-time, short-lived privacy export download grant",
+        "operationId": "createM1017PrivacyExportDownloadGrant",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learner-service.privacy",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.self.download",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "resourceOwner",
+            "exportExpiry",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived export subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "privacy-export-download-grant",
+          "replayBehavior": "same subject and ready export return the active one-time grant only while it remains valid"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017ExportId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One-time download grant",
+            "headers": {
+              "Cache-Control": {
+                "schema": {
+                  "const": "no-store"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017PrivacyDownloadGrantEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "410": {
+            "description": "Export or its download window expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/privacy/exports/{exportId}/receipt": {
+      "get": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Read a redacted privacy export receipt",
+        "operationId": "getM1017PrivacyExportReceipt",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "learner-service.privacy",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.self.receipt.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived export subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017ExportId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Redacted export receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017PrivacyReceiptEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/internal/v1/privacy/exports/{exportId}/owner-receipts": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Record an owner-scoped privacy export receipt",
+        "operationId": "recordM1017PrivacyExportOwnerReceipt",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-owner": "learner-service.privacy",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.owner-receipt.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "trustedWorkloadIdentity",
+            "serverDerivedOwnerService",
+            "serverDerivedTenant",
+            "pathExportId",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "privacy-export-owner-receipt",
+          "replayBehavior": "same workload, export and receipt digest return the original acknowledgement; a different digest is a conflict"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017ExportId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017OwnerReceiptSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Owner receipt accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017PrivacyExportEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/internal/v1/privacy/exports/{exportId}/recovery": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Request a controlled privacy export recovery",
+        "operationId": "recoverM1017PrivacyExport",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-owner": "learner-service.privacy",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "privacy.export.recovery.execute",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "trustedWorkloadIdentity",
+            "serverDerivedTenant",
+            "pathExportId",
+            "recoveryTask",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "privacy-export-recovery",
+          "replayBehavior": "same recovery task and action return the original acknowledgement"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017ExportId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017PrivacyRecoveryCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Recovery task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017PrivacyExportEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/account-deletions": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Create a self-scoped account deletion request with a seven-day cooling-off period",
+        "operationId": "createM1017AccountDeletionRequest",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.self",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "consent",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived authenticated subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-request",
+          "replayBehavior": "same authenticated subject and request digest return the pending deletion request; a different digest is a conflict"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AccountDeletionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Deletion request accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/account-deletions/{deletionRequestId}": {
+      "get": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Read the authenticated subject's account deletion status",
+        "operationId": "getM1017AccountDeletionStatus",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.self.read",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "resourceOwner",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived deletion request subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current deletion status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ApiNotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/iam/account-deletions/{deletionRequestId}/cancel": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Cancel an account deletion request during its cooling-off period",
+        "operationId": "cancelM1017AccountDeletionRequest",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.self.cancel",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "verifiedPrincipal",
+            "serverDerivedTenant",
+            "reauthentication",
+            "resourceOwner",
+            "coolingOffWindow",
+            "policyVersion"
+          ],
+          "resourceOwner": "server-derived deletion request subject",
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-cancel",
+          "replayBehavior": "same deletion request and cancellation digest return the original cancellation acknowledgement"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AccountDeletionCancelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deletion request cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/internal/v1/iam/account-deletions/{deletionRequestId}/execute": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Execute a due account deletion request after the cooling-off period",
+        "operationId": "executeM1017AccountDeletion",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.execute",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "trustedWorkloadIdentity",
+            "serverDerivedTenant",
+            "pathDeletionRequestId",
+            "dueCoolingOffWindow",
+            "legalHoldDecision",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-execute",
+          "replayBehavior": "same scheduled execution command returns the original state; execution never accepts a client-supplied target state"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Deletion execution accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/internal/v1/iam/account-deletions/{deletionRequestId}/owner-receipts": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Record an owner-scoped account deletion or anonymization receipt",
+        "operationId": "recordM1017AccountDeletionOwnerReceipt",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.owner-receipt.write",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "trustedWorkloadIdentity",
+            "serverDerivedOwnerService",
+            "serverDerivedTenant",
+            "pathDeletionRequestId",
+            "legalHoldDecision",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-owner-receipt",
+          "replayBehavior": "same workload, deletion request and receipt digest return the original acknowledgement; a different digest is a conflict"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017OwnerReceiptSubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Owner receipt accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/internal/v1/iam/account-deletions/{deletionRequestId}/recovery": {
+      "post": {
+        "tags": [
+          "m1-017-privacy-lifecycle"
+        ],
+        "summary": "Request controlled recovery for a partially completed account deletion",
+        "operationId": "recoverM1017AccountDeletion",
+        "security": [
+          {
+            "B8ServiceIdentity": []
+          }
+        ],
+        "x-owner": "iam-service",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "requiredPermission": "iam.account.deletion.recovery.execute",
+          "defaultDecision": "DENY",
+          "trustedFacts": [
+            "trustedWorkloadIdentity",
+            "serverDerivedTenant",
+            "pathDeletionRequestId",
+            "recoveryTask",
+            "legalHoldDecision",
+            "policyVersion"
+          ],
+          "serviceSidePepRequired": true,
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "keyHeader": "Idempotency-Key",
+          "strategy": "account-deletion-recovery",
+          "replayBehavior": "same recovery task and action return the original acknowledgement; completed owner receipts are never repeated"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017DeletionRequestId"
+          },
+          {
+            "$ref": "#/components/parameters/B1IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017DeletionRecoveryCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Recovery task accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AccountDeletionEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/ApiUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/ApiForbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ApiConflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ApiUnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/telemetry": {
+      "post": {
+        "tags": [
+          "M1-017-Analytics"
+        ],
+        "summary": "Accept a consent- and deletion-gated UI telemetry event",
+        "operationId": "ingestM1017AnalyticsTelemetry",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "x-owner": "analytics-service",
+        "x-data-owner": "analytics-service",
+        "x-permission": "analytics.telemetry.ingest",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "analytics.telemetry.ingest",
+          "pep": "analytics-service-local",
+          "allowedActors": [
+            "AUTHENTICATED_LEARNER"
+          ],
+          "trustedFacts": [
+            "subject",
+            "tenant",
+            "consent",
+            "deletionStatus",
+            "policyVersion"
+          ],
+          "clientAuthority": "NONE"
+        },
+        "x-telemetry": {
+          "transport": "HTTP_TELEMETRY_ONLY",
+          "kafkaTopic": null,
+          "publishesDomainFacts": false,
+          "writesDomainFacts": false,
+          "clientIsKafkaProducer": false,
+          "consentMissingEffect": "SUPPRESS",
+          "consentRevokedEffect": "SUPPRESS",
+          "deletionRequestedEffect": "SUPPRESS",
+          "deletionAllowedStatus": [
+            "ACTIVE"
+          ],
+          "deletionSuppressedStatuses": [
+            "PENDING_COOLING_OFF",
+            "EXECUTING",
+            "RECOVERY_REQUIRED",
+            "ANONYMIZED"
+          ],
+          "deletionCancelledEffect": "SUPPRESS",
+          "failureEffect": "NON_BLOCKING",
+          "retentionPolicyRef": "ANALYTICS-RETENTION-V1",
+          "redactionVersion": "analytics-redaction-v1"
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/M1017TelemetryIdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/M1017AnalyticsTelemetryRequest"
+              }
+            }
+          }
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "tenant-subject-client-event-payload-hash",
+          "replayBehavior": "return-original-receipt"
+        },
+        "responses": {
+          "202": {
+            "description": "Telemetry accepted or suppressed without changing domain facts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/M1017AnalyticsTelemetryReceipt"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "$ref": "#/components/headers/XRequestId"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/XTraceId"
+              },
+              "X-API-Version": {
+                "$ref": "#/components/headers/XApiVersion"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/B13Invalid"
+          },
+          "401": {
+            "$ref": "#/components/responses/B13Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/B13Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/B13Conflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/B13RateLimited"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -35480,6 +37198,58 @@
           "maxLength": 128,
           "pattern": "^st_[A-Za-z0-9._:-]{6,120}$"
         }
+      },
+      "M1017AuditIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "M1017AuditExportId": {
+        "name": "exportId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^audit-export_[A-Za-z0-9._:-]{8,112}$"
+        }
+      },
+      "M1017ExportId": {
+        "name": "exportId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^pex_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        }
+      },
+      "M1017DeletionRequestId": {
+        "name": "deletionRequestId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^del_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+        }
+      },
+      "M1017TelemetryIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "同一认证主体和同一客户端事件摘要重放原回执；同 key 不同摘要必须拒绝。",
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9._:-]{16,200}$"
+        },
+        "x-client-authority": "NONE"
       }
     },
     "headers": {
@@ -37725,6 +39495,25 @@
             }
           }
         }
+      },
+      "B13RateLimited": {
+        "description": "Telemetry ingress 被限流；不得阻塞领域事实写入",
+        "headers": {
+          "Retry-After": {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            }
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/B13Problem"
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -39609,20 +41398,19 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "subjectId",
-          "policyName"
+          "policyName",
+          "reauthenticationRef"
         ],
         "properties": {
-          "subjectId": {
-            "type": "integer",
-            "format": "int64",
-            "minimum": 1
-          },
           "policyName": {
             "type": "string",
             "enum": [
               "learner-self"
             ]
+          },
+          "reauthenticationRef": {
+            "type": "string",
+            "pattern": "^reauth_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
           }
         }
       },
@@ -71339,6 +73127,1572 @@
             "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
           }
         }
+      },
+      "M1017AuditExportCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "windowStart",
+          "windowEnd",
+          "scope",
+          "eventFamilies",
+          "format",
+          "approvalRef"
+        ],
+        "properties": {
+          "windowStart": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "windowEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/M1017AuditExportScope"
+          },
+          "eventFamilies": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/components/schemas/M1017AuditEventFamily"
+            }
+          },
+          "format": {
+            "$ref": "#/components/schemas/M1017AuditExportFormat"
+          },
+          "approvalRef": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128,
+            "pattern": "^approval-ref:[A-Za-z0-9._:-]{8,112}$"
+          }
+        }
+      },
+      "M1017AuditExportDownloadRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedStateVersion"
+        ],
+        "properties": {
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "M1017AuditExportRecoveryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "expectedStateVersion",
+          "reasonCode"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "RETRY",
+              "REBUILD_REDACTED_COPY",
+              "REVOKE_DOWNLOAD_GRANT"
+            ]
+          },
+          "expectedStateVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "OWNER_TIMEOUT",
+              "SOURCE_UNAVAILABLE",
+              "REDACTION_FAILURE",
+              "OPERATOR_REQUEST",
+              "POLICY_RECHECK"
+            ]
+          }
+        }
+      },
+      "M1017AuditExportScope": {
+        "type": "string",
+        "enum": [
+          "TENANT",
+          "SUBJECT",
+          "PRIVACY_OPERATIONS",
+          "SECURITY_OPERATIONS"
+        ]
+      },
+      "M1017AuditEventFamily": {
+        "type": "string",
+        "enum": [
+          "AUTH",
+          "ACCESS",
+          "ADMIN",
+          "PRIVACY",
+          "RECOVERY",
+          "DATA"
+        ]
+      },
+      "M1017AuditExportFormat": {
+        "type": "string",
+        "enum": [
+          "JSONL",
+          "CSV"
+        ]
+      },
+      "M1017AuditExportState": {
+        "type": "string",
+        "enum": [
+          "REQUESTED",
+          "PROCESSING",
+          "READY",
+          "RETRY_SCHEDULED",
+          "FAILED_RETRYABLE",
+          "FAILED_FINAL",
+          "EXPIRED",
+          "REVOKED"
+        ]
+      },
+      "M1017AuditFailureCode": {
+        "type": "string",
+        "enum": [
+          "NONE",
+          "OWNER_TIMEOUT",
+          "SOURCE_UNAVAILABLE",
+          "REDACTION_FAILURE",
+          "LEGAL_HOLD",
+          "POLICY_DENIED",
+          "RETRY_BUDGET_EXHAUSTED"
+        ]
+      },
+      "M1017AuditExportCreateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "state",
+          "stateVersion",
+          "requestDigest",
+          "auditId",
+          "createdAt",
+          "expiresAt",
+          "redacted",
+          "owner",
+          "tenantScope",
+          "runtimeStatus"
+        ],
+        "properties": {
+          "exportId": {
+            "$ref": "#/components/schemas/M1017AuditExportIdValue"
+          },
+          "state": {
+            "$ref": "#/components/schemas/M1017AuditExportState"
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "requestDigest": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "auditId": {
+            "$ref": "#/components/schemas/M1017AuditId"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          },
+          "owner": {
+            "type": "string",
+            "const": "audit-service"
+          },
+          "tenantScope": {
+            "type": "string",
+            "const": "server-derived"
+          },
+          "runtimeStatus": {
+            "type": "string",
+            "const": "NOT_RUNTIME_VERIFIED"
+          }
+        }
+      },
+      "M1017AuditExportStatusResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "state",
+          "stateVersion",
+          "requestDigest",
+          "auditId",
+          "createdAt",
+          "expiresAt",
+          "redacted",
+          "owner",
+          "tenantScope",
+          "attempt",
+          "retryable",
+          "lastFailureCode",
+          "recoveryReceiptRef",
+          "downloadAvailable",
+          "domainFactsUntouched",
+          "runtimeStatus"
+        ],
+        "properties": {
+          "exportId": {
+            "$ref": "#/components/schemas/M1017AuditExportIdValue"
+          },
+          "state": {
+            "$ref": "#/components/schemas/M1017AuditExportState"
+          },
+          "stateVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "requestDigest": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "auditId": {
+            "$ref": "#/components/schemas/M1017AuditId"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          },
+          "owner": {
+            "type": "string",
+            "const": "audit-service"
+          },
+          "tenantScope": {
+            "type": "string",
+            "const": "server-derived"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "lastFailureCode": {
+            "$ref": "#/components/schemas/M1017AuditFailureCode"
+          },
+          "recoveryReceiptRef": {
+            "type": "string",
+            "pattern": "^(NONE|audit-recovery-receipt:[A-Za-z0-9._:-]{8,112})$"
+          },
+          "downloadAvailable": {
+            "type": "boolean"
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "const": true
+          },
+          "runtimeStatus": {
+            "type": "string",
+            "const": "NOT_RUNTIME_VERIFIED"
+          }
+        }
+      },
+      "M1017AuditExportDownloadGrant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "grantRef",
+          "contentDigest",
+          "expiresAt",
+          "oneTime",
+          "redacted",
+          "auditId",
+          "downloadAuditId"
+        ],
+        "properties": {
+          "exportId": {
+            "$ref": "#/components/schemas/M1017AuditExportIdValue"
+          },
+          "grantRef": {
+            "type": "string",
+            "minLength": 24,
+            "maxLength": 128,
+            "pattern": "^audit-download-ref:[A-Za-z0-9._:-]{8,112}$"
+          },
+          "contentDigest": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "oneTime": {
+            "type": "boolean",
+            "const": true
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          },
+          "auditId": {
+            "$ref": "#/components/schemas/M1017AuditId"
+          },
+          "downloadAuditId": {
+            "$ref": "#/components/schemas/M1017AuditId"
+          }
+        }
+      },
+      "M1017AuditExportRecoveryReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "action",
+          "state",
+          "attempt",
+          "retryable",
+          "recoveryReceiptRef",
+          "auditId",
+          "occurredAt",
+          "redacted",
+          "domainFactsUntouched",
+          "owner",
+          "workflowOwner"
+        ],
+        "properties": {
+          "exportId": {
+            "$ref": "#/components/schemas/M1017AuditExportIdValue"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "RETRY",
+              "REBUILD_REDACTED_COPY",
+              "REVOKE_DOWNLOAD_GRANT"
+            ]
+          },
+          "state": {
+            "$ref": "#/components/schemas/M1017AuditExportState"
+          },
+          "attempt": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "retryable": {
+            "type": "boolean"
+          },
+          "recoveryReceiptRef": {
+            "type": "string",
+            "pattern": "^audit-recovery-receipt:[A-Za-z0-9._:-]{8,112}$"
+          },
+          "auditId": {
+            "$ref": "#/components/schemas/M1017AuditId"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "const": true
+          },
+          "owner": {
+            "type": "string",
+            "const": "audit-service"
+          },
+          "workflowOwner": {
+            "type": "string",
+            "const": "workflow-service"
+          }
+        }
+      },
+      "M1017AuditRecordSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "auditId",
+          "actorSubjectHash",
+          "tenantHash",
+          "action",
+          "resourceRef",
+          "decision",
+          "reasonCode",
+          "decisionId",
+          "requestId",
+          "traceId",
+          "commandId",
+          "eventId",
+          "occurredAt",
+          "beforeDigest",
+          "afterDigest",
+          "previousHash",
+          "recordHash",
+          "redacted",
+          "appendOnly"
+        ],
+        "properties": {
+          "auditId": {
+            "$ref": "#/components/schemas/M1017AuditId"
+          },
+          "actorSubjectHash": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "tenantHash": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "EXPORT_REQUEST",
+              "EXPORT_STATUS_READ",
+              "DOWNLOAD_ISSUED",
+              "RECOVERY_RECORDED"
+            ]
+          },
+          "resourceRef": {
+            "type": "string",
+            "pattern": "^resource-ref:[A-Za-z0-9._:-]{8,112}$"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ALLOW",
+              "DENY"
+            ]
+          },
+          "reasonCode": {
+            "$ref": "#/components/schemas/M1017AuditFailureCode"
+          },
+          "decisionId": {
+            "type": "string",
+            "pattern": "^decision_[A-Za-z0-9._:-]{8,112}$"
+          },
+          "requestId": {
+            "type": "string",
+            "pattern": "^request_[A-Za-z0-9._:-]{8,112}$"
+          },
+          "traceId": {
+            "type": "string",
+            "pattern": "^trace_[A-Za-z0-9._:-]{8,112}$"
+          },
+          "commandId": {
+            "type": "string",
+            "pattern": "^command_[A-Za-z0-9._:-]{8,112}$"
+          },
+          "eventId": {
+            "type": "string",
+            "pattern": "^event_[A-Za-z0-9._:-]{8,112}$"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "beforeDigest": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "afterDigest": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "previousHash": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "recordHash": {
+            "$ref": "#/components/schemas/M1017Sha256Digest"
+          },
+          "redacted": {
+            "type": "boolean",
+            "const": true
+          },
+          "appendOnly": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "M1017AuditId": {
+        "type": "string",
+        "minLength": 14,
+        "maxLength": 128,
+        "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+      },
+      "M1017AuditExportIdValue": {
+        "type": "string",
+        "minLength": 16,
+        "maxLength": 128,
+        "pattern": "^audit-export_[A-Za-z0-9._:-]{8,112}$"
+      },
+      "M1017Sha256Digest": {
+        "type": "string",
+        "pattern": "^sha256:[a-f0-9]{64}$"
+      },
+      "M1017PrivacyExportRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reauthenticationRef",
+          "scope",
+          "purposeCode"
+        ],
+        "properties": {
+          "reauthenticationRef": {
+            "type": "string",
+            "pattern": "^reauth_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_AND_LEARNER_DATA"
+            ]
+          },
+          "purposeCode": {
+            "type": "string",
+            "enum": [
+              "DATA_EXPORT"
+            ]
+          }
+        }
+      },
+      "M1017PrivacyExport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "status",
+          "scope",
+          "requestedAt",
+          "expiresAt",
+          "policyVersion",
+          "receiptSummary",
+          "download",
+          "recovery"
+        ],
+        "properties": {
+          "exportId": {
+            "type": "string",
+            "pattern": "^pex_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "REQUESTED",
+              "COLLECTING",
+              "ASSEMBLING",
+              "READY",
+              "DOWNLOAD_ISSUED",
+              "EXPIRED",
+              "FAILED",
+              "RECOVERY_REQUIRED"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "ACCOUNT_AND_LEARNER_DATA"
+            ]
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "policyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "receiptSummary": {
+            "$ref": "#/components/schemas/M1017ReceiptSummary"
+          },
+          "download": {
+            "$ref": "#/components/schemas/M1017DownloadAvailability"
+          },
+          "recovery": {
+            "$ref": "#/components/schemas/M1017RecoveryStatus"
+          }
+        }
+      },
+      "M1017PrivacyDownloadGrant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "downloadUrl",
+          "expiresAt",
+          "oneTime",
+          "cacheControl"
+        ],
+        "properties": {
+          "exportId": {
+            "type": "string",
+            "pattern": "^pex_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "downloadUrl": {
+            "type": "string",
+            "format": "uri",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "oneTime": {
+            "type": "boolean",
+            "const": true
+          },
+          "cacheControl": {
+            "type": "string",
+            "const": "no-store"
+          }
+        }
+      },
+      "M1017PrivacyExportReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "exportId",
+          "status",
+          "aggregateDigest",
+          "ownerReceipts",
+          "issuedAt"
+        ],
+        "properties": {
+          "exportId": {
+            "type": "string",
+            "pattern": "^pex_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "READY",
+              "EXPIRED",
+              "FAILED",
+              "RECOVERY_REQUIRED"
+            ]
+          },
+          "aggregateDigest": {
+            "type": "string",
+            "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"
+          },
+          "ownerReceipts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/M1017OwnerReceiptSummary"
+            }
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1017OwnerReceiptSubmission": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "receiptId",
+          "taskVersion",
+          "outcome",
+          "artifactDigest",
+          "legalHoldDecision",
+          "completedAt"
+        ],
+        "properties": {
+          "receiptId": {
+            "type": "string",
+            "pattern": "^rcpt_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "taskVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "COLLECTED",
+              "NO_DATA",
+              "DELETED",
+              "ANONYMIZED",
+              "RETAINED_LEGAL_HOLD",
+              "FAILED"
+            ]
+          },
+          "artifactDigest": {
+            "type": "string",
+            "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"
+          },
+          "legalHoldDecision": {
+            "type": "string",
+            "enum": [
+              "CLEARED",
+              "ACTIVE_RETAINED"
+            ]
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "failureCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          }
+        }
+      },
+      "M1017OwnerReceiptSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ownerService",
+          "receiptId",
+          "taskVersion",
+          "outcome",
+          "artifactDigest",
+          "legalHoldDecision",
+          "completedAt"
+        ],
+        "properties": {
+          "ownerService": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)?$"
+          },
+          "receiptId": {
+            "type": "string",
+            "pattern": "^rcpt_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "taskVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "COLLECTED",
+              "NO_DATA",
+              "DELETED",
+              "ANONYMIZED",
+              "RETAINED_LEGAL_HOLD",
+              "FAILED"
+            ]
+          },
+          "artifactDigest": {
+            "type": "string",
+            "pattern": "^sha256:[A-Za-z0-9._:-]{8,128}$"
+          },
+          "legalHoldDecision": {
+            "type": "string",
+            "enum": [
+              "CLEARED",
+              "ACTIVE_RETAINED"
+            ]
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1017ReceiptSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedOwnerCount",
+          "receivedOwnerCount",
+          "hasFailure",
+          "legalHoldDecision"
+        ],
+        "properties": {
+          "expectedOwnerCount": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "receivedOwnerCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hasFailure": {
+            "type": "boolean"
+          },
+          "legalHoldDecision": {
+            "type": "string",
+            "enum": [
+              "CLEARED",
+              "ACTIVE_RETAINED",
+              "NOT_APPLICABLE"
+            ]
+          }
+        }
+      },
+      "M1017DownloadAvailability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "availability",
+          "oneTime",
+          "cacheControl"
+        ],
+        "properties": {
+          "availability": {
+            "type": "string",
+            "enum": [
+              "NOT_READY",
+              "AVAILABLE",
+              "EXPIRED"
+            ]
+          },
+          "oneTime": {
+            "type": "boolean",
+            "const": true
+          },
+          "cacheControl": {
+            "type": "string",
+            "const": "no-store"
+          }
+        }
+      },
+      "M1017RecoveryStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "REQUIRED"
+            ]
+          },
+          "recoveryTaskRef": {
+            "type": "string",
+            "pattern": "^recovery_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          }
+        }
+      },
+      "M1017PrivacyRecoveryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "recoveryReason"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "RETRY_FAILED_OWNER",
+              "RECONCILE_RECEIPTS",
+              "EXPIRE_INCOMPLETE_EXPORT"
+            ]
+          },
+          "recoveryReason": {
+            "type": "string",
+            "enum": [
+              "OWNER_FAILURE",
+              "DELIVERY_TIMEOUT",
+              "RECONCILIATION_MISMATCH"
+            ]
+          }
+        }
+      },
+      "M1017AccountDeletionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reauthenticationRef",
+          "confirmation",
+          "reasonCode"
+        ],
+        "properties": {
+          "reauthenticationRef": {
+            "type": "string",
+            "pattern": "^reauth_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "confirmation": {
+            "type": "string",
+            "const": "DELETE_ACCOUNT"
+          },
+          "reasonCode": {
+            "type": "string",
+            "enum": [
+              "USER_REQUEST"
+            ]
+          }
+        }
+      },
+      "M1017AccountDeletionCancelRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reauthenticationRef"
+        ],
+        "properties": {
+          "reauthenticationRef": {
+            "type": "string",
+            "pattern": "^reauth_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          }
+        }
+      },
+      "M1017AccountDeletion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deletionRequestId",
+          "status",
+          "requestedAt",
+          "executeAt",
+          "coolingOffHours",
+          "sessionRevocationState",
+          "receiptSummary",
+          "legalHoldSummary",
+          "recovery"
+        ],
+        "properties": {
+          "deletionRequestId": {
+            "type": "string",
+            "pattern": "^del_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING_COOLING_OFF",
+              "CANCELLED",
+              "EXECUTING",
+              "RECOVERY_REQUIRED",
+              "ANONYMIZED"
+            ]
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "executeAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "coolingOffHours": {
+            "type": "integer",
+            "const": 168
+          },
+          "sessionRevocationState": {
+            "type": "string",
+            "enum": [
+              "NOT_STARTED",
+              "REVOKED"
+            ]
+          },
+          "receiptSummary": {
+            "$ref": "#/components/schemas/M1017ReceiptSummary"
+          },
+          "legalHoldSummary": {
+            "type": "string",
+            "enum": [
+              "CLEARED",
+              "ACTIVE_RETAINED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "recovery": {
+            "$ref": "#/components/schemas/M1017RecoveryStatus"
+          }
+        }
+      },
+      "M1017AccountDeletionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "deletionRequestId",
+          "status",
+          "sessionRevocationState",
+          "ownerReceipts",
+          "issuedAt"
+        ],
+        "properties": {
+          "deletionRequestId": {
+            "type": "string",
+            "pattern": "^del_[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "RECOVERY_REQUIRED",
+              "ANONYMIZED"
+            ]
+          },
+          "sessionRevocationState": {
+            "type": "string",
+            "const": "REVOKED"
+          },
+          "ownerReceipts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/M1017OwnerReceiptSummary"
+            }
+          },
+          "issuedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "M1017DeletionRecoveryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "recoveryReason"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "RETRY_FAILED_OWNER",
+              "RECONCILE_RECEIPTS",
+              "ESCALATE_MANUAL_REVIEW"
+            ]
+          },
+          "recoveryReason": {
+            "type": "string",
+            "enum": [
+              "OWNER_FAILURE",
+              "RECONCILIATION_MISMATCH",
+              "LEGAL_HOLD_REVIEW"
+            ]
+          }
+        }
+      },
+      "M1017PrivacyExportEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/M1017PrivacyExport"
+              }
+            }
+          }
+        ]
+      },
+      "M1017PrivacyDownloadGrantEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/M1017PrivacyDownloadGrant"
+              }
+            }
+          }
+        ]
+      },
+      "M1017PrivacyReceiptEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/M1017PrivacyExportReceipt"
+              }
+            }
+          }
+        ]
+      },
+      "M1017AccountDeletionEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/M1017AccountDeletion"
+              }
+            }
+          }
+        ]
+      },
+      "M1017AccountDeletionReceiptEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApiSuccessEnvelope"
+          },
+          {
+            "type": "object",
+            "required": [
+              "data"
+            ],
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/M1017AccountDeletionReceipt"
+              }
+            }
+          }
+        ]
+      },
+      "M1017AnalyticsTelemetryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientEventId",
+          "eventName",
+          "eventVersion",
+          "occurredAt",
+          "payload"
+        ],
+        "properties": {
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "eventName": {
+            "type": "string",
+            "enum": [
+              "ui.page.viewed.v1",
+              "ui.element.clicked.v1",
+              "ui.media.playback.started.v1",
+              "telemetry.error.v1"
+            ]
+          },
+          "eventVersion": {
+            "type": "string",
+            "enum": [
+              "1.0.0"
+            ]
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "payload": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/M1017UiPageViewedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/M1017UiElementClickedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/M1017UiMediaPlaybackStartedPayload"
+              },
+              {
+                "$ref": "#/components/schemas/M1017TelemetryErrorPayload"
+              }
+            ],
+            "x-discriminator": "payload.schema"
+          }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "ui.page.viewed.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017UiPageViewedPayload"
+              }
+            },
+            "x-event-name": "ui.page.viewed.v1"
+          },
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "ui.element.clicked.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017UiElementClickedPayload"
+              }
+            },
+            "x-event-name": "ui.element.clicked.v1"
+          },
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "ui.media.playback.started.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017UiMediaPlaybackStartedPayload"
+              }
+            },
+            "x-event-name": "ui.media.playback.started.v1"
+          },
+          {
+            "required": [
+              "eventName",
+              "payload"
+            ],
+            "properties": {
+              "eventName": {
+                "enum": [
+                  "telemetry.error.v1"
+                ]
+              },
+              "payload": {
+                "$ref": "#/components/schemas/M1017TelemetryErrorPayload"
+              }
+            },
+            "x-event-name": "telemetry.error.v1"
+          }
+        ],
+        "x-client-authority": "NONE",
+        "x-forbidden-fields": [
+          "tenant",
+          "tenantId",
+          "subject",
+          "ownerId",
+          "owner",
+          "ownerService",
+          "principal",
+          "principalId",
+          "subjectId",
+          "actor",
+          "actorId",
+          "user",
+          "userId",
+          "role",
+          "roles",
+          "permission",
+          "permissions",
+          "assignment",
+          "assignee",
+          "queueId",
+          "priority",
+          "sla",
+          "slaDueAt",
+          "state",
+          "stateVersion",
+          "status",
+          "deliveryStatus",
+          "readAt",
+          "legalHold",
+          "retention",
+          "retentionPolicyRef",
+          "auditId",
+          "rawText",
+          "rawBody",
+          "rawContent",
+          "rawDescription",
+          "rawPayload",
+          "rawTranscript",
+          "description",
+          "body",
+          "freeText",
+          "plainText",
+          "unredactedFreeText",
+          "unredactedDescription",
+          "password",
+          "secret",
+          "token",
+          "accessToken",
+          "refreshToken",
+          "authorization",
+          "cookie",
+          "rawAudio",
+          "audioBytes",
+          "recordingBytes",
+          "rawAttachmentBytes",
+          "transcript",
+          "answerKey",
+          "rawAnswer",
+          "paymentCredential",
+          "paymentToken",
+          "cardNumber",
+          "cvv",
+          "cvc",
+          "jws",
+          "signature",
+          "objectKey",
+          "url",
+          "signedUrl",
+          "downloadUrl",
+          "uploadUrl"
+        ],
+        "x-telemetry-only": true,
+        "x-domain-facts-write": false,
+        "x-consent-source": "server-derived",
+        "x-deletion-source": "iam-service-server-derived",
+        "x-retention-policy-ref": "ANALYTICS-RETENTION-V1"
+      },
+      "M1017UiPageViewedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "pageCode"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ui.page.viewed"
+            ]
+          },
+          "pageCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "surfaceCode": {
+            "type": "string",
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "locale": {
+            "type": "string",
+            "maxLength": 20,
+            "pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{2,8})?$"
+          }
+        },
+        "x-event-name": "ui.page.viewed.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017UiElementClickedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "pageCode",
+          "elementCode",
+          "interactionCode"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ui.element.clicked"
+            ]
+          },
+          "pageCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "elementCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          },
+          "interactionCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,31}$"
+          }
+        },
+        "x-event-name": "ui.element.clicked.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017UiMediaPlaybackStartedPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "mediaKind",
+          "durationBucket"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "ui.media.playback.started"
+            ]
+          },
+          "mediaKind": {
+            "type": "string",
+            "enum": [
+              "LESSON_AUDIO",
+              "LESSON_VIDEO",
+              "PRONUNCIATION"
+            ]
+          },
+          "durationBucket": {
+            "type": "string",
+            "enum": [
+              "LT_10S",
+              "10S_60S",
+              "GT_60S"
+            ]
+          },
+          "contentRef": {
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          }
+        },
+        "x-event-name": "ui.media.playback.started.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017TelemetryErrorPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema",
+          "errorCode",
+          "category"
+        ],
+        "properties": {
+          "schema": {
+            "type": "string",
+            "enum": [
+              "telemetry.error"
+            ]
+          },
+          "errorCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,95}$"
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+          }
+        },
+        "x-event-name": "telemetry.error.v1",
+        "x-client-authority": "NONE"
+      },
+      "M1017AnalyticsTelemetryReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "receiptId",
+          "clientEventId",
+          "state",
+          "replayed",
+          "redactionVersion",
+          "policyVersion",
+          "domainFactsUntouched"
+        ],
+        "properties": {
+          "receiptId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 160,
+            "pattern": "^telemetry-receipt_[A-Za-z0-9._:-]{6,152}$"
+          },
+          "clientEventId": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{7,127}$"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "SUPPRESSED",
+              "REPLAYED",
+              "REJECTED"
+            ]
+          },
+          "replayed": {
+            "type": "boolean"
+          },
+          "suppressionReason": {
+            "type": "string",
+            "enum": [
+              "CONSENT_MISSING",
+              "CONSENT_REVOKED",
+              "DELETION_PENDING",
+              "DELETION_EXECUTED",
+              "TRUSTED_CONTEXT_UNAVAILABLE"
+            ]
+          },
+          "redactionVersion": {
+            "type": "string",
+            "enum": [
+              "analytics-redaction-v1"
+            ]
+          },
+          "policyVersion": {
+            "type": "string",
+            "enum": [
+              "1.0.0"
+            ]
+          },
+          "domainFactsUntouched": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "x-client-authority": "NONE",
+        "x-telemetry-only": true
       }
     },
     "requestBodies": {},
@@ -71703,6 +75057,22 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "analytics-telemetry",
+        "priority": 800,
+        "match": {
+          "type": "EXACT",
+          "path": "/api/v1/analytics/telemetry",
+          "methods": [
+            "POST"
+          ]
+        },
+        "upstreamOwner": "analytics-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "learning-content-snapshot",
         "priority": 800,
         "match": {
@@ -71788,6 +75158,23 @@
         "compatibilityMode": "NONE"
       },
       {
+        "ruleId": "iam-account-deletions",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/iam/account-deletions",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "iam-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
+        "compatibilityMode": "NONE"
+      },
+      {
         "ruleId": "learner-domain",
         "priority": 100,
         "match": {
@@ -71830,6 +75217,7 @@
           "type": "PREFIX",
           "path": "/api/v1/privacy",
           "methods": [
+            "GET",
             "POST"
           ]
         },
@@ -71837,6 +75225,23 @@
         "internalTargetClass": "INTERNAL_V1",
         "visibility": "AUTHENTICATED",
         "authClass": "HIGH_RISK_ADMIN",
+        "compatibilityMode": "NONE"
+      },
+      {
+        "ruleId": "privacy-exports",
+        "priority": 800,
+        "match": {
+          "type": "PREFIX",
+          "path": "/api/v1/privacy/exports",
+          "methods": [
+            "GET",
+            "POST"
+          ]
+        },
+        "upstreamOwner": "learner-service",
+        "internalTargetClass": "INTERNAL_V1",
+        "visibility": "AUTHENTICATED",
+        "authClass": "AUTHENTICATED_WRITE",
         "compatibilityMode": "NONE"
       },
       {
@@ -72351,7 +75756,7 @@
       "externalExposure": "DENY",
       "externalCors": "DENY",
       "requiredCallerIdentity": "VALIDATED_WORKLOAD_IDENTITY",
-      "baselineOperationCount": 53,
+      "baselineOperationCount": 62,
       "networkIsolationRequired": true,
       "applicationDenyIsSufficient": false
     },

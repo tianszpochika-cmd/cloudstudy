@@ -26,6 +26,12 @@ function rule(document, ruleId) {
   return found;
 }
 
+function m1017Operation(canonicalOpenApi, route, method) {
+  const operation = canonicalOpenApi.paths?.[route]?.[method.toLowerCase()];
+  assert.ok(operation, `missing canonical M1-017 operation ${method} ${route}`);
+  return operation;
+}
+
 function assertMutationFails(mutate, expected, { syncProjection = true } = {}) {
   const { document, canonicalOpenApi } = fixture();
   mutate(document, canonicalOpenApi);
@@ -40,12 +46,12 @@ test('Gateway contract audit passes the dedicated fragment and exact canonical p
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.deepEqual(report.errors, []);
   assert.deepEqual(report.summary, {
-    routeRuleCount: 53,
-    publicOperationCount: 357,
-    coveredPublicOperationCount: 357,
+    routeRuleCount: 56,
+    publicOperationCount: 365,
+    coveredPublicOperationCount: 365,
     publicCoverageErrorCount: 0,
-    internalOperationCount: 53,
-    externalDeniedInternalOperationCount: 53,
+    internalOperationCount: 62,
+    externalDeniedInternalOperationCount: 62,
     canonicalProjectionMatches: true,
   });
 });
@@ -129,6 +135,65 @@ test('M1-016 notification operations cannot be exposed under the public prefix',
   assertMutationFails((document, canonicalOpenApi) => {
     canonicalOpenApi.paths['/api/v1/notifications/retry'] = structuredClone(canonicalOpenApi.paths['/internal/v1/notifications/retry']);
   }, /public operation baseline drift|must not be exposed under the public prefix/);
+});
+
+test('M1-017 has exactly eight public and nine internal operations with exact owner, security and authorization', () => {
+  const report = validateGatewayContract({ root });
+  assert.equal(report.result, 'PASS', report.errors.join('\n'));
+  assert.equal(report.summary.publicOperationCount, 365);
+  assert.equal(report.summary.routeRuleCount, 56);
+  assert.equal(report.summary.internalOperationCount, 62);
+});
+
+test('M1-017 public operations cannot weaken owner or authorization', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    m1017Operation(canonicalOpenApi, '/api/v1/analytics/telemetry', 'POST')['x-owner'] = 'rogue-service';
+  }, /M1-017 public operation is missing or has an invalid identity\/owner/);
+  assertMutationFails((document, canonicalOpenApi) => {
+    m1017Operation(canonicalOpenApi, '/api/v1/privacy/exports', 'POST')['x-authorization'].defaultDecision = 'ALLOW';
+  }, /M1-017 public operation authorization is invalid or not fail-closed/);
+  assertMutationFails((document, canonicalOpenApi) => {
+    m1017Operation(canonicalOpenApi, '/api/v1/analytics/telemetry', 'POST').security = [{ B8ServiceIdentity: [] }];
+  }, /M1-017 public operation security is invalid/);
+});
+
+test('M1-017 internal operations require exact workload security and fail-closed authorization', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    m1017Operation(canonicalOpenApi, '/internal/v1/privacy/exports/{exportId}/recovery', 'POST').security = [{ bearerAuth: [] }];
+  }, /M1-017 internal operation security is invalid/);
+  assertMutationFails((document, canonicalOpenApi) => {
+    m1017Operation(canonicalOpenApi, '/internal/v1/audit/exports', 'POST')['x-owner'] = 'admin-ops-service';
+  }, /M1-017 internal operation is missing or has an invalid identity\/owner/);
+  assertMutationFails((document, canonicalOpenApi) => {
+    m1017Operation(canonicalOpenApi, '/internal/v1/iam/account-deletions/{deletionRequestId}/execute', 'POST')['x-authorization'].defaultDecision = 'ALLOW';
+  }, /M1-017 internal operation authorization is invalid or not fail-closed/);
+});
+
+test('M1-017 internal operations cannot be exposed under the public prefix', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    canonicalOpenApi.paths['/api/v1/audit/exports'] = structuredClone(canonicalOpenApi.paths['/internal/v1/audit/exports']);
+  }, /public operation baseline drift|M1-017 public operation set|M1-017 internal operation must not be exposed/);
+  assertMutationFails((document, canonicalOpenApi) => {
+    const leaked = structuredClone(canonicalOpenApi.paths['/internal/v1/privacy/exports/{exportId}/recovery']);
+    leaked.post.operationId = 'legacyPrivacyRecoveryAlias';
+    leaked.post['x-contract'].task = 'LEGACY';
+    canonicalOpenApi.paths['/api/v1/privacy/exports/{exportId}/recovery'] = leaked;
+  }, /M1-017 internal operation route must not be exposed publicly/);
+});
+
+test('canonical operations outside the governed API prefixes fail closed', () => {
+  assertMutationFails((document, canonicalOpenApi) => {
+    canonicalOpenApi.paths['/v1/audit/exports'] = structuredClone(canonicalOpenApi.paths['/internal/v1/audit/exports']);
+  }, /canonical operation uses an ungoverned API prefix/);
+});
+
+test('M1-017 Gateway route rules remain exact for telemetry, IAM deletion and privacy export paths', () => {
+  assertMutationFails((document) => {
+    rule(document, 'analytics-telemetry').match.type = 'PREFIX';
+  }, /M1-017 Gateway route rule is missing or not exact/);
+  assertMutationFails((document) => {
+    rule(document, 'privacy-exports').match.methods = ['POST'];
+  }, /M1-017 Gateway route rule is missing or not exact|public route has no owner rule/);
 });
 
 test('credentialed browser origins cannot use a wildcard', () => {

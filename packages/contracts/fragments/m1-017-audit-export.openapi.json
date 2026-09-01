@@ -1,0 +1,584 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "P1R-M1-017 audit-service export contract patch",
+    "version": "1.0.0",
+    "description": "Coordinator-applied B13/OpenAPI patch. This file is a source patch fixture; it is not the canonical generated document."
+  },
+  "x-contract-status": "canonical",
+  "x-m1017-audit-export": {
+    "task": "P1R-M1-017",
+    "owner": "audit-service",
+    "dataOwner": "audit-service",
+    "externalBoundaryOwner": "admin-ops-service",
+    "externalExposure": "DENY",
+    "maturity": "D2_CONTRACT_READY",
+    "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+    "clientAuthority": "NONE",
+    "immutableAudit": true,
+    "workflowRole": "RETRY_AND_RECOVERY_RECEIPTS_ONLY",
+    "canonicalOperations": [
+      "createM1017AuditExport",
+      "getM1017AuditExport",
+      "requestM1017AuditExportDownload",
+      "recoverM1017AuditExport"
+    ]
+  },
+  "tags": [
+    {
+      "name": "M1-017-Audit",
+      "description": "audit-service owned, redacted, append-only audit export jobs"
+    }
+  ],
+  "paths": {
+    "/internal/v1/audit/exports": {
+      "post": {
+        "tags": ["M1-017-Audit"],
+        "summary": "Create an asynchronous redacted audit export job",
+        "operationId": "createM1017AuditExport",
+        "security": [{"B8WorkloadIdentity": []}],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.create",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.create",
+          "pep": "audit-service-local",
+          "allowedActors": ["ADMIN_OPS_SERVICE", "WORKFLOW_SERVICE"],
+          "trustedFacts": ["workloadIdentity", "subject", "tenant", "roles", "permissions", "policyVersion", "resourceOwner"],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "audit-export-request-digest",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same canonical request digest returns the original export job",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_REQUEST",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": ["auditId", "exportId", "requestDigest", "scope", "eventFamilies", "format", "decision", "decisionId", "requestId", "traceId", "occurredAt"],
+          "forbiddenFields": ["password", "accessToken", "refreshToken", "paymentCredential", "rawAudio", "rawText", "rawBody", "description", "body", "freeText", "downloadUrl", "token", "secret"]
+        },
+        "x-reliability": {
+          "retryOwner": "workflow-service",
+          "maxAttemptsIncludingInitial": 5,
+          "retryableFailureCodes": ["OWNER_TIMEOUT", "SOURCE_UNAVAILABLE", "REDACTION_FAILURE"],
+          "finalFailureCodes": ["LEGAL_HOLD", "POLICY_DENIED", "RETRY_BUDGET_EXHAUSTED"],
+          "recoveryReceipt": "#/components/schemas/M1017AuditExportRecoveryReceipt",
+          "domainFactsUntouched": true
+        },
+        "parameters": [{"$ref": "#/components/parameters/M1017AuditIdempotencyKey"}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/M1017AuditExportCreateRequest"}
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Audit export job accepted; source records remain append-only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/ApiSuccessEnvelope"},
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["data"],
+                      "properties": {"data": {"$ref": "#/components/schemas/M1017AuditExportCreateResponse"}}
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {"$ref": "#/components/headers/XRequestId"},
+              "X-Trace-Id": {"$ref": "#/components/headers/XTraceId"},
+              "X-API-Version": {"$ref": "#/components/headers/XApiVersion"}
+            }
+          },
+          "400": {"$ref": "#/components/responses/ApiBadRequest"},
+          "401": {"$ref": "#/components/responses/ApiUnauthorized"},
+          "403": {"$ref": "#/components/responses/ApiForbidden"},
+          "409": {"$ref": "#/components/responses/ApiConflict"},
+          "422": {"$ref": "#/components/responses/ApiUnprocessableEntity"},
+          "500": {"$ref": "#/components/responses/ApiInternalError"},
+          "503": {"$ref": "#/components/responses/ApiServiceUnavailable"}
+        }
+      }
+    },
+    "/internal/v1/audit/exports/{exportId}": {
+      "get": {
+        "tags": ["M1-017-Audit"],
+        "summary": "Read an audit export job status",
+        "operationId": "getM1017AuditExport",
+        "security": [{"B8WorkloadIdentity": []}],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.read",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.read",
+          "pep": "audit-service-local",
+          "allowedActors": ["ADMIN_OPS_SERVICE", "WORKFLOW_SERVICE"],
+          "trustedFacts": ["workloadIdentity", "subject", "tenant", "roles", "permissions", "policyVersion", "resourceOwner"],
+          "clientAuthority": "NONE"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_STATUS_READ",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": ["auditId", "exportId", "state", "attempt", "retryable", "requestId", "traceId", "occurredAt"],
+          "forbiddenFields": ["password", "accessToken", "refreshToken", "paymentCredential", "rawAudio", "rawText", "rawBody", "description", "body", "freeText", "downloadUrl", "token", "secret"]
+        },
+        "parameters": [{"$ref": "#/components/parameters/M1017AuditExportId"}],
+        "responses": {
+          "200": {
+            "description": "Server-derived export state and redacted recovery receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/ApiSuccessEnvelope"},
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["data"],
+                      "properties": {"data": {"$ref": "#/components/schemas/M1017AuditExportStatusResponse"}}
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {"$ref": "#/components/headers/XRequestId"},
+              "X-Trace-Id": {"$ref": "#/components/headers/XTraceId"},
+              "X-API-Version": {"$ref": "#/components/headers/XApiVersion"}
+            }
+          },
+          "401": {"$ref": "#/components/responses/ApiUnauthorized"},
+          "403": {"$ref": "#/components/responses/ApiForbidden"},
+          "404": {"$ref": "#/components/responses/ApiNotFound"}
+        }
+      }
+    },
+    "/internal/v1/audit/exports/{exportId}/download": {
+      "post": {
+        "tags": ["M1-017-Audit"],
+        "summary": "Issue a one-time short-lived redacted export grant",
+        "operationId": "requestM1017AuditExportDownload",
+        "security": [{"B8WorkloadIdentity": []}],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.download",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.download",
+          "pep": "audit-service-local",
+          "allowedActors": ["ADMIN_OPS_SERVICE", "WORKFLOW_SERVICE"],
+          "trustedFacts": ["workloadIdentity", "subject", "tenant", "roles", "permissions", "policyVersion", "resourceOwner"],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "audit-export-download-grant",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same request returns the same unexpired one-time grant",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_DOWNLOAD_ISSUED",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": ["auditId", "exportId", "grantRef", "expiresAt", "oneTime", "requestId", "traceId", "occurredAt"],
+          "forbiddenFields": ["password", "accessToken", "refreshToken", "paymentCredential", "rawAudio", "rawText", "rawBody", "description", "body", "freeText", "downloadUrl", "token", "secret"]
+        },
+        "parameters": [
+          {"$ref": "#/components/parameters/M1017AuditExportId"},
+          {"$ref": "#/components/parameters/M1017AuditIdempotencyKey"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/M1017AuditExportDownloadRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "One-time grant reference; no credential or permanent URL is returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/ApiSuccessEnvelope"},
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["data"],
+                      "properties": {"data": {"$ref": "#/components/schemas/M1017AuditExportDownloadGrant"}}
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {"$ref": "#/components/headers/XRequestId"},
+              "X-Trace-Id": {"$ref": "#/components/headers/XTraceId"},
+              "X-API-Version": {"$ref": "#/components/headers/XApiVersion"}
+            }
+          },
+          "401": {"$ref": "#/components/responses/ApiUnauthorized"},
+          "403": {"$ref": "#/components/responses/ApiForbidden"},
+          "404": {"$ref": "#/components/responses/ApiNotFound"},
+          "409": {"$ref": "#/components/responses/ApiConflict"},
+          "410": {"$ref": "#/components/responses/ApiConflict"}
+        }
+      }
+    },
+    "/internal/v1/audit/exports/{exportId}/recovery": {
+      "post": {
+        "tags": ["M1-017-Audit"],
+        "summary": "Record a workflow-owned export retry or recovery receipt",
+        "operationId": "recoverM1017AuditExport",
+        "security": [{"B8WorkloadIdentity": []}],
+        "x-owner": "audit-service",
+        "x-data-owner": "audit-service",
+        "x-permission": "audit.export.recover",
+        "x-contract": {
+          "task": "P1R-M1-017",
+          "canonical": true,
+          "maturity": "D2_CONTRACT_READY",
+          "runtimeStatus": "NOT_RUNTIME_VERIFIED",
+          "clientAuthority": "NONE"
+        },
+        "x-authorization": {
+          "defaultDecision": "DENY",
+          "requiredPermission": "audit.export.recover",
+          "pep": "audit-service-local",
+          "allowedActors": ["WORKFLOW_SERVICE"],
+          "trustedFacts": ["workloadIdentity", "subject", "tenant", "roles", "permissions", "policyVersion", "resourceOwner"],
+          "clientAuthority": "NONE"
+        },
+        "x-idempotency": {
+          "required": true,
+          "strategy": "audit-export-recovery",
+          "keyHeader": "Idempotency-Key",
+          "replayBehavior": "same action and expected state version returns the original recovery receipt",
+          "sameKeyDifferentDigest": "CONFLICT_409",
+          "digest": "server-canonical-json-sha256"
+        },
+        "x-audit": {
+          "required": true,
+          "sink": "audit-service",
+          "recordKind": "AUDIT_EXPORT_RECOVERY",
+          "appendOnly": true,
+          "redacted": true,
+          "allowedFields": ["auditId", "exportId", "action", "attempt", "state", "recoveryReceiptRef", "requestId", "traceId", "occurredAt"],
+          "forbiddenFields": ["password", "accessToken", "refreshToken", "paymentCredential", "rawAudio", "rawText", "rawBody", "description", "body", "freeText", "downloadUrl", "token", "secret"]
+        },
+        "x-reliability": {
+          "retryOwner": "workflow-service",
+          "maxAttemptsIncludingInitial": 5,
+          "recoveryReceipt": "#/components/schemas/M1017AuditExportRecoveryReceipt",
+          "domainFactsUntouched": true
+        },
+        "parameters": [
+          {"$ref": "#/components/parameters/M1017AuditExportId"},
+          {"$ref": "#/components/parameters/M1017AuditIdempotencyKey"}
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/M1017AuditExportRecoveryRequest"}
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Recovery action accepted with a redacted receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {"$ref": "#/components/schemas/ApiSuccessEnvelope"},
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["data"],
+                      "properties": {"data": {"$ref": "#/components/schemas/M1017AuditExportRecoveryReceipt"}}
+                    }
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {"$ref": "#/components/headers/XRequestId"},
+              "X-Trace-Id": {"$ref": "#/components/headers/XTraceId"},
+              "X-API-Version": {"$ref": "#/components/headers/XApiVersion"}
+            }
+          },
+          "401": {"$ref": "#/components/responses/ApiUnauthorized"},
+          "403": {"$ref": "#/components/responses/ApiForbidden"},
+          "404": {"$ref": "#/components/responses/ApiNotFound"},
+          "409": {"$ref": "#/components/responses/ApiConflict"},
+          "422": {"$ref": "#/components/responses/ApiUnprocessableEntity"}
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "M1017AuditIdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {"type": "string", "minLength": 8, "maxLength": 128}
+      },
+      "M1017AuditExportId": {
+        "name": "exportId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^audit-export_[A-Za-z0-9._:-]{8,112}$"
+        }
+      }
+    },
+    "schemas": {
+      "M1017AuditExportCreateRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["windowStart", "windowEnd", "scope", "eventFamilies", "format", "approvalRef"],
+        "properties": {
+          "windowStart": {"type": "string", "format": "date-time"},
+          "windowEnd": {"type": "string", "format": "date-time"},
+          "scope": {"$ref": "#/components/schemas/M1017AuditExportScope"},
+          "eventFamilies": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {"$ref": "#/components/schemas/M1017AuditEventFamily"}
+          },
+          "format": {"$ref": "#/components/schemas/M1017AuditExportFormat"},
+          "approvalRef": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 128,
+            "pattern": "^approval-ref:[A-Za-z0-9._:-]{8,112}$"
+          }
+        }
+      },
+      "M1017AuditExportDownloadRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expectedStateVersion"],
+        "properties": {
+          "expectedStateVersion": {"type": "integer", "minimum": 0}
+        }
+      },
+      "M1017AuditExportRecoveryRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "expectedStateVersion", "reasonCode"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": ["RETRY", "REBUILD_REDACTED_COPY", "REVOKE_DOWNLOAD_GRANT"]
+          },
+          "expectedStateVersion": {"type": "integer", "minimum": 0},
+          "reasonCode": {
+            "type": "string",
+            "enum": ["OWNER_TIMEOUT", "SOURCE_UNAVAILABLE", "REDACTION_FAILURE", "OPERATOR_REQUEST", "POLICY_RECHECK"]
+          }
+        }
+      },
+      "M1017AuditExportScope": {
+        "type": "string",
+        "enum": ["TENANT", "SUBJECT", "PRIVACY_OPERATIONS", "SECURITY_OPERATIONS"]
+      },
+      "M1017AuditEventFamily": {
+        "type": "string",
+        "enum": ["AUTH", "ACCESS", "ADMIN", "PRIVACY", "RECOVERY", "DATA"]
+      },
+      "M1017AuditExportFormat": {
+        "type": "string",
+        "enum": ["JSONL", "CSV"]
+      },
+      "M1017AuditExportState": {
+        "type": "string",
+        "enum": ["REQUESTED", "PROCESSING", "READY", "RETRY_SCHEDULED", "FAILED_RETRYABLE", "FAILED_FINAL", "EXPIRED", "REVOKED"]
+      },
+      "M1017AuditFailureCode": {
+        "type": "string",
+        "enum": ["NONE", "OWNER_TIMEOUT", "SOURCE_UNAVAILABLE", "REDACTION_FAILURE", "LEGAL_HOLD", "POLICY_DENIED", "RETRY_BUDGET_EXHAUSTED"]
+      },
+      "M1017AuditExportCreateResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["exportId", "state", "stateVersion", "requestDigest", "auditId", "createdAt", "expiresAt", "redacted", "owner", "tenantScope", "runtimeStatus"],
+        "properties": {
+          "exportId": {"$ref": "#/components/schemas/M1017AuditExportIdValue"},
+          "state": {"$ref": "#/components/schemas/M1017AuditExportState"},
+          "stateVersion": {"type": "integer", "minimum": 0},
+          "requestDigest": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "auditId": {"$ref": "#/components/schemas/M1017AuditId"},
+          "createdAt": {"type": "string", "format": "date-time"},
+          "expiresAt": {"type": "string", "format": "date-time"},
+          "redacted": {"type": "boolean", "const": true},
+          "owner": {"type": "string", "const": "audit-service"},
+          "tenantScope": {"type": "string", "const": "server-derived"},
+          "runtimeStatus": {"type": "string", "const": "NOT_RUNTIME_VERIFIED"}
+        }
+      },
+      "M1017AuditExportStatusResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["exportId", "state", "stateVersion", "requestDigest", "auditId", "createdAt", "expiresAt", "redacted", "owner", "tenantScope", "attempt", "retryable", "lastFailureCode", "recoveryReceiptRef", "downloadAvailable", "domainFactsUntouched", "runtimeStatus"],
+        "properties": {
+          "exportId": {"$ref": "#/components/schemas/M1017AuditExportIdValue"},
+          "state": {"$ref": "#/components/schemas/M1017AuditExportState"},
+          "stateVersion": {"type": "integer", "minimum": 0},
+          "requestDigest": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "auditId": {"$ref": "#/components/schemas/M1017AuditId"},
+          "createdAt": {"type": "string", "format": "date-time"},
+          "expiresAt": {"type": "string", "format": "date-time"},
+          "redacted": {"type": "boolean", "const": true},
+          "owner": {"type": "string", "const": "audit-service"},
+          "tenantScope": {"type": "string", "const": "server-derived"},
+          "attempt": {"type": "integer", "minimum": 1, "maximum": 5},
+          "retryable": {"type": "boolean"},
+          "lastFailureCode": {"$ref": "#/components/schemas/M1017AuditFailureCode"},
+          "recoveryReceiptRef": {
+            "type": "string",
+            "pattern": "^(NONE|audit-recovery-receipt:[A-Za-z0-9._:-]{8,112})$"
+          },
+          "downloadAvailable": {"type": "boolean"},
+          "domainFactsUntouched": {"type": "boolean", "const": true},
+          "runtimeStatus": {"type": "string", "const": "NOT_RUNTIME_VERIFIED"}
+        }
+      },
+      "M1017AuditExportDownloadGrant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["exportId", "grantRef", "contentDigest", "expiresAt", "oneTime", "redacted", "auditId", "downloadAuditId"],
+        "properties": {
+          "exportId": {"$ref": "#/components/schemas/M1017AuditExportIdValue"},
+          "grantRef": {
+            "type": "string",
+            "minLength": 24,
+            "maxLength": 128,
+            "pattern": "^audit-download-ref:[A-Za-z0-9._:-]{8,112}$"
+          },
+          "contentDigest": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "expiresAt": {"type": "string", "format": "date-time"},
+          "oneTime": {"type": "boolean", "const": true},
+          "redacted": {"type": "boolean", "const": true},
+          "auditId": {"$ref": "#/components/schemas/M1017AuditId"},
+          "downloadAuditId": {"$ref": "#/components/schemas/M1017AuditId"}
+        }
+      },
+      "M1017AuditExportRecoveryReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["exportId", "action", "state", "attempt", "retryable", "recoveryReceiptRef", "auditId", "occurredAt", "redacted", "domainFactsUntouched", "owner", "workflowOwner"],
+        "properties": {
+          "exportId": {"$ref": "#/components/schemas/M1017AuditExportIdValue"},
+          "action": {"type": "string", "enum": ["RETRY", "REBUILD_REDACTED_COPY", "REVOKE_DOWNLOAD_GRANT"]},
+          "state": {"$ref": "#/components/schemas/M1017AuditExportState"},
+          "attempt": {"type": "integer", "minimum": 1, "maximum": 5},
+          "retryable": {"type": "boolean"},
+          "recoveryReceiptRef": {"type": "string", "pattern": "^audit-recovery-receipt:[A-Za-z0-9._:-]{8,112}$"},
+          "auditId": {"$ref": "#/components/schemas/M1017AuditId"},
+          "occurredAt": {"type": "string", "format": "date-time"},
+          "redacted": {"type": "boolean", "const": true},
+          "domainFactsUntouched": {"type": "boolean", "const": true},
+          "owner": {"type": "string", "const": "audit-service"},
+          "workflowOwner": {"type": "string", "const": "workflow-service"}
+        }
+      },
+      "M1017AuditRecordSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["auditId", "actorSubjectHash", "tenantHash", "action", "resourceRef", "decision", "reasonCode", "decisionId", "requestId", "traceId", "commandId", "eventId", "occurredAt", "beforeDigest", "afterDigest", "previousHash", "recordHash", "redacted", "appendOnly"],
+        "properties": {
+          "auditId": {"$ref": "#/components/schemas/M1017AuditId"},
+          "actorSubjectHash": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "tenantHash": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "action": {"type": "string", "enum": ["EXPORT_REQUEST", "EXPORT_STATUS_READ", "DOWNLOAD_ISSUED", "RECOVERY_RECORDED"]},
+          "resourceRef": {"type": "string", "pattern": "^resource-ref:[A-Za-z0-9._:-]{8,112}$"},
+          "decision": {"type": "string", "enum": ["ALLOW", "DENY"]},
+          "reasonCode": {"$ref": "#/components/schemas/M1017AuditFailureCode"},
+          "decisionId": {"type": "string", "pattern": "^decision_[A-Za-z0-9._:-]{8,112}$"},
+          "requestId": {"type": "string", "pattern": "^request_[A-Za-z0-9._:-]{8,112}$"},
+          "traceId": {"type": "string", "pattern": "^trace_[A-Za-z0-9._:-]{8,112}$"},
+          "commandId": {"type": "string", "pattern": "^command_[A-Za-z0-9._:-]{8,112}$"},
+          "eventId": {"type": "string", "pattern": "^event_[A-Za-z0-9._:-]{8,112}$"},
+          "occurredAt": {"type": "string", "format": "date-time"},
+          "beforeDigest": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "afterDigest": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "previousHash": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "recordHash": {"$ref": "#/components/schemas/M1017Sha256Digest"},
+          "redacted": {"type": "boolean", "const": true},
+          "appendOnly": {"type": "boolean", "const": true}
+        }
+      },
+      "M1017AuditId": {
+        "type": "string",
+        "minLength": 14,
+        "maxLength": 128,
+        "pattern": "^audit_[A-Za-z0-9._:-]{6,120}$"
+      },
+      "M1017AuditExportIdValue": {
+        "type": "string",
+        "minLength": 16,
+        "maxLength": 128,
+        "pattern": "^audit-export_[A-Za-z0-9._:-]{8,112}$"
+      },
+      "M1017Sha256Digest": {
+        "type": "string",
+        "pattern": "^sha256:[a-f0-9]{64}$"
+      }
+    }
+  }
+}

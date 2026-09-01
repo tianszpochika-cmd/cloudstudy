@@ -249,7 +249,7 @@
     "mode":"static-only",
     "staticDecision":"PASS",
     "defaultDecision":"NO-GO",
-    "topic":{"name":"platform.learner.v1","ownerService":"learner-service","producerPrincipal":"svc.learner-service","partitionKey":"aggregateId","consumerGroups":[{"name":"cg.learning-from-learner.v1","service":"learning-service","principal":"cg.learning-from-learner.v1","replayEnabled":true},{"name":"cg.workflow-from-learner.v1","service":"workflow-service","principal":"cg.workflow-from-learner.v1","replayEnabled":true}]},
+    "topic":{"name":"platform.learner.v1","ownerService":"learner-service","producerPrincipal":"svc.learner-service","partitionKey":"aggregateId","consumerGroups":[{"name":"cg.audit-from-learner.v1","service":"audit-service","principal":"cg.audit-from-learner.v1","replayEnabled":true},{"name":"cg.learning-from-learner.v1","service":"learning-service","principal":"cg.learning-from-learner.v1","replayEnabled":true},{"name":"cg.notification-from-learner.v1","service":"notification-service","principal":"cg.notification-from-learner.v1","replayEnabled":true},{"name":"cg.workflow-from-learner.v1","service":"workflow-service","principal":"cg.workflow-from-learner.v1","replayEnabled":true}]},
     "routing":{"eventName":"learner.target.updated.v1","topic":"platform.learner.v1","partitionKey":"aggregateId","consumerGroups":["cg.learning-from-learner.v1","cg.workflow-from-learner.v1"]}
   },
   "phase1Prohibitions":["client-plan-authority","client-recovery-authority","cross-owner-domain-write","unbounded-duration-input","legacy-duration-auto-mapping","canonical-event-promotion-outside-target","runtime-promotion"],

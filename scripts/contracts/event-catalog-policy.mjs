@@ -96,6 +96,7 @@ export const EXPECTED_EVENT_FRAGMENT_INVENTORY = Object.freeze([
   fragmentInventory('packages/contracts/events/v1/fragments/m1-014-gamification-social-v2.events.json', 'learning.task.completed.v2 gamification.xp.ledger_posted.v2 gamification.reward.granted.v2 study_room.seat_joined.v2 study_room.focus_started.v2 study_room.seat_left.v2 leaderboard.snapshot_published.v2 social.report.created.v2'),
   fragmentInventory('packages/contracts/events/v1/fragments/m1-015-commerce-v2.events.json', 'commerce.order.created.v2 commerce.payment.requested.v2 commerce.payment.callback_received.v2 commerce.payment.verified.v2 commerce.entitlement.activated.v2 commerce.entitlement.revoked.v2 commerce.refund.settled.v2 commerce.reconciliation.discrepancy_recorded.v2 commerce.reconciliation.recovery_receipted.v2'),
   fragmentInventory('packages/contracts/events/v1/fragments/m1-016-notification-sync-support-v2.events.json', 'notification.requested.v2 notification.retry_scheduled.v2 notification.recovery.completed.v2 sync.command_receipted.v2 sync.conflict_detected.v2 sync.recovered.v2 support.ticket.created.v2 support.ticket.resolved.v2'),
+  fragmentInventory('packages/contracts/events/v1/fragments/m1-017-privacy-deletion-v2.events.json', 'privacy.export.requested.v2 privacy.export.completed.v2 account.deletion.requested.v2 account.deletion.cancelled.v2 account.deletion.completed.v2'),
 ]);
 
 export const EXPECTED_FORBIDDEN_PAYLOAD_FIELD_PATTERNS = [

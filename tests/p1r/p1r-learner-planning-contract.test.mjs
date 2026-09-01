@@ -61,6 +61,10 @@ function eventPayload(document, eventName) {
   return document.payloadSchemas[reference.split('/').at(-1)];
 }
 
+function b26Topic(fixture) {
+  return fixture.b26Runtime.topics.find((entry) => entry.name === fixture.policy.b26Static.topic.name);
+}
+
 function removeRequired(schema, field) {
   schema.required = schema.required.filter((candidate) => candidate !== field);
 }
@@ -83,6 +87,33 @@ test('learner planning contract validator accepts the governed synthetic D2 fixt
   assert.equal(report.result, 'PASS', report.errors.join('\n'));
   assert.equal(report.summary.runtimeStatus, 'NOT_RUNTIME_VERIFIED');
   assert.equal(report.summary.targetEventStatus, 'CANONICAL_D2');
+});
+
+test('B26 learner topic consumers remain exact while privacy consumers are added', () => {
+  const fixture = makeSyntheticFixture();
+  assert.deepEqual(fixture.policy.b26Static.topic.consumerGroups, [
+    { name: 'cg.audit-from-learner.v1', service: 'audit-service', principal: 'cg.audit-from-learner.v1', replayEnabled: true },
+    { name: 'cg.learning-from-learner.v1', service: 'learning-service', principal: 'cg.learning-from-learner.v1', replayEnabled: true },
+    { name: 'cg.notification-from-learner.v1', service: 'notification-service', principal: 'cg.notification-from-learner.v1', replayEnabled: true },
+    { name: 'cg.workflow-from-learner.v1', service: 'workflow-service', principal: 'cg.workflow-from-learner.v1', replayEnabled: true },
+  ]);
+
+  const missingConsumer = structuredClone(fixture);
+  b26Topic(missingConsumer).consumerGroups.pop();
+  const missingReport = validateLearnerPlanningContractData(missingConsumer);
+  assert.equal(missingReport.result, 'FAIL');
+  assert.match(missingReport.errors.join('\n'), /B26 learner consumers must exactly match the frozen policy contract/);
+
+  const additionalConsumer = structuredClone(fixture);
+  b26Topic(additionalConsumer).consumerGroups.push({
+    name: 'cg.unapproved-from-learner.v1',
+    service: 'unapproved-service',
+    principal: 'cg.unapproved-from-learner.v1',
+    replayEnabled: true,
+  });
+  const additionalReport = validateLearnerPlanningContractData(additionalConsumer);
+  assert.equal(additionalReport.result, 'FAIL');
+  assert.match(additionalReport.errors.join('\n'), /B26 learner consumers must exactly match the frozen policy contract/);
 });
 
 const mutations = {
